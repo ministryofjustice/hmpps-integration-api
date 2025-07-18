@@ -1,0 +1,3829 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Prisoner Search",
+    "description": "<div>\n  <h2 id=\"overview\">Overview</h2>\n  <p>This service provides a number of endpoints for searching and reading prisoners that have been registered with the\n    HMPPS prison service. This may be current or previous prisoners or other people that might be in secure\n    hospitals.</p>\n  <h2 id=\"data-provided\">Data provided</h2>\n  <p>The vast majority of the data is sourced from the NOMIS system though in the future this is likely to change as\n    more HMPPS prison data is held outside NOMIS.</p>\n  <p>The data for a person is stored in Elastic Search and is updated after a record in NOMIS is changed. This is\n    typically about a minute after the data is changed in NOMIS. In the unlikely circumstance that your service needs\n    data that is 100% up to date with NOMIS then the\n    <a href=\"https://prison-api-dev.prison.service.justice.gov.uk/swagger-ui/index.html\">prison-api</a>\n    might be a better service to use.\n    One use case this might be appropriate for is if you need up-to-date data at the point a NOMIS prisoner event\n    is received; this service also updates its records as a result of NOMIS prisoner events, so you might encounter a\n    race\n    condition if your read is triggered from the same event.\n  </p>\n  <div>The data returned for each prisoner record is essentially a snapshot of key prisoner data. This includes the\n    following:\n    <ul>\n      <li>Identifiers from both NOMIS and those held in other systems</li>\n      <li>Personal details such as name and date of birth (including aliases)</li>\n      <li>Current prison status such as the current location (including cell)</li>\n      <li>Latest sentence details</li>\n      <li>Alerts</li>\n    </ul>\n    See the schema definition for the API for full details.\n  </div>\n  <h3 id=\"response-fields\">Filtering response data</h3>\n  <div>The <strong>Prisoner</strong> object returned from most endpoints has grown very large over time. This has become problematic for a few reasons:\n     <ul>\n      <li>Calls with a large number of results can have exceedingly large payloads returned, sometimes breaking response size limits</li>\n      <li>Some data points aren't suitable for all clients, in particular 3rd parties should not receive data they don't explicitly need</li>\n      <li>Most teams are only interested in a small portion of the response object; the rest is superfluous, noisy and a waste of resource</li>\n    </ul>\n  </div>\n  <p>\n    To address these issues, endpoints that return the <strong>Prisoner</strong> object now support filtering of response data via the\n    <strong>responseFields</strong> query parameter.\n  </p>\n  <p>\n    For example, to only return the prisoner's name and date of birth,\n    you would use query: <strong>/prisoner/A1234BC?responseFields=firstName,lastName,dateOfBirth</strong>\n  </p>\n  <p>\n    Note that it is also possible to specify nested objects or fields from lists of objects, for example:\n    <strong>/prisoner/A1234BC?responseFields=aliases.lastName,currentIncentive.level</strong>\n  </p>\n  <p>\n    To find which fields can be included as <strong>responseFields</strong> call the endpoint <a href=\"#/Developer information/responseFields\" target=\"_blank\">GET /response-fields</a>.\n  </p>\n  <h2 id=\"role-restrictions\">Role restrictions</h2>\n  <p>\n    Role restrictions in this service are applied by a `@PreAuthorize` annotation at either resource or service level.\n    Furthermore the annotation can be applied at individual method level or class level.\n  </p>\n  <p>\n    Each endpoint in this API documentation should normally include what restrictions are applied. If there is any doubt\n    then it is worth looking at the github repository at\n    https://github.com/ministryofjustice/hmpps-prisoner-search/ and looking at the endpoint in question.\n  </p>\n\n  The following roles are currently in use in this service:\n  <ul>\n    <li>\n      ROLE_PRISONER_SEARCH. This role grants access to all of the search endpoints.\n    </li>\n    <li>\n      ROLE_PRISONER_IN_PRISON_SEARCH. This role is limited to protect the \"/prison/{prisonId}/prisoners\" endpoint for\n      clients that only need access to this endpoint in prisoner offender search. For more general access the\n      ROLE_PRISONER_SEARCH would be more suitable.\n    </li>\n    <li>\n      ROLE_VIEW_PRISONER_DATA. This role is only needed at present for the \"/prisoner/{id}\" endpoint to retrieve\n      detailed information about a particular prisoner, as opposed to the rest of the search endpoints in this service\n      that can return multiple matches.\n    </li>\n    <li>\n      ROLE_GLOBAL_SEARCH. This role is deprecated and replaced by the ROLE_PRISONER_SEARCH. All of the endpoints in\n      this service that accept this role also accept ROLE_PRISONER_SEARCH so the latter should be used in preference.\n      It was originally created for Prison API and is still in use there.\n    </li>\n    <li>\n      ROLE_EVENTS_ADMIN. This role is only needed for the \"/events/prisoner/received/{prisonerNumber}\" endpoint\n      and is only required in the event that a prisoner event wasn't raised by the service when their data in the\n      service\n      had changed.\n    </li>\n  </ul>\n  <h2 id=\"types-of-endpoints\">Types of endpoints</h2>\n  <h3>Searching for a specific prisoner based on criteria</h3>\n  <p>\n    These are endpoints that use the core Elastic Search features to locate a prisoner record based on a set of\n    criteria;\n    for instance name, date of birth or unique identifier (such as the Police National Computer PNC number).\n    Typically, they return many results and a summary of those results would be presented to an end user.\n  </p>\n  <h3>Matching records</h3>\n  <p>\n    Similar to searching but typically using a criteria from a different system; for instance, key data from a probation\n    record or court record.\n    These will use an algorithm that matches based on data that is likely to be most reliable for matching; for\n    instance,\n    PNC number or name with date of birth.\n  </p>\n  <h3>Retrieving a specific record</h3>\n  <p>\n    Retrieving a specific record typically by a unique identifier; for instance, prisoner number (aka NOMS number). This\n    is a convenient way of viewing a summary of a prisoner record and is typically quicker than using the equivalent API\n    in <b>prison-api</b>.\n  </p>\n  <h3>Retrieving batches of records</h3>\n  <p>\n    Retrieving a batch of records either by supplying a list of identifiers or a criteria that will a match many\n    records;\n    for instance, all people in a prison wing or people to be released on a specific date.\n  </p>\n</div>\n",
+    "contact": {
+      "name": "HMPPS Digital Studio",
+      "email": "feedback@digital.justice.gov.uk"
+    },
+    "version": "2025-07-17.74.cc58294"
+  },
+  "servers": [
+    {
+      "url": "https://prisoner-search-dev.prison.service.justice.gov.uk/",
+      "description": "Development"
+    },
+    {
+      "url": "https://prisoner-search-preprod.prison.service.justice.gov.uk/",
+      "description": "Pre-Production"
+    },
+    {
+      "url": "https://prisoner-search.prison.service.justice.gov.uk/",
+      "description": "Production"
+    },
+    {
+      "url": "http://localhost:8080",
+      "description": "Local"
+    }
+  ],
+  "security": [
+    {
+      "view-prisoner-data-role": ["read"]
+    },
+    {
+      "prisoner-search-role": ["read"]
+    },
+    {
+      "global-search-role": ["read"]
+    },
+    {
+      "prisoner-in-prison-search-role": ["read"]
+    },
+    {
+      "prisoner-search--prisoner--ro": ["read"]
+    }
+  ],
+  "tags": [
+    {
+      "name": "Popular",
+      "description": "The most popular endpoints. Look here first when deciding which endpoint to use."
+    },
+    {
+      "name": "Establishment search",
+      "description": "Endpoints for searching for a prisoner within a prison"
+    },
+    {
+      "name": "Global search",
+      "description": "Endpoints for searching for a prisoner across the entire prison estate, including people that have previously been released"
+    },
+    {
+      "name": "Batch",
+      "description": "Endpoints designed to find a large number of prisoners with a single call"
+    },
+    {
+      "name": "Matching",
+      "description": "Endpoints designed for matching a prisoner with data from other sources"
+    },
+    {
+      "name": "Deprecated",
+      "description": "Endpoints that should no longer be used and will be removed in a future release"
+    },
+    {
+      "name": "Specific use case",
+      "description": "Endpoints that were designed for a specific use case and are unlikely to fit for general use"
+    },
+    {
+      "name": "Experimental",
+      "description": "Endpoints that have not been tried and tested in a production environment"
+    }
+  ],
+  "paths": {
+    "/restricted-patient-search/match-restricted-patients": {
+      "post": {
+        "tags": ["Specific use case"],
+        "summary": "Match prisoners by criteria",
+        "description": "Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role",
+        "operationId": "findByCriteria",
+        "parameters": [
+          {
+            "name": "responseFields",
+            "in": "query",
+            "description": "A list of fields to populate on the Prisoner record returned in the response. An empty list defaults to all fields.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "example": "[prisonerNumber,firstName,aliases.firstName,currentIncentive.level.code]"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Zero-based page index (0..N)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "The size of the page to be returned",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RestrictedPatientSearchCriteria"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagePrisoner"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prisoner-search/release-date-by-prison": {
+      "post": {
+        "tags": ["Batch", "Specific use case"],
+        "summary": "Match prisoners who have a release date within a range, and optionally by prison",
+        "description": "Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role",
+        "operationId": "findByReleaseDateAndPrison",
+        "parameters": [
+          {
+            "name": "responseFields",
+            "in": "query",
+            "description": "A list of fields to populate on the Prisoner record returned in the response. An empty list defaults to all fields.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "example": "[prisonerNumber,firstName,aliases.firstName,currentIncentive.level.code]"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Zero-based page index (0..N)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "The size of the page to be returned",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReleaseDateSearch"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagePrisoner"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prisoner-search/prisoner-numbers": {
+      "post": {
+        "tags": ["Popular", "Batch"],
+        "summary": "Match prisoners by a list of prisoner numbers",
+        "description": "Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role or PRISONER_SEARCH__PRISONER__RO",
+        "operationId": "findByNumbers",
+        "parameters": [
+          {
+            "name": "responseFields",
+            "in": "query",
+            "description": "A list of fields to populate on the Prisoner record returned in the response. An empty list defaults to all fields.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "example": "[prisonerNumber,firstName,aliases.firstName,currentIncentive.level.code]"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrisonerNumbers"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Prisoner"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prisoner-search/possible-matches": {
+      "post": {
+        "tags": ["Matching"],
+        "summary": "Search for possible matches by criteria",
+        "description": "Search by prison number, PNC number, and/or name and date of birth, returning collated results by order of search.\n       This will also search aliases for possible matches. \n       Use when there is manual input, e.g. a user can select the correct match from search results.\n       Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.\n       ",
+        "operationId": "findPossibleMatchesBySearchCriteria",
+        "parameters": [
+          {
+            "name": "responseFields",
+            "in": "query",
+            "description": "A list of fields to populate on the Prisoner record returned in the response. An empty list defaults to all fields.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "example": "[prisonerNumber,firstName,aliases.firstName,currentIncentive.level.code]"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PossibleMatchCriteria"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Prisoner"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prisoner-search/match": {
+      "post": {
+        "tags": ["Deprecated"],
+        "summary": "Match prisoners by criteria, to search across a list of specific prisons use /match-prisoners",
+        "description": "Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role",
+        "operationId": "findByCriteria_1",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrisonSearch"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Prisoner"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/prisoner-search/match-prisoners": {
+      "post": {
+        "tags": ["Matching", "Popular"],
+        "summary": "Match prisoners by criteria",
+        "description": "Search by prisoner identifier or name and returning results for the criteria matched first.\n        Typically used when the matching data is of high quality where the first match is expected to be a near perfect match.\n        Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.\n        ",
+        "operationId": "findByCriteria_2",
+        "parameters": [
+          {
+            "name": "responseFields",
+            "in": "query",
+            "description": "A list of fields to populate on the Prisoner record returned in the response. An empty list defaults to all fields.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "example": "[prisonerNumber,firstName,aliases.firstName,currentIncentive.level.code]"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SearchCriteria"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Prisoner"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prisoner-search/booking-ids": {
+      "post": {
+        "tags": ["Batch"],
+        "summary": "Match prisoners by a list of booking ids",
+        "description": "Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role",
+        "operationId": "findByIds",
+        "parameters": [
+          {
+            "name": "responseFields",
+            "in": "query",
+            "description": "A list of fields to populate on the Prisoner record returned in the response. An empty list defaults to all fields.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "example": "[prisonerNumber,firstName,aliases.firstName,currentIncentive.level.code]"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookingIds"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Prisoner"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prisoner-detail": {
+      "post": {
+        "tags": ["Global search"],
+        "summary": "Find prisoners by exact or wildcard terms for specified fields and return a paginated result set",
+        "description": "Search terms and identifiers can be provided in either or mixed case and are converted to the appropriate case.\n      This endpoint will find both exact values (full term matched) or wildcards supporting the '*' and '?' symbols.\n      The '*' symbol will match any number of characters e.g. firstName='J*' will match 'John', 'Jane', and 'James'.  \n      The '?' symbol will match any letter substituted at that position. e.g. firstName='t?ny' will match 'Tony' and 'Tiny'\n      Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.\n      ",
+        "operationId": "prisonerDetailSearch",
+        "parameters": [
+          {
+            "name": "responseFields",
+            "in": "query",
+            "description": "A list of fields to populate on the Prisoner record returned in the response. An empty list defaults to all fields.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "example": "[prisonerNumber,firstName,aliases.firstName,currentIncentive.level.code]"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrisonerDetailRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Search successfully performed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrisonerDetailResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Incorrect information provided to perform prisoner match",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized to access this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Incorrect permissions to search for prisoner data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "global-search-role": []
+          },
+          {
+            "prisoner-search-role": []
+          }
+        ]
+      }
+    },
+    "/physical-detail": {
+      "post": {
+        "tags": ["Experimental", "Physical detail search"],
+        "summary": "*** BETA *** Physical details search for prisoners within a prison / group of prisons - returns a paginated result set",
+        "description": "BETA endpoint - subject to change. Search by physical details.\n      If a cell location is provided then only one prison can be supplied, otherwise multiple prisons are allowed.\n      If lenient is set to false (default) then all supplied physical details must match in order for results to be returned.\n      If lenient is set to true then at least one physical detail must match.\n      Searches will return results for partial string matches, so searching for an ethnicity of white will return all\n      prisoners with ethnicity of White: Eng./Welsh/Scot./N.Irish/British, White: Irish etc.\n      Results are ordered so that prisoners that match the most criteria are returned first, then secondary order is by\n      prisoner number.\n      Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.\n      ",
+        "operationId": "prisonerDetailSearch_1",
+        "parameters": [
+          {
+            "name": "responseFields",
+            "in": "query",
+            "description": "A list of fields to populate on the Prisoner record returned in the response. An empty list defaults to all fields.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "example": "[prisonerNumber,firstName,aliases.firstName,currentIncentive.level.code]"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PhysicalDetailRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Search successfully performed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhysicalDetailResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Incorrect information provided to perform prisoner match",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized to access this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Incorrect permissions to search for prisoner data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "global-search-role": []
+          },
+          {
+            "prisoner-search-role": []
+          }
+        ]
+      }
+    },
+    "/match-prisoners": {
+      "post": {
+        "tags": ["Deprecated"],
+        "summary": "Match for an prisoner by criteria",
+        "description": "This is a more lenient version to other match endpoints that includes alias and fuzzy date of birth matching.\n       It will return the best group of matching prisoners based on the request\n       Specify the request criteria to match against.\n       Role required is ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH.\n       ",
+        "operationId": "matchPrisoners",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MatchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Search successfully performed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrisonerMatches"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Incorrect information provided to perform prisoner match",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized to access this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Incorrect permissions to search for prisoner data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "global-search-role": []
+          },
+          {
+            "prisoner-search-role": []
+          }
+        ]
+      }
+    },
+    "/keyword": {
+      "post": {
+        "tags": ["Experimental"],
+        "summary": "Search for prisoners by keyword or identifiers within a list of prisons and return a paginated result set",
+        "description": "Words and identifiers can be provided in either or mixed case and will be matched against all indexed text and keyword fields.\n      Identifiers within the [and, or, not, exact] terms are detected and converted to the appropriate case.\n      Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.\n      ",
+        "operationId": "keywordSearch",
+        "parameters": [
+          {
+            "name": "responseFields",
+            "in": "query",
+            "description": "A list of fields to populate on the Prisoner record returned in the response. An empty list defaults to all fields.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "example": "[prisonerNumber,firstName,aliases.firstName,currentIncentive.level.code]"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KeywordRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Search successfully performed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KeywordResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Incorrect information provided to perform prisoner match",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized to access this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Incorrect permissions to search for prisoner data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "global-search-role": []
+          },
+          {
+            "prisoner-search-role": []
+          }
+        ]
+      }
+    },
+    "/global-search": {
+      "post": {
+        "tags": ["Popular", "Global search"],
+        "summary": "Match prisoners by criteria",
+        "description": "Requires ROLE_GLOBAL_SEARCH role or ROLE_PRISONER_SEARCH role or PRISONER_SEARCH__PRISONER__RO",
+        "operationId": "globalFindByCriteria",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Zero-based page index (0..N)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "The size of the page to be returned",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "responseFields",
+            "in": "query",
+            "description": "A list of fields to populate on the Prisoner record returned in the response. An empty list defaults to all fields.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "example": "[prisonerNumber,firstName,aliases.firstName,currentIncentive.level.code]"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GlobalSearchCriteria"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagePrisoner"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/attribute-search": {
+      "post": {
+        "tags": ["Attribute search"],
+        "summary": "Search for prisoners by attributes",
+        "description": "<p>This endpoint allows you to create queries over all attributes from the <em>Prisoner</em> record. Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.</p>\n      <p>The request contains a list of queries to search on one or more attributes using a list of matchers. For example attribute \"lastName\"\"\n      requires a <em>StringMatcher</em> so we can query on <strong>\"lastName IS Smith\"</strong>. Other type matchers include <em>IntMatcher</em>, <em>BooleanMatcher</em>,\n      <em>DateMatcher</em> and <em>DateTimeMatcher</em>.\n      </p>\n      <p>Each query can also contain a list of sub-queries. Each sub-query can be considered as a separate query in brackets.\n      Combining multiple sub-queries gives us the ability to create complex searches using any combination of a prisoner's \n      attributes. For example we can model nested queries such as <strong>\"lastName IS Smith AND (prisonId IS MDI OR (prisonId IS OUT AND lastPrisonId IS MDI))\"</strong>.\n      </p>\n      <p>To find all attributes that can be searched for please refer to the <em>Prisoner</em> record or get them from endpoint <a target=\"_blank\" href=\"/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config#/Attribute search/getAttributes\"><strong>GET /attribute-search/attributes</strong></a>. Attributes from lists can be\n      searched for with dot notation, e.g. <strong>\"attribute=aliases.firstName\"</strong> or <strong>\"attribute=tattoos.bodyPart\"</strong>. \n      Attributes from complex objects can also be searched for with dot notation, e.g. <strong>\"attribute=currentIncentive.level.code\"</strong>.\n      </p>\n      <p>Note that when searching lists of complex objects (e.g. aliases, alerts, tattoos) if you want to search for multiple attributes within the same object then you need \n      to include them in the same query. For example, to search for alias \"John Smith\" you should search for <strong>aliases.firstName IS \"John\"</strong> and <strong>aliases.lastName IS \"Smith\"</strong> using string matchers in the same query.\n      If you search for them in different queries you will receive anyone with firstName John and also anyone with lastName Smith.\n      </p>\n      <p>Many attributes contain reference data restricted to a fixed list of values. For example, attribute \"inOutStatus\" only contains values \"IN\", \"OUT\" and \"TRN\".\n      To find which attributes use reference data and to fetch the possible attribute values see the endpoint <a target=\"_blank\" href=\"/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config#/Reference data/referenceData\"><strong>GET /reference-data/{attribute}</strong></a>.\n      </p>\n      <p>String attributes support advanced search techniques such as <a href=\"https://opensearch.org/docs/latest/query-dsl/term/fuzzy/\">fuzzy search</a> matching and <a href=\"https://opensearch.org/docs/latest/query-dsl/term/wildcard/\">wildcard search</a>. All String searches are case-insensitive (except for IS with fuzzy matching which is not supported by OpenSearch).\n      <ul>\n        <li>IS and IS_NOT require an exact match (wildcards ? and * will not work). E.g. If religion is \"Christian\" then <strong>\"religion IS Christian\"</strong> will match but <strong>\"religion IS Christ*\"</strong> will not.</li>\n        <li>For IS and CONTAINS some attributes support fuzzy matching e.g. they allow spelling mistakes. Call endpoint <strong>GET /attribute-search/attributes</strong> to see which attributes support fuzzy matching. E.g. If firstName is \"Jonathan\" then <strong>\"firstName IS Johnathon\"</strong> or <strong>\"firstName CONTAINS Johnathon\"</strong> will match. Note that fuzzy matches for IS are case sensitive but for CONTAINS they are case insensitive.</li>\n        <li>CONTAINS without wildcards (? and *) for a non-fuzzy attribute looks for the exact search term anywhere in the attribute value. E.g. If religion is \"Christian\" then <strong>\"religion CONTAINS ist\"</strong> will match.</li>\n        <li>CONTAINS with wildcards ? (single character) and/or * (zero to many characters) perform a wildcard search which must match the entire attribute value. E.g. If firstName is \"Jonathan\" then <strong>\"firstName CONTAINS Jon*\"</strong> will match but <strong>\"firstName CONTAINS nath*\"</strong> will not.</li>\n        <li>STARTSWITH checks only the prefix of the attribute value and does not support fuzzy matching or wildcards. E.g.If firstName is \"Jonathan\" then <strong>\"firstName STARTSWITH Jon\"</strong> will match but <strong>\"firstName STARTSWITH Jon*\"</strong> will not.</li> \n        <li>IN checks that the attribute value is any of the list of Strings provided in the search term. The search term should be a comma separated list of Strings to search, E.g. \"searchValue1,searchValue2,searchValue3\". This only matches exactly - no fuzzy search, wildcards or case-insensitive search is supported by OpenSearch. E.g.If firstName is \"Jonathan\" then <strong>\"firstName IN 'Jonathan,Bob,Chris'\"</strong> will match but <strong>\"firstName IN 'Adrian,Bob,Chris'\"</strong> will not.</li> \n      </ul>\n      </p>\n      <p>To assist with debugging queries we publish events in App Insights. To search in App Insights Log Analytics run query: \n      <pre>\n        AppEvents\n        | where Name == 'POSAttributeSearch'\n      </pre>\n      </p>\n      <h3>Example Requests</h3>\n      <p>Note that the default \"joinType\" is \"AND\" so it could be omitted from the examples below (but is included for clarity).</p>\n      <h4>Search for all prisoners in Moorland with a height between 150 and 180cm</h4>\n      <br/>\n      Query: <strong>\"prisonId = \"MDI\" AND (heightCentimetres >= 150 AND heightCentimetres <= 180)\"</strong>\n      <br/>\n      JSON request:\n      <br/>\n      <pre>\n        {\n          \"joinType\": \"AND\",\n          \"queries\": [\n            {\n              \"joinType\": \"AND\",\n              \"matchers\": [\n                {\n                  \"type\": \"String\",\n                  \"attribute\": \"prisonId\",\n                  \"condition\": \"IS\",\n                  \"searchTerm\": \"MDI\"\n                },\n                {\n                  \"type\": \"Int\",\n                  \"attribute\": \"heightCentimetres\",\n                  \"minValue\": 150,\n                  \"maxValue\": 180\n                }\n              ]\n            }\n          ]\n        }\n      </pre>\n      <br/>\n      <h4>Search for all prisoners in a list of cells in Moorland</h4>\n      Query: <strong>\"prisonId = \"MDI\" AND cellLocation IN (1-2-001, 1-3-014, 3-1-020)</strong>\n      <br/>\n      JSON request:\n      <br/>\n      <pre>\n        {\n          \"joinType\": \"AND\",\n          \"queries\": [\n            {\n              \"joinType\": \"AND\",\n              \"matchers\": [\n                {\n                  \"type\": \"String\",\n                  \"attribute\": \"prisonId\",\n                  \"condition\": \"IS\",\n                  \"searchTerm\": \"MDI\"\n                },\n                {\n                  \"type\": \"String\",\n                  \"attribute\": \"cellLocation\",\n                  \"condition\": \"IN\",\n                  \"searchTerm\": \"1-2-001,1-3-014,3-1-020\"\n                }\n              ]\n            }\n          ]\n        }\n      </pre>\n      <br/>\n      <h4>Search for all prisoners received since 1st Jan 2024 with a dragon tattoo on either their arm or shoulder</h4>\n      <br/>\n      Query: <strong>\"(receptionDate >= 2024-01-01) AND ((tattoos.bodyPart = \"arm\" AND tattoos.comment CONTAINS \"dragon\" ) OR (tattoos.bodyPart = \"shoulder\" AND tattoos.comment CONTAINS \"dragon\"))\"</strong>\n      <br/>\n      JSON request:\n      <br/>\n      <pre>\n        {\n          \"joinType\": \"AND\",\n          \"queries\": [\n            {\n              \"matchers\": [\n                {\n                  \"type\": \"Date\",\n                  \"attribute\": \"receptionDate\",\n                  \"minValue\": \"2024-01-01\"\n                }\n              ]\n            },\n            {\n              \"joinType\": \"OR\",\n              \"subQueries\": [\n                {\n                  \"joinType\": \"AND\",\n                  \"matchers\": [\n                    {\n                      \"type\": \"String\",\n                      \"attribute\": \"tattoos.bodyPart\",\n                      \"condition\": \"IS\",\n                      \"searchTerm\": \"arm\"\n                    },\n                    {\n                      \"type\": \"String\",\n                      \"attribute\": \"tattoos.comment\",\n                      \"condition\": \"CONTAINS\",\n                      \"searchTerm\": \"dragon\"\n                    }\n                  ]\n                },\n                {\n                  \"joinType\": \"AND\",\n                  \"matchers\": [\n                    {\n                      \"type\": \"String\",\n                      \"attribute\": \"tattoos.bodyPart\",\n                      \"condition\": \"IS\",\n                      \"searchTerm\": \"shoulder\"\n                    },\n                    {\n                      \"type\": \"String\",\n                      \"attribute\": \"tattoos.comment\",\n                      \"condition\": \"CONTAINS\",\n                      \"searchTerm\": \"dragon\"\n                    }\n                  ]\n                }\n              ]\n            }\n          ]\n        }\n      </pre>\n    ",
+        "operationId": "attributeSearch",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Zero-based page index (0..N)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "The size of the page to be returned",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "responseFields",
+            "in": "query",
+            "description": "A list of fields to populate on the Prisoner record returned in the response. An empty list defaults to all fields.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "example": "[prisonerNumber,firstName,aliases.firstName,currentIncentive.level.code]"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AttributeSearchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Search successfully performed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagePrisoner"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Incorrect information provided to perform an attribute search",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized to access this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Incorrect permissions to this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "global-search-role": []
+          },
+          {
+            "prisoner-search-role": []
+          }
+        ]
+      }
+    },
+    "/response-fields": {
+      "get": {
+        "tags": ["Developer information"],
+        "summary": "Get all available response fields",
+        "description": "This exists for developers to find all available values for responseFields parameters. Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role",
+        "operationId": "responseFields",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reference-data/{attribute}": {
+      "get": {
+        "tags": ["Experimental", "Reference data", "Developer information"],
+        "summary": "*** BETA *** Reference data search",
+        "description": "BETA endpoint - reference data returned reflects the data assigned to prisoners\n      rather than all the possible values.  Only to be used for searching existing data purposes.\n      This method will also cache all reference data results for an hour and any new data will only appear after an hour.\n      Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.\n      ",
+        "operationId": "referenceData",
+        "parameters": [
+          {
+            "name": "attribute",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "build",
+                "category",
+                "csra",
+                "ethnicity",
+                "facialHair",
+                "gender",
+                "hairColour",
+                "imprisonmentStatusDescription",
+                "incentiveLevel",
+                "inOutStatus",
+                "leftEyeColour",
+                "legalStatus",
+                "marksBodyPart",
+                "maritalStatus",
+                "nationality",
+                "religion",
+                "rightEyeColour",
+                "scarsBodyPart",
+                "shapeOfFace",
+                "status",
+                "tattoosBodyPart",
+                "title",
+                "youthOffender"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reference data search successfully performed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReferenceDataResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Reference data search for attribute that isn't mapped",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized to access this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Incorrect permissions to retrieve reference data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "global-search-role": []
+          },
+          {
+            "prisoner-search-role": []
+          }
+        ]
+      }
+    },
+    "/reference-data/alerts/types": {
+      "get": {
+        "tags": ["Experimental", "Reference data", "Developer information"],
+        "summary": "*** BETA *** Alerts reference data",
+        "description": "BETA endpoint - alerts reference data returned reflects the data assigned to prisoners\n      rather than all the possible values.  Only to be used for searching existing data purposes.\n      This method will also cache all reference data results for an hour and any new data will only appear after an hour.\n      Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.\n      ",
+        "operationId": "alertsReferenceData",
+        "responses": {
+          "200": {
+            "description": "Reference data search successfully performed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReferenceDataResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Reference data search for attribute that isn't mapped",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized to access this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Incorrect permissions to retrieve reference data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "global-search-role": []
+          },
+          {
+            "prisoner-search-role": []
+          }
+        ]
+      }
+    },
+    "/prisoner/{id}": {
+      "get": {
+        "tags": ["Popular"],
+        "summary": "Get prisoner by prisoner number (AKA NOMS number)",
+        "description": "Requires  ROLE_PRISONER_SEARCH or ROLE_VIEW_PRISONER_DATA role or PRISONER_SEARCH__PRISONER__RO",
+        "operationId": "findByPrisonNumber",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "responseFields",
+            "in": "query",
+            "description": "A list of fields to populate on the Prisoner record returned in the response. An empty list defaults to all fields.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "example": "[prisonerNumber,firstName,aliases.firstName,currentIncentive.level.code]"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Prisoner"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "view-prisoner-data-role": []
+          },
+          {
+            "prisoner-search-role": []
+          }
+        ]
+      }
+    },
+    "/prisoner-search/prison/{prisonId}": {
+      "get": {
+        "tags": ["Popular", "Batch"],
+        "summary": "Get all prisoners in a prison, including restricted patients supported by a POM",
+        "description": "Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role",
+        "operationId": "findByPrison",
+        "parameters": [
+          {
+            "name": "prisonId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "include-restricted-patients",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "responseFields",
+            "in": "query",
+            "description": "A list of fields to populate on the Prisoner record returned in the response. An empty list defaults to all fields.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "example": "[prisonerNumber,firstName,aliases.firstName,currentIncentive.level.code]"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Zero-based page index (0..N)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "The size of the page to be returned",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagePrisoner"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prisoner-location/scroll/{scroll-id}": {
+      "get": {
+        "tags": ["Specific use case"],
+        "summary": "Get the next page of prisoners.",
+        "description": "To be used in conjunction with /prisoner-location/all. Uses the scroll id to get the next page of\n      prisoners.  Calls should be repeated until a\n      `null` scroll id is then returned, indicating that no more data is available.  Each call will return the scroll id,\n      which should be used for the next call, rather than re-using the original scroll id.\n      Note that the OpenSearch scroll will expire after 5 minutes, so if no calls are made during that time then the\n      scroll id will be invalid.\n      Requires PRISONER_SEARCH__PRISONER_LOCATION__RO role.",
+        "operationId": "scroll",
+        "parameters": [
+          {
+            "name": "scroll-id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrisonerLocationResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prisoner-location/all": {
+      "get": {
+        "tags": ["Specific use case"],
+        "summary": "Get all prisoners.  This will return the first page of results and a scroll id to retrieve the next page",
+        "description": "To be used in conjunction with /prisoner-location/scroll/{scroll-id}.\n      This endpoint will return the first page of results (10,000 per page) and also a scroll id.\n      This scroll id can then be used to make subsequent calls to return the data.\n      It is required that this call will then be followed by calls to the /scroll/{scroll-id} endpoint to retrieve all\n      the rest of the data, since it opens an OpenSearch scroll that will be cleared when no more data is available.\n      Requires PRISONER_SEARCH__PRISONER_LOCATION__RO role.",
+        "operationId": "findAll",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrisonerLocationResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prison/{prisonId}/prisoners": {
+      "get": {
+        "tags": ["Establishment search", "Popular"],
+        "summary": "Search for prisoners within a particular prison establishment",
+        "description": "This search is optimised for clients that have a simple search term typically containing the prisoner's name\n      or prisoner number. The user typically is certain the prisoner is within the establishment and knows key information \n      about the prisoner.\n      \n      Requires ROLE_PRISONER_IN_PRISON_SEARCH or ROLE_PRISONER_SEARCH role.\n      \n      Sort fields supported are: firstName, lastName, prisonerNumber, dateOfBirth, cellLocation e.g \"sort=firstName,lastName,desc\"\n      \n      Examples:\n      \n      \"/prison/BXI/prisoners?term=John&sort=firstName,lastName,desc&page=2&size=20\"\n      This will return all people in HMP Brixton whose first or last names begins with JOHN. \n      Results will be ordered by firstName, lastName descending. \n      Page 3 will be returned with a maximum of 20 results per page.\n      \n      \"/prison/WWI/prisoners?sort=cellLocation\"\n      This will return all people in HMP Wandsworth. \n      Results will be ordered by cell location ascending. \n      Page 1 will be returned with a maximum of 10 results per page.\n      \n      \"/prison/WWI/prisoners?cellLocationPrefix=WWI-2&term=smith\"\n      \"/prison/WWI/prisoners?cellLocationPrefix=2&term=smith\"\n      This will return all people in HMP Wandsworth block 2 whose name starts with SMITH. \n\n      \"/prison/WWI/prisoners?cellLocationPrefix=2-A-3-001\"\n      This will return all people in HMP Wandsworth cell WWI-2-A-3-001 \n\n      \"/prison/WWI/prisoners?term=A1234KJ\"\n      \"/prison/WWI/prisoners?term=A1234KJ bananas\"\n      This will return the single prisoner with prisoner number A1234KJ in HMP Wandsworth. \n      An empty page will be returned if not found.\n\n      \"/prison/WWI/prisoners?term=A J&fromDob=1956-01-01&toDob=2000-01-02\"\n      This will return all people in HMP Wandsworth. Born on or after 1956-01-01 and on or before 2000-01-02, \n      whose name begins with A J, e.g Alan Jones born on 1956-01-01. \n\n      \"/prison/WWI/prisoners?alerts=TACT&alerts=PEEP\"\n      This will return all people in HMP Wandsworth. With the alerts TACT or PEEP.\n\n      ",
+        "operationId": "search",
+        "parameters": [
+          {
+            "name": "prisonId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "term",
+            "in": "query",
+            "description": "The primary search term. Whe absent all prisoners will be returned at the prison",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": ""
+            },
+            "example": "john smith"
+          },
+          {
+            "name": "alerts",
+            "in": "query",
+            "description": "alert codes to filter by. Zero or more can be supplied. When multiple supplied the filter is effectively and OR",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "default": [],
+              "items": {
+                "type": "string"
+              }
+            },
+            "example": "XTACT"
+          },
+          {
+            "name": "fromDob",
+            "in": "query",
+            "description": "Offenders with a DOB >= this date",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "example": "1970-01-02"
+          },
+          {
+            "name": "toDob",
+            "in": "query",
+            "description": "Offenders with a DOB <= this date",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "example": "1975-01-02"
+          },
+          {
+            "name": "cellLocationPrefix",
+            "in": "query",
+            "description": "Filter for the prisoners cell location. A block wing or cell can be specified. With prison id can be included or absent so HEI-3-1 and 3-1 are equivalent when the prison id is HEI",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "3-1"
+          },
+          {
+            "name": "incentiveLevelCode",
+            "in": "query",
+            "description": "Filter for the prisoners on an incentive level.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "STD"
+          },
+          {
+            "name": "responseFields",
+            "in": "query",
+            "description": "A list of fields to populate on the Prisoner record returned in the response. An empty list defaults to all fields.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "example": "[prisonerNumber,firstName,aliases.firstName,currentIncentive.level.code]"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Zero-based page index (0..N)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "The size of the page to be returned",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "default": ["lastName,ASC", "firstName,ASC", "prisonerNumber,ASC"],
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search successfully performed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagePrisoner"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Incorrect information provided to perform prisoner match",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized to access this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Incorrect permissions to search for prisoner data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "prisoner-in-prison-search-role": []
+          },
+          {
+            "prisoner-search-role": []
+          }
+        ]
+      }
+    },
+    "/attribute-search/attributes": {
+      "get": {
+        "tags": ["Developer information", "Attribute search"],
+        "summary": "Retrieve all attributes supported by the attribute search",
+        "description": "Returns all attributes that can be passed into the attribute search including their type.",
+        "operationId": "getAttributes",
+        "responses": {
+          "200": {
+            "description": "Search successfully performed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Attribute"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized to access this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Incorrect permissions to this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "global-search-role": []
+          },
+          {
+            "prisoner-search-role": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "RestrictedPatientSearchCriteria": {
+        "type": "object",
+        "description": "Search Criteria for Prisoner Search",
+        "properties": {
+          "prisonerIdentifier": {
+            "type": "string",
+            "description": "Prisoner identifier, one of prisoner number, book number, booking ID or PNC",
+            "example": "A1234AA,"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "First Name",
+            "example": "John"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Last Name",
+            "example": "Smith"
+          },
+          "supportingPrisonIds": {
+            "type": "array",
+            "description": "List of supporting Prison Ids to restrict the search by. Unrestricted if not supplied or null",
+            "example": ["MDI"],
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Address": {
+        "type": "object",
+        "properties": {
+          "fullAddress": {
+            "type": "string",
+            "description": "The full address on a single line.  No fixed address records will have the fullAddress set to 'No fixed address'. Will never be null.",
+            "example": 1
+          },
+          "postalCode": {
+            "type": "string",
+            "description": "The postal code",
+            "example": "S10 1BP"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date",
+            "description": "The date the address became active according to NOMIS. Will never be null.",
+            "example": "2020-07-17"
+          },
+          "primaryAddress": {
+            "type": "boolean",
+            "description": "Whether the address is currently marked as the primary address. Will never be null.",
+            "example": true
+          },
+          "noFixedAddress": {
+            "type": "boolean",
+            "description": "No fixed address. This address record is only ever returned if it is also the primary address, otherwise it is ignored. Will never be null.",
+            "example": true
+          },
+          "phoneNumbers": {
+            "type": "array",
+            "description": "Phone numbers linked to the address. Note the phone number contains only numbers, no whitespace. Therefore searching on 'addresses.phoneNumbers.number' should not pass any non-numeric characters.",
+            "items": {
+              "$ref": "#/components/schemas/PhoneNumber"
+            }
+          }
+        }
+      },
+      "BodyPartDetail": {
+        "type": "object",
+        "properties": {
+          "bodyPart": {
+            "type": "string",
+            "description": "Part of the body that has the mark. From REFERENCE_CODES table where DOMAIN = BODY_PART. Allowable values extracted 08/02/2023.",
+            "enum": [
+              "Ankle",
+              "Arm",
+              "Ear",
+              "Elbow",
+              "Face",
+              "Finger",
+              "Foot",
+              "Hand",
+              "Head",
+              "Knee",
+              "Leg",
+              "Lip",
+              "Neck",
+              "Nose",
+              "Shoulder",
+              "Thigh",
+              "Toe",
+              "Torso"
+            ],
+            "example": "Head"
+          },
+          "comment": {
+            "type": "string",
+            "description": "Optional free text comment describing the mark",
+            "example": "Skull and crossbones covering chest"
+          }
+        }
+      },
+      "CurrentIncentive": {
+        "type": "object",
+        "properties": {
+          "level": {
+            "$ref": "#/components/schemas/IncentiveLevel",
+            "description": "Incentive level. Will never be null."
+          },
+          "dateTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date time of the incentive. Will never be null.",
+            "example": "2022-11-10T15:47:24"
+          },
+          "nextReviewDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Schedule new review date",
+            "example": "2022-11-10"
+          }
+        },
+        "required": ["dateTime", "nextReviewDate"]
+      },
+      "EmailAddress": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "The email address. Will never be null.",
+            "example": "john.smith@gmail.com"
+          }
+        }
+      },
+      "Identifier": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "The type of identifier. Will never be null.",
+            "example": "PNC, CRO, DL, NINO"
+          },
+          "value": {
+            "type": "string",
+            "description": "The identifier value. Will never be null.",
+            "example": "12/394773H"
+          },
+          "issuedDate": {
+            "type": "string",
+            "format": "date",
+            "description": "The date the identifier was issued according to NOMIS",
+            "example": "2020-07-17"
+          },
+          "issuedAuthorityText": {
+            "type": "string",
+            "description": "Free text entered into NOMIS when the identifier was recorded."
+          },
+          "createdDateTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The date/time the identifier was created in the system. Will never be null.",
+            "example": "2020-07-17T12:34:56.833Z"
+          }
+        }
+      },
+      "IncentiveLevel": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "code. Will never be null.",
+            "example": "STD"
+          },
+          "description": {
+            "type": "string",
+            "description": "description. Will never be null.",
+            "example": "Standard"
+          }
+        }
+      },
+      "Language": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "A LOV from domain LANG_TYPE",
+            "enum": ["PRIM", "SEC", "PREF_SPEAK", "PREF_WRITE"]
+          },
+          "code": {
+            "type": "string",
+            "description": "The actual language code, from domain LANG",
+            "example": "ENG"
+          },
+          "readSkill": {
+            "type": "string",
+            "description": "The level of reading skill, from domain LANG_SKILLS:\n    |Y  Yes\n    |A\tAverage\n    |D\tDyslexia\n    |G\tGood\n    |N\tNil\n    |P\tPoor\n    |R\tRefused",
+            "enum": ["Y", "N", "A", "D", "G", "P", "R"]
+          },
+          "writeSkill": {
+            "type": "string",
+            "description": "The level of writing skill, see description for readSkill",
+            "enum": ["Y", "N", "A", "D", "G", "P", "R"]
+          },
+          "speakSkill": {
+            "type": "string",
+            "description": "The level of writing skill, see description for readSkill",
+            "enum": ["Y", "N", "A", "D", "G", "P", "R"]
+          },
+          "interpreterRequested": {
+            "type": "boolean",
+            "description": "Whether an interpreter requested"
+          }
+        }
+      },
+      "Offence": {
+        "type": "object",
+        "properties": {
+          "statuteCode": {
+            "type": "string",
+            "description": "The statue code. Will never be null.",
+            "example": "TH68"
+          },
+          "offenceCode": {
+            "type": "string",
+            "description": "The offence code. Will never be null.",
+            "example": "TH68010"
+          },
+          "offenceDescription": {
+            "type": "string",
+            "description": "The offence description. Will never be null.",
+            "example": "Theft from a shop"
+          },
+          "offenceDate": {
+            "type": "string",
+            "format": "date",
+            "description": "The date of the offence",
+            "example": "2024-05-23"
+          },
+          "latestBooking": {
+            "type": "boolean",
+            "description": "Indicates this offence is for the latest NOMIS booking. Will never be null."
+          },
+          "sentenceStartDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Start date of sentence - null if there is no associated sentence",
+            "example": "2018-03-10"
+          },
+          "primarySentence": {
+            "type": "boolean",
+            "description": "Primary sentence - true if it is not a consecutive sentence, false if it is a consecutive sentence, null if no sentence found for the charge."
+          }
+        }
+      },
+      "PagePrisoner": {
+        "type": "object",
+        "properties": {
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Prisoner"
+            }
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/SortObject"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PageableObject": {
+        "type": "object",
+        "properties": {
+          "offset": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/SortObject"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "paged": {
+            "type": "boolean"
+          },
+          "unpaged": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PersonalCareNeed": {
+        "type": "object",
+        "properties": {
+          "problemType": {
+            "type": "string",
+            "description": "Problem Type, from reference data with domain 'HEALTH'",
+            "example": "MATSTAT"
+          },
+          "problemCode": {
+            "type": "string",
+            "description": "Problem Code, from reference data with domain 'HEALTH_PBLM'",
+            "example": "ACCU9"
+          },
+          "problemStatus": {
+            "type": "string",
+            "description": "Problem Status, from reference data with domain 'HEALTH_STS'",
+            "enum": ["ON", "I", "EBS"]
+          },
+          "problemDescription": {
+            "type": "string",
+            "description": "Problem Description"
+          },
+          "commentText": {
+            "type": "string",
+            "description": "Comment"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Start Date",
+            "example": "2020-06-21"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date",
+            "description": "End Date",
+            "example": "2025-05-11"
+          }
+        }
+      },
+      "PhoneNumber": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "The type of the phone number. Will never be null.",
+            "example": "HOME, MOB"
+          },
+          "number": {
+            "type": "string",
+            "description": "The phone number. Numeric characters only (no whitespace). Will never be null.",
+            "example": "01141234567"
+          }
+        }
+      },
+      "Prisoner": {
+        "type": "object",
+        "properties": {
+          "prisonerNumber": {
+            "type": "string",
+            "description": "Prisoner Number",
+            "example": "A1234AA"
+          },
+          "pncNumber": {
+            "type": "string",
+            "description": "PNC Number",
+            "example": "12/394773H"
+          },
+          "pncNumberCanonicalShort": {
+            "type": "string",
+            "description": "PNC Number",
+            "example": "12/394773H"
+          },
+          "pncNumberCanonicalLong": {
+            "type": "string",
+            "description": "PNC Number",
+            "example": "2012/394773H"
+          },
+          "croNumber": {
+            "type": "string",
+            "description": "CRO Number",
+            "example": "29906/12J"
+          },
+          "bookingId": {
+            "type": "string",
+            "description": "Booking No.",
+            "example": "0001200924"
+          },
+          "bookNumber": {
+            "type": "string",
+            "description": "Book Number",
+            "example": "38412A"
+          },
+          "title": {
+            "type": "string",
+            "description": "Title",
+            "example": "Ms"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "First Name",
+            "example": "Robert"
+          },
+          "middleNames": {
+            "type": "string",
+            "description": "Middle Names",
+            "example": "John James"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Last name",
+            "example": "Larsen"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date",
+            "description": "Date of Birth",
+            "example": "1975-04-02"
+          },
+          "gender": {
+            "type": "string",
+            "description": "Gender",
+            "example": "Female"
+          },
+          "ethnicity": {
+            "type": "string",
+            "description": "Ethnicity",
+            "example": "White: Eng./Welsh/Scot./N.Irish/British"
+          },
+          "raceCode": {
+            "type": "string",
+            "description": "Ethnicity code",
+            "example": "W1"
+          },
+          "youthOffender": {
+            "type": "boolean",
+            "description": "Youth Offender?",
+            "example": true
+          },
+          "maritalStatus": {
+            "type": "string",
+            "description": "Marital Status",
+            "example": "Widowed"
+          },
+          "religion": {
+            "type": "string",
+            "description": "Religion",
+            "example": "Church of England (Anglican)"
+          },
+          "nationality": {
+            "type": "string",
+            "description": "Nationality",
+            "example": "Egyptian"
+          },
+          "smoker": {
+            "type": "string",
+            "description": "Smoker (V=vapes)",
+            "enum": ["Y", "N", "V"]
+          },
+          "personalCareNeeds": {
+            "type": "array",
+            "description": "Personal Care Needs",
+            "items": {
+              "$ref": "#/components/schemas/PersonalCareNeed"
+            }
+          },
+          "languages": {
+            "type": "array",
+            "description": "Languages",
+            "items": {
+              "$ref": "#/components/schemas/Language"
+            }
+          },
+          "currentFacialImageId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "The prisoner's current facial image can be retrieved by plugging this id into the prison-api endpoint /app/images/{prisonerNumber}/data?imageId={imageId}",
+            "example": 2122100
+          },
+          "status": {
+            "type": "string",
+            "description": "Status of the prisoner",
+            "example": "ACTIVE IN"
+          },
+          "lastMovementTypeCode": {
+            "type": "string",
+            "description": "Last Movement Type Code of prisoner",
+            "example": "CRT"
+          },
+          "lastMovementReasonCode": {
+            "type": "string",
+            "description": "Last Movement Reason of prisoner",
+            "example": "CA"
+          },
+          "inOutStatus": {
+            "type": "string",
+            "description": "In/Out Status",
+            "enum": ["IN", "OUT", "TRN"],
+            "example": "IN"
+          },
+          "prisonId": {
+            "type": "string",
+            "description": "Prison ID",
+            "example": "MDI"
+          },
+          "lastPrisonId": {
+            "type": "string",
+            "description": "The last prison for the prisoner (which is the same as the prisonId if they are still inside prison)",
+            "example": "MDI"
+          },
+          "prisonName": {
+            "type": "string",
+            "description": "Prison Name",
+            "example": "HMP Leeds"
+          },
+          "cellLocation": {
+            "type": "string",
+            "description": "In prison cell location",
+            "example": "A-1-002"
+          },
+          "aliases": {
+            "type": "array",
+            "description": "Aliases Names and Details",
+            "items": {
+              "$ref": "#/components/schemas/PrisonerAlias"
+            }
+          },
+          "alerts": {
+            "type": "array",
+            "description": "Alerts",
+            "items": {
+              "$ref": "#/components/schemas/PrisonerAlert"
+            }
+          },
+          "csra": {
+            "type": "string",
+            "description": "Cell Sharing Risk Assessment",
+            "example": "HIGH"
+          },
+          "category": {
+            "type": "string",
+            "description": "Prisoner Category",
+            "example": "C"
+          },
+          "complexityOfNeedLevel": {
+            "type": "string",
+            "description": "Complexity of Need level if female",
+            "example": "low"
+          },
+          "legalStatus": {
+            "type": "string",
+            "description": "Legal Status",
+            "enum": [
+              "RECALL",
+              "DEAD",
+              "INDETERMINATE_SENTENCE",
+              "SENTENCED",
+              "CONVICTED_UNSENTENCED",
+              "CIVIL_PRISONER",
+              "IMMIGRATION_DETAINEE",
+              "REMAND",
+              "UNKNOWN",
+              "OTHER"
+            ],
+            "example": "SENTENCED"
+          },
+          "imprisonmentStatus": {
+            "type": "string",
+            "description": "The prisoner's imprisonment status code.",
+            "example": "LIFE"
+          },
+          "imprisonmentStatusDescription": {
+            "type": "string",
+            "description": "The prisoner's imprisonment status description.",
+            "example": "Serving Life Imprisonment"
+          },
+          "convictedStatus": {
+            "type": "string",
+            "description": "The prisoner's convicted status code.",
+            "enum": ["Convicted", "Remand"],
+            "example": "Convicted"
+          },
+          "mostSeriousOffence": {
+            "type": "string",
+            "description": "Most serious offence for this sentence",
+            "example": "Robbery"
+          },
+          "recall": {
+            "type": "boolean",
+            "description": "Indicates that the prisoner has been recalled",
+            "example": false
+          },
+          "indeterminateSentence": {
+            "type": "boolean",
+            "description": "Indicates that the prisoner has an indeterminate sentence",
+            "example": true
+          },
+          "sentenceStartDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Start Date for this sentence",
+            "example": "2020-04-03"
+          },
+          "releaseDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Actual of most likely Release Date",
+            "example": "2023-05-02"
+          },
+          "confirmedReleaseDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Release Date Confirmed",
+            "example": "2023-05-01"
+          },
+          "sentenceExpiryDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Sentence Expiry Date",
+            "example": "2023-05-01"
+          },
+          "licenceExpiryDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Licence Expiry Date",
+            "example": "2023-05-01"
+          },
+          "homeDetentionCurfewEligibilityDate": {
+            "type": "string",
+            "format": "date",
+            "description": "HDC Eligibility Date",
+            "example": "2023-05-01"
+          },
+          "homeDetentionCurfewActualDate": {
+            "type": "string",
+            "format": "date",
+            "description": "HDC Actual Date",
+            "example": "2023-05-01"
+          },
+          "homeDetentionCurfewEndDate": {
+            "type": "string",
+            "format": "date",
+            "description": "HDC End Date",
+            "example": "2023-05-02"
+          },
+          "topupSupervisionStartDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Top-up supervision start date",
+            "example": "2023-04-29"
+          },
+          "topupSupervisionExpiryDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Top-up supervision expiry date",
+            "example": "2023-05-01"
+          },
+          "additionalDaysAwarded": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Days added to sentence term due to adjustments.",
+            "example": 10
+          },
+          "nonDtoReleaseDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Release date for Non determinant sentence (if applicable). This will be based on one of ARD, CRD, NPD or PRRD.",
+            "example": "2023-05-01"
+          },
+          "nonDtoReleaseDateType": {
+            "type": "string",
+            "description": "Indicates which type of non-DTO release date is the effective release date. One of 'ARD’, 'CRD’, ‘NPD’ or 'PRRD’.",
+            "enum": ["ARD", "CRD", "NPD", "PRRD"],
+            "example": "ARD"
+          },
+          "receptionDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Date prisoner was received into prison at the start of the term",
+            "example": "2023-05-01"
+          },
+          "lastAdmissionDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Date prisoner was transferred into the current or latest prison",
+            "example": "2023-05-01"
+          },
+          "paroleEligibilityDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Parole  Eligibility Date",
+            "example": "2023-05-01"
+          },
+          "automaticReleaseDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Automatic Release Date. If automaticReleaseOverrideDate is available then it will be set as automaticReleaseDate",
+            "example": "2023-05-01"
+          },
+          "postRecallReleaseDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Post Recall Release Date. if postRecallReleaseOverrideDate is available then it will be set as postRecallReleaseDate",
+            "example": "2023-05-01"
+          },
+          "conditionalReleaseDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Conditional Release Date. If conditionalReleaseOverrideDate is available then it will be set as conditionalReleaseDate",
+            "example": "2023-05-01"
+          },
+          "actualParoleDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Actual Parole Date",
+            "example": "2023-05-01"
+          },
+          "tariffDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Tariff Date",
+            "example": "2023-05-01"
+          },
+          "releaseOnTemporaryLicenceDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Release on Temporary Licence Date",
+            "example": "2023-05-01"
+          },
+          "locationDescription": {
+            "type": "string",
+            "description": "current prison or outside with last movement information.",
+            "example": "Outside - released from Leeds"
+          },
+          "restrictedPatient": {
+            "type": "boolean",
+            "description": "Indicates a restricted patient. Will never be null.",
+            "example": true
+          },
+          "supportingPrisonId": {
+            "type": "string",
+            "description": "Supporting prison ID for POM",
+            "example": "LEI"
+          },
+          "dischargedHospitalId": {
+            "type": "string",
+            "description": "Which hospital the prisoner has been discharged to",
+            "example": "HAZLWD"
+          },
+          "dischargedHospitalDescription": {
+            "type": "string",
+            "description": "Hospital name to which the prisoner was discharged",
+            "example": "Hazelwood House"
+          },
+          "dischargeDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Date of discharge",
+            "example": "2020-05-01"
+          },
+          "dischargeDetails": {
+            "type": "string",
+            "description": "Any additional discharge details",
+            "example": "Psychiatric Hospital Discharge to Hazelwood House"
+          },
+          "currentIncentive": {
+            "$ref": "#/components/schemas/CurrentIncentive",
+            "description": "Incentive level"
+          },
+          "heightCentimetres": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Height in centimetres of the prisoner",
+            "example": 200
+          },
+          "weightKilograms": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Weight in kilograms of the prisoner",
+            "example": 102
+          },
+          "hairColour": {
+            "type": "string",
+            "description": "Hair colour. From PROFILE_CODES table where PROFILE_TYPE = HAIR. Allowable values extracted 07/02/2023.",
+            "enum": [
+              "Bald",
+              "Balding",
+              "Black",
+              "Blonde",
+              "Brown",
+              "Brunette",
+              "Dark",
+              "Dyed",
+              "Ginger",
+              "Grey",
+              "Light",
+              "Mouse",
+              "Multi-coloured",
+              "Red",
+              "White"
+            ],
+            "example": "Blonde"
+          },
+          "rightEyeColour": {
+            "type": "string",
+            "description": "Right eye colour. From PROFILE_CODES table where PROFILE_TYPE = R_EYE_C. Allowable values extracted 07/02/2023.",
+            "enum": ["Blue", "Brown", "Clouded", "Green", "Grey", "Hazel", "Missing", "Pink", "White"],
+            "example": "Green"
+          },
+          "leftEyeColour": {
+            "type": "string",
+            "description": "Left eye colour. From PROFILE_CODES table where PROFILE_TYPE = L_EYE_C. Allowable values extracted 07/02/2023.",
+            "enum": ["Blue", "Brown", "Clouded", "Green", "Grey", "Hazel", "Missing", "Pink", "White"],
+            "example": "Hazel"
+          },
+          "facialHair": {
+            "type": "string",
+            "description": "Facial hair. From PROFILE_CODES table where PROFILE_TYPE = FACIAL_HAIR. Allowable values extracted 07/02/2023.",
+            "enum": [
+              "Full Beard",
+              "Clean Shaven",
+              "Goatee Beard",
+              "Moustache Only",
+              "Not Applicable (Female Offender)",
+              "No Facial Hair",
+              "Sideburns"
+            ],
+            "example": "Clean Shaven"
+          },
+          "shapeOfFace": {
+            "type": "string",
+            "description": "Shape of face. From PROFILE_CODES table where PROFILE_TYPE = FACE. Allowable values extracted 07/02/2023.",
+            "enum": ["Angular", "Bullet", "Oval", "Round", "Square", "Triangular"],
+            "example": "Round"
+          },
+          "build": {
+            "type": "string",
+            "description": "Build. From PROFILE_CODES table where PROFILE_TYPE = BUILD. Allowable values extracted 07/02/2023.",
+            "enum": ["Fat", "Frail", "Heavy", "Medium", "Muscular", "Obese", "Proportional", "Slight", "Small", "Stocky", "Stooped", "Thin"],
+            "example": "Muscular"
+          },
+          "shoeSize": {
+            "type": "integer",
+            "format": "int32",
+            "description": "UK shoe size",
+            "example": 10
+          },
+          "tattoos": {
+            "type": "array",
+            "description": "List of parts of the body that have tattoos. This includes marks and other marks whose comment contains 'tattoo'. 'From REFERENCE_CODES table where DOMAIN = BODY_PART. Allowable values extracted 08/02/2023.",
+            "items": {
+              "$ref": "#/components/schemas/BodyPartDetail"
+            }
+          },
+          "scars": {
+            "type": "array",
+            "description": "List of parts of the body that have scars. This includes marks and other marks whose comment contains 'scar'. From REFERENCE_CODES table where DOMAIN = BODY_PART. Allowable values extracted 08/02/2023.",
+            "items": {
+              "$ref": "#/components/schemas/BodyPartDetail"
+            }
+          },
+          "marks": {
+            "type": "array",
+            "description": "List of parts of the body that have marks. This includes NOMIS physical details of type 'marks' and 'otherMarks'. If we find a comment with either 'tattoo' or 'scar' we also add to the list of tattoos or scars. From REFERENCE_CODES table where DOMAIN = BODY_PART. Allowable values extracted 08/02/2023.",
+            "items": {
+              "$ref": "#/components/schemas/BodyPartDetail"
+            }
+          },
+          "addresses": {
+            "type": "array",
+            "description": "Addresses. Note that no fixed addresses are only ever returned if they are also the primary address, otherwise they are filtered out.",
+            "items": {
+              "$ref": "#/components/schemas/Address"
+            }
+          },
+          "emailAddresses": {
+            "type": "array",
+            "description": "Email addresses",
+            "items": {
+              "$ref": "#/components/schemas/EmailAddress"
+            }
+          },
+          "phoneNumbers": {
+            "type": "array",
+            "description": "Telephone numbers. Note that the number will contain only numeric characters [0-9] (including no break between area code and number). Therefore if searching on 'phoneNumbers.number' you should not pass any non-numeric characters.",
+            "items": {
+              "$ref": "#/components/schemas/PhoneNumber"
+            }
+          },
+          "identifiers": {
+            "type": "array",
+            "description": "All identifiers for the prisoner including those recorded against aliases. Currently supports only PNC, CRO, NINO and DL.",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "allConvictedOffences": {
+            "type": "array",
+            "description": "All historical convicted offences",
+            "items": {
+              "$ref": "#/components/schemas/Offence"
+            }
+          }
+        },
+        "required": [
+          "dateOfBirth",
+          "ethnicity",
+          "firstName",
+          "gender",
+          "lastName",
+          "maritalStatus",
+          "mostSeriousOffence",
+          "nationality",
+          "prisonerNumber",
+          "raceCode",
+          "religion",
+          "restrictedPatient",
+          "status",
+          "youthOffender"
+        ]
+      },
+      "PrisonerAlert": {
+        "type": "object",
+        "properties": {
+          "alertType": {
+            "type": "string",
+            "description": "Alert Type. Will never be null.",
+            "example": "H"
+          },
+          "alertCode": {
+            "type": "string",
+            "description": "Alert Code. Will never be null.",
+            "example": "HA"
+          },
+          "active": {
+            "type": "boolean",
+            "description": "Active. Will never be null.",
+            "example": true
+          },
+          "expired": {
+            "type": "boolean",
+            "description": "Expired. Will never be null.",
+            "example": true
+          }
+        }
+      },
+      "PrisonerAlias": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Title. Will never be null.",
+            "example": "Ms"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "First Name. Will never be null.",
+            "example": "Robert"
+          },
+          "middleNames": {
+            "type": "string",
+            "description": "Middle names. Will never be null.",
+            "example": "Trevor"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Last name. Will never be null.",
+            "example": "Lorsen"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date",
+            "description": "Date of birth. Will never be null.",
+            "example": "1975-04-02"
+          },
+          "gender": {
+            "type": "string",
+            "description": "Gender. Will never be null.",
+            "example": "Male"
+          },
+          "ethnicity": {
+            "type": "string",
+            "description": "Ethnicity. Will never be null.",
+            "example": "White : Irish"
+          },
+          "raceCode": {
+            "type": "string",
+            "description": "Ethnicity code. Will never be null.",
+            "example": "W1"
+          }
+        }
+      },
+      "SortObject": {
+        "type": "object",
+        "properties": {
+          "empty": {
+            "type": "boolean"
+          },
+          "sorted": {
+            "type": "boolean"
+          },
+          "unsorted": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ReleaseDateSearch": {
+        "type": "object",
+        "description": "Search Criteria for Release Date Search",
+        "properties": {
+          "earliestReleaseDate": {
+            "type": "string",
+            "format": "date",
+            "description": "The lower bound for the release date range of which to search - defaults to today if not provided",
+            "example": "2022-04-20"
+          },
+          "latestReleaseDate": {
+            "type": "string",
+            "format": "date",
+            "description": "The upper bound for the release date range of which to search. A required field.",
+            "example": "2022-05-20"
+          },
+          "prisonIds": {
+            "type": "array",
+            "description": "List of Prison Ids (can include OUT and TRN) to restrict the search by. Unrestricted if not supplied or null",
+            "example": ["MDI"],
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          }
+        },
+        "required": ["latestReleaseDate"]
+      },
+      "PrisonerNumbers": {
+        "type": "object",
+        "properties": {
+          "prisonerNumbers": {
+            "type": "array",
+            "description": "List of prisoner numbers to search by",
+            "example": ["A1234AA"],
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 1000,
+            "minItems": 1
+          }
+        },
+        "required": ["prisonerNumbers"]
+      },
+      "PossibleMatchCriteria": {
+        "type": "object",
+        "description": "Search Criteria for possible match",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "description": "Prisoner first name",
+            "example": "john"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Prisoner last Name",
+            "example": "smith"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date",
+            "description": "Prisoner date of birth",
+            "example": "1996-02-10"
+          },
+          "pncNumber": {
+            "type": "string",
+            "description": "Police National Computer (PNC) number (This will match both long and short PNC formats)",
+            "example": "2018/0123456X"
+          },
+          "nomsNumber": {
+            "type": "string",
+            "description": "The Prisoner NOMIS Id (aka prison number/offender no in DPS)",
+            "example": "A1234AB"
+          }
+        }
+      },
+      "PrisonSearch": {
+        "type": "object",
+        "description": "Search Criteria for Prisoner Search",
+        "properties": {
+          "prisonerIdentifier": {
+            "type": "string",
+            "description": "Prisoner identifier, one of prisoner number, book number, booking ID or PNC",
+            "example": "A1234AA,"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "First Name",
+            "example": "John"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Last Name",
+            "example": "Smith"
+          },
+          "prisonId": {
+            "type": "string",
+            "description": "Prison Id, Prison Id or OUT or TRN",
+            "example": "MDI"
+          },
+          "includeAliases": {
+            "type": "boolean",
+            "default": false,
+            "description": "Include aliases in search",
+            "example": false
+          }
+        }
+      },
+      "SearchCriteria": {
+        "type": "object",
+        "description": "Search Criteria for Prisoner Search",
+        "properties": {
+          "prisonerIdentifier": {
+            "type": "string",
+            "description": "Prisoner identifier, one of prisoner number, book number, booking ID or PNC",
+            "example": "A1234AA,"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "First Name",
+            "example": "John"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Last Name",
+            "example": "Smith"
+          },
+          "prisonIds": {
+            "type": "array",
+            "description": "List of Prison Ids (can include OUT and TRN) to restrict the search by. Unrestricted if not supplied or null",
+            "example": ["MDI"],
+            "items": {
+              "type": "string"
+            }
+          },
+          "includeAliases": {
+            "type": "boolean",
+            "default": false,
+            "description": "Include aliases in search",
+            "example": false
+          }
+        }
+      },
+      "BookingIds": {
+        "type": "object",
+        "properties": {
+          "bookingIds": {
+            "type": "array",
+            "description": "List of bookingIds to search by",
+            "example": [1, 2, 3],
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "maxItems": 1000,
+            "minItems": 1
+          }
+        },
+        "required": ["bookingIds"]
+      },
+      "PaginationRequest": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The page number required in the paginated response",
+            "example": 0
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The number of results to return for paginated response",
+            "example": 10
+          }
+        },
+        "required": ["page", "size"]
+      },
+      "PrisonerDetailRequest": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "description": "Prisoner first name",
+            "example": "john"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Prisoner last name",
+            "example": "smith"
+          },
+          "nomsNumber": {
+            "type": "string",
+            "description": "Prisoner number (aka. offenderId, nomisId)",
+            "example": "A1234AA"
+          },
+          "pncNumber": {
+            "type": "string",
+            "description": "Police National Computer (PNC) number",
+            "example": "2018/0123456X"
+          },
+          "croNumber": {
+            "type": "string",
+            "description": "Criminal Records Office (CRO) number",
+            "example": "SF80/655108T"
+          },
+          "fuzzyMatch": {
+            "type": "boolean",
+            "description": "Fuzzy matching. Allow a one character difference in spelling in word lengths below five and two differences above.",
+            "example": false
+          },
+          "prisonIds": {
+            "type": "array",
+            "description": "List of prison codes to filter results by",
+            "example": "['LEI', 'MDI']",
+            "items": {
+              "type": "string"
+            }
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date",
+            "description": "Date of birth to filter results by",
+            "example": "1970-02-28"
+          },
+          "includeAliases": {
+            "type": "boolean",
+            "default": true,
+            "description": "Include aliases in search",
+            "example": true
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/PaginationRequest",
+            "description": "Pagination options. Will default to the first page if omitted."
+          }
+        },
+        "required": ["pagination", "prisonIds"]
+      },
+      "PrisonerDetailResponse": {
+        "type": "object",
+        "properties": {
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Prisoner"
+            }
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/SortObject"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Status of Error Code",
+            "example": 400
+          },
+          "developerMessage": {
+            "type": "string",
+            "description": "Developer Information message",
+            "example": "System is down"
+          },
+          "errorCode": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Internal Error Code",
+            "example": 20012
+          },
+          "userMessage": {
+            "type": "string",
+            "description": "Error message information",
+            "example": "Prisoner Not Found"
+          },
+          "moreInfo": {
+            "type": "string",
+            "description": "Additional information about the error",
+            "example": "Hard disk failure"
+          }
+        },
+        "required": ["errorCode", "status", "userMessage"]
+      },
+      "BodyPart": {
+        "type": "object",
+        "properties": {
+          "bodyPart": {
+            "type": "string",
+            "description": "Body part that has the physical mark, searching on the description in the type BODY_PART in the REFERENCE_CODES table. Allowable values extracted 08/02/2023.",
+            "enum": [
+              "Ankle",
+              "Arm",
+              "Ear",
+              "Elbow",
+              "Face",
+              "Finger",
+              "Foot",
+              "Hand",
+              "Head",
+              "Knee",
+              "Leg",
+              "Lip",
+              "Neck",
+              "Nose",
+              "Shoulder",
+              "Thigh",
+              "Toe",
+              "Torso"
+            ],
+            "example": "Arm"
+          },
+          "comment": {
+            "type": "string",
+            "description": "Comment on the physical mark.",
+            "example": "dragon"
+          }
+        }
+      },
+      "PhysicalDetailRequest": {
+        "type": "object",
+        "properties": {
+          "prisonIds": {
+            "type": "array",
+            "description": "List of prison codes to filter results by",
+            "example": "['LEI', 'MDI']",
+            "items": {
+              "type": "string"
+            }
+          },
+          "cellLocationPrefix": {
+            "type": "string",
+            "description": "Filter for the prisoners cell location. A block wing or cell can be specified. With prison id can be included or absent so HEI-3-1 and 3-1 are equivalent when the prison id is HEI",
+            "example": "3-1"
+          },
+          "gender": {
+            "type": "string",
+            "description": "Gender, searching on the description in the domain SEX in the REFERENCE_CODES table.",
+            "enum": ["Female", "Male", "Not Known / Not Recorded", "Not Specified (Indeterminate)", "Refused"],
+            "example": "Male"
+          },
+          "ethnicity": {
+            "type": "string",
+            "description": "Ethnicity, searching on the description in the domain ETHNICITY in the REFERENCE_CODES table.",
+            "enum": [
+              "Asian/Asian British: Indian",
+              "Asian/Asian British: Pakistani",
+              "Asian/Asian British: Bangladeshi",
+              "Asian/Asian British: Chinese",
+              "Asian/Asian British: Any other backgr'nd",
+              "Black/Black British: Caribbean",
+              "Black/Black British: African",
+              "Black/Black British: Any other Backgr'nd",
+              "Mixed: White and Black Caribbean",
+              "Mixed: White and Black African",
+              "Mixed: White and Asian",
+              "Mixed: Any other background",
+              "Needs to be confirmed following Merge",
+              "Prefer not to say",
+              "Chinese",
+              "Other: Arab",
+              "Other: Any other background",
+              "White: Eng./Welsh/Scot./N.Irish/British",
+              "White : Irish",
+              "White: Gypsy or Irish Traveller",
+              "White : Irish Traveller/Gypsy",
+              "White: Any other background"
+            ],
+            "example": "White : Irish"
+          },
+          "minHeight": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Minimum height of the prisoner in centimetres",
+            "example": 170
+          },
+          "maxHeight": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Maximum height of the prisoner in centimetres",
+            "example": 198
+          },
+          "minWeight": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Minimum weight of the prisoner in kilograms",
+            "example": 80
+          },
+          "maxWeight": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Maximum weight of the prisoner in kilograms",
+            "example": 90
+          },
+          "hairColour": {
+            "type": "string",
+            "description": "Hair colour, searching on the description in the type HAIR in the PROFILE_CODES table. Allowable values extracted 07/02/2023.",
+            "enum": [
+              "Bald",
+              "Balding",
+              "Black",
+              "Blonde",
+              "Brown",
+              "Brunette",
+              "Dark",
+              "Dyed",
+              "Ginger",
+              "Grey",
+              "Light",
+              "Mouse",
+              "Multi-coloured",
+              "Red",
+              "White"
+            ],
+            "example": "Brunette"
+          },
+          "rightEyeColour": {
+            "type": "string",
+            "description": "Right eye colour, searching on the description in the type R_EYE_C in the PROFILE_CODES table. Allowable values extracted 07/02/2023.",
+            "enum": ["Blue", "Brown", "Clouded", "Green", "Grey", "Hazel", "Missing", "Pink", "White"],
+            "example": "Green"
+          },
+          "leftEyeColour": {
+            "type": "string",
+            "description": "Left eye colour, searching on the description in the type L_EYE_C in the PROFILE_CODES table. Allowable values extracted 07/02/2023.",
+            "enum": ["Blue", "Brown", "Clouded", "Green", "Grey", "Hazel", "Missing", "Pink", "White"],
+            "example": "Hazel"
+          },
+          "facialHair": {
+            "type": "string",
+            "description": "Facial hair, searching on the description in the type FACIAL_HAIR in the PROFILE_CODES table. Allowable values extracted 07/02/2023.",
+            "enum": [
+              "Full Beard",
+              "Clean Shaven",
+              "Goatee Beard",
+              "Moustache Only",
+              "Not Applicable (Female Offender)",
+              "No Facial Hair",
+              "Sideburns"
+            ],
+            "example": "Goatee Beard"
+          },
+          "shapeOfFace": {
+            "type": "string",
+            "description": "Shape of face, searching on the description in the type FACE in the PROFILE_CODES table. Allowable values extracted 07/02/2023.",
+            "enum": ["Angular", "Bullet", "Oval", "Round", "Square", "Triangular"],
+            "example": "Bullet"
+          },
+          "build": {
+            "type": "string",
+            "description": "Physical build, searching on the description in the type BUILD in the PROFILE_CODES table. Allowable values extracted 07/02/2023.",
+            "enum": ["Fat", "Frail", "Heavy", "Medium", "Muscular", "Obese", "Proportional", "Slight", "Small", "Stocky", "Stooped", "Thin"],
+            "example": "Medium"
+          },
+          "minShoeSize": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Minimum UK shoe size of the prisoner",
+            "example": 5
+          },
+          "maxShoeSize": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Maximum UK shoe size of the prisoner",
+            "example": 10
+          },
+          "tattoos": {
+            "type": "array",
+            "description": "List of body parts that have tattoos",
+            "items": {
+              "$ref": "#/components/schemas/BodyPart"
+            }
+          },
+          "marks": {
+            "type": "array",
+            "description": "List of body parts that have marks",
+            "items": {
+              "$ref": "#/components/schemas/BodyPart"
+            }
+          },
+          "scars": {
+            "type": "array",
+            "description": "List of body parts that have scars",
+            "items": {
+              "$ref": "#/components/schemas/BodyPart"
+            }
+          },
+          "lenient": {
+            "type": "boolean",
+            "description": "\n        Whether all terms are required to match. If set to true then only matches on all fields will return a result.\n        If set to false then matches will return a higher score than non matches, but all will be returned.\n        Prison and cell location will always be required to match.",
+            "example": false
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/PaginationRequest",
+            "description": "Pagination options. Will default to the first page if omitted."
+          }
+        },
+        "required": ["lenient", "pagination", "prisonIds"]
+      },
+      "PhysicalDetailResponse": {
+        "type": "object",
+        "properties": {
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Prisoner"
+            }
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/SortObject"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
+      "MatchRequest": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "description": "Prisoner first name",
+            "example": "john"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Prisoner last Name",
+            "example": "smith",
+            "minLength": 1
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date",
+            "description": "Prisoner date of birth",
+            "example": "1996-02-10"
+          },
+          "pncNumber": {
+            "type": "string",
+            "description": "Police National Computer (PNC) number",
+            "example": "2018/0123456X"
+          },
+          "croNumber": {
+            "type": "string",
+            "description": "Criminal Records Office (CRO) number",
+            "example": "SF80/655108T"
+          },
+          "nomsNumber": {
+            "type": "string",
+            "description": "The Prisoner NOMIS Id (aka prison number/offender no in DPS)",
+            "example": "A1234AB"
+          }
+        },
+        "required": ["lastName"]
+      },
+      "PrisonerMatch": {
+        "type": "object",
+        "properties": {
+          "prisoner": {
+            "$ref": "#/components/schemas/Prisoner",
+            "description": "Details of the matching prisoner"
+          }
+        },
+        "required": ["prisoner"]
+      },
+      "PrisonerMatches": {
+        "type": "object",
+        "properties": {
+          "matches": {
+            "type": "array",
+            "description": "List of prisoners that share the same possibility of being the match",
+            "items": {
+              "$ref": "#/components/schemas/PrisonerMatch"
+            }
+          },
+          "matchedBy": {
+            "type": "string",
+            "description": "How the match was performed",
+            "enum": ["ALL_SUPPLIED", "ALL_SUPPLIED_ALIAS", "HMPPS_KEY", "EXTERNAL_KEY", "NAME", "PARTIAL_NAME", "PARTIAL_NAME_DOB_LENIENT", "NOTHING"]
+          }
+        },
+        "required": ["matchedBy", "matches"]
+      },
+      "KeywordRequest": {
+        "type": "object",
+        "properties": {
+          "orWords": {
+            "type": "string",
+            "description": "Match where any of the keywords are present in any text field",
+            "example": "smith james john"
+          },
+          "andWords": {
+            "type": "string",
+            "description": "Match where all keywords are present in any text field",
+            "example": "smith james"
+          },
+          "notWords": {
+            "type": "string",
+            "description": "Filter results where any of these words are present in any text field",
+            "example": "jonas"
+          },
+          "exactPhrase": {
+            "type": "string",
+            "description": "Match only prisoners where the full phrase is present in any text field",
+            "example": "John Smith"
+          },
+          "fuzzyMatch": {
+            "type": "boolean",
+            "description": "Fuzzy matching. Allow a one character difference in spelling in word lengths below five and two differences above.",
+            "example": false
+          },
+          "prisonIds": {
+            "type": "array",
+            "description": "List of prison codes to filter results",
+            "example": ["LEI", "MDI"],
+            "items": {
+              "type": "string"
+            }
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/PaginationRequest",
+            "description": "Pagination options. Will default to the first page if omitted."
+          },
+          "type": {
+            "type": "string",
+            "description": "The type of search. When set to DEFAULT (which is the default when not provided) search order is by calculated relevance (AKA score). An ESTABLISHMENT type will order results by name and is designed for using this API for a single quick search field for prisoners within a specific prison",
+            "enum": ["DEFAULT", "ESTABLISHMENT"]
+          }
+        },
+        "required": ["pagination", "prisonIds", "type"]
+      },
+      "KeywordResponse": {
+        "type": "object",
+        "properties": {
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Prisoner"
+            }
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/SortObject"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
+      "GlobalSearchCriteria": {
+        "type": "object",
+        "description": "Search Criteria for Global Prisoner Search",
+        "properties": {
+          "prisonerIdentifier": {
+            "type": "string",
+            "description": "Prisoner identifier, one of prisoner number, book number, booking ID or PNC",
+            "example": "A1234AA"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "First Name",
+            "example": "John"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Last Name",
+            "example": "Smith"
+          },
+          "gender": {
+            "type": "string",
+            "description": "Gender, F - Female, M - Male, NK - Not Known / Not Recorded or NS - Not Specified (Indeterminate)",
+            "enum": ["M", "F", "NK", "NS", "ALL"],
+            "example": "M"
+          },
+          "location": {
+            "type": "string",
+            "description": "Location, All or Inside or Outside",
+            "example": "IN"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date",
+            "description": "Date of birth",
+            "example": "1970-02-28"
+          },
+          "includeAliases": {
+            "type": "boolean",
+            "default": false,
+            "description": "Include aliases in search",
+            "example": false
+          }
+        }
+      },
+      "AttributeSearchRequest": {
+        "type": "object",
+        "description": "A request to search for prisoners by attributes",
+        "properties": {
+          "joinType": {
+            "type": "string",
+            "default": "AND",
+            "description": "The type of join to use when combining the matchers and subQueries",
+            "enum": ["AND", "OR"],
+            "example": "AND"
+          },
+          "queries": {
+            "type": "array",
+            "description": "A list of queries of type Query that will be combined with the matchers in this query",
+            "items": {
+              "$ref": "#/components/schemas/Query"
+            }
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/PaginationRequest"
+          }
+        },
+        "required": ["pagination", "queries"]
+      },
+      "BooleanMatcher": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Matcher"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "attribute": {
+                "type": "string",
+                "description": "The attribute to match",
+                "example": "recall"
+              },
+              "condition": {
+                "type": "boolean",
+                "description": "Whether the attribute must be true or false",
+                "example": true
+              },
+              "type": {
+                "type": "string",
+                "description": "Must be Boolean",
+                "example": "Boolean"
+              }
+            }
+          }
+        ],
+        "description": "A matcher for a boolean attribute from the Prisoner record",
+        "required": ["attribute", "condition", "type"]
+      },
+      "DateMatcher": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Matcher"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "attribute": {
+                "type": "string",
+                "description": "The attribute to match",
+                "example": "releaseDate"
+              },
+              "minValue": {
+                "type": "string",
+                "format": "date",
+                "description": "The minimum value to match",
+                "example": "2024-01-01"
+              },
+              "minInclusive": {
+                "type": "boolean",
+                "default": true,
+                "description": "Whether the minimum value is inclusive or exclusive"
+              },
+              "maxValue": {
+                "type": "string",
+                "format": "date",
+                "description": "The maximum value to match",
+                "example": "2024-01-31"
+              },
+              "maxInclusive": {
+                "type": "boolean",
+                "default": true,
+                "description": "Whether the maximum value is inclusive or exclusive"
+              },
+              "type": {
+                "type": "string",
+                "description": "Must be Date",
+                "example": "Date"
+              }
+            }
+          }
+        ],
+        "description": "A matcher for a date attribute from the Prisoner record.\n  \n  For a between clause use both min value and max value. By default the range is inclusive, but can be adjusted with minInclusive and maxInclusive.\n  \n  For <= enter only a max value, and for < set max inclusive to false.\n   \n  For >= enter only a min value, and for > set min inclusive to false.\n  \n  For equals enter the same date in both the min value and max value and leave min/max inclusive as true.\n  ",
+        "required": ["attribute", "type"]
+      },
+      "DateTimeMatcher": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Matcher"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "attribute": {
+                "type": "string",
+                "description": "The attribute to search on",
+                "example": "currentIncentive.dateTime"
+              },
+              "minValue": {
+                "type": "string",
+                "format": "date-time",
+                "description": "The minimum value to match",
+                "example": "2024-01-01T09:00:00Z"
+              },
+              "maxValue": {
+                "type": "string",
+                "format": "date-time",
+                "description": "The maximum value to match",
+                "example": "2024-01-31T21:00:00Z"
+              },
+              "type": {
+                "type": "string",
+                "description": "Must be DateTime",
+                "example": "DateTime"
+              }
+            }
+          }
+        ],
+        "description": "A matcher for a date time attribute from the Prisoner record.\n  \n  For a between clause use both the min and max values.\n  \n  For < enter only the max value.\n  \n  For > enter only the min value.\n",
+        "required": ["attribute", "type"]
+      },
+      "IntMatcher": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Matcher"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "attribute": {
+                "type": "string",
+                "description": "The attribute to match on",
+                "example": "heightCentimetres"
+              },
+              "minValue": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The minimum value to match on",
+                "example": 150
+              },
+              "minInclusive": {
+                "type": "boolean",
+                "default": true,
+                "description": "Whether the minimum value is inclusive"
+              },
+              "maxValue": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The maximum value to match on",
+                "example": 180
+              },
+              "maxInclusive": {
+                "type": "boolean",
+                "default": true,
+                "description": "Whether the maximum value is inclusive"
+              },
+              "type": {
+                "type": "string",
+                "description": "Must be Int",
+                "example": "Int"
+              }
+            }
+          }
+        ],
+        "description": "A matcher for an integer attribute from the Prisoner record.\n  \n  For a between clause use both min value and max value. By default the range is inclusive, but can be adjusted with minInclusive and maxInclusive.\n  \n  For <= enter only a max value, and for < set max inclusive to false.\n   \n  For >= enter only a min value, and for > set min inclusive to false.\n  \n  For equals enter the same integer in both the min value and max value and leave min/max inclusive as true.\n  ",
+        "required": ["attribute", "type"]
+      },
+      "Matcher": {
+        "type": "object",
+        "discriminator": {
+          "propertyName": "type"
+        },
+        "properties": {
+          "type": {
+            "type": "string"
+          }
+        },
+        "required": ["type"]
+      },
+      "PncMatcher": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Matcher"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "pncNumber": {
+                "type": "string",
+                "description": "The PNC number match",
+                "example": "24/123456H"
+              },
+              "type": {
+                "type": "string",
+                "description": "Must be PNC",
+                "example": "PNC"
+              }
+            }
+          }
+        ],
+        "description": "A matcher for PNC numbers.\n  \n    This is required because PNC numbers come in various formats with 2/4 long years and with/without leading zeroes.\n     \n    This matcher will find the matching PNC regardless of which format is used. \n  ",
+        "required": ["pncNumber", "type"]
+      },
+      "Query": {
+        "type": "object",
+        "description": "A query to search for prisoners by attributes",
+        "properties": {
+          "joinType": {
+            "type": "string",
+            "default": "AND",
+            "description": "The type of join to use when combining the matchers and subQueries",
+            "enum": ["AND", "OR"],
+            "example": "AND"
+          },
+          "matchers": {
+            "type": "array",
+            "description": "Matchers that will be applied to this query",
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/BooleanMatcher"
+                },
+                {
+                  "$ref": "#/components/schemas/DateMatcher"
+                },
+                {
+                  "$ref": "#/components/schemas/DateTimeMatcher"
+                },
+                {
+                  "$ref": "#/components/schemas/IntMatcher"
+                },
+                {
+                  "$ref": "#/components/schemas/PncMatcher"
+                },
+                {
+                  "$ref": "#/components/schemas/StringMatcher"
+                }
+              ]
+            }
+          },
+          "subQueries": {
+            "type": "array",
+            "description": "A list of sub-queries of type Query that will be combined with the matchers in this query",
+            "items": {
+              "description": "A query to search for prisoners by attributes"
+            }
+          }
+        }
+      },
+      "StringMatcher": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Matcher"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "attribute": {
+                "type": "string",
+                "description": "The attribute to match on",
+                "example": "aliases.lastName"
+              },
+              "condition": {
+                "type": "string",
+                "description": "The condition to apply to the attribute",
+                "enum": ["IS", "IS_NOT", "CONTAINS", "STARTSWITH", "IN"],
+                "example": "IS"
+              },
+              "searchTerm": {
+                "type": "string",
+                "description": "The search term to apply to the attribute. Search terms are not case-sensitive.",
+                "example": "Smith"
+              },
+              "type": {
+                "type": "string",
+                "description": "Must be String",
+                "example": "String"
+              }
+            }
+          }
+        ],
+        "description": "A matcher for a string attribute from the prisoner record",
+        "required": ["attribute", "condition", "searchTerm", "type"]
+      },
+      "ReferenceData": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          }
+        },
+        "required": ["label", "value"]
+      },
+      "ReferenceDataResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReferenceData"
+            }
+          }
+        },
+        "required": ["data"]
+      },
+      "PrisonerLocation": {
+        "type": "object",
+        "description": "Prisoner location",
+        "properties": {
+          "prisonerNumber": {
+            "type": "string",
+            "description": "Prisoner number",
+            "example": "A1234AA"
+          },
+          "prisonId": {
+            "type": "string",
+            "description": "Prison id. Current prison or OUT if outside. Will not be returned if no bookings.",
+            "example": "MDI"
+          },
+          "lastPrisonId": {
+            "type": "string",
+            "description": "Last prison id. If prisonId is OUT then will contain last prison, otherwise will be the same as prisonId. Will not be returned if no bookings.",
+            "example": "MDI"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "First Name",
+            "example": "Robert"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Last name",
+            "example": "Larsen"
+          }
+        },
+        "required": ["firstName", "lastName", "prisonerNumber"]
+      },
+      "PrisonerLocationResponse": {
+        "type": "object",
+        "description": "Prisoner location response",
+        "properties": {
+          "scrollId": {
+            "type": "string",
+            "description": "Scroll id. To be kept and used in next request",
+            "example": "FGluY2x1ZGVfY29udGV4dF91dWlkDnF1ZXJ5VGhlbkZldG..."
+          },
+          "locations": {
+            "type": "array",
+            "description": "List of prisoner locations",
+            "items": {
+              "$ref": "#/components/schemas/PrisonerLocation"
+            }
+          }
+        }
+      },
+      "Attribute": {
+        "type": "object",
+        "description": "An attribute that can be searched for in a query",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the attribute to be used when searching",
+            "example": "firstName"
+          },
+          "type": {
+            "type": "string",
+            "description": "The type of the attribute (used to determine which matcher to use)",
+            "example": "String"
+          },
+          "fuzzySearch": {
+            "type": "boolean",
+            "description": "Whether the attribute search will be fuzzy. Generally applicable to String attributes containing free text such as names.",
+            "example": true
+          }
+        },
+        "required": ["fuzzySearch", "name", "type"]
+      }
+    },
+    "securitySchemes": {
+      "view-prisoner-data-role": {
+        "type": "http",
+        "description": "A HMPPS Auth access token with the `ROLE_VIEW_PRISONER_DATA` role.",
+        "name": "Authorization",
+        "in": "header",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "prisoner-search-role": {
+        "type": "http",
+        "description": "A HMPPS Auth access token with the `ROLE_PRISONER_SEARCH` role.",
+        "name": "Authorization",
+        "in": "header",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "global-search-role": {
+        "type": "http",
+        "description": "A HMPPS Auth access token with the `ROLE_GLOBAL_SEARCH` role.",
+        "name": "Authorization",
+        "in": "header",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "prisoner-in-prison-search-role": {
+        "type": "http",
+        "description": "A HMPPS Auth access token with the `ROLE_PRISONER_IN_PRISON_SEARCH` role.",
+        "name": "Authorization",
+        "in": "header",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "prisoner-search--prisoner--ro": {
+        "type": "http",
+        "description": "A HMPPS Auth access token with the `PRISONER_SEARCH__PRISONER__RO` role.",
+        "name": "Authorization",
+        "in": "header",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

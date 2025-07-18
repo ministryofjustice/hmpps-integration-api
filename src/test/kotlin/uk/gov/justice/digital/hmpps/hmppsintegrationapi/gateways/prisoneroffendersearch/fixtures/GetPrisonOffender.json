@@ -18,6 +18,7 @@
   "maritalStatus": "Widowed",
   "religion": "Church of England (Anglican)",
   "nationality": "Egyptian",
+  "smoker": "Y",
   "personalCareNeeds": [
     {
       "problemType": "MATSTAT",
@@ -39,6 +40,7 @@
       "interpreterRequested": true
     }
   ],
+  "currentFacialImageId": 2122100,
   "status": "ACTIVE IN",
   "lastMovementTypeCode": "CRT",
   "lastMovementReasonCode": "CA",

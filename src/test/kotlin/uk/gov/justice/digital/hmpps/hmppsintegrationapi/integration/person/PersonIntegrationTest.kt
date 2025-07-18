@@ -24,17 +24,17 @@ class PersonIntegrationTest : IntegrationTestBase() {
         "/global-search?size=9999",
         """
             {
-              "firstName": "John",
-              "lastName": "Doe",
+              "firstName": "Robert",
+              "lastName": "Larsen",
               "includeAliases": false
             }
           """.removeWhitespaceAndNewlines(),
         File(
-          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/GetPrisonersResponse.json",
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/GetPerson.json",
         ).readText(),
       )
-      val firstName = "John"
-      val lastName = "Doe"
+      val firstName = "Robert"
+      val lastName = "Larsen"
       val queryParams = "first_name=$firstName&last_name=$lastName"
 
       callApi("$basePath?$queryParams")
