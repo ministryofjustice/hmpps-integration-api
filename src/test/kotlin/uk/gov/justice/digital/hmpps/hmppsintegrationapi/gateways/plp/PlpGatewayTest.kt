@@ -225,7 +225,7 @@ class PlpGatewayTest(
       }
 
       describe("getEducationAssessmentSummary") {
-        val prisonerNumber = "123"
+        val prisonerNumber = "A1234BC"
         val path = "/assessments/$prisonerNumber/required"
 
         it("authenticates using HMPPS Auth with credentials") {
