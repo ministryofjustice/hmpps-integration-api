@@ -45,6 +45,7 @@ class ManagePOMCaseGatewayTest(
 
       afterTest {
         managePOMCaseApiMockServer.stop()
+        managePOMCaseApiMockServer.resetValidator()
       }
 
       it("authenticates using HMPPS Auth with credentials") {
@@ -74,6 +75,8 @@ class ManagePOMCaseGatewayTest(
         response.data.shouldNotBeNull()
         response.data.forename.shouldBe("Joe")
         response.data.surname.shouldBe("Bloggs")
+
+        managePOMCaseApiMockServer.assertValidationPassed()
       }
     },
   )
