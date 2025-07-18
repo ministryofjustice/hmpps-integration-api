@@ -20,7 +20,7 @@ services:
   plp:
     base-url: https://learningandworkprogress-api-dev.hmpps.service.justice.gov.uk
   san:
-    base-url: http://support-for-additional-needs-api-dev.hmpps.service.justice.gov.uk
+    base-url: https://support-for-additional-needs-api-dev.hmpps.service.justice.gov.uk
   non-associations:
     base-url: https://non-associations-api-dev.hmpps.service.justice.gov.uk
   personal-relationships:
@@ -130,7 +130,6 @@ authorisation:
         - "/v1/persons/.*/adjudications"
         - "/v1/persons/.*/alerts"
         - "/v1/pnd/persons/.*/alerts"
-        - "/v1/persons/.*/alerts/pnd"
         - "/v1/persons/.*/case-notes"
         - "/v1/persons/.*/images"
         - "/v1/persons/.*/licences/conditions"
