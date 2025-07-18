@@ -5,7 +5,6 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.collections.shouldBeEmpty
-import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
@@ -48,10 +47,6 @@ class PrisonerOffenderSearchGatewayTest(
       val getPath = "/prisoner/$nomsNumber"
       val prisonerOffenderSearchApiMockServer = ApiMockServer.create(UpstreamApi.PRISONER_OFFENDER_SEARCH)
 
-      val firstName = "JAMES"
-      val lastName = "HOWLETT"
-      val dateOfBirth = "1975-02-28"
-
       beforeEach {
         prisonerOffenderSearchApiMockServer.start()
         Mockito.reset(hmppsAuthGateway)
@@ -65,6 +60,10 @@ class PrisonerOffenderSearchGatewayTest(
       }
 
       describe("#getPersons") {
+        val firstName = "Robert"
+        val lastName = "Larsen"
+        val dateOfBirth = "1975-04-02"
+
         beforeEach {
           prisonerOffenderSearchApiMockServer.stubForPost(
             postPath,
@@ -77,7 +76,7 @@ class PrisonerOffenderSearchGatewayTest(
             }
             """.removeWhitespaceAndNewlines(),
             File(
-              "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/GetPrisonersResponse.json",
+              "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/GetPerson.json",
             ).readText(),
           )
         }
@@ -90,28 +89,15 @@ class PrisonerOffenderSearchGatewayTest(
 
         it("returns person(s) when searching on first name, last name and date of birth, in a descending order according to date of birth") {
           val response = prisonerOffenderSearchGateway.getPersons(firstName, lastName, dateOfBirth)
-          response.data.count().shouldBe(4)
+          response.data.count().shouldBe(1)
           response.data.forEach {
             it.firstName.shouldBe(firstName)
             it.lastName.shouldBe(lastName)
           }
           response.data[0]
             .prisonerNumber
-            .shouldBe("A5043DY")
-          response.data[1]
-            .prisonerNumber
-            .shouldBe("A5083DY")
-          response.data[2]
-            .prisonerNumber
-            .shouldBe("G9347GV")
-          response.data[3]
-            .prisonerNumber
-            .shouldBe("A7796DY")
-
-          response.data[0].pncNumber.shouldBeNull()
-          response.data[1].pncNumber.shouldBe("03/11985X")
-          response.data[2].pncNumber.shouldBe("95/289622B")
-          response.data[3].pncNumber.shouldBeNull()
+            .shouldBe("A1234AA")
+          response.data[0].pncNumber.shouldBe("12/394773H")
 
           prisonerOffenderSearchApiMockServer.assertValidationPassed()
         }
@@ -125,42 +111,9 @@ class PrisonerOffenderSearchGatewayTest(
               "includeAliases": false
             }
             """.removeWhitespaceAndNewlines(),
-            """
-            {
-              "content": [
-                {
-                  "firstName": "$firstName",
-                  "lastName": "$lastName"
-                }
-              ],
-              "pageable": {
-                  "sort": {
-                    "empty": true,
-                    "unsorted": true,
-                    "sorted": false
-                  },
-                  "offset": 0,
-                  "pageSize": 10,
-                  "pageNumber": 0,
-                  "paged": true,
-                  "unpaged": false
-                },
-                "totalPages": 2,
-                "last": false,
-                "totalElements": 4,
-                "size": 10,
-                "number": 0,
-                "sort": {
-                  "empty": true,
-                  "unsorted": true,
-                  "sorted": false
-                },
-                "first": true,
-                "numberOfElements": 10,
-                "empty": false
-              }
-            }
-            """.trimIndent(),
+            File(
+              "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/GetPerson.json",
+            ).readText(),
           )
 
           val response = prisonerOffenderSearchGateway.getPersons(firstName, null, null)
@@ -186,41 +139,9 @@ class PrisonerOffenderSearchGatewayTest(
               "includeAliases": false
             }
             """.removeWhitespaceAndNewlines(),
-            """
-            {
-              "content": [
-                {
-                  "firstName": "$firstName",
-                  "lastName": "$lastName"
-                }
-              ],
-              "pageable": {
-                "sort": {
-                  "empty": true,
-                  "unsorted": true,
-                  "sorted": false
-                },
-                "offset": 0,
-                "pageSize": 10,
-                "pageNumber": 0,
-                "paged": true,
-                "unpaged": false
-              },
-              "totalPages": 2,
-              "last": false,
-              "totalElements": 4,
-              "size": 10,
-              "number": 0,
-              "sort": {
-                "empty": true,
-                "unsorted": true,
-                "sorted": false
-              },
-              "first": true,
-              "numberOfElements": 10,
-              "empty": false
-            }
-            """.trimIndent(),
+            File(
+              "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/GetPerson.json",
+            ).readText(),
           )
 
           val response = prisonerOffenderSearchGateway.getPersons(null, lastName, null)
@@ -246,42 +167,9 @@ class PrisonerOffenderSearchGatewayTest(
               "dateOfBirth": "$dateOfBirth"
             }
             """.removeWhitespaceAndNewlines(),
-            """
-            {
-              "content": [
-                {
-                  "firstName": "$firstName",
-                  "lastName": "$lastName",
-                  "dateOfBirth": "$dateOfBirth"
-                }
-              ],
-              "pageable": {
-                "sort": {
-                  "empty": true,
-                  "unsorted": true,
-                  "sorted": false
-                },
-                "offset": 0,
-                "pageSize": 10,
-                "pageNumber": 0,
-                "paged": true,
-                "unpaged": false
-              },
-              "totalPages": 2,
-              "last": false,
-              "totalElements": 4,
-              "size": 10,
-              "number": 0,
-              "sort": {
-                "empty": true,
-                "unsorted": true,
-                "sorted": false
-              },
-              "first": true,
-              "numberOfElements": 10,
-              "empty": false
-            }
-            """.trimIndent(),
+            File(
+              "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/GetPerson.json",
+            ).readText(),
           )
 
           val response = prisonerOffenderSearchGateway.getPersons(null, null, dateOfBirth)
@@ -311,52 +199,13 @@ class PrisonerOffenderSearchGatewayTest(
               "includeAliases": true
             }
             """.removeWhitespaceAndNewlines(),
-            """
-            {
-              "content": [
-                {
-                  "firstName": "Richard",
-                  "lastName": "Roger",
-                  "aliases": [
-                    {
-                      "firstName": "$firstName",
-                      "lastName": "$lastName"
-                    }
-                  ]
-                }
-              ],
-               "pageable": {
-                  "sort": {
-                    "empty": true,
-                    "unsorted": true,
-                    "sorted": false
-                  },
-                  "offset": 0,
-                  "pageSize": 10,
-                  "pageNumber": 0,
-                  "paged": true,
-                  "unpaged": false
-                },
-                "totalPages": 2,
-                "last": false,
-                "totalElements": 4,
-                "size": 10,
-                "number": 0,
-                "sort": {
-                  "empty": true,
-                  "unsorted": true,
-                  "sorted": false
-                },
-                "first": true,
-                "numberOfElements": 10,
-                "empty": false
-              }
-            }
-            """.trimIndent(),
+            File(
+              "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/GetPersons.json",
+            ).readText(),
           )
 
           val response = prisonerOffenderSearchGateway.getPersons(firstName, null, null, true)
-          response.data.count().shouldBe(1)
+          response.data.count().shouldBe(2)
           response.data
             .first()
             .aliases
@@ -368,7 +217,7 @@ class PrisonerOffenderSearchGatewayTest(
             .aliases
             .first()
             .lastName
-            .shouldBe(lastName)
+            .shouldBe("Lorsen")
 
           prisonerOffenderSearchApiMockServer.assertValidationPassed()
         }
@@ -424,19 +273,15 @@ class PrisonerOffenderSearchGatewayTest(
       }
 
       describe("#getPrisonOffender") {
+        val firstName = "Robert"
+        val lastName = "Larsen"
+
         beforeEach {
           prisonerOffenderSearchApiMockServer.stubForGet(
             getPath,
-            """
-            {
-              "prisonerNumber": "A7796DY",
-              "bookingId": "599877",
-              "firstName": "$firstName",
-              "middleNames": "MARTIN",
-              "lastName": "$lastName",
-              "maritalStatus": "Widowed"
-            }
-            """.trimIndent(),
+            File(
+              "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/GetPrisonOffender.json",
+            ).readText(),
           )
         }
 
@@ -447,10 +292,10 @@ class PrisonerOffenderSearchGatewayTest(
 
         it("returns reasonable adjustment for a person with the matching ID") {
           val response = prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)
-          response.data?.prisonerNumber.shouldBe("A7796DY")
-          response.data?.bookingId.shouldBe("599877")
+          response.data?.prisonerNumber.shouldBe("A1234AA")
+          response.data?.bookingId.shouldBe("0001200924")
           response.data?.firstName.shouldBe(firstName)
-          response.data?.middleNames.shouldBe("MARTIN")
+          response.data?.middleNames.shouldBe("John James")
           response.data?.lastName.shouldBe(lastName)
           response.data?.maritalStatus.shouldBe("Widowed")
 
@@ -474,8 +319,8 @@ class PrisonerOffenderSearchGatewayTest(
       }
 
       describe("#attributeSearch") {
-        val prisonId = "MKI"
-        val cellLocation = "A-1-001"
+        val prisonId = "MDI"
+        val cellLocation = "A-1-002"
         val request =
           POSAttributeSearchRequest(
             joinType = "AND",
@@ -511,43 +356,9 @@ class PrisonerOffenderSearchGatewayTest(
           prisonerOffenderSearchApiMockServer.stubForPost(
             "/attribute-search",
             objectMapper.writeValueAsString(request),
-            """
-            {
-              "content": [
-                {
-                  "prisonId": "$prisonId",
-                  "firstName": "$firstName",
-                  "lastName": "$lastName",
-                  "cellLocation": "$cellLocation"
-                }
-              ],
-              "pageable": {
-                "sort": {
-                  "empty": true,
-                  "unsorted": true,
-                  "sorted": false
-                },
-                "offset": 0,
-                "pageSize": 10,
-                "pageNumber": 0,
-                "paged": true,
-                "unpaged": false
-              },
-              "totalPages": 1,
-              "last": false,
-              "totalElements": 1,
-              "size": 10,
-              "number": 0,
-              "sort": {
-                "empty": true,
-                "unsorted": true,
-                "sorted": false
-              },
-              "first": true,
-              "numberOfElements": 1,
-              "empty": false
-            }
-            """.trimIndent(),
+            File(
+              "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/AttributeSearch.json",
+            ).readText(),
           )
 
           val response = prisonerOffenderSearchGateway.attributeSearch(request)
