@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -7,6 +8,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationT
 import java.io.File
 
 class PLPIntegrationTest : IntegrationTestBase() {
+  @AfterEach
+  fun resetValidators() {
+    plpMockServer.resetValidator()
+  }
+
   @Test
   fun `returns a persons induction schedule`() {
     plpMockServer.stubForGet(
@@ -31,6 +37,8 @@ class PLPIntegrationTest : IntegrationTestBase() {
       """,
         ),
       )
+
+    plpMockServer.assertValidationPassed()
   }
 
   @Test
@@ -70,6 +78,8 @@ class PLPIntegrationTest : IntegrationTestBase() {
       """,
         ),
       )
+
+    plpMockServer.assertValidationPassed()
   }
 
   @Test
@@ -90,5 +100,7 @@ class PLPIntegrationTest : IntegrationTestBase() {
     callApi("$basePath/$nomsId/plp-review-schedule")
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("plp-review-schedule-history")))
+
+    plpMockServer.assertValidationPassed()
   }
 }
