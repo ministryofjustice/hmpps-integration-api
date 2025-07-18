@@ -90,6 +90,7 @@ class PrisonerBaseLocationGatewayTest(
 
       afterTest {
         prisonerOffenderSearchApiMockServer.stop()
+        prisonerOffenderSearchApiMockServer.resetValidator()
       }
 
       describe("#getPrisonerBaseLocation()") {
@@ -114,6 +115,8 @@ class PrisonerBaseLocationGatewayTest(
             it.lastMovementType shouldBe knownPrisonerLastMovementType
             it.receptionDate shouldBe knownPrisoner.receptionDate?.let { LocalDate.parse(it) }
           }
+
+          prisonerOffenderSearchApiMockServer.assertValidationPassed()
         }
       }
     },

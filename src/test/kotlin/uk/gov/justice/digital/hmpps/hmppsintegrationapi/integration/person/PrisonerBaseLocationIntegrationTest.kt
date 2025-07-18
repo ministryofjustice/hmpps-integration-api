@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
@@ -12,6 +13,11 @@ class PrisonerBaseLocationIntegrationTest : IntegrationTestBase() {
   private val knownNomisNumber = "A1234BC"
   private val unknownNomisNumnber = "Z9876YX"
 
+  @AfterEach
+  fun resetValidators() {
+    prisonerOffenderSearchMockServer.resetValidator()
+  }
+
   @Test
   fun `returns prisoner base location, having hmppsId being nomisID`() {
     givenKnownPrisoner()
@@ -21,6 +27,7 @@ class PrisonerBaseLocationIntegrationTest : IntegrationTestBase() {
       .andExpect(
         content().json(getExpectedResponse("prisoner-base-location")),
       )
+    prisonerOffenderSearchMockServer.assertValidationPassed()
   }
 
   @Test

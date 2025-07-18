@@ -61,6 +61,7 @@ class PrisonerOffenderSearchGatewayTest(
 
       afterTest {
         prisonerOffenderSearchApiMockServer.stop()
+        prisonerOffenderSearchApiMockServer.resetValidator()
       }
 
       describe("#getPersons") {
@@ -111,6 +112,8 @@ class PrisonerOffenderSearchGatewayTest(
           response.data[1].pncNumber.shouldBe("03/11985X")
           response.data[2].pncNumber.shouldBe("95/289622B")
           response.data[3].pncNumber.shouldBeNull()
+
+          prisonerOffenderSearchApiMockServer.assertValidationPassed()
         }
 
         it("returns person(s) when searching on first name only") {
@@ -170,6 +173,8 @@ class PrisonerOffenderSearchGatewayTest(
             .first()
             .lastName
             .shouldBe(lastName)
+
+          prisonerOffenderSearchApiMockServer.assertValidationPassed()
         }
 
         it("returns person(s) when searching on last name only") {
@@ -228,6 +233,8 @@ class PrisonerOffenderSearchGatewayTest(
             .first()
             .lastName
             .shouldBe(lastName)
+
+          prisonerOffenderSearchApiMockServer.assertValidationPassed()
         }
 
         it("returns person(s) when searching on date of birth only") {
@@ -291,6 +298,8 @@ class PrisonerOffenderSearchGatewayTest(
             .first()
             .dateOfBirth
             .shouldBe(LocalDate.parse(dateOfBirth))
+
+          prisonerOffenderSearchApiMockServer.assertValidationPassed()
         }
 
         it("returns person(s) when searching within aliases") {
@@ -360,6 +369,8 @@ class PrisonerOffenderSearchGatewayTest(
             .first()
             .lastName
             .shouldBe(lastName)
+
+          prisonerOffenderSearchApiMockServer.assertValidationPassed()
         }
 
         it("returns an empty list of Person if no matching person") {
@@ -442,6 +453,8 @@ class PrisonerOffenderSearchGatewayTest(
           response.data?.middleNames.shouldBe("MARTIN")
           response.data?.lastName.shouldBe(lastName)
           response.data?.maritalStatus.shouldBe("Widowed")
+
+          prisonerOffenderSearchApiMockServer.assertValidationPassed()
         }
 
         it("returns an error when 404 NOT FOUND is returned") {
@@ -547,6 +560,8 @@ class PrisonerOffenderSearchGatewayTest(
           response.data.content[0]
             .cellLocation
             .shouldBe(cellLocation)
+
+          prisonerOffenderSearchApiMockServer.assertValidationPassed()
         }
 
         it("throws an exception when 400 BAD REQUEST is returned") {

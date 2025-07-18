@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.prison
 
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -14,11 +15,18 @@ class PrisonIntegrationTest : IntegrationTestBase() {
   private final val lastName = "Doe"
   private final val dateOfBirth = "1980-01-01"
 
+  @AfterEach
+  fun resetValidators() {
+    prisonerOffenderSearchMockServer.resetValidator()
+  }
+
   @Test
   fun `return a prisoner with all fields populated`() {
     callApi("$basePrisonPath/prisoners/$hmppsId")
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("prisoner-response")))
+
+    prisonerOffenderSearchMockServer.assertValidationPassed()
   }
 
   @Test
@@ -79,6 +87,8 @@ class PrisonIntegrationTest : IntegrationTestBase() {
     )
     callApi("$basePrisonPath/prisoners?first_name=$deliberateMissVal&last_name=$lastName&date_of_birth=$dateOfBirth")
       .andExpect(status().isOk)
+
+    prisonerOffenderSearchMockServer.assertValidationPassed()
   }
 
   @Test
@@ -100,5 +110,7 @@ class PrisonIntegrationTest : IntegrationTestBase() {
     callApi("$basePrisonPath/prisoners?first_name=$firstName&last_name=$lastName&date_of_birth=$dateOfBirth")
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("prisoners-response")))
+
+    prisonerOffenderSearchMockServer.assertValidationPassed()
   }
 }
