@@ -85,11 +85,6 @@ abstract class IntegrationTestBase {
       )
 
       managePomCaseMockServer.start()
-      managePomCaseMockServer.stubForGet(
-        "/api/allocation/$nomsId/primary_pom",
-        File("$gatewaysFolder/managePOMcase/fixtures/GetPrimaryPOMResponse.json").readText(),
-      )
-
       plpMockServer.start()
       sanMockServer.start()
       activitiesMockServer.start()
