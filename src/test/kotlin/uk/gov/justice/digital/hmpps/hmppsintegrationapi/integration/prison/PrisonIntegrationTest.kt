@@ -93,18 +93,22 @@ class PrisonIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `return multiple prisoners when querying by complex parameters`() {
+    val firstName = "Robert"
+    val lastName = "Larsen"
+    val dateOfBirth = "1975-04-02"
+
     prisonerOffenderSearchMockServer.stubForPost(
       "/global-search?size=9999",
       """
             {
-              "firstName": "John",
-              "lastName": "Doe",
+              "firstName": "$firstName",
+              "lastName": "$lastName",
               "includeAliases": false,
-              "dateOfBirth": "1980-01-01"
+              "dateOfBirth": "$dateOfBirth"
             }
           """.removeWhitespaceAndNewlines(),
       File(
-        "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/GetPrisonersResponse.json",
+        "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/GetPersons.json",
       ).readText(),
     )
     callApi("$basePrisonPath/prisoners?first_name=$firstName&last_name=$lastName&date_of_birth=$dateOfBirth")
