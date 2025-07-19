@@ -11,10 +11,13 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.inspectors.shouldForAll
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
+import org.mockito.Mockito
+import org.mockito.kotlin.whenever
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.web.reactive.function.client.WebClientRequestException
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.TestApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -50,14 +53,17 @@ class WebClientWrapperTest :
     val getPath = "/test/$id"
     val postPath = "/testPost"
     val headers = mapOf("foo" to "bar")
+    val featureFlagConfig = Mockito.mock(FeatureFlagConfig::class.java)
 
     beforeEach {
       mockServer.start()
+      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.RETRY_ALL_UPSTREAM_GETS)).thenReturn(true)
       webClient =
         WebClientWrapper(
           baseUrl = mockServer.baseUrl(),
           connectTimeoutMillis = 500,
           responseTimeoutSeconds = 1,
+          featureFlagConfig = featureFlagConfig,
         )
     }
 
@@ -318,6 +324,7 @@ class WebClientWrapperTest :
             "http://10.255.255.1:81",
             connectTimeoutMillis = 300,
             responseTimeoutSeconds = 2,
+            featureFlagConfig,
           )
 
         val exception =

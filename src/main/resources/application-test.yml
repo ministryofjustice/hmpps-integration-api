@@ -86,6 +86,7 @@ feature-flag:
   error-on-no-lao-context: true
   san-endpoint-enabled: true
   simple-redaction: true
+  retry-all-upstream-gets: true
 
 authorisation:
   consumers:

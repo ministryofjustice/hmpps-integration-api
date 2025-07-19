@@ -11,6 +11,8 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import reactor.core.publisher.Mono
 import reactor.netty.http.client.HttpClient
 import reactor.util.retry.Retry
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ApplicationContextProvider
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -22,11 +24,11 @@ class WebClientWrapper(
   val baseUrl: String,
   connectTimeoutMillis: Int = 10_000,
   responseTimeoutSeconds: Long = 15,
+  val featureFlagConfig: FeatureFlagConfig = ApplicationContextProvider.featureFlagConfig ?: FeatureFlagConfig(),
 ) {
   val CREATE_TRANSACTION_RETRY_HTTP_CODES = listOf(502, 503, 504, 522, 599, 499, 408)
   val MAX_RETRY_ATTEMPTS = 3L
   val MIN_BACKOFF_DURATION = Duration.ofSeconds(3)
-
   val httpClient =
     HttpClient
       .create()
@@ -67,16 +69,20 @@ class WebClientWrapper(
     forbiddenAsError: Boolean = false,
     badRequestAsError: Boolean = false,
   ): WebClientWrapperResponse<T> =
-    try {
-      val responseData =
-        getResponseBodySpec(method, uri, headers, requestBody)
-          .retrieve()
-          .bodyToMono(T::class.java)
-          .block()!!
+    if (featureFlagConfig.isEnabled(FeatureFlagConfig.RETRY_ALL_UPSTREAM_GETS) && method == HttpMethod.GET) {
+      requestWithRetry(method, uri, headers, upstreamApi, requestBody, forbiddenAsError, badRequestAsError)
+    } else {
+      try {
+        val responseData =
+          getResponseBodySpec(method, uri, headers, requestBody)
+            .retrieve()
+            .bodyToMono(T::class.java)
+            .block()!!
 
-      WebClientWrapperResponse.Success(responseData)
-    } catch (exception: WebClientResponseException) {
-      getErrorType(exception, upstreamApi, forbiddenAsError, badRequestAsError)
+        WebClientWrapperResponse.Success(responseData)
+      } catch (exception: WebClientResponseException) {
+        getErrorType(exception, upstreamApi, forbiddenAsError, badRequestAsError)
+      }
     }
 
   /**
@@ -119,12 +125,45 @@ class WebClientWrapper(
     forbiddenAsError: Boolean = false,
     badRequestAsError: Boolean = false,
   ): WebClientWrapperResponse<List<T>> =
+    if (featureFlagConfig.isEnabled(FeatureFlagConfig.RETRY_ALL_UPSTREAM_GETS) && method == HttpMethod.GET) {
+      requestListWithRetry(method, uri, headers, upstreamApi, requestBody, forbiddenAsError, badRequestAsError)
+    } else {
+      try {
+        val responseData =
+          getResponseBodySpec(method, uri, headers, requestBody)
+            .retrieve()
+            .bodyToFlux(T::class.java)
+            .collectList()
+            .block() as List<T>
+
+        WebClientWrapperResponse.Success(responseData)
+      } catch (exception: WebClientResponseException) {
+        getErrorType(exception, upstreamApi, forbiddenAsError, badRequestAsError)
+      }
+    }
+
+  inline fun <reified T> requestListWithRetry(
+    method: HttpMethod,
+    uri: String,
+    headers: Map<String, String>,
+    upstreamApi: UpstreamApi,
+    requestBody: Any? = null,
+    forbiddenAsError: Boolean = false,
+    badRequestAsError: Boolean = false,
+  ): WebClientWrapperResponse<List<T>> =
     try {
       val responseData =
         getResponseBodySpec(method, uri, headers, requestBody)
           .retrieve()
-          .bodyToFlux(T::class.java)
-          .collectList()
+          .onStatus({ status -> status.value() in CREATE_TRANSACTION_RETRY_HTTP_CODES }) { response ->
+            Mono.error(ResponseException(null, response.statusCode().value()))
+          }.bodyToFlux(T::class.java)
+          .retryWhen(
+            Retry
+              .backoff(MAX_RETRY_ATTEMPTS, MIN_BACKOFF_DURATION)
+              .filter { throwable -> throwable is ResponseException }
+              .onRetryExhaustedThrow { _, retrySignal -> throw ResponseException("External Service failed to process after max retries", HttpStatus.SERVICE_UNAVAILABLE.value()) },
+          ).collectList()
           .block() as List<T>
 
       WebClientWrapperResponse.Success(responseData)
