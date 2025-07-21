@@ -49,6 +49,14 @@ data class PlanCreationSchedule(
   val updatedAtPrison: String,
   @Schema(description = "Date the plan creation is due", example = "2023-11-19")
   val deadlineDate: LocalDate? = null,
+  @Schema(example = "2023-11-19", description = "If the status of this Plan Creation Schedule is COMPLETED, this field is an ISO-8601 date representing  date that the Education Support Plan was created. This field will only have a value when the status of the  Plan Creation Schedule is COMPLETED, and reflects the date the Education Support Plan was created  (rather than the Plan Creation Schedule) ")
+  val planCompletedDate: LocalDate? = null,
+  @Schema(example = "null", description = "If the status of this Plan Creation Schedule is COMPLETED, and the person who met with the  prisoner to create their Education Support Plan was not the same person who keyed it into  the SAN service, this field will be that person's name. This field will only have a value  when the status of the Plan Creation Schedule is COMPLETED, and the person who met with  the prisoner to create their Education Support Plan was not the same person who keyed it into the SAN service. If the Plan Creation Schedule is COMPLETED and this field is null,  consumers of this API can assume the person who created the Education Support Plan is  the person who keyed it in. See field planKeyedInBy ")
+  val planCompletedBy: String? = null,
+  @Schema(example = "null", description = "If the status of this Plan Creation Schedule is COMPLETED, this field is the DPS  username of the user that keyed the Education Support Plan into the system.This  field will only have a value when the status of the Plan Creation Schedule is COMPLETED,  and reflects the logged in user who interacted with the SAN service. ")
+  val planKeyedInBy: String? = null,
+  @Schema(example = "Education coordinator", description = "The job role of the person who completed the plan.")
+  val planCompletedByJobRole: String? = null,
   @Schema(description = "Reason for exemption", example = "EXEMPT_NOT_REQUIRED")
   val exemptionReason: String? = null,
   @Schema(description = "Details about the exemption")
@@ -84,6 +92,10 @@ class PlanCreationScheduleDeserializer : JsonDeserializer<PlanCreationSchedule>(
         node["needSources"]?.takeUnless { it.isNull }?.mapNotNull { ns ->
           ns?.asText()?.let { NeedSource.valueOf(it) }
         },
+      planKeyedInBy = node["planKeyedInBy"]?.takeUnless { it.isNull }?.asText(),
+      planCompletedDate = node["planCompletedDate"]?.takeUnless { it.isNull }?.asText()?.let { LocalDate.parse(it) },
+      planCompletedBy = node["planCompletedBy"]?.takeUnless { it.isNull }?.asText(),
+      planCompletedByJobRole = node["planCompletedByJobRole"]?.takeUnless { it.isNull }?.asText(),
       version = node["version"]?.takeUnless { it.isNull }?.asInt(),
     )
   }
