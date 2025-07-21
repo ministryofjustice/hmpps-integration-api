@@ -121,13 +121,13 @@ class GetAlertsForPrisonerTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        prisonerAlertsGateway.getPrisonerAlerts(prisonerNumber, page, size)
+        prisonerAlertsGateway.getPrisonerAlertsForCodes(prisonerNumber, page, size)
 
         verify(hmppsAuthGateway, times(1)).getClientToken("PRISONER_ALERTS")
       }
 
       it("returns alerts for the matching person ID") {
-        val response = prisonerAlertsGateway.getPrisonerAlerts(prisonerNumber, page, size)
+        val response = prisonerAlertsGateway.getPrisonerAlertsForCodes(prisonerNumber, page, size)
         response.data.shouldNotBeNull()
         response.data!!
           .content.size
@@ -142,7 +142,7 @@ class GetAlertsForPrisonerTest(
       it("returns an error when 404 Not Found is returned because no person is found") {
         apiMockServer.stubForGet(path, "", HttpStatus.NOT_FOUND)
 
-        val response = prisonerAlertsGateway.getPrisonerAlerts(prisonerNumber, page, size)
+        val response = prisonerAlertsGateway.getPrisonerAlertsForCodes(prisonerNumber, page, size)
         response.hasErrorCausedBy(UpstreamApiError.Type.ENTITY_NOT_FOUND, UpstreamApi.PRISONER_ALERTS)
       }
 

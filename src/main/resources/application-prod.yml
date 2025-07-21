@@ -56,7 +56,6 @@ feature-flag:
   use-historical-attendances-endpoint: true
   use-suitability-endpoint: true
   use-waiting-list-endpoint: true
-  use-alerts-api-filter: true
   san-endpoint-enabled: false
   error-on-no-lao-context: true
   simple-redaction: false
