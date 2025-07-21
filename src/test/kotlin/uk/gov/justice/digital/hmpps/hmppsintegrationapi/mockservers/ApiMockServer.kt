@@ -50,7 +50,7 @@ class ApiMockServer(
       if (apiMockerServerConfig.configPath != null) {
         val specPath = "src/test/resources/openapi-specs/${apiMockerServerConfig.configPath}"
         val validationListener = OpenApiValidationListener(specPath)
-        return ApiMockServer(wireMockConfig, validationListener)
+        return ApiMockServer(wireMockConfig.extensions(ResetValidationEventListener(validationListener)), validationListener)
       }
 
       return ApiMockServer(wireMockConfig)
