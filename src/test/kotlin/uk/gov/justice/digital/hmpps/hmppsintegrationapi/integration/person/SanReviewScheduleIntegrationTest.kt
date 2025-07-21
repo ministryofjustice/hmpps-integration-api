@@ -10,7 +10,7 @@ class SanReviewScheduleIntegrationTest : IntegrationTestBase() {
   @Test
   fun `returns a persons san review schedule`() {
     sanMockServer.stubForGet(
-      "/profile/$nomsId/review-schedule?includeAllHistory=true",
+      "/profile/$nomsId/reviews/review-schedules?includeAllHistory=true",
       File(
         "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/san/fixtures/GetSANReviewScheduleResponse.json",
       ).readText(),
