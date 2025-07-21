@@ -52,42 +52,42 @@ data class PlanReviewSchedules(
  */
 data class PlanReviewSchedule(
   @Schema(example = "c88a6c48-97e2-4c04-93b5-98619966447b", required = true, description = "The unique reference of this Review")
-  @get:JsonProperty("reference", required = true) val reference: java.util.UUID,
+  @get:JsonProperty("reference", required = true) val reference: UUID,
   @field:Valid
   @Schema(example = "2023-11-19", required = true, description = "An ISO-8601 date representing date that the Review is due. ")
-  @get:JsonProperty("deadlineDate", required = true) val deadlineDate: java.time.LocalDate,
+  @get:JsonProperty("deadlineDate", required = true) val deadlineDate: LocalDate,
   @field:Valid
   @Schema(example = "null", required = true, description = "")
   @get:JsonProperty("status", required = true) val status: PlanReviewScheduleStatus,
   @Schema(example = "asmith_gen", required = true, description = "The DPS username of the person who created this resource.")
-  @get:JsonProperty("createdBy", required = true) val createdBy: kotlin.String,
+  @get:JsonProperty("createdBy", required = true) val createdBy: String,
   @Schema(example = "Alex Smith", required = true, description = "The display name of the person who created this resource.")
-  @get:JsonProperty("createdByDisplayName", required = true) val createdByDisplayName: kotlin.String,
+  @get:JsonProperty("createdByDisplayName", required = true) val createdByDisplayName: String,
   @Schema(example = "2023-06-19T09:39:44Z", required = true, description = "An ISO-8601 timestamp representing when this resource was created.")
   @get:JsonProperty("createdAt", required = true) val createdAt: java.time.OffsetDateTime,
   @Schema(example = "BXI", required = true, description = "The identifier of the prison that the prisoner was resident at when this resource was created.")
-  @get:JsonProperty("createdAtPrison", required = true) val createdAtPrison: kotlin.String,
+  @get:JsonProperty("createdAtPrison", required = true) val createdAtPrison: String,
   @Schema(example = "asmith_gen", required = true, description = "The DPS username of the person who last updated this resource.")
-  @get:JsonProperty("updatedBy", required = true) val updatedBy: kotlin.String,
+  @get:JsonProperty("updatedBy", required = true) val updatedBy: String,
   @Schema(example = "Alex Smith", required = true, description = "The display name of the person who last updated this resource.")
-  @get:JsonProperty("updatedByDisplayName", required = true) val updatedByDisplayName: kotlin.String,
+  @get:JsonProperty("updatedByDisplayName", required = true) val updatedByDisplayName: String,
   @Schema(example = "2023-06-19T09:39:44Z", required = true, description = "An ISO-8601 timestamp representing when this resource was last updated. This will be the same as the created date if it has not yet been updated.")
-  @get:JsonProperty("updatedAt", required = true) val updatedAt: java.time.OffsetDateTime,
+  @get:JsonProperty("updatedAt", required = true) val updatedAt: OffsetDateTime,
   @Schema(example = "BXI", required = true, description = "The identifier of the prison that the prisoner was resident at when this resource was updated.")
-  @get:JsonProperty("updatedAtPrison", required = true) val updatedAtPrison: kotlin.String,
+  @get:JsonProperty("updatedAtPrison", required = true) val updatedAtPrison: String,
   @field:Valid
   @Schema(example = "2023-11-19", description = "If the status of this Review Schedule is COMPLETED, this field is an ISO-8601 date representing  date that the Review was created. This field will only have a value when the status of the  Review Schedule is COMPLETED, and reflects the date the Review was completed. ")
-  @get:JsonProperty("reviewCompletedDate") val reviewCompletedDate: java.time.LocalDate? = null,
+  @get:JsonProperty("reviewCompletedDate") val reviewCompletedDate: LocalDate? = null,
   @Schema(example = "null", description = "If the status of this Review Schedule is COMPLETED, this field is the DPS  username of the user that keyed the Review into the system.This  field will only have a value when the status of the Review Schedule is COMPLETED,  and reflects the logged in user who interacted with the SAN service. ")
-  @get:JsonProperty("reviewKeyedInBy") val reviewKeyedInBy: kotlin.String? = null,
+  @get:JsonProperty("reviewKeyedInBy") val reviewKeyedInBy: String? = null,
   @Schema(example = "null", description = "If the status of this Review Schedule is COMPLETED, and the person who met with the  prisoner to create their Review was not the same person who keyed it into  the SAN service, this field will be that person's name. This field will only have a value  when the status of the Review Schedule is COMPLETED, and the person who met with  the prisoner to create their Education Support Plan was not the same person who keyed it into the SAN service. If the Review Schedule is COMPLETED and this field is null,  consumers of this API can assume the person who created the Review is  the person who keyed it in. See field reviewKeyedInBy ")
-  @get:JsonProperty("reviewCompletedBy") val reviewCompletedBy: kotlin.String? = null,
+  @get:JsonProperty("reviewCompletedBy") val reviewCompletedBy: String? = null,
   @Schema(example = "Education coordinator", description = "The job role of the person who completed the review.")
-  @get:JsonProperty("reviewCompletedByJobRole") val reviewCompletedByJobRole: kotlin.String? = null,
+  @get:JsonProperty("reviewCompletedByJobRole") val reviewCompletedByJobRole: String? = null,
   @Schema(example = "null", description = "An optional reason as to why the Review Schedule is exempted.  Only present when the `status` field is one of the `EXEMPTION_` statuses and the user entered an exemption  reason when marking the Review as Exempted. ")
-  @get:JsonProperty("exemptionReason") val exemptionReason: kotlin.String? = null,
+  @get:JsonProperty("exemptionReason") val exemptionReason: String? = null,
   @Schema(example = "null", description = "the version number of this schedule (the highest number is the most recent version of this review schedule)")
-  @get:JsonProperty("version") val version: kotlin.Int? = null,
+  @get:JsonProperty("version") val version: Int? = null,
 )
 
 class ReviewScheduleDeserializer : JsonDeserializer<PlanReviewSchedule>() {

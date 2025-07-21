@@ -16,7 +16,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGatewa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.SANGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PlanReviewScheduleStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import java.util.*
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -88,9 +90,9 @@ class GetReviewSchedulesForPrisonerTest(
         schedules.size.shouldBe(1)
 
         val schedule = schedules.first()
-        schedule.reference.shouldBe("39ee07c2-1607-42af-a2e8-af6215505ad9")
+        schedule.reference.shouldBe(UUID.fromString("39ee07c2-1607-42af-a2e8-af6215505ad9"))
         schedule.deadlineDate.toString().shouldBe("2025-07-24")
-        schedule.status.shouldBe("SCHEDULED")
+        schedule.status.shouldBe(PlanReviewScheduleStatus.SCHEDULED)
         schedule.createdBy.shouldBe("SMCALLISTER_GEN")
         schedule.createdByDisplayName.shouldBe("Stephen Mcallister")
         schedule.createdAt.toString().shouldBe("2025-07-21T14:08:47.575496Z")
