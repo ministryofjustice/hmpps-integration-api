@@ -29,6 +29,7 @@ class WebClientWrapper(
   val CREATE_TRANSACTION_RETRY_HTTP_CODES = listOf(502, 503, 504, 522, 599, 499, 408)
   val MAX_RETRY_ATTEMPTS = 3L
   val MIN_BACKOFF_DURATION = Duration.ofSeconds(3)
+
   val httpClient =
     HttpClient
       .create()

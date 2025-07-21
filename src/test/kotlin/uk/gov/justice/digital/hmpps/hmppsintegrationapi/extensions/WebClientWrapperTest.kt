@@ -53,6 +53,7 @@ class WebClientWrapperTest :
     val mockServer = TestApiMockServer()
     lateinit var webClient: WebClientWrapper
     lateinit var wrapper: WebClientWrapper
+
     val id = "ABC1234"
     val getPath = "/test/$id"
     val postPath = "/testPost"
@@ -181,6 +182,7 @@ class WebClientWrapperTest :
       describe("when request") {
         it("performs a GET request where the result is a json object") {
           mockServer.stubGetTest(getPath, """{"sourceName" : "Harold"}""".removeWhitespaceAndNewlines())
+
           val result = webClient.request<TestModel>(HttpMethod.GET, getPath, headers, UpstreamApi.TEST)
           result.shouldBeInstanceOf<WebClientWrapperResponse.Success<TestModel>>()
           val testDomainModel = result.data.toDomain()
