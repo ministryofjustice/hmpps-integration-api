@@ -5,19 +5,45 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.spy
 import org.mockito.kotlin.whenever
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
+import org.springframework.test.util.ReflectionTestUtils
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ErrorResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGateway
 import java.io.File
+import java.time.Duration
 
 class RetryIntegrationTest : IntegrationTestBase() {
+  @Value("\${services.activities.base-url}")
+  lateinit var baseUrl: String
+
   @MockitoBean lateinit var featureFlagConfig: FeatureFlagConfig
 
+  @MockitoSpyBean lateinit var activitiesGateway: ActivitiesGateway
+
+  lateinit var client: WebClientWrapper
+  lateinit var wrapper: WebClientWrapper
+
   @BeforeEach
-  fun resetValidators() {
+  fun setup() {
+    client =
+      WebClientWrapper(
+        baseUrl,
+        connectTimeoutMillis = 500,
+        responseTimeoutSeconds = 1,
+        featureFlagConfig = featureFlagConfig,
+      )
+    wrapper = spy(client)
+    whenever(wrapper.MIN_BACKOFF_DURATION).thenReturn(Duration.ofSeconds(0))
+    ReflectionTestUtils.setField(activitiesGateway, "webClient", wrapper)
+
     activitiesMockServer.resetValidator()
   }
 
