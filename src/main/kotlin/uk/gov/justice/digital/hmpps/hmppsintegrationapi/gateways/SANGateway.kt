@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PlanCreationSchedules
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PlanReviewSchedules
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 
@@ -37,6 +38,30 @@ class SANGateway(
       is WebClientWrapperResponse.Error -> {
         Response(
           data = PlanCreationSchedules(listOf()),
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getReviewSchedules(prisonerNumber: String): Response<PlanReviewSchedules> {
+    val result =
+      webClient.request<PlanReviewSchedules>(
+        HttpMethod.GET,
+        "/profile/$prisonerNumber/reviews/review-schedules?includeAllHistory=true",
+        authenticationHeader(),
+        UpstreamApi.SAN,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        val planReviewSchedules = result.data
+        Response(data = planReviewSchedules)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = PlanReviewSchedules(listOf()),
           errors = result.errors,
         )
       }

@@ -95,6 +95,7 @@ globals:
         - "/v1/persons/.*/education/assessments"
         - "/v1/status"
         - "/v1/persons/.*/education/san/plan-creation-schedule"
+        - "/v1/persons/.*/education/san/review-schedule"
     reference-data-only:
       include:
         - "/v1/hmpps/reference-data"
@@ -163,3 +164,4 @@ globals:
         - "/v1/activities/schedule/.*/waiting-list-applications"
         - "/v1/status"
         - "/v1/persons/.*/education/san/plan-creation-schedule"
+        - "/v1/persons/.*/education/san/review-schedule"

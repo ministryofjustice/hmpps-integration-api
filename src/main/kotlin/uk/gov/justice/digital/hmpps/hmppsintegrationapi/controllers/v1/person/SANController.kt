@@ -16,8 +16,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFound
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PlanCreationSchedules
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PlanReviewSchedules
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetSANPLanScheduleForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetSANReviewScheduleForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 /**
@@ -28,6 +30,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 @Tags(value = [Tag(name = "Persons"), Tag(name = "SAN")])
 class SANController(
   private val getSANPLanScheduleForPersonService: GetSANPLanScheduleForPersonService,
+  private val getSANReviewScheduleForPersonService: GetSANReviewScheduleForPersonService,
   private val auditService: AuditService,
 ) {
   @FeatureFlag(name = FeatureFlagConfig.SAN_ENDPOINT_ENABLED)
@@ -49,6 +52,28 @@ class SANController(
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
     auditService.createEvent("GET_SAN_PLAN_CREATION_SCHEDULE", mapOf("hmppsId" to hmppsId))
+    return DataResponse(response.data)
+  }
+
+  @FeatureFlag(name = FeatureFlagConfig.SAN_ENDPOINT_ENABLED)
+  @GetMapping("{hmppsId}/education/san/review-schedule")
+  @Operation(
+    summary = "Returns the history of changes to the Support Additional Needs (SAN) Review Schedule associated with a person.",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found Review Schedule history for a person with the provided HMPPS ID."),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  fun getReviewSchedule(
+    @Parameter(description = "A HMPPS id", example = "A123123") @PathVariable hmppsId: String,
+  ): DataResponse<PlanReviewSchedules> {
+    val response = getSANReviewScheduleForPersonService.getReviewSchedules(hmppsId)
+
+    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Could not find person with id: $hmppsId")
+    }
+    auditService.createEvent("GET_SAN_REVIEW_SCHEDULE", mapOf("hmppsId" to hmppsId))
     return DataResponse(response.data)
   }
 }
