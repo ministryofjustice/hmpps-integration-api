@@ -23,6 +23,7 @@ data class PlanReviewSchedules(
        This list will show each change the schedule has been through. This allows for reports to be generated.
     """,
   )
+  @JsonProperty("reviewSchedules")
   val planReviewSchedules: List<PlanReviewSchedule>,
 )
 
