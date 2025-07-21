@@ -8,6 +8,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.matching
 import com.github.tomakehurst.wiremock.client.WireMock.post
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
+import com.github.tomakehurst.wiremock.stubbing.Scenario
 import org.springframework.http.HttpStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 
@@ -49,7 +50,7 @@ class ApiMockServer(
       if (apiMockerServerConfig.configPath != null) {
         val specPath = "src/test/resources/openapi-specs/${apiMockerServerConfig.configPath}"
         val validationListener = OpenApiValidationListener(specPath)
-        return ApiMockServer(wireMockConfig, validationListener)
+        return ApiMockServer(wireMockConfig.extensions(ResetValidationEventListener(validationListener)), validationListener)
       }
 
       return ApiMockServer(wireMockConfig)
@@ -87,6 +88,32 @@ class ApiMockServer(
             .withBody(body.trimIndent()),
         ),
     )
+  }
+
+  fun stubForRetry(
+    scenario: String,
+    path: String,
+    numberOfRequests: Int = 4,
+    failedStatus: Int,
+    endStatus: Int,
+    body: String,
+  ) {
+    (1..numberOfRequests).forEach {
+      stubFor(
+        get(path)
+          .withHeader(
+            "Authorization",
+            matching("Bearer ${HmppsAuthMockServer.TOKEN}"),
+          ).inScenario(scenario)
+          .whenScenarioStateIs(if (it == 1) Scenario.STARTED else "RETRY${it - 1}")
+          .willReturn(
+            aResponse()
+              .withHeader("Content-Type", "application/json")
+              .withStatus(if (it == numberOfRequests) endStatus else failedStatus)
+              .withBody(if (it == numberOfRequests) body else "Failed"),
+          ).willSetStateTo("RETRY$it"),
+      )
+    }
   }
 
   fun stubForPost(
