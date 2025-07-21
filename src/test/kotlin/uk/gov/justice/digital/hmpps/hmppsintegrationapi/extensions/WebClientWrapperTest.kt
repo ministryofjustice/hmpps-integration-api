@@ -71,7 +71,7 @@ class WebClientWrapperTest :
           featureFlagConfig = featureFlagConfig,
         )
       wrapper = spy(webClient)
-      whenever(wrapper.MIN_BACKOFF_DURATION).thenReturn(Duration.ofSeconds(1L))
+      whenever(wrapper.MIN_BACKOFF_DURATION).thenReturn(Duration.ofSeconds(0L))
       whenever(wrapper.MAX_RETRY_ATTEMPTS).thenReturn(1L)
     }
 
