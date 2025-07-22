@@ -15,17 +15,6 @@ data class PAPaginatedAlerts(
   val pageable: PAPageable,
   val empty: Boolean,
 ) {
-  fun toPaginatedAlerts(pndOnly: Boolean = false) =
-    PaginatedAlerts(
-      content = (if (pndOnly) this.content.filter { isPndAlert(it) } else this.content).map { it.toAlert() },
-      totalPages = this.totalPages,
-      totalCount = this.totalElements,
-      isLastPage = this.last,
-      count = this.numberOfElements,
-      page = this.number + 1, // Alerts API pagination is 0 based
-      perPage = this.size,
-    )
-
   fun toPaginatedAlertsFilterApplied() =
     PaginatedAlerts(
       content = this.content.map { it.toAlert() },
@@ -72,6 +61,4 @@ data class PAPaginatedAlerts(
         "SC",
       )
   }
-
-  private fun isPndAlert(alert: PAAlert): Boolean = alert.alertCode.code in PND_ALERT_CODES
 }
