@@ -33,7 +33,6 @@ data class FeatureFlagConfig(
     const val USE_SUITABILITY_ENDPOINT = "use-suitability-endpoint"
     const val USE_HISTORICAL_ATTENDANCES_ENDPOINT = "use-historical-attendances-endpoint"
     const val USE_WAITING_LIST_ENDPOINT = "use-waiting-list-endpoint"
-    const val ERROR_ON_NO_LAO_CONTEXT = "error-on-no-lao-context"
     const val SAN_ENDPOINT_ENABLED = "san-endpoint-enabled"
     const val SIMPLE_REDACTION = "simple-redaction"
     const val RETRY_ALL_UPSTREAM_GETS = "retry-all-upstream-gets"

@@ -80,7 +80,6 @@ feature-flag:
   use-historical-attendances-endpoint: true
   use-suitability-endpoint: true
   use-waiting-list-endpoint: true
-  error-on-no-lao-context: true
   san-endpoint-enabled: true
   simple-redaction: true
   retry-all-upstream-gets: true
