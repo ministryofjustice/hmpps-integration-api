@@ -5,7 +5,9 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag
 import org.aspectj.lang.ProceedingJoinPoint
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.mockito.Mockito.*
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verifyNoMoreInteractions
+import org.mockito.Mockito.`when`
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
@@ -19,7 +21,6 @@ class FeatureFlagAspectTest {
   private val featureFlagConfig: FeatureFlagConfig =
     FeatureFlagConfig(
       mapOf(
-        "use-arns-endpoints" to true,
         "use-education-assessments-endpoints" to false,
         "use-schedule-detail-endpoint" to false,
       ),
@@ -31,7 +32,6 @@ class FeatureFlagAspectTest {
 
   @Test
   fun `test feature flag enabled then proceed`() {
-    featureFlagAspect.checkFeatureFlag(proceedingJoinPoint, FeatureFlag(FeatureFlagConfig.USE_ARNS_ENDPOINTS))
     verify(proceedingJoinPoint, times(1)).proceed()
     verifyNoMoreInteractions(proceedingJoinPoint)
   }
