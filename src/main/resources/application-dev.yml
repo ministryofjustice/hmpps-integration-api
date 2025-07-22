@@ -288,6 +288,11 @@ authorisation:
       filters:
       roles:
         - "full-access"
+    geoamey:
+      include:
+      filters:
+      roles:
+        - "prisoner-escort-custody-service"
 
 redaction:
   client-names:
