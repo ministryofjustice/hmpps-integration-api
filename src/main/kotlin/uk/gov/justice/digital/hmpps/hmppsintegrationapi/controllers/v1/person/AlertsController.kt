@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_ALERTS_API_FILTER
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Alert
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -33,7 +31,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 class AlertsController(
   @Autowired val getAlertsForPersonService: GetAlertsForPersonService,
   @Autowired val auditService: AuditService,
-  @Autowired val featureFlagConfig: FeatureFlagConfig,
 ) {
   @GetMapping("/persons/{hmppsId}/alerts")
   @Tags(value = [Tag("Reception"), Tag("Activities")])
@@ -53,7 +50,7 @@ class AlertsController(
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
     @RequestAttribute filters: ConsumerFilters?,
   ): PaginatedResponse<Alert> {
-    val response = if (featureFlagConfig.isEnabled(USE_ALERTS_API_FILTER)) getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage, emptyList()) else getAlertsForPersonService.execute(hmppsId, filters, page, perPage)
+    val response = getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage, emptyList())
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
@@ -86,7 +83,7 @@ class AlertsController(
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
     @RequestAttribute filters: ConsumerFilters?,
   ): PaginatedResponse<Alert> {
-    val response = if (featureFlagConfig.isEnabled(USE_ALERTS_API_FILTER)) getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage, PAPaginatedAlerts.PND_ALERT_CODES) else getAlertsForPersonService.execute(hmppsId, filters, page, perPage, pndOnly = true)
+    val response = getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage, PAPaginatedAlerts.PND_ALERT_CODES)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
