@@ -21,8 +21,8 @@ class FeatureFlagAspectTest {
   private val featureFlagConfig: FeatureFlagConfig =
     FeatureFlagConfig(
       mapOf(
-        "use-education-assessments-endpoints" to true,
-        "use-schedule-detail-endpoint" to false,
+        "use-endpoint-1" to true,
+        "use-endpoint-2" to false,
       ),
     )
   private val featureFlagAspect: FeatureFlagAspect =
@@ -32,7 +32,7 @@ class FeatureFlagAspectTest {
 
   @Test
   fun `test feature flag enabled then proceed`() {
-    featureFlagAspect.checkFeatureFlag(proceedingJoinPoint, FeatureFlag(FeatureFlagConfig.USE_EDUCATION_ASSESSMENTS_ENDPOINTS))
+    featureFlagAspect.checkFeatureFlag(proceedingJoinPoint, FeatureFlag("use-endpoint-1"))
     verify(proceedingJoinPoint, times(1)).proceed()
     verifyNoMoreInteractions(proceedingJoinPoint)
   }
@@ -40,7 +40,7 @@ class FeatureFlagAspectTest {
   @Test
   fun `test feature flag disabled then throw feature flag not enabled exception`() {
     assertThrows<FeatureNotEnabledException> {
-      featureFlagAspect.checkFeatureFlag(proceedingJoinPoint, FeatureFlag(FeatureFlagConfig.USE_SCHEDULE_DETAIL_ENDPOINT))
+      featureFlagAspect.checkFeatureFlag(proceedingJoinPoint, FeatureFlag("use-endpoint-2"))
     }
     verify(proceedingJoinPoint, times(0)).proceed()
     verifyNoMoreInteractions(proceedingJoinPoint)
