@@ -1,10 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.assessrisksandneeds
 
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.string.shouldContain
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
@@ -15,8 +13,6 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_ARNS_ENDPOINTS
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.AssessRisksAndNeedsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
@@ -45,7 +41,6 @@ class GetNeedsForPersonTest(
       beforeEach {
         assessRisksAndNeedsApiMockServer.start()
         Mockito.reset(hmppsAuthGateway)
-        whenever(featureFlag.isEnabled(USE_ARNS_ENDPOINTS)).thenReturn(true)
         assessRisksAndNeedsApiMockServer.stubForGet(
           path,
           """
@@ -160,12 +155,6 @@ class GetNeedsForPersonTest(
         val response = assessRisksAndNeedsGateway.getNeedsForPerson(deliusCrn)
 
         response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
-      }
-
-      it("returns 503 service not available when feature flag set to false") {
-        whenever(featureFlag.require(USE_ARNS_ENDPOINTS)).thenThrow(FeatureNotEnabledException("use-arns-endpoints not enabled"))
-        val exception = shouldThrow<FeatureNotEnabledException> { assessRisksAndNeedsGateway.getNeedsForPerson(deliusCrn) }
-        exception.message.shouldContain("use-arns-endpoints not enabled")
       }
     },
   )

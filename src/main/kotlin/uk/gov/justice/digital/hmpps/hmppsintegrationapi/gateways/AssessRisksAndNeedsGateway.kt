@@ -27,7 +27,6 @@ class AssessRisksAndNeedsGateway(
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
   fun getRiskPredictorScoresForPerson(id: String): Response<List<RiskPredictorScore>> {
-    featureConfig.require(FeatureFlagConfig.USE_ARNS_ENDPOINTS)
     val result =
       webClient.requestList<ArnRiskPredictorScore>(
         HttpMethod.GET,
@@ -57,7 +56,6 @@ class AssessRisksAndNeedsGateway(
   }
 
   fun getRiskSeriousHarmForPerson(id: String): Response<Risks?> {
-    featureConfig.require(FeatureFlagConfig.USE_ARNS_ENDPOINTS)
     val result =
       webClient.request<ArnRisks>(
         HttpMethod.GET,
@@ -82,7 +80,6 @@ class AssessRisksAndNeedsGateway(
   }
 
   fun getNeedsForPerson(id: String): Response<Needs?> {
-    featureConfig.require(FeatureFlagConfig.USE_ARNS_ENDPOINTS)
     val result =
       webClient.request<ArnNeeds>(
         HttpMethod.GET,

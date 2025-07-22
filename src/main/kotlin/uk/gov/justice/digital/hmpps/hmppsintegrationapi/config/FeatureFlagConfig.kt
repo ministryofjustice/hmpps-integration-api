@@ -19,7 +19,6 @@ data class FeatureFlagConfig(
   val flags: Map<String, Boolean> = mutableMapOf(),
 ) {
   companion object {
-    const val USE_ARNS_ENDPOINTS = "use-arns-endpoints"
     const val USE_EDUCATION_ASSESSMENTS_ENDPOINTS = "use-education-assessments-endpoints"
     const val USE_ESWE_CURIOUS_ENDPOINTS = "use-eswe-curious-endpoints"
     const val USE_UPDATE_ATTENDANCE_ENDPOINT = "use-update-attendance-endpoint"
