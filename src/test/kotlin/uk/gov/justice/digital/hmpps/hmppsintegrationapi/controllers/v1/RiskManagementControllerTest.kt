@@ -20,7 +20,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.ERROR_ON_NO_LAO_CONTEXT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.LaoRedactorAspect
@@ -203,7 +202,6 @@ class RiskManagementControllerTest(
       }
 
       it("fails with the appropriate error when LAO context has failed to be retrieved") {
-        whenever(featureFlagConfig.isEnabled(ERROR_ON_NO_LAO_CONTEXT)).thenReturn(true)
         val response = mockMvc.performAuthorised("/v1/persons/$laoFailureCrn/risk-management-plan")
 
         assert(response.response.status == 500)

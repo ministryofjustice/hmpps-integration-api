@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.EnableAspectJAutoProxy
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.ERROR_ON_NO_LAO_CONTEXT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
@@ -34,15 +33,13 @@ class LaoRedactorAspect(
     redaction: LaoRedaction,
   ): Any {
     val hmppsId = (joinPoint.args.first() as String).decodeUrlCharacters()
-    val laoContext = loaChecker.getAccessFor(hmppsId)?.asLaoContext()
-    if (featureFlagConfig.isEnabled(ERROR_ON_NO_LAO_CONTEXT) && laoContext == null) {
-      throw LimitedAccessFailedException()
-    }
-    if (laoContext?.isLimitedAccess() == true && redaction.mode == Mode.REJECT) {
+    val laoContext = loaChecker.getAccessFor(hmppsId)?.asLaoContext() ?: throw LimitedAccessFailedException()
+
+    if (laoContext.isLimitedAccess() && redaction.mode == Mode.REJECT) {
       throw LimitedAccessException()
     }
     val result = joinPoint.proceed()
-    return if (laoContext?.isLimitedAccess() == true) {
+    return if (laoContext.isLimitedAccess()) {
       when (result) {
         is DataResponse<*> -> redactDataResponse(result)
         is PaginatedResponse<*> -> redactPaginatedResponse(result)

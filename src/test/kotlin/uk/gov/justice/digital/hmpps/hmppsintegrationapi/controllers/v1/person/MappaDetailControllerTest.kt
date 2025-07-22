@@ -17,7 +17,6 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.ERROR_ON_NO_LAO_CONTEXT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
@@ -204,7 +203,6 @@ internal class MappaDetailControllerTest(
         }
 
         it("fails with the appropriate error when LAO context has failed to be retrieved") {
-          whenever(featureFlagConfig.isEnabled(ERROR_ON_NO_LAO_CONTEXT)).thenReturn(true)
           val response = mockMvc.performAuthorised("/v1/persons/$laoFailureCrn/risks/mappadetail")
 
           assert(response.response.status == 500)
