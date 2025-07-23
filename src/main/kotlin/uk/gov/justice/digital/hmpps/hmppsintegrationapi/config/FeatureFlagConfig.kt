@@ -36,6 +36,7 @@ data class FeatureFlagConfig(
     const val SAN_ENDPOINT_ENABLED = "san-endpoint-enabled"
     const val SIMPLE_REDACTION = "simple-redaction"
     const val RETRY_ALL_UPSTREAM_GETS = "retry-all-upstream-gets"
+    const val EDUCATION_TRIGGER_ENABLED = "education-trigger-enabled"
   }
 
   /**
