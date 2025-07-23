@@ -52,7 +52,7 @@ class EducationStatusService(
     domainEventPublisher.createAndPublishEvent(
       prisonNumber = prisonNumber,
       occurredAt = Instant.now(),
-      eventType = "education.updated",
+      eventType = "prison.education.updated",
       description = description,
       detailUrl = detailUrl,
       additionalInformation = mapOf("curiousExternalReference" to externalReference),
