@@ -28,6 +28,7 @@ class ReferenceDataController(
     responses = [
       ApiResponse(
         responseCode = "200",
+        useReturnTypeSchema = true,
         description = "Successfully returned prison and probation reference data.",
         content = [
           Content(
