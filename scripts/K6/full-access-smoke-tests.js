@@ -126,7 +126,7 @@ const get_endpoints = [
 
 const broken_endpoints = []
 
-const postEducationUpdateEndpoint = "/v1/persons/${hmppsId}/education/status"
+const postEducationUpdateEndpoint = `/v1/persons/${hmppsId}/education/status`
 const postEducationUpdateRequest = JSON.stringify({
   status: "EDUCATION_STARTED",
   detailUrl:"https://example.com/sequation-virtual-campus2-api/learnerEducation/${hmppsId}",
