@@ -99,3 +99,7 @@ testlogger {
 ktlint {
   version = "1.5.0"
 }
+
+kotlin {
+  kotlinDaemonJvmArgs = listOf("-Xmx1g")
+}

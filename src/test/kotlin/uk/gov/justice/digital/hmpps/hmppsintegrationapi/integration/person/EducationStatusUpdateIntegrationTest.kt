@@ -36,7 +36,7 @@ class EducationStatusUpdateIntegrationTest : IntegrationTestWithQueueBase("educa
       val requestBody = asJsonString(request)
 
       postToApi(path, requestBody)
-        .andExpect(status().isOk)
+        .andExpect(status().isCreated)
         .andExpect(
           content().json(
             """
@@ -56,20 +56,22 @@ class EducationStatusUpdateIntegrationTest : IntegrationTestWithQueueBase("educa
 
       val messageJson = queueMessages[0].body()
 
-      messageJson.shouldContainJsonKeyValue("$.eventType", "prison.education.updated")
+      val snsEnvelope = jacksonObjectMapper().readTree(messageJson)
+      val eventJsonString = snsEnvelope.get("Message").asText()
 
-      val objectMapper = jacksonObjectMapper()
-      val messageTree = objectMapper.readTree(messageJson)
+      eventJsonString.shouldContainJsonKeyValue("$.eventType", "prison.education.updated")
 
-      val personReference = messageTree.at("/personReference/identifiers/0")
+      val eventJson = jacksonObjectMapper().readTree(eventJsonString)
+
+      val personReference = eventJson.at("/personReference/identifiers/0")
       personReference.at("/type").asText().shouldBe("NOMS")
       personReference.at("/value").asText().shouldBe(nomsId)
 
-      val additionalInfo = messageTree.at("/additionalInformation")
+      val additionalInfo = eventJson.at("/additionalInformation")
       additionalInfo.at("/curiousExternalReference").asText().shouldBe(request.requestId.toString())
 
-      messageTree.at("/description").asText().shouldBe("EDUCATION_STARTED")
-      messageTree.at("/detailUrl").asText().shouldBe(request.detailUrl.toString())
+      eventJson.at("/description").asText().shouldBe("EDUCATION_STARTED")
+      eventJson.at("/detailUrl").asText().shouldBe(request.detailUrl.toString())
     }
   }
 }
