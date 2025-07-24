@@ -126,6 +126,13 @@ const get_endpoints = [
 
 const broken_endpoints = []
 
+const postEducationUpdateEndpoint = "/v1/persons/${hmppsId}/education/status"
+const postEducationUpdateRequest = JSON.stringify({
+  status: "EDUCATION_STARTED",
+  detailUrl:"https://example.com/sequation-virtual-campus2-api/learnerEducation/${hmppsId}",
+  requestId: "0650ba37-a977-4fbe-9000-4715aaecadba"
+})
+
 const post_visit_endpoint = "/v1/visit";
 const post_visit_data = JSON.stringify({
   prisonerId: "A4433DZ",
@@ -223,6 +230,13 @@ export default function ()  {
       'x-api-key': __ENV.FULL_ACCESS_API_KEY,
     },
   };
+
+  const postEducationStatusRes = http.post(`${baseUrl}${postEducationUpdateEndpoint}`, postEducationUpdateRequest, params);
+  if (!check(postEducationStatusRes, {
+    'POST /v1/persons/${hmppsId}/education/status returns 201': (r) => r.status === 201,
+  })) {
+    exec.test.fail(`${postEducationUpdateEndpoint} caused the test to fail`)
+  }
 
   const postRes = http.post(`${baseUrl}${post_visit_endpoint}`, post_visit_data, params);
   if (!check(postRes, {

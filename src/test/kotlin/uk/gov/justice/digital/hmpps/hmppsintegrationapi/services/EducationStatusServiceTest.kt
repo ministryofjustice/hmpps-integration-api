@@ -26,7 +26,7 @@ class EducationStatusServiceTest {
   private val hmppsId = "A4321BC"
   private val nomisNumber = "A1234BC"
   private val requestId = UUID.randomUUID()
-  private val detailUrl: URL = URI.create("http://meganexus.com/education/update").toURL()
+  private val detailUrl: URL = URI.create("http:/example.com/education/update").toURL()
 
   private val request =
     EducationStatusChangeRequest(
