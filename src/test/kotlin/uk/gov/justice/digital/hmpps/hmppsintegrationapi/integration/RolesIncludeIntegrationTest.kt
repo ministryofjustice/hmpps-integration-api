@@ -18,13 +18,8 @@ class RolesIncludeIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `reference-data-only should be able to access reference data`() {
-    // There is a defect (HIA-788) in the reference data service / NOMIS prism
-    // mock that results in an internal server error. The expected response for
-    // this test should be changed to 200 as part of fixing that defect.
-    // In the meantime, the 500 demonstrates that the client is able to invoke
-    // the endpoint, which is the purpose of this test.
     callApiWithCN("/v1/hmpps/reference-data", "reference-data-only-user")
-      .andExpect(status().isInternalServerError)
+      .andExpect(status().isOk)
   }
 
   @Test

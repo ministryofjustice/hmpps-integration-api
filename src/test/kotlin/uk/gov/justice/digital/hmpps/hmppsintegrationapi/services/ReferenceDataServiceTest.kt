@@ -48,6 +48,16 @@ class ReferenceDataServiceTest(
                    "code": "F",
                    "description": "Female"
                   }
+                ],
+                "ADDRESS_TYPE": [
+                  {
+                   "code": "A1",
+                   "description": "Delius address status 1"
+                  },
+                  {
+                   "code": "A2",
+                   "description": "Delius address status 2"
+                  }
                 ]
               }
             }
@@ -97,6 +107,28 @@ class ReferenceDataServiceTest(
             {"domain":"SEX", "code":"a", "description":"desc_a"},
             {"domain":"SEX", "code":"b", "description":"desc_b"},
             {"domain":"SEX", "code":"c", "description":"desc_c"}
+          ]
+        """,
+        )
+
+        nomisApiMockServer.stubForGet(
+          "/api/reference-domains/domains/ADDRESS_TYPE",
+          """
+          [
+            {"domain":"ADDRESS_TYPE", "code":"a", "description":"prison ADDRESS_TYPE_a"},
+            {"domain":"ADDRESS_TYPE", "code":"b", "description":"prison ADDRESS_TYPE_b"},
+            {"domain":"ADDRESS_TYPE", "code":"c", "description":"prison ADDRESS_TYPE_c"}
+          ]
+        """,
+        )
+
+        nomisApiMockServer.stubForGet(
+          "/api/reference-domains/domains/ADDR_TYPE",
+          """
+          [
+            {"domain":"ADDR_TYPE", "code":"ta", "description":"prison ADDR_TYPE_ta"},
+            {"domain":"ADDR_TYPE", "code":"tb", "description":"prison ADDR_TYPE_tb"},
+            {"domain":"ADDR_TYPE", "code":"tc", "description":"prison ADDR_TYPE_tc"}
           ]
         """,
         )
@@ -209,6 +241,31 @@ class ReferenceDataServiceTest(
                     "code": "c",
                     "description": "desc_c"
                   }
+                ],
+                "ADDRESS_TYPE": [
+                  {
+                    "code":"a",
+                    "description":"prison ADDRESS_TYPE_a"
+                  },
+                  {
+                    "code":"b",
+                    "description":"prison ADDRESS_TYPE_b"
+                  },
+                  {
+                    "code":"c",
+                    "description":"prison ADDRESS_TYPE_c"
+                  },
+                  {
+                    "code":"ta",
+                    "description":"prison ADDR_TYPE_ta"
+                  },
+                  {
+                    "code":"tb",
+                    "description":"prison ADDR_TYPE_tb"},
+                  {
+                    "code":"tc",
+                    "description":"prison ADDR_TYPE_tc"
+                  }
                 ]
               },
               "probationReferenceData": {
@@ -220,6 +277,16 @@ class ReferenceDataServiceTest(
                   {
                     "code": "F",
                     "description": "Female"
+                  }
+                ],
+                "ADDRESS_TYPE": [
+                  {
+                   "code": "A1",
+                   "description": "Delius address status 1"
+                  },
+                  {
+                   "code": "A2",
+                   "description": "Delius address status 2"
                   }
                 ]
               }
