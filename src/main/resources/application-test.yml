@@ -67,7 +67,7 @@ hmpps.sqs:
       queueName: "activities"
     educationstatusevents:
       queueName: "educationstatusevents"
-      subscribeFilter: "{\"eventType\":[\"prison.education.updated\"]}"
+      subscribeFilter: '{"eventType":["prison.education.updated"]}'
       subscribeTopicId: domainevents
   topics:
     domainevents:
