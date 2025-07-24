@@ -17,8 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.EducationSt
 import java.net.URI
 import java.util.UUID
 
-class EducationStatusIntegrationTest : IntegrationTestWithQueueBase("educationstatusevents") {
-
+class EducationStatusUpdateIntegrationTest : IntegrationTestWithQueueBase("educationstatusevents") {
   @DisplayName("POST /v1/persons/{hmppsId}/education/status")
   @Nested
   inner class PostEducationStatus {
@@ -46,8 +45,8 @@ class EducationStatusIntegrationTest : IntegrationTestWithQueueBase("educationst
                   "message": "Education status update event written to queue"
               }
             }
-            """.trimIndent()
-          )
+            """.trimIndent(),
+          ),
         )
 
       await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
