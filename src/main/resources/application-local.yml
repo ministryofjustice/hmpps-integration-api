@@ -37,6 +37,13 @@ hmpps.sqs:
       queueName: "locations"
     activities:
       queueName: "activities"
+    educationstatusevents:
+      queueName: "educationstatusevents"
+      subscribeFilter: '{"eventType":["prison.education.updated"]}'
+      subscribeTopicId: "domainevents"
+  topics:
+    domainevents:
+      arn: arn:aws:sns:eu-west-2:000000000000:domainevents-topic
 
 feature-flag:
   use-education-assessments-endpoints: true
@@ -56,6 +63,7 @@ feature-flag:
   san-endpoint-enabled: true
   simple-redaction: true
   retry-all-upstream-gets: true
+  education-trigger-enabled: true
 
 authorisation:
   consumers:

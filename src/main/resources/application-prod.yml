@@ -58,6 +58,7 @@ feature-flag:
   san-endpoint-enabled: false
   simple-redaction: false
   retry-all-upstream-gets: true
+  education-trigger-enabled: false
 
 authorisation:
   consumers:
