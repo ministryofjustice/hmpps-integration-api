@@ -96,6 +96,7 @@ globals:
         - "/v1/status"
         - "/v1/persons/.*/education/san/plan-creation-schedule"
         - "/v1/persons/.*/education/san/review-schedule"
+        - "/v1/persons/.*/education/status"
     reference-data-only:
       include:
         - "/v1/hmpps/reference-data"
@@ -165,6 +166,7 @@ globals:
         - "/v1/status"
         - "/v1/persons/.*/education/san/plan-creation-schedule"
         - "/v1/persons/.*/education/san/review-schedule"
+        - "/v1/persons/.*/education/status"
     prisoner-escort-custody-service:
       include:
         - "/v1/status"
