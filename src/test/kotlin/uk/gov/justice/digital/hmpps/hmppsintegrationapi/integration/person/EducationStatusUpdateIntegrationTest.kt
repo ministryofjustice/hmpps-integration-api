@@ -17,7 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.EducationSt
 import java.net.URI
 import java.util.UUID
 
-class EducationStatusUpdateIntegrationTest : IntegrationTestWithQueueBase("educationalnevents") {
+class EducationStatusUpdateIntegrationTest : IntegrationTestWithQueueBase("educationstatusevents") {
   @DisplayName("POST /v1/persons/{hmppsId}/education/status")
   @Nested
   inner class PostEducationStatus {
