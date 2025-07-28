@@ -133,6 +133,13 @@ const postEducationUpdateRequest = JSON.stringify({
   requestId: "0650ba37-a977-4fbe-9000-4715aaecadba"
 })
 
+const postEducationALNUpdateEndpoint = `/v1/persons/${hmppsId}/education/aln-assessment`
+const postEducationALNUpdateRequest = JSON.stringify({
+  status: "ASSESSMENT_COMPLETED",
+  detailUrl:"https://example.com/sequation-virtual-campus2-api/learnerAssessments/v2/A1234AB",
+  requestId: "0650ba37-a977-4fbe-9000-4715aaecadba"
+})
+
 const post_visit_endpoint = "/v1/visit";
 const post_visit_data = JSON.stringify({
   prisonerId: "A4433DZ",
@@ -236,6 +243,13 @@ export default function ()  {
     'POST /v1/persons/${hmppsId}/education/status returns 201': (r) => r.status === 201,
   })) {
     exec.test.fail(`${postEducationUpdateEndpoint} caused the test to fail`)
+  }
+
+  const postEducationALNRes = http.post(`${baseUrl}${postEducationALNUpdateEndpoint}`, postEducationALNUpdateRequest, params);
+  if (!check(postEducationALNRes, {
+    'POST /v1/persons/${hmppsId}/education/aln-assessment returns 201': (r) => r.status === 201,
+  })) {
+    exec.test.fail(`${postEducationALNUpdateEndpoint} caused the test to fail`)
   }
 
   const postRes = http.post(`${baseUrl}${post_visit_endpoint}`, post_visit_data, params);
