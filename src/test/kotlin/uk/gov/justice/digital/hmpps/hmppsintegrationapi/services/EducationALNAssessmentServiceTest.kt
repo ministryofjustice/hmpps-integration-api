@@ -11,8 +11,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ALNStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.EducationALNAssessmentsChangeRequest
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.EducationStatus
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.EducationStatusChangeRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
