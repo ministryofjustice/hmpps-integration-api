@@ -3618,11 +3618,7 @@
             "type": "array",
             "description": "Matchers that will be applied to this query",
             "items": {
-              "anyOf": [
-                {
-                  "$ref": "#/components/schemas/Matcher"
-                }
-              ]
+              "$ref": "#/components/schemas/Matcher"
             }
           },
           "subQueries": {
