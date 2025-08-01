@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers
 
+import com.atlassian.oai.validator.OpenApiInteractionValidator
 import com.atlassian.oai.validator.wiremock.OpenApiValidationListener
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
@@ -21,7 +22,7 @@ class ApiMockServer(
     fun create(upstreamApi: UpstreamApi): ApiMockServer {
       val apiMockerServerConfig =
         when (upstreamApi) {
-          UpstreamApi.PRISONER_OFFENDER_SEARCH -> ApiMockServerConfig(4000, "prisoner-search.json")
+          UpstreamApi.PRISONER_OFFENDER_SEARCH -> ApiMockServerConfig(4000, "prisoner-search.json", true)
           UpstreamApi.HEALTH_AND_MEDICATION -> ApiMockServerConfig(4001, "health-and-medication.json")
           UpstreamApi.MANAGE_POM_CASE -> ApiMockServerConfig(4002, "manage-POM.json")
           UpstreamApi.PLP -> ApiMockServerConfig(4003, "plp.json")
@@ -49,7 +50,8 @@ class ApiMockServer(
 
       if (apiMockerServerConfig.configPath != null) {
         val specPath = "src/test/resources/openapi-specs/${apiMockerServerConfig.configPath}"
-        val validationListener = OpenApiValidationListener(specPath)
+        val openApiInteractionValidator = OpenApiInteractionValidator.createFor(specPath).build()
+        val validationListener = BindTypeValidationListener(openApiInteractionValidator, apiMockerServerConfig.overrideBindType)
         return ApiMockServer(wireMockConfig.extensions(ResetValidationEventListener(validationListener)), validationListener)
       }
 

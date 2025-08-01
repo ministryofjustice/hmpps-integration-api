@@ -3415,9 +3415,6 @@
       "BooleanMatcher": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/Matcher"
-          },
-          {
             "type": "object",
             "properties": {
               "attribute": {
@@ -3432,6 +3429,7 @@
               },
               "type": {
                 "type": "string",
+                "enum": ["Boolean"],
                 "description": "Must be Boolean",
                 "example": "Boolean"
               }
@@ -3443,9 +3441,6 @@
       },
       "DateMatcher": {
         "allOf": [
-          {
-            "$ref": "#/components/schemas/Matcher"
-          },
           {
             "type": "object",
             "properties": {
@@ -3478,6 +3473,7 @@
               },
               "type": {
                 "type": "string",
+                "enum": ["Date"],
                 "description": "Must be Date",
                 "example": "Date"
               }
@@ -3489,9 +3485,6 @@
       },
       "DateTimeMatcher": {
         "allOf": [
-          {
-            "$ref": "#/components/schemas/Matcher"
-          },
           {
             "type": "object",
             "properties": {
@@ -3514,6 +3507,7 @@
               },
               "type": {
                 "type": "string",
+                "enum": ["DateTime"],
                 "description": "Must be DateTime",
                 "example": "DateTime"
               }
@@ -3525,9 +3519,6 @@
       },
       "IntMatcher": {
         "allOf": [
-          {
-            "$ref": "#/components/schemas/Matcher"
-          },
           {
             "type": "object",
             "properties": {
@@ -3560,6 +3551,7 @@
               },
               "type": {
                 "type": "string",
+                "enum": ["Int"],
                 "description": "Must be Int",
                 "example": "Int"
               }
@@ -3572,7 +3564,15 @@
       "Matcher": {
         "type": "object",
         "discriminator": {
-          "propertyName": "type"
+          "propertyName": "type",
+          "mapping": {
+            "String": "StringMatcher",
+            "Boolean": "BooleanMatcher",
+            "Date": "DateMatcher",
+            "DateTime": "DateTimeMatcher",
+            "Int": "IntMatcher",
+            "PNC": "PncMatcher"
+          }
         },
         "properties": {
           "type": {
@@ -3584,9 +3584,6 @@
       "PncMatcher": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/Matcher"
-          },
-          {
             "type": "object",
             "properties": {
               "pncNumber": {
@@ -3596,6 +3593,7 @@
               },
               "type": {
                 "type": "string",
+                "enum": ["PNC"],
                 "description": "Must be PNC",
                 "example": "PNC"
               }
@@ -3620,26 +3618,7 @@
             "type": "array",
             "description": "Matchers that will be applied to this query",
             "items": {
-              "oneOf": [
-                {
-                  "$ref": "#/components/schemas/BooleanMatcher"
-                },
-                {
-                  "$ref": "#/components/schemas/DateMatcher"
-                },
-                {
-                  "$ref": "#/components/schemas/DateTimeMatcher"
-                },
-                {
-                  "$ref": "#/components/schemas/IntMatcher"
-                },
-                {
-                  "$ref": "#/components/schemas/PncMatcher"
-                },
-                {
-                  "$ref": "#/components/schemas/StringMatcher"
-                }
-              ]
+              "$ref": "#/components/schemas/Matcher"
             }
           },
           "subQueries": {
@@ -3653,9 +3632,6 @@
       },
       "StringMatcher": {
         "allOf": [
-          {
-            "$ref": "#/components/schemas/Matcher"
-          },
           {
             "type": "object",
             "properties": {
@@ -3678,6 +3654,7 @@
               "type": {
                 "type": "string",
                 "description": "Must be String",
+                "enum": ["String"],
                 "example": "String"
               }
             }
