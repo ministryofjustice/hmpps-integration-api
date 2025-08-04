@@ -9,7 +9,7 @@ import java.util.UUID
  */
 data class EducationStatusChangeRequest(
   @Schema(description = "The current status of the Assessments", example = "EDUCATION_STARTED")
-  val status: EducationStatus = EducationStatus.EDUCATION_UPDATED,
+  val status: EducationStatus = EducationStatus.EDUCATION_STARTED,
   @jakarta.validation.constraints.NotNull(message = "A detailURL must be provided")
   @Schema(description = "The URL of where to get the person's current Education", example = "https://example.com/sequation-virtual-campus2-api/learnerQualifications/v2/A1234AB")
   val detailUrl: URL,
@@ -20,6 +20,5 @@ data class EducationStatusChangeRequest(
 
 enum class EducationStatus {
   EDUCATION_STARTED,
-  EDUCATION_COMPLETED,
-  EDUCATION_UPDATED,
+  EDUCATION_STOPPED,
 }
