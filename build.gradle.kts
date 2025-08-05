@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "8.3.1"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "8.3.4"
   kotlin("plugin.spring") version "2.2.0"
 }
 
@@ -14,12 +14,12 @@ dependencies {
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
-  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.17.0")
-  implementation("io.sentry:sentry-logback:8.17.0")
+  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.18.0")
+  implementation("io.sentry:sentry-logback:8.18.0")
   implementation("org.springframework.data:spring-data-commons")
   implementation("org.springframework:spring-aop")
   implementation("org.aspectj:aspectjweaver")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.4.7") {
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.4.10") {
     exclude("org.springframework.security", "spring-security-config")
     exclude("org.springframework.security", "spring-security-core")
     exclude("org.springframework.security", "spring-security-crypto")
@@ -34,7 +34,7 @@ dependencies {
   testImplementation("org.wiremock:wiremock-standalone:3.13.1")
   testImplementation("io.kotest.extensions:kotest-extensions-spring:1.3.0")
   testImplementation("org.mockito:mockito-core:5.18.0")
-  testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.1")
+  testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.2")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
   testImplementation("com.atlassian.oai:swagger-request-validator-wiremock:2.44.9") {
     // Exclude WireMock artifacts
@@ -48,10 +48,10 @@ dependencies {
   }
   // Explicitly add all necessary Jetty and Servlet dependencies
   testImplementation("javax.servlet:javax.servlet-api:4.0.1")
-  testImplementation("org.eclipse.jetty:jetty-util:12.0.12")
-  testImplementation("org.eclipse.jetty:jetty-server:12.0.12")
-  testImplementation("org.eclipse.jetty:jetty-http:12.0.12")
-  testImplementation("org.eclipse.jetty:jetty-io:12.0.12")
+  testImplementation("org.eclipse.jetty:jetty-util:12.0.23")
+  testImplementation("org.eclipse.jetty:jetty-server:12.0.23")
+  testImplementation("org.eclipse.jetty:jetty-http:12.0.23")
+  testImplementation("org.eclipse.jetty:jetty-io:12.0.23")
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
   testImplementation(kotlin("test"))
