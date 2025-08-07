@@ -125,12 +125,12 @@ class PrisonerOffenderSearchGateway(
     }
   }
 
-  fun attributeSearch(request: POSAttributeSearchRequest): Response<POSPaginatedPrisoners?> {
-    return attributeSearchWithResponseFields(emptyList(), request);
-  }
+  fun attributeSearch(request: POSAttributeSearchRequest): Response<POSPaginatedPrisoners?> = attributeSearchWithResponseFields(emptyList(), request)
 
-  fun attributeSearchWithResponseFields(responseFields: List<String>, request: POSAttributeSearchRequest): Response<POSPaginatedPrisoners?> {
-
+  fun attributeSearchWithResponseFields(
+    responseFields: List<String>,
+    request: POSAttributeSearchRequest,
+  ): Response<POSPaginatedPrisoners?> {
     val uriBuilder = UriComponentsBuilder.fromPath("/attribute-search")
     responseFields.takeIf { it.isNotEmpty() }?.let {
       uriBuilder.queryParam("responseFields", it.joinToString(","))

@@ -208,11 +208,12 @@ class GetPersonService(
     ) {
       findPrisonerIdMerged(hmppsId)?.let { posIdentifier ->
         return Response(
-          data = OffenderSearchRedirectionResult(
-            prisonerNumber = posIdentifier.prisonerNumber,
-            redirectUrl = hmppsId,
-            removePrisonerNumber = posIdentifier.prisonerNumber,
-          ),
+          data =
+            OffenderSearchRedirectionResult(
+              prisonerNumber = posIdentifier.prisonerNumber,
+              redirectUrl = hmppsId,
+              removePrisonerNumber = posIdentifier.prisonerNumber,
+            ),
           errors = combinedErrors,
         )
       }
@@ -226,38 +227,45 @@ class GetPersonService(
   }
 
   private fun findPrisonerIdMerged(hmppsId: String): POSIdentifierWithPrisonerNumber? {
-    val attributeSearchRequest = POSAttributeSearchRequest(
-      joinType = "AND",
-      queries =
-        listOf(
-          POSAttributeSearchQuery(
-            joinType = "AND",
-            matchers =
-              listOf(
-                POSAttributeSearchMatcher(
-                  type = "String",
-                  attribute = "identifiers.type",
-                  condition = "IS",
-                  searchTerm = "MERGED",
+    val attributeSearchRequest =
+      POSAttributeSearchRequest(
+        joinType = "AND",
+        queries =
+          listOf(
+            POSAttributeSearchQuery(
+              joinType = "AND",
+              matchers =
+                listOf(
+                  POSAttributeSearchMatcher(
+                    type = "String",
+                    attribute = "identifiers.type",
+                    condition = "IS",
+                    searchTerm = "MERGED",
+                  ),
+                  POSAttributeSearchMatcher(
+                    type = "String",
+                    attribute = "identifiers.value",
+                    condition = "IS",
+                    searchTerm = hmppsId,
+                  ),
                 ),
-                POSAttributeSearchMatcher(
-                  type = "String",
-                  attribute = "identifiers.value",
-                  condition = "IS",
-                  searchTerm = hmppsId,
-                ),
-              ),
+            ),
           ),
-        ),
-    )
+      )
 
-    val response = prisonerOffenderSearchGateway
-      .attributeSearchWithResponseFields(listOf("prisonerNumber", "identifiers"), attributeSearchRequest)
+    val response =
+      prisonerOffenderSearchGateway
+        .attributeSearchWithResponseFields(listOf("prisonerNumber", "identifiers"), attributeSearchRequest)
 
-    return response.data?.content?.firstOrNull()?.identifiers
+    return response.data
+      ?.content
+      ?.firstOrNull()
+      ?.identifiers
       ?.firstOrNull { it.type == "MERGED" && it.value == hmppsId }
       ?.let { identifier ->
-        response.data.content.firstOrNull()?.prisonerNumber
+        response.data.content
+          .firstOrNull()
+          ?.prisonerNumber
           ?.let { prisonerNumber -> POSIdentifierWithPrisonerNumber(prisonerNumber, identifier) }
       }
   }

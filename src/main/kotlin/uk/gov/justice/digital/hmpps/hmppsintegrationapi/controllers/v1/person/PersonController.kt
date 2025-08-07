@@ -9,6 +9,8 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import io.swagger.v3.oas.annotations.tags.Tags
 import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatusCode
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestAttribute
@@ -25,13 +27,16 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.IEPLevel
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Language
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NumberOfChildren
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchRedirectionResult
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResult
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonName
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonalCareNeed
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PhysicalCharacteristics
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerEducation
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitOrders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.interfaces.toPaginatedResponse
@@ -53,11 +58,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import org.springframework.http.HttpStatusCode
-import org.springframework.http.ResponseEntity
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchRedirectionResult
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResult
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 
 @Suppress("CAST_NEVER_SUCCEEDS")
 @RestController
@@ -139,22 +139,28 @@ class PersonController(
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     } else if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Bad request from upstream ${response.errors.first().description}")
-    } else if (response.data?.isRedirectionResponse() == true){
-      return ResponseEntity
-        .status(HttpStatusCode.valueOf(303))
-        .header("Location", (response.data as? OffenderSearchRedirectionResult)?.redirectUrl)
-        .body(Response(response as OffenderSearchResponse))
     }
 
-    requireNotNull(response.data)
     auditService.createEvent("GET_PERSON_DETAILS", mapOf("hmppsId" to hmppsId))
-    val data =
-      if (featureFlag.isEnabled(FeatureFlagConfig.SIMPLE_REDACTION)) { // simple redaction: to be refactored in later releases
-        redactPersonData(response.data as OffenderSearchResult, clientName)
-      } else {
-        response.data
+    requireNotNull(response.data)
+
+    return when (response.data) {
+      is OffenderSearchRedirectionResult -> {
+        ResponseEntity
+          .status(HttpStatusCode.valueOf(303))
+          .header("Location", response.data.redirectUrl)
+          .body(Response(response as OffenderSearchResponse))
       }
-    return ResponseEntity.ok<Response<OffenderSearchResponse>>(Response(data))
+      is OffenderSearchResult -> {
+        val redactedData =
+          if (featureFlag.isEnabled(FeatureFlagConfig.SIMPLE_REDACTION)) { // simple redaction: to be refactored in later releases
+            redactPersonData(response.data, clientName)
+          } else {
+            response.data
+          }
+        return ResponseEntity.ok<Response<OffenderSearchResponse>>(Response(redactedData))
+      }
+    }
   }
 
   @GetMapping("{hmppsId}/images")
