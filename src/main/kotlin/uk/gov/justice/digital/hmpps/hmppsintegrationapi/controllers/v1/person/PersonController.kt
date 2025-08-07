@@ -53,7 +53,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import org.springframework.http.HttpStatusCode
+import org.springframework.http.ResponseEntity
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchRedirectionResult
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResult
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 
+@Suppress("CAST_NEVER_SUCCEEDS")
 @RestController
 @RequestMapping("/v1/persons")
 @Tag(name = "Persons")
@@ -125,7 +131,7 @@ class PersonController(
   fun getPerson(
     @Parameter(description = "A URL-encoded HMPPS identifier", example = "2008%2F0545166T") @PathVariable encodedHmppsId: String,
     @RequestAttribute clientName: String,
-  ): DataResponse<OffenderSearchResponse> {
+  ): ResponseEntity<Response<OffenderSearchResponse>> {
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getPersonService.getCombinedDataForPerson(hmppsId)
 
@@ -133,17 +139,22 @@ class PersonController(
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     } else if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Bad request from upstream ${response.errors.first().description}")
+    } else if (response.data?.isRedirectionResponse() == true){
+      return ResponseEntity
+        .status(HttpStatusCode.valueOf(303))
+        .header("Location", (response.data as? OffenderSearchRedirectionResult)?.redirectUrl)
+        .body(Response(response as OffenderSearchResponse))
     }
-    requireNotNull(response.data)
 
+    requireNotNull(response.data)
     auditService.createEvent("GET_PERSON_DETAILS", mapOf("hmppsId" to hmppsId))
     val data =
       if (featureFlag.isEnabled(FeatureFlagConfig.SIMPLE_REDACTION)) { // simple redaction: to be refactored in later releases
-        redactPersonData(response.data, clientName)
+        redactPersonData(response.data as OffenderSearchResult, clientName)
       } else {
         response.data
       }
-    return DataResponse(data)
+    return ResponseEntity.ok<Response<OffenderSearchResponse>>(Response(data))
   }
 
   @GetMapping("{hmppsId}/images")
@@ -458,7 +469,7 @@ class PersonController(
    * This simple redaction method is to be replaced by "flexible redaction" in coming releases
    */
   private fun redactPersonData(
-    offenderData: OffenderSearchResponse,
+    offenderData: OffenderSearchResult,
     clientName: String? = null,
   ) = offenderData.let { data ->
     val targetConsumers = redactionConfig.clientNames

@@ -63,6 +63,7 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
 import kotlin.random.Random
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResult
 
 @WebMvcTest(controllers = [PersonController::class])
 @ActiveProfiles("test")
@@ -261,7 +262,7 @@ internal class PersonControllerTest(
           Mockito.reset(auditService)
 
           val personMap =
-            OffenderSearchResponse(
+            OffenderSearchResult(
               probationOffenderSearch = probationOffenderSearch,
               prisonerOffenderSearch = prisonResponse.data.toPerson(),
             )
@@ -297,7 +298,7 @@ internal class PersonControllerTest(
           it("does not return a 404 status code when a person was found in one upstream API") {
             whenever(getPersonService.getCombinedDataForPerson(idThatDoesNotExist)).thenReturn(
               Response(
-                data = OffenderSearchResponse(prisonerOffenderSearch = null, probationOffenderSearch = PersonOnProbation(Person("someFirstName", "someLastName"), underActiveSupervision = false)),
+                data = OffenderSearchResult(prisonerOffenderSearch = null, probationOffenderSearch = PersonOnProbation(Person("someFirstName", "someLastName"), underActiveSupervision = false)),
                 errors = notFoundErrors(UpstreamApi.PRISONER_OFFENDER_SEARCH),
               ),
             )
@@ -362,7 +363,8 @@ internal class PersonControllerTest(
                      "currentExclusion": true,
                      "exclusionMessage": "An exclusion exists"
                   }
-               }
+               },
+               "errors":[]
             }
             """.removeWhitespaceAndNewlines(),
           )
@@ -420,7 +422,8 @@ internal class PersonControllerTest(
                         "currentExclusion": true,
                         "exclusionMessage": "An exclusion exists"
                     }
-                }
+                },
+                "errors":[]
             }
             """.asResponseTrimmed()
 
@@ -450,7 +453,8 @@ internal class PersonControllerTest(
                         "exclusionMessage": "**REDACTED**"
                     },
                     "probationOffenderSearch": null
-                }
+                },
+                "errors":[]
             }
             """.asResponseTrimmed()
 
