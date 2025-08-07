@@ -59,6 +59,7 @@ feature-flag:
   simple-redaction: false
   retry-all-upstream-gets: true
   education-trigger-enabled: false
+  education-aln-trigger-enabled: false
 
 authorisation:
   consumers:
