@@ -42,6 +42,7 @@ abstract class IntegrationTestBase {
   final val noPrisonsCn = "no-prisons"
   final val emptyPrisonsCn = "empty-prisons"
   final val contactId = 123456L
+  final val nomsIdFromProbation = "G5555TT"
 
   companion object {
     private val nomsId = "G2996UX"

@@ -126,6 +126,7 @@ class PersonController(
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+      ApiResponse(responseCode = "303", description = "Redirect response due to person with the provided HMPPS ID being merged."),
     ],
   )
   fun getPerson(
@@ -149,7 +150,7 @@ class PersonController(
         ResponseEntity
           .status(HttpStatusCode.valueOf(303))
           .header("Location", response.data.redirectUrl)
-          .body(Response(response as OffenderSearchResponse))
+          .body(Response(response.data as OffenderSearchResponse))
       }
       is OffenderSearchResult -> {
         val redactedData =

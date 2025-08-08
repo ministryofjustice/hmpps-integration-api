@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
-import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -125,22 +124,11 @@ class PrisonerOffenderSearchGateway(
     }
   }
 
-  fun attributeSearch(request: POSAttributeSearchRequest): Response<POSPaginatedPrisoners?> = attributeSearchWithResponseFields(emptyList(), request)
-
-  fun attributeSearchWithResponseFields(
-    responseFields: List<String>,
-    request: POSAttributeSearchRequest,
-  ): Response<POSPaginatedPrisoners?> {
-    val uriBuilder = UriComponentsBuilder.fromPath("/attribute-search")
-    responseFields.takeIf { it.isNotEmpty() }?.let {
-      uriBuilder.queryParam("responseFields", it.joinToString(","))
-    }
-    val uri = uriBuilder.build().toUriString()
-
+  fun attributeSearch(request: POSAttributeSearchRequest): Response<POSPaginatedPrisoners?> {
     val result =
       webClient.request<POSPaginatedPrisoners>(
         HttpMethod.POST,
-        uri,
+        "/attribute-search",
         authenticationHeader(),
         UpstreamApi.PRISONER_OFFENDER_SEARCH,
         request.toMap(),

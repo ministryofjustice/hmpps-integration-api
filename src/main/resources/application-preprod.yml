@@ -39,6 +39,8 @@ services:
     base-url: https://health-and-medication-api-preprod.hmpps.service.justice.gov.uk
   activities:
     base-url: https://activities-api-preprod.prison.service.justice.gov.uk
+  integration-api:
+    base-url: https://preprod.integration-api.hmpps.service.justice.gov.uk
 
 feature-flag:
   use-education-assessments-endpoints: false
