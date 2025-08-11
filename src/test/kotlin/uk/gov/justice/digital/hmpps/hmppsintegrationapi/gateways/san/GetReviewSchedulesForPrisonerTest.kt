@@ -91,7 +91,7 @@ class GetReviewSchedulesForPrisonerTest(
 
         val schedule = schedules.first()
         schedule.reference.shouldBe(UUID.fromString("39ee07c2-1607-42af-a2e8-af6215505ad9"))
-        schedule.deadlineDate.toString().shouldBe("2025-07-24")
+        schedule.deadlineDate!!.toString().shouldBe("2025-07-24")
         schedule.status.shouldBe(PlanReviewScheduleStatus.SCHEDULED)
         schedule.createdBy.shouldBe("SMCALLISTER_GEN")
         schedule.createdByDisplayName.shouldBe("Stephen Mcallister")
