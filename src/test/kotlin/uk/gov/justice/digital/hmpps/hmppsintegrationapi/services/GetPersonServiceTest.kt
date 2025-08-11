@@ -18,8 +18,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
-import org.springframework.test.context.DynamicPropertyRegistry
-import org.springframework.test.context.DynamicPropertySource
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
@@ -56,7 +54,6 @@ internal class GetPersonServiceTest(
   @MockitoBean val consumerPrisonAccessService: ConsumerPrisonAccessService,
   @MockitoBean val deliusGateway: NDeliusGateway,
   @MockitoBean val featureFlag: FeatureFlagConfig,
-  val baseUrl: String = "http://localhost:9999",
   private val getPersonService: GetPersonService,
 ) : DescribeSpec(
     {
@@ -401,7 +398,7 @@ internal class GetPersonServiceTest(
               this.shouldNotBeNull()
               prisonerNumber shouldBe mergedInToPrisonerNumber
               removedPrisonerNumber shouldBe hmppsId
-              redirectUrl shouldBe "$baseUrl/v1/persons/$mergedInToPrisonerNumber"
+              redirectUrl shouldBe "/v1/persons/$mergedInToPrisonerNumber"
             }
           }
 
@@ -728,12 +725,4 @@ internal class GetPersonServiceTest(
         }
       }
     },
-  ) {
-  companion object {
-    @JvmStatic
-    @DynamicPropertySource
-    fun registerProperties(registry: DynamicPropertyRegistry) {
-      registry.add("services.integration-api.base-url") { "http://localhost:9999" }
-    }
-  }
-}
+  )

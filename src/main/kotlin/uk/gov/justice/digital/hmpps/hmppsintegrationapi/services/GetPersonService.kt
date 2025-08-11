@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
@@ -26,7 +25,6 @@ class GetPersonService(
   @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
   private val deliusGateway: NDeliusGateway,
-  @Value("\${services.integration-api.base-url}") private val baseUrl: String,
 ) {
   fun execute(hmppsId: String): Response<Person?> {
     val probationResponse = getProbationResponse(hmppsId)
@@ -213,7 +211,7 @@ class GetPersonService(
           data =
             OffenderSearchRedirectionResult(
               prisonerNumber = posIdentifier.prisonerNumber,
-              redirectUrl = buildRedirectUrl(posIdentifier.prisonerNumber),
+              redirectUrl = "/v1/persons/${posIdentifier.prisonerNumber}",
               removedPrisonerNumber = posIdentifier.identifier.value,
             ),
           errors = combinedErrors,
@@ -329,6 +327,4 @@ class GetPersonService(
   }
 
   private fun getProbationResponse(hmppsId: String) = deliusGateway.getPerson(hmppsId)
-
-  private fun buildRedirectUrl(hmppsId: String): String = "$baseUrl/v1/persons/$hmppsId"
 }

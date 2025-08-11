@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import io.swagger.v3.oas.annotations.tags.Tags
 import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpStatusCode
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -59,7 +59,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-@Suppress("CAST_NEVER_SUCCEEDS")
 @RestController
 @RequestMapping("/v1/persons")
 @Tag(name = "Persons")
@@ -148,7 +147,7 @@ class PersonController(
     return when (response.data) {
       is OffenderSearchRedirectionResult -> {
         ResponseEntity
-          .status(HttpStatusCode.valueOf(303))
+          .status(HttpStatus.SEE_OTHER)
           .header("Location", response.data.redirectUrl)
           .body(Response(response.data as OffenderSearchResponse))
       }
