@@ -55,7 +55,7 @@ data class PlanReviewSchedule(
   @get:JsonProperty("reference", required = true) val reference: UUID,
   @field:Valid
   @Schema(example = "2023-11-19", required = true, description = "An ISO-8601 date representing date that the Review is due. ")
-  @get:JsonProperty("deadlineDate", required = true) val deadlineDate: LocalDate,
+  @get:JsonProperty("deadlineDate", required = false) val deadlineDate: LocalDate,
   @field:Valid
   @Schema(example = "null", required = true, description = "")
   @get:JsonProperty("status", required = true) val status: PlanReviewScheduleStatus,
