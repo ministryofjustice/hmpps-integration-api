@@ -35,7 +35,6 @@ data class FeatureFlagConfig(
     const val USE_WAITING_LIST_ENDPOINT = "use-waiting-list-endpoint"
     const val SAN_ENDPOINT_ENABLED = "san-endpoint-enabled"
     const val SIMPLE_REDACTION = "simple-redaction"
-    const val RETRY_ALL_UPSTREAM_GETS = "retry-all-upstream-gets"
     const val EDUCATION_TRIGGER_ENABLED = "education-trigger-enabled"
     const val EDUCATION_ALN_TRIGGER_ENABLED = "education-aln-trigger-enabled"
   }
