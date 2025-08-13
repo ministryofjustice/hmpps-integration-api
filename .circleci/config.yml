@@ -14,6 +14,9 @@ parameters:
   releases-slack-channel:
     type: string
     default: hmpps-integration-api-alerts
+  java-options:
+    type: string
+    default: -Xmx2g -XX:MaxMetaspaceSize=1g -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false -Dkotlin.compiler.execution.strategy=in-process -Dorg.gradle.workers.max=1
 
 slack-fail-post-step: &slack-fail-post-step
   post-steps:
@@ -84,6 +87,7 @@ jobs:
     executor:
       name: hmpps/java
       tag: "21.0"
+      java_options: << pipeline.parameters.java-options >>
     steps:
       - checkout
       - restore_cache:
