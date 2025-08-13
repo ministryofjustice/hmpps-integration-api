@@ -38,7 +38,6 @@ class RetryIntegrationTest : IntegrationTestBase() {
         baseUrl,
         connectTimeoutMillis = 500,
         responseTimeoutSeconds = 1,
-        featureFlagConfig = featureFlagConfig,
       )
     wrapper = spy(client)
     whenever(wrapper.MIN_BACKOFF_DURATION).thenReturn(Duration.ofSeconds(0))
