@@ -28,7 +28,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetada
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Language
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NumberOfChildren
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResult
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedPrisonerContacts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonName
@@ -261,7 +261,7 @@ internal class PersonControllerTest(
           Mockito.reset(auditService)
 
           val personMap =
-            OffenderSearchResponse(
+            OffenderSearchResult(
               probationOffenderSearch = probationOffenderSearch,
               prisonerOffenderSearch = prisonResponse.data.toPerson(),
             )
@@ -297,7 +297,7 @@ internal class PersonControllerTest(
           it("does not return a 404 status code when a person was found in one upstream API") {
             whenever(getPersonService.getCombinedDataForPerson(idThatDoesNotExist)).thenReturn(
               Response(
-                data = OffenderSearchResponse(prisonerOffenderSearch = null, probationOffenderSearch = PersonOnProbation(Person("someFirstName", "someLastName"), underActiveSupervision = false)),
+                data = OffenderSearchResult(prisonerOffenderSearch = null, probationOffenderSearch = PersonOnProbation(Person("someFirstName", "someLastName"), underActiveSupervision = false)),
                 errors = notFoundErrors(UpstreamApi.PRISONER_OFFENDER_SEARCH),
               ),
             )
@@ -362,7 +362,8 @@ internal class PersonControllerTest(
                      "currentExclusion": true,
                      "exclusionMessage": "An exclusion exists"
                   }
-               }
+               },
+               "errors":[]
             }
             """.removeWhitespaceAndNewlines(),
           )
@@ -420,7 +421,8 @@ internal class PersonControllerTest(
                         "currentExclusion": true,
                         "exclusionMessage": "An exclusion exists"
                     }
-                }
+                },
+                "errors":[]
             }
             """.asResponseTrimmed()
 
@@ -450,7 +452,8 @@ internal class PersonControllerTest(
                         "exclusionMessage": "**REDACTED**"
                     },
                     "probationOffenderSearch": null
-                }
+                },
+                "errors":[]
             }
             """.asResponseTrimmed()
 
