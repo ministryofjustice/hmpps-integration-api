@@ -58,7 +58,6 @@ class WebClientWrapperTest :
     val getPath = "/test/$id"
     val postPath = "/testPost"
     val headers = mapOf("foo" to "bar")
-    val featureFlagConfig = mock(FeatureFlagConfig::class.java)
 
     beforeEach {
       mockServer.start()
@@ -68,7 +67,6 @@ class WebClientWrapperTest :
           baseUrl = mockServer.baseUrl(),
           connectTimeoutMillis = 500,
           responseTimeoutSeconds = 1,
-          featureFlagConfig = featureFlagConfig,
         )
       wrapper = spy(webClient)
       whenever(wrapper.MIN_BACKOFF_DURATION).thenReturn(Duration.ofSeconds(0L))
@@ -409,7 +407,6 @@ class WebClientWrapperTest :
             "http://10.255.255.1:81",
             connectTimeoutMillis = 300,
             responseTimeoutSeconds = 2,
-            featureFlagConfig,
           )
 
         val exception =
