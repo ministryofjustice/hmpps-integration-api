@@ -91,6 +91,10 @@ tasks {
   }
 }
 
+kotlin {
+  kotlinDaemonJvmArgs = listOf("-Xmx2g")
+}
+
 testlogger {
   theme = com.adarshr.gradle.testlogger.theme.ThemeType.MOCHA
 }
