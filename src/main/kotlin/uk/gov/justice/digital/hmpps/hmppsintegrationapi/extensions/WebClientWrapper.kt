@@ -11,8 +11,6 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import reactor.core.publisher.Mono
 import reactor.netty.http.client.HttpClient
 import reactor.util.retry.Retry
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ApplicationContextProvider
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -24,7 +22,6 @@ class WebClientWrapper(
   val baseUrl: String,
   connectTimeoutMillis: Int = 10_000,
   responseTimeoutSeconds: Long = 15,
-  val featureFlagConfig: FeatureFlagConfig = ApplicationContextProvider.featureFlagConfig ?: FeatureFlagConfig(),
 ) {
   val CREATE_TRANSACTION_RETRY_HTTP_CODES = listOf(502, 503, 504, 522, 599, 499, 408)
   val MAX_RETRY_ATTEMPTS = 3L
@@ -70,7 +67,7 @@ class WebClientWrapper(
     forbiddenAsError: Boolean = false,
     badRequestAsError: Boolean = false,
   ): WebClientWrapperResponse<T> =
-    if (featureFlagConfig.isEnabled(FeatureFlagConfig.RETRY_ALL_UPSTREAM_GETS) && method == HttpMethod.GET) {
+    if (method == HttpMethod.GET) {
       requestWithRetry(method, uri, headers, upstreamApi, requestBody, forbiddenAsError, badRequestAsError)
     } else {
       try {
@@ -126,7 +123,7 @@ class WebClientWrapper(
     forbiddenAsError: Boolean = false,
     badRequestAsError: Boolean = false,
   ): WebClientWrapperResponse<List<T>> =
-    if (featureFlagConfig.isEnabled(FeatureFlagConfig.RETRY_ALL_UPSTREAM_GETS) && method == HttpMethod.GET) {
+    if (method == HttpMethod.GET) {
       requestListWithRetry(method, uri, headers, upstreamApi, requestBody, forbiddenAsError, badRequestAsError)
     } else {
       try {

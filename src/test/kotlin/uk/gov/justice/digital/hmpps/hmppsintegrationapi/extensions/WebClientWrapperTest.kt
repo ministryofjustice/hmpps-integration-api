@@ -79,11 +79,7 @@ class WebClientWrapperTest :
       mockServer.stop()
     }
 
-    describe("when retry on all upstream gets is enabled") {
-      beforeEach {
-        whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.RETRY_ALL_UPSTREAM_GETS)).thenReturn(true)
-      }
-
+    describe("retry on all upstream gets") {
       it("calls requestWithRetry for a GET request") {
         listOf(502, 503, 504, 522, 599, 499, 408).forEach {
           mockServer.resetAll()
@@ -157,24 +153,6 @@ class WebClientWrapperTest :
           webClient.requestList<SearchModel>(HttpMethod.POST, postPath, headers, UpstreamApi.TEST, mapOf("sourceName" to "Paul"))
         }
         mockServer.verify(exactly(1), postRequestedFor(urlEqualTo(postPath)))
-      }
-    }
-
-    describe("when retry on all upstream gets is disabled") {
-      beforeEach {
-        whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.RETRY_ALL_UPSTREAM_GETS)).thenReturn(false)
-      }
-
-      it("does not call requestWithRetry for a GET request and continues to fail on first attempt") {
-        mockServer.stubForRetry("3", getPath, 2, 502, 200, """[{"sourceName" : "Harold"}]""".removeWhitespaceAndNewlines())
-        assertThrows<WebClientResponseException> { wrapper.requestList<TestModel>(HttpMethod.GET, getPath, headers, UpstreamApi.TEST) }
-        mockServer.verify(exactly(1), getRequestedFor(urlEqualTo(getPath)))
-      }
-
-      it("does not call requestWithRetry for a GET requestList and continues to fail on first attempt") {
-        mockServer.stubForRetry("4", getPath, 2, 502, 200, """[{"sourceName" : "Harold"}]""".removeWhitespaceAndNewlines())
-        assertThrows<WebClientResponseException> { wrapper.requestList<TestModel>(HttpMethod.GET, getPath, headers, UpstreamApi.TEST) }
-        mockServer.verify(exactly(1), getRequestedFor(urlEqualTo(getPath)))
       }
     }
 

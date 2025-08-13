@@ -57,7 +57,6 @@ feature-flag:
   use-waiting-list-endpoint: true
   san-endpoint-enabled: false
   simple-redaction: false
-  retry-all-upstream-gets: true
   education-trigger-enabled: false
   education-aln-trigger-enabled: false
 
