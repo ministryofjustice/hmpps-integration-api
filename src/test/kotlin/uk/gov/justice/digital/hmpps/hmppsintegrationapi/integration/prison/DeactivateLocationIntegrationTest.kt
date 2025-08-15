@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.prison
 
+import com.atlassian.oai.validator.wiremock.OpenApiValidationListener
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.kotest.assertions.json.shouldContainJsonKeyValue
 import io.kotest.matchers.shouldBe
@@ -8,8 +9,13 @@ import org.awaitility.kotlin.matches
 import org.awaitility.kotlin.untilCallTo
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestWithQueueBase
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DeactivateLocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DeactivationReason
@@ -19,6 +25,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffenders
 import java.time.LocalDate
 
 class DeactivateLocationIntegrationTest : IntegrationTestWithQueueBase("locations") {
+  @Autowired lateinit var prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway
+
   private val prisonId = "MDI"
   private val key = "MDI-A-1-001"
   private val path = "/v1/prison/$prisonId/location/$key/deactivate"
@@ -39,6 +47,32 @@ class DeactivateLocationIntegrationTest : IntegrationTestWithQueueBase("location
               listOf(
                 POSAttributeSearchMatcher(
                   type = "String",
+                  attribute = "prisonId",
+                  condition = "IS",
+                  searchTerm = "$prisonId",
+                ),
+                POSAttributeSearchMatcher(
+                  type = "String",
+                  attribute = "cellLocation",
+                  condition = "IS",
+                  searchTerm = "A-1-001",
+                ),
+              ),
+          ),
+        ),
+    )
+
+  private val invalidCellRequest =
+    POSAttributeSearchRequest(
+      joinType = "AND",
+      queries =
+        listOf(
+          POSAttributeSearchQuery(
+            joinType = "AND",
+            matchers =
+              listOf(
+                POSAttributeSearchMatcher(
+                  type = "NotAValidDiscriminator",
                   attribute = "prisonId",
                   condition = "IS",
                   searchTerm = "$prisonId",
@@ -123,8 +157,44 @@ class DeactivateLocationIntegrationTest : IntegrationTestWithQueueBase("location
     val expectedMessageAttributes = objectMapper.readTree(objectMapper.writeValueAsString(expectedMessage.messageAttributes))
     messageAttributes.shouldBe(expectedMessageAttributes)
 
-//    Need to look into the validation.request.body.schema.processingError causing issues on this test and associated PrisonerOffenderSearchGatewayTest
-//    prisonerOffenderSearchMockServer.assertValidationPassed()
+    prisonerOffenderSearchMockServer.assertValidationPassed()
+  }
+
+  @Test
+  fun `an invalid cell request with unknown discriminator fails schema validation`() {
+    prisonerOffenderSearchMockServer.stubForPost(
+      "/attribute-search",
+      jacksonObjectMapper().writeValueAsString(invalidCellRequest),
+      """
+      {
+        "errorCode": 400,
+        "status": 400,
+        "userMessage": "Bad request"
+      }
+      """.trimIndent(),
+      HttpStatus.BAD_REQUEST,
+    )
+    val response =
+      assertThrows<WebClientResponseException> {
+        prisonerOffenderSearchGateway.attributeSearch(invalidCellRequest)
+      }
+
+    val validationFailure =
+      assertThrows<OpenApiValidationListener.OpenApiValidationException> {
+        prisonerOffenderSearchMockServer.assertValidationPassed()
+      }
+
+    validationFailure.validationReport.hasErrors().shouldBe(true)
+    validationFailure.validationReport.messages
+      .first()
+      .nestedMessages
+      .first()
+      .nestedMessages
+      .first()
+      .message
+      .shouldBe("[Path '/queries/0/matchers/0'] Discriminator field 'type' value 'NotAValidDiscriminator' is not the name of a valid definition (possible values: [PNC, DateTimeMatcher, DateMatcher, StringMatcher, BooleanMatcher, IntMatcher, PncMatcher, String, Boolean, Int, DateTime, Date])")
+
+    response.statusText.shouldBe("Bad Request")
   }
 
   @Test
