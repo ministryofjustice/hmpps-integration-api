@@ -123,8 +123,7 @@ class DeactivateLocationIntegrationTest : IntegrationTestWithQueueBase("location
     val expectedMessageAttributes = objectMapper.readTree(objectMapper.writeValueAsString(expectedMessage.messageAttributes))
     messageAttributes.shouldBe(expectedMessageAttributes)
 
-//    Need to look into the validation.request.body.schema.processingError causing issues on this test and associated PrisonerOffenderSearchGatewayTest
-//    prisonerOffenderSearchMockServer.assertValidationPassed()
+    prisonerOffenderSearchMockServer.assertValidationPassed()
   }
 
   @Test
