@@ -30,9 +30,7 @@ class BindTypeValidationListener(
     response: Response?,
   ) {
     if (overrideBindType) {
-      System.setProperty("bind-type", "true")
-      super.requestReceived(request, response)
-      System.setProperty("bind-type", "false")
+      withBindTypeSet { super.requestReceived(request, response) }
     } else {
       super.requestReceived(request, response)
     }

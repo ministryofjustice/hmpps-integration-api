@@ -61,14 +61,13 @@ class ApiMockServer(
           For atlassion code @see https://bitbucket.org/atlassian/swagger-request-validator/src/4e3e8fe412e99517a03e32a2c3217eb064c44823/swagger-request-validator-core/src/main/java/com/atlassian/oai/validator/util/OpenApiLoader.java?at=master#lines-55
           We use OpenAPIV3Parser instead of atlassions OpenAPILoader for schemas that use discriminators to ensure the request is fully validated.
          */
+
         val openApiInteractionValidator =
           if (apiMockerServerConfig.overrideBindType) {
-            System.setProperty("bind-type", "true")
-            OpenApiInteractionValidator.createFor(OpenAPIV3Parser().readLocation(specPath, null, null).openAPI).build()
+            withBindTypeSet { OpenApiInteractionValidator.createFor(OpenAPIV3Parser().readLocation(specPath, null, null).openAPI).build() }
           } else {
             OpenApiInteractionValidator.createFor(specPath).build()
           }
-        System.setProperty("bind-type", "false")
         val validationListener = BindTypeValidationListener(openApiInteractionValidator, apiMockerServerConfig.overrideBindType)
         return ApiMockServer(wireMockConfig.extensions(ResetValidationEventListener(validationListener)), validationListener)
       }
@@ -88,6 +87,10 @@ class ApiMockServer(
   }
 
   fun assertValidationPassed() {
+    this.validationListener?.assertValidationPassed()
+  }
+
+  fun assertValidationFailed() {
     this.validationListener?.assertValidationPassed()
   }
 
@@ -174,4 +177,23 @@ class ApiMockServer(
         ),
     )
   }
+}
+
+inline fun <reified T> withBindTypeSet(block: () -> T): T {
+  val bindType =
+    try {
+      System.getProperty("bind-type")
+    } catch (e: NullPointerException) {
+      null
+    }
+  if (bindType == null || bindType == "false") {
+    System.setProperty("bind-type", "true")
+  }
+  val result = block.invoke()
+  if (bindType == null) {
+    System.clearProperty("bind-type")
+  } else {
+    System.setProperty("bind-type", bindType)
+  }
+  return result
 }
