@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.CACHE_AUTH_TOKEN
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.HmppsAuthFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Credentials
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import java.nio.charset.StandardCharsets
 import java.time.Instant
 import java.util.Base64
@@ -30,6 +31,9 @@ class HmppsAuthGateway(
 
   @Autowired
   private lateinit var featureFlagConfig: FeatureFlagConfig
+
+  @Autowired
+  private lateinit var telemetryService: TelemetryService
 
   private var existingAccessToken: String? = null
 
@@ -53,11 +57,13 @@ class HmppsAuthGateway(
     if (featureFlagConfig.isEnabled(CACHE_AUTH_TOKEN)) {
       existingAccessToken?.let {
         if (checkTokenValid(it)) {
+          telemetryService.trackEvent("AuthTokenCache")
           return it
         }
       }
     }
 
+    telemetryService.trackEvent("AuthTokenRequest")
     val credentials = Credentials(username, password)
 
     return try {

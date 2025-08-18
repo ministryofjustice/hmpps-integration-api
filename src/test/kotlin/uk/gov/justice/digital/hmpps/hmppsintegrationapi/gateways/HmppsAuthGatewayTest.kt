@@ -4,6 +4,9 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import org.mockito.Mockito
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ActiveProfiles
@@ -13,6 +16,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.CACHE_AUTH_TOKEN
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.HmppsAuthFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -22,12 +26,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMoc
 class HmppsAuthGatewayTest(
   hmppsAuthGateway: HmppsAuthGateway,
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
+  @MockitoBean val telemetryService: TelemetryService,
 ) : DescribeSpec({
     val hmppsAuthMockServer = HmppsAuthMockServer()
 
     beforeEach {
       hmppsAuthMockServer.start()
-
+      Mockito.reset(telemetryService)
       hmppsAuthMockServer.stubGetOAuthToken("username", "password")
     }
 
@@ -81,6 +86,9 @@ class HmppsAuthGatewayTest(
       val secondToken = hmppsAuthGateway.getClientToken("NOMIS")
       secondToken shouldBe firstToken
       secondToken shouldNotBe secondMockedToken
+
+      verify(telemetryService, times(1)).trackEvent("AuthTokenRequest")
+      verify(telemetryService, times(1)).trackEvent("AuthTokenCache")
     }
 
     it("asks for new token if the existing access token is not valid") {
@@ -95,6 +103,8 @@ class HmppsAuthGatewayTest(
       val secondToken = hmppsAuthGateway.getClientToken("NOMIS")
       secondToken shouldBe secondMockedToken
       secondToken shouldNotBe firstToken
+
+      verify(telemetryService, times(2)).trackEvent("AuthTokenRequest")
     }
 
     it("does not cache the token when feature flag disabled") {
@@ -109,5 +119,7 @@ class HmppsAuthGatewayTest(
       val secondToken = hmppsAuthGateway.getClientToken("NOMIS")
       secondToken shouldBe secondMockedToken
       secondToken shouldNotBe firstToken
+
+      verify(telemetryService, times(2)).trackEvent("AuthTokenRequest")
     }
   })
