@@ -12,6 +12,8 @@ configurations {
 
 dependencies {
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
+  runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
+  runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
   implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.19.0")
@@ -28,6 +30,7 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
+  implementation("io.jsonwebtoken:jjwt-api:0.12.6")
   testImplementation("io.kotest:kotest-assertions-json-jvm:5.9.1")
   testImplementation("io.kotest:kotest-runner-junit5-jvm:5.9.1")
   testImplementation("io.kotest:kotest-assertions-core-jvm:5.9.1")
