@@ -60,7 +60,7 @@ abstract class IntegrationTestBase {
     @JvmStatic
     fun startMockServers() {
       hmppsAuthMockServer.start()
-      hmppsAuthMockServer.stubGetOAuthToken("client", "client-secret")
+      hmppsAuthMockServer.stubGetOAuthToken("client", "client-secret", HmppsAuthMockServer.TOKEN)
 
       prisonerOffenderSearchMockServer.start()
       prisonerOffenderSearchMockServer.stubForGet(
