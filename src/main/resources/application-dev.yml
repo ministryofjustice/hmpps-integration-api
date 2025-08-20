@@ -295,6 +295,11 @@ authorisation:
       filters:
       roles:
         - "prisoner-escort-custody-service"
+    zkhan:
+      include:
+      filters:
+      roles:
+        - "full-access"
 
 redaction:
   client-names:
