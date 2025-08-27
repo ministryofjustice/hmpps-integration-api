@@ -51,6 +51,8 @@ data class PlanReviewSchedules(
  * @param version the version number of this schedule (the highest number is the most recent version of this review schedule)
  */
 data class PlanReviewSchedule(
+  @Schema(description = "The Nomis number of the person.", example = "A1234BC", required = true)
+  val nomisNumber: String? = null,
   @Schema(example = "c88a6c48-97e2-4c04-93b5-98619966447b", required = true, description = "The unique reference of this Review")
   @get:JsonProperty("reference", required = true) val reference: UUID,
   @field:Valid

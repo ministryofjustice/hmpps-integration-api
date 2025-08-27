@@ -27,6 +27,8 @@ data class PlanCreationSchedules(
 @JsonInclude(JsonInclude.Include.USE_DEFAULTS)
 @JsonDeserialize(using = PlanCreationScheduleDeserializer::class)
 data class PlanCreationSchedule(
+  @Schema(description = "The Nomis number of the person.", example = "A1234BC", required = true)
+  val nomisNumber: String? = null,
   @Schema(description = "The unique reference of this plan creation schedule", example = "c88a6c48-97e2-4c04-93b5-98619966447b", required = true)
   val reference: UUID,
   @Schema(description = "Status of the schedule", example = "SCHEDULED", required = true)

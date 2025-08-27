@@ -14,9 +14,19 @@ class GetSANPLanScheduleForPersonService(
   fun getPlanCreationSchedules(hmppsId: String): Response<PlanCreationSchedules> {
     val response = getPersonService.getNomisNumber(hmppsId = hmppsId)
 
-    response.data?.nomisNumber?.let {
-      return sanGateway.getPlanCreationSchedules(it)
+    val nomisNumber = response.data?.nomisNumber
+    nomisNumber?.let {
+      val schedulesResponse = sanGateway.getPlanCreationSchedules(it)
+
+      val updatedSchedules = schedulesResponse.data.planCreationSchedules
+        .map { schedule -> schedule.copy(nomisNumber = it) }
+
+      return Response(
+        PlanCreationSchedules(updatedSchedules),
+        schedulesResponse.errors
+      )
     }
-    return Response(PlanCreationSchedules(listOf()), response.errors)
+
+    return Response(PlanCreationSchedules(emptyList()), response.errors)
   }
 }
