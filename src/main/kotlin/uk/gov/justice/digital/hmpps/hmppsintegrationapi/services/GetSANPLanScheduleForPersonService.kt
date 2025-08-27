@@ -18,12 +18,13 @@ class GetSANPLanScheduleForPersonService(
     nomisNumber?.let {
       val schedulesResponse = sanGateway.getPlanCreationSchedules(it)
 
-      val updatedSchedules = schedulesResponse.data.planCreationSchedules
-        .map { schedule -> schedule.copy(nomisNumber = it) }
+      val updatedSchedules =
+        schedulesResponse.data.planCreationSchedules
+          .map { schedule -> schedule.copy(nomisNumber = it) }
 
       return Response(
         PlanCreationSchedules(updatedSchedules),
-        schedulesResponse.errors
+        schedulesResponse.errors,
       )
     }
 

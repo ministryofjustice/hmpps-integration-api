@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.SANGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PlanCreationSchedules
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PlanReviewSchedules
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 
@@ -17,13 +16,14 @@ class GetSANReviewScheduleForPersonService(
     val nomisNumber = response.data?.nomisNumber
 
     nomisNumber?.let {
-      val schedulesResponse =  sanGateway.getReviewSchedules(it)
-      val updatedSchedules = schedulesResponse.data.planReviewSchedules
-        .map { schedule -> schedule.copy(nomisNumber = it) }
+      val schedulesResponse = sanGateway.getReviewSchedules(it)
+      val updatedSchedules =
+        schedulesResponse.data.planReviewSchedules
+          .map { schedule -> schedule.copy(nomisNumber = it) }
 
       return Response(
         PlanReviewSchedules(updatedSchedules),
-        schedulesResponse.errors
+        schedulesResponse.errors,
       )
     }
     return Response(PlanReviewSchedules(listOf()), response.errors)
