@@ -95,7 +95,6 @@ feature-flag:
   simple-redaction: true
   education-trigger-enabled: true
   education-aln-trigger-enabled: true
-  cache-auth-token: true
 
 authorisation:
   consumers:

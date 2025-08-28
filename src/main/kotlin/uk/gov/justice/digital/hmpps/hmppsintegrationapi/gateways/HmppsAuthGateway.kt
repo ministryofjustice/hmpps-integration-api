@@ -9,7 +9,6 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientRequestException
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.CACHE_AUTH_TOKEN
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.HmppsAuthFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Credentials
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
@@ -54,12 +53,10 @@ class HmppsAuthGateway(
   }
 
   override fun getClientToken(service: String): String {
-    if (featureFlagConfig.isEnabled(CACHE_AUTH_TOKEN)) {
-      existingAccessToken?.let {
-        if (checkTokenValid(it)) {
-          telemetryService.trackEvent("AuthTokenCache")
-          return it
-        }
+    existingAccessToken?.let {
+      if (checkTokenValid(it)) {
+        telemetryService.trackEvent("AuthTokenCache")
+        return it
       }
     }
 
