@@ -132,6 +132,12 @@ abstract class IntegrationTestBase {
         .contentType(org.springframework.http.MediaType.APPLICATION_JSON),
     )
 
+  fun putApi(path: String): ResultActions =
+    mockMvc.perform(
+      put(path)
+        .headers(getAuthHeader()),
+    )
+
   fun putApi(
     path: String,
     requestBody: String,
