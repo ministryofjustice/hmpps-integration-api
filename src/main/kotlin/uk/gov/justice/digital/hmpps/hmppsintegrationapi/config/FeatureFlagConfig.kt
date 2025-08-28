@@ -37,7 +37,6 @@ data class FeatureFlagConfig(
     const val SIMPLE_REDACTION = "simple-redaction"
     const val EDUCATION_TRIGGER_ENABLED = "education-trigger-enabled"
     const val EDUCATION_ALN_TRIGGER_ENABLED = "education-aln-trigger-enabled"
-    const val CACHE_AUTH_TOKEN = "cache-auth-token"
   }
 
   /**

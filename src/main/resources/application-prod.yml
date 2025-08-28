@@ -59,7 +59,6 @@ feature-flag:
   simple-redaction: false
   education-trigger-enabled: false
   education-aln-trigger-enabled: false
-  cache-auth-token: true
 
 authorisation:
   consumers:
