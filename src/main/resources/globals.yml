@@ -172,6 +172,7 @@ globals:
     prisoner-escort-custody-service:
       include:
         - "/v1/status"
+        - "/v1/persons/.*/case-notes"
     mappa:
       include:
         - "/v1/persons"
