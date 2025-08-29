@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.PutExpressionInterestService
 
@@ -32,6 +34,7 @@ class ExpressionInterestController(
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
     ],
   )
+  @FeatureFlag(name = FeatureFlagConfig.USE_EXPRESSION_OF_INTEREST_ENDPOINT)
   fun submitExpressionOfInterest(
     @Parameter(description = "A HMPPS identifier", example = "A1234AA") @PathVariable hmppsId: String,
     @Parameter(description = "A job identifier") @PathVariable jobid: String,
