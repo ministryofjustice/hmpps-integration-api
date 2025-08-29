@@ -26,7 +26,7 @@ class GetCaseNotesForPersonService(
 
     val nomisNumber = personResponse.data?.nomisNumber ?: return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
 
-    val caseNotes = caseNotesGateway.getCaseNotesForPerson(id = nomisNumber, filter)
+    val caseNotes = caseNotesGateway.getCaseNotesForPerson(id = nomisNumber, filter, filters?.caseNotes)
 
     val paginatedCaseNotes = caseNotes.data?.toPaginatedCaseNotes()
 
