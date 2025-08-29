@@ -76,7 +76,7 @@ class CaseNotesControllerTest(
           ).createEvent("GET_CASE_NOTES", mapOf("hmppsId" to hmppsId))
         }
 
-        it("passes filters into service") {
+        it("passes prison filters into service") {
           mockMvc.performAuthorisedWithCN(path, "limited-prisons")
 
           verify(
@@ -85,6 +85,18 @@ class CaseNotesControllerTest(
           ).execute(
             caseNoteFilter,
             ConsumerFilters(prisons = listOf("XYZ")),
+          )
+        }
+
+        it("passes case notes filters into service") {
+          mockMvc.performAuthorisedWithCN(path, "limited-case-notes")
+
+          verify(
+            getCaseNotesForPersonService,
+            times(1),
+          ).execute(
+            caseNoteFilter,
+            ConsumerFilters(prisons = null, caseNotes = listOf("CAB")),
           )
         }
 

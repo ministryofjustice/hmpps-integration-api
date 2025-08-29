@@ -140,6 +140,12 @@ authorisation:
         - "private-prison"
       include:
       filters:
+    limited-case-notes:
+      roles:
+        - "full-access"
+      filters:
+        case-notes:
+          - "CAB"
     reference-data-only-user:
       roles:
         - "reference-data-only"
