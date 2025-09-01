@@ -2,7 +2,7 @@ name: Pipeline [test -> build -> deploy]
 on:
   push:
     branches:
-      - main
+      - 'HIA-855-GHA-testing'
   workflow_dispatch:
     inputs:
       additional_docker_tag:

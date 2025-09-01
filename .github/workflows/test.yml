@@ -3,7 +3,7 @@ name: Test
 on:
   pull_request:
     branches:
-      - HIA-855-GHA-testing
+      - main
   workflow_call:
 
 concurrency:
