@@ -4,6 +4,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "8.3.7"
   kotlin("plugin.spring") version "2.2.10"
+  id("io.gitlab.arturbosch.detekt") version "1.23.8"
+  id("org.jetbrains.kotlinx.kover") version "0.9.1"
 }
 
 configurations {
@@ -68,6 +70,7 @@ repositories {
   mavenCentral()
 }
 
+
 tasks {
   register<Test>("unitTest") {
     group = "verification"
@@ -92,6 +95,25 @@ tasks {
       freeCompilerArgs.add("-Xannotation-default-target=param-property")
     }
   }
+
+  withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+    source = source.asFileTree
+  }
+
+  getByName("check") {
+    dependsOn(":ktlintCheck", "detekt")
+  }
+
+  getByName("koverHtmlReport") {
+    dependsOn("check")
+  }
+}
+
+detekt {
+  config.setFrom("./detekt.yml")
+  buildUponDefaultConfig = true
+  ignoreFailures = false
+  baseline = file("./detekt-baseline.xml")
 }
 
 kotlin {
@@ -105,4 +127,12 @@ testlogger {
 // this is to address JLLeitschuh/ktlint-gradle#809
 ktlint {
   version = "1.5.0"
+}
+
+configurations.matching { it.name == "detekt" }.all {
+  resolutionStrategy.eachDependency {
+    if (requested.group == "org.jetbrains.kotlin") {
+      useVersion(io.gitlab.arturbosch.detekt.getSupportedKotlinVersion())
+    }
+  }
 }
