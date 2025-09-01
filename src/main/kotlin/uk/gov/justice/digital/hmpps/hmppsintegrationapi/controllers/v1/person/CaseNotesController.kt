@@ -61,7 +61,7 @@ class CaseNotesController(
     @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
     @RequestAttribute filters: ConsumerFilters?,
   ): PaginatedResponse<CaseNote> {
-    val response = getCaseNoteForPersonService.execute(CaseNoteFilter(hmppsId, startDate, endDate, page, perPage), filters)
+    val response = getCaseNoteForPersonService.execute(CaseNoteFilter(hmppsId, startDate, endDate, filters?.caseNotes, page, perPage), filters)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Invalid id: $hmppsId")

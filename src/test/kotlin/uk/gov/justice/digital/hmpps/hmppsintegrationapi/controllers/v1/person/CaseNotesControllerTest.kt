@@ -90,12 +90,13 @@ class CaseNotesControllerTest(
 
         it("passes case notes filters into service") {
           mockMvc.performAuthorisedWithCN(path, "limited-case-notes")
+          val specificCaseNoteFilter = CaseNoteFilter(hmppsId, startDate, endDate, listOf("CAB"))
 
           verify(
             getCaseNotesForPersonService,
             times(1),
           ).execute(
-            caseNoteFilter,
+            specificCaseNoteFilter,
             ConsumerFilters(prisons = null, caseNotes = listOf("CAB")),
           )
         }
