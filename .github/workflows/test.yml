@@ -58,66 +58,43 @@ jobs:
           path: |
             build/test-results
             build/reports/tests
-#      - name: Publish Test Report
-#        uses: ctrf-io/github-test-reporter@a63590595a9ae45cb646c55a314110f910d360d2
-#        with:
-#          report-path: './build/test-results/unitTest/*.xml'
-#          use-suite-name: true
-#          integrations-config: |
-#            {
-#              "junit-to-ctrf": {
-#                "enabled": true,
-#                "action": "convert",
-#                "options": {
-#                  "output": "./ctrf-reports/ctrf-report.json",
-#                  "toolname": "junit-to-ctrf",
-#                  "useSuiteName": true,
-#                  "env": {
-#                    "appName": "approved-premises-api"
-#                  }
-#                }
-#              }
-#            }
-#        if: always()
+      - name: Publish Test Report
+        uses: ctrf-io/github-test-reporter@a63590595a9ae45cb646c55a314110f910d360d2
+        with:
+          report-path: './build/test-results/unitTest/*.xml'
+          use-suite-name: true
+          integrations-config: |
+            {
+              "junit-to-ctrf": {
+                "enabled": true,
+                "action": "convert",
+                "options": {
+                  "output": "./ctrf-reports/ctrf-report.json",
+                  "toolname": "junit-to-ctrf",
+                  "useSuiteName": true,
+                  "env": {
+                    "appName": "approved-premises-api"
+                  }
+                }
+              }
+            }
+        if: always()
 
 
-#  integration_test:
-#    name: Integration Test
-#    runs-on: ubuntu-latest
-##    needs: gradle_build
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        shard: [ 1, 2, 3, 4, 5, 6 ]
-#    env:
-#      _JAVA_OPTIONS: "-Xmx2g -XX:MaxMetaspaceSize=1g -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dkotlin.compiler.execution.strategy=in-process"
-#      GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=1"
+  integration_test:
+    name: Integration Test
+    runs-on: ubuntu-latest
+    needs: ktlint-check
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [ 1, 2, 3, 4, 5, 6 ]
+    env:
+      _JAVA_OPTIONS: "-Xmx2g -XX:MaxMetaspaceSize=1g -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dkotlin.compiler.execution.strategy=in-process"
+      GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=1"
 #      POSTGRES_PORT: 5432
 #      SPRING_DATA_REDIS_PORT: 6379
 #    services:
-#      redis:
-#        image: "bitnami/redis:7.2.5"
-#        ports:
-#          - 6379:6379
-#        options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=5
-#        env:
-#          ALLOW_EMPTY_PASSWORD: yes
-#      postgres:
-#        image: "postgis/postgis:14-3.5"
-#
-#        env:
-#          POSTGRES_USER: api_user
-#          POSTGRES_PASSWORD: api_user_password
-#          POSTGRES_DB: unused
-#
-#        options: >-
-#          --health-cmd pg_isready
-#          --health-interval 10s
-#          --health-timeout 5s
-#          --health-retries 5
-#        ports:
-#          # Maps tcp port 5432 on service container to the host
-#          - 5432:5432
 #      localstack:
 #        image: localstack/localstack:3.4.0
 #        ports:
@@ -131,17 +108,19 @@ jobs:
 #          SERVICES: sns,sqs
 #          DEFAULT_REGION: eu-west-2
 #          DATA_DIR: /tmp/localstack/data
-#
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v3
-#      - uses: actions/setup-java@v3
-#        with:
-#          distribution: 'temurin'
-#          java-version: 21
-#      - name: Set up Gradle
-#        uses: gradle/actions/setup-gradle@v3
-#
+#        volumes:
+#          - "./localstack:/var/lib/localstack"
+#          - "/var/run/docker.sock:/var/run/docker.sock"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: 21
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+
 #      - name: Determine tests splitting
 #        uses: chaosaffe/split-tests@v1
 #        id: split-tests
@@ -149,41 +128,41 @@ jobs:
 #          glob: src/test/kotlin/**/integration/**/*Test.kt
 #          split-index: ${{ strategy.job-index }}
 #          split-total: ${{ strategy.job-total }}
-#
-#      - name: Run integration test
-#        run: |
+
+      - name: Run integration test
+        run: |
 #          # Format the arguments to "./gradlew integrationTest"
 #          SPECS_LIST=$(echo  ${{ steps.split-tests.outputs.test-suite }} | sed 's/src\/test\/kotlin\///g;s/\//./g;s/\.kt / /g' | awk '{for (i=1; i<=NF; i++) print "--tests",$i}')
 #          echo "Prepared arguments for Gradle: $SPECS_LIST"
-#          ./gradlew integrationTest $SPECS_LIST
-#
-#      - name: Upload raw test reports on failure
-#        if: failure()
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: integration-test-results-${{ matrix.shard }}-of-${{ strategy.job-total }}
-#          path: |
-#            build/test-results
-#            build/reports/tests
-#
-#      - name: Publish Test Report
-#        uses: ctrf-io/github-test-reporter@a63590595a9ae45cb646c55a314110f910d360d2
-#        with:
-#          report-path: './build/test-results/integrationTest/*.xml'
-#          use-suite-name: true
-#          integrations-config: |
-#            {
-#              "junit-to-ctrf": {
-#                "enabled": true,
-#                "action": "convert",
-#                "options": {
-#                  "output": "./ctrf-reports/ctrf-report.json",
-#                  "toolname": "junit-to-ctrf",
-#                  "useSuiteName": true,
-#                  "env": {
-#                    "appName": "approved-premises-api"
-#                  }
-#                }
-#              }
-#            }
-#        if: always()
+          make integration-test
+
+      - name: Upload raw test reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-test-results-${{ matrix.shard }}-of-${{ strategy.job-total }}
+          path: |
+            build/test-results
+            build/reports/tests
+
+      - name: Publish Test Report
+        uses: ctrf-io/github-test-reporter@a63590595a9ae45cb646c55a314110f910d360d2
+        with:
+          report-path: './build/test-results/integrationTest/*.xml'
+          use-suite-name: true
+          integrations-config: |
+            {
+              "junit-to-ctrf": {
+                "enabled": true,
+                "action": "convert",
+                "options": {
+                  "output": "./ctrf-reports/ctrf-report.json",
+                  "toolname": "junit-to-ctrf",
+                  "useSuiteName": true,
+                  "env": {
+                    "appName": "approved-premises-api"
+                  }
+                }
+              }
+            }
+        if: always()
