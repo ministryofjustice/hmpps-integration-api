@@ -145,8 +145,8 @@ class CaseNotesGatewayTest(
         val caseNoteRequest = CNSearchNotesRequest(page = 1, size = 10, typeSubTypes = listOf(CNTypeSubType("KA"), CNTypeSubType("CAB")))
         val jsonRequest = objectMapper.writeValueAsString(caseNoteRequest.toApiConformingMap())
         caseNotesApiMockServer.stubForPost(pathNoParams, jsonRequest, responseJson, HttpStatus.OK)
-
-        val response = caseNotesGateway.getCaseNotesForPerson(id = id, caseNoteFilter, listOf("KA", "CAB"))
+        val specificTypeCaseNoteFilter = CaseNoteFilter(hmppsId = id, caseNoteTypes = listOf("KA", "CAB"))
+        val response = caseNotesGateway.getCaseNotesForPerson(id = id, specificTypeCaseNoteFilter)
         response.data
           ?.content!!
           .count()

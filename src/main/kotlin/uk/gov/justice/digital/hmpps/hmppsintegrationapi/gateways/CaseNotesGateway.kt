@@ -24,7 +24,6 @@ class CaseNotesGateway(
   fun getCaseNotesForPerson(
     id: String,
     filter: CaseNoteFilter,
-    caseNoteTypes: List<String>? = null,
   ): Response<OCNCaseNote?> {
     val requestBody =
       CNSearchNotesRequest(
@@ -33,7 +32,7 @@ class CaseNotesGateway(
         occurredTo = filter.endDate?.let { it.toString() + "Z" },
         page = filter.page,
         size = filter.size,
-        typeSubTypes = caseNoteTypes?.map { CNTypeSubType(it) },
+        typeSubTypes = filter.caseNoteTypes?.map { CNTypeSubType(it) },
       )
 
     val result =
