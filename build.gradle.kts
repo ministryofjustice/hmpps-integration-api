@@ -70,7 +70,6 @@ repositories {
   mavenCentral()
 }
 
-
 tasks {
   register<Test>("unitTest") {
     group = "verification"
@@ -132,7 +131,12 @@ ktlint {
 configurations.matching { it.name == "detekt" }.all {
   resolutionStrategy.eachDependency {
     if (requested.group == "org.jetbrains.kotlin") {
-      useVersion(io.gitlab.arturbosch.detekt.getSupportedKotlinVersion())
+      useVersion(io.gitlab.arturbosch.detekt
+        .getSupportedKotlinVersion())
     }
   }
+}
+
+val reportMerge by tasks.registering(io.gitlab.arturbosch.detekt.report.ReportMergeTask::class) {
+  output.set(rootProject.layout.buildDirectory.file("reports/detekt/merge.xml")) // or "reports/detekt/merge.sarif"
 }

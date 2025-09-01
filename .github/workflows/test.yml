@@ -47,6 +47,7 @@ jobs:
       - name: Run detekt
         run: ./gradlew detekt
       - name: Upload raw test reports on failure
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: detekt results
