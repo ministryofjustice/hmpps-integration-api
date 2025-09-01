@@ -38,7 +38,7 @@ class CaseNotesController(
   @GetMapping("{hmppsId}/case-notes")
   @Operation(
     summary = "Returns case notes associated with a person.",
-    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li><li>caseNotes</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found case notes for a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "400", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
