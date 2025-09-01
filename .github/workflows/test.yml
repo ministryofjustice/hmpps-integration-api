@@ -120,15 +120,17 @@ jobs:
           java-version: 21
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
-#      - name: Determine tests splitting
-#        uses: chaosaffe/split-tests@v1
-#        id: split-tests
-#        with:
-#          glob: src/test/kotlin/**/integration/**/*Test.kt
-#          split-index: ${{ strategy.job-index }}
-#          split-total: ${{ strategy.job-total }}
+      - name: Serve Dependencies
+        run: make serve-dependencies
+      - name: Determine tests splitting
+        uses: chaosaffe/split-tests@v1
+        id: split-tests
+        with:
+          glob: src/test/kotlin/**/integration/**/*Test.kt
+          split-index: ${{ strategy.job-index }}
+          split-total: ${{ strategy.job-total }}
       - name: Run integration test
-        run: make integration-test
+        run: make e2e
       - name: Upload raw test reports on failure
         if: failure()
         uses: actions/upload-artifact@v4
