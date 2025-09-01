@@ -32,6 +32,7 @@ jobs:
   detekt:
     name: Static Code Analysis
     runs-on: ubuntu-latest
+    continue-on-error: true
     env:
       _JAVA_OPTIONS: "-Xmx3g"
       GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2"

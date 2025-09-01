@@ -131,8 +131,10 @@ ktlint {
 configurations.matching { it.name == "detekt" }.all {
   resolutionStrategy.eachDependency {
     if (requested.group == "org.jetbrains.kotlin") {
-      useVersion(io.gitlab.arturbosch.detekt
-        .getSupportedKotlinVersion())
+      useVersion(
+        io.gitlab.arturbosch.detekt
+          .getSupportedKotlinVersion(),
+      )
     }
   }
 }
