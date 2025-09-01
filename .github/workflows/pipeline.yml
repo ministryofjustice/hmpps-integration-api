@@ -31,10 +31,6 @@ jobs:
     secrets: inherit
     with:
       environment: ${{ matrix.environments }}
-  kotlin_validate:
-    name: Validate the kotlin
-    uses: ministryofjustice/hmpps-github-actions/.github/workflows/gradle_verify.yml@v2 # WORKFLOW_VERSION
-    secrets: inherit
   test:
     name: Test
     uses: ./.github/workflows/test.yml
@@ -44,7 +40,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/docker_build.yml@v2 # WORKFLOW_VERSION
     needs:
-      - kotlin_validate
+      - test
     with:
       docker_registry: 'ghcr.io'
       registry_org: 'ministryofjustice'
