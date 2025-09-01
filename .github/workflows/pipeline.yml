@@ -35,6 +35,8 @@ jobs:
     name: Test
     uses: ./.github/workflows/test.yml
     secrets: inherit
+    needs:
+      - helm_lint
   build:
     name: Build docker image from hmpps-github-actions
     if: github.ref == 'refs/heads/main'
