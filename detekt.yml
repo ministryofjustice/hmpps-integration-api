@@ -37,7 +37,7 @@ complexity:
       # database design.
       - javax.persistence.Entity
     excludes:
-      - '**/givens/**'
+      - "**/givens/**"
   TooManyFunctions:
     thresholdInInterfaces: 20
     thresholdInClasses: 20
