@@ -18,9 +18,9 @@ on:
 permissions:
   contents: read
   packages: write
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref == 'refs/heads/main' && github.sha || github.ref }}
-  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+#concurrency:
+#  group: ${{ github.workflow }}-${{ github.ref == 'refs/heads/main' && github.sha || github.ref }}
+#  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 jobs:
   helm_lint:
     strategy:
