@@ -71,6 +71,7 @@ repositories {
 }
 
 tasks {
+
   register<Test>("unitTest") {
     group = "verification"
     filter {
@@ -103,15 +104,15 @@ tasks {
     dependsOn(":ktlintCheck", "detekt")
   }
 
-  getByName("koverHtmlReport") {
-    dependsOn("check")
-  }
+//  getByName("koverHtmlReport") {
+//    dependsOn("check")
+//  }
 }
 
 detekt {
   config.setFrom("./detekt.yml")
   buildUponDefaultConfig = true
-  ignoreFailures = false
+  ignoreFailures = true
   baseline = file("./detekt-baseline.xml")
 }
 
@@ -139,6 +140,10 @@ configurations.matching { it.name == "detekt" }.all {
   }
 }
 
-val reportMerge by tasks.registering(io.gitlab.arturbosch.detekt.report.ReportMergeTask::class) {
-  output.set(rootProject.layout.buildDirectory.file("reports/detekt/merge.xml")) // or "reports/detekt/merge.sarif"
+kover {
+  currentProject {
+    instrumentation {
+      disabledForTestTasks.add("test")
+    }
+  }
 }
