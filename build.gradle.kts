@@ -71,7 +71,6 @@ repositories {
   mavenCentral()
 }
 
-
 tasks {
 
   register<Test>("unitTest") {
@@ -94,7 +93,7 @@ tasks {
   withType<KoverXmlReport>().configureEach {
     val environment = System.getenv()
     val testType = environment["TEST_TYPE"] ?: "UNIT"
-    val excluded = if(testType == "UNIT") "integrationTest" else "unitTest"
+    val excluded = if (testType == "UNIT") "integrationTest" else "unitTest"
 
     kover {
       currentProject {
@@ -117,12 +116,9 @@ tasks {
     source = source.asFileTree
   }
 
-
-
   getByName("check") {
     dependsOn(":ktlintCheck", "detekt")
   }
-
 }
 
 detekt {
@@ -155,4 +151,3 @@ configurations.matching { it.name == "detekt" }.all {
     }
   }
 }
-
