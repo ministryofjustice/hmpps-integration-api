@@ -117,7 +117,7 @@ class PersonController(
     return response.data.paginateWith(page, perPage)
   }
 
-  @GetMapping("{encodedHmppsId}")
+  @GetMapping("{hmppsId}")
   @Operation(
     summary = "Returns a person.",
     responses = [
@@ -128,8 +128,8 @@ class PersonController(
     ],
   )
   fun getPerson(
-    @Parameter(description = "A URL-encoded HMPPS identifier", example = "2008%2F0545166T") @PathVariable encodedHmppsId: String,
-    @RequestAttribute clientName: String,
+    @Parameter(description = "A HMPPS identifier", example = "X00001") @PathVariable("hmppsId") encodedHmppsId: String,
+    @RequestAttribute clientName: String?,
   ): ResponseEntity<DataResponse<OffenderSearchResponse>> {
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getPersonService.getCombinedDataForPerson(hmppsId)
@@ -148,7 +148,7 @@ class PersonController(
         ResponseEntity
           .status(HttpStatus.SEE_OTHER)
           .header("Location", response.data.redirectUrl)
-          .body(DataResponse(response.data))
+          .build()
       }
       is OffenderSearchResult -> {
         val redactedData =
