@@ -27,7 +27,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceKey
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TopupSupervision
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 import java.time.LocalDate
 
 @ContextConfiguration(
@@ -42,7 +42,7 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
     {
       val hmppsId = "A1234AA"
       val nomisNumber = "abc123"
-      val filters = ConsumerFilters(null)
+      val filters = RoleFilters(null)
       val person = Person(firstName = "Test", lastName = "Name", hmppsId = hmppsId, identifiers = Identifiers(nomisNumber = nomisNumber))
 
       beforeEach {
@@ -461,9 +461,9 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
       }
 
       it("returns null when latest key dates and adjustments are queried and the consumer doesnt have access to the persons prison") {
-        val consumerFilters = ConsumerFilters(prisons = listOf("XYZ"))
+        val roleFilters = RoleFilters(prisons = listOf("XYZ"))
 
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, consumerFilters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, roleFilters)).thenReturn(
           Response(
             data = null,
             errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")),
@@ -472,7 +472,7 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
         val result =
           getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(
             hmppsId,
-            consumerFilters,
+            roleFilters,
           )
 
         result.data.shouldBe(null)
@@ -480,8 +480,8 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
       }
 
       it("returns latest key dates and adjustments when the consumer does have access to the persons prison") {
-        val consumerFilters = ConsumerFilters(prisons = listOf("MDI"))
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, consumerFilters)).thenReturn(
+        val roleFilters = RoleFilters(prisons = listOf("MDI"))
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, roleFilters)).thenReturn(
           Response(
             data = person,
             errors = emptyList(),
@@ -490,7 +490,7 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
         val result =
           getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(
             hmppsId,
-            consumerFilters,
+            roleFilters,
           )
 
         result.data.shouldNotBeNull()

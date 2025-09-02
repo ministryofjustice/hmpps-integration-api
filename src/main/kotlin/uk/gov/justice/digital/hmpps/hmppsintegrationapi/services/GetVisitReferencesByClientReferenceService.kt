@@ -9,7 +9,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitReferences
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 
 @Service
 class GetVisitReferencesByClientReferenceService(
@@ -18,7 +18,7 @@ class GetVisitReferencesByClientReferenceService(
 ) {
   fun execute(
     clientReference: String,
-    filters: ConsumerFilters? = null,
+    filters: RoleFilters? = null,
   ): Response<VisitReferences?> {
     val visitReferencesResponse = prisonVisitsGateway.getVisitReferencesByClientReference(clientReference)
 

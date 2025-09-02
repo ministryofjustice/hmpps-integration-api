@@ -47,7 +47,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visitors
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPaginatedPrisonerContacts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPrisonerContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.RestrictionSummary
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import java.time.LocalDateTime
@@ -74,7 +74,7 @@ internal class VisitQueueServiceTest(
 
     val hmppsId = "A1234AB"
     val prisonId = "MDI"
-    val filters = ConsumerFilters(prisons = listOf(prisonId))
+    val filters = RoleFilters(prisons = listOf(prisonId))
     val who = "client-name"
     val visitReference = "ABC-123-DEF-456"
     val visitorContactId = 3L
@@ -164,9 +164,9 @@ internal class VisitQueueServiceTest(
       reset(mockSqsClient, objectMapper)
 
       whenever(hmppsQueueService.findByQueueId("visits")).thenReturn(visitQueue)
-      whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId = eq(hmppsId), filters = any<ConsumerFilters>())).thenReturn(Response(NomisNumber(hmppsId)))
+      whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId = eq(hmppsId), filters = any<RoleFilters>())).thenReturn(Response(NomisNumber(hmppsId)))
       whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessage>(prisonId, filters)).thenReturn(Response(data = null))
-      whenever(getVisitInformationByReferenceService.execute(eq(visitReference), any<ConsumerFilters>())).thenReturn(Response(data = visitResponse))
+      whenever(getVisitInformationByReferenceService.execute(eq(visitReference), any<RoleFilters>())).thenReturn(Response(data = visitResponse))
       whenever(personalRelationshipsGateway.getContacts(hmppsId, page = 1, size = 10)).thenReturn(
         Response(
           data = getContactsResponse(visitorContactId),
@@ -231,7 +231,7 @@ internal class VisitQueueServiceTest(
       }
 
       it("return error if consumerPrisonAccessService returns an error") {
-        val incorrectFilters = ConsumerFilters(prisons = listOf("XYZ"))
+        val incorrectFilters = RoleFilters(prisons = listOf("XYZ"))
         val errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "consumerPrisonAccessService returns an error"))
         whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessage>(createVisitRequest.prisonId, incorrectFilters)).thenReturn(Response(data = null, errors))
 

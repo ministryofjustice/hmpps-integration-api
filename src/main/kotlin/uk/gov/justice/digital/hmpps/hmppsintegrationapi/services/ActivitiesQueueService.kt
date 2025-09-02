@@ -18,7 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.toHmppsMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.toTestMessage
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import uk.gov.justice.hmpps.sqs.eventTypeMessageAttributes
@@ -43,7 +43,7 @@ class ActivitiesQueueService(
   fun sendAttendanceUpdateRequest(
     attendanceUpdateRequests: List<AttendanceUpdateRequest>,
     who: String,
-    filters: ConsumerFilters?,
+    filters: RoleFilters?,
   ): Response<HmppsMessageResponse?> {
     for (attendanceUpdateRequest in attendanceUpdateRequests) {
       if (attendanceUpdateRequest.status == "TestEvent") {
@@ -74,7 +74,7 @@ class ActivitiesQueueService(
     scheduleId: Long,
     prisonerDeallocationRequest: PrisonerDeallocationRequest,
     who: String,
-    filters: ConsumerFilters?,
+    filters: RoleFilters?,
   ): Response<HmppsMessageResponse?> {
     if (prisonerDeallocationRequest.reasonCode == "TestEvent") {
       val testMessage = prisonerDeallocationRequest.toTestMessage(actionedBy = who)
@@ -107,7 +107,7 @@ class ActivitiesQueueService(
     scheduleId: Long,
     prisonerAllocationRequest: PrisonerAllocationRequest,
     who: String,
-    filters: ConsumerFilters?,
+    filters: RoleFilters?,
   ): Response<HmppsMessageResponse?> {
     if (prisonerAllocationRequest.testEvent == "TestEvent") {
       val testMessage = prisonerAllocationRequest.toTestMessage(actionedBy = who)
@@ -197,7 +197,7 @@ class ActivitiesQueueService(
   private fun validatePayBand(
     schedule: ActivitiesActivityScheduleDetailed,
     request: PrisonerAllocationRequest,
-    filters: ConsumerFilters?,
+    filters: RoleFilters?,
   ): Response<HmppsMessageResponse?>? {
     val isPaid = schedule.activity.paid
     val payBandId = request.payBandId
@@ -280,7 +280,7 @@ class ActivitiesQueueService(
   private fun validateWaitingListApplications(
     scheduleId: Long,
     prisonerNumber: String,
-    filters: ConsumerFilters?,
+    filters: RoleFilters?,
   ): Response<HmppsMessageResponse?>? {
     val waitingListsResposne = getWaitingListApplicationsByScheduleIdService.execute(scheduleId, filters)
     if (waitingListsResposne.errors.isNotEmpty()) {

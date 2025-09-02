@@ -16,7 +16,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nonAssociation.NonAssociation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nonAssociation.NonAssociationPrisonerDetails
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nonAssociation.NonAssociations
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -98,11 +98,11 @@ internal class GetPrisonersNonAssociationsServiceTest(
             ),
           )
 
-        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<NonAssociations?>(wrongPrisonId, ConsumerFilters(listOf("MDI")), upstreamServiceType = UpstreamApi.NON_ASSOCIATIONS)).thenReturn(
+        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<NonAssociations?>(wrongPrisonId, RoleFilters(listOf("MDI")), upstreamServiceType = UpstreamApi.NON_ASSOCIATIONS)).thenReturn(
           Response(data = null, errors = errors),
         )
 
-        val response = getPrisonersNonAssociationsService.execute(prisonerNumber, wrongPrisonId, filters = ConsumerFilters(listOf("MDI")))
+        val response = getPrisonersNonAssociationsService.execute(prisonerNumber, wrongPrisonId, filters = RoleFilters(listOf("MDI")))
         response.errors.shouldBe(errors)
         response.data.shouldBe(null)
       }

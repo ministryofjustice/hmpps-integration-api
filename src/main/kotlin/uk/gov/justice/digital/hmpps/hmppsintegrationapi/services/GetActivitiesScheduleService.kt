@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGatew
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivitySchedule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 
 @Service
 class GetActivitiesScheduleService(
@@ -16,7 +16,7 @@ class GetActivitiesScheduleService(
 ) {
   fun execute(
     activityId: Long,
-    filters: ConsumerFilters?,
+    filters: RoleFilters?,
   ): Response<List<ActivitySchedule>?> {
     val activitiesScheduleResponse = activitiesGateway.getActivitySchedules(activityId)
     if (activitiesScheduleResponse.errors.isNotEmpty()) {

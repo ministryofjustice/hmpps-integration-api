@@ -17,7 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 
 @ContextConfiguration(
@@ -30,7 +30,7 @@ class GetAttendanceByIdServiceTest(
   private val getAttendanceByIdService: GetAttendanceByIdService,
 ) : DescribeSpec(
     {
-      val filters = ConsumerFilters(prisons = listOf("MDI"))
+      val filters = RoleFilters(prisons = listOf("MDI"))
       val prisonerNumber = "A1234AA"
       val attendanceId = 123456L
       val activitiesAttendanceReason =

@@ -15,7 +15,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.incentives.IncIEPDetails
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.incentives.IncIEPReviewHistory
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -27,7 +27,7 @@ internal class GetIEPLevelServiceTest(
   private val getIEPLevelService: GetIEPLevelService,
 ) : DescribeSpec({
     val hmppsId = "A1234AA"
-    val filters = ConsumerFilters(null)
+    val filters = RoleFilters(null)
 
     val iepReviewHistory =
       IncIEPReviewHistory(

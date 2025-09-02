@@ -21,7 +21,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerCon
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitRestrictionsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitorRestrictionsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
@@ -236,7 +236,7 @@ internal class VisitRestrictionsControllerTest(
       }
 
       it("returned 404 when consumerPrisonAccessService returns entity not found") {
-        whenever(getVisitorRestrictionsService.execute(hmppsId, contactId, filters = ConsumerFilters(listOf("XYZ")))).thenReturn(
+        whenever(getVisitorRestrictionsService.execute(hmppsId, contactId, filters = RoleFilters(listOf("XYZ")))).thenReturn(
           Response(
             data = null,
             errors =

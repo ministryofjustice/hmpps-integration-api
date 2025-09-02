@@ -25,7 +25,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpdateVisit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitReferences
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitInformationByReferenceService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitReferencesByClientReferenceService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.VisitQueueService
@@ -70,7 +70,7 @@ class VisitsController(
   @GetMapping("/{visitReference}")
   fun getVisitInformationByReference(
     @Parameter(description = "The visit reference number relating to the visit.") @PathVariable visitReference: String,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute filters: RoleFilters?,
   ): DataResponse<Visit?> {
     val response = getVisitInformationByReferenceService.execute(visitReference, filters)
 
@@ -128,7 +128,7 @@ class VisitsController(
   fun postVisit(
     @Valid @RequestBody createVisitRequest: CreateVisitRequest,
     @RequestAttribute clientName: String?,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute filters: RoleFilters?,
   ): DataResponse<HmppsMessageResponse?> {
     val response = visitQueueService.sendCreateVisit(createVisitRequest, clientName.orEmpty(), filters)
 
@@ -190,7 +190,7 @@ class VisitsController(
     @Valid @RequestBody updateVisitRequest: UpdateVisitRequest,
     @Parameter(description = "The visit reference number relating to the visit.") @PathVariable visitReference: String,
     @RequestAttribute clientName: String?,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute filters: RoleFilters?,
   ): DataResponse<HmppsMessageResponse?> {
     val response = visitQueueService.sendUpdateVisit(visitReference, updateVisitRequest, clientName.orEmpty(), filters)
 
@@ -249,7 +249,7 @@ class VisitsController(
     @Valid @RequestBody cancelVisitRequest: CancelVisitRequest,
     @Parameter(description = "The visit reference number relating to the visit.") @PathVariable visitReference: String,
     @RequestAttribute clientName: String?,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute filters: RoleFilters?,
   ): DataResponse<HmppsMessageResponse?> {
     val response = visitQueueService.sendCancelVisit(visitReference, cancelVisitRequest, clientName.orEmpty(), filters)
 
@@ -297,7 +297,7 @@ class VisitsController(
   fun getVisitReferencesByClientReference(
     @Parameter(description = "The visit reference number relating to the visit.")
     @PathVariable clientReference: String,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute filters: RoleFilters?,
   ): DataResponse<VisitReferences?> {
     val response = getVisitReferencesByClientReferenceService.execute(clientReference, filters)
 
