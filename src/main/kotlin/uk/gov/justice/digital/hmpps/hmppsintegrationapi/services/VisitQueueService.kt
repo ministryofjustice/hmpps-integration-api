@@ -18,7 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UserType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitNotes
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visitor
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import uk.gov.justice.hmpps.sqs.eventTypeMessageAttributes
@@ -39,7 +39,7 @@ class VisitQueueService(
   fun sendCreateVisit(
     createVisitRequest: CreateVisitRequest,
     who: String,
-    filters: ConsumerFilters?,
+    filters: RoleFilters?,
   ): Response<HmppsMessageResponse?> {
     val checkVisitNoteTypesUniqueResponse = checkVisitNoteTypesUnique(createVisitRequest.visitNotes)
     if (checkVisitNoteTypesUniqueResponse.errors.isNotEmpty()) {
@@ -76,7 +76,7 @@ class VisitQueueService(
     visitReference: String,
     updateVisitRequest: UpdateVisitRequest,
     who: String,
-    filters: ConsumerFilters?,
+    filters: RoleFilters?,
   ): Response<HmppsMessageResponse?> {
     val checkVisitNoteTypesUniqueResponse = checkVisitNoteTypesUnique(updateVisitRequest.visitNotes)
     if (checkVisitNoteTypesUniqueResponse.errors.isNotEmpty()) {
@@ -105,7 +105,7 @@ class VisitQueueService(
     visitReference: String,
     cancelVisitRequest: CancelVisitRequest,
     who: String,
-    filters: ConsumerFilters?,
+    filters: RoleFilters?,
   ): Response<HmppsMessageResponse?> {
     val visitResponse = getVisitInformationByReferenceService.execute(visitReference, filters)
 

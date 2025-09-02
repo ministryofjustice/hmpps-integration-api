@@ -27,7 +27,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Type
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetTransactionForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetTransactionsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.PostTransactionForPersonService
@@ -261,7 +261,7 @@ class TransactionsControllerTest(
         }
 
         it("returns 400 if prison filter is not matched") {
-          whenever(postTransactionForPersonService.execute(prisonId, hmppsId, exampleTransaction, ConsumerFilters(prisons = listOf("XYZ")))).thenReturn(
+          whenever(postTransactionForPersonService.execute(prisonId, hmppsId, exampleTransaction, RoleFilters(prisons = listOf("XYZ")))).thenReturn(
             Response(
               data = null,
               errors =
@@ -291,7 +291,7 @@ class TransactionsControllerTest(
         }
 
         it("calls the API with the correct filters") {
-          whenever(postTransactionForPersonService.execute(prisonId, hmppsId, exampleTransaction, ConsumerFilters(prisons = listOf("XYZ")))).thenReturn(Response(transactionCreateResponse))
+          whenever(postTransactionForPersonService.execute(prisonId, hmppsId, exampleTransaction, RoleFilters(prisons = listOf("XYZ")))).thenReturn(Response(transactionCreateResponse))
 
           val result = mockMvc.performAuthorisedPostWithCN(postTransactionPath, "limited-prisons", exampleTransaction)
 
@@ -376,7 +376,7 @@ class TransactionsControllerTest(
 
         it("returns 400 if prison filter is not matched") {
           whenever(
-            postTransactionTransferForPersonService.execute(prisonId, hmppsId, exampleTransactionTransfer, ConsumerFilters(prisons = listOf("XYZ"))),
+            postTransactionTransferForPersonService.execute(prisonId, hmppsId, exampleTransactionTransfer, RoleFilters(prisons = listOf("XYZ"))),
           ).thenReturn(
             Response(
               data = null,
@@ -412,7 +412,7 @@ class TransactionsControllerTest(
 
         it("calls the API with the correct filters") {
           whenever(
-            postTransactionTransferForPersonService.execute(prisonId, hmppsId, exampleTransactionTransfer, ConsumerFilters(prisons = listOf("XYZ"))),
+            postTransactionTransferForPersonService.execute(prisonId, hmppsId, exampleTransactionTransfer, RoleFilters(prisons = listOf("XYZ"))),
           ).thenReturn(
             Response(transactionTransferCreateResponse),
           )

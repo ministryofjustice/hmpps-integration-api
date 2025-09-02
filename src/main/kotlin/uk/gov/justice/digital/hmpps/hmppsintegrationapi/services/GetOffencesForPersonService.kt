@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGatewa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Offence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 
 @Service
 class GetOffencesForPersonService(
@@ -17,7 +17,7 @@ class GetOffencesForPersonService(
 ) {
   fun execute(
     hmppsId: String,
-    filters: ConsumerFilters?,
+    filters: RoleFilters?,
   ): Response<List<Offence>> {
     val personResponse: Response<Person?>
     val nomisNumber: String?

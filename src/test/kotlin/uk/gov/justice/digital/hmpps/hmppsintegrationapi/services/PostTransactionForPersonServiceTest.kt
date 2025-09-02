@@ -18,7 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiTransactionResponse
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -38,7 +38,7 @@ internal class PostTransactionForPersonServiceTest(
     val amount = 1634
     val clientTransactionId = "CL123212"
     val clientUniqueRef = "CLIENT121131-0_11"
-    val filters = ConsumerFilters(null)
+    val filters = RoleFilters(null)
     val exampleTransaction = TransactionRequest(type, description, amount, clientTransactionId, clientUniqueRef)
     val exampleTransactionResponse =
       PrisonApiTransactionResponse(

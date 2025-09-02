@@ -26,7 +26,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.Activi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 import java.time.DayOfWeek
 import java.time.LocalDateTime
 
@@ -41,7 +41,7 @@ class GetScheduleDetailsServiceTest(
 ) : DescribeSpec(
     {
       val prisonId = "MDI"
-      val filters = ConsumerFilters(prisons = listOf(prisonId))
+      val filters = RoleFilters(prisons = listOf(prisonId))
       val scheduleId = 123456L
       val activitySchedule =
         ActivitiesActivityScheduleDetailed(

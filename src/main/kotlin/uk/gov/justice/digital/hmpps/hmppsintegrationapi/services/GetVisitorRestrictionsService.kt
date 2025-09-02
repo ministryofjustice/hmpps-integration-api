@@ -9,7 +9,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerCon
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 
 @Service
 class GetVisitorRestrictionsService(
@@ -20,7 +20,7 @@ class GetVisitorRestrictionsService(
   fun execute(
     hmppsId: String,
     contactId: Long,
-    filters: ConsumerFilters?,
+    filters: RoleFilters?,
   ): Response<PrisonerContactRestrictions?> {
     val personResponse = getPersonService.getPrisoner(hmppsId, filters)
 

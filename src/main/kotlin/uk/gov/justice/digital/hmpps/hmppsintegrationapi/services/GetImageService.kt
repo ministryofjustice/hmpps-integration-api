@@ -6,7 +6,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGatewa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 
 @Service
 class GetImageService(
@@ -18,7 +18,7 @@ class GetImageService(
   fun execute(
     id: Int,
     hmppsId: String,
-    filters: ConsumerFilters?,
+    filters: RoleFilters?,
   ): Response<ByteArray?> {
     val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)
     if (personResponse.errors.isNotEmpty()) {

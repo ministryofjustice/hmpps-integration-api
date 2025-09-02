@@ -20,7 +20,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisitContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisitorSupport
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVistExternalSystemDetails
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -34,7 +34,7 @@ internal class GetVisitsServiceTest(
 ) : DescribeSpec({
     val hmppsId = "A1234AA"
     val prisonId = "ABC"
-    val filters = ConsumerFilters(null)
+    val filters = RoleFilters(null)
     val visitResponse =
       PVVisit(
         prisonerId = "PrisonerId",

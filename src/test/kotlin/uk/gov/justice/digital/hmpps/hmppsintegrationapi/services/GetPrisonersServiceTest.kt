@@ -15,7 +15,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 
 @ContextConfiguration(
@@ -80,7 +80,7 @@ internal class GetPrisonersServiceTest(
       }
 
       it("returns an error when the person queried for is not in a prisonId matching their config") {
-        val prisonIds = ConsumerFilters(prisons = listOf("FAKE_PRISON"))
+        val prisonIds = RoleFilters(prisons = listOf("FAKE_PRISON"))
         val errors = listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "MockError"))
         whenever(request.getAttribute("filters")).thenReturn(prisonIds)
         whenever(prisonerOffenderSearchGateway.getPrisonerDetails(firstName, lastName, dateOfBirth.toString(), false, prisonIds.prisons)).thenReturn(
@@ -100,7 +100,7 @@ internal class GetPrisonersServiceTest(
             POSPrisoner(firstName = firstName, lastName = lastName, youthOffender = false),
             POSPrisoner(firstName = "John", lastName = lastName, youthOffender = false),
           )
-        val prisonIds = ConsumerFilters(prisons = listOf("VALID_PRISON"))
+        val prisonIds = RoleFilters(prisons = listOf("VALID_PRISON"))
         whenever(request.getAttribute("filters")).thenReturn(prisonIds)
         whenever(prisonerOffenderSearchGateway.getPrisonerDetails(firstName, lastName, dateOfBirth.toString(), false, prisonIds.prisons)).thenReturn(
           Response(
@@ -114,7 +114,7 @@ internal class GetPrisonersServiceTest(
 
       it("returns the no data when the query is valid but no data is found") {
         val people = emptyList<POSPrisoner>()
-        val prisonIds = ConsumerFilters(prisons = listOf("VALID_PRISON"))
+        val prisonIds = RoleFilters(prisons = listOf("VALID_PRISON"))
         whenever(request.getAttribute("filters")).thenReturn(prisonIds)
         whenever(prisonerOffenderSearchGateway.getPrisonerDetails(firstName, lastName, dateOfBirth.toString(), false, prisonIds.prisons)).thenReturn(
           Response(

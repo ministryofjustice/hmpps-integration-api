@@ -19,7 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPaginatedPrisonerContacts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPrisonerContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.RestrictionSummary
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -31,7 +31,7 @@ internal class GetPrisonerContactsServiceTest(
   private val getPrisonerContactsService: GetPrisonerContactsService,
 ) : DescribeSpec({
     val hmppsId = "A1234AA"
-    val filters = ConsumerFilters(null)
+    val filters = RoleFilters(null)
     val page = 1
     val size = 10
     val relationship =

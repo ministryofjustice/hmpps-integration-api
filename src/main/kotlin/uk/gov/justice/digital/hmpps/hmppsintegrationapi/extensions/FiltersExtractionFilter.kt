@@ -11,17 +11,20 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.GlobalsConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 import java.io.IOException
 
 @Component
 @Order(2)
-@EnableConfigurationProperties(AuthorisationConfig::class)
+@EnableConfigurationProperties(AuthorisationConfig::class, GlobalsConfig::class)
 class FiltersExtractionFilter
   @Autowired
   constructor(
     var authorisationConfig: AuthorisationConfig,
+    val globalsConfig: GlobalsConfig,
   ) : Filter {
     @Throws(IOException::class, ServletException::class)
     override fun doFilter(
@@ -37,9 +40,30 @@ class FiltersExtractionFilter
         return
       }
 
-      val requestingConsumersFilters: ConsumerFilters? = consumerConfig.filters
+      val aggregatedRoles: List<Role>? = consumerConfig.roles?.mapNotNull { globalsConfig.roles[it] }
 
-      request.setAttribute("filters", requestingConsumersFilters)
+      val filters = buildAggregatedFilters(aggregatedRoles)
+      request.setAttribute("filters", filters)
       chain.doFilter(request, response)
     }
   }
+
+private fun buildAggregatedFilters(roles: List<Role>?): RoleFilters? {
+  if (roles == null || roles.isEmpty() || (roles.all { it.filters == null })) return null
+
+  val prisons =
+    roles
+      .takeIf { role -> role.any { it.filters?.prisons != null } }
+      ?.mapNotNull { it.filters?.prisons }
+      ?.flatten()
+      ?.distinct()
+
+  val caseNotes =
+    roles
+      .takeIf { role -> role.any { it.filters?.caseNotes != null } }
+      ?.mapNotNull { it.filters?.caseNotes }
+      ?.flatten()
+      ?.distinct()
+
+  return RoleFilters(prisons, caseNotes)
+}

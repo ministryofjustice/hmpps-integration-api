@@ -102,7 +102,7 @@ globals:
       include:
         - "/v1/hmpps/reference-data"
         - "/v1/status"
-    full-access:
+    all-endpoints:
       include:
         # Provides access to all endpoints
         - "/.*"
@@ -173,6 +173,13 @@ globals:
       include:
         - "/v1/status"
         - "/v1/persons/.*/case-notes"
+      filters:
+        case-notes:
+          - "CAB"
+          - "NEG"
+          - "CVM"
+          - "INTERVENTION"
+          - "POS"
     mappa:
       include:
         - "/v1/persons"
@@ -198,3 +205,36 @@ globals:
         - "/v1/persons/.*/risk-management-plan"
         - "/v1/hmpps/reference-data"
         - "/v1/status"
+
+    prison-MDI-only:
+      filters:
+        prisons:
+          - MDI
+
+    prison-MKI-only:
+      filters:
+        prisons:
+          - MKI
+
+    prison-XYZ-only:
+      filters:
+        prisons:
+          - XYZ
+
+    prison-ABC-only:
+      filters:
+        prisons:
+          - ABC
+
+    empty-prisons:
+      filters:
+        prisons:
+
+    no-prisons:
+      filters:
+        prisons:
+
+    case-notes-CAB-only:
+      filters:
+        case-notes:
+          - "CAB"

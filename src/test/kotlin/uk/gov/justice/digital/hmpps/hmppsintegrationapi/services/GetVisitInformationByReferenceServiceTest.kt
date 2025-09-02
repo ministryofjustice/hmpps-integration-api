@@ -18,7 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisitContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisitorSupport
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVistExternalSystemDetails
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -84,7 +84,7 @@ class GetVisitInformationByReferenceServiceTest(
     }
 
     it("returns a 404 not found status in the case of the prisonId returned by the visit query not being in the consumers profile") {
-      val filters = ConsumerFilters(prisons = listOf("WRONG-PRISON-BRO"))
+      val filters = RoleFilters(prisons = listOf("WRONG-PRISON-BRO"))
       whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Visit>("MDI", filters, UpstreamApi.MANAGE_PRISON_VISITS)).thenReturn(
         Response(data = null),
       )

@@ -13,7 +13,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonVisit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -26,7 +26,7 @@ class GetVisitRestrictionsForPersonServiceTest(
 ) : DescribeSpec({
     val hmppsId = "1234/56789B"
     val nomisNumber = "Z99999ZZ"
-    val filters = ConsumerFilters(null)
+    val filters = RoleFilters(null)
     val examplePersonVisitRestrictions =
       listOf(
         PersonVisitRestriction(restrictionId = 1, comment = "Restriction 1", restrictionType = "TYPE", restrictionTypeDescription = "Type description", startDate = "2025-01-01", expiryDate = "2025-12-31", active = true),

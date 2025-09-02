@@ -67,14 +67,12 @@ authorisation:
   consumers:
     mapps:
       include:
-      filters:
       roles:
         - "mappa"
     ctrlo:
       include:
         - "/v1/epf/person-details/.*/[^/]*$"
         - "/v1/status"
-      filters:
     moj-pes:
       include:
         - "/v1/persons/.*/name"
@@ -83,23 +81,19 @@ authorisation:
         - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
         - "/v1/persons/.*/cell-location"
         - "/v1/status"
-      filters:
     kubernetes-health-check-client:
       include:
         - "/health/liveness"
         - "/health/readiness"
         - "/v1/status"
-      filters:
     pnd:
       include:
-      filters:
       roles:
         - "police"
     event-service:
       include:
         - "/v2/config/authorisation"
         - "/v1/status"
-      filters:
     mryall:
       include:
         - "/v1/hmpps/reference-data"
@@ -135,17 +129,13 @@ authorisation:
         - "/v1/prison/.*/prisoners/.*/transactions/[^/]*$"
         - "/v1/prison/.*/prisoners/.*/transactions"
         - "/v1/status"
-      filters:
     kilco:
       include:
-      filters:
-        prisons:
-          - MKI
       roles:
         - "private-prison"
+        - "prison-MKI-only"
     meganexus:
       include:
-      filters:
       roles:
         - "curious"
     moj-esw:
@@ -157,12 +147,10 @@ authorisation:
         - "/v1/persons/[^/]+/prisoner-base-location"
         - "/v1/persons/.*/education/assessments"
         - "/v1/status"
-      filters:
     bmadley:
       include:
-      filters:
       roles:
-        - "full-access"
+        - "all-endpoints"
     serco:
       include:
         - "/v1/persons"
@@ -171,10 +159,8 @@ authorisation:
         - "/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
         - "/v1/hmpps/id/by-nomis-number/[^/]*$"
         - "/v1/status"
-      filters:
     unilink:
       include:
-      filters:
       roles:
         - "private-prison"
     prisonerfacing:
@@ -185,7 +171,6 @@ authorisation:
         - "/v1/persons/.*/cell-location"
         - "/v1/prison/prisoners/[^/]*$" # This has been provided for testing purposes. Approval needed before access can be provided in prod.
         - "/v1/status"
-      filters:
     abritton:
       include:
         - "/v1/persons"
@@ -211,7 +196,6 @@ authorisation:
         - "/v1/persons/.*/risk-management-plan"
         - "/v1/hmpps/reference-data"
         - "/v1/status"
-      filters:
     jbetton:
       include:
         - "/v1/persons"
@@ -237,54 +221,38 @@ authorisation:
         - "/v1/persons/.*/risk-management-plan"
         - "/v1/hmpps/reference-data"
         - "/v1/status"
-      filters:
     smoke-test-full-access:
       include:
-      filters:
       roles:
-        - "full-access"
+        - "all-endpoints"
     smoke-test-limited-access:
       include:
-      filters:
       roles:
         - "private-prison"
     smoke-test-no-access:
       include:
-      filters:
       roles:
     test:
       include:
-      filters:
-        prisons:
-          - MKI
       roles:
         - "private-prison"
+        - "prison-MKI-only"
     sleach:
       include:
-      filters:
       roles:
-        - "full-access"
+        - "all-endpoints"
     pmcphee:
       include:
-      filters:
       roles:
-        - "full-access"
+        - "all-endpoints"
     geoamey:
       include:
-      filters:
-        case-notes:
-          - "CAB"
-          - "NEG"
-          - "CVM"
-          - "INTERVENTION"
-          - "POS"
       roles:
         - "prisoner-escort-custody-service"
     zkhan:
       include:
-      filters:
       roles:
-        - "full-access"
+        - "all-endpoints"
 
 redaction:
   client-names:

@@ -30,7 +30,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 import java.time.LocalDate
 
 @ContextConfiguration(
@@ -46,7 +46,7 @@ internal class GetHealthAndDietServiceTest(
     {
       val hmppsId = "A1234AA"
       val nomsId = "A1234BB"
-      val filters = ConsumerFilters(prisons = null)
+      val filters = RoleFilters(prisons = null)
       val prisoner = POSPrisoner(firstName = "Jim", lastName = "Brown", smoker = "Y", dateOfBirth = LocalDate.of(1992, 12, 3), prisonerNumber = nomsId, youthOffender = false)
       val healthAndMedicationResponse =
         HAMHealthAndMedication(

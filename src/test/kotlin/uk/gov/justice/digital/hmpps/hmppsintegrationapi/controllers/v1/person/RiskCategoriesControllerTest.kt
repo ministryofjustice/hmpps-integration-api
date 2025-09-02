@@ -20,7 +20,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskAssessm
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskCategory
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetRiskCategoriesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
@@ -135,7 +135,7 @@ internal class RiskCategoriesControllerTest(
         }
 
         it("returns a 404 NOT FOUND status code consumer not in allowed for endpoint") {
-          whenever(getRiskCategoriesForPersonService.execute(hmppsId, ConsumerFilters(prisons = listOf("XYZ")))).thenReturn(
+          whenever(getRiskCategoriesForPersonService.execute(hmppsId, RoleFilters(prisons = listOf("XYZ")))).thenReturn(
             Response(
               data = RiskCategory(),
               errors =

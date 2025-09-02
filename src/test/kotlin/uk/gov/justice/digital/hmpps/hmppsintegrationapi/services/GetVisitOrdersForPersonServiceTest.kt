@@ -14,7 +14,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitOrders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.visits.VisitBalances
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -27,7 +27,7 @@ class GetVisitOrdersForPersonServiceTest(
 ) : DescribeSpec({
     val hmppsId = "1234/56789B"
     val nomisNumber = "Z99999ZZ"
-    val filters = ConsumerFilters(null)
+    val filters = RoleFilters(null)
     val exampleVisitBalances = VisitBalances(remainingVo = 1073741824, remainingPvo = 1073741824)
     val exampleVisitOrders = VisitOrders(remainingVisitOrders = 1073741824, remainingPrivilegeVisitOrders = 1073741824)
 

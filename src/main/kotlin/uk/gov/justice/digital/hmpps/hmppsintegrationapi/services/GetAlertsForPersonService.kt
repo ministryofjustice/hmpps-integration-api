@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedAl
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 
 @Service
 class GetAlertsForPersonService(
@@ -16,7 +16,7 @@ class GetAlertsForPersonService(
 ) {
   fun getAlerts(
     hmppsId: String,
-    filters: ConsumerFilters?,
+    filters: RoleFilters?,
     page: Int,
     perPage: Int,
     alertCodes: List<String> = emptyList(),

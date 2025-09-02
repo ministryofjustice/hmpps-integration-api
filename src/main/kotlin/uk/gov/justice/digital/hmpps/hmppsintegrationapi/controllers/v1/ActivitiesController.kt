@@ -34,7 +34,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ReasonForAt
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SuitabilityCriteria
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.WaitingListApplication
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ActivitiesQueueService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetActivitiesScheduleService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetActivitiesSuitabilityCriteriaService
@@ -83,7 +83,7 @@ class ActivitiesController(
   )
   fun getActivitySchedules(
     @Parameter(description = "The ID of the activity") @PathVariable activityId: Long,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute filters: RoleFilters?,
   ): DataResponse<List<ActivitySchedule>?> {
     val response = getActivitiesScheduleService.execute(activityId, filters)
 
@@ -135,7 +135,7 @@ class ActivitiesController(
   @FeatureFlag(name = FeatureFlagConfig.USE_SCHEDULE_DETAIL_ENDPOINT)
   fun getScheduleDetails(
     @Parameter(description = "The ID of the schedule") @PathVariable scheduleId: Long,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute filters: RoleFilters?,
   ): DataResponse<ActivityScheduleDetailed?> {
     val response = getScheduleDetailsService.execute(scheduleId, filters)
 
@@ -187,7 +187,7 @@ class ActivitiesController(
   @FeatureFlag(name = FeatureFlagConfig.USE_SUITABILITY_ENDPOINT)
   fun getActivityScheduleSuitabilityCriteria(
     @Parameter(description = "The ID of the schedule") @PathVariable scheduleId: Long,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute filters: RoleFilters?,
   ): DataResponse<SuitabilityCriteria?> {
     val response = getActivitiesSuitabilityCriteriaService.execute(scheduleId, filters)
 
@@ -238,7 +238,7 @@ class ActivitiesController(
   )
   @FeatureFlag(name = FeatureFlagConfig.Companion.USE_UPDATE_ATTENDANCE_ENDPOINT)
   fun putAttendance(
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute filters: RoleFilters?,
     @RequestAttribute clientName: String,
     @RequestBody @Valid attendanceUpdateRequests: List<AttendanceUpdateRequest>,
   ): DataResponse<HmppsMessageResponse?> {
@@ -328,7 +328,7 @@ class ActivitiesController(
   @FeatureFlag(name = FeatureFlagConfig.Companion.USE_DEALLOCATION_ENDPOINT)
   fun putDeallocateFromSchedule(
     @Parameter(description = "The ID of the schedule") @PathVariable scheduleId: Long,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute filters: RoleFilters?,
     @RequestAttribute clientName: String,
     @RequestBody @Valid prisonerDeallocationRequest: PrisonerDeallocationRequest,
   ): DataResponse<HmppsMessageResponse?> {
@@ -423,7 +423,7 @@ class ActivitiesController(
   @FeatureFlag(name = FeatureFlagConfig.Companion.USE_ALLOCATION_ENDPOINT)
   fun postAllocationEndpoint(
     @Parameter(description = "The ID of the schedule") @PathVariable scheduleId: Long,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute filters: RoleFilters?,
     @RequestAttribute clientName: String,
     @RequestBody @Valid prisonerAllocationRequest: PrisonerAllocationRequest,
   ): DataResponse<HmppsMessageResponse?> {
@@ -480,7 +480,7 @@ class ActivitiesController(
   @FeatureFlag(name = FeatureFlagConfig.Companion.USE_WAITING_LIST_ENDPOINT)
   fun getWaitingListApplicationsByScheduleId(
     @Parameter(description = "The ID of the schedule") @PathVariable scheduleId: Long,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute filters: RoleFilters?,
   ): DataResponse<List<WaitingListApplication>?> {
     val response = getWaitingListApplicationsByScheduleIdService.execute(scheduleId, filters)
 

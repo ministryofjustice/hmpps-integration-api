@@ -9,6 +9,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.GlobalsConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ConfigAuthorisation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import kotlin.collections.orEmpty
 
 @Hidden
 @RestController("ConfigControllerV2")
@@ -24,7 +26,7 @@ class ConfigController(
   private fun mapConsumerToIncludesAndFilters(consumerConfig: ConsumerConfig?): ConfigAuthorisation =
     ConfigAuthorisation(
       endpoints = buildEndpointsList(consumerConfig),
-      filters = consumerConfig?.filters,
+      filters = buildFiltersList(consumerConfig),
     )
 
   private fun buildEndpointsList(consumerConfig: ConsumerConfig?): List<String> =
@@ -34,4 +36,24 @@ class ConfigController(
       }
       addAll(consumerConfig?.include.orEmpty())
     }
+
+  private fun buildFiltersList(consumerConfig: ConsumerConfig?): RoleFilters {
+    val aggregatedPrisonFilters: List<String>? =
+      consumerConfig
+        ?.roles
+        ?.mapNotNull { consumerRole ->
+          globalsConfig.roles[consumerRole]?.filters?.prisons
+        }?.flatten()
+        ?.takeIf { it.isNotEmpty() }
+
+    val aggregatedCaseNoteFilters: List<String>? =
+      consumerConfig
+        ?.roles
+        ?.mapNotNull { consumerRole ->
+          globalsConfig.roles[consumerRole]?.filters?.caseNotes
+        }?.flatten()
+        ?.takeIf { it.isNotEmpty() }
+
+    return RoleFilters(aggregatedPrisonFilters, aggregatedCaseNoteFilters)
+  }
 }
