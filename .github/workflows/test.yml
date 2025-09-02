@@ -200,6 +200,12 @@ jobs:
           min-coverage-overall: 80
           min-coverage-changed-files: 80
           coverage-counter-type: LINE
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: |
+            coverage
 #  coverage:
 #    name: Test Coverage
 #    runs-on: ubuntu-latest
