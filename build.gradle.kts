@@ -1,3 +1,4 @@
+import kotlinx.kover.gradle.plugin.dsl.tasks.KoverXmlReport
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -70,6 +71,7 @@ repositories {
   mavenCentral()
 }
 
+
 tasks {
 
   register<Test>("unitTest") {
@@ -89,6 +91,21 @@ tasks {
     }
   }
 
+  withType<KoverXmlReport>().configureEach {
+    val environment = System.getenv()
+    val testType = environment["TEST_TYPE"] ?: "UNIT"
+    val excluded = if(testType == "UNIT") "integrationTest" else "unitTest"
+
+    kover {
+      currentProject {
+        instrumentation {
+          disabledForTestTasks.add(excluded)
+          disabledForTestTasks.add("test")
+        }
+      }
+    }
+  }
+
   withType<KotlinCompile> {
     compilerOptions {
       jvmTarget = JvmTarget.JVM_21
@@ -100,13 +117,12 @@ tasks {
     source = source.asFileTree
   }
 
+
+
   getByName("check") {
     dependsOn(":ktlintCheck", "detekt")
   }
 
-//  getByName("koverHtmlReport") {
-//    dependsOn("check")
-//  }
 }
 
 detekt {
@@ -140,10 +156,3 @@ configurations.matching { it.name == "detekt" }.all {
   }
 }
 
-kover {
-  currentProject {
-    instrumentation {
-      disabledForTestTasks.add("test")
-    }
-  }
-}
