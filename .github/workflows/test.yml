@@ -183,6 +183,8 @@ jobs:
         shell: bash
         run: |
           mkdir ${{ github.workspace }}/lib
+          mkdir ${{ github.workspace }}/build
+          cp -rf ${{ github.workspace }}/unit_test_results/classes ${{ github.workspace }}/build/.
           cp ${{ github.workspace }}/unit_test_results/kover/bin-reports/unitTest.ic ${{ github.workspace }}/lib/.
           cp ${{ github.workspace }}/integration_test_results/kover/bin-reports/integrationTest.ic ${{ github.workspace }}/lib/.
       - name: Copy coverage files
