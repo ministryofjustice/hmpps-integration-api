@@ -1,4 +1,4 @@
-import kotlinx.kover.gradle.plugin.dsl.tasks.KoverXmlReport
+import kotlinx.kover.gradle.plugin.dsl.tasks.KoverReport
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -34,6 +34,8 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
   implementation("io.jsonwebtoken:jjwt-api:0.13.0")
+
+  implementation("org.jetbrains.kotlinx:kover-cli:0.9.1")
   testImplementation("io.kotest:kotest-assertions-json-jvm:5.9.1")
   testImplementation("io.kotest:kotest-runner-junit5-jvm:5.9.1")
   testImplementation("io.kotest:kotest-assertions-core-jvm:5.9.1")
@@ -58,7 +60,6 @@ dependencies {
   testImplementation("org.eclipse.jetty:jetty-server:12.1.0")
   testImplementation("org.eclipse.jetty:jetty-http:12.1.0")
   testImplementation("org.eclipse.jetty:jetty-io:12.1.0")
-
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
   testImplementation(kotlin("test"))
 }
@@ -72,6 +73,54 @@ repositories {
 }
 
 tasks {
+  // Enables the coverage report to be created for only unit tests or integration tests
+  // This is so the unit and integration tests can be run in parallel
+  // Could have just called
+  withType<KoverReport>().configureEach {
+    val environment = System.getenv()
+    val testType = environment["TEST_TYPE"] ?: "UNIT"
+    val excluded = if (testType == "UNIT") "integrationTest" else "unitTest"
+    kover {
+      currentProject {
+        instrumentation {
+          disabledForTestTasks.add(excluded)
+          disabledForTestTasks.add("test")
+        }
+      }
+    }
+  }
+
+  val mergeCoverageReport by registering(JavaExec::class) {
+    classpath = files("lib/kover-cli.jar")
+    args =
+      listOf(
+        "merge",
+        "lib/unitTest.ic",
+        "lib/integrationTest.ic",
+        "--target=lib/merged.ic",
+      )
+  }
+
+  val createCoverageReport by registering(JavaExec::class) {
+    classpath = files("lib/kover-cli.jar")
+    args =
+      listOf(
+        "report",
+        "lib/merged.ic",
+        "--src=src/main",
+        "--classfiles=build/classes/kotlin/main",
+        "--html=coverage",
+        "--xml=coverage/report.xml",
+      )
+  }
+
+  val koverCli by registering(Copy::class) {
+    from(configurations.runtimeClasspath).include("kover-cli*.jar")
+    into("lib")
+    rename("(.*).jar", "kover-cli.jar")
+  }
+  getByName("mergeCoverageReport").dependsOn(koverCli)
+  getByName("createCoverageReport").dependsOn(mergeCoverageReport)
 
   register<Test>("unitTest") {
     group = "verification"
@@ -87,21 +136,6 @@ tasks {
     classpath = sourceSets["main"].output + configurations["testRuntimeClasspath"] + sourceSets["test"].output
     filter {
       includeTestsMatching("uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration*")
-    }
-  }
-
-  withType<KoverXmlReport>().configureEach {
-    val environment = System.getenv()
-    val testType = environment["TEST_TYPE"] ?: "UNIT"
-    val excluded = if (testType == "UNIT") "integrationTest" else "unitTest"
-
-    kover {
-      currentProject {
-        instrumentation {
-          disabledForTestTasks.add(excluded)
-          disabledForTestTasks.add("test")
-        }
-      }
     }
   }
 
@@ -130,6 +164,8 @@ detekt {
 
 kotlin {
   kotlinDaemonJvmArgs = listOf("-Xmx2g")
+
+  configurations.runtimeClasspath.get().resolvedConfiguration
 }
 
 testlogger {
