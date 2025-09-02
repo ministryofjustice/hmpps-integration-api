@@ -69,7 +69,7 @@ jobs:
           java-version: 21
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
-      - name: Run unit tests
+      - name: Run Unit Tests
         shell: bash
         run: TEST_TYPE="UNIT" ./gradlew koverXmlReport
       - name: Move coverage report
@@ -128,6 +128,8 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
       - name: Serve Dependencies
+        run: make serve-dependencies
+      - name: Run Integration Tests
         run: TEST_TYPE="INT" ./gradlew koverXmlReport
       - name: Upload raw test reports on failure
         if: failure()
