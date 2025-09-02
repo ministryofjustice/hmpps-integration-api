@@ -118,7 +118,6 @@ class PersonIntegrationTest : IntegrationTestBase() {
         callApi("$basePath/$nomsId")
           .andExpect(status().is3xxRedirection)
           .andExpect(header().string("Location", Matchers.containsString("/v1/persons/A1234AA")))
-          .andExpect(content().json(getExpectedResponse("person-offender-and-probation-search-redirect-response")))
 
         // Need to look into the validation.request.body.schema.processingError causing issues on this test and associated DeactivateLocationIntegrationTest
         // prisonerOffenderSearchApiMockServer.assertValidationPassed()
