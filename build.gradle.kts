@@ -27,7 +27,7 @@ dependencies {
     exclude("org.springframework.security", "spring-security-crypto")
     exclude("org.springframework.security", "spring-security-web")
   }
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.11")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.12")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
   implementation("io.jsonwebtoken:jjwt-api:0.13.0")
@@ -37,7 +37,7 @@ dependencies {
   testImplementation("org.wiremock:wiremock-standalone:3.13.1")
   testImplementation("io.kotest.extensions:kotest-extensions-spring:1.3.0")
   testImplementation("org.mockito:mockito-core:5.19.0")
-  testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.2")
+  testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.20.0")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
   testImplementation("com.atlassian.oai:swagger-request-validator-wiremock:2.45.1") {
     // Exclude WireMock artifacts
