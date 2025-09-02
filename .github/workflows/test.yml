@@ -73,7 +73,7 @@ jobs:
         shell: bash
         run: TEST_TYPE="UNIT" ./gradlew koverXmlReport
       - name: Upload raw test reports on failure
-        if: failure()
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: unit_test_results
@@ -129,7 +129,7 @@ jobs:
       - name: Run Integration Tests
         run: TEST_TYPE="INT" ./gradlew koverXmlReport
       - name: Upload raw test reports on failure
-        if: failure()
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: integration_test_results
