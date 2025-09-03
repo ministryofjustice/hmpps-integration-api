@@ -15,7 +15,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -31,7 +31,7 @@ class GetHistoricalAttendancesServiceTest(
       val prisonId = "MDI"
       val startDate = "2023-09-10"
       val endDate = "2023-10-10"
-      val filters = RoleFilters(listOf(prisonId))
+      val filters = ConsumerFilters(listOf(prisonId))
       val person =
         Person(
           firstName = "John",

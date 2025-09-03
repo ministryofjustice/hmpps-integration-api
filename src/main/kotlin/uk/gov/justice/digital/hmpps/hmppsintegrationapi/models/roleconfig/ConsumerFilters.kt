@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig
 
-data class RoleFilters(
+data class ConsumerFilters(
   val prisons: List<String>?,
   val caseNotes: List<String>? = null,
 ) {

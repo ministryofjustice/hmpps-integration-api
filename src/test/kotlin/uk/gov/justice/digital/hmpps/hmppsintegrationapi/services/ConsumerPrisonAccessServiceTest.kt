@@ -8,7 +8,7 @@ import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -21,31 +21,31 @@ internal class ConsumerPrisonAccessServiceTest(
 
       it("Should return no errors when prison id is in filters") {
         val result =
-          consumerPrisonAccessService.checkConsumerHasPrisonAccess<Nothing>("MDI", RoleFilters(listOf("MDI")))
+          consumerPrisonAccessService.checkConsumerHasPrisonAccess<Nothing>("MDI", ConsumerFilters(listOf("MDI")))
         result.errors.shouldBeEmpty()
       }
 
       it("Should return an error when prison id is not in filters") {
         val result =
-          consumerPrisonAccessService.checkConsumerHasPrisonAccess<Nothing>("XYZ", RoleFilters(listOf("MDI")))
+          consumerPrisonAccessService.checkConsumerHasPrisonAccess<Nothing>("XYZ", ConsumerFilters(listOf("MDI")))
         result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
       }
 
       it("Should return no errors when prison id is supplied but filters are not") {
         val result =
-          consumerPrisonAccessService.checkConsumerHasPrisonAccess<Nothing>("MDI", RoleFilters(null))
+          consumerPrisonAccessService.checkConsumerHasPrisonAccess<Nothing>("MDI", ConsumerFilters(null))
         result.errors.shouldBeEmpty()
       }
 
       it("Should return an error when prison id is null but filters is supplied") {
         val result =
-          consumerPrisonAccessService.checkConsumerHasPrisonAccess<Nothing>(null, RoleFilters(listOf("MDI")))
+          consumerPrisonAccessService.checkConsumerHasPrisonAccess<Nothing>(null, ConsumerFilters(listOf("MDI")))
         result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
       }
 
       it("Should return no errors when prison id nor the filters are supplied") {
         val result =
-          consumerPrisonAccessService.checkConsumerHasPrisonAccess<Nothing>(null, RoleFilters(null))
+          consumerPrisonAccessService.checkConsumerHasPrisonAccess<Nothing>(null, ConsumerFilters(null))
         result.errors.shouldBeEmpty()
       }
     },

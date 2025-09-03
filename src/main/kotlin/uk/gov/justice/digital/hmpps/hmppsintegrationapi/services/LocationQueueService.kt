@@ -13,7 +13,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessag
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import uk.gov.justice.hmpps.sqs.eventTypeMessageAttributes
@@ -31,11 +31,11 @@ class LocationQueueService(
   private val locationQueueUrl by lazy { locationQueue.queueUrl }
 
   fun sendDeactivateLocationRequest(
-    deactivateLocationRequest: DeactivateLocationRequest,
-    prisonId: String,
-    key: String,
-    who: String,
-    filters: RoleFilters?,
+      deactivateLocationRequest: DeactivateLocationRequest,
+      prisonId: String,
+      key: String,
+      who: String,
+      filters: ConsumerFilters?,
   ): Response<HmppsMessageResponse?> {
     if (deactivateLocationRequest.externalReference == "TestEvent") {
       val testMessage = deactivateLocationRequest.toTestMessage(actionedBy = who)

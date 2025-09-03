@@ -8,7 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedCa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetCaseNotesForPersonService(
@@ -17,7 +17,7 @@ class GetCaseNotesForPersonService(
 ) {
   fun execute(
     filter: CaseNoteFilter,
-    filters: RoleFilters?,
+    filters: ConsumerFilters?,
   ): Response<PaginatedCaseNotes?> {
     val personResponse = getPersonService.getNomisNumberWithPrisonFilter(filter.hmppsId, filters)
     if (personResponse.errors.isNotEmpty()) {

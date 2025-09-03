@@ -8,7 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nonAssociation.NonAssociations
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetPrisonersNonAssociationsService(
@@ -16,11 +16,11 @@ class GetPrisonersNonAssociationsService(
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
 ) {
   fun execute(
-    hmppsId: String,
-    prisonId: String,
-    includeOpen: String? = "true",
-    includeClosed: String? = "false",
-    filters: RoleFilters?,
+      hmppsId: String,
+      prisonId: String,
+      includeOpen: String? = "true",
+      includeClosed: String? = "false",
+      filters: ConsumerFilters?,
   ): Response<NonAssociations?> {
     val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<NonAssociations?>(prisonId, filters, upstreamServiceType = UpstreamApi.NON_ASSOCIATIONS)
     if (consumerPrisonFilterCheck.errors.isNotEmpty()) {

@@ -9,7 +9,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.GlobalsConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ConfigAuthorisation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import kotlin.collections.orEmpty
 
 @Hidden
@@ -37,7 +37,7 @@ class ConfigController(
       addAll(consumerConfig?.include.orEmpty())
     }
 
-  private fun buildFiltersList(consumerConfig: ConsumerConfig?): RoleFilters {
+  private fun buildFiltersList(consumerConfig: ConsumerConfig?): ConsumerFilters {
     val aggregatedPrisonFilters: List<String>? =
       consumerConfig
         ?.roles
@@ -54,6 +54,6 @@ class ConfigController(
         }?.flatten()
         ?.takeIf { it.isNotEmpty() }
 
-    return RoleFilters(aggregatedPrisonFilters, aggregatedCaseNoteFilters)
+    return ConsumerFilters(aggregatedPrisonFilters, aggregatedCaseNoteFilters)
   }
 }

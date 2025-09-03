@@ -14,7 +14,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.GlobalsConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import java.io.IOException
 
 @Component
@@ -48,7 +48,7 @@ class FiltersExtractionFilter
     }
   }
 
-private fun buildAggregatedFilters(roles: List<Role>?): RoleFilters? {
+private fun buildAggregatedFilters(roles: List<Role>?): ConsumerFilters? {
   if (roles == null || roles.isEmpty() || (roles.all { it.filters == null })) return null
 
   val prisons =
@@ -65,5 +65,5 @@ private fun buildAggregatedFilters(roles: List<Role>?): RoleFilters? {
       ?.flatten()
       ?.distinct()
 
-  return RoleFilters(prisons, caseNotes)
+  return ConsumerFilters(prisons, caseNotes)
 }

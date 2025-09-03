@@ -17,7 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFound
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonResponsibleOfficer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCommunityOffenderManagerForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonOffenderManagerForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
@@ -42,8 +42,8 @@ class PersonResponsibleOfficerController(
     ],
   )
   fun getPersonResponsibleOfficer(
-    @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
-    @RequestAttribute filters: RoleFilters?,
+      @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
+      @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<PersonResponsibleOfficer> {
     val prisonOffenderManager = getPrisonOffenderManagerForPersonService.execute(hmppsId, filters)
 

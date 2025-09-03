@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGatew
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.WaitingListApplication
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetWaitingListApplicationsByScheduleIdService(
@@ -15,8 +15,8 @@ class GetWaitingListApplicationsByScheduleIdService(
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
 ) {
   fun execute(
-    scheduleId: Long,
-    filters: RoleFilters?,
+      scheduleId: Long,
+      filters: ConsumerFilters?,
   ): Response<List<WaitingListApplication>?> {
     val scheduleDetailsResponse = activitiesGateway.getActivityScheduleById(scheduleId)
     if (scheduleDetailsResponse.errors.isNotEmpty()) {

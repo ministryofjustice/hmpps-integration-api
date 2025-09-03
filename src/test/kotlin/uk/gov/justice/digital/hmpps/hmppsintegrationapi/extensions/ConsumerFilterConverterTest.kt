@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @ActiveProfiles("test")
 class ConsumerFilterConverterTest {
@@ -12,6 +12,6 @@ class ConsumerFilterConverterTest {
     val consumerConfig = ""
     val actual = RoleFilterConverter().convert(consumerConfig)
 
-    actual.shouldBe(RoleFilters(prisons = null))
+    actual.shouldBe(ConsumerFilters(prisons = null))
   }
 }

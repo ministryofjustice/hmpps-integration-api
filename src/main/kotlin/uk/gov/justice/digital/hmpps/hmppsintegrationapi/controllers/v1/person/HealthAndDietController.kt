@@ -17,7 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFound
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HealthAndDiet
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetHealthAndDietService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
@@ -45,8 +45,8 @@ class HealthAndDietController(
   @Tag(name = "Reception")
   @GetMapping("/{hmppsId}/health-and-diet")
   fun getHealthAndDiet(
-    @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
-    @RequestAttribute filters: RoleFilters?,
+      @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
+      @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<HealthAndDiet?> {
     val response = getHealthAndDietService.execute(hmppsId, filters)
 

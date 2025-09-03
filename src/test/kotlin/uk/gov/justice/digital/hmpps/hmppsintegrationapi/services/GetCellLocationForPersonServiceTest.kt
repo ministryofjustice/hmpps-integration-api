@@ -16,7 +16,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 
 @ContextConfiguration(
@@ -31,7 +31,7 @@ internal class GetCellLocationForPersonServiceTest(
     {
       val persona = personInProbationAndNomisPersona
       val hmppsId = persona.identifiers.nomisNumber!!
-      val filters = RoleFilters(null)
+      val filters = ConsumerFilters(null)
       val prisonId = "MDI"
       val prisonName = "Moorland (HMP & YOI)"
       val cellLocation = "6-2-006"

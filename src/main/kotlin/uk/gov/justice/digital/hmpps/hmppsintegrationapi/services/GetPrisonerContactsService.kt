@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedPr
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetPrisonerContactsService(
@@ -15,10 +15,10 @@ class GetPrisonerContactsService(
   @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(
-    prisonerId: String,
-    page: Int,
-    size: Int,
-    filter: RoleFilters?,
+      prisonerId: String,
+      page: Int,
+      size: Int,
+      filter: ConsumerFilters?,
   ): Response<PaginatedPrisonerContacts?> {
     val personResponse = getPersonService.getNomisNumberWithPrisonFilter(prisonerId, filter)
     if (personResponse.errors.isNotEmpty()) {

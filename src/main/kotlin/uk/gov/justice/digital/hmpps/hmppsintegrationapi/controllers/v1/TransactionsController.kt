@@ -27,7 +27,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionTransferCreateResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionTransferRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetTransactionForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetTransactionsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.PostTransactionForPersonService
@@ -87,14 +87,14 @@ class TransactionsController(
   )
   @GetMapping("/accounts/{accountCode}/transactions")
   fun getTransactionsByAccountCode(
-    @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
-    @Parameter(description = "The ID of the prison that holds the account") @PathVariable prisonId: String,
-    @Parameter(description = "The code of the account to be accessed, one of 'spends', 'savings' or 'cash'", example = "spends") @PathVariable accountCode: String,
-    @RequestAttribute filters: RoleFilters?,
-    @Parameter(description = "Start date for transactions (defaults to today if not supplied)") @RequestParam(required = false, name = "from_date") fromDate: String?,
-    @Parameter(description = "To date for transactions (defaults to today if not supplied)") @RequestParam(required = false, name = "to_date") toDate: String?,
-    @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
-    @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
+      @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
+      @Parameter(description = "The ID of the prison that holds the account") @PathVariable prisonId: String,
+      @Parameter(description = "The code of the account to be accessed, one of 'spends', 'savings' or 'cash'", example = "spends") @PathVariable accountCode: String,
+      @RequestAttribute filters: ConsumerFilters?,
+      @Parameter(description = "Start date for transactions (defaults to today if not supplied)") @RequestParam(required = false, name = "from_date") fromDate: String?,
+      @Parameter(description = "To date for transactions (defaults to today if not supplied)") @RequestParam(required = false, name = "to_date") toDate: String?,
+      @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
+      @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
   ): PaginatedResponse<Transaction?> {
     var startDate = LocalDate.now().toString()
     var endDate = LocalDate.now().toString()
@@ -162,10 +162,10 @@ class TransactionsController(
   )
   @GetMapping("/transactions/{clientUniqueRef}")
   fun getTransactionsByClientUniqueRef(
-    @Parameter(description = "The HMPPS ID of the person") @PathVariable prisonId: String,
-    @Parameter(description = "The ID of the prison that holds the account") @PathVariable hmppsId: String,
-    @Parameter(description = "The clientUniqueRef used when the transaction was created") @PathVariable clientUniqueRef: String,
-    @RequestAttribute filters: RoleFilters?,
+      @Parameter(description = "The HMPPS ID of the person") @PathVariable prisonId: String,
+      @Parameter(description = "The ID of the prison that holds the account") @PathVariable hmppsId: String,
+      @Parameter(description = "The clientUniqueRef used when the transaction was created") @PathVariable clientUniqueRef: String,
+      @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<Transaction?> {
     val response = getTransactionForPersonService.execute(hmppsId, prisonId, clientUniqueRef, filters)
 
@@ -231,10 +231,10 @@ class TransactionsController(
   )
   @PostMapping("/transactions")
   fun postTransactions(
-    @Parameter(description = "The ID of the prison that holds the account") @PathVariable prisonId: String,
-    @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
-    @RequestAttribute filters: RoleFilters?,
-    @Valid @RequestBody transactionRequest: TransactionRequest,
+      @Parameter(description = "The ID of the prison that holds the account") @PathVariable prisonId: String,
+      @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
+      @RequestAttribute filters: ConsumerFilters?,
+      @Valid @RequestBody transactionRequest: TransactionRequest,
   ): DataResponse<TransactionCreateResponse?> {
     val response = postTransactionsForPersonService.execute(prisonId, hmppsId, transactionRequest, filters)
 
@@ -306,10 +306,10 @@ class TransactionsController(
   )
   @PostMapping("/transactions/transfer")
   fun postTransactionsTransfer(
-    @Parameter(description = "The ID of the prison that holds the account") @PathVariable prisonId: String,
-    @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
-    @RequestAttribute filters: RoleFilters?,
-    @Valid @RequestBody transactionTransferRequest: TransactionTransferRequest,
+      @Parameter(description = "The ID of the prison that holds the account") @PathVariable prisonId: String,
+      @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
+      @RequestAttribute filters: ConsumerFilters?,
+      @Valid @RequestBody transactionTransferRequest: TransactionTransferRequest,
   ): DataResponse<TransactionTransferCreateResponse?> {
     val response = postTransactionTransferForPersonService.execute(prisonId, hmppsId, transactionTransferRequest, filters)
 

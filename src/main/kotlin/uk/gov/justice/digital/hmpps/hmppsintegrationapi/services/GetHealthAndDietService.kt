@@ -10,7 +10,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HealthAndDi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetHealthAndDietService(
@@ -19,8 +19,8 @@ class GetHealthAndDietService(
   @Autowired val healthAndMedicationGateway: HealthAndMedicationGateway,
 ) {
   fun execute(
-    hmppsId: String,
-    filters: RoleFilters?,
+      hmppsId: String,
+      filters: ConsumerFilters?,
   ): Response<HealthAndDiet?> {
     val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId = hmppsId, filters)
     if (personResponse.errors.isNotEmpty()) {

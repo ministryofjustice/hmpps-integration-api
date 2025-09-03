@@ -19,7 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataRespons
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.ENTITY_NOT_FOUND
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nonAssociation.NonAssociations
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersNonAssociationsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
@@ -49,7 +49,7 @@ class OffenderRestrictionsController(
     @Parameter(description = "The prison ID of the prisoner") @PathVariable prisonId: String,
     @Parameter(description = "") @RequestParam(required = false, name = "includeOpen", defaultValue = "true") includeOpen: Boolean?,
     @Parameter(description = "") @RequestParam(required = false, name = "includeClosed", defaultValue = "false") includeClosed: Boolean?,
-    @RequestAttribute filters: RoleFilters?,
+    @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<NonAssociations?> {
     if (includeOpen == null && includeClosed == null || includeOpen == false && includeClosed == false) {
       throw ValidationException("includeOpen or includeClosed must be provided.")

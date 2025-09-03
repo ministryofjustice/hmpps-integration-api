@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Attendance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetAttendanceByIdService(
@@ -15,8 +15,8 @@ class GetAttendanceByIdService(
   @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(
-    attendanceId: Long,
-    filters: RoleFilters?,
+      attendanceId: Long,
+      filters: ConsumerFilters?,
   ): Response<Attendance?> {
     val attendanceResponse = activitiesGateway.getAttendanceById(attendanceId)
     if (attendanceResponse.errors.isNotEmpty()) {

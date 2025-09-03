@@ -17,7 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskAssessm
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskCategory
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInNomisOnlyPersona
 
 @ContextConfiguration(
@@ -39,7 +39,7 @@ internal class GetRiskCategoriesForPersonServiceTest(
 
       val nomisNumber = person.identifiers.nomisNumber!!
       val hmppsId = nomisNumber
-      val filters = RoleFilters(null)
+      val filters = ConsumerFilters(null)
 
       beforeEach {
         Mockito.reset(getPersonService)

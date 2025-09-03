@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonVisit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetVisitRestrictionsForPersonService(
@@ -15,8 +15,8 @@ class GetVisitRestrictionsForPersonService(
   @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(
-    hmppsId: String,
-    filters: RoleFilters? = null,
+      hmppsId: String,
+      filters: ConsumerFilters? = null,
   ): Response<List<PersonVisitRestriction>?> {
     val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)
     if (personResponse.errors.isNotEmpty()) {

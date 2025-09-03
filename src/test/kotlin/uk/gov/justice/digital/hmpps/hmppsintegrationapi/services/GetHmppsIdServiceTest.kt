@@ -14,7 +14,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 
 @ContextConfiguration(
@@ -30,7 +30,7 @@ internal class GetHmppsIdServiceTest(
       val persona = personInProbationAndNomisPersona
       val nomisNumber = persona.identifiers.nomisNumber!!
       val hmppsId = nomisNumber
-      val filters = RoleFilters(listOf("ABC"))
+      val filters = ConsumerFilters(listOf("ABC"))
 
       beforeEach {
         Mockito.reset(getPersonService)
