@@ -71,10 +71,13 @@ authorisation:
       include:
       roles:
         - "mappa"
+        - "empty-filters"
     ctrlo:
       include:
         - "/v1/epf/person-details/.*/[^/]*$"
         - "/v1/status"
+      roles:
+        - "empty-filters"
     moj-pes:
       include:
         - "/v1/persons/.*/name"
@@ -83,19 +86,26 @@ authorisation:
         - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
         - "/v1/persons/.*/cell-location"
         - "/v1/status"
+      roles:
+        - "empty-filters"
     kubernetes-health-check-client:
       include:
         - "/health/liveness"
         - "/health/readiness"
         - "/v1/status"
+      roles:
+        - "empty-filters"
     pnd:
       include:
       roles:
         - "police"
+        - "empty-filters"
     event-service:
       include:
         - "/v2/config/authorisation"
         - "/v1/status"
+      roles:
+        - "empty-filters"
     mryall:
       include:
         - "/v1/hmpps/reference-data"
@@ -131,6 +141,8 @@ authorisation:
         - "/v1/prison/.*/prisoners/.*/transactions/[^/]*$"
         - "/v1/prison/.*/prisoners/.*/transactions"
         - "/v1/status"
+      roles:
+        - "empty-filters"
     kilco:
       include:
       roles:
@@ -140,6 +152,7 @@ authorisation:
       include:
       roles:
         - "curious"
+        - "empty-filters"
     moj-esw:
       include:
         - "/v1/persons/[^/]+/expression-of-interest/jobs/[^/]+$"
@@ -149,10 +162,13 @@ authorisation:
         - "/v1/persons/[^/]+/prisoner-base-location"
         - "/v1/persons/.*/education/assessments"
         - "/v1/status"
+      roles:
+        - "empty-filters"
     bmadley:
       include:
       roles:
         - "all-endpoints"
+        - "empty-filters"
     serco:
       include:
         - "/v1/persons"
@@ -165,6 +181,7 @@ authorisation:
       include:
       roles:
         - "private-prison"
+        - "empty-filters"
     prisonerfacing:
       include:
         - "/v1/persons/.*/name"
@@ -173,6 +190,8 @@ authorisation:
         - "/v1/persons/.*/cell-location"
         - "/v1/prison/prisoners/[^/]*$" # This has been provided for testing purposes. Approval needed before access can be provided in prod.
         - "/v1/status"
+      roles:
+        - "empty-filters"
     abritton:
       include:
         - "/v1/persons"
@@ -198,6 +217,8 @@ authorisation:
         - "/v1/persons/.*/risk-management-plan"
         - "/v1/hmpps/reference-data"
         - "/v1/status"
+      roles:
+        - "empty-filters"
     jbetton:
       include:
         - "/v1/persons"
@@ -223,30 +244,39 @@ authorisation:
         - "/v1/persons/.*/risk-management-plan"
         - "/v1/hmpps/reference-data"
         - "/v1/status"
+      roles:
+        - "empty-filters"
     smoke-test-full-access:
       include:
       roles:
         - "all-endpoints"
+        - "empty-filters"
     smoke-test-limited-access:
       include:
       roles:
         - "private-prison"
+        - "empty-filters"
     smoke-test-no-access:
       include:
       roles:
+        - "empty-filters"
     test:
       include:
       roles:
         - "private-prison"
         - "prison-MKI-only"
+        - "empty-filters"
     sleach:
       include:
       roles:
         - "all-endpoints"
+        - "empty-filters"
+
     pmcphee:
       include:
       roles:
         - "all-endpoints"
+        - "empty-filters"
     geoamey:
       include:
       roles:
@@ -255,6 +285,7 @@ authorisation:
       include:
       roles:
         - "all-endpoints"
+        - "empty-filters"
 
 redaction:
   client-names:
