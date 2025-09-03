@@ -14,8 +14,8 @@ class GetCommunityOffenderManagerForPersonService(
   @Autowired val nDeliusGateway: NDeliusGateway,
 ) {
   fun execute(
-      hmppsId: String,
-      filters: ConsumerFilters?,
+    hmppsId: String,
+    filters: ConsumerFilters?,
   ): Response<CommunityOffenderManager?> {
     val personResponse = getPersonService.getPersonWithPrisonFilter(hmppsId, filters)
     if (personResponse.errors.isNotEmpty()) {

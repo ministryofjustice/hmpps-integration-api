@@ -18,12 +18,12 @@ class GetTransactionsForPersonService(
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
 ) {
   fun execute(
-      hmppsId: String,
-      prisonId: String,
-      accountCode: String,
-      startDate: String,
-      endDate: String,
-      filters: ConsumerFilters? = null,
+    hmppsId: String,
+    prisonId: String,
+    accountCode: String,
+    startDate: String,
+    endDate: String,
+    filters: ConsumerFilters? = null,
   ): Response<List<Transaction>?> {
     val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<List<Transaction>>(prisonId, filters)
 

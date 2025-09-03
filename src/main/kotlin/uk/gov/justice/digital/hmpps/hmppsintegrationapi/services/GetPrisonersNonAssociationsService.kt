@@ -16,11 +16,11 @@ class GetPrisonersNonAssociationsService(
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
 ) {
   fun execute(
-      hmppsId: String,
-      prisonId: String,
-      includeOpen: String? = "true",
-      includeClosed: String? = "false",
-      filters: ConsumerFilters?,
+    hmppsId: String,
+    prisonId: String,
+    includeOpen: String? = "true",
+    includeClosed: String? = "false",
+    filters: ConsumerFilters?,
   ): Response<NonAssociations?> {
     val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<NonAssociations?>(prisonId, filters, upstreamServiceType = UpstreamApi.NON_ASSOCIATIONS)
     if (consumerPrisonFilterCheck.errors.isNotEmpty()) {

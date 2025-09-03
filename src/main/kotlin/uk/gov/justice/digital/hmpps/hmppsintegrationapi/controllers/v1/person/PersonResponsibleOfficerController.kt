@@ -42,8 +42,8 @@ class PersonResponsibleOfficerController(
     ],
   )
   fun getPersonResponsibleOfficer(
-      @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
-      @RequestAttribute filters: ConsumerFilters?,
+    @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
+    @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<PersonResponsibleOfficer> {
     val prisonOffenderManager = getPrisonOffenderManagerForPersonService.execute(hmppsId, filters)
 

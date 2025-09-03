@@ -41,8 +41,8 @@ class RiskCategoriesController(
     ],
   )
   fun getPersonRiskCategories(
-      @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
-      @RequestAttribute filters: ConsumerFilters?,
+    @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
+    @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<RiskCategory?> {
     val response = getRiskCategoriesForPersonService.execute(hmppsId, filters)
 

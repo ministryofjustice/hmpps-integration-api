@@ -44,8 +44,8 @@ class CellLocationController(
   )
   @GetMapping("{hmppsId}/cell-location")
   fun getPersonCellLocation(
-      @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
-      @RequestAttribute filters: ConsumerFilters?,
+    @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
+    @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<CellLocation?> {
     val response = getCellLocationForPersonService.execute(hmppsId, filters)
 

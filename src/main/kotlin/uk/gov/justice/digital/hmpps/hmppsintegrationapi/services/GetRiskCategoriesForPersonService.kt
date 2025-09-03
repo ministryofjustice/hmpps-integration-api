@@ -13,8 +13,8 @@ class GetRiskCategoriesForPersonService(
   @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(
-      hmppsId: String,
-      filters: ConsumerFilters?,
+    hmppsId: String,
+    filters: ConsumerFilters?,
   ): Response<RiskCategory?> {
     val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)
 

@@ -41,8 +41,8 @@ class AddressController(
     ],
   )
   fun getPersonAddresses(
-      @Parameter(description = "The HMPPS ID of the person", example = "G2996UX") @PathVariable hmppsId: String,
-      @RequestAttribute filters: ConsumerFilters?,
+    @Parameter(description = "The HMPPS ID of the person", example = "G2996UX") @PathVariable hmppsId: String,
+    @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<List<Address>> {
     val response = getAddressesForPersonService.execute(hmppsId, filters)
 

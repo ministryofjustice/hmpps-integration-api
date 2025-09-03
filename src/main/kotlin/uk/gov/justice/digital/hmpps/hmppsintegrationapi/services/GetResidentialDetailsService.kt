@@ -16,9 +16,9 @@ class GetResidentialDetailsService(
   @Autowired val locationsInsidePrisonGateway: LocationsInsidePrisonGateway,
 ) {
   fun execute(
-      prisonId: String,
-      parentPathHierarchy: String?,
-      filters: ConsumerFilters?,
+    prisonId: String,
+    parentPathHierarchy: String?,
+    filters: ConsumerFilters?,
   ): Response<ResidentialDetails?> {
     val checkAccess = consumerPrisonAccessService.checkConsumerHasPrisonAccess<Any>(prisonId, filters)
     if (checkAccess.errors.isNotEmpty()) {

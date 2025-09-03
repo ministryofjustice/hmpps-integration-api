@@ -16,9 +16,9 @@ class SearchAppointmentsService(
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
 ) {
   fun execute(
-      prisonId: String,
-      appointmentSearchRequest: AppointmentSearchRequest,
-      filters: ConsumerFilters?,
+    prisonId: String,
+    appointmentSearchRequest: AppointmentSearchRequest,
+    filters: ConsumerFilters?,
   ): Response<List<AppointmentDetails>?> {
     val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<List<AppointmentDetails>>(prisonId, filters, UpstreamApi.ACTIVITIES)
     if (consumerPrisonFilterCheck.errors.isNotEmpty()) {

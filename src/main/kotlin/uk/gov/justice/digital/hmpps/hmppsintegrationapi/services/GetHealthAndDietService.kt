@@ -19,8 +19,8 @@ class GetHealthAndDietService(
   @Autowired val healthAndMedicationGateway: HealthAndMedicationGateway,
 ) {
   fun execute(
-      hmppsId: String,
-      filters: ConsumerFilters?,
+    hmppsId: String,
+    filters: ConsumerFilters?,
   ): Response<HealthAndDiet?> {
     val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId = hmppsId, filters)
     if (personResponse.errors.isNotEmpty()) {

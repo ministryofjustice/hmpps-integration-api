@@ -16,8 +16,8 @@ class GetAddressesForPersonService(
   private val deliusGateway: NDeliusGateway,
 ) {
   fun execute(
-      hmppsId: String,
-      filters: ConsumerFilters?,
+    hmppsId: String,
+    filters: ConsumerFilters?,
   ): Response<List<Address>> {
     val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId = hmppsId, filters)
     if (personResponse.errors.isNotEmpty()) {

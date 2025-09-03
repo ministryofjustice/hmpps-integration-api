@@ -15,8 +15,8 @@ class GetPrisonActivitiesService(
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
 ) {
   fun execute(
-      prisonId: String,
-      filters: ConsumerFilters?,
+    prisonId: String,
+    filters: ConsumerFilters?,
   ): Response<List<RunningActivity>?> {
     val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<List<RunningActivity>>(prisonId, filters, upstreamServiceType = UpstreamApi.ACTIVITIES)
     if (consumerPrisonFilterCheck.errors.isNotEmpty()) {

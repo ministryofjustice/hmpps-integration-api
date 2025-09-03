@@ -39,8 +39,8 @@ class HmppsIdController(
     ],
   )
   fun getHmppsIdByNomisNumber(
-      @PathVariable nomisNumber: String,
-      @RequestAttribute filters: ConsumerFilters?,
+    @PathVariable nomisNumber: String,
+    @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<HmppsId?> {
     val response = getHmppsIdService.execute(nomisNumber, filters)
 
@@ -68,8 +68,8 @@ class HmppsIdController(
     ],
   )
   fun getNomisNumberByHMPPSID(
-      @PathVariable hmppsId: String,
-      @RequestAttribute filters: ConsumerFilters?,
+    @PathVariable hmppsId: String,
+    @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<NomisNumber?> {
     val response = getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {

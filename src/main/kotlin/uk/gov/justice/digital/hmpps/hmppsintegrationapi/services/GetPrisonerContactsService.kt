@@ -15,10 +15,10 @@ class GetPrisonerContactsService(
   @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(
-      prisonerId: String,
-      page: Int,
-      size: Int,
-      filter: ConsumerFilters?,
+    prisonerId: String,
+    page: Int,
+    size: Int,
+    filter: ConsumerFilters?,
   ): Response<PaginatedPrisonerContacts?> {
     val personResponse = getPersonService.getNomisNumberWithPrisonFilter(prisonerId, filter)
     if (personResponse.errors.isNotEmpty()) {

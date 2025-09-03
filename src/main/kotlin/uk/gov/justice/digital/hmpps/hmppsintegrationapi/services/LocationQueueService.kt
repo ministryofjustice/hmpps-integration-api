@@ -31,11 +31,11 @@ class LocationQueueService(
   private val locationQueueUrl by lazy { locationQueue.queueUrl }
 
   fun sendDeactivateLocationRequest(
-      deactivateLocationRequest: DeactivateLocationRequest,
-      prisonId: String,
-      key: String,
-      who: String,
-      filters: ConsumerFilters?,
+    deactivateLocationRequest: DeactivateLocationRequest,
+    prisonId: String,
+    key: String,
+    who: String,
+    filters: ConsumerFilters?,
   ): Response<HmppsMessageResponse?> {
     if (deactivateLocationRequest.externalReference == "TestEvent") {
       val testMessage = deactivateLocationRequest.toTestMessage(actionedBy = who)

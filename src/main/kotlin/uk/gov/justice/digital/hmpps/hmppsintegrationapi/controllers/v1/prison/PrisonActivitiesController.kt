@@ -57,8 +57,8 @@ class PrisonActivitiesController(
     ],
   )
   fun getPrisonActivities(
-      @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
-      @RequestAttribute filters: ConsumerFilters?,
+    @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
+    @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<List<RunningActivity>?> {
     val response = getPrisonActivitiesService.execute(prisonId, filters)
 
@@ -108,15 +108,15 @@ class PrisonActivitiesController(
     ],
   )
   fun getScheduledInstancesForPrisoner(
-      @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
-      @Parameter(description = "The ID of the prisoner to be queried against") @PathVariable hmppsId: String,
-      @Parameter(description = "The start date of the search range (YYYY-MM-DD)", required = true)
+    @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
+    @Parameter(description = "The ID of the prisoner to be queried against") @PathVariable hmppsId: String,
+    @Parameter(description = "The start date of the search range (YYYY-MM-DD)", required = true)
     @RequestParam startDate: String,
-      @Parameter(description = "The end date of the search range (YYYY-MM-DD)", required = true)
+    @Parameter(description = "The end date of the search range (YYYY-MM-DD)", required = true)
     @RequestParam endDate: String,
-      @Parameter(description = "Optional time slot filter", required = false)
+    @Parameter(description = "Optional time slot filter", required = false)
     @RequestParam(required = false) slot: String? = null,
-      @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<List<ActivityScheduledInstanceForPrisoner>?> {
     val response = getScheduledInstancesForPrisonerService.execute(prisonId, hmppsId, startDate, endDate, slot, filters)
 
@@ -150,9 +150,9 @@ class PrisonActivitiesController(
   )
   @FeatureFlag(name = FeatureFlagConfig.USE_SEARCH_APPOINTMENTS_ENDPOINT)
   fun searchAppointments(
-      @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
-      @RequestAttribute filters: ConsumerFilters?,
-      @Valid @RequestBody request: AppointmentSearchRequest,
+    @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
+    @RequestAttribute filters: ConsumerFilters?,
+    @Valid @RequestBody request: AppointmentSearchRequest,
   ): DataResponse<List<AppointmentDetails>?> {
     val response = searchAppointmentsService.execute(prisonId, request, filters)
 
@@ -186,11 +186,11 @@ class PrisonActivitiesController(
   )
   @FeatureFlag(name = FeatureFlagConfig.USE_HISTORICAL_ATTENDANCES_ENDPOINT)
   fun getHistoricalAttendances(
-      @Parameter(description = "The ID of the prisoner to be queried against") @PathVariable hmppsId: String,
-      @RequestParam startDate: String,
-      @RequestParam endDate: String,
-      @RequestParam prisonId: String?,
-      @RequestAttribute filters: ConsumerFilters?,
+    @Parameter(description = "The ID of the prisoner to be queried against") @PathVariable hmppsId: String,
+    @RequestParam startDate: String,
+    @RequestParam endDate: String,
+    @RequestParam prisonId: String?,
+    @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<List<HistoricalAttendance>?> {
     val response = getHistoricalAttendancesService.execute(hmppsId, startDate, endDate, prisonId, filters)
 

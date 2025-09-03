@@ -40,8 +40,8 @@ class PrisonerBaseLocationController(
     ],
   )
   fun getPrisonerBaseLocation(
-      @Parameter(description = "A HMPPS id", example = "A123123") @PathVariable hmppsId: String,
-      @RequestAttribute filters: ConsumerFilters?,
+    @Parameter(description = "A HMPPS id", example = "A123123") @PathVariable hmppsId: String,
+    @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<PrisonerBaseLocation?> {
     featureFlag.require(FeatureFlagConfig.USE_PRISONER_BASE_LOCATION_ENDPOINT)
 

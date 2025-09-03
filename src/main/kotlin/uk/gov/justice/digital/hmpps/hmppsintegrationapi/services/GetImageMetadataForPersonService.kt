@@ -15,8 +15,8 @@ class GetImageMetadataForPersonService(
   @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(
-      hmppsId: String,
-      filters: ConsumerFilters?,
+    hmppsId: String,
+    filters: ConsumerFilters?,
   ): Response<List<ImageMetadata>> {
     val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)
     if (personResponse.errors.isNotEmpty()) {

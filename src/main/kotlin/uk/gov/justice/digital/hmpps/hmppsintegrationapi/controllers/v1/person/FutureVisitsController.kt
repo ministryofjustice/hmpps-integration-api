@@ -41,8 +41,8 @@ class FutureVisitsController(
     ],
   )
   fun getFutureVisits(
-      @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
-      @RequestAttribute filters: ConsumerFilters?,
+    @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
+    @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<List<Visit>?> {
     val response = getFutureVisitsService.execute(hmppsId, filters)
 

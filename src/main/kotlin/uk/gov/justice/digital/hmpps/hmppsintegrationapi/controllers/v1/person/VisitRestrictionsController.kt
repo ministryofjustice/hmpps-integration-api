@@ -44,8 +44,8 @@ class VisitRestrictionsController(
     ],
   )
   fun getRestrictionsForPerson(
-      @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
-      @RequestAttribute filters: ConsumerFilters?,
+    @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
+    @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<List<PersonVisitRestriction>?> {
     val response = getVisitRestrictionsForPersonService.execute(hmppsId, filters = filters)
 
@@ -72,9 +72,9 @@ class VisitRestrictionsController(
   )
   @GetMapping("/visitor/{contactId}/restrictions")
   fun getVisitorRestrictions(
-      @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
-      @Parameter(description = "A contact ID") @PathVariable contactId: String,
-      @RequestAttribute filters: ConsumerFilters?,
+    @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
+    @Parameter(description = "A contact ID") @PathVariable contactId: String,
+    @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<PrisonerContactRestrictions?> {
     val stringifiedContactId = contactId.toLongOrNull() ?: throw ValidationException("Invalid contact ID")
     val response = getVisitorRestrictionsService.execute(hmppsId, stringifiedContactId, filters)

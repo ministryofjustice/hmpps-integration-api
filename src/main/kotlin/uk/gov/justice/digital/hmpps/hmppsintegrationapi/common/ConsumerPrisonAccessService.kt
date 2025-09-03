@@ -9,9 +9,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 @Service
 class ConsumerPrisonAccessService {
   fun <T> checkConsumerHasPrisonAccess(
-      prisonId: String?,
-      filters: ConsumerFilters?,
-      upstreamServiceType: UpstreamApi = UpstreamApi.PRISON_API,
+    prisonId: String?,
+    filters: ConsumerFilters?,
+    upstreamServiceType: UpstreamApi = UpstreamApi.PRISON_API,
   ): Response<T?> {
     val response = Response<T?>(data = null, errors = emptyList<UpstreamApiError>())
     if (filters != null && !filters.matchesPrison(prisonId)) {

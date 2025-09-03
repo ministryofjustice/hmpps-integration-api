@@ -15,8 +15,8 @@ class GetFutureVisitsService(
   @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(
-      hmppsId: String,
-      filters: ConsumerFilters?,
+    hmppsId: String,
+    filters: ConsumerFilters?,
   ): Response<List<Visit>?> {
     val (person, personErrors) = getPersonService.getPersonWithPrisonFilter(hmppsId, filters)
     if (personErrors.isNotEmpty()) {

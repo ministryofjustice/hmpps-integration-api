@@ -41,9 +41,9 @@ class ActivitiesQueueService(
   private val activitiesQueueUrl by lazy { activitiesQueue.queueUrl }
 
   fun sendAttendanceUpdateRequest(
-      attendanceUpdateRequests: List<AttendanceUpdateRequest>,
-      who: String,
-      filters: ConsumerFilters?,
+    attendanceUpdateRequests: List<AttendanceUpdateRequest>,
+    who: String,
+    filters: ConsumerFilters?,
   ): Response<HmppsMessageResponse?> {
     for (attendanceUpdateRequest in attendanceUpdateRequests) {
       if (attendanceUpdateRequest.status == "TestEvent") {
@@ -71,10 +71,10 @@ class ActivitiesQueueService(
   }
 
   fun sendPrisonerDeallocationRequest(
-      scheduleId: Long,
-      prisonerDeallocationRequest: PrisonerDeallocationRequest,
-      who: String,
-      filters: ConsumerFilters?,
+    scheduleId: Long,
+    prisonerDeallocationRequest: PrisonerDeallocationRequest,
+    who: String,
+    filters: ConsumerFilters?,
   ): Response<HmppsMessageResponse?> {
     if (prisonerDeallocationRequest.reasonCode == "TestEvent") {
       val testMessage = prisonerDeallocationRequest.toTestMessage(actionedBy = who)
@@ -104,10 +104,10 @@ class ActivitiesQueueService(
   }
 
   fun sendPrisonerAllocationRequest(
-      scheduleId: Long,
-      prisonerAllocationRequest: PrisonerAllocationRequest,
-      who: String,
-      filters: ConsumerFilters?,
+    scheduleId: Long,
+    prisonerAllocationRequest: PrisonerAllocationRequest,
+    who: String,
+    filters: ConsumerFilters?,
   ): Response<HmppsMessageResponse?> {
     if (prisonerAllocationRequest.testEvent == "TestEvent") {
       val testMessage = prisonerAllocationRequest.toTestMessage(actionedBy = who)
@@ -195,9 +195,9 @@ class ActivitiesQueueService(
   }
 
   private fun validatePayBand(
-      schedule: ActivitiesActivityScheduleDetailed,
-      request: PrisonerAllocationRequest,
-      filters: ConsumerFilters?,
+    schedule: ActivitiesActivityScheduleDetailed,
+    request: PrisonerAllocationRequest,
+    filters: ConsumerFilters?,
   ): Response<HmppsMessageResponse?>? {
     val isPaid = schedule.activity.paid
     val payBandId = request.payBandId
@@ -278,9 +278,9 @@ class ActivitiesQueueService(
   }
 
   private fun validateWaitingListApplications(
-      scheduleId: Long,
-      prisonerNumber: String,
-      filters: ConsumerFilters?,
+    scheduleId: Long,
+    prisonerNumber: String,
+    filters: ConsumerFilters?,
   ): Response<HmppsMessageResponse?>? {
     val waitingListsResposne = getWaitingListApplicationsByScheduleIdService.execute(scheduleId, filters)
     if (waitingListsResposne.errors.isNotEmpty()) {

@@ -41,8 +41,8 @@ class ProtectedCharacteristicsController(
     ],
   )
   fun getProtectedCharacteristics(
-      @Parameter(description = "The HMPPS ID of the person", example = "G2996UX") @PathVariable hmppsId: String,
-      @RequestAttribute filters: ConsumerFilters?,
+    @Parameter(description = "The HMPPS ID of the person", example = "G2996UX") @PathVariable hmppsId: String,
+    @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<PersonProtectedCharacteristics?> {
     val response = getProtectedCharacteristicsService.execute(hmppsId, filters)
 

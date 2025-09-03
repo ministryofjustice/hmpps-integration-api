@@ -13,8 +13,8 @@ class GetActivitiesSuitabilityCriteriaService(
   @Autowired val getScheduleDetailsService: GetScheduleDetailsService,
 ) {
   fun execute(
-      scheduleId: Long,
-      filters: ConsumerFilters? = null,
+    scheduleId: Long,
+    filters: ConsumerFilters? = null,
   ): Response<SuitabilityCriteria?> {
     val checkPrisonCode = getScheduleDetailsService.execute(scheduleId, filters)
     if (checkPrisonCode.errors.isNotEmpty()) {

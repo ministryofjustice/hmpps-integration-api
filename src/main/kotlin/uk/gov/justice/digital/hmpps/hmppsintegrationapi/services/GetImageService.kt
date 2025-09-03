@@ -16,9 +16,9 @@ class GetImageService(
   fun getById(id: Int): Response<ByteArray> = prisonApiGateway.getImageData(id)
 
   fun execute(
-      id: Int,
-      hmppsId: String,
-      filters: ConsumerFilters?,
+    id: Int,
+    hmppsId: String,
+    filters: ConsumerFilters?,
   ): Response<ByteArray?> {
     val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)
     if (personResponse.errors.isNotEmpty()) {

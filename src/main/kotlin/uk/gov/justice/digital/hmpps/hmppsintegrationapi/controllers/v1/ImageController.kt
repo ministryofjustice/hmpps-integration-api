@@ -68,9 +68,9 @@ class ImageController(
     ],
   )
   fun getImage(
-      @PathVariable id: Int,
-      @PathVariable hmppsId: String,
-      @RequestAttribute filters: ConsumerFilters?,
+    @PathVariable id: Int,
+    @PathVariable hmppsId: String,
+    @RequestAttribute filters: ConsumerFilters?,
   ): ResponseEntity<ByteArray> {
     val response = getImageService.execute(id, hmppsId, filters)
 

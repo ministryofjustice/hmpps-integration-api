@@ -37,9 +37,9 @@ class VisitQueueService(
   private val visitsQueueUrl by lazy { visitsQueue.queueUrl }
 
   fun sendCreateVisit(
-      createVisitRequest: CreateVisitRequest,
-      who: String,
-      filters: ConsumerFilters?,
+    createVisitRequest: CreateVisitRequest,
+    who: String,
+    filters: ConsumerFilters?,
   ): Response<HmppsMessageResponse?> {
     val checkVisitNoteTypesUniqueResponse = checkVisitNoteTypesUnique(createVisitRequest.visitNotes)
     if (checkVisitNoteTypesUniqueResponse.errors.isNotEmpty()) {
@@ -73,10 +73,10 @@ class VisitQueueService(
   }
 
   fun sendUpdateVisit(
-      visitReference: String,
-      updateVisitRequest: UpdateVisitRequest,
-      who: String,
-      filters: ConsumerFilters?,
+    visitReference: String,
+    updateVisitRequest: UpdateVisitRequest,
+    who: String,
+    filters: ConsumerFilters?,
   ): Response<HmppsMessageResponse?> {
     val checkVisitNoteTypesUniqueResponse = checkVisitNoteTypesUnique(updateVisitRequest.visitNotes)
     if (checkVisitNoteTypesUniqueResponse.errors.isNotEmpty()) {
@@ -102,10 +102,10 @@ class VisitQueueService(
   }
 
   fun sendCancelVisit(
-      visitReference: String,
-      cancelVisitRequest: CancelVisitRequest,
-      who: String,
-      filters: ConsumerFilters?,
+    visitReference: String,
+    cancelVisitRequest: CancelVisitRequest,
+    who: String,
+    filters: ConsumerFilters?,
   ): Response<HmppsMessageResponse?> {
     val visitResponse = getVisitInformationByReferenceService.execute(visitReference, filters)
 

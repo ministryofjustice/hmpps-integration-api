@@ -13,11 +13,11 @@ class GetHistoricalAttendancesService(
   @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(
-      prisonerNumber: String,
-      startDate: String,
-      endDate: String,
-      prisonId: String?,
-      filters: ConsumerFilters?,
+    prisonerNumber: String,
+    startDate: String,
+    endDate: String,
+    prisonId: String?,
+    filters: ConsumerFilters?,
   ): Response<List<HistoricalAttendance>?> {
     val getPersonServiceResponse = getPersonService.getPersonWithPrisonFilter(prisonerNumber, filters)
     if (getPersonServiceResponse.errors.isNotEmpty()) {
