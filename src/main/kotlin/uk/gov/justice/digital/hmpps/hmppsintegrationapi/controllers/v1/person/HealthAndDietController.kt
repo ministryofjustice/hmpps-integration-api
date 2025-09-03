@@ -45,8 +45,8 @@ class HealthAndDietController(
   @Tag(name = "Reception")
   @GetMapping("/{hmppsId}/health-and-diet")
   fun getHealthAndDiet(
-      @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
-      @RequestAttribute filters: ConsumerFilters?,
+    @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
+    @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<HealthAndDiet?> {
     val response = getHealthAndDietService.execute(hmppsId, filters)
 

@@ -15,11 +15,11 @@ class GetAlertsForPersonService(
   @Autowired val prisonerAlertsGateway: PrisonerAlertsGateway,
 ) {
   fun getAlerts(
-      hmppsId: String,
-      filters: ConsumerFilters?,
-      page: Int,
-      perPage: Int,
-      alertCodes: List<String> = emptyList(),
+    hmppsId: String,
+    filters: ConsumerFilters?,
+    page: Int,
+    perPage: Int,
+    alertCodes: List<String> = emptyList(),
   ): Response<PaginatedAlerts?> {
     val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)
 

@@ -46,9 +46,9 @@ class BalancesController(
     ],
   )
   fun getBalancesForPerson(
-      @PathVariable hmppsId: String,
-      @PathVariable prisonId: String,
-      @RequestAttribute filters: ConsumerFilters?,
+    @PathVariable hmppsId: String,
+    @PathVariable prisonId: String,
+    @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<Balances?> {
     val response = getBalancesForPersonService.execute(prisonId, hmppsId, filters = filters)
 
@@ -80,10 +80,10 @@ class BalancesController(
     ],
   )
   fun getBalanceForPerson(
-      @PathVariable hmppsId: String,
-      @PathVariable prisonId: String,
-      @PathVariable accountCode: String,
-      @RequestAttribute filters: ConsumerFilters?,
+    @PathVariable hmppsId: String,
+    @PathVariable prisonId: String,
+    @PathVariable accountCode: String,
+    @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<Balance?> {
     val response = getBalancesForPersonService.getBalance(prisonId, hmppsId, accountCode, filters = filters)
 

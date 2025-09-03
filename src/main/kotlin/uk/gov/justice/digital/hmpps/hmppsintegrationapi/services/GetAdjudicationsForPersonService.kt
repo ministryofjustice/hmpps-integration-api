@@ -13,8 +13,8 @@ class GetAdjudicationsForPersonService(
   @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(
-      hmppsId: String,
-      filters: ConsumerFilters? = null,
+    hmppsId: String,
+    filters: ConsumerFilters? = null,
   ): Response<List<Adjudication>> {
     val personResponse = getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters = filters)
     val nomisNumber = personResponse.data?.identifiers?.nomisNumber

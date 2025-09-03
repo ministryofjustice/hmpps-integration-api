@@ -15,8 +15,8 @@ class GetActivitiesScheduleService(
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
 ) {
   fun execute(
-      activityId: Long,
-      filters: ConsumerFilters?,
+    activityId: Long,
+    filters: ConsumerFilters?,
   ): Response<List<ActivitySchedule>?> {
     val activitiesScheduleResponse = activitiesGateway.getActivitySchedules(activityId)
     if (activitiesScheduleResponse.errors.isNotEmpty()) {

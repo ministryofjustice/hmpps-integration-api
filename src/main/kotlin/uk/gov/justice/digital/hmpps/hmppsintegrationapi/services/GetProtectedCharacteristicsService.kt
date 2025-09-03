@@ -22,8 +22,8 @@ class GetProtectedCharacteristicsService(
   private val deliusGateway: NDeliusGateway,
 ) {
   fun execute(
-      hmppsId: String,
-      filters: ConsumerFilters?,
+    hmppsId: String,
+    filters: ConsumerFilters?,
   ): Response<PersonProtectedCharacteristics?> {
     val hmppsIdType = getPersonService.identifyHmppsId(hmppsId)
     if (hmppsIdType == IdentifierType.UNKNOWN) {

@@ -15,8 +15,8 @@ class GetAttendanceByIdService(
   @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(
-      attendanceId: Long,
-      filters: ConsumerFilters?,
+    attendanceId: Long,
+    filters: ConsumerFilters?,
   ): Response<Attendance?> {
     val attendanceResponse = activitiesGateway.getAttendanceById(attendanceId)
     if (attendanceResponse.errors.isNotEmpty()) {

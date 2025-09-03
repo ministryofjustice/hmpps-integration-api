@@ -17,14 +17,14 @@ class GetVisitsService(
   @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(
-      hmppsId: String? = null,
-      prisonId: String,
-      fromDate: String?,
-      toDate: String?,
-      visitStatus: String,
-      page: Int,
-      size: Int,
-      filters: ConsumerFilters? = null,
+    hmppsId: String? = null,
+    prisonId: String,
+    fromDate: String?,
+    toDate: String?,
+    visitStatus: String,
+    page: Int,
+    size: Int,
+    filters: ConsumerFilters? = null,
   ): Response<PaginatedVisits?> {
     val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<PaginatedVisits?>(prisonId, filters, upstreamServiceType = UpstreamApi.MANAGE_PRISON_VISITS)
 

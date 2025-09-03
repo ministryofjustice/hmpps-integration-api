@@ -11,8 +11,8 @@ class GetNameForPersonService(
   @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(
-      hmppsId: String,
-      filters: ConsumerFilters?,
+    hmppsId: String,
+    filters: ConsumerFilters?,
   ): Response<PersonName?> {
     val personResponse = getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)
 

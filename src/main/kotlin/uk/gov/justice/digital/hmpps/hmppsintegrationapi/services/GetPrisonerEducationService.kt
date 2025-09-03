@@ -15,8 +15,8 @@ class GetPrisonerEducationService(
   @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(
-      hmppsId: String,
-      filters: ConsumerFilters? = null,
+    hmppsId: String,
+    filters: ConsumerFilters? = null,
   ): Response<PrisonerEducation?> {
     val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId = hmppsId, filters = filters)
     if (personResponse.errors.isNotEmpty()) {

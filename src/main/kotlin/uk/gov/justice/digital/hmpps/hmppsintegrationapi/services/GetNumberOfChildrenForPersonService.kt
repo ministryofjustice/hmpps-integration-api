@@ -13,8 +13,8 @@ class GetNumberOfChildrenForPersonService(
   @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(
-      hmppsId: String,
-      filters: ConsumerFilters? = null,
+    hmppsId: String,
+    filters: ConsumerFilters? = null,
   ): Response<NumberOfChildren?> {
     val personResponse = getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters = filters)
     val nomisNumber = personResponse.data?.identifiers?.nomisNumber ?: return Response(data = null, errors = personResponse.errors)

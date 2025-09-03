@@ -17,8 +17,8 @@ class GetPrisonerBaseLocationForPersonService(
   @Autowired private val prisonerBaseLocationGateway: PrisonerBaseLocationGateway,
 ) {
   fun execute(
-      hmppsId: String,
-      filters: ConsumerFilters?,
+    hmppsId: String,
+    filters: ConsumerFilters?,
   ): Response<PrisonerBaseLocation?> {
     val personResponse = getPersonService.getNomisNumber(hmppsId)
     if (personResponse.errors.isNotEmpty()) {

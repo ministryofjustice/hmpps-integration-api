@@ -15,8 +15,8 @@ class GetWaitingListApplicationsByScheduleIdService(
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
 ) {
   fun execute(
-      scheduleId: Long,
-      filters: ConsumerFilters?,
+    scheduleId: Long,
+    filters: ConsumerFilters?,
   ): Response<List<WaitingListApplication>?> {
     val scheduleDetailsResponse = activitiesGateway.getActivityScheduleById(scheduleId)
     if (scheduleDetailsResponse.errors.isNotEmpty()) {

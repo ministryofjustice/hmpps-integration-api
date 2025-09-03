@@ -17,8 +17,8 @@ class GetHmppsIdService(
   private val deliusGateway: NDeliusGateway,
 ) : CrnSupplier {
   fun execute(
-      nomisNumber: String,
-      filters: ConsumerFilters? = null,
+    nomisNumber: String,
+    filters: ConsumerFilters? = null,
   ): Response<HmppsId?> {
     val (person, personErrors) = getPersonService.getPersonWithPrisonFilter(nomisNumber, filters)
     if (personErrors.isNotEmpty()) {

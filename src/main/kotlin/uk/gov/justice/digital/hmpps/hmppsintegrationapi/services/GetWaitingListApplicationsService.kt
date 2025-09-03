@@ -16,11 +16,11 @@ class GetWaitingListApplicationsService(
   @Autowired private val consumerPrisonAccessService: ConsumerPrisonAccessService,
 ) {
   fun execute(
-      prisonId: String,
-      waitingListSearchRequest: WaitingListSearchRequest,
-      filters: ConsumerFilters?,
-      page: Int = 1,
-      perPage: Int = 50,
+    prisonId: String,
+    waitingListSearchRequest: WaitingListSearchRequest,
+    filters: ConsumerFilters?,
+    page: Int = 1,
+    perPage: Int = 50,
   ): Response<PaginatedWaitingListApplications?> {
     val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<PaginatedWaitingListApplications>(prisonId, filters, UpstreamApi.ACTIVITIES)
     if (consumerPrisonFilterCheck.errors.isNotEmpty()) {

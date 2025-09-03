@@ -16,9 +16,9 @@ class GetResidentialHierarchyService(
   @Autowired val locationsInsidePrisonGateway: LocationsInsidePrisonGateway,
 ) {
   fun execute(
-      prisonId: String,
-      includeInactive: Boolean = false,
-      filters: ConsumerFilters?,
+    prisonId: String,
+    includeInactive: Boolean = false,
+    filters: ConsumerFilters?,
   ): Response<List<ResidentialHierarchyItem>?> {
     val checkAccess = consumerPrisonAccessService.checkConsumerHasPrisonAccess<List<ResidentialHierarchyItem>>(prisonId, filters)
     if (checkAccess.errors.isNotEmpty()) {

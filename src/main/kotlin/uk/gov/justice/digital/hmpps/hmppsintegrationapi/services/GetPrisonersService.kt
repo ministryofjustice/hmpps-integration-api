@@ -14,11 +14,11 @@ class GetPrisonersService(
   @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
 ) {
   fun execute(
-      firstName: String?,
-      lastName: String?,
-      dateOfBirth: String?,
-      searchWithinAliases: Boolean = false,
-      filters: ConsumerFilters?,
+    firstName: String?,
+    lastName: String?,
+    dateOfBirth: String?,
+    searchWithinAliases: Boolean = false,
+    filters: ConsumerFilters?,
   ): Response<List<PersonInPrison>> {
     val prisonIds = filters?.prisons
     val responseFromPrisonerOffenderSearch =

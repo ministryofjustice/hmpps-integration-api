@@ -17,10 +17,10 @@ class GetTransactionForPersonService(
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
 ) {
   fun execute(
-      hmppsId: String,
-      prisonId: String,
-      clientUniqueRef: String,
-      filters: ConsumerFilters? = null,
+    hmppsId: String,
+    prisonId: String,
+    clientUniqueRef: String,
+    filters: ConsumerFilters? = null,
   ): Response<Transaction?> {
     val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<Transaction>(prisonId, filters)
 

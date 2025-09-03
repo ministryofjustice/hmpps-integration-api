@@ -16,8 +16,8 @@ class GetLatestSentenceKeyDatesAndAdjustmentsForPersonService(
   private val getPersonService: GetPersonService,
 ) {
   fun execute(
-      hmppsId: String,
-      filters: ConsumerFilters?,
+    hmppsId: String,
+    filters: ConsumerFilters?,
   ): Response<LatestSentenceKeyDatesAndAdjustments?> {
     val (person, personErrors) = getPersonService.getPersonWithPrisonFilter(hmppsId, filters)
 

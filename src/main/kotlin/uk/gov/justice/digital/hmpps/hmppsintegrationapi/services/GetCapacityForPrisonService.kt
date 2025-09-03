@@ -16,8 +16,8 @@ class GetCapacityForPrisonService(
   @Autowired val locationsInsidePrisonGateway: LocationsInsidePrisonGateway,
 ) {
   fun execute(
-      prisonId: String,
-      filters: ConsumerFilters?,
+    prisonId: String,
+    filters: ConsumerFilters?,
   ): Response<PrisonCapacity?> {
     val checkAccess = consumerPrisonAccessService.checkConsumerHasPrisonAccess<PrisonCapacity>(prisonId, filters)
 

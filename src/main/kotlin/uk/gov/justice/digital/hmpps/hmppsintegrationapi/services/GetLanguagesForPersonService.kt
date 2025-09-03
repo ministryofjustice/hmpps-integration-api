@@ -15,8 +15,8 @@ class GetLanguagesForPersonService(
   @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(
-      hmppsId: String,
-      filters: ConsumerFilters? = null,
+    hmppsId: String,
+    filters: ConsumerFilters? = null,
   ): Response<List<Language>?> {
     val personResponse = getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters = filters)
     if (personResponse.errors.isNotEmpty()) {

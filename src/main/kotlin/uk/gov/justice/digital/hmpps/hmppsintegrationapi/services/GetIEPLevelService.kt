@@ -15,8 +15,8 @@ class GetIEPLevelService(
   @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(
-      prisonerId: String,
-      filter: ConsumerFilters?,
+    prisonerId: String,
+    filter: ConsumerFilters?,
   ): Response<IEPLevel?> {
     val personResponse = getPersonService.getNomisNumberWithPrisonFilter(prisonerId, filter)
     if (personResponse.errors.isNotEmpty()) {

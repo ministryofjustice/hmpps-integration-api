@@ -18,10 +18,10 @@ class PostTransactionTransferForPersonService(
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
 ) {
   fun execute(
-      prisonId: String,
-      hmppsId: String,
-      transactionTransferRequest: TransactionTransferRequest,
-      filters: ConsumerFilters? = null,
+    prisonId: String,
+    hmppsId: String,
+    transactionTransferRequest: TransactionTransferRequest,
+    filters: ConsumerFilters? = null,
   ): Response<TransactionTransferCreateResponse?> {
     val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<TransactionTransferCreateResponse?>(prisonId, filters)
 

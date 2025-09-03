@@ -43,10 +43,10 @@ class AdjudicationsController(
     ],
   )
   fun getPersonAdjudications(
-      @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
-      @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
-      @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "8", name = "perPage") perPage: Int,
-      @RequestAttribute filters: ConsumerFilters?,
+    @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
+    @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
+    @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "8", name = "perPage") perPage: Int,
+    @RequestAttribute filters: ConsumerFilters?,
   ): PaginatedResponse<Adjudication> {
     val response = getAdjudicationsForPersonService.execute(hmppsId, filters)
 

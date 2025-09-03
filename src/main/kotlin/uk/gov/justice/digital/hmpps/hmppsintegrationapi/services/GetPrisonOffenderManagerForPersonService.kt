@@ -15,8 +15,8 @@ class GetPrisonOffenderManagerForPersonService(
   @Autowired val managePOMCaseGateway: ManagePOMCaseGateway,
 ) {
   fun execute(
-      hmppsId: String,
-      filters: ConsumerFilters?,
+    hmppsId: String,
+    filters: ConsumerFilters?,
   ): Response<PrisonOffenderManager?> {
     val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)
     if (personResponse.errors.isNotEmpty()) {

@@ -16,12 +16,12 @@ class GetScheduledInstancesForPrisonerService(
   @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(
-      prisonId: String,
-      hmppsId: String,
-      startDate: String,
-      endDate: String,
-      slot: String?,
-      filters: ConsumerFilters?,
+    prisonId: String,
+    hmppsId: String,
+    startDate: String,
+    endDate: String,
+    slot: String?,
+    filters: ConsumerFilters?,
   ): Response<List<ActivityScheduledInstanceForPrisoner>?> {
     val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<List<ActivityScheduledInstanceForPrisoner>?>(prisonId, filters, upstreamServiceType = UpstreamApi.ACTIVITIES)
     if (consumerPrisonFilterCheck.errors.isNotEmpty()) {

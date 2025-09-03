@@ -16,8 +16,8 @@ class GetVisitInformationByReferenceService(
   @Autowired val prisonVisitsGateway: PrisonVisitsGateway,
 ) {
   fun execute(
-      visitReference: String,
-      filters: ConsumerFilters? = null,
+    visitReference: String,
+    filters: ConsumerFilters? = null,
   ): Response<Visit?> {
     val prisonVisitsResponse = prisonVisitsGateway.getVisitByReference(visitReference)
 

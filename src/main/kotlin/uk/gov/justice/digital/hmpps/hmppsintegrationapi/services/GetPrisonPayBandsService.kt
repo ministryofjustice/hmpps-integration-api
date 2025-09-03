@@ -15,8 +15,8 @@ class GetPrisonPayBandsService(
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
 ) {
   fun execute(
-      prisonId: String,
-      filters: ConsumerFilters?,
+    prisonId: String,
+    filters: ConsumerFilters?,
   ): Response<List<PrisonPayBand>?> {
     val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<List<PrisonPayBand>>(prisonId, filters, upstreamServiceType = UpstreamApi.ACTIVITIES)
     if (consumerPrisonFilterCheck.errors.isNotEmpty()) {

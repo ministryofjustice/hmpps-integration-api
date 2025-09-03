@@ -18,9 +18,9 @@ class GetVisitorRestrictionsService(
   @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(
-      hmppsId: String,
-      contactId: Long,
-      filters: ConsumerFilters?,
+    hmppsId: String,
+    contactId: Long,
+    filters: ConsumerFilters?,
   ): Response<PrisonerContactRestrictions?> {
     val personResponse = getPersonService.getPrisoner(hmppsId, filters)
 

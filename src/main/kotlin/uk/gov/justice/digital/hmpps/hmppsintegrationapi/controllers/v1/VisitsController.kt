@@ -69,8 +69,8 @@ class VisitsController(
   )
   @GetMapping("/{visitReference}")
   fun getVisitInformationByReference(
-      @Parameter(description = "The visit reference number relating to the visit.") @PathVariable visitReference: String,
-      @RequestAttribute filters: ConsumerFilters?,
+    @Parameter(description = "The visit reference number relating to the visit.") @PathVariable visitReference: String,
+    @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<Visit?> {
     val response = getVisitInformationByReferenceService.execute(visitReference, filters)
 
@@ -126,9 +126,9 @@ class VisitsController(
   )
   @PostMapping("")
   fun postVisit(
-      @Valid @RequestBody createVisitRequest: CreateVisitRequest,
-      @RequestAttribute clientName: String?,
-      @RequestAttribute filters: ConsumerFilters?,
+    @Valid @RequestBody createVisitRequest: CreateVisitRequest,
+    @RequestAttribute clientName: String?,
+    @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<HmppsMessageResponse?> {
     val response = visitQueueService.sendCreateVisit(createVisitRequest, clientName.orEmpty(), filters)
 
@@ -187,10 +187,10 @@ class VisitsController(
   )
   @PutMapping("/{visitReference}")
   fun putUpdateVisit(
-      @Valid @RequestBody updateVisitRequest: UpdateVisitRequest,
-      @Parameter(description = "The visit reference number relating to the visit.") @PathVariable visitReference: String,
-      @RequestAttribute clientName: String?,
-      @RequestAttribute filters: ConsumerFilters?,
+    @Valid @RequestBody updateVisitRequest: UpdateVisitRequest,
+    @Parameter(description = "The visit reference number relating to the visit.") @PathVariable visitReference: String,
+    @RequestAttribute clientName: String?,
+    @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<HmppsMessageResponse?> {
     val response = visitQueueService.sendUpdateVisit(visitReference, updateVisitRequest, clientName.orEmpty(), filters)
 
@@ -246,10 +246,10 @@ class VisitsController(
   )
   @PostMapping("/{visitReference}/cancel")
   fun postCancelVisit(
-      @Valid @RequestBody cancelVisitRequest: CancelVisitRequest,
-      @Parameter(description = "The visit reference number relating to the visit.") @PathVariable visitReference: String,
-      @RequestAttribute clientName: String?,
-      @RequestAttribute filters: ConsumerFilters?,
+    @Valid @RequestBody cancelVisitRequest: CancelVisitRequest,
+    @Parameter(description = "The visit reference number relating to the visit.") @PathVariable visitReference: String,
+    @RequestAttribute clientName: String?,
+    @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<HmppsMessageResponse?> {
     val response = visitQueueService.sendCancelVisit(visitReference, cancelVisitRequest, clientName.orEmpty(), filters)
 
@@ -295,9 +295,9 @@ class VisitsController(
   )
   @GetMapping("/id/by-client-ref/{clientReference}")
   fun getVisitReferencesByClientReference(
-      @Parameter(description = "The visit reference number relating to the visit.")
+    @Parameter(description = "The visit reference number relating to the visit.")
     @PathVariable clientReference: String,
-      @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<VisitReferences?> {
     val response = getVisitReferencesByClientReferenceService.execute(clientReference, filters)
 
