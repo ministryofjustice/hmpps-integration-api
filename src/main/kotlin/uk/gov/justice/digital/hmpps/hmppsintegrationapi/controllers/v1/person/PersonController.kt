@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.person
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.headers.Header
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -36,7 +37,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonalCar
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PhysicalCharacteristics
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerEducation
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitOrders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.interfaces.toPaginatedResponse
@@ -118,20 +118,20 @@ class PersonController(
     return response.data.paginateWith(page, perPage)
   }
 
-  @GetMapping("{encodedHmppsId}")
+  @GetMapping("{hmppsId}")
   @Operation(
     summary = "Returns a person.",
     responses = [
-      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a person with the provided HMPPS ID."),
+      ApiResponse(responseCode = "200", content = [Content(schema = Schema(implementation = OffenderSearchDataResponse::class))], description = "Successfully found a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
-      ApiResponse(responseCode = "303", description = "Redirect response due to person with the provided HMPPS ID being merged."),
+      ApiResponse(responseCode = "303", headers = [Header(name = "Location", description = "Redirect URL to the new person resource")], content = [Content()], description = "Redirect response due to person with the provided HMPPS ID being merged."),
     ],
   )
   fun getPerson(
-    @Parameter(description = "A URL-encoded HMPPS identifier", example = "2008%2F0545166T") @PathVariable encodedHmppsId: String,
-    @RequestAttribute clientName: String,
-  ): ResponseEntity<Response<OffenderSearchResponse>> {
+    @Parameter(description = "A HMPPS identifier", example = "X00001") @PathVariable("hmppsId") encodedHmppsId: String,
+    @RequestAttribute clientName: String?,
+  ): ResponseEntity<DataResponse<OffenderSearchResponse>> {
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getPersonService.getCombinedDataForPerson(hmppsId)
 
@@ -149,7 +149,7 @@ class PersonController(
         ResponseEntity
           .status(HttpStatus.SEE_OTHER)
           .header("Location", response.data.redirectUrl)
-          .body(Response(response.data as OffenderSearchResponse))
+          .build()
       }
       is OffenderSearchResult -> {
         val redactedData =
@@ -158,7 +158,7 @@ class PersonController(
           } else {
             response.data
           }
-        return ResponseEntity.ok<Response<OffenderSearchResponse>>(Response(redactedData))
+        return ResponseEntity.ok(DataResponse(redactedData))
       }
     }
   }
@@ -508,3 +508,8 @@ class PersonController(
 }
 
 private const val REDACTED = "**REDACTED**"
+
+// Workaround for Swagger with generic around `@Schema` (`useReturnTypeSchema` is not applicable here)
+private data class OffenderSearchDataResponse(
+  val data: OffenderSearchResult,
+)
