@@ -102,6 +102,7 @@ authorisation:
     automated-test-client:
       roles:
         - "all-endpoints"
+        - "empty-prisons"
     config-v2-test:
       include:
         - "/v2/config/authorisation"
