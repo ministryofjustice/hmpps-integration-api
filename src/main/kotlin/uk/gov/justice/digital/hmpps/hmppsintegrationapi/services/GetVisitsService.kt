@@ -8,7 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedVi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 
 @Service
 class GetVisitsService(
@@ -24,7 +24,7 @@ class GetVisitsService(
     visitStatus: String,
     page: Int,
     size: Int,
-    filters: ConsumerFilters? = null,
+    filters: RoleFilters? = null,
   ): Response<PaginatedVisits?> {
     val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<PaginatedVisits?>(prisonId, filters, upstreamServiceType = UpstreamApi.MANAGE_PRISON_VISITS)
 

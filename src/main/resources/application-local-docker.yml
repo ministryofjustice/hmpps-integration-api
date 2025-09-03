@@ -27,18 +27,17 @@ authorisation:
     automated-test-client:
       roles:
         - "full-access"
-      filters:
+        - "empty-filters"
     config-v2-test:
       include:
         - "/v2/config/authorisation"
-      filters:
-        prisons:
-          - XYZ
+      roles:
+        - "prison-XYZ-only"
     all-access:
       include:
         - "/.*"
-      filters:
-
+      roles:
+        - "empty-filters"
 hmpps.sqs:
   provider: localstack
   localstackUrl: http://local-stack-aws:4566

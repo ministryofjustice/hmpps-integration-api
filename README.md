@@ -1,4 +1,4 @@
-# HMPPS Integration API <!-- omit in toc -->
+# HMPPS External API <!-- omit in toc -->
 
 [![CircleCI](https://circleci.com/gh/ministryofjustice/hmpps-integration-api/tree/main.svg?style=svg)](https://circleci.com/gh/ministryofjustice/hmpps-integration-api)
 [![API docs](https://img.shields.io/badge/API_docs_-view-85EA2D.svg?logo=swagger)](https://ministryofjustice.github.io/hmpps-integration-api)
@@ -26,7 +26,11 @@
 ## About this project
 
 A long-lived API that exposes data from HMPPS systems such as the National Offender Management Information System (NOMIS), nDelius (probation system) and Offender Assessment System (OASys), providing a single point of entry for
-consumers. It's built using [Spring Boot](https://spring.io/projects/spring-boot/) and [Kotlin](https://kotlinlang.org/)
+consumers.
+
+Formerly named the "HMPPS Integration API", it was renamed to "HMPPS External API" in September 2025, though many references to the old name persist.
+
+It is built using [Spring Boot](https://spring.io/projects/spring-boot/) and [Kotlin](https://kotlinlang.org/)
 as well as the following technologies for its infrastructure:
 
 - [AWS](https://aws.amazon.com/) - Services utilise AWS features through Cloud Platform such

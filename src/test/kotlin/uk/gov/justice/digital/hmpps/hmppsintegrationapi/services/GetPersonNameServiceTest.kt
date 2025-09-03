@@ -14,7 +14,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonName
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 
 @ContextConfiguration(
@@ -28,7 +28,7 @@ internal class GetPersonNameServiceTest(
     {
       val persona = personInProbationAndNomisPersona
       val hmppsId = persona.identifiers.nomisNumber!!
-      val filters = ConsumerFilters(null)
+      val filters = RoleFilters(null)
       val person = Person(firstName = persona.firstName, lastName = persona.lastName)
 
       beforeEach {

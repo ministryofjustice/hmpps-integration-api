@@ -18,7 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nonAssociation.NonAssociation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nonAssociation.NonAssociationPrisonerDetails
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nonAssociation.NonAssociations
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersNonAssociationsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
@@ -148,7 +148,7 @@ class OffenderRestrictionsControllerTest(
     it("returns 404 not found if person not found in prison") {
       val errors = listOf(UpstreamApiError(type = UpstreamApiError.Type.ENTITY_NOT_FOUND, causedBy = UpstreamApi.NON_ASSOCIATIONS, description = "No prison associated with prisoner"))
       val wrongPrisonId = "MDI"
-      whenever(getPrisonersNonAssociationsService.execute(hmppsId, wrongPrisonId, includeOpen = "true", includeClosed = "false", filters = ConsumerFilters(listOf("XYZ")))).thenReturn(
+      whenever(getPrisonersNonAssociationsService.execute(hmppsId, wrongPrisonId, includeOpen = "true", includeClosed = "false", filters = RoleFilters(listOf("XYZ")))).thenReturn(
         Response(
           data = null,
           errors,

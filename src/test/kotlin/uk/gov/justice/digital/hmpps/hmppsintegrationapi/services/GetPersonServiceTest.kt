@@ -40,7 +40,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffenders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPaginatedPrisoners
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSSort
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInNomisOnlyPersona
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationOnlyPersona
@@ -60,8 +60,8 @@ internal class GetPersonServiceTest(
       val invalidNomsNumber = "N1234PSX"
       val prisonId = "ABC"
       val wrongPrisonId = "XYZ"
-      val filters = ConsumerFilters(listOf(prisonId))
-      val blankConsumerFilters = ConsumerFilters(null)
+      val filters = RoleFilters(listOf(prisonId))
+      val blankRoleFilters = RoleFilters(null)
 
       val personaInProbationAndPrison = personInProbationAndNomisPersona
       val personOnProbation = personaInProbationAndPrison.run { PersonOnProbation(Person(firstName = firstName, lastName = lastName, identifiers = identifiers), underActiveSupervision = true) }
@@ -421,7 +421,7 @@ internal class GetPersonServiceTest(
             Response(data = POSPrisoner(firstName = "Sam", lastName = "Mills", youthOffender = false)),
           )
 
-          val result = getPersonService.getPrisoner(validHmppsId, blankConsumerFilters)
+          val result = getPersonService.getPrisoner(validHmppsId, blankRoleFilters)
           result.data.shouldBeTypeOf<PersonInPrison>()
           result.data.firstName.shouldBe(person.firstName)
           result.data.lastName.shouldBe(person.lastName)
@@ -432,14 +432,14 @@ internal class GetPersonServiceTest(
           val errors = listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = null, errors))
 
-          val result = getPersonService.getPrisoner(nomsNumber, blankConsumerFilters)
+          val result = getPersonService.getPrisoner(nomsNumber, blankRoleFilters)
           result.data.shouldBe(null)
           result.errors.shouldBe(errors)
         }
 
         it("returns error when invalid hmppsId is provided") {
           val invalidHmppsId = "invalid_id"
-          val result = getPersonService.getPrisoner(invalidHmppsId, blankConsumerFilters)
+          val result = getPersonService.getPrisoner(invalidHmppsId, blankRoleFilters)
           result.data.shouldBe(null)
           result.errors.shouldBe(
             listOf(
@@ -458,7 +458,7 @@ internal class GetPersonServiceTest(
             Response(data = null, errors),
           )
 
-          val result = getPersonService.getPrisoner(crnNumber, blankConsumerFilters)
+          val result = getPersonService.getPrisoner(crnNumber, blankRoleFilters)
           result.data.shouldBe(null)
           result.errors.shouldBe(errors)
         }
@@ -481,19 +481,19 @@ internal class GetPersonServiceTest(
         }
 
         it("returns prisoner if no prison filter present") {
-          val result = getPersonService.getPrisoner(nomsNumber, ConsumerFilters(prisons = null))
+          val result = getPersonService.getPrisoner(nomsNumber, RoleFilters(prisons = null))
           result.data.shouldBe(prisoner.toPersonInPrison())
           result.errors.shouldBe(emptyList())
         }
 
         it("returns null if no prisons in prison filter") {
-          val result = getPersonService.getPrisoner(nomsNumber, ConsumerFilters(prisons = emptyList()))
+          val result = getPersonService.getPrisoner(nomsNumber, RoleFilters(prisons = emptyList()))
           result.data.shouldBe(null)
           result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
         }
 
         it("does not return prisoners who are missing prison ID") {
-          val result = getPersonService.getPrisoner(nomsNumber, ConsumerFilters(prisons = listOf("ABC")))
+          val result = getPersonService.getPrisoner(nomsNumber, RoleFilters(prisons = listOf("ABC")))
           result.data.shouldBe(null)
           result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
         }
@@ -560,7 +560,7 @@ internal class GetPersonServiceTest(
         it("if filters are null, we get data from delius") {
           whenever(deliusGateway.getPerson(id = nomsNumber)).thenReturn(Response(data = personOnProbation))
 
-          val result = getPersonService.getPersonWithPrisonFilter(nomsNumber, blankConsumerFilters)
+          val result = getPersonService.getPersonWithPrisonFilter(nomsNumber, blankRoleFilters)
           result.data.shouldBe(personOnProbation)
         }
 
@@ -571,7 +571,7 @@ internal class GetPersonServiceTest(
             Response(data = null, errors = errors),
           )
 
-          val result = getPersonService.getPersonWithPrisonFilter(nomsNumber, blankConsumerFilters)
+          val result = getPersonService.getPersonWithPrisonFilter(nomsNumber, blankRoleFilters)
           val person = prisonerWithPrisonId.toPerson()
           result.data.shouldNotBeNull()
           result.data.firstName.shouldBe(person.firstName)
@@ -586,7 +586,7 @@ internal class GetPersonServiceTest(
             Response(data = null, errors = errors),
           )
 
-          val result = getPersonService.getPersonWithPrisonFilter(nomsNumber, blankConsumerFilters)
+          val result = getPersonService.getPersonWithPrisonFilter(nomsNumber, blankRoleFilters)
           result.data.shouldBe(null)
           result.errors.shouldBe(errors)
         }

@@ -23,7 +23,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedCa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCaseNotesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.time.LocalDateTime
@@ -40,7 +40,7 @@ class CaseNotesControllerTest(
       val startDate: LocalDateTime = LocalDateTime.now()
       val endDate: LocalDateTime = LocalDateTime.now()
       val path = "/v1/persons/$hmppsId/case-notes?startDate=$startDate&endDate=$endDate"
-      val caseNoteFilter = CaseNoteFilter(hmppsId, startDate, endDate)
+      val caseNoteFilter = CaseNoteFilter(hmppsId, startDate, endDate, null)
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
       val pageCaseNote =
         PaginatedCaseNotes(
@@ -84,7 +84,7 @@ class CaseNotesControllerTest(
             times(1),
           ).execute(
             caseNoteFilter,
-            ConsumerFilters(prisons = listOf("XYZ")),
+            RoleFilters(prisons = listOf("XYZ")),
           )
         }
 
@@ -97,7 +97,7 @@ class CaseNotesControllerTest(
             times(1),
           ).execute(
             specificCaseNoteFilter,
-            ConsumerFilters(prisons = null, caseNotes = listOf("CAB")),
+            RoleFilters(prisons = null, caseNotes = listOf("CAB")),
           )
         }
 
@@ -145,7 +145,7 @@ class CaseNotesControllerTest(
           result.response.status.shouldBe(HttpStatus.FORBIDDEN.value())
         }
 
-        it("returns a 400 when the upstream service returns entity not found") {
+        it("returns a 404 when the upstream service returns entity not found") {
           whenever(getCaseNotesForPersonService.execute(caseNoteFilter, filters)).thenReturn(
             Response(
               data = null,

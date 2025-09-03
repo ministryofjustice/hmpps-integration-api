@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonName
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 
 @Service
 class GetNameForPersonService(
@@ -12,7 +12,7 @@ class GetNameForPersonService(
 ) {
   fun execute(
     hmppsId: String,
-    filters: ConsumerFilters?,
+    filters: RoleFilters?,
   ): Response<PersonName?> {
     val personResponse = getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)
 

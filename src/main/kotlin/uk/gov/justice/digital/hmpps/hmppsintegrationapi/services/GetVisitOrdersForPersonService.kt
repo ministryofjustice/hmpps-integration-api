@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitOrders
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 
 @Service
 class GetVisitOrdersForPersonService(
@@ -16,7 +16,7 @@ class GetVisitOrdersForPersonService(
 ) {
   fun execute(
     hmppsId: String,
-    filters: ConsumerFilters? = null,
+    filters: RoleFilters? = null,
   ): Response<VisitOrders?> {
     val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)
     if (personResponse.errors.isNotEmpty()) {

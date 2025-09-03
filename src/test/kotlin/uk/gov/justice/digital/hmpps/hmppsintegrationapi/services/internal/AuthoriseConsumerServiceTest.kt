@@ -18,7 +18,7 @@ internal class AuthoriseConsumerServiceTest(
       val requestedPath = "/persons/123"
 
       describe("doesConsumerHaveIncludesAccess") {
-        val consumerConfig = ConsumerConfig(listOf("/persons/.*"), listOf(), null)
+        val consumerConfig = ConsumerConfig(listOf("/persons/.*"), listOf())
 
         it("access is allowed when the path is listed under that consumer") {
           val authResult =

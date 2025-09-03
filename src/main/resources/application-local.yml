@@ -71,15 +71,15 @@ authorisation:
   consumers:
     automated-test-client:
       roles:
-        - "full-access"
-      filters:
+        - "all-endpoints"
+        - "empty-filters"
     config-v2-test:
       include:
         - "/v2/config/authorisation"
-      filters:
-        prisons:
-          - XYZ
+      roles:
+        - "prison-XYZ-only"
     all-access:
       include:
         - "/.*"
-      filters:
+      roles:
+        - "empty-filters"

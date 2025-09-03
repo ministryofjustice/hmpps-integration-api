@@ -9,7 +9,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 
 @Service
 class GetHmppsIdService(
@@ -18,7 +18,7 @@ class GetHmppsIdService(
 ) : CrnSupplier {
   fun execute(
     nomisNumber: String,
-    filters: ConsumerFilters? = null,
+    filters: RoleFilters? = null,
   ): Response<HmppsId?> {
     val (person, personErrors) = getPersonService.getPersonWithPrisonFilter(nomisNumber, filters)
     if (personErrors.isNotEmpty()) {

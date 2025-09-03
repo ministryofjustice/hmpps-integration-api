@@ -44,7 +44,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitOrders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCareNeedsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetIEPLevelService
@@ -362,8 +362,7 @@ internal class PersonControllerTest(
                      "currentExclusion": true,
                      "exclusionMessage": "An exclusion exists"
                   }
-               },
-               "errors":[]
+               }
             }
             """.removeWhitespaceAndNewlines(),
           )
@@ -421,8 +420,7 @@ internal class PersonControllerTest(
                         "currentExclusion": true,
                         "exclusionMessage": "An exclusion exists"
                     }
-                },
-                "errors":[]
+                }
             }
             """.asResponseTrimmed()
 
@@ -452,8 +450,7 @@ internal class PersonControllerTest(
                         "exclusionMessage": "**REDACTED**"
                     },
                     "probationOffenderSearch": null
-                },
-                "errors":[]
+                }
             }
             """.asResponseTrimmed()
 
@@ -1061,7 +1058,7 @@ internal class PersonControllerTest(
           Mockito.reset(getPersonsService)
           Mockito.reset(auditService)
 
-          val filters = ConsumerFilters(prisons = emptyList())
+          val filters = RoleFilters(prisons = emptyList())
           whenever(getPersonService.getNomisNumberWithPrisonFilter(sanitisedHmppsId, filters)).thenReturn(Response(NomisNumber("A1234AA")))
         }
 
@@ -1284,7 +1281,7 @@ internal class PersonControllerTest(
           Mockito.reset(getPersonsService)
           Mockito.reset(auditService)
 
-          val filters = ConsumerFilters(prisons = emptyList())
+          val filters = RoleFilters(prisons = emptyList())
           whenever(getPersonService.getNomisNumberWithPrisonFilter(sanitisedHmppsId, filters)).thenReturn(Response(NomisNumber("A1234AA")))
         }
 

@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAcc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.LocationsInsidePrisonGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ResidentialHierarchyItem
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 
 @Component
 @Service
@@ -18,7 +18,7 @@ class GetResidentialHierarchyService(
   fun execute(
     prisonId: String,
     includeInactive: Boolean = false,
-    filters: ConsumerFilters?,
+    filters: RoleFilters?,
   ): Response<List<ResidentialHierarchyItem>?> {
     val checkAccess = consumerPrisonAccessService.checkConsumerHasPrisonAccess<List<ResidentialHierarchyItem>>(prisonId, filters)
     if (checkAccess.errors.isNotEmpty()) {

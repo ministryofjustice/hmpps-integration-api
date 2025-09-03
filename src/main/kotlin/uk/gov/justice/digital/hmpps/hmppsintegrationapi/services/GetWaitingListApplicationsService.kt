@@ -8,7 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedWa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.WaitingListSearchRequest
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 
 @Service
 class GetWaitingListApplicationsService(
@@ -18,7 +18,7 @@ class GetWaitingListApplicationsService(
   fun execute(
     prisonId: String,
     waitingListSearchRequest: WaitingListSearchRequest,
-    filters: ConsumerFilters?,
+    filters: RoleFilters?,
     page: Int = 1,
     perPage: Int = 50,
   ): Response<PaginatedWaitingListApplications?> {
