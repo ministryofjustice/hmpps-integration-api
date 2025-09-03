@@ -121,6 +121,7 @@ authorisation:
     private-prison-only:
       roles:
         - "private-prison"
+        - "empty-filters"
       include:
     limited-case-notes:
       roles:
