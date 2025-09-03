@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HistoricalAttendance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetHistoricalAttendancesService(
@@ -13,11 +13,11 @@ class GetHistoricalAttendancesService(
   @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(
-    prisonerNumber: String,
-    startDate: String,
-    endDate: String,
-    prisonId: String?,
-    filters: RoleFilters?,
+      prisonerNumber: String,
+      startDate: String,
+      endDate: String,
+      prisonId: String?,
+      filters: ConsumerFilters?,
   ): Response<List<HistoricalAttendance>?> {
     val getPersonServiceResponse = getPersonService.getPersonWithPrisonFilter(prisonerNumber, filters)
     if (getPersonServiceResponse.errors.isNotEmpty()) {

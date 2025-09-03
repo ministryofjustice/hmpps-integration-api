@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGatew
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivityScheduledInstanceForPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetScheduledInstancesForPrisonerService(
@@ -16,12 +16,12 @@ class GetScheduledInstancesForPrisonerService(
   @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(
-    prisonId: String,
-    hmppsId: String,
-    startDate: String,
-    endDate: String,
-    slot: String?,
-    filters: RoleFilters?,
+      prisonId: String,
+      hmppsId: String,
+      startDate: String,
+      endDate: String,
+      slot: String?,
+      filters: ConsumerFilters?,
   ): Response<List<ActivityScheduledInstanceForPrisoner>?> {
     val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<List<ActivityScheduledInstanceForPrisoner>?>(prisonId, filters, upstreamServiceType = UpstreamApi.ACTIVITIES)
     if (consumerPrisonFilterCheck.errors.isNotEmpty()) {

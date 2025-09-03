@@ -7,18 +7,18 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPri
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetPrisonersService(
   @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
 ) {
   fun execute(
-    firstName: String?,
-    lastName: String?,
-    dateOfBirth: String?,
-    searchWithinAliases: Boolean = false,
-    filters: RoleFilters?,
+      firstName: String?,
+      lastName: String?,
+      dateOfBirth: String?,
+      searchWithinAliases: Boolean = false,
+      filters: ConsumerFilters?,
   ): Response<List<PersonInPrison>> {
     val prisonIds = filters?.prisons
     val responseFromPrisonerOffenderSearch =

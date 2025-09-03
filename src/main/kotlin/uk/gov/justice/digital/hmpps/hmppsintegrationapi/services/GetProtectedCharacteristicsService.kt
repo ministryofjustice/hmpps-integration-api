@@ -10,7 +10,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonProte
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService.IdentifierType
 
 @Service
@@ -22,8 +22,8 @@ class GetProtectedCharacteristicsService(
   private val deliusGateway: NDeliusGateway,
 ) {
   fun execute(
-    hmppsId: String,
-    filters: RoleFilters?,
+      hmppsId: String,
+      filters: ConsumerFilters?,
   ): Response<PersonProtectedCharacteristics?> {
     val hmppsIdType = getPersonService.identifyHmppsId(hmppsId)
     if (hmppsIdType == IdentifierType.UNKNOWN) {

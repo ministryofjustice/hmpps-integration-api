@@ -23,7 +23,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedCa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCaseNotesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.time.LocalDateTime
@@ -84,7 +84,7 @@ class CaseNotesControllerTest(
             times(1),
           ).execute(
             caseNoteFilter,
-            RoleFilters(prisons = listOf("XYZ")),
+            ConsumerFilters(prisons = listOf("XYZ")),
           )
         }
 
@@ -97,7 +97,7 @@ class CaseNotesControllerTest(
             times(1),
           ).execute(
             specificCaseNoteFilter,
-            RoleFilters(prisons = null, caseNotes = listOf("CAB")),
+            ConsumerFilters(prisons = null, caseNotes = listOf("CAB")),
           )
         }
 

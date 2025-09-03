@@ -17,7 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Type
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -33,7 +33,7 @@ internal class GetTransactionForPersonServiceTest(
     val nomisNumber = "Z99999ZZ"
     val prisonId = "ABC"
     val clientUniqueRef = "client_unique_ref"
-    val filters = RoleFilters(null)
+    val filters = ConsumerFilters(null)
     val exampleTransaction = Transaction("204564839-3", Type(code = "spends", desc = "Spends desc"), "Spends account code", 12345, "2016-10-21", null)
 
     beforeEach {
@@ -191,7 +191,7 @@ internal class GetTransactionForPersonServiceTest(
     }
 
     it("returns null when a transaction is requested from an unapproved prison") {
-      val consumerFillters = RoleFilters(prisons = listOf("ABC"))
+      val consumerFillters = ConsumerFilters(prisons = listOf("ABC"))
       val wrongPrisonId = "XYZ"
       whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Transaction>(wrongPrisonId, consumerFillters)).thenReturn(
         Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))),
@@ -202,7 +202,7 @@ internal class GetTransactionForPersonServiceTest(
           hmppsId,
           wrongPrisonId,
           clientUniqueRef,
-          RoleFilters(prisons = listOf("ABC")),
+          ConsumerFilters(prisons = listOf("ABC")),
         )
 
       result.data.shouldBe(null)
@@ -210,7 +210,7 @@ internal class GetTransactionForPersonServiceTest(
     }
 
     it("returns a transaction when requested from an approved prison") {
-      val consumerFillters = RoleFilters(prisons = listOf("ABC"))
+      val consumerFillters = ConsumerFilters(prisons = listOf("ABC"))
       whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Transaction>(prisonId, consumerFillters)).thenReturn(
         Response(data = null),
       )
@@ -220,7 +220,7 @@ internal class GetTransactionForPersonServiceTest(
           hmppsId,
           prisonId,
           clientUniqueRef,
-          RoleFilters(prisons = listOf(prisonId)),
+          ConsumerFilters(prisons = listOf(prisonId)),
         )
 
       result.data.shouldBe(exampleTransaction)

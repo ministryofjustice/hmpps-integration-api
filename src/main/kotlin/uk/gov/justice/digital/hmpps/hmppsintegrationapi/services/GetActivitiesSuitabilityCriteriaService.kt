@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SuitabilityCriteria
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetActivitiesSuitabilityCriteriaService(
@@ -13,8 +13,8 @@ class GetActivitiesSuitabilityCriteriaService(
   @Autowired val getScheduleDetailsService: GetScheduleDetailsService,
 ) {
   fun execute(
-    scheduleId: Long,
-    filters: RoleFilters? = null,
+      scheduleId: Long,
+      filters: ConsumerFilters? = null,
   ): Response<SuitabilityCriteria?> {
     val checkPrisonCode = getScheduleDetailsService.execute(scheduleId, filters)
     if (checkPrisonCode.errors.isNotEmpty()) {

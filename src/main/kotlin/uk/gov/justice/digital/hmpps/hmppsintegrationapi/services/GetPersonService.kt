@@ -18,7 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffenders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchQuery
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSIdentifierWithPrisonerNumber
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetPersonService(
@@ -38,7 +38,7 @@ class GetPersonService(
 
   fun getPersonWithPrisonFilter(
     hmppsId: String,
-    filters: RoleFilters?,
+    filters: ConsumerFilters?,
   ): Response<Person?> {
     // Error if not a valid id
     val hmppsIdType = identifyHmppsId(hmppsId)
@@ -118,7 +118,7 @@ class GetPersonService(
    */
   fun getNomisNumberWithPrisonFilter(
     hmppsId: String,
-    filters: RoleFilters?,
+    filters: ConsumerFilters?,
   ): Response<NomisNumber?> {
     when (identifyHmppsId(hmppsId)) {
       IdentifierType.NOMS -> {
@@ -273,7 +273,7 @@ class GetPersonService(
 
   fun getPrisoner(
     hmppsId: String,
-    filters: RoleFilters?,
+    filters: ConsumerFilters?,
   ): Response<PersonInPrison?> {
     val prisonerNomisNumber = getNomisNumber(hmppsId)
 

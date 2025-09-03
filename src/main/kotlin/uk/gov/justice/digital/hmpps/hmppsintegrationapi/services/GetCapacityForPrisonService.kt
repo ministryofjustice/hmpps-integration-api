@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAcc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.LocationsInsidePrisonGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonCapacity
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Component
 @Service
@@ -16,8 +16,8 @@ class GetCapacityForPrisonService(
   @Autowired val locationsInsidePrisonGateway: LocationsInsidePrisonGateway,
 ) {
   fun execute(
-    prisonId: String,
-    filters: RoleFilters?,
+      prisonId: String,
+      filters: ConsumerFilters?,
   ): Response<PrisonCapacity?> {
     val checkAccess = consumerPrisonAccessService.checkConsumerHasPrisonAccess<PrisonCapacity>(prisonId, filters)
 

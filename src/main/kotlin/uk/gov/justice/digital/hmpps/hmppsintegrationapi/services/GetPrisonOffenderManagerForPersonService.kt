@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonOffen
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetPrisonOffenderManagerForPersonService(
@@ -15,8 +15,8 @@ class GetPrisonOffenderManagerForPersonService(
   @Autowired val managePOMCaseGateway: ManagePOMCaseGateway,
 ) {
   fun execute(
-    hmppsId: String,
-    filters: RoleFilters?,
+      hmppsId: String,
+      filters: ConsumerFilters?,
   ): Response<PrisonOffenderManager?> {
     val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)
     if (personResponse.errors.isNotEmpty()) {

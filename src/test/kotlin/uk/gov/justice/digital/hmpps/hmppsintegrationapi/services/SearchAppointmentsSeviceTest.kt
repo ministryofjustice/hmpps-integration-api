@@ -20,7 +20,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Appointment
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import java.time.LocalDate
 
 @ContextConfiguration(
@@ -33,7 +33,7 @@ internal class SearchAppointmentsSeviceTest(
   private val searchAppointmentsService: SearchAppointmentsService,
 ) : DescribeSpec({
     val prisonId = "ABC"
-    val filters = RoleFilters(null)
+    val filters = ConsumerFilters(null)
     val exampleRequest =
       AppointmentSearchRequest(
         appointmentType = "INDIVIDUAL",

@@ -37,7 +37,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitContac
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitExternalSystemDetails
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitorSupport
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.locationsInsidePrison.LIPPrisonSummary
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCapacityForPrisonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
@@ -240,7 +240,7 @@ internal class PrisonControllerTest(
       }
 
       it("returns 500 when prisoner query gets no result") {
-        whenever(getPrisonersService.execute(firstName, lastName, dateOfBirth.toString(), false, RoleFilters(emptyList()))).thenReturn(
+        whenever(getPrisonersService.execute(firstName, lastName, dateOfBirth.toString(), false, ConsumerFilters(emptyList()))).thenReturn(
           Response(
             data = emptyList(),
             errors =
@@ -286,7 +286,7 @@ internal class PrisonControllerTest(
       }
 
       it("returns 403 when consumer config includes an empty prison filter field") {
-        whenever(getPrisonersService.execute(firstName, lastName, dateOfBirth.toString(), false, RoleFilters(prisons = emptyList()))).thenReturn(
+        whenever(getPrisonersService.execute(firstName, lastName, dateOfBirth.toString(), false, ConsumerFilters(prisons = emptyList()))).thenReturn(
           Response(
             data = emptyList(),
             errors =

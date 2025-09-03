@@ -18,7 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Balance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Balances
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetBalancesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
@@ -46,9 +46,9 @@ class BalancesController(
     ],
   )
   fun getBalancesForPerson(
-    @PathVariable hmppsId: String,
-    @PathVariable prisonId: String,
-    @RequestAttribute filters: RoleFilters?,
+      @PathVariable hmppsId: String,
+      @PathVariable prisonId: String,
+      @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<Balances?> {
     val response = getBalancesForPersonService.execute(prisonId, hmppsId, filters = filters)
 
@@ -80,10 +80,10 @@ class BalancesController(
     ],
   )
   fun getBalanceForPerson(
-    @PathVariable hmppsId: String,
-    @PathVariable prisonId: String,
-    @PathVariable accountCode: String,
-    @RequestAttribute filters: RoleFilters?,
+      @PathVariable hmppsId: String,
+      @PathVariable prisonId: String,
+      @PathVariable accountCode: String,
+      @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<Balance?> {
     val response = getBalancesForPersonService.getBalance(prisonId, hmppsId, accountCode, filters = filters)
 

@@ -27,7 +27,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffenders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.Offender
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.OffenderProfile
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.OtherIds
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @ActiveProfiles("test")
 @JsonTest
@@ -173,11 +173,11 @@ class GetProtectedCharacteristicsServiceTest {
     whenever(deliusGateway.getOffender(hmppsId)).thenReturn(Response(data = mockOffender, errors = emptyList()))
     whenever(prisonerOffenderSearchGateway.getPrisonOffender(mockOffender.otherIds.nomsNumber!!)).thenReturn(Response(data = mockPrisonOffender))
     whenever(prisonApiGateway.getReasonableAdjustments(mockPrisonOffender.bookingId!!)).thenReturn(Response(data = listOf(mockReasonableAdjustment)))
-    whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<PersonProtectedCharacteristics>("ABC", filters = RoleFilters(listOf("ABC")))).thenReturn(
+    whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<PersonProtectedCharacteristics>("ABC", filters = ConsumerFilters(listOf("ABC")))).thenReturn(
       Response(data = null, errors = emptyList()),
     )
 
-    val result = service.execute(hmppsId, filters = RoleFilters(listOf("ABC")))
+    val result = service.execute(hmppsId, filters = ConsumerFilters(listOf("ABC")))
 
     result.data.shouldNotBeNull()
     result.errors.shouldHaveSize(0)
@@ -200,7 +200,7 @@ class GetProtectedCharacteristicsServiceTest {
   @Test
   fun `returns null when protected characteristics are requested from an unapproved prison`() {
     val wrongPrisonId = "XYZ"
-    val filters = RoleFilters(listOf("ABC"))
+    val filters = ConsumerFilters(listOf("ABC"))
     val mockPrisonOffenderInWrongPrison = POSPrisoner(firstName = "John", lastName = "Smith", maritalStatus = "Widowed", bookingId = "bookingId", prisonId = wrongPrisonId, youthOffender = false)
     whenever(deliusGateway.getOffender(hmppsId)).thenReturn(Response(data = mockOffender, errors = emptyList()))
     whenever(prisonerOffenderSearchGateway.getPrisonOffender(mockOffender.otherIds.nomsNumber!!)).thenReturn(Response(data = mockPrisonOffenderInWrongPrison))

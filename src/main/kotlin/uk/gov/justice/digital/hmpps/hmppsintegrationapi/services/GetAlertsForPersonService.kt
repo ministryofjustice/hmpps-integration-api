@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedAl
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetAlertsForPersonService(
@@ -15,11 +15,11 @@ class GetAlertsForPersonService(
   @Autowired val prisonerAlertsGateway: PrisonerAlertsGateway,
 ) {
   fun getAlerts(
-    hmppsId: String,
-    filters: RoleFilters?,
-    page: Int,
-    perPage: Int,
-    alertCodes: List<String> = emptyList(),
+      hmppsId: String,
+      filters: ConsumerFilters?,
+      page: Int,
+      perPage: Int,
+      alertCodes: List<String> = emptyList(),
   ): Response<PaginatedAlerts?> {
     val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)
 

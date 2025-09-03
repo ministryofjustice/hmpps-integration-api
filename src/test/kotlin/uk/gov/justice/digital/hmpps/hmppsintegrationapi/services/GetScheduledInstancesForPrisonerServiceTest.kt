@@ -16,7 +16,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -33,7 +33,7 @@ class GetScheduledInstancesForPrisonerServiceTest(
     {
       val prisonCode = "MKI"
       val prisonerId = "A1234AA"
-      val filters = RoleFilters(prisons = listOf(prisonCode))
+      val filters = ConsumerFilters(prisons = listOf(prisonCode))
       val activitiesActivityScheduledInstanceForPerson =
         listOf(
           ActivitiesActivityScheduledInstanceForPrisoner(

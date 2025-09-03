@@ -10,7 +10,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Balances
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetBalancesForPersonService(
@@ -19,9 +19,9 @@ class GetBalancesForPersonService(
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
 ) {
   fun execute(
-    prisonId: String,
-    hmppsId: String,
-    filters: RoleFilters? = null,
+      prisonId: String,
+      hmppsId: String,
+      filters: ConsumerFilters? = null,
   ): Response<Balances?> {
     val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<Balances>(prisonId, filters)
 
@@ -73,10 +73,10 @@ class GetBalancesForPersonService(
   }
 
   fun getBalance(
-    prisonId: String,
-    hmppsId: String,
-    accountCode: String,
-    filters: RoleFilters? = null,
+      prisonId: String,
+      hmppsId: String,
+      accountCode: String,
+      filters: ConsumerFilters? = null,
   ): Response<Balance?> {
     if (!listOf("spends", "savings", "cash").any { it == accountCode }) {
       return Response(

@@ -21,7 +21,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.WaitingListSearchRequest
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -35,7 +35,7 @@ internal class GetWaitingListApplicationsSeviceTest(
   private val getWaitingListApplicationsService: GetWaitingListApplicationsService,
 ) : DescribeSpec({
     val prisonId = "ABC"
-    val filters = RoleFilters(null)
+    val filters = ConsumerFilters(null)
     val waitingListSearchRequest =
       WaitingListSearchRequest(
         applicationDateFrom = LocalDate.now(),

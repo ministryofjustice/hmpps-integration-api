@@ -21,7 +21,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Balances
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetBalancesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
@@ -92,7 +92,7 @@ class BalancesControllerTest(
 
       it("calls the balances endpoint with the correct filters") {
         mockMvc.performAuthorisedWithCN(balancesPath, "limited-prisons")
-        verify(getBalancesForPersonService, times(1)).execute(prisonId, hmppsId, filters = RoleFilters(prisons = listOf("XYZ")))
+        verify(getBalancesForPersonService, times(1)).execute(prisonId, hmppsId, filters = ConsumerFilters(prisons = listOf("XYZ")))
       }
 
       it("returns a 404 NOT FOUND status code when person isn't found in delius") {
@@ -194,7 +194,7 @@ class BalancesControllerTest(
 
       it("calls the account code balances endpoint with the correct filters") {
         mockMvc.performAuthorisedWithCN(accountCodePath, "limited-prisons")
-        verify(getBalancesForPersonService, times(1)).getBalance(prisonId, hmppsId, accountCode, filters = RoleFilters(prisons = listOf("XYZ")))
+        verify(getBalancesForPersonService, times(1)).getBalance(prisonId, hmppsId, accountCode, filters = ConsumerFilters(prisons = listOf("XYZ")))
       }
 
       it("returns a 404 NOT FOUND status code when person isn't found in probation offender search") {

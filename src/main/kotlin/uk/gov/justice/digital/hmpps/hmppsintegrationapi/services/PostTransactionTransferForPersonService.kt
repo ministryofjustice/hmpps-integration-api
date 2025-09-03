@@ -9,7 +9,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionTransferRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class PostTransactionTransferForPersonService(
@@ -18,10 +18,10 @@ class PostTransactionTransferForPersonService(
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
 ) {
   fun execute(
-    prisonId: String,
-    hmppsId: String,
-    transactionTransferRequest: TransactionTransferRequest,
-    filters: RoleFilters? = null,
+      prisonId: String,
+      hmppsId: String,
+      transactionTransferRequest: TransactionTransferRequest,
+      filters: ConsumerFilters? = null,
   ): Response<TransactionTransferCreateResponse?> {
     val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<TransactionTransferCreateResponse?>(prisonId, filters)
 

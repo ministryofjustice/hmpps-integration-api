@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 
-import io.kotest.matchers.string.include
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -13,7 +12,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.GlobalsConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 class FiltersExtractionFilterTest {
   private var authorisationConfig: AuthorisationConfig = AuthorisationConfig()
@@ -51,7 +50,7 @@ class FiltersExtractionFilterTest {
     val mockResponse = mock(HttpServletResponse::class.java)
     val mockChain = mock(FilterChain::class.java)
 
-    val expectedFilters = RoleFilters(prisons = listOf("filter-1", "filter-2"))
+    val expectedFilters = ConsumerFilters(prisons = listOf("filter-1", "filter-2"))
     val testRole = Role(include = null, filters = expectedFilters)
     authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, roles = listOf("test-role")))
     globalsConfig.roles = mapOf("test-role" to testRole)
@@ -72,7 +71,7 @@ class FiltersExtractionFilterTest {
     val mockResponse = mock(HttpServletResponse::class.java)
     val mockChain = mock(FilterChain::class.java)
 
-    val expectedFilters = RoleFilters(prisons = listOf("filter-1", "filter-2"))
+    val expectedFilters = ConsumerFilters(prisons = listOf("filter-1", "filter-2"))
     authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, roles = listOf()))
 
     // Act

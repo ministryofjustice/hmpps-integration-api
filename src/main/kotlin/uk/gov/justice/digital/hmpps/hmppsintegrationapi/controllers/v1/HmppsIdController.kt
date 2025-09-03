@@ -15,7 +15,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataRespons
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsId
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetHmppsIdService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
@@ -39,8 +39,8 @@ class HmppsIdController(
     ],
   )
   fun getHmppsIdByNomisNumber(
-    @PathVariable nomisNumber: String,
-    @RequestAttribute filters: RoleFilters?,
+      @PathVariable nomisNumber: String,
+      @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<HmppsId?> {
     val response = getHmppsIdService.execute(nomisNumber, filters)
 
@@ -68,8 +68,8 @@ class HmppsIdController(
     ],
   )
   fun getNomisNumberByHMPPSID(
-    @PathVariable hmppsId: String,
-    @RequestAttribute filters: RoleFilters?,
+      @PathVariable hmppsId: String,
+      @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<NomisNumber?> {
     val response = getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {

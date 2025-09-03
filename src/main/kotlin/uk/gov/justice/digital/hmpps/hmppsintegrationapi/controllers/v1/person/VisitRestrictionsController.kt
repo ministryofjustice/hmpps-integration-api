@@ -19,7 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataRespons
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonVisitRestriction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContactRestrictions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitRestrictionsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitorRestrictionsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
@@ -44,8 +44,8 @@ class VisitRestrictionsController(
     ],
   )
   fun getRestrictionsForPerson(
-    @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
-    @RequestAttribute filters: RoleFilters?,
+      @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
+      @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<List<PersonVisitRestriction>?> {
     val response = getVisitRestrictionsForPersonService.execute(hmppsId, filters = filters)
 
@@ -72,9 +72,9 @@ class VisitRestrictionsController(
   )
   @GetMapping("/visitor/{contactId}/restrictions")
   fun getVisitorRestrictions(
-    @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
-    @Parameter(description = "A contact ID") @PathVariable contactId: String,
-    @RequestAttribute filters: RoleFilters?,
+      @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
+      @Parameter(description = "A contact ID") @PathVariable contactId: String,
+      @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<PrisonerContactRestrictions?> {
     val stringifiedContactId = contactId.toLongOrNull() ?: throw ValidationException("Invalid contact ID")
     val response = getVisitorRestrictionsService.execute(hmppsId, stringifiedContactId, filters)

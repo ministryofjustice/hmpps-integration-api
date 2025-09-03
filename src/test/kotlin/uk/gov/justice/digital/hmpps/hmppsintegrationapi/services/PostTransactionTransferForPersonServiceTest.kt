@@ -21,7 +21,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.CreditTransaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.DebitTransaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.NomisTransactionTransferResponse
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -40,7 +40,7 @@ internal class PostTransactionTransferForPersonServiceTest(
     val amount = 1634
     val clientTransactionId = "CL123212"
     val clientUniqueRef = "CLIENT121131-0_11"
-    val filters = RoleFilters(null)
+    val filters = ConsumerFilters(null)
     val fromAccount = "spends"
     val toAccount = "savings"
     val exampleTransfer = TransactionTransferRequest(description, amount, clientTransactionId, clientUniqueRef, fromAccount, toAccount)

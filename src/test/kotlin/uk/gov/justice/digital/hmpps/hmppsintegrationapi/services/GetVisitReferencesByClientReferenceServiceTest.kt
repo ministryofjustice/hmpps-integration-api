@@ -20,7 +20,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisitorSupport
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVistExternalSystemDetails
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitReferences
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -85,7 +85,7 @@ class GetVisitReferencesByClientReferenceServiceTest(
 
       it("returns errors when a visit is in a prison not available to the consumer") {
         whenever(prisonVisitsGateway.getVisitReferencesByClientReference(clientReference)).thenReturn(Response(data = visitReferences))
-        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Visit>(visitResponse.prisonId, RoleFilters(listOf("IDM")), UpstreamApi.MANAGE_PRISON_VISITS)).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))))
+        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Visit>(visitResponse.prisonId, ConsumerFilters(listOf("IDM")), UpstreamApi.MANAGE_PRISON_VISITS)).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))))
 
         val result = getVisitReferencesByClientReferenceService.execute(clientReference)
 

@@ -6,7 +6,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CommunityOffenderManager
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetCommunityOffenderManagerForPersonService(
@@ -14,8 +14,8 @@ class GetCommunityOffenderManagerForPersonService(
   @Autowired val nDeliusGateway: NDeliusGateway,
 ) {
   fun execute(
-    hmppsId: String,
-    filters: RoleFilters?,
+      hmppsId: String,
+      filters: ConsumerFilters?,
   ): Response<CommunityOffenderManager?> {
     val personResponse = getPersonService.getPersonWithPrisonFilter(hmppsId, filters)
     if (personResponse.errors.isNotEmpty()) {

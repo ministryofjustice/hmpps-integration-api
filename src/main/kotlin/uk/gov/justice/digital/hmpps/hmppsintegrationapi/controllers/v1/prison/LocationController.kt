@@ -26,7 +26,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Location
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.BAD_REQUEST
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.ENTITY_NOT_FOUND
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetLocationByKeyService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.LocationQueueService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
@@ -56,9 +56,9 @@ class LocationController(
     ],
   )
   fun getLocationInformation(
-    @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
-    @Parameter(description = "The key of the location to be queried against in the format of (PrisonId-locationKey") @PathVariable key: String,
-    @RequestAttribute filters: RoleFilters?,
+      @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
+      @Parameter(description = "The key of the location to be queried against in the format of (PrisonId-locationKey") @PathVariable key: String,
+      @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<Location?> {
     val response = getLocationByKeyService.execute(prisonId, key, filters)
 
@@ -95,11 +95,11 @@ class LocationController(
     ],
   )
   fun deactivateLocation(
-    @Parameter(description = "The ID of the prison the location is in") @PathVariable prisonId: String,
-    @Parameter(description = "The key of the location, must be a cell") @PathVariable key: String,
-    @Valid @RequestBody deactivateLocationRequest: DeactivateLocationRequest,
-    @RequestAttribute clientName: String?,
-    @RequestAttribute filters: RoleFilters?,
+      @Parameter(description = "The ID of the prison the location is in") @PathVariable prisonId: String,
+      @Parameter(description = "The key of the location, must be a cell") @PathVariable key: String,
+      @Valid @RequestBody deactivateLocationRequest: DeactivateLocationRequest,
+      @RequestAttribute clientName: String?,
+      @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<HmppsMessageResponse?> {
     val response = locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, clientName.orEmpty(), filters)
     if (response.hasError(ENTITY_NOT_FOUND)) {
