@@ -6,7 +6,7 @@
       "name": "HMPPS Digital Studio",
       "email": "feedback@digital.justice.gov.uk"
     },
-    "version": "2025-06-30.125.ee9bfaf"
+    "version": "2025-07-23.134.3ab7065"
   },
   "servers": [
     {
@@ -28,7 +28,10 @@
   ],
   "security": [
     {
-      "bearer-jwt": ["read", "write"]
+      "bearer-jwt": [
+        "read",
+        "write"
+      ]
     }
   ],
   "tags": [
@@ -44,7 +47,9 @@
   "paths": {
     "/prisoners/{prisonerNumber}/smoker": {
       "put": {
-        "tags": ["Health and Medication Data"],
+        "tags": [
+          "Health and Medication Data"
+        ],
         "summary": "Updates the smoker status for a prisoner",
         "description": "Requires role `ROLE_HEALTH_AND_MEDICATION_API__HEALTH_AND_MEDICATION_DATA__RW`",
         "operationId": "updateSmokerStatus",
@@ -111,7 +116,9 @@
     },
     "/prisoners/{prisonerNumber}/diet-and-allergy": {
       "put": {
-        "tags": ["Health and Medication Data"],
+        "tags": [
+          "Health and Medication Data"
+        ],
         "summary": "Updates the diet and allergy data for a prisoner",
         "description": "Requires role `ROLE_HEALTH_AND_MEDICATION_API__HEALTH_AND_MEDICATION_DATA__RW`",
         "operationId": "updateDietAndAllergyData",
@@ -185,7 +192,9 @@
     },
     "/prisons/{prisonId}": {
       "post": {
-        "tags": ["Bulk Health and Medication Data by Agency"],
+        "tags": [
+          "Bulk Health and Medication Data by Agency"
+        ],
         "description": "Requires role `ROLE_HEALTH_AND_MEDICATION_API__HEALTH_AND_MEDICATION_DATA__RO`",
         "operationId": "postHealthAndMedicationData",
         "parameters": [
@@ -258,7 +267,9 @@
     },
     "/subject-access-request": {
       "get": {
-        "tags": ["Subject Access Request"],
+        "tags": [
+          "Subject Access Request"
+        ],
         "summary": "Provides content for a prisoner to satisfy the needs of a subject access request on their behalf",
         "description": "Requires role SAR_DATA_ACCESS or additional role as specified by hmpps.sar.additionalAccessRole configuration.",
         "operationId": "getSarContentByReference",
@@ -368,7 +379,9 @@
     },
     "/reference-data/domains": {
       "get": {
-        "tags": ["Reference Data Domains"],
+        "tags": [
+          "Reference Data Domains"
+        ],
         "summary": "Get all reference data domains",
         "description": "Returns the list of reference data domains. By default this endpoint only returns active reference data domains. The `includeInactive` parameter can be used to return all reference data domains. Requires role `ROLE_HEALTH_AND_MEDICATION_API__REFERENCE_DATA__RO`",
         "operationId": "getReferenceDataDomains",
@@ -421,7 +434,9 @@
     },
     "/reference-data/domains/{domain}": {
       "get": {
-        "tags": ["Reference Data Domains"],
+        "tags": [
+          "Reference Data Domains"
+        ],
         "summary": "Get a reference data domain",
         "description": "Returns the reference data domain, including all reference data codes linked to that domain. Requires role `ROLE_HEALTH_AND_MEDICATION_API__REFERENCE_DATA__RO`",
         "operationId": "getReferenceDataDomain",
@@ -471,7 +486,9 @@
     },
     "/reference-data/domains/{domain}/codes": {
       "get": {
-        "tags": ["Reference Data Codes"],
+        "tags": [
+          "Reference Data Codes"
+        ],
         "summary": "Get all reference data codes for {domain}",
         "description": "Returns the list of reference data codes within {domain}. By default this endpoint only returns active reference data codes. The `includeInactive` parameter can be used to return all reference data codes. Requires role `ROLE_HEALTH_AND_MEDICATION_API__REFERENCE_DATA__RO`",
         "operationId": "getReferenceDataCodes",
@@ -533,7 +550,9 @@
     },
     "/reference-data/domains/{domain}/codes/{code}": {
       "get": {
-        "tags": ["Reference Data Codes"],
+        "tags": [
+          "Reference Data Codes"
+        ],
         "summary": "Get a reference data code",
         "description": "Returns the reference data code.",
         "operationId": "getReferenceDataCode",
@@ -591,7 +610,9 @@
     },
     "/prisoners/{prisonerNumber}": {
       "get": {
-        "tags": ["Health and Medication Data"],
+        "tags": [
+          "Health and Medication Data"
+        ],
         "description": "Requires role `ROLE_HEALTH_AND_MEDICATION_API__HEALTH_AND_MEDICATION_DATA__RO`",
         "operationId": "getHealthAndMedicationData",
         "parameters": [
@@ -675,7 +696,9 @@
             "type": "string"
           }
         },
-        "required": ["status"]
+        "required": [
+          "status"
+        ]
       },
       "UpdateSmokerStatusRequest": {
         "type": "object",
@@ -687,7 +710,9 @@
             "example": "SMOKER_NO"
           }
         },
-        "required": ["smokerStatus"]
+        "required": [
+          "smokerStatus"
+        ]
       },
       "ReferenceDataIdSelection": {
         "type": "object",
@@ -703,7 +728,9 @@
             "example": "Some other text"
           }
         },
-        "required": ["value"]
+        "required": [
+          "value"
+        ]
       },
       "UpdateDietAndAllergyRequest": {
         "type": "object",
@@ -711,7 +738,7 @@
         "properties": {
           "foodAllergies": {
             "type": "array",
-            "description": "The list of food allergies the prisoner has with an optional comment text.  Valid `ReferenceDataCode.id` options for `foodAllergies` can be retrieved by querying `GET /reference-data/domains/FOOD_ALLERGY`.",
+            "description": "The list of food allergies the prisoner has with an optional comment text. Valid `ReferenceDataCode.id` options for `foodAllergies` can be retrieved by querying `GET /reference-data/domains/FOOD_ALLERGY`.",
             "example": [
               {
                 "value": "FOOD_ALLERGY_EGG"
@@ -727,7 +754,7 @@
           },
           "medicalDietaryRequirements": {
             "type": "array",
-            "description": "The list of medical dietary requirements the prisoner has with an optional comment text.  Valid `ReferenceDataCode.id` options for `medicalDietaryRequirements` can be retrieved by querying `GET /reference-data/domains/MEDICAL_DIET`.",
+            "description": "The list of medical dietary requirements the prisoner has with an optional comment text. Valid `ReferenceDataCode.id` options for `medicalDietaryRequirements` can be retrieved by querying `GET /reference-data/domains/MEDICAL_DIET`.",
             "example": [
               {
                 "value": "MEDICAL_DIET_LOW_CHOLESTEROL"
@@ -743,7 +770,7 @@
           },
           "personalisedDietaryRequirements": {
             "type": "array",
-            "description": "The list of personalised dietary requirements the prisoner has with an optional comment text.  Valid `ReferenceDataCode.id` options for `personalisedDietaryRequirements` can be retrieved by querying `GET /reference-data/domains/PERSONALISED_DIET`.",
+            "description": "The list of personalised dietary requirements the prisoner has with an optional comment text. Valid `ReferenceDataCode.id` options for `personalisedDietaryRequirements` can be retrieved by querying `GET /reference-data/domains/PERSONALISED_DIET`.",
             "example": [
               {
                 "value": "PERSONALISED_DIET_VEGAN"
@@ -763,7 +790,12 @@
             "example": "Some specific instructions."
           }
         },
-        "required": ["cateringInstructions", "foodAllergies", "medicalDietaryRequirements", "personalisedDietaryRequirements"]
+        "required": [
+          "cateringInstructions",
+          "foodAllergies",
+          "medicalDietaryRequirements",
+          "personalisedDietaryRequirements"
+        ]
       },
       "DietAndAllergyResponse": {
         "type": "object",
@@ -801,7 +833,9 @@
             "example": "Some other text"
           }
         },
-        "required": ["value"]
+        "required": [
+          "value"
+        ]
       },
       "ReferenceDataValue": {
         "type": "object",
@@ -823,7 +857,11 @@
             "example": "Milk"
           }
         },
-        "required": ["code", "description", "id"]
+        "required": [
+          "code",
+          "description",
+          "id"
+        ]
       },
       "ValueWithMetadataListReferenceDataSelection": {
         "type": "object",
@@ -852,7 +890,11 @@
             "example": "STI"
           }
         },
-        "required": ["lastModifiedAt", "lastModifiedBy", "lastModifiedPrisonId"]
+        "required": [
+          "lastModifiedAt",
+          "lastModifiedBy",
+          "lastModifiedPrisonId"
+        ]
       },
       "ValueWithMetadataString": {
         "type": "object",
@@ -878,7 +920,11 @@
             "example": "STI"
           }
         },
-        "required": ["lastModifiedAt", "lastModifiedBy", "lastModifiedPrisonId"]
+        "required": [
+          "lastModifiedAt",
+          "lastModifiedBy",
+          "lastModifiedPrisonId"
+        ]
       },
       "HealthAndMedicationForPrisonRequest": {
         "type": "object",
@@ -897,7 +943,11 @@
             "type": "string"
           }
         },
-        "required": ["page", "size", "sort"]
+        "required": [
+          "page",
+          "size",
+          "sort"
+        ]
       },
       "HealthAndMedicationForPrisonDto": {
         "type": "object",
@@ -918,7 +968,10 @@
             "$ref": "#/components/schemas/HealthAndMedicationResponse"
           }
         },
-        "required": ["health", "prisonerNumber"]
+        "required": [
+          "health",
+          "prisonerNumber"
+        ]
       },
       "HealthAndMedicationForPrisonResponse": {
         "type": "object",
@@ -933,7 +986,10 @@
             "$ref": "#/components/schemas/PageMeta"
           }
         },
-        "required": ["content", "metadata"]
+        "required": [
+          "content",
+          "metadata"
+        ]
       },
       "HealthAndMedicationResponse": {
         "type": "object",
@@ -979,7 +1035,16 @@
             "format": "int32"
           }
         },
-        "required": ["first", "last", "numberOfElements", "offset", "pageNumber", "size", "totalElements", "totalPages"]
+        "required": [
+          "first",
+          "last",
+          "numberOfElements",
+          "offset",
+          "pageNumber",
+          "size",
+          "totalElements",
+          "totalPages"
+        ]
       },
       "HmppsSubjectAccessRequestContent": {
         "type": "object",
@@ -988,7 +1053,9 @@
             "description": "The content of the subject access request response"
           }
         },
-        "required": ["content"]
+        "required": [
+          "content"
+        ]
       },
       "ReferenceDataCodeDto": {
         "type": "object",
@@ -1059,7 +1126,16 @@
             "example": "USER1234"
           }
         },
-        "required": ["code", "createdAt", "createdBy", "description", "domain", "id", "isActive", "listSequence"]
+        "required": [
+          "code",
+          "createdAt",
+          "createdBy",
+          "description",
+          "domain",
+          "id",
+          "isActive",
+          "listSequence"
+        ]
       },
       "ReferenceDataDomainDto": {
         "type": "object",
@@ -1134,7 +1210,16 @@
             }
           }
         },
-        "required": ["code", "createdAt", "createdBy", "description", "isActive", "listSequence", "referenceDataCodes", "subDomains"]
+        "required": [
+          "code",
+          "createdAt",
+          "createdBy",
+          "description",
+          "isActive",
+          "listSequence",
+          "referenceDataCodes",
+          "subDomains"
+        ]
       }
     },
     "securitySchemes": {
@@ -1149,22 +1234,22 @@
         "type": "oauth2",
         "flows": {
           "clientCredentials": {
-            "tokenUrl": "https://sign-in-dev.hmpps.service.justice.gov.uk/auth/oauth/token",
+            "tokenUrl": "https://sign-in.hmpps.service.justice.gov.uk/auth/oauth/token",
             "scopes": {
               "read": "Allows read of data",
               "write": "Allows write of data"
             }
           },
           "authorizationCode": {
-            "authorizationUrl": "https://sign-in-dev.hmpps.service.justice.gov.uk/auth/oauth/authorize",
-            "tokenUrl": "https://sign-in-dev.hmpps.service.justice.gov.uk/auth/oauth/token",
+            "authorizationUrl": "https://sign-in.hmpps.service.justice.gov.uk/auth/oauth/authorize",
+            "tokenUrl": "https://sign-in.hmpps.service.justice.gov.uk/auth/oauth/token",
             "scopes": {
               "read": "Allows read of data",
               "write": "Allows write of data"
             }
           }
         },
-        "openIdConnectUrl": "https://sign-in-dev.hmpps.service.justice.gov.uk/auth/.well-known/openid-configuration"
+        "openIdConnectUrl": "https://sign-in.hmpps.service.justice.gov.uk/auth/.well-known/openid-configuration"
       }
     }
   }
