@@ -69,7 +69,8 @@ authorisation:
       include:
         - "/v1/epf/person-details/.*/[^/]*$"
         - "/v1/status"
-      filters:
+      roles:
+        - "empty-filters"
     moj-pes:
       include:
         - "/v1/persons/.*/name"
@@ -78,28 +79,31 @@ authorisation:
         - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
         - "/v1/persons/.*/cell-location"
         - "/v1/status"
-      filters:
+      roles:
+        - "empty-filters"
     kubernetes-health-check-client:
       include:
         - "/health/liveness"
         - "/health/readiness"
         - "/v1/status"
-      filters:
+      roles:
+        - "empty-filters"
     event-service:
       include:
         - "/v2/config/authorisation"
         - "/v1/status"
-      filters:
+      roles:
+        - "empty-filters"
     meganexus:
       include:
-      filters:
       roles:
         - "curious"
+        - "empty-filters"
     pnd:
       include:
-      filters:
       roles:
         - "police"
+        - "empty-filters"
     smoke-test:
       include:
         - "/v1/status"
