@@ -272,6 +272,12 @@ authorisation:
     geoamey:
       include:
       filters:
+        case-notes:
+          - "CAB"
+          - "NEG"
+          - "CVM"
+          - "INTERVENTION"
+          - "POS"
       roles:
         - "prisoner-escort-custody-service"
     zkhan:
