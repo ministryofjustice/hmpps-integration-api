@@ -102,42 +102,48 @@ authorisation:
     automated-test-client:
       roles:
         - "all-endpoints"
-        - "empty-filters"
+      filters:
     config-v2-test:
       include:
         - "/v2/config/authorisation"
-      roles:
-        - "prison-XYZ-only"
+      filters:
+        prisons:
+          - XYZ
     all-access:
       include:
         - "/.*"
-      roles:
-        - "empty-filters"
+      filters:
     specific-prison:
       roles:
         - "all-endpoints"
-        - "prison-MDI-only"
+      filters:
+        prisons:
+          - MDI
     limited-prisons:
       roles:
         - "all-endpoints"
-        - "prison-ABC-only"
+      filters:
+        prisons:
+          - ABC
     no-prisons:
       roles:
         - "all-endpoints"
-        - "no-prisons"
+      filters:
+        prisons:
     private-prison-only:
       roles:
         - "private-prison"
       include:
+      filters:
+    reference-data-only-user:
+      roles:
+        - "reference-data-only"
+      include:
+      filters:
     limited-case-notes:
       roles:
         - "all-endpoints"
         - "case-notes-CAB-only"
-    reference-data-only-user:
-      roles:
-        - "reference-data-only"
-        - "empty-filters"
-      include:
     redacted-client:
       include:
         - "/v1/persons/[^/]*$"

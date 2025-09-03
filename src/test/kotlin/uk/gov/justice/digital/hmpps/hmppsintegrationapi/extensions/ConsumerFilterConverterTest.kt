@@ -10,7 +10,7 @@ class ConsumerFilterConverterTest {
   @Test
   fun `converts empty string to empty RoleFilter object`() {
     val consumerConfig = ""
-    val actual = RoleFilterConverter().convert(consumerConfig)
+    val actual = ConsumerFilterConverter().convert(consumerConfig)
 
     actual.shouldBe(ConsumerFilters(prisons = null))
   }
