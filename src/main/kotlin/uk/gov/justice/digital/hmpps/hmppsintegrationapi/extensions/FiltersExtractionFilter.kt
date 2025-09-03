@@ -42,24 +42,29 @@ class FiltersExtractionFilter
 
       val aggregatedRoles: List<Role>? = consumerConfig.roles?.mapNotNull { globalsConfig.roles[it] }
 
-      val filters = buildAggregatedFilters(aggregatedRoles)
+      val filters = buildAggregatedFilters(consumerConfig.filters, aggregatedRoles)
       request.setAttribute("filters", filters)
       chain.doFilter(request, response)
     }
   }
 
-private fun buildAggregatedFilters(roles: List<Role>?): ConsumerFilters? {
-  if (roles == null || roles.isEmpty() || (roles.all { it.filters == null })) return null
+private fun buildAggregatedFilters(
+  consumerFilters: ConsumerFilters?,
+  roles: List<Role>?,
+): ConsumerFilters? {
+  if (roles == null || roles.isEmpty() || (roles.all { it.filters == null })) return consumerFilters
+
+  val consumerPseudoRole = Role(include = null, filters = consumerFilters)
 
   val prisons =
-    roles
+    (listOf(consumerPseudoRole) + roles)
       .takeIf { role -> role.any { it.filters?.prisons != null } }
       ?.mapNotNull { it.filters?.prisons }
       ?.flatten()
       ?.distinct()
 
   val caseNotes =
-    roles
+    (listOf(consumerPseudoRole) + roles)
       .takeIf { role -> role.any { it.filters?.caseNotes != null } }
       ?.mapNotNull { it.filters?.caseNotes }
       ?.flatten()

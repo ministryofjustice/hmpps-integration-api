@@ -210,38 +210,7 @@ globals:
         - "/v1/hmpps/reference-data"
         - "/v1/status"
 
-    prison-MDI-only:
-      filters:
-        prisons:
-          - MDI
-
-    prison-MKI-only:
-      filters:
-        prisons:
-          - MKI
-
-    prison-XYZ-only:
-      filters:
-        prisons:
-          - XYZ
-
-    prison-ABC-only:
-      filters:
-        prisons:
-          - ABC
-
-    empty-prisons:
-      filters:
-        prisons:
-
-    no-prisons:
-      filters:
-        prisons:
-
     case-notes-CAB-only:
       filters:
         case-notes:
           - "CAB"
-
-    empty-filters:
-      filters:

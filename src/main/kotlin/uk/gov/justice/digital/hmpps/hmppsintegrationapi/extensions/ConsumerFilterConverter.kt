@@ -7,6 +7,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 
 @Component
 @ConfigurationPropertiesBinding
-class RoleFilterConverter : Converter<String, ConsumerFilters> {
+class ConsumerFilterConverter : Converter<String, ConsumerFilters> {
   override fun convert(source: String): ConsumerFilters? = ConsumerFilters(prisons = null, caseNotes = null)
 }

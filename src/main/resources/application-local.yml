@@ -74,14 +74,14 @@ authorisation:
     automated-test-client:
       roles:
         - "all-endpoints"
-        - "empty-filters"
+      filters:
     config-v2-test:
       include:
         - "/v2/config/authorisation"
-      roles:
-        - "prison-XYZ-only"
+      filters:
+        prisons:
+          - XYZ
     all-access:
       include:
         - "/.*"
-      roles:
-        - "empty-filters"
+      filters:

@@ -103,8 +103,9 @@ authorisation:
     config-v2-test:
       include:
         - "/v2/config/authorisation"
-      roles:
-        - "prison-XYZ-only"
+      filters:
+        prisons:
+          - XYZ
     no-include-or-roles:
     empty-include:
       include:
@@ -113,16 +114,19 @@ authorisation:
     limited-prisons:
       roles:
         - "all-endpoints"
-        - "prison-XYZ-only"
+      filters:
+        prisons:
+          - XYZ
     empty-prisons:
       roles:
         - "all-endpoints"
-        - "empty-prisons"
+      filters:
+        prisons:
     private-prison-only:
       roles:
         - "private-prison"
-        - "empty-filters"
       include:
+      filters:
     limited-case-notes:
       roles:
         - "all-endpoints"

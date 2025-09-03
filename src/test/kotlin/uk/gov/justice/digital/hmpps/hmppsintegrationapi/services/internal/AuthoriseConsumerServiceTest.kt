@@ -6,6 +6,7 @@ import io.kotest.matchers.booleans.shouldBeTrue
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -18,7 +19,7 @@ internal class AuthoriseConsumerServiceTest(
       val requestedPath = "/persons/123"
 
       describe("doesConsumerHaveIncludesAccess") {
-        val consumerConfig = ConsumerConfig(listOf("/persons/.*"), listOf())
+        val consumerConfig = ConsumerConfig(listOf("/persons/.*"), ConsumerFilters(null, null), listOf())
 
         it("access is allowed when the path is listed under that consumer") {
           val authResult =
