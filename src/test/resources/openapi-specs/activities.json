@@ -17,18 +17,13 @@
   ],
   "security": [
     {
-      "bearer-jwt": [
-        "read",
-        "write"
-      ]
+      "bearer-jwt": ["read", "write"]
     }
   ],
   "paths": {
     "/schedules/{scheduleId}/deallocate": {
       "put": {
-        "tags": [
-          "activity-schedule-controller"
-        ],
+        "tags": ["activity-schedule-controller"],
         "summary": "Deallocate offenders",
         "description": "Deallocates offenders from an activity schedule on a future date.\n\nRequires one of the following roles:\n* ACTIVITY_HUB\n* ACTIVITY_ADMIN",
         "operationId": "deallocate",
@@ -113,9 +108,7 @@
     },
     "/scheduled-instances/{instanceId}": {
       "get": {
-        "tags": [
-          "scheduled-instance-controller"
-        ],
+        "tags": ["scheduled-instance-controller"],
         "summary": "Get a scheduled instance by ID",
         "description": "Returns a scheduled instance.\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN\n* NOMIS_ACTIVITIES",
         "operationId": "getScheduledInstanceById",
@@ -185,9 +178,7 @@
         }
       },
       "put": {
-        "tags": [
-          "scheduled-instance-controller"
-        ],
+        "tags": ["scheduled-instance-controller"],
         "summary": "Update a scheduled instance.",
         "description": "\n Currently only cancelled sessions reasons, comments and attendances where payments should be issued can be updated\n \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "updateScheduledInstance",
@@ -272,9 +263,7 @@
     },
     "/scheduled-instances/{instanceId}/uncancel": {
       "put": {
-        "tags": [
-          "scheduled-instance-controller"
-        ],
+        "tags": ["scheduled-instance-controller"],
         "summary": "Un-cancels a scheduled instance.",
         "description": "Un-cancels a previously cancelled scheduled instance.\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "uncancelScheduledInstance",
@@ -349,9 +338,7 @@
     },
     "/scheduled-instances/{instanceId}/cancel": {
       "put": {
-        "tags": [
-          "scheduled-instance-controller"
-        ],
+        "tags": ["scheduled-instance-controller"],
         "summary": "Cancel a scheduled instance",
         "description": "Cancels scheduled instance and associated attendance records\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "cancelScheduledInstance",
@@ -433,9 +420,7 @@
     },
     "/scheduled-instances/uncancel": {
       "put": {
-        "tags": [
-          "scheduled-instance-controller"
-        ],
+        "tags": ["scheduled-instance-controller"],
         "summary": "Uncancel multiple schedule instances",
         "description": "Uncancel multiple schedule instances and reset associated un-suspended attendances\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "uncancelScheduledInstances",
@@ -495,9 +480,7 @@
     },
     "/scheduled-instances/cancel": {
       "put": {
-        "tags": [
-          "scheduled-instance-controller"
-        ],
+        "tags": ["scheduled-instance-controller"],
         "summary": "Cancel multiple schedule instances",
         "description": "Cancels multiple schedule instances and associated attendance records\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "cancelScheduledInstances",
@@ -557,9 +540,7 @@
     },
     "/queue-admin/retry-dlq/{dlqName}": {
       "put": {
-        "tags": [
-          "hmpps-queue-resource"
-        ],
+        "tags": ["hmpps-queue-resource"],
         "description": "\n\nRequires one of the following roles:\n* ACTIVITY_ADMIN",
         "operationId": "retryDlq",
         "parameters": [
@@ -588,9 +569,7 @@
     },
     "/queue-admin/retry-all-dlqs": {
       "put": {
-        "tags": [
-          "hmpps-queue-resource"
-        ],
+        "tags": ["hmpps-queue-resource"],
         "operationId": "retryAllDlqs",
         "responses": {
           "200": {
@@ -611,9 +590,7 @@
     },
     "/queue-admin/purge-queue/{queueName}": {
       "put": {
-        "tags": [
-          "hmpps-queue-resource"
-        ],
+        "tags": ["hmpps-queue-resource"],
         "description": "\n\nRequires one of the following roles:\n* ACTIVITY_ADMIN",
         "operationId": "purgeQueue",
         "parameters": [
@@ -642,9 +619,7 @@
     },
     "/attendances": {
       "put": {
-        "tags": [
-          "attendance-controller"
-        ],
+        "tags": ["attendance-controller"],
         "summary": "Updates attendance records.",
         "description": "Updates the given attendance records with the supplied update request details.\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "markAttendances",
@@ -697,9 +672,7 @@
     },
     "/appointments/{appointmentId}/uncancel": {
       "put": {
-        "tags": [
-          "appointment-controller"
-        ],
+        "tags": ["appointment-controller"],
         "summary": "Uncancel an appointment or series of appointments",
         "description": "\n Uncancel an appointment or series of appointments based on the applyTo property.\n \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "uncancelAppointment",
@@ -781,9 +754,7 @@
     },
     "/appointments/{appointmentId}/cancel": {
       "put": {
-        "tags": [
-          "appointment-controller"
-        ],
+        "tags": ["appointment-controller"],
         "summary": "Cancel an appointment or series of appointments",
         "description": "\n Cancel an appointment or series of appointments based on the applyTo property.\n \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "cancelAppointment",
@@ -865,9 +836,7 @@
     },
     "/appointments/updateAttendances": {
       "put": {
-        "tags": [
-          "appointment-controller"
-        ],
+        "tags": ["appointment-controller"],
         "summary": "Update the attendances for multiple appointments",
         "description": "\n Update the attendance records for attendees on multiple appointments. This sets the current attendance records\n for the supplied prison numbers, replacing any existing records. This supports both the initial recording of attendances\n and changing that attendance records. There are no restrictions on when attendances can be recorded. It can be done\n for past and future appointments.\n \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "markMultipleAttendances",
@@ -879,11 +848,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "enum": [
-                "ATTENDED",
-                "NOT_ATTENDED",
-                "RESET"
-              ]
+              "enum": ["ATTENDED", "NOT_ATTENDED", "RESET"]
             }
           },
           {
@@ -948,9 +913,7 @@
     },
     "/advance-attendances/{advanceAttendanceId}": {
       "get": {
-        "tags": [
-          "advance-attendance-controller"
-        ],
+        "tags": ["advance-attendance-controller"],
         "summary": "Get an advance attendance by id.",
         "description": "Returns an advance attendance.\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getAttendanceById",
@@ -1009,9 +972,7 @@
         }
       },
       "put": {
-        "tags": [
-          "advance-attendance-controller"
-        ],
+        "tags": ["advance-attendance-controller"],
         "summary": "Updates an advance attendance.",
         "description": "Updates the given advance attendance. Currently only updates the issue payment status.\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "update",
@@ -1080,9 +1041,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "advance-attendance-controller"
-        ],
+        "tags": ["advance-attendance-controller"],
         "summary": "Deletes the advance attendance.",
         "description": "Hard deletes the given advance attendance.\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "reset",
@@ -1143,9 +1102,7 @@
     },
     "/waiting-list-applications/{prisonCode}/search": {
       "post": {
-        "tags": [
-          "waiting-list-application-controller"
-        ],
+        "tags": ["waiting-list-application-controller"],
         "description": "Search waiting list applications\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN\n* ACTIVITIES_MANAGEMENT__RO",
         "operationId": "searchWaitingLists",
         "parameters": [
@@ -1255,9 +1212,7 @@
     },
     "/utility/update-case-note-uuid": {
       "post": {
-        "tags": [
-          "utility-controller"
-        ],
+        "tags": ["utility-controller"],
         "summary": "Update case note UUID for all the existing case notes.",
         "description": "Can only be accessed from within the ingress. Requests from elsewhere will result in a 401 response code.",
         "operationId": "updateCaseNoteUUID",
@@ -1277,9 +1232,7 @@
     },
     "/utility/publish-events": {
       "post": {
-        "tags": [
-          "utility-controller"
-        ],
+        "tags": ["utility-controller"],
         "summary": "Publish an event to the domain events SNS topic.",
         "description": "Can only be accessed from within the ingress. Requests from elsewhere will result in a 401 response code.",
         "operationId": "publishDomainEvent",
@@ -1309,9 +1262,7 @@
     },
     "/schedules/{scheduleId}/allocations": {
       "get": {
-        "tags": [
-          "activity-schedule-controller"
-        ],
+        "tags": ["activity-schedule-controller"],
         "summary": "Get a list of activity schedule allocations",
         "description": "Returns zero or more activity schedule allocations.\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getAllocationsBy",
@@ -1412,9 +1363,7 @@
         }
       },
       "post": {
-        "tags": [
-          "activity-schedule-controller"
-        ],
+        "tags": ["activity-schedule-controller"],
         "summary": "Allocate offender to schedule",
         "description": "Allocates the supplied offender allocation request to the activity schedule.\n\nRequires one of the following roles:\n* ACTIVITY_HUB\n* ACTIVITY_ADMIN",
         "operationId": "allocate",
@@ -1495,9 +1444,7 @@
     },
     "/scheduled-instances": {
       "post": {
-        "tags": [
-          "scheduled-instance-controller"
-        ],
+        "tags": ["scheduled-instance-controller"],
         "summary": "Get scheduled instances by their ids",
         "description": "Returns a list of scheduled instances.\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN\n* NOMIS_ACTIVITIES",
         "operationId": "getScheduledInstancesByIds",
@@ -1568,9 +1515,7 @@
     },
     "/scheduled-events/prison/{prisonCode}": {
       "post": {
-        "tags": [
-          "scheduled-event-controller"
-        ],
+        "tags": ["scheduled-event-controller"],
         "summary": "Get a list of scheduled events for a prison and list of prisoner numbers for a date and time slot",
         "description": "\n Returns scheduled events for the prison, prisoner numbers, single date and an optional time slot.\n Court hearings, adjudication hearings, transfers and visits come from NOMIS (via prison API).\n Activities and appointments come from either NOMIS or the local database depending on whether the prison is\n marked as rolled-out for activities and/or appointments.\n (Intended usage: Unlock list)\n \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getScheduledEventsForMultiplePrisoners",
@@ -1601,11 +1546,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "enum": [
-                "AM",
-                "PM",
-                "ED"
-              ]
+              "enum": ["AM", "PM", "ED"]
             }
           }
         ],
@@ -1680,9 +1621,7 @@
     },
     "/scheduled-events/prison/{prisonCode}/locations": {
       "post": {
-        "tags": [
-          "scheduled-event-controller"
-        ],
+        "tags": ["scheduled-event-controller"],
         "summary": "Get a list of scheduled events for a prison and list of internal location ids numbers for a date and optional time slot",
         "description": "\n Returns scheduled events for the prison, internal location ids, single date and an optional time slot.\n This endpoint only returns activities and appointments and these come from the local database.\n This endpoint supports the creation of movement lists.\n Note that activities are only scheduled 60 days in advance. Appointments may be scheduled for any date in the future.\n \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getScheduledEventsForMultipleLocations",
@@ -1713,11 +1652,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "enum": [
-                "AM",
-                "PM",
-                "ED"
-              ]
+              "enum": ["AM", "PM", "ED"]
             }
           }
         ],
@@ -1797,9 +1732,7 @@
     },
     "/scheduled-events/prison/{prisonCode}/location-events": {
       "post": {
-        "tags": [
-          "scheduled-event-controller"
-        ],
+        "tags": ["scheduled-event-controller"],
         "summary": "Get a list of scheduled events for a prison given list of DPS location UUIDs, a date and optional time slot",
         "description": "\n Returns scheduled events for the prison, locations UUIDs, date and optional time slot.\n This endpoint only returns activities and appointments and these come from the local database.\n This endpoint supports the creation of movement lists.\n Note that activities are only scheduled 60 days in advance. Appointments may be scheduled for any date in the future.\n \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getScheduledEventsForMultipleLocationsByDPSLocationsIds",
@@ -1830,11 +1763,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "enum": [
-                "AM",
-                "PM",
-                "ED"
-              ]
+              "enum": ["AM", "PM", "ED"]
             }
           }
         ],
@@ -1913,9 +1842,7 @@
     },
     "/rollout/prison-regime/{agencyId}": {
       "post": {
-        "tags": [
-          "rollout-controller"
-        ],
+        "tags": ["rollout-controller"],
         "summary": "Creates a prison regime for a given prison",
         "description": "If a regine exists it will overwrite it. Called via migration dashboard only\n\nRequires one of the following roles:\n* MIGRATE_ACTIVITIES",
         "operationId": "setPrisonRegimeSlots",
@@ -1961,9 +1888,7 @@
     },
     "/prisons/{prisonCode}/prisoner-allocations": {
       "post": {
-        "tags": [
-          "prisoner-allocation-controller"
-        ],
+        "tags": ["prisoner-allocation-controller"],
         "summary": "Get all allocations for prisoners",
         "description": "Returns zero or more allocations for the supplied list of prisoners.\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN\n* ACTIVITIES_MANAGEMENT__RO",
         "operationId": "prisonerAllocations",
@@ -2039,9 +1964,7 @@
     },
     "/prison/{prisonCode}/prison-pay-band": {
       "post": {
-        "tags": [
-          "prison-controller"
-        ],
+        "tags": ["prison-controller"],
         "summary": "Create a pay band for a given prison",
         "description": "Returns the newly created pay band.\n\nRequires one of the following roles:\n* MIGRATE_ACTIVITIES\n* ACTIVITY_ADMIN",
         "operationId": "createPayBand",
@@ -2115,9 +2038,7 @@
     },
     "/migrate/{prisonCode}/move-activity-start-dates": {
       "post": {
-        "tags": [
-          "migrate-activity-controller"
-        ],
+        "tags": ["migrate-activity-controller"],
         "summary": "Move the start date for activities their schedules and allocations for a prison",
         "description": "\n Move a prisons activities to a later start date.\n Only allocations due to start before the new start date will be moved.\n Activities that have already started will be ignored.\n Activities that are not before the new start date will be ignored.\n \n\nRequires one of the following roles:\n* NOMIS_ACTIVITIES\n* ACTIVITY_ADMIN",
         "operationId": "moveActivityStartDates",
@@ -2200,9 +2121,7 @@
     },
     "/migrate/allocation": {
       "post": {
-        "tags": [
-          "migrate-activity-controller"
-        ],
+        "tags": ["migrate-activity-controller"],
         "summary": "Migrate an allocation",
         "description": "Migrate an allocation from NOMIS.\n\nRequires one of the following roles:\n* NOMIS_ACTIVITIES",
         "operationId": "migrateAllocation",
@@ -2262,9 +2181,7 @@
     },
     "/migrate/activity": {
       "post": {
-        "tags": [
-          "migrate-activity-controller"
-        ],
+        "tags": ["migrate-activity-controller"],
         "summary": "Migrate an activity",
         "description": "Migrate an activity.\n\nRequires one of the following roles:\n* NOMIS_ACTIVITIES",
         "operationId": "migrateActivity",
@@ -2324,9 +2241,7 @@
     },
     "/migrate-appointment": {
       "post": {
-        "tags": [
-          "migrate-appointment-controller"
-        ],
+        "tags": ["migrate-appointment-controller"],
         "summary": "Migrate an appointment from NOMIS",
         "description": "\n Migrate an appointment creating an appointment series with one appointment that has the supplied prisoner allocated.\n Will return null if appointment was dropped.\n \n\nRequires one of the following roles:\n* NOMIS_APPOINTMENTS",
         "operationId": "migrateAppointment",
@@ -2376,9 +2291,7 @@
     },
     "/job/purposeful-activity-reports": {
       "post": {
-        "tags": [
-          "job-trigger-controller"
-        ],
+        "tags": ["job-trigger-controller"],
         "summary": "Trigger the job to generate purposeful activity reports and upload to s3",
         "description": "\n Generates 3 csv reports which are uploaded to an s3 bucket for prison performance reporting team to process for\n purposeful activity generation purposes and to display on the prison regime dashboard in the performance hub.\n\n Report 1) Details of attended purposeful-activity activities\n Report 2) Details of attended purposeful-activity appointments\n Report 3) Prison rollout table\n\n Can only be accessed from within the ingress. Requests from elsewhere will result in a 401 response code.\n ",
         "operationId": "triggerPurposefulActivityReportsJob",
@@ -2411,9 +2324,7 @@
     },
     "/job/manage-attendance-records": {
       "post": {
-        "tags": [
-          "job-trigger-controller"
-        ],
+        "tags": ["job-trigger-controller"],
         "summary": "Trigger the job to manage attendance records in advance",
         "description": "Can only be accessed from within the ingress. Requests from elsewhere will result in a 401 response code.",
         "operationId": "triggerManageAttendanceRecordsJob",
@@ -2463,9 +2374,7 @@
     },
     "/job/manage-allocations": {
       "post": {
-        "tags": [
-          "job-trigger-controller"
-        ],
+        "tags": ["job-trigger-controller"],
         "summary": "Trigger the job to manage allocations",
         "description": "\n One or more operations to trigger for managing allocations.\n\n Can only be accessed from within the ingress. Requests from elsewhere will result in a 401 response code.\n ",
         "operationId": "triggerManageAllocationsJob",
@@ -2523,9 +2432,7 @@
     },
     "/job/fix-zero-pay": {
       "post": {
-        "tags": [
-          "job-trigger-controller"
-        ],
+        "tags": ["job-trigger-controller"],
         "summary": "Trigger the job fix zero pay activities",
         "description": "Can only be accessed from within the ingress. Requests from elsewhere will result in a 401 response code.",
         "operationId": "triggerFixZeroPayJob",
@@ -2593,9 +2500,7 @@
     },
     "/job/fix-locations": {
       "post": {
-        "tags": [
-          "job-trigger-controller"
-        ],
+        "tags": ["job-trigger-controller"],
         "summary": "Trigger the job fix activity and appointment locations",
         "description": "Can only be accessed from within the ingress. Requests from elsewhere will result in a 401 response code.",
         "operationId": "triggerActivitiesLocationsJob",
@@ -2615,9 +2520,7 @@
     },
     "/job/create-scheduled-instances": {
       "post": {
-        "tags": [
-          "job-trigger-controller"
-        ],
+        "tags": ["job-trigger-controller"],
         "summary": "Trigger the job to create the scheduled instances in advance for the active schedules on activities",
         "description": "Can only be accessed from within the ingress. Requests from elsewhere will result in a 401 response code.",
         "operationId": "triggerCreateScheduledInstancesJob",
@@ -2637,9 +2540,7 @@
     },
     "/job/appointments/manage-attendees": {
       "post": {
-        "tags": [
-          "appointment-job-controller"
-        ],
+        "tags": ["appointment-job-controller"],
         "summary": "Starts a job to manage appointment attendees",
         "description": "\n Job will retrieve all future appointments starting within the number of days defined by the days after now parameter.\n It will retrieve the attendees for these appointments and retrieve the associated prisoner records. The status, location and\n any other pertinent information for these prisoners will be used to determine whether the attendee records should be removed.\n \n Can only be accessed from within the ingress. Requests from elsewhere will result in a 401 response code.\n ",
         "operationId": "triggerManageAllocationsJob_1",
@@ -2671,9 +2572,7 @@
     },
     "/job/appointments-metrics": {
       "post": {
-        "tags": [
-          "job-trigger-controller"
-        ],
+        "tags": ["job-trigger-controller"],
         "summary": "Trigger the job to generate appointments metrics",
         "description": "Can only be accessed from within the ingress. Requests from elsewhere will result in a 401 response code.",
         "operationId": "triggerAppointmentsMetricsJob",
@@ -2693,9 +2592,7 @@
     },
     "/job/activities-metrics": {
       "post": {
-        "tags": [
-          "job-trigger-controller"
-        ],
+        "tags": ["job-trigger-controller"],
         "summary": "Trigger the job to generate activity metrics",
         "description": "Can only be accessed from within the ingress. Requests from elsewhere will result in a 401 response code.",
         "operationId": "triggerActivityMetricsJob",
@@ -2715,9 +2612,7 @@
     },
     "/integration-api/waiting-list-applications/{prisonCode}/search": {
       "post": {
-        "tags": [
-          "integration-api-controller"
-        ],
+        "tags": ["integration-api-controller"],
         "description": "Search waiting list applications\n\nRequires one of the following roles:\n* ACTIVITIES__HMPPS_INTEGRATION_API",
         "operationId": "searchWaitingLists_1",
         "parameters": [
@@ -2827,9 +2722,7 @@
     },
     "/integration-api/scheduled-events/prison/{prisonCode}": {
       "get": {
-        "tags": [
-          "integration-api-controller"
-        ],
+        "tags": ["integration-api-controller"],
         "summary": "Get a list of scheduled events for a prison, prisoner, date range (max 3 months) and optional time slot.",
         "description": "\n Returns scheduled events for the prison, prisoner, date range (max 3 months) and optional time slot.\n Court hearings, adjudication hearings, transfers and visits come from NOMIS (via prison API).\n Activities and appointments come from either NOMIS or the local database depending on whether the prison is\n marked as active for appointments and/or activities.\n (Intended usage: Prisoner calendar / schedule)\n \n\nRequires one of the following roles:\n* ACTIVITIES__HMPPS_INTEGRATION_API",
         "operationId": "getScheduledEventsForSinglePrisoner",
@@ -2879,11 +2772,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "enum": [
-                "AM",
-                "PM",
-                "ED"
-              ]
+              "enum": ["AM", "PM", "ED"]
             }
           }
         ],
@@ -2941,9 +2830,7 @@
         }
       },
       "post": {
-        "tags": [
-          "integration-api-controller"
-        ],
+        "tags": ["integration-api-controller"],
         "summary": "Get a list of scheduled events for a prison and list of prisoner numbers for a date and time slot",
         "description": "\n Returns scheduled events for the prison, prisoner numbers, single date and an optional time slot.\n Court hearings, adjudication hearings, transfers and visits come from NOMIS (via prison API).\n Activities and appointments come from either NOMIS or the local database depending on whether the prison is\n marked as rolled-out for activities and/or appointments.\n (Intended usage: Unlock list)\n \n\nRequires one of the following roles:\n* ACTIVITIES__HMPPS_INTEGRATION_API",
         "operationId": "getScheduledEventsForMultiplePrisoners_1",
@@ -2974,11 +2861,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "enum": [
-                "AM",
-                "PM",
-                "ED"
-              ]
+              "enum": ["AM", "PM", "ED"]
             }
           }
         ],
@@ -3053,9 +2936,7 @@
     },
     "/integration-api/appointments/{prisonCode}/search": {
       "post": {
-        "tags": [
-          "integration-api-controller"
-        ],
+        "tags": ["integration-api-controller"],
         "summary": "Search for appointments within the specified prison",
         "description": "\n Uses the supplied prison code and search parameters to filter and return appointment search results.\n \n\nRequires one of the following roles:\n* ACTIVITIES__HMPPS_INTEGRATION_API",
         "operationId": "searchAppointments",
@@ -3129,9 +3010,7 @@
     },
     "/event-review/prison/{prison}/acknowledge": {
       "post": {
-        "tags": [
-          "event-review-controller"
-        ],
+        "tags": ["event-review-controller"],
         "summary": "Acknowledge a list of change of circumstance events in the prison.",
         "description": "Used to indicate that a subset of change events have been acknowledged.\n\nRequires one of the following roles:\n* ACTIVITY_HUB\n* ACTIVITY_ADMIN",
         "operationId": "acknowledgeEvents",
@@ -3213,9 +3092,7 @@
     },
     "/audit/search": {
       "post": {
-        "tags": [
-          "audit-controller"
-        ],
+        "tags": ["audit-controller"],
         "summary": "Search for audit records",
         "description": "Returns all records that match the search criteria.\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getAuditRecords",
@@ -3296,9 +3173,7 @@
     },
     "/appointments/{prisonCode}/search": {
       "post": {
-        "tags": [
-          "appointment-controller"
-        ],
+        "tags": ["appointment-controller"],
         "summary": "Search for appointments within the specified prison",
         "description": "\n Uses the supplied prison code and search parameters to filter and return appointment search results.\n \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "searchAppointments_1",
@@ -3372,9 +3247,7 @@
     },
     "/appointments/details": {
       "post": {
-        "tags": [
-          "appointment-controller"
-        ],
+        "tags": ["appointment-controller"],
         "summary": "Get the details of appointments for display purposes by their ids",
         "description": "Returns the displayable details of appointments by their unique identifiers.\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getAppointmentDetailsById",
@@ -3432,9 +3305,7 @@
     },
     "/appointment-set": {
       "post": {
-        "tags": [
-          "appointment-set-controller"
-        ],
+        "tags": ["appointment-set-controller"],
         "summary": "Create a set of appointments",
         "description": "\n Create a set of appointments that start on the same day and add the associated prisoner as the appointment attendee.\n \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "createAppointmentSet",
@@ -3497,9 +3368,7 @@
     },
     "/appointment-series": {
       "post": {
-        "tags": [
-          "appointment-series-controller"
-        ],
+        "tags": ["appointment-series-controller"],
         "summary": "Create an appointment series with one or more appointments",
         "description": "\n Create an appointment series with one or more appointments and add the supplied prisoner or prisoners as appointment attendees.\n \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "createAppointmentSeries",
@@ -3562,9 +3431,7 @@
     },
     "/allocations/{prisonCode}/waiting-list-application": {
       "post": {
-        "tags": [
-          "allocation-controller"
-        ],
+        "tags": ["allocation-controller"],
         "summary": "Add a prisoner to an activity schedule waiting list",
         "description": "Adds the supplied waiting list creation request to the activity schedule.\n\nRequires one of the following roles:\n* ACTIVITY_HUB\n* ACTIVITY_ADMIN",
         "operationId": "addToWaitingList",
@@ -3655,9 +3522,7 @@
     },
     "/allocations/{prisonCode}/unsuspend": {
       "post": {
-        "tags": [
-          "allocation-controller"
-        ],
+        "tags": ["allocation-controller"],
         "summary": "Suspend allocations",
         "description": "Add a suspension end date to a list of allocations\n\nRequires one of the following roles:\n* ACTIVITY_HUB\n* ACTIVITY_ADMIN",
         "operationId": "unsuspend",
@@ -3738,9 +3603,7 @@
     },
     "/allocations/{prisonCode}/suspend": {
       "post": {
-        "tags": [
-          "allocation-controller"
-        ],
+        "tags": ["allocation-controller"],
         "summary": "Suspend allocations",
         "description": "Add a suspension start date to a list of allocations, accompanied by an optional case note.\n\nRequires one of the following roles:\n* ACTIVITY_HUB\n* ACTIVITY_ADMIN",
         "operationId": "suspend",
@@ -3821,9 +3684,7 @@
     },
     "/advance-attendances": {
       "post": {
-        "tags": [
-          "advance-attendance-controller"
-        ],
+        "tags": ["advance-attendance-controller"],
         "summary": "Create an advance attendance",
         "description": "Create an advance attendance. Currently only for a prisoner who is not required.\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "create",
@@ -3873,9 +3734,7 @@
     },
     "/activities": {
       "post": {
-        "tags": [
-          "activity-controller"
-        ],
+        "tags": ["activity-controller"],
         "summary": "Create an activity",
         "description": "Create an activity\n\nRequires one of the following roles:\n* ACTIVITY_HUB\n* ACTIVITY_ADMIN",
         "operationId": "create_1",
@@ -3948,9 +3807,7 @@
     },
     "/waiting-list-applications/{waitingListId}": {
       "get": {
-        "tags": [
-          "waiting-list-application-controller"
-        ],
+        "tags": ["waiting-list-application-controller"],
         "summary": "Get a waiting list application by its id",
         "description": "Returns a single waiting list application by its unique identifier.\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getWaitingListById",
@@ -4020,9 +3877,7 @@
         }
       },
       "patch": {
-        "tags": [
-          "waiting-list-application-controller"
-        ],
+        "tags": ["waiting-list-application-controller"],
         "description": "Update a waiting list application.\n\nRequires one of the following roles:\n* ACTIVITY_HUB\n* ACTIVITY_ADMIN",
         "operationId": "updateWaitingList",
         "parameters": [
@@ -4113,9 +3968,7 @@
     },
     "/prison/{prisonCode}/prison-pay-band/{prisonPayBandId}": {
       "patch": {
-        "tags": [
-          "prison-controller"
-        ],
+        "tags": ["prison-controller"],
         "summary": "Update a pay band for a given prison",
         "description": "Returns the updated pay band.\n\nRequires one of the following roles:\n* MIGRATE_ACTIVITIES\n* ACTIVITY_ADMIN",
         "operationId": "updatePayBand",
@@ -4198,9 +4051,7 @@
     },
     "/appointments/{appointmentId}": {
       "patch": {
-        "tags": [
-          "appointment-controller"
-        ],
+        "tags": ["appointment-controller"],
         "summary": "Update an appointment or series of appointments",
         "description": "\n Update an appointment or series of appointments based on the applyTo property.\n \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "updateAppointment",
@@ -4282,9 +4133,7 @@
     },
     "/allocations/{prisonCode}/allocationId/{allocationId}": {
       "patch": {
-        "tags": [
-          "allocation-controller"
-        ],
+        "tags": ["allocation-controller"],
         "summary": "Update an allocation",
         "description": "Update an allocation\n\nRequires one of the following roles:\n* ACTIVITY_HUB\n* ACTIVITY_ADMIN",
         "operationId": "update_1",
@@ -4373,9 +4222,7 @@
     },
     "/activities/{prisonCode}/activityId/{activityId}": {
       "patch": {
-        "tags": [
-          "activity-controller"
-        ],
+        "tags": ["activity-controller"],
         "summary": "Update an activity",
         "description": "Update an activity\n\nRequires one of the following roles:\n* ACTIVITY_HUB\n* ACTIVITY_ADMIN",
         "operationId": "update_2",
@@ -4475,9 +4322,7 @@
     },
     "/utility/invalid-activity-locations": {
       "get": {
-        "tags": [
-          "utility-controller"
-        ],
+        "tags": ["utility-controller"],
         "summary": "Get any activities with invalid locations",
         "description": "Return any activities with invalid locations.",
         "operationId": "getInvalidActivityLocations",
@@ -4497,9 +4342,7 @@
     },
     "/synchronisation/reconciliation/suspended-allocations/{prisonId}": {
       "get": {
-        "tags": [
-          "synchronisation-controller"
-        ],
+        "tags": ["synchronisation-controller"],
         "summary": "Retrieves suspended allocation details for the sync reconciliation",
         "description": "Retrieves booking numbers and counts for suspended allocations currently active in each prison\n\nRequires one of the following roles:\n* NOMIS_ACTIVITIES",
         "operationId": "getSuspendedAllocationReconciliation",
@@ -4561,9 +4404,7 @@
     },
     "/synchronisation/reconciliation/attendances/{prisonId}": {
       "get": {
-        "tags": [
-          "synchronisation-controller"
-        ],
+        "tags": ["synchronisation-controller"],
         "summary": "Retrieves attendance details for the sync reconciliation",
         "description": "Retrieves booking numbers and counts for paid attendances in the prison on the date\n\nRequires one of the following roles:\n* NOMIS_ACTIVITIES",
         "operationId": "getAttendanceReconciliation",
@@ -4636,9 +4477,7 @@
     },
     "/synchronisation/reconciliation/allocations/{prisonId}": {
       "get": {
-        "tags": [
-          "synchronisation-controller"
-        ],
+        "tags": ["synchronisation-controller"],
         "summary": "Retrieves allocation details for the sync reconciliation",
         "description": "Retrieves booking numbers and counts for allocations currently active in each prison\n\nRequires one of the following roles:\n* NOMIS_ACTIVITIES",
         "operationId": "getAllocationReconciliation",
@@ -4700,9 +4539,7 @@
     },
     "/synchronisation/attendance/{attendanceId}": {
       "get": {
-        "tags": [
-          "synchronisation-controller"
-        ],
+        "tags": ["synchronisation-controller"],
         "summary": "Retrieves Nomis synchronisation details",
         "description": "Retrieves all details required in order to synchronise an attendance with the Nomis database.\n\nRequires one of the following roles:\n* NOMIS_ACTIVITIES",
         "operationId": "getAttendanceSync",
@@ -4775,9 +4612,7 @@
     },
     "/subject-access-request": {
       "get": {
-        "tags": [
-          "Subject Access Request"
-        ],
+        "tags": ["Subject Access Request"],
         "summary": "Provides content for a prisoner to satisfy the needs of a subject access request on their behalf",
         "description": "Requires role SAR_DATA_ACCESS or additional role as specified by hmpps.sar.additionalAccessRole configuration.\n\nRequires one of the following roles:\n* SAR_DATA_ACCESS\n* SAR_DATA_ACCESS",
         "operationId": "getSarContentByReference",
@@ -4887,9 +4722,7 @@
     },
     "/schedules/{scheduleId}": {
       "get": {
-        "tags": [
-          "activity-schedule-controller"
-        ],
+        "tags": ["activity-schedule-controller"],
         "summary": "Get an activity schedule by its id",
         "description": "Returns a single activity schedule by its unique identifier.\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN\n* NOMIS_ACTIVITIES",
         "operationId": "getScheduleById",
@@ -4971,9 +4804,7 @@
     },
     "/schedules/{scheduleId}/waiting-list-applications": {
       "get": {
-        "tags": [
-          "activity-schedule-controller"
-        ],
+        "tags": ["activity-schedule-controller"],
         "summary": "Get a schedules waiting list applications",
         "description": "Returns zero or more activity schedule waiting list applications.\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getWaitingListApplicationsBy",
@@ -5057,9 +4888,7 @@
     },
     "/schedules/{scheduleId}/suitability": {
       "get": {
-        "tags": [
-          "activity-schedule-controller"
-        ],
+        "tags": ["activity-schedule-controller"],
         "summary": "Gets the suitability details of a candidate for an activity",
         "description": "Returns candidate suitability details considering factors such as, workplace risk assessment, incentive level, education levels, earliest release date and non-associations\n\nRequires one of the following roles:\n* ACTIVITY_HUB\n* ACTIVITY_ADMIN",
         "operationId": "allocationSuitability",
@@ -5139,9 +4968,7 @@
     },
     "/schedules/{scheduleId}/non-associations": {
       "get": {
-        "tags": [
-          "activity-schedule-controller"
-        ],
+        "tags": ["activity-schedule-controller"],
         "summary": "Get non-associations for a prisoner within an activity schedule",
         "description": "Returns a list of non-associations for the prisoner.\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getNonAssociations",
@@ -5215,9 +5042,7 @@
     },
     "/schedules/{scheduleId}/candidates": {
       "get": {
-        "tags": [
-          "activity-schedule-controller"
-        ],
+        "tags": ["activity-schedule-controller"],
         "summary": "Get the suitable candidates for an activity",
         "description": "Returns a paginated view of the list of candidates suitable for a given activity schedule. Filterable by employment status, workplace risk assessment, and incentive level.\n\nRequires one of the following roles:\n* ACTIVITY_HUB\n* ACTIVITY_ADMIN",
         "operationId": "candidates",
@@ -5379,9 +5204,7 @@
     },
     "/scheduled-instances/{instanceId}/scheduled-attendees": {
       "get": {
-        "tags": [
-          "scheduled-instance-controller"
-        ],
+        "tags": ["scheduled-instance-controller"],
         "summary": "Get a list of scheduled attendees for a scheduled instance",
         "description": "Returns a list of prisoners who are scheduled to attend a given scheduled instance.\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getScheduledAttendeesByScheduledInstance",
@@ -5456,9 +5279,7 @@
     },
     "/scheduled-instances/attendance-summary": {
       "get": {
-        "tags": [
-          "scheduled-instance-controller"
-        ],
+        "tags": ["scheduled-instance-controller"],
         "summary": "Attendance summary of activity sessions for a given date",
         "description": "Attendance summary of activity sessions for a given date\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "attendanceSummary",
@@ -5555,9 +5376,7 @@
     },
     "/rollout": {
       "get": {
-        "tags": [
-          "rollout-controller"
-        ],
+        "tags": ["rollout-controller"],
         "summary": "Get all rollout prisons",
         "description": "Returns a list of all rolled out prisons.\n\nRequires one of the following roles:\n* ACTIVITY_ADMIN",
         "operationId": "getRolledOutPrisons",
@@ -5611,9 +5430,7 @@
     },
     "/rollout/{prisonCode}": {
       "get": {
-        "tags": [
-          "rollout-controller"
-        ],
+        "tags": ["rollout-controller"],
         "summary": "Get a prison's rollout plan by prison code",
         "description": "Returns a single prison and its activities management service rollout plan by its unique code.\n\nRequires one of the following roles:\n* ACTIVITY_ADMIN",
         "operationId": "getPrisonByCode",
@@ -5663,9 +5480,7 @@
     },
     "/queue-admin/get-dlq-messages/{dlqName}": {
       "get": {
-        "tags": [
-          "hmpps-queue-resource"
-        ],
+        "tags": ["hmpps-queue-resource"],
         "description": "\n\nRequires one of the following roles:\n* ACTIVITY_ADMIN",
         "operationId": "getDlqMessages",
         "parameters": [
@@ -5704,9 +5519,7 @@
     },
     "/prisons/{prisonCode}/scheduled-instances": {
       "get": {
-        "tags": [
-          "activity-schedule-instance-controller"
-        ],
+        "tags": ["activity-schedule-instance-controller"],
         "summary": "Get a list of scheduled instances for a prison, date range (max 3 months) and time slot (AM, PM or ED - optional)",
         "description": "Returns zero or more scheduled instances for a prison and date range (max 3 months).\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getActivityScheduleInstancesByDateRange",
@@ -5747,11 +5560,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "enum": [
-                "AM",
-                "PM",
-                "ED"
-              ]
+              "enum": ["AM", "PM", "ED"]
             }
           },
           {
@@ -5803,9 +5612,7 @@
     },
     "/prison/{prisonCode}/prison-pay-bands": {
       "get": {
-        "tags": [
-          "prison-controller"
-        ],
+        "tags": ["prison-controller"],
         "summary": "Get a list of pay bands at a given prison",
         "description": "Returns the pay bands at a given prison or a default list of values if none present.\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getPrisonPayBands",
@@ -5858,9 +5665,7 @@
     },
     "/prison/{prisonCode}/activities": {
       "get": {
-        "tags": [
-          "prison-controller"
-        ],
+        "tags": ["prison-controller"],
         "summary": "Get list of activities running at a specified prison. Optionally and by default, only currently LIVE activities are returned",
         "description": "\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN\n* ACTIVITIES_MANAGEMENT__RO",
         "operationId": "getActivities",
@@ -5931,9 +5736,7 @@
     },
     "/prison/prison-regime/{prisonCode}": {
       "get": {
-        "tags": [
-          "prison-controller"
-        ],
+        "tags": ["prison-controller"],
         "summary": "Get a prison regime by its code",
         "description": "Returns a single prison regime and its details by its unique prison code.\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getPrisonRegimeByPrisonCode",
@@ -5986,9 +5789,7 @@
     },
     "/migrate-appointment/{prisonCode}/summary": {
       "get": {
-        "tags": [
-          "migrate-appointment-controller"
-        ],
+        "tags": ["migrate-appointment-controller"],
         "summary": "Get the list of appointment categories",
         "description": "\n\nRequires one of the following roles:\n* NOMIS_APPOINTMENTS\n* MIGRATE_APPOINTMENTS",
         "operationId": "migratedAppointmentsSummary",
@@ -6054,9 +5855,7 @@
     },
     "/locations/prison/{prisonCode}": {
       "get": {
-        "tags": [
-          "location-controller"
-        ],
+        "tags": ["location-controller"],
         "summary": "List of cell locations for a prison group supplied as a query parameter",
         "description": "List of cell locations for a prison group supplied as a query parameter\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getCellLocationsForGroup",
@@ -6137,9 +5936,7 @@
     },
     "/locations/prison/{prisonCode}/location-prefix": {
       "get": {
-        "tags": [
-          "location-controller"
-        ],
+        "tags": ["location-controller"],
         "summary": "Get the location prefix for a location group supplied as a query parameter",
         "description": "Get location prefix for a location group name supplied as a query parameter\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getLocationPrefixForGroup",
@@ -6207,9 +6004,7 @@
     },
     "/locations/prison/{prisonCode}/location-groups": {
       "get": {
-        "tags": [
-          "location-controller"
-        ],
+        "tags": ["location-controller"],
         "summary": "List of all available location groups defined at a prison",
         "description": "List of all available location groups defined at a prison\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getLocationGroups",
@@ -6282,9 +6077,7 @@
     },
     "/locations/prison/{prisonCode}/events-summaries": {
       "get": {
-        "tags": [
-          "location-controller"
-        ],
+        "tags": ["location-controller"],
         "summary": "\n Get a list of internal locations that have events scheduled to take place on the specified date and optional time slot.\n ",
         "description": "\n Returns internal locations that have events scheduled to take place on the specified date and optional time slot.\n Will contain summary information about the events taking place at the location as well as the total number of\n prisoners due to arrive at the location. This endpoint supports the creation of movement lists allowing\n users to select from a sublist of only the internal locations that have events scheduled there.\n Note that activities are only scheduled 60 days in advance. Appointments may be scheduled for any date in the future.\n \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getInternalLocationEventsSummary",
@@ -6315,11 +6108,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "enum": [
-                "AM",
-                "PM",
-                "ED"
-              ]
+              "enum": ["AM", "PM", "ED"]
             }
           }
         ],
@@ -6379,9 +6168,7 @@
     },
     "/integration-api/schedules/{scheduleId}": {
       "get": {
-        "tags": [
-          "integration-api-controller"
-        ],
+        "tags": ["integration-api-controller"],
         "summary": "Get an activity schedule by its id",
         "description": "Returns a single activity schedule by its unique identifier.\n\nRequires one of the following roles:\n* ACTIVITIES__HMPPS_INTEGRATION_API",
         "operationId": "getScheduleById_1",
@@ -6463,9 +6250,7 @@
     },
     "/integration-api/schedules/{scheduleId}/waiting-list-applications": {
       "get": {
-        "tags": [
-          "integration-api-controller"
-        ],
+        "tags": ["integration-api-controller"],
         "summary": "Get a schedules waiting list applications",
         "description": "Returns zero or more activity schedule waiting list applications.\n\nRequires one of the following roles:\n* ACTIVITIES__HMPPS_INTEGRATION_API",
         "operationId": "getWaitingListApplicationsBy_1",
@@ -6540,9 +6325,7 @@
     },
     "/integration-api/prisons/{prisonCode}/{prisonerNumber}/scheduled-instances": {
       "get": {
-        "tags": [
-          "integration-api-controller"
-        ],
+        "tags": ["integration-api-controller"],
         "summary": "Get a list of scheduled instances for a prisoner, prison, date range (max 3 months) and time slot (AM, PM or ED - optional)",
         "description": "Returns zero or more scheduled instances for a prisoner and date range (max 3 months).\n\nRequires one of the following roles:\n* ACTIVITIES__HMPPS_INTEGRATION_API",
         "operationId": "getScheduledInstancesForPrisoner",
@@ -6592,11 +6375,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "enum": [
-                "AM",
-                "PM",
-                "ED"
-              ]
+              "enum": ["AM", "PM", "ED"]
             }
           }
         ],
@@ -6639,9 +6418,7 @@
     },
     "/integration-api/prison/{prisonCode}/prison-pay-bands": {
       "get": {
-        "tags": [
-          "integration-api-controller"
-        ],
+        "tags": ["integration-api-controller"],
         "summary": "Get a list of pay bands at a given prison",
         "description": "Returns the pay bands at a given prison or a default list of values if none present.\n\nRequires one of the following roles:\n* ACTIVITIES__HMPPS_INTEGRATION_API",
         "operationId": "getPrisonPayBands_1",
@@ -6694,9 +6471,7 @@
     },
     "/integration-api/prison/{prisonCode}/activities": {
       "get": {
-        "tags": [
-          "integration-api-controller"
-        ],
+        "tags": ["integration-api-controller"],
         "summary": "Get list of activities running at a specified prison. Optionally and by default, only currently LIVE activities are returned",
         "description": "\n\nRequires one of the following roles:\n* ACTIVITIES__HMPPS_INTEGRATION_API",
         "operationId": "getActivities_1",
@@ -6767,9 +6542,7 @@
     },
     "/integration-api/prison/prison-regime/{prisonCode}": {
       "get": {
-        "tags": [
-          "integration-api-controller"
-        ],
+        "tags": ["integration-api-controller"],
         "summary": "Get a prison regime by its code",
         "description": "Returns a single prison regime and its details by its unique prison code.\n\nRequires one of the following roles:\n* ACTIVITIES__HMPPS_INTEGRATION_API",
         "operationId": "getPrisonRegimeByPrisonCode_1",
@@ -6822,9 +6595,7 @@
     },
     "/integration-api/attendances/{attendanceId}": {
       "get": {
-        "tags": [
-          "integration-api-controller"
-        ],
+        "tags": ["integration-api-controller"],
         "summary": "Get an attendance by ID",
         "description": "Returns an attendance.\n\nRequires one of the following roles:\n* ACTIVITIES__HMPPS_INTEGRATION_API",
         "operationId": "getAttendanceById_1",
@@ -6885,9 +6656,7 @@
     },
     "/integration-api/attendances/prisoner/{prisonerNumber}": {
       "get": {
-        "tags": [
-          "integration-api-controller"
-        ],
+        "tags": ["integration-api-controller"],
         "summary": "Gets a list of prisoner attendance activities for a given date range",
         "description": "\n\nRequires one of the following roles:\n* ACTIVITIES__HMPPS_INTEGRATION_API",
         "operationId": "getAttendanceForPrisoner",
@@ -6990,9 +6759,7 @@
     },
     "/integration-api/attendance-reasons": {
       "get": {
-        "tags": [
-          "integration-api-controller"
-        ],
+        "tags": ["integration-api-controller"],
         "summary": "Get the list of attendance reasons",
         "description": "\n\nRequires one of the following roles:\n* ACTIVITIES__HMPPS_INTEGRATION_API",
         "operationId": "getAttendanceReasons",
@@ -7035,9 +6802,7 @@
     },
     "/integration-api/allocations/deallocation-reasons": {
       "get": {
-        "tags": [
-          "integration-api-controller"
-        ],
+        "tags": ["integration-api-controller"],
         "summary": "Get the list of deallocation reasons",
         "description": "\n\nRequires one of the following roles:\n* ACTIVITIES__HMPPS_INTEGRATION_API",
         "operationId": "getDeallocationReasons",
@@ -7080,9 +6845,7 @@
     },
     "/integration-api/activities/{activityId}/schedules": {
       "get": {
-        "tags": [
-          "integration-api-controller"
-        ],
+        "tags": ["integration-api-controller"],
         "summary": "Get the capacity and number of allocated slots in an activity",
         "description": "\n\nRequires one of the following roles:\n* ACTIVITIES__HMPPS_INTEGRATION_API",
         "operationId": "getActivitySchedules",
@@ -7146,9 +6909,7 @@
     },
     "/integration-api/activities/schedule/{scheduleId}/suitability-criteria": {
       "get": {
-        "tags": [
-          "integration-api-controller"
-        ],
+        "tags": ["integration-api-controller"],
         "summary": "Gets the suitability criteria for allocating prisoners to a particular activity ",
         "description": "\n\nRequires one of the following roles:\n* ACTIVITIES__HMPPS_INTEGRATION_API",
         "operationId": "getActivityScheduleSuitabilityCriteria",
@@ -7223,9 +6984,7 @@
     },
     "/event-review/prison/{prisonCode}": {
       "get": {
-        "tags": [
-          "event-review-controller"
-        ],
+        "tags": ["event-review-controller"],
         "summary": "Get events for a prison which may indicate that a change of circumstances affecting allocations had occurred",
         "description": "Returns events in the prison which match the search criteria provided.\n\nRequires one of the following roles:\n* ACTIVITY_HUB\n* ACTIVITY_ADMIN",
         "operationId": "getEventsForReview",
@@ -7340,9 +7099,7 @@
     },
     "/attendances/{prisonCode}/{sessionDate}": {
       "get": {
-        "tags": [
-          "attendance-controller"
-        ],
+        "tags": ["attendance-controller"],
         "summary": "Get a daily list of attendances",
         "description": "Returns an attendance list.\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getAttendanceByDate",
@@ -7370,11 +7127,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "enum": [
-                "TIER_1",
-                "TIER_2",
-                "FOUNDATION"
-              ]
+              "enum": ["TIER_1", "TIER_2", "FOUNDATION"]
             }
           }
         ],
@@ -7417,9 +7170,7 @@
     },
     "/attendances/{prisonCode}/suspended": {
       "get": {
-        "tags": [
-          "attendance-controller"
-        ],
+        "tags": ["attendance-controller"],
         "summary": "Gets a list of suspended prisoner attendance activities for a given date",
         "description": "\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getAttendanceForSuspendedPrisoners",
@@ -7513,9 +7264,7 @@
     },
     "/attendances/{attendanceId}": {
       "get": {
-        "tags": [
-          "attendance-controller"
-        ],
+        "tags": ["attendance-controller"],
         "summary": "Get an attendance by ID",
         "description": "Returns an attendance.\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getAttendanceById_2",
@@ -7576,9 +7325,7 @@
     },
     "/attendance-reasons": {
       "get": {
-        "tags": [
-          "attendance-reason-controller"
-        ],
+        "tags": ["attendance-reason-controller"],
         "summary": "Get the list of attendance reasons",
         "description": "\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getAttendanceReasons_1",
@@ -7621,9 +7368,7 @@
     },
     "/appointments/{prisonCode}/{status}/attendance": {
       "get": {
-        "tags": [
-          "appointment-controller"
-        ],
+        "tags": ["appointment-controller"],
         "summary": "\n Get a list of appointments scheduled to take place on the specified date by status\n ",
         "description": "\n Returns appointments scheduled to take place on the specified date by status\n \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getAppointmentAttendanceByStatus",
@@ -7644,13 +7389,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": [
-                "ATTENDED",
-                "NOT_ATTENDED",
-                "CANCELLED",
-                "NOT_RECORDED",
-                "EVENT_TIER"
-              ]
+              "enum": ["ATTENDED", "NOT_ATTENDED", "CANCELLED", "NOT_RECORDED", "EVENT_TIER"]
             }
           },
           {
@@ -7695,11 +7434,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "enum": [
-                "TIER_1",
-                "TIER_2",
-                "FOUNDATION"
-              ]
+              "enum": ["TIER_1", "TIER_2", "FOUNDATION"]
             }
           },
           {
@@ -7778,9 +7513,7 @@
     },
     "/appointments/{prisonCode}/attendance-summaries": {
       "get": {
-        "tags": [
-          "appointment-controller"
-        ],
+        "tags": ["appointment-controller"],
         "summary": "\n Get a list of appointments scheduled to take place on the specified date along with the summary of their attendance.\n ",
         "description": "\n Returns appointments scheduled to take place on the specified date along with the summary of their attendance.\n Will contain summary information about the appointments taking place on the date as well as counts of attendees,\n counts of those marked attended and non attended and the count of attendees with no attendance marked.\n This endpoint supports management level views of appointment attendance and statistics.\n \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getAppointmentAttendanceSummaries",
@@ -7890,9 +7623,7 @@
     },
     "/appointments/{appointmentId}/details": {
       "get": {
-        "tags": [
-          "appointment-controller"
-        ],
+        "tags": ["appointment-controller"],
         "summary": "Get the details of an appointment for display purposes by its id",
         "description": "Returns the displayable details of an appointment by its unique identifier.\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getAppointmentDetailsById_1",
@@ -7954,9 +7685,7 @@
     },
     "/appointment-set/{appointmentSetId}/details": {
       "get": {
-        "tags": [
-          "appointment-set-controller"
-        ],
+        "tags": ["appointment-set-controller"],
         "summary": "Get the details of an appointment set for display purposes by its id",
         "description": "Returns the displayable details of an appointment set by its unique identifier.\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getAppointmentSetDetailsById",
@@ -8018,9 +7747,7 @@
     },
     "/appointment-series/{appointmentSeriesId}": {
       "get": {
-        "tags": [
-          "appointment-series-controller"
-        ],
+        "tags": ["appointment-series-controller"],
         "summary": "Get an appointment series by its id",
         "description": "Returns an appointment series with its properties and references to NOMIS by its unique identifier.\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getAppointmentSeriesById",
@@ -8082,9 +7809,7 @@
     },
     "/appointment-series/{appointmentSeriesId}/details": {
       "get": {
-        "tags": [
-          "appointment-series-controller"
-        ],
+        "tags": ["appointment-series-controller"],
         "summary": "Get the details of an appointment series for display purposes by its id",
         "description": "Returns the displayable details of an appointment series by its unique identifier.\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getAppointmentDetailsById_2",
@@ -8146,9 +7871,7 @@
     },
     "/appointment-locations/{prisonCode}": {
       "get": {
-        "tags": [
-          "appointment-location-controller"
-        ],
+        "tags": ["appointment-location-controller"],
         "summary": "Get the list of appointment locations",
         "description": "\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getAppointmentLocations",
@@ -8191,9 +7914,7 @@
     },
     "/appointment-instances/{appointmentInstanceId}": {
       "get": {
-        "tags": [
-          "appointment-instance-controller"
-        ],
+        "tags": ["appointment-instance-controller"],
         "summary": "Get an appointment instance by its id",
         "description": "Returns an appointment instance and its details by its unique identifier.\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN\n* NOMIS_ACTIVITIES\n* ACTIVITIES_MANAGEMENT__RO",
         "operationId": "getAppointmentInstanceById",
@@ -8255,9 +7976,7 @@
     },
     "/appointment-categories": {
       "get": {
-        "tags": [
-          "appointment-category-controller"
-        ],
+        "tags": ["appointment-category-controller"],
         "summary": "Get the list of appointment categories",
         "description": "\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getAppointmentCategories",
@@ -8290,9 +8009,7 @@
     },
     "/allocations/id/{allocationId}": {
       "get": {
-        "tags": [
-          "allocation-controller"
-        ],
+        "tags": ["allocation-controller"],
         "summary": "Get an allocation by its id",
         "description": "Returns a single allocation and its details by its unique identifier.\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN\n* NOMIS_ACTIVITIES",
         "operationId": "getAllocationById",
@@ -8364,9 +8081,7 @@
     },
     "/allocations/deallocation-reasons": {
       "get": {
-        "tags": [
-          "allocation-controller"
-        ],
+        "tags": ["allocation-controller"],
         "summary": "Get the list of deallocation reasons",
         "description": "\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getDeallocationReasons_1",
@@ -8409,9 +8124,7 @@
     },
     "/activity-categories": {
       "get": {
-        "tags": [
-          "activity-category-controller"
-        ],
+        "tags": ["activity-category-controller"],
         "summary": "Get the list of top-level activity categories",
         "description": "\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN\n* NOMIS_ACTIVITIES",
         "operationId": "getCategories",
@@ -8454,9 +8167,7 @@
     },
     "/activities/{activityId}/schedules": {
       "get": {
-        "tags": [
-          "activity-controller"
-        ],
+        "tags": ["activity-controller"],
         "summary": "Get the capacity and number of allocated slots in an activity",
         "description": "\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getActivitySchedules_1",
@@ -8520,9 +8231,7 @@
     },
     "/activities/{activityId}/pay-history": {
       "get": {
-        "tags": [
-          "activity-controller"
-        ],
+        "tags": ["activity-controller"],
         "summary": "Get the complete pay rate history for an activity by its ID",
         "description": "Returns full list of pay rate history for a single activity by activity ID\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_HUB",
         "operationId": "getActivityPayHistory",
@@ -8583,9 +8292,7 @@
     },
     "/activities/{activityId}/filtered": {
       "get": {
-        "tags": [
-          "activity-controller"
-        ],
+        "tags": ["activity-controller"],
         "summary": "Get an activity by its ID with limited instances (by date)",
         "description": "Returns a single activity by activity ID with limited instances.\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN\n* NOMIS_ACTIVITIES",
         "operationId": "getActivityByIdWithFilters",
@@ -8656,9 +8363,7 @@
     },
     "/migrate/delete-activity/prison/{prisonCode}/id/{activityId}": {
       "delete": {
-        "tags": [
-          "migrate-activity-controller"
-        ],
+        "tags": ["migrate-activity-controller"],
         "summary": "Delete an activity with cascade.",
         "description": "\n Deletes an activity and all its child entities including schedule, slots, pay, instances, attendances and allocations.\n Only for use via by migration services to undo a failed migration.\n \n\nRequires one of the following roles:\n* NOMIS_ACTIVITIES",
         "operationId": "deleteActivity",
@@ -8722,9 +8427,7 @@
     },
     "/migrate-appointment/{prisonCode}": {
       "delete": {
-        "tags": [
-          "migrate-appointment-controller"
-        ],
+        "tags": ["migrate-appointment-controller"],
         "summary": "\n Starts a job to delete migrated appointments taking place at the supplied prison code that start on or after the\n supplied start date and are assigned the optional category code.\n ",
         "description": "\n Migrated appointments matching the supplied criteria will be soft deleted in the database. An appointment instance\n deleted domain event used for syncing will be published for each deleted appointment. This will cause the mapped\n appointment in NOMIS to also be deleted.\n \n\nRequires one of the following roles:\n* NOMIS_APPOINTMENTS\n* ACTIVITY_ADMIN\n* MIGRATE_APPOINTMENTS",
         "operationId": "deleteMigratedAppointments",
@@ -8805,10 +8508,7 @@
           "type": {
             "type": "string",
             "description": "Case Note Type",
-            "enum": [
-              "GEN",
-              "NEG"
-            ],
+            "enum": ["GEN", "NEG"],
             "example": "GEN"
           },
           "text": {
@@ -8818,10 +8518,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "text",
-          "type"
-        ]
+        "required": ["text", "type"]
       },
       "PrisonerDeallocationRequest": {
         "type": "object",
@@ -8838,16 +8535,7 @@
           "reasonCode": {
             "type": "string",
             "description": "The reason code for the deallocation",
-            "enum": [
-              "COMPLETED",
-              "TRANSFERRED",
-              "WITHDRAWN_STAFF",
-              "WITHDRAWN_OWN",
-              "DISMISSED",
-              "HEALTH",
-              "OTHER",
-              "SECURITY"
-            ],
+            "enum": ["COMPLETED", "TRANSFERRED", "WITHDRAWN_STAFF", "WITHDRAWN_OWN", "DISMISSED", "HEALTH", "OTHER", "SECURITY"],
             "example": "RELEASED",
             "minLength": 1
           },
@@ -8867,11 +8555,7 @@
             "description": "The scheduled instance id required when de-allocation is a session later today"
           }
         },
-        "required": [
-          "endDate",
-          "prisonerNumbers",
-          "reasonCode"
-        ]
+        "required": ["endDate", "prisonerNumbers", "reasonCode"]
       },
       "ErrorResponse": {
         "type": "object",
@@ -8894,9 +8578,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "status"
-        ]
+        "required": ["status"]
       },
       "ScheduledInstancedUpdateRequest": {
         "type": "object",
@@ -8940,10 +8622,7 @@
             "minLength": 1
           }
         },
-        "required": [
-          "displayName",
-          "username"
-        ]
+        "required": ["displayName", "username"]
       },
       "ScheduleInstanceCancelRequest": {
         "type": "object",
@@ -8968,10 +8647,7 @@
             "example": "Resume tomorrow"
           }
         },
-        "required": [
-          "reason",
-          "username"
-        ]
+        "required": ["reason", "username"]
       },
       "ScheduleInstancesUncancelRequest": {
         "type": "object",
@@ -8987,9 +8663,7 @@
             "minItems": 1
           }
         },
-        "required": [
-          "scheduleInstanceIds"
-        ]
+        "required": ["scheduleInstanceIds"]
       },
       "ScheduleInstancesCancelRequest": {
         "type": "object",
@@ -9028,12 +8702,7 @@
             "example": true
           }
         },
-        "required": [
-          "issuePayment",
-          "reason",
-          "scheduleInstanceIds",
-          "username"
-        ]
+        "required": ["issuePayment", "reason", "scheduleInstanceIds", "username"]
       },
       "RetryDlqResult": {
         "type": "object",
@@ -9043,9 +8712,7 @@
             "format": "int32"
           }
         },
-        "required": [
-          "messagesFoundCount"
-        ]
+        "required": ["messagesFoundCount"]
       },
       "PurgeQueueResult": {
         "type": "object",
@@ -9055,9 +8722,7 @@
             "format": "int32"
           }
         },
-        "required": [
-          "messagesFoundCount"
-        ]
+        "required": ["messagesFoundCount"]
       },
       "AttendanceUpdateRequest": {
         "type": "object",
@@ -9078,10 +8743,7 @@
           "status": {
             "type": "string",
             "description": "The status - WAITING, COMPLETED",
-            "enum": [
-              "WAITING",
-              "COMPLETED"
-            ],
+            "enum": ["WAITING", "COMPLETED"],
             "example": "WAITING",
             "minLength": 1
           },
@@ -9118,11 +8780,7 @@
             "example": "Prisoner has another reason for missing the activity"
           }
         },
-        "required": [
-          "id",
-          "prisonCode",
-          "status"
-        ]
+        "required": ["id", "prisonCode", "status"]
       },
       "AppointmentUncancelRequest": {
         "type": "object",
@@ -9131,17 +8789,11 @@
           "applyTo": {
             "type": "string",
             "description": "\n Specifies which appointment or appointments this un-cancellation should apply to.\n Defaults to THIS_APPOINTMENT meaning the un-cancellation will be applied to the appointment specified by the\n supplied id only.\n ",
-            "enum": [
-              "THIS_APPOINTMENT",
-              "THIS_AND_ALL_FUTURE_APPOINTMENTS",
-              "ALL_FUTURE_APPOINTMENTS"
-            ],
+            "enum": ["THIS_APPOINTMENT", "THIS_AND_ALL_FUTURE_APPOINTMENTS", "ALL_FUTURE_APPOINTMENTS"],
             "example": "THIS_APPOINTMENT"
           }
         },
-        "required": [
-          "applyTo"
-        ]
+        "required": ["applyTo"]
       },
       "Appointment": {
         "type": "object",
@@ -9348,11 +9000,7 @@
             "example": "AAA01U"
           }
         },
-        "required": [
-          "bookingId",
-          "id",
-          "prisonerNumber"
-        ]
+        "required": ["bookingId", "id", "prisonerNumber"]
       },
       "AppointmentSeries": {
         "type": "object",
@@ -9367,10 +9015,7 @@
           "appointmentType": {
             "type": "string",
             "description": "The appointment type (INDIVIDUAL or GROUP)",
-            "enum": [
-              "INDIVIDUAL",
-              "GROUP"
-            ],
+            "enum": ["INDIVIDUAL", "GROUP"],
             "example": "INDIVIDUAL"
           },
           "prisonCode": {
@@ -9485,13 +9130,7 @@
           "frequency": {
             "type": "string",
             "description": "\n The frequency of the appointments in the repeating appointment series. When they will repeat and how often\n ",
-            "enum": [
-              "WEEKDAY",
-              "DAILY",
-              "WEEKLY",
-              "FORTNIGHTLY",
-              "MONTHLY"
-            ],
+            "enum": ["WEEKDAY", "DAILY", "WEEKLY", "FORTNIGHTLY", "MONTHLY"],
             "example": "WEEKLY"
           },
           "numberOfAppointments": {
@@ -9502,10 +9141,7 @@
             "minimum": 1
           }
         },
-        "required": [
-          "frequency",
-          "numberOfAppointments"
-        ]
+        "required": ["frequency", "numberOfAppointments"]
       },
       "EventOrganiser": {
         "type": "object",
@@ -9528,11 +9164,7 @@
             "example": "Prison staff"
           }
         },
-        "required": [
-          "code",
-          "description",
-          "id"
-        ]
+        "required": ["code", "description", "id"]
       },
       "EventTier": {
         "type": "object",
@@ -9555,11 +9187,7 @@
             "example": "Work, education and maintenance"
           }
         },
-        "required": [
-          "code",
-          "description",
-          "id"
-        ]
+        "required": ["code", "description", "id"]
       },
       "AppointmentCancelRequest": {
         "type": "object",
@@ -9574,18 +9202,11 @@
           "applyTo": {
             "type": "string",
             "description": "\n Specifies which appointment or appointments this cancellation should apply to.\n Defaults to THIS_APPOINTMENT meaning the cancellation will be applied to the appointment specified by the\n supplied id only.\n ",
-            "enum": [
-              "THIS_APPOINTMENT",
-              "THIS_AND_ALL_FUTURE_APPOINTMENTS",
-              "ALL_FUTURE_APPOINTMENTS"
-            ],
+            "enum": ["THIS_APPOINTMENT", "THIS_AND_ALL_FUTURE_APPOINTMENTS", "ALL_FUTURE_APPOINTMENTS"],
             "example": "THIS_APPOINTMENT"
           }
         },
-        "required": [
-          "applyTo",
-          "cancellationReasonId"
-        ]
+        "required": ["applyTo", "cancellationReasonId"]
       },
       "MultipleAppointmentAttendanceRequest": {
         "type": "object",
@@ -9606,10 +9227,7 @@
             "minItems": 1
           }
         },
-        "required": [
-          "appointmentId",
-          "prisonerNumbers"
-        ]
+        "required": ["appointmentId", "prisonerNumbers"]
       },
       "AdvanceAttendanceUpdateRequest": {
         "type": "object",
@@ -9621,9 +9239,7 @@
             "example": true
           }
         },
-        "required": [
-          "issuePayment"
-        ]
+        "required": ["issuePayment"]
       },
       "AdvanceAttendance": {
         "type": "object",
@@ -9676,11 +9292,7 @@
             }
           }
         },
-        "required": [
-          "id",
-          "prisonerNumber",
-          "scheduleInstanceId"
-        ]
+        "required": ["id", "prisonerNumber", "scheduleInstanceId"]
       },
       "AdvanceAttendanceHistory": {
         "type": "object",
@@ -9709,12 +9321,7 @@
             "example": "A.JONES"
           }
         },
-        "required": [
-          "id",
-          "issuePayment",
-          "recordedBy",
-          "recordedTime"
-        ]
+        "required": ["id", "issuePayment", "recordedBy", "recordedTime"]
       },
       "WaitingListSearchRequest": {
         "type": "object",
@@ -9741,9 +9348,7 @@
           "prisonerNumbers": {
             "type": "array",
             "description": "The prisoner or prisoners to retrieve waiting list applications for.",
-            "example": [
-              "A1234BC"
-            ],
+            "example": ["A1234BC"],
             "items": {
               "type": "string"
             }
@@ -9751,19 +9356,10 @@
           "status": {
             "type": "array",
             "description": "Filter by the status of the application. PENDING, APPROVED or DECLINED.",
-            "example": [
-              "DECLINED",
-              "PENDING"
-            ],
+            "example": ["DECLINED", "PENDING"],
             "items": {
               "type": "string",
-              "enum": [
-                "PENDING",
-                "APPROVED",
-                "DECLINED",
-                "ALLOCATED",
-                "REMOVED"
-              ]
+              "enum": ["PENDING", "APPROVED", "DECLINED", "ALLOCATED", "REMOVED"]
             }
           }
         }
@@ -9799,13 +9395,7 @@
             "description": "The prisoner is on remand"
           }
         },
-        "required": [
-          "isConvictedUnsentenced",
-          "isImmigrationDetainee",
-          "isIndeterminateSentence",
-          "isRemand",
-          "isTariffDate"
-        ]
+        "required": ["isConvictedUnsentenced", "isImmigrationDetainee", "isIndeterminateSentence", "isRemand", "isTariffDate"]
       },
       "PageableObject": {
         "type": "object",
@@ -9940,13 +9530,7 @@
           "status": {
             "type": "string",
             "description": "The status of this waiting list",
-            "enum": [
-              "PENDING",
-              "APPROVED",
-              "DECLINED",
-              "ALLOCATED",
-              "REMOVED"
-            ],
+            "enum": ["PENDING", "APPROVED", "DECLINED", "ALLOCATED", "REMOVED"],
             "example": "PENDING"
           },
           "statusUpdatedTime": {
@@ -10041,13 +9625,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "allocation",
-          "attendance",
-          "attendanceHistory",
-          "plannedDeallocation",
-          "plannedSuspension"
-        ]
+        "required": ["allocation", "attendance", "attendanceHistory", "plannedDeallocation", "plannedSuspension"]
       },
       "PublishEventUtilityModel": {
         "type": "object",
@@ -10076,10 +9654,7 @@
           "identifiers": {
             "type": "array",
             "description": "A list of entity identifiers to be published with the event",
-            "example": [
-              1,
-              2
-            ],
+            "example": [1, 2],
             "items": {
               "type": "integer",
               "format": "int64"
@@ -10087,10 +9662,7 @@
             "minItems": 1
           }
         },
-        "required": [
-          "identifiers",
-          "outboundEvent"
-        ]
+        "required": ["identifiers", "outboundEvent"]
       },
       "PrisonerAllocationRequest": {
         "type": "object",
@@ -10134,10 +9706,7 @@
             "description": "The scheduled instance id required when allocation starts today"
           }
         },
-        "required": [
-          "prisonerNumber",
-          "startDate"
-        ]
+        "required": ["prisonerNumber", "startDate"]
       },
       "Slot": {
         "type": "object",
@@ -10152,11 +9721,7 @@
           "timeSlot": {
             "type": "string",
             "description": "The time slot of the activity schedule",
-            "enum": [
-              "AM",
-              "PM",
-              "ED"
-            ],
+            "enum": ["AM", "PM", "ED"],
             "minLength": 1
           },
           "monday": {
@@ -10190,31 +9755,12 @@
             "type": "array",
             "items": {
               "type": "string",
-              "enum": [
-                "MONDAY",
-                "TUESDAY",
-                "WEDNESDAY",
-                "THURSDAY",
-                "FRIDAY",
-                "SATURDAY",
-                "SUNDAY"
-              ]
+              "enum": ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"]
             },
             "uniqueItems": true
           }
         },
-        "required": [
-          "daysOfWeek",
-          "friday",
-          "monday",
-          "saturday",
-          "sunday",
-          "thursday",
-          "timeSlot",
-          "tuesday",
-          "wednesday",
-          "weekNumber"
-        ]
+        "required": ["daysOfWeek", "friday", "monday", "saturday", "sunday", "thursday", "timeSlot", "tuesday", "wednesday", "weekNumber"]
       },
       "ActivityCategory": {
         "type": "object",
@@ -10242,11 +9788,7 @@
             "example": "Such as association, library time and social clubs, like music or art"
           }
         },
-        "required": [
-          "code",
-          "id",
-          "name"
-        ]
+        "required": ["code", "id", "name"]
       },
       "ActivityLite": {
         "type": "object",
@@ -10296,10 +9838,7 @@
           "payPerSession": {
             "type": "string",
             "description": "Indicates whether the activity session is a (F)ull day or a (H)alf day (for payment purposes). ",
-            "enum": [
-              "H",
-              "F"
-            ],
+            "enum": ["H", "F"],
             "example": "H"
           },
           "summary": {
@@ -10353,10 +9892,7 @@
           "activityState": {
             "type": "string",
             "description": "Whether the activity is live or archived",
-            "enum": [
-              "ARCHIVED",
-              "LIVE"
-            ],
+            "enum": ["ARCHIVED", "LIVE"],
             "example": "live"
           },
           "paid": {
@@ -10417,13 +9953,7 @@
             "example": "English Language"
           }
         },
-        "required": [
-          "educationLevelCode",
-          "educationLevelDescription",
-          "id",
-          "studyAreaCode",
-          "studyAreaDescription"
-        ]
+        "required": ["educationLevelCode", "educationLevelDescription", "id", "studyAreaCode", "studyAreaDescription"]
       },
       "ActivityScheduleInstance": {
         "type": "object",
@@ -10454,11 +9984,7 @@
           "timeSlot": {
             "type": "string",
             "description": "Time slot of the scheduled instance",
-            "enum": [
-              "AM",
-              "PM",
-              "ED"
-            ]
+            "enum": ["AM", "PM", "ED"]
           },
           "cancelled": {
             "type": "boolean",
@@ -10534,17 +10060,7 @@
             "description": "The activity schedule"
           }
         },
-        "required": [
-          "activitySchedule",
-          "advanceAttendances",
-          "attendances",
-          "cancelled",
-          "date",
-          "endTime",
-          "id",
-          "startTime",
-          "timeSlot"
-        ]
+        "required": ["activitySchedule", "advanceAttendances", "attendances", "cancelled", "date", "endTime", "id", "startTime", "timeSlot"]
       },
       "ActivityScheduleLite": {
         "type": "object",
@@ -10605,16 +10121,7 @@
             "description": "a flag to indicate if this activity is scheduled according to prison standard regime times"
           }
         },
-        "required": [
-          "activity",
-          "capacity",
-          "description",
-          "id",
-          "scheduleWeeks",
-          "slots",
-          "startDate",
-          "usePrisonRegimeTime"
-        ]
+        "required": ["activity", "capacity", "description", "id", "scheduleWeeks", "slots", "startDate", "usePrisonRegimeTime"]
       },
       "ActivityScheduleSlot": {
         "type": "object",
@@ -10629,11 +10136,7 @@
           "timeSlot": {
             "type": "string",
             "description": "Activity schedule timeslot",
-            "enum": [
-              "AM",
-              "PM",
-              "ED"
-            ]
+            "enum": ["AM", "PM", "ED"]
           },
           "weekNumber": {
             "type": "integer",
@@ -10811,14 +10314,7 @@
             "example": true
           }
         },
-        "required": [
-          "editable",
-          "id",
-          "payable",
-          "prisonerNumber",
-          "scheduleInstanceId",
-          "status"
-        ]
+        "required": ["editable", "id", "payable", "prisonerNumber", "scheduleInstanceId", "status"]
       },
       "AttendanceHistory": {
         "type": "object",
@@ -10871,11 +10367,7 @@
             "example": "Prisoner has refused to attend the activity without a valid reason to miss the activity."
           }
         },
-        "required": [
-          "id",
-          "recordedBy",
-          "recordedTime"
-        ]
+        "required": ["id", "recordedBy", "recordedTime"]
       },
       "AttendanceReason": {
         "type": "object",
@@ -10983,11 +10475,7 @@
             "example": "b7602cc8-e769-4cbb-8194-62d8e655992a"
           }
         },
-        "required": [
-          "code",
-          "description",
-          "id"
-        ]
+        "required": ["code", "description", "id"]
       },
       "PrisonerScheduledEvents": {
         "type": "object",
@@ -11239,13 +10727,7 @@
           "appointmentSeriesFrequency": {
             "type": "string",
             "description": "The appointment series frequency",
-            "enum": [
-              "WEEKDAY",
-              "DAILY",
-              "WEEKLY",
-              "FORTNIGHTLY",
-              "MONTHLY"
-            ],
+            "enum": ["WEEKDAY", "DAILY", "WEEKLY", "FORTNIGHTLY", "MONTHLY"],
             "example": "DAILY"
           },
           "paidActivity": {
@@ -11269,16 +10751,7 @@
             "example": "SICK"
           }
         },
-        "required": [
-          "autoSuspended",
-          "cancelled",
-          "inCell",
-          "offWing",
-          "onWing",
-          "outsidePrison",
-          "priority",
-          "suspended"
-        ]
+        "required": ["autoSuspended", "cancelled", "inCell", "offWing", "onWing", "outsidePrison", "priority", "suspended"]
       },
       "InternalLocationEvents": {
         "type": "object",
@@ -11320,14 +10793,7 @@
             "uniqueItems": true
           }
         },
-        "required": [
-          "code",
-          "description",
-          "dpsLocationId",
-          "events",
-          "id",
-          "prisonCode"
-        ]
+        "required": ["code", "description", "dpsLocationId", "events", "id", "prisonCode"]
       },
       "PrisonRegimeSlot": {
         "type": "object",
@@ -11335,15 +10801,7 @@
         "properties": {
           "dayOfWeek": {
             "type": "string",
-            "enum": [
-              "MONDAY",
-              "TUESDAY",
-              "WEDNESDAY",
-              "THURSDAY",
-              "FRIDAY",
-              "SATURDAY",
-              "SUNDAY"
-            ]
+            "enum": ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"]
           },
           "amStart": {
             "type": "string"
@@ -11364,15 +10822,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "amFinish",
-          "amStart",
-          "dayOfWeek",
-          "edFinish",
-          "edStart",
-          "pmFinish",
-          "pmStart"
-        ]
+        "required": ["amFinish", "amStart", "dayOfWeek", "edFinish", "edStart", "pmFinish", "pmStart"]
       },
       "PrisonRegime": {
         "type": "object",
@@ -11422,28 +10872,10 @@
           "dayOfWeek": {
             "type": "string",
             "description": "day of week the regime is applicable to",
-            "enum": [
-              "MONDAY",
-              "TUESDAY",
-              "WEDNESDAY",
-              "THURSDAY",
-              "FRIDAY",
-              "SATURDAY",
-              "SUNDAY"
-            ]
+            "enum": ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"]
           }
         },
-        "required": [
-          "amFinish",
-          "amStart",
-          "dayOfWeek",
-          "edFinish",
-          "edStart",
-          "id",
-          "pmFinish",
-          "pmStart",
-          "prisonCode"
-        ]
+        "required": ["amFinish", "amStart", "dayOfWeek", "edFinish", "edStart", "id", "pmFinish", "pmStart", "prisonCode"]
       },
       "Allocation": {
         "type": "object",
@@ -11544,14 +10976,7 @@
           "status": {
             "type": "string",
             "description": "The status of the allocation. Note that SUSPENDED is suspended without pay.",
-            "enum": [
-              "ACTIVE",
-              "PENDING",
-              "SUSPENDED",
-              "AUTO_SUSPENDED",
-              "ENDED",
-              "SUSPENDED_WITH_PAY"
-            ],
+            "enum": ["ACTIVE", "PENDING", "SUSPENDED", "AUTO_SUSPENDED", "ENDED", "SUSPENDED_WITH_PAY"],
             "example": "ACTIVE"
           },
           "plannedDeallocation": {
@@ -11636,10 +11061,7 @@
             "example": "Released from prison"
           }
         },
-        "required": [
-          "code",
-          "description"
-        ]
+        "required": ["code", "description"]
       },
       "PlannedDeallocation": {
         "type": "object",
@@ -11674,13 +11096,7 @@
             "example": "2023-07-10 14:54"
           }
         },
-        "required": [
-          "id",
-          "plannedAt",
-          "plannedBy",
-          "plannedDate",
-          "plannedReason"
-        ]
+        "required": ["id", "plannedAt", "plannedBy", "plannedDate", "plannedReason"]
       },
       "PlannedSuspension": {
         "type": "object",
@@ -11726,11 +11142,7 @@
             "description": "Is the suspension paid or not"
           }
         },
-        "required": [
-          "plannedAt",
-          "plannedBy",
-          "plannedStartDate"
-        ]
+        "required": ["plannedAt", "plannedBy", "plannedStartDate"]
       },
       "PrisonPayBand": {
         "type": "object",
@@ -11788,14 +11200,7 @@
             "description": "The username of the user authenticated via HMPPS auth that last edited the pay band"
           }
         },
-        "required": [
-          "alias",
-          "description",
-          "displaySequence",
-          "id",
-          "nomisPayBand",
-          "prisonCode"
-        ]
+        "required": ["alias", "description", "displaySequence", "id", "nomisPayBand", "prisonCode"]
       },
       "PrisonerAllocations": {
         "type": "object",
@@ -11814,10 +11219,7 @@
             }
           }
         },
-        "required": [
-          "allocations",
-          "prisonerNumber"
-        ]
+        "required": ["allocations", "prisonerNumber"]
       },
       "PrisonPayBandCreateRequest": {
         "type": "object",
@@ -11850,12 +11252,7 @@
             "example": 1
           }
         },
-        "required": [
-          "alias",
-          "description",
-          "displaySequence",
-          "nomisPayBand"
-        ]
+        "required": ["alias", "description", "displaySequence", "nomisPayBand"]
       },
       "AllocationMigrateRequest": {
         "type": "object",
@@ -11931,14 +11328,7 @@
             }
           }
         },
-        "required": [
-          "activityId",
-          "bookingId",
-          "prisonCode",
-          "prisonerNumber",
-          "startDate",
-          "suspendedFlag"
-        ]
+        "required": ["activityId", "bookingId", "prisonCode", "prisonerNumber", "startDate", "suspendedFlag"]
       },
       "AllocationMigrateResponse": {
         "type": "object",
@@ -11957,10 +11347,7 @@
             "example": 32323
           }
         },
-        "required": [
-          "activityId",
-          "allocationId"
-        ]
+        "required": ["activityId", "allocationId"]
       },
       "ActivityMigrateRequest": {
         "type": "object",
@@ -12013,10 +11400,7 @@
           "payPerSession": {
             "type": "string",
             "description": "Indicates (F)ull or (H)alf day (for payment purposes). Not nullable.",
-            "enum": [
-              "H",
-              "F"
-            ],
+            "enum": ["H", "F"],
             "example": "H"
           },
           "runsOnBankHoliday": {
@@ -12080,10 +11464,7 @@
             "example": 120
           }
         },
-        "required": [
-          "incentiveLevel",
-          "rate"
-        ]
+        "required": ["incentiveLevel", "rate"]
       },
       "NomisScheduleRule": {
         "type": "object",
@@ -12137,24 +11518,10 @@
           "timeSlot": {
             "type": "string",
             "description": "Time slot",
-            "enum": [
-              "AM",
-              "PM",
-              "ED"
-            ]
+            "enum": ["AM", "PM", "ED"]
           }
         },
-        "required": [
-          "endTime",
-          "friday",
-          "monday",
-          "saturday",
-          "startTime",
-          "sunday",
-          "thursday",
-          "tuesday",
-          "wednesday"
-        ]
+        "required": ["endTime", "friday", "monday", "saturday", "startTime", "sunday", "thursday", "tuesday", "wednesday"]
       },
       "ActivityMigrateResponse": {
         "type": "object",
@@ -12171,10 +11538,7 @@
             "format": "int64"
           }
         },
-        "required": [
-          "activityId",
-          "prisonCode"
-        ]
+        "required": ["activityId", "prisonCode"]
       },
       "AppointmentMigrateRequest": {
         "type": "object",
@@ -12263,17 +11627,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "bookingId",
-          "categoryCode",
-          "created",
-          "createdBy",
-          "dpsLocationId",
-          "prisonCode",
-          "prisonerNumber",
-          "startDate",
-          "startTime"
-        ]
+        "required": ["bookingId", "categoryCode", "created", "createdBy", "dpsLocationId", "prisonCode", "prisonerNumber", "startDate", "startTime"]
       },
       "AppointmentInstance": {
         "type": "object",
@@ -12306,10 +11660,7 @@
           "appointmentType": {
             "type": "string",
             "description": "The appointment type (INDIVIDUAL or GROUP)",
-            "enum": [
-              "INDIVIDUAL",
-              "GROUP"
-            ],
+            "enum": ["INDIVIDUAL", "GROUP"],
             "example": "INDIVIDUAL"
           },
           "prisonCode": {
@@ -12421,10 +11772,7 @@
           "appointmentType": {
             "type": "string",
             "description": "\n The appointment type (INDIVIDUAL or GROUP) to match with the appointment series. Will restrict the search results to\n appointments that are part of a series with the matching type when this search parameter is supplied.\n ",
-            "enum": [
-              "INDIVIDUAL",
-              "GROUP"
-            ],
+            "enum": ["INDIVIDUAL", "GROUP"],
             "example": "INDIVIDUAL"
           },
           "startDate": {
@@ -12440,18 +11788,10 @@
           "timeSlots": {
             "type": "array",
             "description": "\n The time slot to match with the appointments. Will restrict the search results to appointments that have a start\n time between the times defined by the prison for that time slot when this search parameter is supplied.\n ",
-            "example": [
-              "AM",
-              "PM",
-              "ED"
-            ],
+            "example": ["AM", "PM", "ED"],
             "items": {
               "type": "string",
-              "enum": [
-                "AM",
-                "PM",
-                "ED"
-              ]
+              "enum": ["AM", "PM", "ED"]
             }
           },
           "categoryCode": {
@@ -12480,9 +11820,7 @@
           "prisonerNumbers": {
             "type": "array",
             "description": "\n The allocated prisoner or prisoners to match with the appointments. Will restrict the search results to\n appointments that have the at least one of the supplied prisoner numbers attending when this search parameter\n is supplied.\n ",
-            "example": [
-              "A1234BC"
-            ],
+            "example": ["A1234BC"],
             "items": {
               "type": "string"
             }
@@ -12493,9 +11831,7 @@
             "example": "AAA01U"
           }
         },
-        "required": [
-          "startDate"
-        ]
+        "required": ["startDate"]
       },
       "AppointmentAttendeeSearchResult": {
         "type": "object",
@@ -12519,11 +11855,7 @@
             "example": 456
           }
         },
-        "required": [
-          "appointmentAttendeeId",
-          "bookingId",
-          "prisonerNumber"
-        ]
+        "required": ["appointmentAttendeeId", "bookingId", "prisonerNumber"]
       },
       "AppointmentCategorySummary": {
         "type": "object",
@@ -12540,10 +11872,7 @@
             "example": "Chaplaincy"
           }
         },
-        "required": [
-          "code",
-          "description"
-        ]
+        "required": ["code", "description"]
       },
       "AppointmentLocationSummary": {
         "type": "object",
@@ -12572,11 +11901,7 @@
             "example": "Chapel"
           }
         },
-        "required": [
-          "description",
-          "id",
-          "prisonCode"
-        ]
+        "required": ["description", "id", "prisonCode"]
       },
       "AppointmentSearchResult": {
         "type": "object",
@@ -12597,10 +11922,7 @@
           "appointmentType": {
             "type": "string",
             "description": "The type of the appointment series (INDIVIDUAL or GROUP)",
-            "enum": [
-              "INDIVIDUAL",
-              "GROUP"
-            ],
+            "enum": ["INDIVIDUAL", "GROUP"],
             "example": "INDIVIDUAL"
           },
           "prisonCode": {
@@ -12655,11 +11977,7 @@
           "timeSlot": {
             "type": "string",
             "description": "time slot",
-            "enum": [
-              "AM",
-              "PM",
-              "ED"
-            ]
+            "enum": ["AM", "PM", "ED"]
           },
           "isRepeat": {
             "type": "boolean",
@@ -12742,20 +12060,14 @@
           "eventReviewIds": {
             "type": "array",
             "description": "The list of IDs to acknowledge",
-            "example": [
-              3,
-              5,
-              6
-            ],
+            "example": [3, 5, 6],
             "items": {
               "type": "integer",
               "format": "int64"
             }
           }
         },
-        "required": [
-          "eventReviewIds"
-        ]
+        "required": ["eventReviewIds"]
       },
       "AuditRecordSearchFilters": {
         "type": "object",
@@ -12779,11 +12091,7 @@
           "auditType": {
             "type": "string",
             "description": "The top-level audit category",
-            "enum": [
-              "PRISONER",
-              "ACTIVITY",
-              "APPOINTMENT"
-            ],
+            "enum": ["PRISONER", "ACTIVITY", "APPOINTMENT"],
             "example": "ACTIVITY"
           },
           "auditEventType": {
@@ -12857,11 +12165,7 @@
           "auditType": {
             "type": "string",
             "description": "The top-level audit category",
-            "enum": [
-              "PRISONER",
-              "ACTIVITY",
-              "APPOINTMENT"
-            ],
+            "enum": ["PRISONER", "ACTIVITY", "APPOINTMENT"],
             "example": "ACTIVITY"
           },
           "auditEventType": {
@@ -12925,15 +12229,7 @@
             "example": "An activity called 'Some Activity'(1) with category C and starting on 2023-03-23 at prison PBI was created. Event created on 2023-03-22 at 09:00:03 by Bob."
           }
         },
-        "required": [
-          "auditEventType",
-          "auditType",
-          "localAuditId",
-          "message",
-          "prisonCode",
-          "recordedTime",
-          "username"
-        ]
+        "required": ["auditEventType", "auditType", "localAuditId", "message", "prisonCode", "recordedTime", "username"]
       },
       "LocalAuditSearchResults": {
         "type": "object",
@@ -12959,11 +12255,7 @@
             "example": 5
           }
         },
-        "required": [
-          "content",
-          "pageNumber",
-          "totalPages"
-        ]
+        "required": ["content", "pageNumber", "totalPages"]
       },
       "AppointmentAttendeeSummary": {
         "type": "object",
@@ -12994,10 +12286,7 @@
             "example": "AAA01U"
           }
         },
-        "required": [
-          "id",
-          "prisoner"
-        ]
+        "required": ["id", "prisoner"]
       },
       "AppointmentDetails": {
         "type": "object",
@@ -13020,10 +12309,7 @@
           "appointmentType": {
             "type": "string",
             "description": "The appointment type (INDIVIDUAL or GROUP)",
-            "enum": [
-              "INDIVIDUAL",
-              "GROUP"
-            ],
+            "enum": ["INDIVIDUAL", "GROUP"],
             "example": "INDIVIDUAL"
           },
           "sequenceNumber": {
@@ -13186,11 +12472,7 @@
             "description": "\n The count of the remaining scheduled appointments in the series that have not been cancelled or deleted.\n "
           }
         },
-        "required": [
-          "appointmentCount",
-          "id",
-          "scheduledAppointmentCount"
-        ]
+        "required": ["appointmentCount", "id", "scheduledAppointmentCount"]
       },
       "AppointmentSetSummary": {
         "type": "object",
@@ -13214,11 +12496,7 @@
             "description": "\n The count of the remaining scheduled appointments in the set that have not been cancelled or deleted.\n "
           }
         },
-        "required": [
-          "appointmentCount",
-          "id",
-          "scheduledAppointmentCount"
-        ]
+        "required": ["appointmentCount", "id", "scheduledAppointmentCount"]
       },
       "PrisonerSummary": {
         "type": "object",
@@ -13265,14 +12543,7 @@
             "example": "P"
           }
         },
-        "required": [
-          "bookingId",
-          "cellLocation",
-          "firstName",
-          "lastName",
-          "prisonCode",
-          "prisonerNumber"
-        ]
+        "required": ["bookingId", "cellLocation", "firstName", "lastName", "prisonCode", "prisonerNumber"]
       },
       "AppointmentSetAppointment": {
         "type": "object",
@@ -13300,11 +12571,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "endTime",
-          "prisonerNumber",
-          "startTime"
-        ]
+        "required": ["endTime", "prisonerNumber", "startTime"]
       },
       "AppointmentSetCreateRequest": {
         "type": "object",
@@ -13326,23 +12593,14 @@
           "tierCode": {
             "type": "string",
             "description": "The tier code for this appointment",
-            "enum": [
-              "TIER_1",
-              "TIER_2",
-              "FOUNDATION"
-            ],
+            "enum": ["TIER_1", "TIER_2", "FOUNDATION"],
             "example": "TIER_1",
             "minLength": 1
           },
           "organiserCode": {
             "type": "string",
             "description": "The organiser code for this appointment",
-            "enum": [
-              "PRISON_STAFF",
-              "PRISONER",
-              "EXTERNAL_PROVIDER",
-              "OTHER"
-            ],
+            "enum": ["PRISON_STAFF", "PRISONER", "EXTERNAL_PROVIDER", "OTHER"],
             "example": "PRISON_STAFF"
           },
           "customName": {
@@ -13383,14 +12641,7 @@
             "minItems": 1
           }
         },
-        "required": [
-          "appointments",
-          "categoryCode",
-          "inCell",
-          "prisonCode",
-          "startDate",
-          "tierCode"
-        ]
+        "required": ["appointments", "categoryCode", "inCell", "prisonCode", "startDate", "tierCode"]
       },
       "AppointmentSet": {
         "type": "object",
@@ -13465,16 +12716,7 @@
             "example": "AAA01U"
           }
         },
-        "required": [
-          "appointments",
-          "categoryCode",
-          "createdBy",
-          "createdTime",
-          "id",
-          "inCell",
-          "prisonCode",
-          "startDate"
-        ]
+        "required": ["appointments", "categoryCode", "createdBy", "createdTime", "id", "inCell", "prisonCode", "startDate"]
       },
       "AppointmentSeriesCreateRequest": {
         "type": "object",
@@ -13483,10 +12725,7 @@
           "appointmentType": {
             "type": "string",
             "description": "The appointment type (INDIVIDUAL or GROUP)",
-            "enum": [
-              "INDIVIDUAL",
-              "GROUP"
-            ],
+            "enum": ["INDIVIDUAL", "GROUP"],
             "example": "INDIVIDUAL"
           },
           "prisonCode": {
@@ -13499,9 +12738,7 @@
           "prisonerNumbers": {
             "type": "array",
             "description": "The prisoner or prisoners attending the appointment or appointments in the series",
-            "example": [
-              "A1234BC"
-            ],
+            "example": ["A1234BC"],
             "items": {
               "type": "string"
             },
@@ -13516,23 +12753,14 @@
           "tierCode": {
             "type": "string",
             "description": "The tier code for this appointment",
-            "enum": [
-              "TIER_1",
-              "TIER_2",
-              "FOUNDATION"
-            ],
+            "enum": ["TIER_1", "TIER_2", "FOUNDATION"],
             "example": "TIER_1",
             "minLength": 1
           },
           "organiserCode": {
             "type": "string",
             "description": "The organiser code for this appointment",
-            "enum": [
-              "PRISON_STAFF",
-              "PRISONER",
-              "EXTERNAL_PROVIDER",
-              "OTHER"
-            ],
+            "enum": ["PRISON_STAFF", "PRISONER", "EXTERNAL_PROVIDER", "OTHER"],
             "example": "PRISON_STAFF"
           },
           "customName": {
@@ -13592,17 +12820,7 @@
             "example": 789
           }
         },
-        "required": [
-          "appointmentType",
-          "categoryCode",
-          "endTime",
-          "inCell",
-          "prisonCode",
-          "prisonerNumbers",
-          "startDate",
-          "startTime",
-          "tierCode"
-        ]
+        "required": ["appointmentType", "categoryCode", "endTime", "inCell", "prisonCode", "prisonerNumbers", "startDate", "startTime", "tierCode"]
       },
       "WaitingListApplicationRequest": {
         "type": "object",
@@ -13644,23 +12862,11 @@
           "status": {
             "type": "string",
             "description": "The status of the application. Only PENDING, APPROVED or DECLINED are allowed when creating.",
-            "enum": [
-              "PENDING",
-              "APPROVED",
-              "DECLINED",
-              "ALLOCATED",
-              "REMOVED"
-            ],
+            "enum": ["PENDING", "APPROVED", "DECLINED", "ALLOCATED", "REMOVED"],
             "example": "PENDING"
           }
         },
-        "required": [
-          "activityScheduleId",
-          "applicationDate",
-          "prisonerNumber",
-          "requestedBy",
-          "status"
-        ]
+        "required": ["activityScheduleId", "applicationDate", "prisonerNumber", "requestedBy", "status"]
       },
       "UnsuspendPrisonerRequest": {
         "type": "object",
@@ -13676,12 +12882,7 @@
           "allocationIds": {
             "type": "array",
             "description": "The allocation or allocations affected by the suspensions request. They must all be for the same prisoner",
-            "example": [
-              1,
-              2,
-              3,
-              4
-            ],
+            "example": [1, 2, 3, 4],
             "items": {
               "type": "integer",
               "format": "int64"
@@ -13695,11 +12896,7 @@
             "example": "2023-09-10"
           }
         },
-        "required": [
-          "allocationIds",
-          "prisonerNumber",
-          "suspendUntil"
-        ]
+        "required": ["allocationIds", "prisonerNumber", "suspendUntil"]
       },
       "SuspendPrisonerRequest": {
         "type": "object",
@@ -13715,12 +12912,7 @@
           "allocationIds": {
             "type": "array",
             "description": "The allocation or allocations affected by the suspensions request. They must all be for the same prisoner",
-            "example": [
-              1,
-              2,
-              3,
-              4
-            ],
+            "example": [1, 2, 3, 4],
             "items": {
               "type": "integer",
               "format": "int64"
@@ -13740,23 +12932,11 @@
           "status": {
             "type": "string",
             "description": "The type of suspension. Only SUSPENDED or SUSPENDED_WITH_PAY are allowed when suspending",
-            "enum": [
-              "ACTIVE",
-              "PENDING",
-              "SUSPENDED",
-              "AUTO_SUSPENDED",
-              "ENDED",
-              "SUSPENDED_WITH_PAY"
-            ],
+            "enum": ["ACTIVE", "PENDING", "SUSPENDED", "AUTO_SUSPENDED", "ENDED", "SUSPENDED_WITH_PAY"],
             "example": "SUSPENDED_WITH_PAY"
           }
         },
-        "required": [
-          "allocationIds",
-          "prisonerNumber",
-          "status",
-          "suspendFrom"
-        ]
+        "required": ["allocationIds", "prisonerNumber", "status", "suspendFrom"]
       },
       "AdvanceAttendanceCreateRequest": {
         "type": "object",
@@ -13781,11 +12961,7 @@
             "example": true
           }
         },
-        "required": [
-          "issuePayment",
-          "prisonerNumber",
-          "scheduleInstanceId"
-        ]
+        "required": ["issuePayment", "prisonerNumber", "scheduleInstanceId"]
       },
       "ActivityCreateRequest": {
         "type": "object",
@@ -13836,10 +13012,7 @@
           "payPerSession": {
             "type": "string",
             "description": "Indicates whether the activity session is a (F)ull day or a (H)alf day (for payment purposes). ",
-            "enum": [
-              "H",
-              "F"
-            ],
+            "enum": ["H", "F"],
             "example": "H"
           },
           "summary": {
@@ -13864,11 +13037,7 @@
           "tierCode": {
             "type": "string",
             "description": "The tier code for this activity, as defined by the Future Prison Regime team",
-            "enum": [
-              "TIER_1",
-              "TIER_2",
-              "FOUNDATION"
-            ],
+            "enum": ["TIER_1", "TIER_2", "FOUNDATION"],
             "example": "TIER_1",
             "minLength": 1
           },
@@ -13880,11 +13049,7 @@
           "eligibilityRuleIds": {
             "type": "array",
             "description": "A list of eligibility rules ids which apply to this activity.",
-            "example": [
-              1,
-              2,
-              3
-            ],
+            "example": [1, 2, 3],
             "items": {
               "type": "integer",
               "format": "int64"
@@ -14019,12 +13184,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "educationLevelCode",
-          "educationLevelDescription",
-          "studyAreaCode",
-          "studyAreaDescription"
-        ]
+        "required": ["educationLevelCode", "educationLevelDescription", "studyAreaCode", "studyAreaDescription"]
       },
       "ActivityPayCreateRequest": {
         "type": "object",
@@ -14075,11 +13235,7 @@
             "example": "2022-12-23"
           }
         },
-        "required": [
-          "incentiveLevel",
-          "incentiveNomisCode",
-          "payBandId"
-        ]
+        "required": ["incentiveLevel", "incentiveNomisCode", "payBandId"]
       },
       "ActivityPayHistoryCreateRequest": {
         "type": "object",
@@ -14132,13 +13288,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "changedBy",
-          "changedDetails",
-          "incentiveLevel",
-          "incentiveNomisCode",
-          "payBandId"
-        ]
+        "required": ["changedBy", "changedDetails", "incentiveLevel", "incentiveNomisCode", "payBandId"]
       },
       "Activity": {
         "type": "object",
@@ -14188,10 +13338,7 @@
           "payPerSession": {
             "type": "string",
             "description": "Indicates whether the activity session is a (F)ull day or a (H)alf day (for payment purposes). ",
-            "enum": [
-              "H",
-              "F"
-            ],
+            "enum": ["H", "F"],
             "example": "H"
           },
           "summary": {
@@ -14336,10 +13483,7 @@
             "description": "The eligiblity rule which applies"
           }
         },
-        "required": [
-          "eligibility",
-          "id"
-        ]
+        "required": ["eligibility", "id"]
       },
       "ActivityPay": {
         "type": "object",
@@ -14390,12 +13534,7 @@
             "example": "2024-06-18"
           }
         },
-        "required": [
-          "id",
-          "incentiveLevel",
-          "incentiveNomisCode",
-          "prisonPayBand"
-        ]
+        "required": ["id", "incentiveLevel", "incentiveNomisCode", "prisonPayBand"]
       },
       "ActivityPayHistory": {
         "type": "object",
@@ -14451,10 +13590,7 @@
             "example": "joebloggs"
           }
         },
-        "required": [
-          "id",
-          "prisonPayBand"
-        ]
+        "required": ["id", "prisonPayBand"]
       },
       "ActivitySchedule": {
         "type": "object",
@@ -14589,11 +13725,7 @@
             "example": "The prisoner must be over 21 to attend"
           }
         },
-        "required": [
-          "code",
-          "description",
-          "id"
-        ]
+        "required": ["code", "description", "id"]
       },
       "ScheduledInstance": {
         "type": "object",
@@ -14624,11 +13756,7 @@
           "timeSlot": {
             "type": "string",
             "description": "The timeslot",
-            "enum": [
-              "AM",
-              "PM",
-              "ED"
-            ]
+            "enum": ["AM", "PM", "ED"]
           },
           "cancelled": {
             "type": "boolean",
@@ -14661,16 +13789,7 @@
             }
           }
         },
-        "required": [
-          "advanceAttendances",
-          "attendances",
-          "cancelled",
-          "date",
-          "endTime",
-          "id",
-          "startTime",
-          "timeSlot"
-        ]
+        "required": ["advanceAttendances", "attendances", "cancelled", "date", "endTime", "id", "startTime", "timeSlot"]
       },
       "Suspension": {
         "type": "object",
@@ -14689,9 +13808,7 @@
             "example": "2022-09-02"
           }
         },
-        "required": [
-          "suspendedFrom"
-        ]
+        "required": ["suspendedFrom"]
       },
       "WaitingListApplicationUpdateRequest": {
         "type": "object",
@@ -14720,13 +13837,7 @@
           "status": {
             "type": "string",
             "description": "The updated status of the application. Only PENDING, APPROVED or DECLINED are allowed when updating.",
-            "enum": [
-              "PENDING",
-              "APPROVED",
-              "DECLINED",
-              "ALLOCATED",
-              "REMOVED"
-            ],
+            "enum": ["PENDING", "APPROVED", "DECLINED", "ALLOCATED", "REMOVED"],
             "example": "PENDING"
           }
         }
@@ -14749,9 +13860,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "alias"
-        ]
+        "required": ["alias"]
       },
       "AppointmentUpdateRequest": {
         "type": "object",
@@ -14765,22 +13874,13 @@
           "tierCode": {
             "type": "string",
             "description": "The tier code for this appointment",
-            "enum": [
-              "TIER_1",
-              "TIER_2",
-              "FOUNDATION"
-            ],
+            "enum": ["TIER_1", "TIER_2", "FOUNDATION"],
             "example": "TIER_1"
           },
           "organiserCode": {
             "type": "string",
             "description": "The organiser code for this appointment",
-            "enum": [
-              "PRISON_STAFF",
-              "PRISONER",
-              "EXTERNAL_PROVIDER",
-              "OTHER"
-            ],
+            "enum": ["PRISON_STAFF", "PRISONER", "EXTERNAL_PROVIDER", "OTHER"],
             "example": "PRISON_STAFF"
           },
           "internalLocationId": {
@@ -14825,9 +13925,7 @@
           "removePrisonerNumbers": {
             "type": "array",
             "description": "The prisoner or prisoners to remove from the appointment or appointments",
-            "example": [
-              "A1234BC"
-            ],
+            "example": ["A1234BC"],
             "items": {
               "type": "string"
             }
@@ -14835,9 +13933,7 @@
           "addPrisonerNumbers": {
             "type": "array",
             "description": "The new prisoner or prisoners that will be attending the appointment or appointments",
-            "example": [
-              "A1234BC"
-            ],
+            "example": ["A1234BC"],
             "items": {
               "type": "string"
             }
@@ -14845,21 +13941,14 @@
           "applyTo": {
             "type": "string",
             "description": "\n Specifies which appointment or appointments this update should apply to.\n Defaults to THIS_APPOINTMENT meaning the update will be applied to the appointment specified by the\n supplied id only.\n ",
-            "enum": [
-              "THIS_APPOINTMENT",
-              "THIS_AND_ALL_FUTURE_APPOINTMENTS",
-              "ALL_FUTURE_APPOINTMENTS"
-            ],
+            "enum": ["THIS_APPOINTMENT", "THIS_AND_ALL_FUTURE_APPOINTMENTS", "ALL_FUTURE_APPOINTMENTS"],
             "example": "THIS_APPOINTMENT"
           },
           "isPropertyUpdate": {
             "type": "boolean"
           }
         },
-        "required": [
-          "applyTo",
-          "isPropertyUpdate"
-        ]
+        "required": ["applyTo", "isPropertyUpdate"]
       },
       "AllocationUpdateRequest": {
         "type": "object",
@@ -14885,16 +13974,7 @@
           "reasonCode": {
             "type": "string",
             "description": "The reason code for the deallocation",
-            "enum": [
-              "OTHER",
-              "PERSONAL",
-              "PROBLEM",
-              "REMOVED",
-              "SECURITY",
-              "UNACCEPTABLE_ATTENDANCE",
-              "UNACCEPTABLE_BEHAVIOUR",
-              "WITHDRAWN"
-            ],
+            "enum": ["OTHER", "PERSONAL", "PROBLEM", "REMOVED", "SECURITY", "UNACCEPTABLE_ATTENDANCE", "UNACCEPTABLE_BEHAVIOUR", "WITHDRAWN"],
             "example": "RELEASED"
           },
           "payBandId": {
@@ -14928,11 +14008,7 @@
           "tierCode": {
             "type": "string",
             "description": "The tier code for this activity, as defined by the Future Prison Regime team",
-            "enum": [
-              "TIER_1",
-              "TIER_2",
-              "FOUNDATION"
-            ],
+            "enum": ["TIER_1", "TIER_2", "FOUNDATION"],
             "example": "TIER_1"
           },
           "organiserCode": {
@@ -15070,10 +14146,7 @@
             }
           }
         },
-        "required": [
-          "bookings",
-          "prisonCode"
-        ]
+        "required": ["bookings", "prisonCode"]
       },
       "BookingCount": {
         "type": "object",
@@ -15092,10 +14165,7 @@
             "example": 2
           }
         },
-        "required": [
-          "bookingId",
-          "count"
-        ]
+        "required": ["bookingId", "count"]
       },
       "AttendanceReconciliationResponse": {
         "type": "object",
@@ -15121,11 +14191,7 @@
             }
           }
         },
-        "required": [
-          "bookings",
-          "date",
-          "prisonCode"
-        ]
+        "required": ["bookings", "date", "prisonCode"]
       },
       "AttendanceSync": {
         "type": "object",
@@ -15227,9 +14293,7 @@
             "description": "The content of the subject access request response"
           }
         },
-        "required": [
-          "content"
-        ]
+        "required": ["content"]
       },
       "ActivityPayLite": {
         "type": "object",
@@ -15276,12 +14340,7 @@
             "example": 10
           }
         },
-        "required": [
-          "id",
-          "incentiveLevel",
-          "incentiveNomisCode",
-          "prisonPayBandId"
-        ]
+        "required": ["id", "incentiveLevel", "incentiveNomisCode", "prisonPayBandId"]
       },
       "AddressDto": {
         "type": "object",
@@ -15381,10 +14440,7 @@
             }
           }
         },
-        "required": [
-          "noFixedAddress",
-          "primary"
-        ]
+        "required": ["noFixedAddress", "primary"]
       },
       "AddressUsageDto": {
         "type": "object",
@@ -15423,9 +14479,7 @@
             "$ref": "#/components/schemas/Allocation"
           }
         },
-        "required": [
-          "allocation"
-        ]
+        "required": ["allocation"]
       },
       "AllocationSuitability": {
         "type": "object",
@@ -15462,10 +14516,7 @@
             }
           }
         },
-        "required": [
-          "allocations",
-          "previousDeallocations"
-        ]
+        "required": ["allocations", "previousDeallocations"]
       },
       "DeallocationCaseNote": {
         "type": "object",
@@ -15478,9 +14529,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "allocation"
-        ]
+        "required": ["allocation"]
       },
       "Education": {
         "type": "object",
@@ -15561,10 +14610,7 @@
             }
           }
         },
-        "required": [
-          "education",
-          "suitable"
-        ]
+        "required": ["education", "suitable"]
       },
       "IncentiveLevelSuitability": {
         "type": "object",
@@ -15581,9 +14627,7 @@
             "example": "standard"
           }
         },
-        "required": [
-          "suitable"
-        ]
+        "required": ["suitable"]
       },
       "ReleaseDateSuitability": {
         "type": "object",
@@ -15599,10 +14643,7 @@
             "description": "The prisoner's earliest release date"
           }
         },
-        "required": [
-          "earliestReleaseDate",
-          "suitable"
-        ]
+        "required": ["earliestReleaseDate", "suitable"]
       },
       "Telephone": {
         "type": "object",
@@ -15629,10 +14670,7 @@
             "example": 123
           }
         },
-        "required": [
-          "number",
-          "type"
-        ]
+        "required": ["number", "type"]
       },
       "WRASuitability": {
         "type": "object",
@@ -15649,10 +14687,7 @@
             "example": "medium"
           }
         },
-        "required": [
-          "riskLevel",
-          "suitable"
-        ]
+        "required": ["riskLevel", "suitable"]
       },
       "NonAssociationDetails": {
         "type": "object",
@@ -15745,12 +14780,7 @@
             "example": "PVI-1-2-4"
           }
         },
-        "required": [
-          "cellLocation",
-          "firstName",
-          "lastName",
-          "prisonerNumber"
-        ]
+        "required": ["cellLocation", "firstName", "lastName", "prisonerNumber"]
       },
       "ActivityCandidate": {
         "type": "object",
@@ -15798,14 +14828,7 @@
             "description": "Does the prisoner have non-associations? Null implies that non-associations could not be retrieved"
           }
         },
-        "required": [
-          "earliestReleaseDate",
-          "firstName",
-          "lastName",
-          "name",
-          "otherAllocations",
-          "prisonerNumber"
-        ]
+        "required": ["earliestReleaseDate", "firstName", "lastName", "name", "otherAllocations", "prisonerNumber"]
       },
       "PageActivityCandidate": {
         "type": "object",
@@ -15891,13 +14914,7 @@
             "example": false
           }
         },
-        "required": [
-          "allocationId",
-          "autoSuspended",
-          "prisonerNumber",
-          "scheduledInstanceId",
-          "suspended"
-        ]
+        "required": ["allocationId", "autoSuspended", "prisonerNumber", "scheduledInstanceId", "suspended"]
       },
       "AttendanceSummaryDetails": {
         "type": "object",
@@ -15940,9 +14957,7 @@
             "example": 2
           }
         },
-        "required": [
-          "allocations"
-        ]
+        "required": ["allocations"]
       },
       "ScheduledInstanceAttendanceSummary": {
         "type": "object",
@@ -15996,11 +15011,7 @@
           "timeSlot": {
             "type": "string",
             "description": "time slot of scheduled instance",
-            "enum": [
-              "AM",
-              "PM",
-              "ED"
-            ]
+            "enum": ["AM", "PM", "ED"]
           },
           "inCell": {
             "type": "boolean",
@@ -16089,13 +15100,7 @@
             "example": true
           }
         },
-        "required": [
-          "activitiesRolledOut",
-          "appointmentsRolledOut",
-          "maxDaysToExpiry",
-          "prisonCode",
-          "prisonLive"
-        ]
+        "required": ["activitiesRolledOut", "appointmentsRolledOut", "maxDaysToExpiry", "prisonCode", "prisonLive"]
       },
       "DlqMessage": {
         "type": "object",
@@ -16108,10 +15113,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "body",
-          "messageId"
-        ]
+        "required": ["body", "messageId"]
       },
       "GetDlqResult": {
         "type": "object",
@@ -16131,11 +15133,7 @@
             }
           }
         },
-        "required": [
-          "messages",
-          "messagesFoundCount",
-          "messagesReturnedCount"
-        ]
+        "required": ["messages", "messagesFoundCount", "messagesReturnedCount"]
       },
       "ActivitySummary": {
         "type": "object",
@@ -16180,22 +15178,11 @@
           "activityState": {
             "type": "string",
             "description": "Whether the activity is live or archived",
-            "enum": [
-              "ARCHIVED",
-              "LIVE"
-            ],
+            "enum": ["ARCHIVED", "LIVE"],
             "example": "LIVE"
           }
         },
-        "required": [
-          "activityState",
-          "allocated",
-          "capacity",
-          "category",
-          "createdTime",
-          "id",
-          "waitlisted"
-        ]
+        "required": ["activityState", "allocated", "capacity", "category", "createdTime", "id", "waitlisted"]
       },
       "AppointmentCountSummary": {
         "type": "object",
@@ -16212,10 +15199,7 @@
             "example": 25
           }
         },
-        "required": [
-          "appointmentCategorySummary",
-          "count"
-        ]
+        "required": ["appointmentCategorySummary", "count"]
       },
       "Location": {
         "type": "object",
@@ -16279,12 +15263,7 @@
             "example": null
           }
         },
-        "required": [
-          "agencyId",
-          "description",
-          "locationId",
-          "locationType"
-        ]
+        "required": ["agencyId", "description", "locationId", "locationType"]
       },
       "LocationPrefixDto": {
         "type": "object",
@@ -16296,9 +15275,7 @@
             "example": "MDI-1-"
           }
         },
-        "required": [
-          "locationPrefix"
-        ]
+        "required": ["locationPrefix"]
       },
       "LocationGroup": {
         "type": "object",
@@ -16322,11 +15299,7 @@
             }
           }
         },
-        "required": [
-          "children",
-          "key",
-          "name"
-        ]
+        "required": ["children", "key", "name"]
       },
       "InternalLocationEventsSummary": {
         "type": "object",
@@ -16360,13 +15333,7 @@
             "example": "Education 1"
           }
         },
-        "required": [
-          "code",
-          "description",
-          "dpsLocationId",
-          "id",
-          "prisonCode"
-        ]
+        "required": ["code", "description", "dpsLocationId", "id", "prisonCode"]
       },
       "ScheduledActivity": {
         "type": "object",
@@ -16489,11 +15456,7 @@
           "timeSlot": {
             "type": "string",
             "description": "Time slot of scheduled instance",
-            "enum": [
-              "AM",
-              "PM",
-              "ED"
-            ],
+            "enum": ["AM", "PM", "ED"],
             "example": "AM"
           },
           "issuePayment": {
@@ -16504,27 +15467,13 @@
           "attendanceStatus": {
             "type": "string",
             "description": "The activity attendance status - WAITING or COMPLETED",
-            "enum": [
-              "WAITING",
-              "COMPLETED"
-            ],
+            "enum": ["WAITING", "COMPLETED"],
             "example": "WAITING"
           },
           "attendanceReasonCode": {
             "type": "string",
             "description": "The code for the activity (non) attendance reason",
-            "enum": [
-              "SICK",
-              "REFUSED",
-              "NOT_REQUIRED",
-              "REST",
-              "CLASH",
-              "OTHER",
-              "AUTO_SUSPENDED",
-              "SUSPENDED",
-              "CANCELLED",
-              "ATTENDED"
-            ],
+            "enum": ["SICK", "REFUSED", "NOT_REQUIRED", "REST", "CLASH", "OTHER", "AUTO_SUSPENDED", "SUSPENDED", "CANCELLED", "ATTENDED"],
             "example": "SICK"
           },
           "paidActivity": {
@@ -16584,12 +15533,7 @@
             }
           }
         },
-        "required": [
-          "isPaid",
-          "minimumEducationLevel",
-          "payRates",
-          "riskLevel"
-        ]
+        "required": ["isPaid", "minimumEducationLevel", "payRates", "riskLevel"]
       },
       "EventReview": {
         "type": "object",
@@ -16652,19 +15596,11 @@
           "eventDescription": {
             "type": "string",
             "description": "A simple description of the event acton",
-            "enum": [
-              "ACTIVITY_SUSPENDED",
-              "ACTIVITY_ENDED",
-              "RELEASED",
-              "PERMANENT_RELEASE",
-              "TEMPORARY_RELEASE"
-            ],
+            "enum": ["ACTIVITY_SUSPENDED", "ACTIVITY_ENDED", "RELEASED", "PERMANENT_RELEASE", "TEMPORARY_RELEASE"],
             "example": "ACTIVITY_SUSPENDED"
           }
         },
-        "required": [
-          "eventReviewId"
-        ]
+        "required": ["eventReviewId"]
       },
       "EventReviewSearchResults": {
         "type": "object",
@@ -16696,12 +15632,7 @@
             "example": 5
           }
         },
-        "required": [
-          "content",
-          "pageNumber",
-          "totalElements",
-          "totalPages"
-        ]
+        "required": ["content", "pageNumber", "totalElements", "totalPages"]
       },
       "AllAttendance": {
         "type": "object",
@@ -16794,11 +15725,7 @@
           "eventTier": {
             "type": "string",
             "description": "event tier",
-            "enum": [
-              "TIER_1",
-              "TIER_2",
-              "FOUNDATION"
-            ]
+            "enum": ["TIER_1", "TIER_2", "FOUNDATION"]
           },
           "incentiveLevelWarningIssued": {
             "type": "boolean",
@@ -16906,10 +15833,7 @@
             }
           }
         },
-        "required": [
-          "attendance",
-          "prisonerNumber"
-        ]
+        "required": ["attendance", "prisonerNumber"]
       },
       "AppointmentAttendeeByStatus": {
         "type": "object",
@@ -16944,16 +15868,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "appointmentAttendeeId",
-          "appointmentId",
-          "appointmentName",
-          "bookingId",
-          "endTime",
-          "prisonerNumber",
-          "startDate",
-          "startTime"
-        ]
+        "required": ["appointmentAttendeeId", "appointmentId", "appointmentName", "bookingId", "endTime", "prisonerNumber", "startDate", "startTime"]
       },
       "AppointmentAttendanceSummary": {
         "type": "object",
@@ -17037,11 +15952,7 @@
           "eventTierType": {
             "type": "string",
             "description": "optional event tier",
-            "enum": [
-              "TIER_1",
-              "TIER_2",
-              "FOUNDATION"
-            ]
+            "enum": ["TIER_1", "TIER_2", "FOUNDATION"]
           }
         },
         "required": [
@@ -17127,17 +16038,7 @@
             "description": "\n The username of the user that last edited one or more appointments in this set.\n Will be null if no appointments in the set have been altered since they were created\n "
           }
         },
-        "required": [
-          "appointmentName",
-          "appointments",
-          "category",
-          "createdBy",
-          "createdTime",
-          "id",
-          "inCell",
-          "prisonCode",
-          "startDate"
-        ]
+        "required": ["appointmentName", "appointments", "category", "createdBy", "createdTime", "id", "inCell", "prisonCode", "startDate"]
       },
       "AppointmentSeriesDetails": {
         "type": "object",
@@ -17152,10 +16053,7 @@
           "appointmentType": {
             "type": "string",
             "description": "The appointment type (INDIVIDUAL or GROUP)",
-            "enum": [
-              "INDIVIDUAL",
-              "GROUP"
-            ],
+            "enum": ["INDIVIDUAL", "GROUP"],
             "example": "INDIVIDUAL"
           },
           "prisonCode": {
@@ -17304,15 +16202,7 @@
             "example": false
           }
         },
-        "required": [
-          "id",
-          "isCancelled",
-          "isDeleted",
-          "isEdited",
-          "sequenceNumber",
-          "startDate",
-          "startTime"
-        ]
+        "required": ["id", "isCancelled", "isDeleted", "isEdited", "sequenceNumber", "startDate", "startTime"]
       }
     },
     "securitySchemes": {

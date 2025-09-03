@@ -29,29 +29,19 @@
   ],
   "security": [
     {
-      "view-prisoner-data-role": [
-        "read"
-      ]
+      "view-prisoner-data-role": ["read"]
     },
     {
-      "prisoner-search-role": [
-        "read"
-      ]
+      "prisoner-search-role": ["read"]
     },
     {
-      "global-search-role": [
-        "read"
-      ]
+      "global-search-role": ["read"]
     },
     {
-      "prisoner-in-prison-search-role": [
-        "read"
-      ]
+      "prisoner-in-prison-search-role": ["read"]
     },
     {
-      "prisoner-search--prisoner--ro": [
-        "read"
-      ]
+      "prisoner-search--prisoner--ro": ["read"]
     }
   ],
   "tags": [
@@ -91,9 +81,7 @@
   "paths": {
     "/restricted-patient-search/match-restricted-patients": {
       "post": {
-        "tags": [
-          "Specific use case"
-        ],
+        "tags": ["Specific use case"],
         "summary": "Match prisoners by criteria",
         "description": "This endpoint sorts by prisonerNumber. This means that calling this endpoint to retrieve\n subsequent pages *should* return the next page of results, but this is not guaranteed.\n\n Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role",
         "operationId": "findByCriteria",
@@ -170,10 +158,7 @@
     },
     "/prisoner-search/release-date-by-prison": {
       "post": {
-        "tags": [
-          "Batch",
-          "Specific use case"
-        ],
+        "tags": ["Batch", "Specific use case"],
         "summary": "Match prisoners who have a release date within a range, and optionally by prison",
         "description": "This endpoint sorts by OpenSearch score and then by prisonerNumber. The score is an indication of\n how close the query matches a prisoner record, thus closest matches to the query will be returned first.\n Unfortunately sorting by score is problematic as different shards might provide different scores, thus breaking\n the paged results. Also it gives inconsistent results the higher the page number. \n \n It is thus recommended not to use paging and instead request a large page size, together with setting the\n responseFields to limit the returned response byte size (otherwise you risk hitting memory / webclient limits).\n\n Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role",
         "operationId": "findByReleaseDateAndPrison",
@@ -240,10 +225,7 @@
     },
     "/prisoner-search/prisoner-numbers": {
       "post": {
-        "tags": [
-          "Popular",
-          "Batch"
-        ],
+        "tags": ["Popular", "Batch"],
         "summary": "Match prisoners by a list of prisoner numbers",
         "description": "Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role or PRISONER_SEARCH__PRISONER__RO",
         "operationId": "findByNumbers",
@@ -291,9 +273,7 @@
     },
     "/prisoner-search/possible-matches": {
       "post": {
-        "tags": [
-          "Matching"
-        ],
+        "tags": ["Matching"],
         "summary": "Search for possible matches by criteria",
         "description": "Search by prison number, PNC number, and/or name and date of birth, returning collated results by order of search.\n This will also search aliases for possible matches. \n Use when there is manual input, e.g. a user can select the correct match from search results.\n Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.\n ",
         "operationId": "findPossibleMatchesBySearchCriteria",
@@ -341,9 +321,7 @@
     },
     "/prisoner-search/match": {
       "post": {
-        "tags": [
-          "Deprecated"
-        ],
+        "tags": ["Deprecated"],
         "summary": "Match prisoners by criteria, to search across a list of specific prisons use /match-prisoners",
         "description": "Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role",
         "operationId": "findByCriteria_1",
@@ -377,10 +355,7 @@
     },
     "/prisoner-search/match-prisoners": {
       "post": {
-        "tags": [
-          "Matching",
-          "Popular"
-        ],
+        "tags": ["Matching", "Popular"],
         "summary": "Match prisoners by criteria",
         "description": "Search by prisoner identifier or name and returning results for the criteria matched first.\n Typically used when the matching data is of high quality where the first match is expected to be a near perfect match.\n Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.\n ",
         "operationId": "findByCriteria_2",
@@ -438,9 +413,7 @@
     },
     "/prisoner-search/booking-ids": {
       "post": {
-        "tags": [
-          "Batch"
-        ],
+        "tags": ["Batch"],
         "summary": "Match prisoners by a list of booking ids",
         "description": "Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role",
         "operationId": "findByIds",
@@ -488,9 +461,7 @@
     },
     "/prisoner-detail": {
       "post": {
-        "tags": [
-          "Global search"
-        ],
+        "tags": ["Global search"],
         "summary": "Find prisoners by exact or wildcard terms for specified fields and return a paginated result set",
         "description": "Search terms and identifiers can be provided in either or mixed case and are converted to the appropriate case.\n This endpoint will find both exact values (full term matched) or wildcards supporting the '*' and '?' symbols.\n The '*' symbol will match any number of characters e.g. firstName='J*' will match 'John', 'Jane', and 'James'. \n The '?' symbol will match any letter substituted at that position. e.g. firstName='t?ny' will match 'Tony' and 'Tiny'\n Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.\n ",
         "operationId": "prisonerDetailSearch",
@@ -573,10 +544,7 @@
     },
     "/physical-detail": {
       "post": {
-        "tags": [
-          "Experimental",
-          "Physical detail search"
-        ],
+        "tags": ["Experimental", "Physical detail search"],
         "summary": "*** BETA EducationAndWorkPlanAPI.yml K6 README.md authenticate_docker.sh cert.pem check_certs_expiry.sh client_certificates data_analysis hmpps-integration-api-dev.tar.gz.enc local_deploy.sh publish.sh query_hmpps_dev.sh report_kubernetes.sh test_performance.sh update_openapi_specs.sh Physical details search for prisoners within a prison / group of prisons - returns a paginated result set",
         "description": "BETA endpoint - subject to change. Search by physical details.\n If a cell location is provided then only one prison can be supplied, otherwise multiple prisons are allowed.\n If lenient is set to false (default) then all supplied physical details must match in order for results to be returned.\n If lenient is set to true then at least one physical detail must match.\n Searches will return results for partial string matches, so searching for an ethnicity of white will return all\n prisoners with ethnicity of White: Eng./Welsh/Scot./N.Irish/British, White: Irish etc.\n Results are ordered so that prisoners that match the most criteria are returned first, then secondary order is by\n prisoner number.\n Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.\n ",
         "operationId": "prisonerDetailSearch_1",
@@ -659,9 +627,7 @@
     },
     "/match-prisoners": {
       "post": {
-        "tags": [
-          "Deprecated"
-        ],
+        "tags": ["Deprecated"],
         "summary": "Match for an prisoner by criteria",
         "description": "This is a more lenient version to other match endpoints that includes alias and fuzzy date of birth matching.\n It will return the best group of matching prisoners based on the request\n Specify the request criteria to match against.\n Role required is ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH.\n ",
         "operationId": "matchPrisoners",
@@ -729,9 +695,7 @@
     },
     "/keyword": {
       "post": {
-        "tags": [
-          "Experimental"
-        ],
+        "tags": ["Experimental"],
         "summary": "Search for prisoners by keyword or identifiers within a list of prisons and return a paginated result set",
         "description": "Words and identifiers can be provided in either or mixed case and will be matched against all indexed text and keyword fields.\n Identifiers within the [and, or, not, exact] terms are detected and converted to the appropriate case.\n Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.\n ",
         "operationId": "keywordSearch",
@@ -814,10 +778,7 @@
     },
     "/global-search": {
       "post": {
-        "tags": [
-          "Popular",
-          "Global search"
-        ],
+        "tags": ["Popular", "Global search"],
         "summary": "Match prisoners by criteria",
         "description": "This endpoint sorts by OpenSearch score and then by prisonerNumber. The score is an indication of\n how close the query matches a prisoner record, thus closest matches to the query will be returned first.\n Unfortunately sorting by score is problematic as different shards might provide different scores, thus breaking\n the paged results. Also it gives inconsistent results the higher the page number. \n \n It is thus recommended not to use paging and instead request a large page size, together with setting the\n responseFields to limit the returned response byte size (otherwise you risk hitting memory / webclient limits).\n\n Requires ROLE_GLOBAL_SEARCH role or ROLE_PRISONER_SEARCH role or PRISONER_SEARCH__PRISONER__RO",
         "operationId": "globalFindByCriteria",
@@ -884,9 +845,7 @@
     },
     "/attribute-search": {
       "post": {
-        "tags": [
-          "Attribute search"
-        ],
+        "tags": ["Attribute search"],
         "summary": "Search for prisoners by attributes",
         "description": "<p>This endpoint allows you to create queries over all attributes from the <em>Prisoner</em> record. Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.</p>\n <p>The request contains a list of queries to search on one or more attributes using a list of matchers. For example attribute \"lastName\"\"\n requires a <em>StringMatcher</em> so we can query on <strong>\"lastName IS Smith\"</strong>. Other type matchers include <em>IntMatcher</em>, <em>BooleanMatcher</em>,\n <em>DateMatcher</em> and <em>DateTimeMatcher</em>.\n </p>\n <p>Each query can also contain a list of sub-queries. Each sub-query can be considered as a separate query in brackets.\n Combining multiple sub-queries gives us the ability to create complex searches using any combination of a prisoner's \n attributes. For example we can model nested queries such as <strong>\"lastName IS Smith AND (prisonId IS MDI OR (prisonId IS OUT AND lastPrisonId IS MDI))\"</strong>.\n </p>\n <p>To find all attributes that can be searched for please refer to the <em>Prisoner</em> record or get them from endpoint <a target=\"_blank\" href=\"/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config#/Attribute search/getAttributes\"><strong>GET /attribute-search/attributes</strong></a>. Attributes from lists can be\n searched for with dot notation, e.g. <strong>\"attribute=aliases.firstName\"</strong> or <strong>\"attribute=tattoos.bodyPart\"</strong>. \n Attributes from complex objects can also be searched for with dot notation, e.g. <strong>\"attribute=currentIncentive.level.code\"</strong>.\n </p>\n <p>Note that when searching lists of complex objects (e.g. aliases, alerts, tattoos) if you want to search for multiple attributes within the same object then you need \n to include them in the same query. For example, to search for alias \"John Smith\" you should search for <strong>aliases.firstName IS \"John\"</strong> and <strong>aliases.lastName IS \"Smith\"</strong> using string matchers in the same query.\n If you search for them in different queries you will receive anyone with firstName John and also anyone with lastName Smith.\n </p>\n <p>Many attributes contain reference data restricted to a fixed list of values. For example, attribute \"inOutStatus\" only contains values \"IN\", \"OUT\" and \"TRN\".\n To find which attributes use reference data and to fetch the possible attribute values see the endpoint <a target=\"_blank\" href=\"/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config#/Reference data/referenceData\"><strong>GET /reference-data/{attribute}</strong></a>.\n </p>\n <p>String attributes support advanced search techniques such as <a href=\"https://opensearch.org/docs/latest/query-dsl/term/fuzzy/\">fuzzy search</a> matching and <a href=\"https://opensearch.org/docs/latest/query-dsl/term/wildcard/\">wildcard search</a>. All String searches are case-insensitive (except for IS with fuzzy matching which is not supported by OpenSearch).\n <ul>\n <li>IS and IS_NOT require an exact match (wildcards ? and EducationAndWorkPlanAPI.yml K6 README.md authenticate_docker.sh cert.pem check_certs_expiry.sh client_certificates data_analysis hmpps-integration-api-dev.tar.gz.enc local_deploy.sh publish.sh query_hmpps_dev.sh report_kubernetes.sh test_performance.sh update_openapi_specs.sh will not work). E.g. If religion is \"Christian\" then <strong>\"religion IS Christian\"</strong> will match but <strong>\"religion IS Christ*\"</strong> will not.</li>\n <li>For IS and CONTAINS some attributes support fuzzy matching e.g. they allow spelling mistakes. Call endpoint <strong>GET /attribute-search/attributes</strong> to see which attributes support fuzzy matching. E.g. If firstName is \"Jonathan\" then <strong>\"firstName IS Johnathon\"</strong> or <strong>\"firstName CONTAINS Johnathon\"</strong> will match. Note that fuzzy matches for IS are case sensitive but for CONTAINS they are case insensitive.</li>\n <li>CONTAINS without wildcards (? and *) for a non-fuzzy attribute looks for the exact search term anywhere in the attribute value. E.g. If religion is \"Christian\" then <strong>\"religion CONTAINS ist\"</strong> will match.</li>\n <li>CONTAINS with wildcards ? (single character) and/or EducationAndWorkPlanAPI.yml K6 README.md authenticate_docker.sh cert.pem check_certs_expiry.sh client_certificates data_analysis hmpps-integration-api-dev.tar.gz.enc local_deploy.sh publish.sh query_hmpps_dev.sh report_kubernetes.sh test_performance.sh update_openapi_specs.sh (zero to many characters) perform a wildcard search which must match the entire attribute value. E.g. If firstName is \"Jonathan\" then <strong>\"firstName CONTAINS Jon*\"</strong> will match but <strong>\"firstName CONTAINS nath*\"</strong> will not.</li>\n <li>STARTSWITH checks only the prefix of the attribute value and does not support fuzzy matching or wildcards. E.g.If firstName is \"Jonathan\" then <strong>\"firstName STARTSWITH Jon\"</strong> will match but <strong>\"firstName STARTSWITH Jon*\"</strong> will not.</li> \n <li>IN checks that the attribute value is any of the list of Strings provided in the search term. The search term should be a comma separated list of Strings to search, E.g. \"searchValue1,searchValue2,searchValue3\". This only matches exactly - no fuzzy search, wildcards or case-insensitive search is supported by OpenSearch. E.g.If firstName is \"Jonathan\" then <strong>\"firstName IN 'Jonathan,Bob,Chris'\"</strong> will match but <strong>\"firstName IN 'Adrian,Bob,Chris'\"</strong> will not.</li> \n </ul>\n </p>\n <p>To assist with debugging queries we publish events in App Insights. To search in App Insights Log Analytics run query: \n <pre>\n AppEvents\n | where Name == 'POSAttributeSearch'\n </pre>\n </p>\n <h3>Example Requests</h3>\n <p>Note that the default \"joinType\" is \"AND\" so it could be omitted from the examples below (but is included for clarity).</p>\n <h4>Search for all prisoners in Moorland with a height between 150 and 180cm</h4>\n <br/>\n Query: <strong>\"prisonId = \"MDI\" AND (heightCentimetres >= 150 AND heightCentimetres <= 180)\"</strong>\n <br/>\n JSON request:\n <br/>\n <pre>\n {\n \"joinType\": \"AND\",\n \"queries\": [\n {\n \"joinType\": \"AND\",\n \"matchers\": [\n {\n \"type\": \"String\",\n \"attribute\": \"prisonId\",\n \"condition\": \"IS\",\n \"searchTerm\": \"MDI\"\n },\n {\n \"type\": \"Int\",\n \"attribute\": \"heightCentimetres\",\n \"minValue\": 150,\n \"maxValue\": 180\n }\n ]\n }\n ]\n }\n </pre>\n <br/>\n <h4>Search for all prisoners in a list of cells in Moorland</h4>\n Query: <strong>\"prisonId = \"MDI\" AND cellLocation IN (1-2-001, 1-3-014, 3-1-020)</strong>\n <br/>\n JSON request:\n <br/>\n <pre>\n {\n \"joinType\": \"AND\",\n \"queries\": [\n {\n \"joinType\": \"AND\",\n \"matchers\": [\n {\n \"type\": \"String\",\n \"attribute\": \"prisonId\",\n \"condition\": \"IS\",\n \"searchTerm\": \"MDI\"\n },\n {\n \"type\": \"String\",\n \"attribute\": \"cellLocation\",\n \"condition\": \"IN\",\n \"searchTerm\": \"1-2-001,1-3-014,3-1-020\"\n }\n ]\n }\n ]\n }\n </pre>\n <br/>\n <h4>Search for all prisoners received since 1st Jan 2024 with a dragon tattoo on either their arm or shoulder</h4>\n <br/>\n Query: <strong>\"(receptionDate >= 2024-01-01) AND ((tattoos.bodyPart = \"arm\" AND tattoos.comment CONTAINS \"dragon\" ) OR (tattoos.bodyPart = \"shoulder\" AND tattoos.comment CONTAINS \"dragon\"))\"</strong>\n <br/>\n JSON request:\n <br/>\n <pre>\n {\n \"joinType\": \"AND\",\n \"queries\": [\n {\n \"matchers\": [\n {\n \"type\": \"Date\",\n \"attribute\": \"receptionDate\",\n \"minValue\": \"2024-01-01\"\n }\n ]\n },\n {\n \"joinType\": \"OR\",\n \"subQueries\": [\n {\n \"joinType\": \"AND\",\n \"matchers\": [\n {\n \"type\": \"String\",\n \"attribute\": \"tattoos.bodyPart\",\n \"condition\": \"IS\",\n \"searchTerm\": \"arm\"\n },\n {\n \"type\": \"String\",\n \"attribute\": \"tattoos.comment\",\n \"condition\": \"CONTAINS\",\n \"searchTerm\": \"dragon\"\n }\n ]\n },\n {\n \"joinType\": \"AND\",\n \"matchers\": [\n {\n \"type\": \"String\",\n \"attribute\": \"tattoos.bodyPart\",\n \"condition\": \"IS\",\n \"searchTerm\": \"shoulder\"\n },\n {\n \"type\": \"String\",\n \"attribute\": \"tattoos.comment\",\n \"condition\": \"CONTAINS\",\n \"searchTerm\": \"dragon\"\n }\n ]\n }\n ]\n }\n ]\n }\n </pre>\n\n There have been issues raised with OpenSearch sorting in that it sometimes doesn't produce stable sorting results,\n especially with higher page numbers.\n\n It is thus recommended not to use paging and instead request a large page size, together with setting the\n responseFields to limit the returned response byte size (otherwise you risk hitting memory / webclient limits).\n ",
         "operationId": "attributeSearch",
@@ -1003,9 +962,7 @@
     },
     "/response-fields": {
       "get": {
-        "tags": [
-          "Developer information"
-        ],
+        "tags": ["Developer information"],
         "summary": "Get all available response fields",
         "description": "This exists for developers to find all available values for responseFields parameters. Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role",
         "operationId": "responseFields",
@@ -1028,11 +985,7 @@
     },
     "/reference-data/{attribute}": {
       "get": {
-        "tags": [
-          "Experimental",
-          "Reference data",
-          "Developer information"
-        ],
+        "tags": ["Experimental", "Reference data", "Developer information"],
         "summary": "*** BETA EducationAndWorkPlanAPI.yml K6 README.md authenticate_docker.sh cert.pem check_certs_expiry.sh client_certificates data_analysis hmpps-integration-api-dev.tar.gz.enc local_deploy.sh publish.sh query_hmpps_dev.sh report_kubernetes.sh test_performance.sh update_openapi_specs.sh Reference data search",
         "description": "BETA endpoint - reference data returned reflects the data assigned to prisoners\n rather than all the possible values. Only to be used for searching existing data purposes.\n This method will also cache all reference data results for an hour and any new data will only appear after an hour.\n Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.\n ",
         "operationId": "referenceData",
@@ -1125,11 +1078,7 @@
     },
     "/reference-data/alerts/types": {
       "get": {
-        "tags": [
-          "Experimental",
-          "Reference data",
-          "Developer information"
-        ],
+        "tags": ["Experimental", "Reference data", "Developer information"],
         "summary": "*** BETA EducationAndWorkPlanAPI.yml K6 README.md authenticate_docker.sh cert.pem check_certs_expiry.sh client_certificates data_analysis hmpps-integration-api-dev.tar.gz.enc local_deploy.sh publish.sh query_hmpps_dev.sh report_kubernetes.sh test_performance.sh update_openapi_specs.sh Alerts reference data",
         "description": "BETA endpoint - alerts reference data returned reflects the data assigned to prisoners\n rather than all the possible values. Only to be used for searching existing data purposes.\n This method will also cache all reference data results for an hour and any new data will only appear after an hour.\n Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.\n ",
         "operationId": "alertsReferenceData",
@@ -1187,9 +1136,7 @@
     },
     "/prisoner/{id}": {
       "get": {
-        "tags": [
-          "Popular"
-        ],
+        "tags": ["Popular"],
         "summary": "Get prisoner by prisoner number (AKA NOMS number)",
         "description": "Requires ROLE_PRISONER_SEARCH or ROLE_VIEW_PRISONER_DATA role or PRISONER_SEARCH__PRISONER__RO",
         "operationId": "findByPrisonNumber",
@@ -1240,10 +1187,7 @@
     },
     "/prisoner-search/prison/{prisonId}": {
       "get": {
-        "tags": [
-          "Popular",
-          "Batch"
-        ],
+        "tags": ["Popular", "Batch"],
         "summary": "Get all prisoners in a prison, including restricted patients supported by a POM",
         "description": "This endpoint sorts by OpenSearch score and then by prisonerNumber. The score is an indication of\n how close the query matches a prisoner record, thus closest matches to the query will be returned first.\n Unfortunately sorting by score is problematic as different shards might provide different scores, thus breaking\n the paged results. Also it gives inconsistent results the higher the page number. \n \n It is thus recommended not to use paging and instead request a large page size, together with setting the\n responseFields to limit the returned response byte size (otherwise you risk hitting memory / webclient limits).\n\n Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role",
         "operationId": "findByPrison",
@@ -1317,9 +1261,7 @@
     },
     "/prisoner-location/scroll/{scroll-id}": {
       "get": {
-        "tags": [
-          "Specific use case"
-        ],
+        "tags": ["Specific use case"],
         "summary": "Get the next page of prisoners.",
         "description": "To be used in conjunction with /prisoner-location/all. Uses the scroll id to get the next page of\n prisoners. Calls should be repeated until a\n `null` scroll id is then returned, indicating that no more data is available. Each call will return the scroll id,\n which should be used for the next call, rather than re-using the original scroll id.\n Note that the OpenSearch scroll will expire after 5 minutes, so if no calls are made during that time then the\n scroll id will be invalid.\n Requires PRISONER_SEARCH__PRISONER_LOCATION__RO role.",
         "operationId": "scroll",
@@ -1349,9 +1291,7 @@
     },
     "/prisoner-location/all": {
       "get": {
-        "tags": [
-          "Specific use case"
-        ],
+        "tags": ["Specific use case"],
         "summary": "Get all prisoners. This will return the first page of results and a scroll id to retrieve the next page",
         "description": "To be used in conjunction with /prisoner-location/scroll/{scroll-id}.\n This endpoint will return the first page of results (10,000 per page) and also a scroll id.\n This scroll id can then be used to make subsequent calls to return the data.\n It is required that this call will then be followed by calls to the /scroll/{scroll-id} endpoint to retrieve all\n the rest of the data, since it opens an OpenSearch scroll that will be cleared when no more data is available.\n Requires PRISONER_SEARCH__PRISONER_LOCATION__RO role.",
         "operationId": "findAll",
@@ -1371,10 +1311,7 @@
     },
     "/prison/{prisonId}/prisoners": {
       "get": {
-        "tags": [
-          "Establishment search",
-          "Popular"
-        ],
+        "tags": ["Establishment search", "Popular"],
         "summary": "Search for prisoners within a particular prison establishment",
         "description": "This search is optimised for clients that have a simple search term typically containing the prisoner's name\n or prisoner number. The user typically is certain the prisoner is within the establishment and knows key information \n about the prisoner.\n \n Requires ROLE_PRISONER_IN_PRISON_SEARCH or ROLE_PRISONER_SEARCH role.\n \n Sort fields supported are: firstName, lastName, prisonerNumber, dateOfBirth, cellLocation e.g \"sort=firstName,lastName,desc\"\n \n Examples:\n \n \"/prison/BXI/prisoners?term=John&sort=firstName,lastName,desc&page=2&size=20\"\n This will return all people in HMP Brixton whose first or last names begins with JOHN. \n Results will be ordered by firstName, lastName descending. \n Page 3 will be returned with a maximum of 20 results per page.\n \n \"/prison/WWI/prisoners?sort=cellLocation\"\n This will return all people in HMP Wandsworth. \n Results will be ordered by cell location ascending. \n Page 1 will be returned with a maximum of 10 results per page.\n \n \"/prison/WWI/prisoners?cellLocationPrefix=WWI-2&term=smith\"\n \"/prison/WWI/prisoners?cellLocationPrefix=2&term=smith\"\n This will return all people in HMP Wandsworth block 2 whose name starts with SMITH. \n\n \"/prison/WWI/prisoners?cellLocationPrefix=2-A-3-001\"\n This will return all people in HMP Wandsworth cell WWI-2-A-3-001 \n\n \"/prison/WWI/prisoners?term=A1234KJ\"\n \"/prison/WWI/prisoners?term=A1234KJ bananas\"\n This will return the single prisoner with prisoner number A1234KJ in HMP Wandsworth. \n An empty page will be returned if not found.\n\n \"/prison/WWI/prisoners?term=A J&fromDob=1956-01-01&toDob=2000-01-02\"\n This will return all people in HMP Wandsworth. Born on or after 1956-01-01 and on or before 2000-01-02, \n whose name begins with A J, e.g Alan Jones born on 1956-01-01. \n\n \"/prison/WWI/prisoners?alerts=TACT&alerts=PEEP\"\n This will return all people in HMP Wandsworth. With the alerts TACT or PEEP.\n\n There have been issues raised with OpenSearch sorting in that it sometimes doesn't produce stable sorting results,\n especially with higher page numbers.\n\n It is thus recommended not to use paging and instead request a large page size, together with setting the\n responseFields to limit the returned response byte size (otherwise you risk hitting memory / webclient limits).\n ",
         "operationId": "search",
@@ -1496,11 +1433,7 @@
             "required": false,
             "schema": {
               "type": "array",
-              "default": [
-                "lastName,ASC",
-                "firstName,ASC",
-                "prisonerNumber,ASC"
-              ],
+              "default": ["lastName,ASC", "firstName,ASC", "prisonerNumber,ASC"],
               "items": {
                 "type": "string"
               }
@@ -1561,10 +1494,7 @@
     },
     "/attribute-search/attributes": {
       "get": {
-        "tags": [
-          "Developer information",
-          "Attribute search"
-        ],
+        "tags": ["Developer information", "Attribute search"],
         "summary": "Retrieve all attributes supported by the attribute search",
         "description": "Returns all attributes that can be passed into the attribute search including their type.",
         "operationId": "getAttributes",
@@ -1638,9 +1568,7 @@
           "supportingPrisonIds": {
             "type": "array",
             "description": "List of supporting Prison Ids to restrict the search by. Unrestricted if not supplied or null",
-            "example": [
-              "MDI"
-            ],
+            "example": ["MDI"],
             "items": {
               "type": "string"
             }
@@ -1740,10 +1668,7 @@
             "example": "2022-11-10"
           }
         },
-        "required": [
-          "dateTime",
-          "nextReviewDate"
-        ]
+        "required": ["dateTime", "nextReviewDate"]
       },
       "EmailAddress": {
         "type": "object",
@@ -1807,12 +1732,7 @@
           "type": {
             "type": "string",
             "description": "A LOV from domain LANG_TYPE",
-            "enum": [
-              "PRIM",
-              "SEC",
-              "PREF_SPEAK",
-              "PREF_WRITE"
-            ]
+            "enum": ["PRIM", "SEC", "PREF_SPEAK", "PREF_WRITE"]
           },
           "code": {
             "type": "string",
@@ -1822,41 +1742,17 @@
           "readSkill": {
             "type": "string",
             "description": "The level of reading skill, from domain LANG_SKILLS:\n |Y Yes\n |A\tAverage\n |D\tDyslexia\n |G\tGood\n |N\tNil\n |P\tPoor\n |R\tRefused",
-            "enum": [
-              "Y",
-              "N",
-              "A",
-              "D",
-              "G",
-              "P",
-              "R"
-            ]
+            "enum": ["Y", "N", "A", "D", "G", "P", "R"]
           },
           "writeSkill": {
             "type": "string",
             "description": "The level of writing skill, see description for readSkill",
-            "enum": [
-              "Y",
-              "N",
-              "A",
-              "D",
-              "G",
-              "P",
-              "R"
-            ]
+            "enum": ["Y", "N", "A", "D", "G", "P", "R"]
           },
           "speakSkill": {
             "type": "string",
             "description": "The level of writing skill, see description for readSkill",
-            "enum": [
-              "Y",
-              "N",
-              "A",
-              "D",
-              "G",
-              "P",
-              "R"
-            ]
+            "enum": ["Y", "N", "A", "D", "G", "P", "R"]
           },
           "interpreterRequested": {
             "type": "boolean",
@@ -1992,11 +1888,7 @@
           "problemStatus": {
             "type": "string",
             "description": "Problem Status, from reference data with domain 'HEALTH_STS'",
-            "enum": [
-              "ON",
-              "I",
-              "EBS"
-            ]
+            "enum": ["ON", "I", "EBS"]
           },
           "problemDescription": {
             "type": "string",
@@ -2137,11 +2029,7 @@
           "smoker": {
             "type": "string",
             "description": "Smoker (V=vapes)",
-            "enum": [
-              "Y",
-              "N",
-              "V"
-            ]
+            "enum": ["Y", "N", "V"]
           },
           "personalCareNeeds": {
             "type": "array",
@@ -2181,11 +2069,7 @@
           "inOutStatus": {
             "type": "string",
             "description": "In/Out Status",
-            "enum": [
-              "IN",
-              "OUT",
-              "TRN"
-            ],
+            "enum": ["IN", "OUT", "TRN"],
             "example": "IN"
           },
           "prisonId": {
@@ -2267,10 +2151,7 @@
           "convictedStatus": {
             "type": "string",
             "description": "The prisoner's convicted status code.",
-            "enum": [
-              "Convicted",
-              "Remand"
-            ],
+            "enum": ["Convicted", "Remand"],
             "example": "Convicted"
           },
           "mostSeriousOffence": {
@@ -2363,12 +2244,7 @@
           "nonDtoReleaseDateType": {
             "type": "string",
             "description": "Indicates which type of non-DTO release date is the effective release date. One of 'ARD’, 'CRD’, ‘NPD’ or 'PRRD’.",
-            "enum": [
-              "ARD",
-              "CRD",
-              "NPD",
-              "PRRD"
-            ],
+            "enum": ["ARD", "CRD", "NPD", "PRRD"],
             "example": "ARD"
           },
           "receptionDate": {
@@ -2502,33 +2378,13 @@
           "rightEyeColour": {
             "type": "string",
             "description": "Right eye colour. From PROFILE_CODES table where PROFILE_TYPE = R_EYE_C. Allowable values extracted 07/02/2023.",
-            "enum": [
-              "Blue",
-              "Brown",
-              "Clouded",
-              "Green",
-              "Grey",
-              "Hazel",
-              "Missing",
-              "Pink",
-              "White"
-            ],
+            "enum": ["Blue", "Brown", "Clouded", "Green", "Grey", "Hazel", "Missing", "Pink", "White"],
             "example": "Green"
           },
           "leftEyeColour": {
             "type": "string",
             "description": "Left eye colour. From PROFILE_CODES table where PROFILE_TYPE = L_EYE_C. Allowable values extracted 07/02/2023.",
-            "enum": [
-              "Blue",
-              "Brown",
-              "Clouded",
-              "Green",
-              "Grey",
-              "Hazel",
-              "Missing",
-              "Pink",
-              "White"
-            ],
+            "enum": ["Blue", "Brown", "Clouded", "Green", "Grey", "Hazel", "Missing", "Pink", "White"],
             "example": "Hazel"
           },
           "facialHair": {
@@ -2548,33 +2404,13 @@
           "shapeOfFace": {
             "type": "string",
             "description": "Shape of face. From PROFILE_CODES table where PROFILE_TYPE = FACE. Allowable values extracted 07/02/2023.",
-            "enum": [
-              "Angular",
-              "Bullet",
-              "Oval",
-              "Round",
-              "Square",
-              "Triangular"
-            ],
+            "enum": ["Angular", "Bullet", "Oval", "Round", "Square", "Triangular"],
             "example": "Round"
           },
           "build": {
             "type": "string",
             "description": "Build. From PROFILE_CODES table where PROFILE_TYPE = BUILD. Allowable values extracted 07/02/2023.",
-            "enum": [
-              "Fat",
-              "Frail",
-              "Heavy",
-              "Medium",
-              "Muscular",
-              "Obese",
-              "Proportional",
-              "Slight",
-              "Small",
-              "Stocky",
-              "Stooped",
-              "Thin"
-            ],
+            "enum": ["Fat", "Frail", "Heavy", "Medium", "Muscular", "Obese", "Proportional", "Slight", "Small", "Stocky", "Stooped", "Thin"],
             "example": "Muscular"
           },
           "shoeSize": {
@@ -2761,18 +2597,14 @@
           "prisonIds": {
             "type": "array",
             "description": "List of Prison Ids (can include OUT and TRN) to restrict the search by. Unrestricted if not supplied or null",
-            "example": [
-              "MDI"
-            ],
+            "example": ["MDI"],
             "items": {
               "type": "string"
             },
             "uniqueItems": true
           }
         },
-        "required": [
-          "latestReleaseDate"
-        ]
+        "required": ["latestReleaseDate"]
       },
       "PrisonerNumbers": {
         "type": "object",
@@ -2780,9 +2612,7 @@
           "prisonerNumbers": {
             "type": "array",
             "description": "List of prisoner numbers to search by",
-            "example": [
-              "A1234AA"
-            ],
+            "example": ["A1234AA"],
             "items": {
               "type": "string"
             },
@@ -2790,9 +2620,7 @@
             "minItems": 1
           }
         },
-        "required": [
-          "prisonerNumbers"
-        ]
+        "required": ["prisonerNumbers"]
       },
       "PossibleMatchCriteria": {
         "type": "object",
@@ -2880,9 +2708,7 @@
           "prisonIds": {
             "type": "array",
             "description": "List of Prison Ids (can include OUT and TRN) to restrict the search by. Unrestricted if not supplied or null",
-            "example": [
-              "MDI"
-            ],
+            "example": ["MDI"],
             "items": {
               "type": "string"
             }
@@ -2901,11 +2727,7 @@
           "bookingIds": {
             "type": "array",
             "description": "List of bookingIds to search by",
-            "example": [
-              1,
-              2,
-              3
-            ],
+            "example": [1, 2, 3],
             "items": {
               "type": "integer",
               "format": "int64"
@@ -2914,9 +2736,7 @@
             "minItems": 1
           }
         },
-        "required": [
-          "bookingIds"
-        ]
+        "required": ["bookingIds"]
       },
       "PaginationRequest": {
         "type": "object",
@@ -2934,10 +2754,7 @@
             "example": 10
           }
         },
-        "required": [
-          "page",
-          "size"
-        ]
+        "required": ["page", "size"]
       },
       "PrisonerDetailRequest": {
         "type": "object",
@@ -2997,10 +2814,7 @@
             "description": "Pagination options. Will default to the first page if omitted."
           }
         },
-        "required": [
-          "pagination",
-          "prisonIds"
-        ]
+        "required": ["pagination", "prisonIds"]
       },
       "PrisonerDetailResponse": {
         "type": "object",
@@ -3079,11 +2893,7 @@
             "example": "Hard disk failure"
           }
         },
-        "required": [
-          "errorCode",
-          "status",
-          "userMessage"
-        ]
+        "required": ["errorCode", "status", "userMessage"]
       },
       "BodyPart": {
         "type": "object",
@@ -3139,13 +2949,7 @@
           "gender": {
             "type": "string",
             "description": "Gender, searching on the description in the domain SEX in the REFERENCE_CODES table.",
-            "enum": [
-              "Female",
-              "Male",
-              "Not Known / Not Recorded",
-              "Not Specified (Indeterminate)",
-              "Refused"
-            ],
+            "enum": ["Female", "Male", "Not Known / Not Recorded", "Not Specified (Indeterminate)", "Refused"],
             "example": "Male"
           },
           "ethnicity": {
@@ -3226,33 +3030,13 @@
           "rightEyeColour": {
             "type": "string",
             "description": "Right eye colour, searching on the description in the type R_EYE_C in the PROFILE_CODES table. Allowable values extracted 07/02/2023.",
-            "enum": [
-              "Blue",
-              "Brown",
-              "Clouded",
-              "Green",
-              "Grey",
-              "Hazel",
-              "Missing",
-              "Pink",
-              "White"
-            ],
+            "enum": ["Blue", "Brown", "Clouded", "Green", "Grey", "Hazel", "Missing", "Pink", "White"],
             "example": "Green"
           },
           "leftEyeColour": {
             "type": "string",
             "description": "Left eye colour, searching on the description in the type L_EYE_C in the PROFILE_CODES table. Allowable values extracted 07/02/2023.",
-            "enum": [
-              "Blue",
-              "Brown",
-              "Clouded",
-              "Green",
-              "Grey",
-              "Hazel",
-              "Missing",
-              "Pink",
-              "White"
-            ],
+            "enum": ["Blue", "Brown", "Clouded", "Green", "Grey", "Hazel", "Missing", "Pink", "White"],
             "example": "Hazel"
           },
           "facialHair": {
@@ -3272,33 +3056,13 @@
           "shapeOfFace": {
             "type": "string",
             "description": "Shape of face, searching on the description in the type FACE in the PROFILE_CODES table. Allowable values extracted 07/02/2023.",
-            "enum": [
-              "Angular",
-              "Bullet",
-              "Oval",
-              "Round",
-              "Square",
-              "Triangular"
-            ],
+            "enum": ["Angular", "Bullet", "Oval", "Round", "Square", "Triangular"],
             "example": "Bullet"
           },
           "build": {
             "type": "string",
             "description": "Physical build, searching on the description in the type BUILD in the PROFILE_CODES table. Allowable values extracted 07/02/2023.",
-            "enum": [
-              "Fat",
-              "Frail",
-              "Heavy",
-              "Medium",
-              "Muscular",
-              "Obese",
-              "Proportional",
-              "Slight",
-              "Small",
-              "Stocky",
-              "Stooped",
-              "Thin"
-            ],
+            "enum": ["Fat", "Frail", "Heavy", "Medium", "Muscular", "Obese", "Proportional", "Slight", "Small", "Stocky", "Stooped", "Thin"],
             "example": "Medium"
           },
           "minShoeSize": {
@@ -3344,11 +3108,7 @@
             "description": "Pagination options. Will default to the first page if omitted."
           }
         },
-        "required": [
-          "lenient",
-          "pagination",
-          "prisonIds"
-        ]
+        "required": ["lenient", "pagination", "prisonIds"]
       },
       "PhysicalDetailResponse": {
         "type": "object",
@@ -3432,9 +3192,7 @@
             "example": "A1234AB"
           }
         },
-        "required": [
-          "lastName"
-        ]
+        "required": ["lastName"]
       },
       "PrisonerMatch": {
         "type": "object",
@@ -3444,9 +3202,7 @@
             "description": "Details of the matching prisoner"
           }
         },
-        "required": [
-          "prisoner"
-        ]
+        "required": ["prisoner"]
       },
       "PrisonerMatches": {
         "type": "object",
@@ -3461,22 +3217,10 @@
           "matchedBy": {
             "type": "string",
             "description": "How the match was performed",
-            "enum": [
-              "ALL_SUPPLIED",
-              "ALL_SUPPLIED_ALIAS",
-              "HMPPS_KEY",
-              "EXTERNAL_KEY",
-              "NAME",
-              "PARTIAL_NAME",
-              "PARTIAL_NAME_DOB_LENIENT",
-              "NOTHING"
-            ]
+            "enum": ["ALL_SUPPLIED", "ALL_SUPPLIED_ALIAS", "HMPPS_KEY", "EXTERNAL_KEY", "NAME", "PARTIAL_NAME", "PARTIAL_NAME_DOB_LENIENT", "NOTHING"]
           }
         },
-        "required": [
-          "matchedBy",
-          "matches"
-        ]
+        "required": ["matchedBy", "matches"]
       },
       "KeywordRequest": {
         "type": "object",
@@ -3509,10 +3253,7 @@
           "prisonIds": {
             "type": "array",
             "description": "List of prison codes to filter results",
-            "example": [
-              "LEI",
-              "MDI"
-            ],
+            "example": ["LEI", "MDI"],
             "items": {
               "type": "string"
             }
@@ -3524,17 +3265,10 @@
           "type": {
             "type": "string",
             "description": "The type of search. When set to DEFAULT (which is the default when not provided) search order is by calculated relevance (AKA score). An ESTABLISHMENT type will order results by name and is designed for using this API for a single quick search field for prisoners within a specific prison",
-            "enum": [
-              "DEFAULT",
-              "ESTABLISHMENT"
-            ]
+            "enum": ["DEFAULT", "ESTABLISHMENT"]
           }
         },
-        "required": [
-          "pagination",
-          "prisonIds",
-          "type"
-        ]
+        "required": ["pagination", "prisonIds", "type"]
       },
       "KeywordResponse": {
         "type": "object",
@@ -3604,13 +3338,7 @@
           "gender": {
             "type": "string",
             "description": "Gender, F - Female, M - Male, NK - Not Known / Not Recorded or NS - Not Specified (Indeterminate)",
-            "enum": [
-              "M",
-              "F",
-              "NK",
-              "NS",
-              "ALL"
-            ],
+            "enum": ["M", "F", "NK", "NS", "ALL"],
             "example": "M"
           },
           "location": {
@@ -3640,10 +3368,7 @@
             "type": "string",
             "default": "AND",
             "description": "The type of join to use when combining the matchers and subQueries",
-            "enum": [
-              "AND",
-              "OR"
-            ],
+            "enum": ["AND", "OR"],
             "example": "AND"
           },
           "queries": {
@@ -3657,10 +3382,7 @@
             "$ref": "#/components/schemas/PaginationRequest"
           }
         },
-        "required": [
-          "pagination",
-          "queries"
-        ]
+        "required": ["pagination", "queries"]
       },
       "BooleanMatcher": {
         "allOf": [
@@ -3684,10 +3406,7 @@
           }
         ],
         "description": "A matcher for a boolean attribute from the Prisoner.\n\n The type must be set to Boolean for this matcher.\n",
-        "required": [
-          "attribute",
-          "condition"
-        ]
+        "required": ["attribute", "condition"]
       },
       "DateMatcher": {
         "allOf": [
@@ -3728,9 +3447,7 @@
           }
         ],
         "description": "A matcher for a date attribute from the Prisoner record.\n \n For a between clause use both min value and max value. By default the range is inclusive, but can be adjusted with minInclusive and maxInclusive.\n \n For <= enter only a max value, and for < set max inclusive to false.\n \n For >= enter only a min value, and for > set min inclusive to false.\n \n For equals enter the same date in both the min value and max value and leave min/max inclusive as true.\n\n The type must be set to Date for this matcher.\n ",
-        "required": [
-          "attribute"
-        ]
+        "required": ["attribute"]
       },
       "DateTimeMatcher": {
         "allOf": [
@@ -3761,9 +3478,7 @@
           }
         ],
         "description": "A matcher for a date time attribute from the Prisoner record.\n \n For a between clause use both the min and max values.\n \n For < enter only the max value.\n \n For > enter only the min value.\n\n The type must be set to DateTime for this matcher.\n",
-        "required": [
-          "attribute"
-        ]
+        "required": ["attribute"]
       },
       "IntMatcher": {
         "allOf": [
@@ -3804,9 +3519,7 @@
           }
         ],
         "description": "A matcher for an integer attribute from the Prisoner record.\n \n For a between clause use both min value and max value. By default the range is inclusive, but can be adjusted with minInclusive and maxInclusive.\n \n For <= enter only a max value, and for < set max inclusive to false.\n \n For >= enter only a min value, and for > set min inclusive to false.\n \n For equals enter the same integer in both the min value and max value and leave min/max inclusive as true..\n\n The type must be set to Int for this matcher.\n ",
-        "required": [
-          "attribute"
-        ]
+        "required": ["attribute"]
       },
       "Matcher": {
         "description": "Matchers that will be applied to this query",
@@ -3826,9 +3539,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "type"
-        ]
+        "required": ["type"]
       },
       "PncMatcher": {
         "allOf": [
@@ -3847,9 +3558,7 @@
           }
         ],
         "description": "A matcher for PNC numbers.\n \n This is required because PNC numbers come in various formats with 2/4 long years and with/without leading zeroes.\n \n This matcher will find the matching PNC regardless of which format is used.\n\n The type must be set to PNC for this matcher.\n ",
-        "required": [
-          "pncNumber"
-        ]
+        "required": ["pncNumber"]
       },
       "Query": {
         "type": "object",
@@ -3859,10 +3568,7 @@
             "type": "string",
             "default": "AND",
             "description": "The type of join to use when combining the matchers and subQueries",
-            "enum": [
-              "AND",
-              "OR"
-            ],
+            "enum": ["AND", "OR"],
             "example": "AND"
           },
           "matchers": {
@@ -3916,13 +3622,7 @@
               "condition": {
                 "type": "string",
                 "description": "The condition to apply to the attribute",
-                "enum": [
-                  "IS",
-                  "IS_NOT",
-                  "CONTAINS",
-                  "STARTSWITH",
-                  "IN"
-                ],
+                "enum": ["IS", "IS_NOT", "CONTAINS", "STARTSWITH", "IN"],
                 "example": "IS"
               },
               "searchTerm": {
@@ -3934,11 +3634,7 @@
           }
         ],
         "description": "A matcher for a string attribute from the prisoner record.\n\n The type must be set to String for this matcher.\n",
-        "required": [
-          "attribute",
-          "condition",
-          "searchTerm"
-        ]
+        "required": ["attribute", "condition", "searchTerm"]
       },
       "ReferenceData": {
         "type": "object",
@@ -3950,10 +3646,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "label",
-          "value"
-        ]
+        "required": ["label", "value"]
       },
       "ReferenceDataResponse": {
         "type": "object",
@@ -3965,9 +3658,7 @@
             }
           }
         },
-        "required": [
-          "data"
-        ]
+        "required": ["data"]
       },
       "PrisonerLocation": {
         "type": "object",
@@ -3999,11 +3690,7 @@
             "example": "Larsen"
           }
         },
-        "required": [
-          "firstName",
-          "lastName",
-          "prisonerNumber"
-        ]
+        "required": ["firstName", "lastName", "prisonerNumber"]
       },
       "PrisonerLocationResponse": {
         "type": "object",
@@ -4043,11 +3730,7 @@
             "example": true
           }
         },
-        "required": [
-          "fuzzySearch",
-          "name",
-          "type"
-        ]
+        "required": ["fuzzySearch", "name", "type"]
       }
     },
     "securitySchemes": {
