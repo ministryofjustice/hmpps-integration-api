@@ -238,3 +238,7 @@ globals:
       filters:
         case-notes:
           - "CAB"
+
+    empty-filters:
+      filters:
+
