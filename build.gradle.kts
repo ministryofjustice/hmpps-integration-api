@@ -1,9 +1,12 @@
+import kotlinx.kover.gradle.plugin.dsl.tasks.KoverReport
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "8.3.7"
   kotlin("plugin.spring") version "2.2.10"
+  id("io.gitlab.arturbosch.detekt") version "1.23.8"
+  id("org.jetbrains.kotlinx.kover") version "0.9.1"
 }
 
 configurations {
@@ -31,6 +34,8 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
   implementation("io.jsonwebtoken:jjwt-api:0.13.0")
+
+  implementation("org.jetbrains.kotlinx:kover-cli:0.9.1")
   testImplementation("io.kotest:kotest-assertions-json-jvm:5.9.1")
   testImplementation("io.kotest:kotest-runner-junit5-jvm:5.9.1")
   testImplementation("io.kotest:kotest-assertions-core-jvm:5.9.1")
@@ -55,7 +60,6 @@ dependencies {
   testImplementation("org.eclipse.jetty:jetty-server:12.1.0")
   testImplementation("org.eclipse.jetty:jetty-http:12.1.0")
   testImplementation("org.eclipse.jetty:jetty-io:12.1.0")
-
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
   testImplementation(kotlin("test"))
 }
@@ -69,6 +73,55 @@ repositories {
 }
 
 tasks {
+  // Enables the coverage report to be created for only unit tests or integration tests
+  // This is so the unit and integration tests can be run in parallel
+  // Could have just called
+  withType<KoverReport>().configureEach {
+    val environment = System.getenv()
+    val testType = environment["TEST_TYPE"] ?: "UNIT"
+    val excluded = if (testType == "UNIT") "integrationTest" else "unitTest"
+    kover {
+      currentProject {
+        instrumentation {
+          disabledForTestTasks.add(excluded)
+          disabledForTestTasks.add("test")
+        }
+      }
+    }
+  }
+
+  val mergeCoverageReport by registering(JavaExec::class) {
+    classpath = files("lib/kover-cli.jar")
+    args =
+      listOf(
+        "merge",
+        "lib/unitTest.ic",
+        "lib/integrationTest.ic",
+        "--target=lib/merged.ic",
+      )
+  }
+
+  val createCoverageReport by registering(JavaExec::class) {
+    classpath = files("lib/kover-cli.jar")
+    args =
+      listOf(
+        "report",
+        "lib/merged.ic",
+        "--src=src/main",
+        "--classfiles=build/classes/kotlin/main",
+        "--html=coverage",
+        "--xml=coverage/report.xml",
+      )
+  }
+
+  val koverCli by registering(Copy::class) {
+    from(configurations.runtimeClasspath).include("kover-cli*.jar")
+    into("lib")
+    rename("(.*).jar", "kover-cli.jar")
+  }
+  getByName("mergeCoverageReport").dependsOn(koverCli)
+  getByName("createCoverageReport").dependsOn(mergeCoverageReport)
+
   register<Test>("unitTest") {
     group = "verification"
     filter {
@@ -92,10 +145,27 @@ tasks {
       freeCompilerArgs.add("-Xannotation-default-target=param-property")
     }
   }
+
+  withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+    source = source.asFileTree
+  }
+
+  getByName("check") {
+    dependsOn(":ktlintCheck", "detekt")
+  }
+}
+
+detekt {
+  config.setFrom("./detekt.yml")
+  buildUponDefaultConfig = true
+  ignoreFailures = true
+  baseline = file("./detekt-baseline.xml")
 }
 
 kotlin {
   kotlinDaemonJvmArgs = listOf("-Xmx2g")
+
+  configurations.runtimeClasspath.get().resolvedConfiguration
 }
 
 testlogger {
@@ -105,4 +175,15 @@ testlogger {
 // this is to address JLLeitschuh/ktlint-gradle#809
 ktlint {
   version = "1.5.0"
+}
+
+configurations.matching { it.name == "detekt" }.all {
+  resolutionStrategy.eachDependency {
+    if (requested.group == "org.jetbrains.kotlin") {
+      useVersion(
+        io.gitlab.arturbosch.detekt
+          .getSupportedKotlinVersion(),
+      )
+    }
+  }
 }

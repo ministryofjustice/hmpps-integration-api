@@ -1,0 +1,43 @@
+# INFO: detekt was added after more than a year of development
+# a detekt-baseline.xml exists that suppresses pre-existing warnings.
+#
+# Configure new rules by adding them to this file
+# https://github.com/koral--/detekt/blob/master/detekt-cli/src/main/resources/default-detekt-config.yml
+config:
+  validation: true
+  warningsAsErrors: true
+
+performance:
+  CouldBeSequence:
+    active: true
+  UnnecessaryPartOfBinaryExpression:
+    active: true
+
+style:
+  MaxLineLength:
+    maxLineLength: 220
+  ReturnCount:
+    max: 4
+  WildcardImport:
+    excludeImports: [] # We remove the default exception of ['java.util.*'] inline with our existing style guide
+
+complexity:
+  LongMethod:
+    threshold: 200
+  LargeClass:
+    threshold: 1000
+  LongParameterList:
+    ignoreAnnotated:
+      # Spring annotations like @Service, @Component, etc.
+      # Classes with these annotations can't have their dependencies grouped into parameter objects easily due to how
+      # autowiring works. Spring beans will therefore require a larger-scale refactoring to reduce the number of
+      # dependencies required by each one that would violate this rule.
+      # Entities typically have large constructors, reflecting the columns in the database tables. Trying to reduce
+      # the number of arguments is non-trivial and may result in worse performance and an unnecessarily fragmented
+      # database design.
+      - javax.persistence.Entity
+    excludes:
+      - "**/givens/**"
+  TooManyFunctions:
+    thresholdInInterfaces: 20
+    thresholdInClasses: 20
