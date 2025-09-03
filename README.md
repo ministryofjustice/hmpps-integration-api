@@ -26,7 +26,7 @@
 ## About this project
 
 A long-lived API that exposes data from HMPPS systems such as the National Offender Management Information System (NOMIS), nDelius (probation system) and Offender Assessment System (OASys), providing a single point of entry for
-consumers. 
+consumers.
 
 Formerly named the "HMPPS Integration API", it was renamed to "HMPPS External API" in September 2025, though many references to the old name persist.
 
