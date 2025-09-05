@@ -110,7 +110,7 @@ class ReviewScheduleDeserializer : JsonDeserializer<PlanReviewSchedule>() {
       updatedByDisplayName = node["updatedByDisplayName"].asText(),
       updatedAt = OffsetDateTime.parse(node["updatedAt"].asText()),
       updatedAtPrison = node["updatedAtPrison"].asText(),
-      deadlineDate = LocalDate.parse(node["deadlineDate"].asText()),
+      deadlineDate = node["deadlineDate"]?.takeUnless { it.isNull }?.asText().let { LocalDate.parse(it) },
       exemptionReason = node["exemptionReason"]?.takeUnless { it.isNull }?.asText(),
       reviewKeyedInBy = node["reviewKeyedInBy"]?.takeUnless { it.isNull }?.asText(),
       reviewCompletedDate = node["reviewCompletedDate"]?.takeUnless { it.isNull }?.asText()?.let { LocalDate.parse(it) },
