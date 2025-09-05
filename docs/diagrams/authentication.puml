@@ -20,7 +20,7 @@ Boundary(mutual_tls, "Mutual TLS authentication", "") {
   OFF_CERTIFICATE_AUTHORITY(public_ca, "Public CA")
   SimpleStorageService(s3_truststore, "HMPPS External API", "S3 Bucket", "Stores root certificate authority.")
   OFF_CERTIFICATE_AUTHORITY(truststore, "Certificate Authority")
-  APIGateway(api_gw, "HMPPS Integration API", "API Gateway", "Manages requests from consumer applications.")
+  APIGateway(api_gw, "HMPPS External API", "API Gateway", "Manages requests from consumer applications.")
 }
 
 Boundary(client_cert_auth, "Client certificate authentication", "") {
