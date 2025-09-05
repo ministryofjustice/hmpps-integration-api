@@ -8,7 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 @ActiveProfiles("test")
 class ConsumerFilterConverterTest {
   @Test
-  fun `converts empty string to empty ConsumerFilter object`() {
+  fun `converts empty string to empty RoleFilter object`() {
     val consumerConfig = ""
     val actual = ConsumerFilterConverter().convert(consumerConfig)
 

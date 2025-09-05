@@ -102,7 +102,7 @@ globals:
       include:
         - "/v1/hmpps/reference-data"
         - "/v1/status"
-    full-access:
+    all-endpoints:
       include:
         # Provides access to all endpoints
         - "/.*"
@@ -172,6 +172,14 @@ globals:
     prisoner-escort-custody-service:
       include:
         - "/v1/status"
+        - "/v1/persons/.*/case-notes"
+      filters:
+        case-notes:
+          - "CAB"
+          - "NEG"
+          - "CVM"
+          - "INTERVENTION"
+          - "POS"
     mappa:
       include:
         - "/v1/persons"
@@ -197,3 +205,8 @@ globals:
         - "/v1/persons/.*/risk-management-plan"
         - "/v1/hmpps/reference-data"
         - "/v1/status"
+
+    case-notes-CAB-only:
+      filters:
+        case-notes:
+          - "CAB"

@@ -9,14 +9,18 @@ import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.GlobalsConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 
 class FiltersExtractionFilterTest {
   private var authorisationConfig: AuthorisationConfig = AuthorisationConfig()
+  private var globalsConfig: GlobalsConfig = GlobalsConfig()
   private var filtersExtractionFilter: FiltersExtractionFilter =
     FiltersExtractionFilter(
       authorisationConfig,
+      globalsConfig,
     )
 
   @Test
@@ -47,7 +51,9 @@ class FiltersExtractionFilterTest {
     val mockChain = mock(FilterChain::class.java)
 
     val expectedFilters = ConsumerFilters(prisons = listOf("filter-1", "filter-2"))
-    authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, filters = expectedFilters, roles = listOf()))
+    val testRole = Role(include = null, filters = expectedFilters)
+    authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, filters = ConsumerFilters(prisons = null), roles = listOf("test-role")))
+    globalsConfig.roles = mapOf("test-role" to testRole)
 
     // Act
     filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)
@@ -66,7 +72,7 @@ class FiltersExtractionFilterTest {
     val mockChain = mock(FilterChain::class.java)
 
     val expectedFilters = ConsumerFilters(prisons = listOf("filter-1", "filter-2"))
-    authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, filters = expectedFilters, roles = listOf()))
+    authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, ConsumerFilters(null, null), roles = listOf()))
 
     // Act
     filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)

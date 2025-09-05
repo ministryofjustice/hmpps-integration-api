@@ -43,4 +43,11 @@ class CaseNotesIntegrationTest : IntegrationTestBase() {
     callApiWithCN(path, limitedPrisonsCn)
       .andExpect(status().isNotFound)
   }
+
+  @Test
+  fun `returns specific case note types for a person`() {
+    callApiWithCN(path, limitedCaseNotesCn)
+      .andExpect(status().isOk)
+      .andExpect(content().json(getExpectedResponse("person-case-notes")))
+  }
 }

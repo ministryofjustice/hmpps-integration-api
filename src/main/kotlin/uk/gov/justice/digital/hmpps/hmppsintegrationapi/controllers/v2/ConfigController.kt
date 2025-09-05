@@ -9,6 +9,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.GlobalsConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ConfigAuthorisation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
+import kotlin.collections.orEmpty
 
 @Hidden
 @RestController("ConfigControllerV2")
@@ -24,7 +27,7 @@ class ConfigController(
   private fun mapConsumerToIncludesAndFilters(consumerConfig: ConsumerConfig?): ConfigAuthorisation =
     ConfigAuthorisation(
       endpoints = buildEndpointsList(consumerConfig),
-      filters = consumerConfig?.filters,
+      filters = buildFiltersList(consumerConfig),
     )
 
   private fun buildEndpointsList(consumerConfig: ConsumerConfig?): List<String> =
@@ -34,4 +37,27 @@ class ConfigController(
       }
       addAll(consumerConfig?.include.orEmpty())
     }
+
+  private fun buildFiltersList(consumerConfig: ConsumerConfig?): ConsumerFilters? {
+    val aggregatedRoles: List<Role>? = consumerConfig?.roles?.mapNotNull { globalsConfig.roles[it] }
+    if (aggregatedRoles == null || aggregatedRoles.isEmpty() || (aggregatedRoles.all { it.filters == null })) return consumerConfig?.filters
+
+    val consumerPseudoRole = Role(include = consumerConfig.include, filters = consumerConfig.filters)
+
+    val prisons: List<String>? =
+      (aggregatedRoles + listOf(consumerPseudoRole))
+        .takeIf { role -> role.any { it.filters?.prisons != null } }
+        ?.mapNotNull { it.filters?.prisons }
+        ?.flatten()
+        ?.distinct()
+
+    val caseNotes: List<String>? =
+      (aggregatedRoles + listOf(consumerPseudoRole))
+        .takeIf { role -> role.any { it.filters?.caseNotes != null } }
+        ?.mapNotNull { it.filters?.caseNotes }
+        ?.flatten()
+        ?.distinct()
+
+    return ConsumerFilters(prisons, caseNotes)
+  }
 }

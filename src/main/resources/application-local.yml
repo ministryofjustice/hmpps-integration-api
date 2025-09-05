@@ -71,7 +71,7 @@ authorisation:
   consumers:
     automated-test-client:
       roles:
-        - "full-access"
+        - "all-endpoints"
       filters:
     config-v2-test:
       include:

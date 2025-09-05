@@ -40,7 +40,7 @@ class CaseNotesControllerTest(
       val startDate: LocalDateTime = LocalDateTime.now()
       val endDate: LocalDateTime = LocalDateTime.now()
       val path = "/v1/persons/$hmppsId/case-notes?startDate=$startDate&endDate=$endDate"
-      val caseNoteFilter = CaseNoteFilter(hmppsId, startDate, endDate)
+      val caseNoteFilter = CaseNoteFilter(hmppsId, startDate, endDate, null)
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
       val pageCaseNote =
         PaginatedCaseNotes(
@@ -76,7 +76,7 @@ class CaseNotesControllerTest(
           ).createEvent("GET_CASE_NOTES", mapOf("hmppsId" to hmppsId))
         }
 
-        it("passes filters into service") {
+        it("passes prison filters into service") {
           mockMvc.performAuthorisedWithCN(path, "limited-prisons")
 
           verify(
@@ -85,6 +85,19 @@ class CaseNotesControllerTest(
           ).execute(
             caseNoteFilter,
             ConsumerFilters(prisons = listOf("XYZ")),
+          )
+        }
+
+        it("passes case notes filters into service") {
+          mockMvc.performAuthorisedWithCN(path, "limited-case-notes")
+          val specificCaseNoteFilter = CaseNoteFilter(hmppsId, startDate, endDate, listOf("CAB"))
+
+          verify(
+            getCaseNotesForPersonService,
+            times(1),
+          ).execute(
+            specificCaseNoteFilter,
+            ConsumerFilters(prisons = null, caseNotes = listOf("CAB")),
           )
         }
 
@@ -132,7 +145,7 @@ class CaseNotesControllerTest(
           result.response.status.shouldBe(HttpStatus.FORBIDDEN.value())
         }
 
-        it("returns a 400 when the upstream service returns entity not found") {
+        it("returns a 404 when the upstream service returns entity not found") {
           whenever(getCaseNotesForPersonService.execute(caseNoteFilter, filters)).thenReturn(
             Response(
               data = null,
