@@ -18,8 +18,8 @@ import org.springframework.context.annotation.Configuration
 @OpenAPIDefinition(
   info =
     Info(
-      title = "HMPPS Integration API",
-      description = "A long-lived API that exposes data from HMPPS systems such as the National Offender Management Information System (NOMIS), nDelius (probation system) and Offender Assessment System (OASys), providing a single point of entry for consumers.",
+      title = "HMPPS External API",
+      description = "A long-lived API that exposes data from HMPPS systems such as the National Offender Management Information System (NOMIS), nDelius (probation system) and Offender Assessment System (OASys), providing a single point of entry for consumers. Originally known as the HMPPS Integration API.",
       license =
         License(
           name = "MIT",
