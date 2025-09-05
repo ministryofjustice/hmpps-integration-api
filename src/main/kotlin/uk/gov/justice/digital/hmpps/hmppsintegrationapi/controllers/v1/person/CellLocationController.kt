@@ -17,7 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFound
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CellLocation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCellLocationForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
@@ -45,7 +45,7 @@ class CellLocationController(
   @GetMapping("{hmppsId}/cell-location")
   fun getPersonCellLocation(
     @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute filters: RoleFilters?,
   ): DataResponse<CellLocation?> {
     val response = getCellLocationForPersonService.execute(hmppsId, filters)
 

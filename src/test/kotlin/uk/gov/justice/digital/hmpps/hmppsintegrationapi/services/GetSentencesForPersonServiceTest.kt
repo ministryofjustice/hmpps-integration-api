@@ -15,7 +15,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiBooking
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInNomisOnlyPersona
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationOnlyPersona
@@ -32,7 +32,7 @@ internal class GetSentencesForPersonServiceTest(
 ) : DescribeSpec(
     {
       val hmppsId = "A1234AA"
-      val filters = ConsumerFilters(null)
+      val filters = RoleFilters(null)
       val firstBookingId = 1
       val secondBookingId = 2
       val personFromProbationOffenderSearch =

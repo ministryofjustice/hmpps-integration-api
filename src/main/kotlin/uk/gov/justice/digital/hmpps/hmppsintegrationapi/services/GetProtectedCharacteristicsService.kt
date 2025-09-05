@@ -10,7 +10,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonProte
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService.IdentifierType
 
 @Service
@@ -23,7 +23,7 @@ class GetProtectedCharacteristicsService(
 ) {
   fun execute(
     hmppsId: String,
-    filters: ConsumerFilters?,
+    filters: RoleFilters?,
   ): Response<PersonProtectedCharacteristics?> {
     val hmppsIdType = getPersonService.identifyHmppsId(hmppsId)
     if (hmppsIdType == IdentifierType.UNKNOWN) {

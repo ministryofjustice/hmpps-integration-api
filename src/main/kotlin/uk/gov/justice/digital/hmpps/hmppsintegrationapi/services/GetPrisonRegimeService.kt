@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGatew
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonRegime
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 
 @Service
 class GetPrisonRegimeService(
@@ -16,7 +16,7 @@ class GetPrisonRegimeService(
 ) {
   fun execute(
     prisonId: String,
-    filters: ConsumerFilters?,
+    filters: RoleFilters?,
   ): Response<List<PrisonRegime>?> {
     val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<List<PrisonRegime>>(prisonId, filters, upstreamServiceType = UpstreamApi.ACTIVITIES)
     if (consumerPrisonFilterCheck.errors.isNotEmpty()) {

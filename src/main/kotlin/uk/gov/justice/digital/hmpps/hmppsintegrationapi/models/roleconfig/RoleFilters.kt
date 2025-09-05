@@ -1,7 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig
 
-data class ConsumerFilters(
+data class RoleFilters(
   val prisons: List<String>?,
+  val caseNotes: List<String>? = null,
 ) {
   fun matchesPrison(prisonId: String?): Boolean = matchesFilterList(prisons, prisonId)
 

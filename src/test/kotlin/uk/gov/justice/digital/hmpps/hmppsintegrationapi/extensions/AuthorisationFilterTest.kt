@@ -15,13 +15,12 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.GlobalsConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 
 class AuthorisationFilterTest {
   private val examplePath: String = "/v1/persons"
   private val roleName = "private-prison"
-  private val exampleGlobalsConfig = GlobalsConfig(roles = mapOf(roleName to Role(include = listOf(examplePath))))
+  private val exampleGlobalsConfig = GlobalsConfig(roles = mapOf(roleName to Role(include = listOf(examplePath), filters = null)))
   private val exampleConsumer: String = "consumer-name"
   private val exampleRoles: List<String> = listOf(roleName)
 
@@ -42,7 +41,7 @@ class AuthorisationFilterTest {
   @Test
   fun `calls the onward chain when path found in either`() {
     val authorisationConfig = AuthorisationConfig()
-    authorisationConfig.consumers = mapOf(exampleConsumer to ConsumerConfig(include = listOf(examplePath), filters = ConsumerFilters(prisons = null), roles = listOf()))
+    authorisationConfig.consumers = mapOf(exampleConsumer to ConsumerConfig(include = listOf(examplePath), roles = listOf()))
     val authorisationFilter = AuthorisationFilter(authorisationConfig, exampleGlobalsConfig)
     authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
 
@@ -52,7 +51,7 @@ class AuthorisationFilterTest {
   @Test
   fun `calls the onward chain when path found in roles (but not in includes)`() {
     val authorisationConfig = AuthorisationConfig()
-    authorisationConfig.consumers = mapOf(exampleConsumer to ConsumerConfig(include = emptyList(), filters = ConsumerFilters(prisons = null), roles = exampleRoles))
+    authorisationConfig.consumers = mapOf(exampleConsumer to ConsumerConfig(include = emptyList(), roles = exampleRoles))
     val authorisationFilter = AuthorisationFilter(authorisationConfig, exampleGlobalsConfig)
     authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
 
@@ -62,8 +61,8 @@ class AuthorisationFilterTest {
   @Test
   fun `calls the onward chain when path not found in roles, but found in includes`() {
     val authorisationConfig = AuthorisationConfig()
-    authorisationConfig.consumers = mapOf(exampleConsumer to ConsumerConfig(include = listOf(examplePath), filters = ConsumerFilters(prisons = null), roles = listOf()))
-    val invalidRoleConfig = GlobalsConfig(roles = mapOf(roleName to Role(include = emptyList())))
+    authorisationConfig.consumers = mapOf(exampleConsumer to ConsumerConfig(include = listOf(examplePath), roles = listOf()))
+    val invalidRoleConfig = GlobalsConfig(roles = mapOf(roleName to Role(include = emptyList(), filters = null)))
     val authorisationFilter = AuthorisationFilter(authorisationConfig, invalidRoleConfig)
     authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
 
@@ -76,7 +75,7 @@ class AuthorisationFilterTest {
     whenever(mockRequest.requestURI).thenReturn(invalidPath)
 
     val authorisationConfig = AuthorisationConfig()
-    authorisationConfig.consumers = mapOf(exampleConsumer to ConsumerConfig(include = listOf(examplePath), filters = ConsumerFilters(prisons = null), roles = exampleRoles))
+    authorisationConfig.consumers = mapOf(exampleConsumer to ConsumerConfig(include = listOf(examplePath), roles = exampleRoles))
     val authorisationFilter = AuthorisationFilter(authorisationConfig = authorisationConfig, globalsConfig = exampleGlobalsConfig)
     authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
 
@@ -97,8 +96,8 @@ class AuthorisationFilterTest {
   @Test
   fun `Forbidden if limited access caused by error for path not found in roles, but found in includes`() {
     val authorisationConfig = AuthorisationConfig()
-    authorisationConfig.consumers = mapOf(exampleConsumer to ConsumerConfig(include = listOf(examplePath), filters = ConsumerFilters(prisons = null), roles = listOf()))
-    val invalidRoleConfig = GlobalsConfig(roles = mapOf(roleName to Role(include = emptyList())))
+    authorisationConfig.consumers = mapOf(exampleConsumer to ConsumerConfig(include = listOf(examplePath), roles = listOf()))
+    val invalidRoleConfig = GlobalsConfig(roles = mapOf(roleName to Role(include = emptyList(), filters = null)))
     val authorisationFilter = AuthorisationFilter(authorisationConfig, invalidRoleConfig)
     whenever(mockChain.doFilter(mockRequest, mockResponse)).thenThrow(ServletException(LimitedAccessException()))
 
@@ -110,7 +109,7 @@ class AuthorisationFilterTest {
   @Test
   fun `Forbidden if limited access caused by error for path found in roles (but not in includes)`() {
     val authorisationConfig = AuthorisationConfig()
-    authorisationConfig.consumers = mapOf(exampleConsumer to ConsumerConfig(include = emptyList(), filters = ConsumerFilters(prisons = null), roles = exampleRoles))
+    authorisationConfig.consumers = mapOf(exampleConsumer to ConsumerConfig(include = emptyList(), roles = exampleRoles))
     val authorisationFilter = AuthorisationFilter(authorisationConfig, exampleGlobalsConfig)
     whenever(mockChain.doFilter(mockRequest, mockResponse)).thenThrow(ServletException(LimitedAccessException()))
 

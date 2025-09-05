@@ -8,7 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Location
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 
 @Service
 class GetLocationByKeyService(
@@ -18,7 +18,7 @@ class GetLocationByKeyService(
   fun execute(
     prisonId: String,
     key: String,
-    filters: ConsumerFilters?,
+    filters: RoleFilters?,
   ): Response<Location?> {
     val checkAccess = consumerPrisonAccessService.checkConsumerHasPrisonAccess<Location?>(prisonId, filters)
 

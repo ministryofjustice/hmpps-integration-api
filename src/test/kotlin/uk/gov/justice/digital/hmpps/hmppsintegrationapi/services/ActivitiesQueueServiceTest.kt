@@ -48,7 +48,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Slot
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.WaitingListApplication
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
@@ -82,7 +82,7 @@ class ActivitiesQueueServiceTest(
 
       val prisonId = "MDI"
       val prisonerNumber = "A1234AA"
-      val filters = ConsumerFilters(prisons = listOf(prisonId))
+      val filters = RoleFilters(prisons = listOf(prisonId))
       val who = "automated-test-client"
 
       val persona = personInProbationAndNomisPersona

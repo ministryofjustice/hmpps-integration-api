@@ -18,7 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFound
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerBaseLocation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonerBaseLocationForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
@@ -41,7 +41,7 @@ class PrisonerBaseLocationController(
   )
   fun getPrisonerBaseLocation(
     @Parameter(description = "A HMPPS id", example = "A123123") @PathVariable hmppsId: String,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute filters: RoleFilters?,
   ): DataResponse<PrisonerBaseLocation?> {
     featureFlag.require(FeatureFlagConfig.USE_PRISONER_BASE_LOCATION_ENDPOINT)
 

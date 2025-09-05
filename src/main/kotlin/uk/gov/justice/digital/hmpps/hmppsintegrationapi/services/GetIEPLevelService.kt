@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.IEPLevel
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 
 @Service
 class GetIEPLevelService(
@@ -16,7 +16,7 @@ class GetIEPLevelService(
 ) {
   fun execute(
     prisonerId: String,
-    filter: ConsumerFilters?,
+    filter: RoleFilters?,
   ): Response<IEPLevel?> {
     val personResponse = getPersonService.getNomisNumberWithPrisonFilter(prisonerId, filter)
     if (personResponse.errors.isNotEmpty()) {

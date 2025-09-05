@@ -15,7 +15,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.Activi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -28,7 +28,7 @@ class GetPrisonPayBandsServiceTest(
 ) : DescribeSpec(
     {
       val prisonId = "MDI"
-      val filters = ConsumerFilters(prisons = listOf(prisonId))
+      val filters = RoleFilters(prisons = listOf(prisonId))
 
       beforeEach {
         Mockito.reset(consumerPrisonAccessService, activitiesGateway)

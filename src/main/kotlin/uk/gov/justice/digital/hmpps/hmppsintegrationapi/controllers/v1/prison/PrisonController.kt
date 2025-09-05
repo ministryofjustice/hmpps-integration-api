@@ -30,7 +30,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.ENTITY_NOT_FOUND
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.interfaces.toPaginatedResponse
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCapacityForPrisonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonPayBandsService
@@ -77,7 +77,7 @@ class PrisonController(
   )
   fun getPerson(
     @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute filters: RoleFilters?,
   ): DataResponse<PersonInPrison?> {
     val response = getPersonService.getPrisoner(hmppsId, filters)
 
@@ -116,7 +116,7 @@ class PrisonController(
     @Parameter(description = "Whether to return results that match the search criteria within the aliases of a person.") @RequestParam(required = false, defaultValue = "false", name = "search_within_aliases") searchWithinAliases: Boolean,
     @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute filters: RoleFilters?,
   ): PaginatedResponse<PersonInPrison?> {
     if (firstName == null && lastName == null && dateOfBirth == null) {
       throw ValidationException("No query parameters specified.")
@@ -169,7 +169,7 @@ class PrisonController(
     @Parameter(description = "The status of the visit. (BOOKED or CANCELLED)") @RequestParam visitStatus: String,
     @Parameter(description = "The page number", schema = Schema(minimum = "1")) @RequestParam(required = true, defaultValue = "1") page: Int,
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = true, defaultValue = "10") size: Int,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute filters: RoleFilters?,
   ): PaginatedResponse<Visit> {
     val response = getVisitsService.execute(hmppsId, prisonId, fromDate, toDate, visitStatus, page, size, filters)
 
@@ -211,7 +211,7 @@ class PrisonController(
     @Schema(description = "Include temporarily inactive locations", example = "false", required = false)
     @RequestParam(name = "includeInactive", required = false, defaultValue = "false")
     includeInactive: Boolean = false,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute filters: RoleFilters?,
   ): DataResponse<List<ResidentialHierarchyItem>?> {
     val response = getResidentialHierarchyService.execute(prisonId, includeInactive, filters)
 
@@ -253,7 +253,7 @@ class PrisonController(
     @Parameter(description = "Parent location path hierarchy, can be a Wing code, or landing code", example = "A-1")
     @RequestParam(required = false)
     parentPathHierarchy: String?,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute filters: RoleFilters?,
   ): DataResponse<ResidentialDetails?> {
     val response = getResidentialDetailsService.execute(prisonId, parentPathHierarchy, filters)
 
@@ -292,7 +292,7 @@ class PrisonController(
   )
   fun getCapacityDetails(
     @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute filters: RoleFilters?,
   ): DataResponse<PrisonCapacity?> {
     val response = getCapacityForPrisonService.execute(prisonId, filters)
 
@@ -326,7 +326,7 @@ class PrisonController(
   )
   fun getPrisonRegime(
     @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute filters: RoleFilters?,
   ): DataResponse<List<PrisonRegime>?> {
     val response = getPrisonRegimeService.execute(prisonId, filters)
 
@@ -360,7 +360,7 @@ class PrisonController(
   )
   fun getPrisonPayBands(
     @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute filters: RoleFilters?,
   ): DataResponse<List<PrisonPayBand>?> {
     val response = getPrisonPayBandsService.execute(prisonId, filters)
 

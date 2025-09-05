@@ -22,7 +22,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelations
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPrisonerContactRestriction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPrisonerContactRestrictions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -38,7 +38,7 @@ class GetVisitorRestrictionsServiceTest(
       val hmppsId = "A1234AA"
       val prisonId = "ABC"
       val contactId = 123456L
-      val filters = ConsumerFilters(null)
+      val filters = RoleFilters(null)
       val posPrisoner = POSPrisoner(firstName = "Test", lastName = "Person", prisonId = prisonId, prisonerNumber = hmppsId, youthOffender = false)
       val listOfLinkedPrisoners =
         PRLinkedPrisoners(
@@ -133,16 +133,16 @@ class GetVisitorRestrictionsServiceTest(
       }
 
       it("returns null when a person in an unapproved prison") {
-        val consumerFilters = ConsumerFilters(prisons = listOf("XYZ"))
+        val roleFilters = RoleFilters(prisons = listOf("XYZ"))
         val wrongPrisonId = "ABC"
 
-        whenever(getPersonService.getPrisoner(hmppsId, consumerFilters)).thenReturn(Response(data = posPrisoner.toPersonInPrison(), errors = emptyList()))
+        whenever(getPersonService.getPrisoner(hmppsId, roleFilters)).thenReturn(Response(data = posPrisoner.toPersonInPrison(), errors = emptyList()))
 
-        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<List<PrisonerContactRestrictions>>(wrongPrisonId, consumerFilters)).thenReturn(
+        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<List<PrisonerContactRestrictions>>(wrongPrisonId, roleFilters)).thenReturn(
           Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))),
         )
 
-        val response = getVisitorRestrictionsService.execute(hmppsId, contactId, consumerFilters)
+        val response = getVisitorRestrictionsService.execute(hmppsId, contactId, roleFilters)
 
         response.data.shouldBe(null)
         response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))

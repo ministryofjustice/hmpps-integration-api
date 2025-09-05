@@ -20,7 +20,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiAccounts
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -39,7 +39,7 @@ internal class GetBalancesForPersonServiceTest(
     val nomisSavings = 102
     val nomisCash = 103
     val accountCode = "spends"
-    val filters = ConsumerFilters(listOf("ABC"))
+    val filters = RoleFilters(listOf("ABC"))
 
     beforeEach {
       Mockito.reset(getPersonService)
@@ -182,7 +182,7 @@ internal class GetBalancesForPersonServiceTest(
       whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Balance>(prisonId, filters)).thenReturn(
         Response(data = null, errors = emptyList()),
       )
-      val result = getBalancesForPersonService.execute(prisonId, hmppsId, filters = ConsumerFilters(prisons = listOf(prisonId)))
+      val result = getBalancesForPersonService.execute(prisonId, hmppsId, filters = RoleFilters(prisons = listOf(prisonId)))
 
       result.data.shouldBe(balances)
     }

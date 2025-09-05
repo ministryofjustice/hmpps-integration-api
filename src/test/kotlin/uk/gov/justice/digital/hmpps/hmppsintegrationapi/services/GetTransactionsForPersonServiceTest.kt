@@ -18,7 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Type
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -36,7 +36,7 @@ internal class GetTransactionsForPersonServiceTest(
     val accountCode = "spends"
     val startDate = "2019-04-01"
     val endDate = "2019-04-05"
-    val filters = ConsumerFilters(null)
+    val filters = RoleFilters(null)
     val exampleTransactions =
       Transactions(
         listOf(
@@ -218,7 +218,7 @@ internal class GetTransactionsForPersonServiceTest(
     }
 
     it("returns null when transactions are requested from an unapproved prison") {
-      val consumerFillters = ConsumerFilters(prisons = listOf("ABC"))
+      val consumerFillters = RoleFilters(prisons = listOf("ABC"))
       val wrongPrisonId = "XYZ"
       whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Transactions>(wrongPrisonId, consumerFillters)).thenReturn(
         Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))),
@@ -239,7 +239,7 @@ internal class GetTransactionsForPersonServiceTest(
     }
 
     it("returns transactions when requested from an approved prison") {
-      val consumerFillters = ConsumerFilters(prisons = listOf("ABC"))
+      val consumerFillters = RoleFilters(prisons = listOf("ABC"))
       whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Transactions>(prisonId, consumerFillters)).thenReturn(
         Response(data = null),
       )

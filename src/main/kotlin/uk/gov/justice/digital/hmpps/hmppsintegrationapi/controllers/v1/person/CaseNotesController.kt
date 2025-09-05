@@ -22,7 +22,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseNote
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.interfaces.toPaginatedResponse
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCaseNotesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
@@ -38,7 +38,7 @@ class CaseNotesController(
   @GetMapping("{hmppsId}/case-notes")
   @Operation(
     summary = "Returns case notes associated with a person.",
-    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li><li>caseNotes</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found case notes for a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "400", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
@@ -59,9 +59,9 @@ class CaseNotesController(
     @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @Parameter(description = "Total results per page, will default to 10 if not provided")
     @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute filters: RoleFilters?,
   ): PaginatedResponse<CaseNote> {
-    val response = getCaseNoteForPersonService.execute(CaseNoteFilter(hmppsId, startDate, endDate, page, perPage), filters)
+    val response = getCaseNoteForPersonService.execute(CaseNoteFilter(hmppsId, startDate, endDate, filters?.caseNotes, page, perPage), filters)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Invalid id: $hmppsId")

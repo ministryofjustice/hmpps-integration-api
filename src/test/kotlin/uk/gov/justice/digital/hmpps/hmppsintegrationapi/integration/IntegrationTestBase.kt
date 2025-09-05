@@ -39,6 +39,7 @@ abstract class IntegrationTestBase {
   final val crn = "AB123123"
   final val specificPrisonCn = "specific-prison"
   final val limitedPrisonsCn = "limited-prisons"
+  final val limitedCaseNotesCn = "limited-case-notes"
   final val noPrisonsCn = "no-prisons"
   final val emptyPrisonsCn = "empty-prisons"
   final val contactId = 123456L
