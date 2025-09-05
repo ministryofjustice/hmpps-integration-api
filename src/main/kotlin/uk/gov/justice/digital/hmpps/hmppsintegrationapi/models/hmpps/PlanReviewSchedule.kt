@@ -57,7 +57,7 @@ data class PlanReviewSchedule(
   @get:JsonProperty("reference", required = true) val reference: UUID,
   @field:Valid
   @Schema(example = "2023-11-19", required = false, description = "An ISO-8601 date representing date that the Review is due. ")
-  @get:JsonProperty("deadlineDate", required = false) val deadlineDate: LocalDate,
+  @get:JsonProperty("deadlineDate", required = false) val deadlineDate: LocalDate?,
   @field:Valid
   @Schema(example = "null", required = true, description = "")
   @get:JsonProperty("status", required = true) val status: PlanReviewScheduleStatus,
@@ -110,7 +110,7 @@ class ReviewScheduleDeserializer : JsonDeserializer<PlanReviewSchedule>() {
       updatedByDisplayName = node["updatedByDisplayName"].asText(),
       updatedAt = OffsetDateTime.parse(node["updatedAt"].asText()),
       updatedAtPrison = node["updatedAtPrison"].asText(),
-      deadlineDate = node["deadlineDate"]?.takeUnless { it.isNull }?.asText().let { LocalDate.parse(it) },
+      deadlineDate = node["deadlineDate"]?.takeUnless { it.isNull }?.asText()?.let { LocalDate.parse(it) },
       exemptionReason = node["exemptionReason"]?.takeUnless { it.isNull }?.asText(),
       reviewKeyedInBy = node["reviewKeyedInBy"]?.takeUnless { it.isNull }?.asText(),
       reviewCompletedDate = node["reviewCompletedDate"]?.takeUnless { it.isNull }?.asText()?.let { LocalDate.parse(it) },
