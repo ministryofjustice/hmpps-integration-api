@@ -2,7 +2,7 @@
 
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 
-title [Infrastructure] HMPPS Integration API
+title [Infrastructure] HMPPS External API
 
 skinparam linetype polyline
 
@@ -19,7 +19,7 @@ Boundary(aws, "Amazon Web Services (AWS)"){
     Container(acm, "Certificate Manager", "Amazon Certificate Manager (ACM)", "Provides server SSL certificate.")
 
     Boundary(eks, "Kubernetes Cluster"){
-      Container(hmpps_integration_api_pod, "Integration API", "Service", "A single point of entry for services to retrieve data from multiple HMPPS systems.")
+      Container(hmpps_integration_api_pod, "External API", "Service", "A single point of entry for services to retrieve data from multiple HMPPS systems.")
     }
   }
 
