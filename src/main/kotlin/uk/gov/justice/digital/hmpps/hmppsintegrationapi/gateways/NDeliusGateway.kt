@@ -19,10 +19,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.StatusInfor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusContactEvent
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusContactEvents
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusSupervisions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.UserAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.ContactDetailsWithAddress
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.Offender
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.ContactEventStubGenerator.generateNDeliusContactEvent
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.ContactEventStubGenerator.generateNDeliusContactEvents
 
 @Component
 class NDeliusGateway(
@@ -309,7 +313,6 @@ class NDeliusGateway(
             .map { it.toAddress() },
         )
       }
-
       is WebClientWrapperResponse.Error -> {
         Response(
           data = emptyList(),
@@ -318,6 +321,67 @@ class NDeliusGateway(
       }
     }
   }
+
+  fun getContactEventsForPerson(
+    crn: String,
+    pageNo: Int,
+    perPage: Int,
+  ): Response<NDeliusContactEvents?> {
+    val result =
+      webClient.request<NDeliusContactEvents>(
+        HttpMethod.GET,
+        "/case/$crn/contacts?page=$pageNo&size=$perPage",
+        authenticationHeader(),
+        UpstreamApi.NDELIUS,
+        badRequestAsError = true,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getContactEventForPerson(
+    crn: String,
+    contactEventId: Long,
+  ): Response<NDeliusContactEvent?> {
+    val result =
+      webClient.request<NDeliusContactEvent>(
+        HttpMethod.GET,
+        "/case/$crn/contacts/$contactEventId",
+        authenticationHeader(),
+        UpstreamApi.NDELIUS,
+      )
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(result.data)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(null, result.errors)
+      }
+    }
+  }
+
+  fun getStubbedContactEventForPerson(
+    crn: String,
+    contactEventId: Long,
+  ): Response<NDeliusContactEvent?> = Response(generateNDeliusContactEvent(contactEventId, crn))
+
+  fun getStubbedContactEventsForPerson(
+    crn: String,
+    pageNo: Int,
+    perPage: Int,
+  ): Response<NDeliusContactEvents?> = Response(generateNDeliusContactEvents(crn, perPage, pageNo, 10))
 
   private fun isNomsNumber(id: String?): Boolean = id?.matches(Regex("^[A-Z]\\d{4}[A-Z]{2}+$")) == true
 }
