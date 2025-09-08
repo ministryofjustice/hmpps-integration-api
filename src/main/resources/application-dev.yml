@@ -242,7 +242,7 @@ authorisation:
       include:
       filters:
       roles:
-        - "all-endpoints"
+        - "full-access"
     smoke-test-limited-access:
       include:
       filters:
@@ -263,12 +263,12 @@ authorisation:
       include:
       filters:
       roles:
-        - "all-endpoints"
+        - "full-access"
     pmcphee:
       include:
       filters:
       roles:
-        - "all-endpoints"
+        - "full-access"
     geoamey:
       include:
       filters:
@@ -278,7 +278,7 @@ authorisation:
       include:
       filters:
       roles:
-        - "all-endpoints"
+        - "full-access"
 
 redaction:
   client-names:

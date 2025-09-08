@@ -106,6 +106,10 @@ globals:
       include:
         # Provides access to all endpoints
         - "/.*"
+    full-access:
+      include:
+        # Provides access to all endpoints
+        - "/.*"
         # Provides access to all events on queue
         - "/v1/activities/attendance-reasons"
         - "/v1/contacts/[^/]*$"
@@ -205,8 +209,3 @@ globals:
         - "/v1/persons/.*/risk-management-plan"
         - "/v1/hmpps/reference-data"
         - "/v1/status"
-
-    case-notes-CAB-only:
-      filters:
-        case-notes:
-          - "CAB"

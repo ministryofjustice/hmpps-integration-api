@@ -97,7 +97,7 @@ authorisation:
   consumers:
     automated-test-client:
       roles:
-        - "all-endpoints"
+        - "full-access"
     config-v2-test:
       include:
         - "/v2/config/authorisation"
@@ -111,13 +111,13 @@ authorisation:
       roles:
     limited-prisons:
       roles:
-        - "all-endpoints"
+        - "full-access"
       filters:
         prisons:
           - XYZ
     empty-prisons:
       roles:
-        - "all-endpoints"
+        - "full-access"
       filters:
         prisons:
     private-prison-only:
@@ -127,8 +127,10 @@ authorisation:
       filters:
     limited-case-notes:
       roles:
-        - "all-endpoints"
-        - "case-notes-CAB-only"
+        - "full-access"
+      filters:
+        case-notes:
+          - "CAB"
     redacted-client:
       include:
         - "/v1/persons/[^/]*$"
