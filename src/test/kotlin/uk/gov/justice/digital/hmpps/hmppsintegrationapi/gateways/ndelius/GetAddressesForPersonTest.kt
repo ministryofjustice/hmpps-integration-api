@@ -23,11 +23,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 @ActiveProfiles("test")
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [NDeliusGateway::class],
+  classes = [NDeliusGateway::class, FeatureFlagConfig::class],
 )
 class GetAddressesForPersonTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
-  @MockitoBean val featureFlag: FeatureFlagConfig,
   private val nDeliusGateway: NDeliusGateway,
 ) : DescribeSpec(
     {

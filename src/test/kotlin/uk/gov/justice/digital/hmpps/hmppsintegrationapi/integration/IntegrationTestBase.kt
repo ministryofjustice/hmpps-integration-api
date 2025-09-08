@@ -55,6 +55,7 @@ abstract class IntegrationTestBase {
     val plpMockServer = ApiMockServer.create(UpstreamApi.PLP)
     val sanMockServer = ApiMockServer.create(UpstreamApi.SAN)
     val activitiesMockServer = ApiMockServer.create(UpstreamApi.ACTIVITIES)
+    val nDeliusMockServer = ApiMockServer.create(UpstreamApi.NDELIUS_INTEGRATION_TEST)
 
     @BeforeAll
     @JvmStatic
@@ -75,7 +76,7 @@ abstract class IntegrationTestBase {
           "$gatewaysFolder/prisoneroffendersearch/fixtures/PrisonerByIdResponse.json",
         ).readText(),
       )
-
+      nDeliusMockServer.start()
       managePomCaseMockServer.start()
       plpMockServer.start()
       sanMockServer.start()
@@ -85,6 +86,7 @@ abstract class IntegrationTestBase {
     @AfterAll
     @JvmStatic
     fun stopMockServers() {
+      nDeliusMockServer.stop()
       hmppsAuthMockServer.stop()
       prisonerOffenderSearchMockServer.stop()
       managePomCaseMockServer.stop()
