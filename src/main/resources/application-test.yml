@@ -111,13 +111,13 @@ authorisation:
       roles:
     limited-prisons:
       roles:
-        - "full-access"
+        - "all-endpoints-and-queues"
       filters:
         prisons:
           - XYZ
     empty-prisons:
       roles:
-        - "full-access"
+        - "all-endpoints-and-queues"
       filters:
         prisons:
     private-prison-only:
@@ -127,7 +127,7 @@ authorisation:
       filters:
     limited-case-notes:
       roles:
-        - "full-access"
+        - "all-endpoints-and-queues"
       filters:
         case-notes:
           - "CAB"

@@ -52,23 +52,29 @@ private fun buildAggregatedFilters(
   consumerFilters: ConsumerFilters?,
   roles: List<Role>?,
 ): ConsumerFilters? {
-  if (roles == null || roles.isEmpty() || (roles.all { it.filters == null })) return consumerFilters
+  if (roles == null || roles.isEmpty() || (roles.all { it.filters == null })) {
+    val prisons = consumerFilters?.prisons?.takeIf { prisons -> prisons.none { it == "*" } }
+    val caseNotes = consumerFilters?.caseNotes?.takeIf { type -> type.none { it == "*" } }
+    return if (consumerFilters != null) ConsumerFilters(prisons, caseNotes) else null
+  } else {
+    val consumerPseudoRole = Role(include = null, filters = consumerFilters)
 
-  val consumerPseudoRole = Role(include = null, filters = consumerFilters)
+    val prisons =
+      (listOf(consumerPseudoRole) + roles)
+        .takeIf { role -> role.any { it.filters?.prisons != null } }
+        ?.mapNotNull { it.filters?.prisons }
+        ?.flatten()
+        ?.distinct()
+        ?.takeIf { prisons -> prisons.none { it == "*" } }
 
-  val prisons =
-    (listOf(consumerPseudoRole) + roles)
-      .takeIf { role -> role.any { it.filters?.prisons != null } }
-      ?.mapNotNull { it.filters?.prisons }
-      ?.flatten()
-      ?.distinct()
+    val caseNotes =
+      (listOf(consumerPseudoRole) + roles)
+        .takeIf { role -> role.any { it.filters?.caseNotes != null } }
+        ?.mapNotNull { it.filters?.caseNotes }
+        ?.flatten()
+        ?.distinct()
+        ?.takeIf { types -> types.none { it == "*" } }
 
-  val caseNotes =
-    (listOf(consumerPseudoRole) + roles)
-      .takeIf { role -> role.any { it.filters?.caseNotes != null } }
-      ?.mapNotNull { it.filters?.caseNotes }
-      ?.flatten()
-      ?.distinct()
-
-  return ConsumerFilters(prisons, caseNotes)
+    return if (caseNotes == null && prisons == null) null else ConsumerFilters(prisons, caseNotes)
+  }
 }
