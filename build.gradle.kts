@@ -16,8 +16,8 @@ dependencies {
   runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.13.0")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
-  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.20.0")
-  implementation("io.sentry:sentry-logback:8.20.0")
+  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.21.0")
+  implementation("io.sentry:sentry-logback:8.21.0")
   implementation("org.springframework.data:spring-data-commons")
   implementation("org.springframework:spring-aop")
   implementation("org.aspectj:aspectjweaver")
@@ -27,7 +27,7 @@ dependencies {
     exclude("org.springframework.security", "spring-security-crypto")
     exclude("org.springframework.security", "spring-security-web")
   }
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.12")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
   implementation("io.jsonwebtoken:jjwt-api:0.13.0")
@@ -51,10 +51,10 @@ dependencies {
   }
   // Explicitly add all necessary Jetty and Servlet dependencies
   testImplementation("javax.servlet:javax.servlet-api:4.0.1")
-  testImplementation("org.eclipse.jetty:jetty-util:12.1.0")
-  testImplementation("org.eclipse.jetty:jetty-server:12.1.0")
-  testImplementation("org.eclipse.jetty:jetty-http:12.1.0")
-  testImplementation("org.eclipse.jetty:jetty-io:12.1.0")
+  testImplementation("org.eclipse.jetty:jetty-util:12.1.1")
+  testImplementation("org.eclipse.jetty:jetty-server:12.1.1")
+  testImplementation("org.eclipse.jetty:jetty-http:12.1.1")
+  testImplementation("org.eclipse.jetty:jetty-io:12.1.1")
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
   testImplementation(kotlin("test"))
