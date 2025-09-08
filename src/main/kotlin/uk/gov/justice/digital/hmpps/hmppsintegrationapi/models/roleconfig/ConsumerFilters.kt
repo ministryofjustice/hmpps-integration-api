@@ -13,6 +13,9 @@ data class ConsumerFilters(
     if (filterList == null) {
       return true
     }
+    if (filterList.contains("*")) {
+      return true
+    }
     if (filterList.contains(value)) {
       return true
     }

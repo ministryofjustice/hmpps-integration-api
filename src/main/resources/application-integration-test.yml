@@ -103,7 +103,7 @@ authorisation:
   consumers:
     automated-test-client:
       roles:
-        - "full-access"
+        - "all-endpoints-and-queues"
       filters:
     automated-test-client-no-filters:
       roles:

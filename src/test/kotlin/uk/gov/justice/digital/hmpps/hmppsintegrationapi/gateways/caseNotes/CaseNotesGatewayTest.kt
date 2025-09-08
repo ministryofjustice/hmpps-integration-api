@@ -151,7 +151,7 @@ class CaseNotesGatewayTest(
           ?.content!!
           .count()
           .shouldBe(1)
-        response.data!!.content.shouldExist { it.caseNoteId == id }
+        response.data.content.shouldExist { it.caseNoteId == id }
 
         caseNotesApiMockServer.verify(
           postRequestedFor(urlEqualTo(pathNoParams))
@@ -168,6 +168,34 @@ class CaseNotesGatewayTest(
                     "type" : "CAB",
                     "subTypes" : []
                   }],
+                  "page" : 1,
+                  "size" : 10
+                }
+                """.trimIndent(),
+              ),
+            ).withHeader("Content-Type", equalTo("application/json")),
+        )
+      }
+
+      it("requests all caseNote types if wildcard") {
+        val caseNoteRequest = CNSearchNotesRequest(page = 1, size = 10, typeSubTypes = listOf(CNTypeSubType("KA"), CNTypeSubType("CAB")))
+        val jsonRequest = objectMapper.writeValueAsString(caseNoteRequest.toApiConformingMap())
+        caseNotesApiMockServer.stubForPost(pathNoParams, jsonRequest, responseJson, HttpStatus.OK)
+        val specificTypeCaseNoteFilter = CaseNoteFilter(hmppsId = id, caseNoteTypes = listOf("KA", "CAB", "*"))
+        val response = caseNotesGateway.getCaseNotesForPerson(id = id, specificTypeCaseNoteFilter)
+        response.data
+          ?.content!!
+          .count()
+          .shouldBe(1)
+        response.data.content.shouldExist { it.caseNoteId == id }
+
+        caseNotesApiMockServer.verify(
+          postRequestedFor(urlEqualTo(pathNoParams))
+            .withRequestBody(
+              equalToJson(
+                """
+                {
+                  "includeSensitive" : true,
                   "page" : 1,
                   "size" : 10
                 }
