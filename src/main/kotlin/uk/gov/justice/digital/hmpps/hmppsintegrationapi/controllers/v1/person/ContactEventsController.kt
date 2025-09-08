@@ -25,14 +25,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 
 @RestController
-@RequestMapping("/v1/persons")
+@RequestMapping("/v1/persons/{hmppsId}/contact-events")
 @Tag(name = "Persons")
 class ContactEventsController(
   @Autowired val auditService: AuditService,
   @Autowired val featureFlag: FeatureFlagConfig,
   @Autowired val contactEventService: ContactEventService,
 ) {
-  @GetMapping("{hmppsId}/contact-events")
+  @GetMapping
   @Tag(name = "Contact Events")
   @Operation(
     summary = "Returns a (potentially empty) list of ContactEvent objects for a person.",
@@ -74,7 +74,7 @@ class ContactEventsController(
     return response.data.toPaginatedResponse()
   }
 
-  @GetMapping("{hmppsId}/contact-events/{contactEventId}")
+  @GetMapping("{contactEventId}")
   @Tag(name = "Contact Event")
   @Operation(
     summary = "Returns a Contact Event for a person and contact event id.",
@@ -102,7 +102,7 @@ class ContactEventsController(
   fun getContactEvent(
     @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
     @Parameter(description = "A Contact Event Id") @PathVariable contactEventId: Long,
-  ): DataResponse<ContactEvent?> {
+  ): DataResponse<ContactEvent> {
     val response = contactEventService.getContactEvent(hmppsId, contactEventId)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
@@ -112,6 +112,6 @@ class ContactEventsController(
       throw EntityNotFoundException("Entity not found ${response.errors.first().description}")
     }
     auditService.createEvent("GET_PERSON_CONTACT_EVENT", mapOf("hmppsId" to hmppsId))
-    return DataResponse(response.data)
+    return DataResponse(response.data!!)
   }
 }

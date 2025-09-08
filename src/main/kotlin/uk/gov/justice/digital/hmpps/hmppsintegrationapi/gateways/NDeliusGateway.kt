@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_STUBBED_CONTACT_EVENTS_DATA
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address
@@ -36,6 +38,9 @@ class NDeliusGateway(
 
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
+
+  @Autowired
+  lateinit var featureFlagConfig: FeatureFlagConfig
 
   fun getOffencesForPerson(id: String): Response<List<Offence>> {
     val result =
@@ -327,6 +332,10 @@ class NDeliusGateway(
     pageNo: Int,
     perPage: Int,
   ): Response<NDeliusContactEvents?> {
+    if (featureFlagConfig.isEnabled(USE_STUBBED_CONTACT_EVENTS_DATA)) {
+      return Response(generateNDeliusContactEvents(crn, perPage, pageNo, 10))
+    }
+
     val result =
       webClient.request<NDeliusContactEvents>(
         HttpMethod.GET,
@@ -354,6 +363,10 @@ class NDeliusGateway(
     crn: String,
     contactEventId: Long,
   ): Response<NDeliusContactEvent?> {
+    if (featureFlagConfig.isEnabled(USE_STUBBED_CONTACT_EVENTS_DATA)) {
+      return Response(generateNDeliusContactEvent(contactEventId, crn))
+    }
+
     val result =
       webClient.request<NDeliusContactEvent>(
         HttpMethod.GET,
@@ -371,17 +384,6 @@ class NDeliusGateway(
       }
     }
   }
-
-  fun getStubbedContactEventForPerson(
-    crn: String,
-    contactEventId: Long,
-  ): Response<NDeliusContactEvent?> = Response(generateNDeliusContactEvent(contactEventId, crn))
-
-  fun getStubbedContactEventsForPerson(
-    crn: String,
-    pageNo: Int,
-    perPage: Int,
-  ): Response<NDeliusContactEvents?> = Response(generateNDeliusContactEvents(crn, perPage, pageNo, 10))
 
   private fun isNomsNumber(id: String?): Boolean = id?.matches(Regex("^[A-Z]\\d{4}[A-Z]{2}+$")) == true
 }

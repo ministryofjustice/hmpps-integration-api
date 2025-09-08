@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_STUBBED_CONTACT_EVENTS_DATA
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
@@ -27,6 +29,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.ContactEventStubGen
 )
 class GetContactEventsForPersonTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
+  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
   val nDeliusGateway: NDeliusGateway,
 ) : DescribeSpec(
     {
@@ -92,12 +95,14 @@ class GetContactEventsForPersonTest(
       }
 
       it("returns stubbed contact events") {
-        val response = nDeliusGateway.getStubbedContactEventsForPerson(deliusCrn, 1, 10)
+        whenever(featureFlagConfig.isEnabled(USE_STUBBED_CONTACT_EVENTS_DATA)).thenReturn(true)
+        val response = nDeliusGateway.getContactEventsForPerson(deliusCrn, 1, 10)
         response.data?.size.shouldBe(10)
       }
 
       it("returns a stubbed contact event") {
-        val response = nDeliusGateway.getStubbedContactEventForPerson(deliusCrn, 1)
+        whenever(featureFlagConfig.isEnabled(USE_STUBBED_CONTACT_EVENTS_DATA)).thenReturn(true)
+        val response = nDeliusGateway.getContactEventForPerson(deliusCrn, 1)
         response.data?.contactEventIdentifier.shouldBe(1)
       }
     },

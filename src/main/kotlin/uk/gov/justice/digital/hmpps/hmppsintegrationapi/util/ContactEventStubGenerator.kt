@@ -3,12 +3,11 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.util
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusContactEvent
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusContactEvents
 import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.ZonedDateTime
 import kotlin.math.ceil
 
 object ContactEventStubGenerator {
-  val EuropeLondon: ZoneId = ZoneId.of("Europe/London")
+  val baseDateTimeString = "2025-09-08T11:34:03.569"
+  val baseDateTime = LocalDateTime.parse(baseDateTimeString)
 
   fun generateNDeliusContactEvent(
     id: Long,
@@ -16,10 +15,10 @@ object ContactEventStubGenerator {
   ) = NDeliusContactEvent(
     contactEventIdentifier = id,
     contactType = "Contact Type for $id",
-    creationDateTime = ZonedDateTime.of(LocalDateTime.now().minusDays(id), EuropeLondon),
-    updateDateTime = ZonedDateTime.of(LocalDateTime.now().minusDays(id - 1), EuropeLondon),
+    creationDateTime = baseDateTime.minusDays(id),
+    updateDateTime = baseDateTime.minusDays(id - 1),
     offenderHmppsId = crn,
-    contactDateTime = ZonedDateTime.of(LocalDateTime.now().minusDays(id - 2), EuropeLondon),
+    contactDateTime = baseDateTime.minusDays(id - 2),
     outcome = "Outcome",
     area = "area",
     pdu = "PDU",

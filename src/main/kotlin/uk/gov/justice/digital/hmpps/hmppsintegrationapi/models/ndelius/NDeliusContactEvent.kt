@@ -1,11 +1,9 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.datatype.jsr310.ser.ZonedDateTimeSerializer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactEvent
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactEvents
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.ContactEventStubGenerator.EuropeLondon
-import java.time.ZonedDateTime
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 data class NDeliusContactEvents(
   val size: Int,
@@ -29,12 +27,9 @@ data class NDeliusContactEvents(
 data class NDeliusContactEvent(
   val contactEventIdentifier: Long,
   val offenderHmppsId: String,
-  @JsonSerialize(using = ZonedDateTimeSerializer::class)
-  val creationDateTime: ZonedDateTime,
-  @JsonSerialize(using = ZonedDateTimeSerializer::class)
-  val updateDateTime: ZonedDateTime,
-  @JsonSerialize(using = ZonedDateTimeSerializer::class)
-  val contactDateTime: ZonedDateTime,
+  val creationDateTime: LocalDateTime,
+  val updateDateTime: LocalDateTime,
+  val contactDateTime: LocalDateTime,
   val contactType: String,
   val outcome: String,
   val area: String,
@@ -46,13 +41,14 @@ data class NDeliusContactEvent(
   val description: String,
   val notes: String,
 ) {
-  fun toContactEvent() =
-    ContactEvent(
+  fun toContactEvent(): ContactEvent {
+    val europeLondon: ZoneId = ZoneId.of("Europe/London")
+    return ContactEvent(
       contactEventIdentifier,
       offenderHmppsId,
-      creationDateTime.toInstant().atZone(EuropeLondon).withZoneSameInstant(EuropeLondon),
-      updateDateTime.toInstant().atZone(EuropeLondon).withZoneSameInstant(EuropeLondon),
-      contactDateTime.toInstant().atZone(EuropeLondon).withZoneSameInstant(EuropeLondon),
+      creationDateTime.atZone(europeLondon).withZoneSameInstant(ZoneId.of("UTC")),
+      updateDateTime.atZone(europeLondon).withZoneSameInstant(ZoneId.of("UTC")),
+      contactDateTime.atZone(europeLondon).withZoneSameInstant(ZoneId.of("UTC")),
       contactType,
       outcome,
       area,
@@ -64,4 +60,5 @@ data class NDeliusContactEvent(
       description,
       notes,
     )
+  }
 }

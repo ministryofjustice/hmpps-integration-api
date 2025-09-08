@@ -10,7 +10,6 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
@@ -29,7 +28,6 @@ internal class ContactEventServiceTest(
   @MockitoBean val prisonApiGateway: PrisonApiGateway,
   @MockitoBean val personService: GetPersonService,
   @MockitoBean val deliusGateway: NDeliusGateway,
-  @MockitoBean val featureFlag: FeatureFlagConfig,
   private val contactEventService: ContactEventService,
 ) : DescribeSpec(
     {
@@ -44,7 +42,6 @@ internal class ContactEventServiceTest(
         Mockito.reset(prisonApiGateway)
         Mockito.reset(personService)
         Mockito.reset(deliusGateway)
-        Mockito.reset(featureFlag)
 
         whenever(personService.execute(hmppsId = hmppsId)).thenReturn(Response(person))
         whenever(deliusGateway.getContactEventsForPerson(crn, 1, 10))
@@ -77,7 +74,7 @@ internal class ContactEventServiceTest(
           assertThrows<EntityNotFoundException> {
             contactEventService.getContactEvents("notfound", 1, 10)
           }
-        exception.message.shouldBe("Contact Events not found for notfound")
+        exception.message.shouldBe("NDelius CRN not found for notfound")
       }
 
       it("contact events should return a list of errors if ndelius gateway service returns error") {
@@ -130,7 +127,7 @@ internal class ContactEventServiceTest(
           assertThrows<EntityNotFoundException> {
             contactEventService.getContactEvent("notfound", 1)
           }
-        exception.message.shouldBe("Contact Event not found for notfound with id 1")
+        exception.message.shouldBe("NDelius CRN not found for notfound with id 1")
       }
 
       it("contact event should return a list of errors if ndelius gateway service returns error") {
