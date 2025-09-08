@@ -187,6 +187,69 @@ class FiltersExtractionFilterTest {
   }
 
   @Test
+  fun `wildcard filter in prison filter results in null`() {
+    // Arrange
+    val mockRequest = mock(HttpServletRequest::class.java)
+    whenever(mockRequest.getAttribute("clientName")).thenReturn("consumer-name")
+
+    val mockResponse = mock(HttpServletResponse::class.java)
+    val mockChain = mock(FilterChain::class.java)
+
+    val expectedFilters = ConsumerFilters(prisons = null, caseNotes = listOf("consumer-filter", "role-filter"))
+    val testRole = Role(include = null, filters = ConsumerFilters(prisons = listOf("role-filter", "*"), caseNotes = listOf("role-filter")))
+    authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, filters = ConsumerFilters(prisons = listOf("consumer-filter"), caseNotes = listOf("consumer-filter")), roles = listOf("test-role")))
+    globalsConfig.roles = mapOf("test-role" to testRole)
+
+    // Act
+    filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)
+
+    // Assert
+    verify(mockRequest, times(1)).setAttribute("filters", expectedFilters)
+  }
+
+  @Test
+  fun `wildcard filter in caseNotes filter results in null`() {
+    // Arrange
+    val mockRequest = mock(HttpServletRequest::class.java)
+    whenever(mockRequest.getAttribute("clientName")).thenReturn("consumer-name")
+
+    val mockResponse = mock(HttpServletResponse::class.java)
+    val mockChain = mock(FilterChain::class.java)
+
+    val expectedFilters = ConsumerFilters(prisons = listOf("consumer-filter", "role-filter"), caseNotes = null)
+    val testRole = Role(include = null, filters = ConsumerFilters(prisons = listOf("role-filter"), caseNotes = listOf("role-filter", "*")))
+    authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, filters = ConsumerFilters(prisons = listOf("consumer-filter"), caseNotes = listOf("consumer-filter")), roles = listOf("test-role")))
+    globalsConfig.roles = mapOf("test-role" to testRole)
+
+    // Act
+    filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)
+
+    // Assert
+    verify(mockRequest, times(1)).setAttribute("filters", expectedFilters)
+  }
+
+  @Test
+  fun `wildcard filter in both filters results in null`() {
+    // Arrange
+    val mockRequest = mock(HttpServletRequest::class.java)
+    whenever(mockRequest.getAttribute("clientName")).thenReturn("consumer-name")
+
+    val mockResponse = mock(HttpServletResponse::class.java)
+    val mockChain = mock(FilterChain::class.java)
+
+    val expectedFilters = null
+    val testRole = Role(include = null, filters = ConsumerFilters(prisons = listOf("role-filter", "*"), caseNotes = listOf("role-filter", "*")))
+    authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, filters = ConsumerFilters(prisons = listOf("consumer-filter"), caseNotes = listOf("consumer-filter")), roles = listOf("test-role")))
+    globalsConfig.roles = mapOf("test-role" to testRole)
+
+    // Act
+    filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)
+
+    // Assert
+    verify(mockRequest, times(1)).setAttribute("filters", expectedFilters)
+  }
+
+  @Test
   fun `tolerates when no consumer config values matched with clientName`() {
     // Arrange
     val mockRequest = mock(HttpServletRequest::class.java)
