@@ -123,8 +123,8 @@ const get_endpoints = [
   `/v1/status`,
   `/v1/persons/${hmppsId}/education/san/plan-creation-schedule`,
   `/v1/persons/${alternativeHmppsId}/education/san/review-schedule`,
-  `/v1/persons/${hmppsId}/contact-events`,
-  `/v1/persons/${hmppsId}/contact-events/${contactEventId}`,
+  `/v1/persons/${deliusCrn}/contact-events`,
+  `/v1/persons/${deliusCrn}/contact-events/${contactEventId}`,
 ];
 
 const broken_endpoints = []
