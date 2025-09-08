@@ -6,7 +6,7 @@
       "name": "HMPPS Digital Studio",
       "email": "feedback@digital.justice.gov.uk"
     },
-    "version": "2025-06-30.125.ee9bfaf"
+    "version": "2025-07-23.134.3ab7065"
   },
   "servers": [
     {
@@ -711,7 +711,7 @@
         "properties": {
           "foodAllergies": {
             "type": "array",
-            "description": "The list of food allergies the prisoner has with an optional comment text.  Valid `ReferenceDataCode.id` options for `foodAllergies` can be retrieved by querying `GET /reference-data/domains/FOOD_ALLERGY`.",
+            "description": "The list of food allergies the prisoner has with an optional comment text. Valid `ReferenceDataCode.id` options for `foodAllergies` can be retrieved by querying `GET /reference-data/domains/FOOD_ALLERGY`.",
             "example": [
               {
                 "value": "FOOD_ALLERGY_EGG"
@@ -727,7 +727,7 @@
           },
           "medicalDietaryRequirements": {
             "type": "array",
-            "description": "The list of medical dietary requirements the prisoner has with an optional comment text.  Valid `ReferenceDataCode.id` options for `medicalDietaryRequirements` can be retrieved by querying `GET /reference-data/domains/MEDICAL_DIET`.",
+            "description": "The list of medical dietary requirements the prisoner has with an optional comment text. Valid `ReferenceDataCode.id` options for `medicalDietaryRequirements` can be retrieved by querying `GET /reference-data/domains/MEDICAL_DIET`.",
             "example": [
               {
                 "value": "MEDICAL_DIET_LOW_CHOLESTEROL"
@@ -743,7 +743,7 @@
           },
           "personalisedDietaryRequirements": {
             "type": "array",
-            "description": "The list of personalised dietary requirements the prisoner has with an optional comment text.  Valid `ReferenceDataCode.id` options for `personalisedDietaryRequirements` can be retrieved by querying `GET /reference-data/domains/PERSONALISED_DIET`.",
+            "description": "The list of personalised dietary requirements the prisoner has with an optional comment text. Valid `ReferenceDataCode.id` options for `personalisedDietaryRequirements` can be retrieved by querying `GET /reference-data/domains/PERSONALISED_DIET`.",
             "example": [
               {
                 "value": "PERSONALISED_DIET_VEGAN"
@@ -1149,22 +1149,22 @@
         "type": "oauth2",
         "flows": {
           "clientCredentials": {
-            "tokenUrl": "https://sign-in-dev.hmpps.service.justice.gov.uk/auth/oauth/token",
+            "tokenUrl": "https://sign-in.hmpps.service.justice.gov.uk/auth/oauth/token",
             "scopes": {
               "read": "Allows read of data",
               "write": "Allows write of data"
             }
           },
           "authorizationCode": {
-            "authorizationUrl": "https://sign-in-dev.hmpps.service.justice.gov.uk/auth/oauth/authorize",
-            "tokenUrl": "https://sign-in-dev.hmpps.service.justice.gov.uk/auth/oauth/token",
+            "authorizationUrl": "https://sign-in.hmpps.service.justice.gov.uk/auth/oauth/authorize",
+            "tokenUrl": "https://sign-in.hmpps.service.justice.gov.uk/auth/oauth/token",
             "scopes": {
               "read": "Allows read of data",
               "write": "Allows write of data"
             }
           }
         },
-        "openIdConnectUrl": "https://sign-in-dev.hmpps.service.justice.gov.uk/auth/.well-known/openid-configuration"
+        "openIdConnectUrl": "https://sign-in.hmpps.service.justice.gov.uk/auth/.well-known/openid-configuration"
       }
     }
   }

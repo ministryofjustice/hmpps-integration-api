@@ -362,8 +362,7 @@ internal class PersonControllerTest(
                      "currentExclusion": true,
                      "exclusionMessage": "An exclusion exists"
                   }
-               },
-               "errors":[]
+               }
             }
             """.removeWhitespaceAndNewlines(),
           )
@@ -421,8 +420,7 @@ internal class PersonControllerTest(
                         "currentExclusion": true,
                         "exclusionMessage": "An exclusion exists"
                     }
-                },
-                "errors":[]
+                }
             }
             """.asResponseTrimmed()
 
@@ -452,8 +450,7 @@ internal class PersonControllerTest(
                         "exclusionMessage": "**REDACTED**"
                     },
                     "probationOffenderSearch": null
-                },
-                "errors":[]
+                }
             }
             """.asResponseTrimmed()
 
