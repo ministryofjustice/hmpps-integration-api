@@ -34,6 +34,7 @@ const imageId = "1988315";
 const locationIdKey = "MKI-A";
 const activityId = 1162
 const scheduleId = 518
+const contactEventId = 500
 const today = new Date();
 const year = today.getFullYear();
 const month = (today.getMonth() + 1).toString().padStart(2, '0');
@@ -121,7 +122,9 @@ const get_endpoints = [
   `/v1/activities/schedule/${scheduleId}/suitability-criteria`,
   `/v1/status`,
   `/v1/persons/${hmppsId}/education/san/plan-creation-schedule`,
-  `/v1/persons/${alternativeHmppsId}/education/san/review-schedule`
+  `/v1/persons/${alternativeHmppsId}/education/san/review-schedule`,
+  `/v1/persons/${hmppsId}/contact-events`,
+  `/v1/persons/${hmppsId}/contact-events/${contactEventId}`,
 ];
 
 const broken_endpoints = []

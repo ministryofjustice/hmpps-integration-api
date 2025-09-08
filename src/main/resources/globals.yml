@@ -169,6 +169,8 @@ globals:
         - "/v1/persons/.*/education/san/review-schedule"
         - "/v1/persons/.*/education/status"
         - "/v1/persons/.*/education/aln-assessment"
+        - "/v1/persons/.*/contact-events"
+        - "/v1/persons/.*/contact-events/.*"
     full-access:
       include:
         # Provides access to all endpoints
@@ -236,6 +238,8 @@ globals:
         - "/v1/persons/.*/education/san/review-schedule"
         - "/v1/persons/.*/education/status"
         - "/v1/persons/.*/education/aln-assessment"
+        - "/v1/persons/.*/contact-events"
+        - "/v1/persons/.*/contact-events/.*"
       filters:
         prisons:
           - "*"
@@ -275,5 +279,7 @@ globals:
         - "/v1/persons/.*/risks/categories"
         - "/v1/persons/.*/person-responsible-officer"
         - "/v1/persons/.*/risk-management-plan"
+        - "/v1/persons/.*/contact-events"
+        - "/v1/persons/.*/contact-events/.*"
         - "/v1/hmpps/reference-data"
         - "/v1/status"

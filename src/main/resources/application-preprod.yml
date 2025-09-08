@@ -60,6 +60,8 @@ feature-flag:
   simple-redaction: false
   education-trigger-enabled: false
   education-aln-trigger-enabled: false
+  use-contact-events-endpoint: false
+  use-stubbed-contact-events-data: false
 
 authorisation:
   consumers:
