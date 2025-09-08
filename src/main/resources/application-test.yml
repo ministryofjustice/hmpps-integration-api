@@ -97,7 +97,7 @@ authorisation:
   consumers:
     automated-test-client:
       roles:
-        - "full-access"
+        - "all-endpoints-and-queues"
     config-v2-test:
       include:
         - "/v2/config/authorisation"

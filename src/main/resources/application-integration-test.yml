@@ -101,7 +101,7 @@ authorisation:
   consumers:
     automated-test-client:
       roles:
-        - "full-access"
+        - "all-endpoints-and-queues"
       filters:
     config-v2-test:
       include:

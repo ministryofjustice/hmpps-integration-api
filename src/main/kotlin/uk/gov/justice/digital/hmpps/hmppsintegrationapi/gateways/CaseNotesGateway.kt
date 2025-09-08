@@ -32,7 +32,11 @@ class CaseNotesGateway(
         occurredTo = filter.endDate?.let { it.toString() + "Z" },
         page = filter.page,
         size = filter.size,
-        typeSubTypes = filter.caseNoteTypes?.map { CNTypeSubType(it) },
+        typeSubTypes =
+          filter.caseNoteTypes
+            ?.takeIf {
+              it.none { type -> type == "*" }
+            }?.map { CNTypeSubType(it) },
       )
 
     val result =
