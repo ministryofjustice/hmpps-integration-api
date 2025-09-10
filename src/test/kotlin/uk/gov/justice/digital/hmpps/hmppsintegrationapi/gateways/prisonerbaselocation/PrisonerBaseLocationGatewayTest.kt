@@ -18,7 +18,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMoc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.LastMovementType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 import java.io.File
 import java.time.LocalDate
 
@@ -34,72 +33,46 @@ class PrisonerBaseLocationGatewayTest(
   private val prisonerBaseLocationGateway: PrisonerBaseLocationGateway,
 ) : DescribeSpec(
     {
-      val knownNomisNumber = "A1234BC"
-      val unknownNomisNumnber = "Z9876YX"
-
-      val prisonerOffenderSearchApiMockServer = ApiMockServer.create(UpstreamApi.PRISONER_OFFENDER_SEARCH)
-
-      fun mockPrisoner(
-        nomisNumber: String,
-        inOutStatus: String = "IN",
-        prisonId: String = "MDI",
-        lastPrisonId: String = "MDI",
-        lastMovementTypeCode: String = "ADM",
-        receptionDate: String = "2023-05-01",
-      ) = POSPrisoner(
-        prisonerNumber = nomisNumber,
-        inOutStatus = inOutStatus,
-        prisonId = prisonId,
-        lastPrisonId = lastPrisonId,
-        lastMovementTypeCode = lastMovementTypeCode,
-        receptionDate = receptionDate,
-        firstName = "First",
-        lastName = "Last",
-        youthOffender = false,
-      )
-
       fun readFixtures(fileName: String): String = File("$FIXTURES_DIR/$fileName").readText()
 
-      val knownPrisonerInOutStatus = "IN"
-      val knownPrisonerLastMovementTypeCode = "ADM"
-      val knownPrisonerLastMovementType = LastMovementType.ADMISSION
-      val knownPrisoner = mockPrisoner(nomisNumber = knownNomisNumber, inOutStatus = knownPrisonerInOutStatus, lastMovementTypeCode = knownPrisonerLastMovementTypeCode)
-      val knownPrisonerResponse = readFixtures("PrisonerByIdResponse.json")
-      val unknownPrisonerResponse = readFixtures("PrisonerByIdNotFoundResponse.json")
+      val knownNomisNumber = "A1234BC"
+      val unknownNomisNumber = "Z9876YX"
+      val prisonerBaseLocationApiMockServer = ApiMockServer.create(UpstreamApi.PRISONER_BASE_LOCATION)
+      val knownPrisonerResponse = readFixtures("PrisonerBaseLocationResponse.json")
 
       beforeTest {
-        prisonerOffenderSearchApiMockServer.start()
+        prisonerBaseLocationApiMockServer.start()
       }
 
       beforeEach {
-        whenever(hmppsAuthGateway.getClientToken("Prisoner Offender Search")).thenReturn(HmppsAuthMockServer.TOKEN)
+        whenever(hmppsAuthGateway.getClientToken("Prisoner Base Location")).thenReturn(HmppsAuthMockServer.TOKEN)
 
-        with(prisonerOffenderSearchApiMockServer) {
+        with(prisonerBaseLocationApiMockServer) {
           stubForGet(
-            path = "/prisoner/$unknownNomisNumnber",
+            path = "/v1/persons/$unknownNomisNumber/prisoner-base-location",
             status = HttpStatus.NOT_FOUND,
-            body = unknownPrisonerResponse,
+            body = "",
           )
 
           stubForGet(
-            path = "/prisoner/$knownNomisNumber",
+            path = "/v1/persons/$knownNomisNumber/prisoner-base-location",
             body = knownPrisonerResponse,
           )
         }
       }
 
       afterTest {
-        prisonerOffenderSearchApiMockServer.stop()
-        prisonerOffenderSearchApiMockServer.resetValidator()
+        prisonerBaseLocationApiMockServer.stop()
+        prisonerBaseLocationApiMockServer.resetValidator()
       }
 
       describe("#getPrisonerBaseLocation()") {
         it("does not return prisoner base location for unknown prisoner") {
-          val response = prisonerBaseLocationGateway.getPrisonerBaseLocation(unknownNomisNumnber)
+          val response = prisonerBaseLocationGateway.getPrisonerBaseLocation(unknownNomisNumber)
 
           response.data shouldBe null
           response.errors.firstOrNull().shouldNotBeNull().let {
-            it.causedBy shouldBe UpstreamApi.PRISONER_OFFENDER_SEARCH
+            it.causedBy shouldBe UpstreamApi.PRISONER_BASE_LOCATION
             it.type shouldBe UpstreamApiError.Type.ENTITY_NOT_FOUND
           }
         }
@@ -109,14 +82,14 @@ class PrisonerBaseLocationGatewayTest(
 
           response.errors.shouldBeEmpty()
           response.data.shouldNotBeNull().let {
-            it.inPrison shouldBe (knownPrisonerInOutStatus == knownPrisoner.inOutStatus)
-            it.prisonId shouldBe knownPrisoner.prisonId
-            it.lastPrisonId shouldBe knownPrisoner.lastPrisonId
-            it.lastMovementType shouldBe knownPrisonerLastMovementType
-            it.receptionDate shouldBe knownPrisoner.receptionDate?.let { LocalDate.parse(it) }
+            it.inPrison shouldBe true
+            it.prisonId shouldBe "MDI"
+            it.lastPrisonId shouldBe "MDI"
+            it.lastMovementType shouldBe LastMovementType.ADMISSION
+            it.receptionDate shouldBe LocalDate.parse("2025-04-01")
           }
 
-          prisonerOffenderSearchApiMockServer.assertValidationPassed()
+          prisonerBaseLocationApiMockServer.assertValidationPassed()
         }
       }
     },

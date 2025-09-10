@@ -12,15 +12,16 @@ ADD https://ministryofjustice.github.io/hmpps-probation-integration-services/tec
 RUN swagger-cli bundle -r -o /prismMocks/adjudications.json /tmp/adjudications.json
 
 # new files from this point on need to start with an x- followed by the port number:
-RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/x4021-non-associations.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/adjudications.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/assess-risks-and-needs.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/case-notes.json
-RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/x4022-personal-relationships.json
-RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/x4023-manage-prison-visits.json
-RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/x4024-incentives.json
-RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/x4025-alerts-api.json
-RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/x4026-locations-inside-prison-api.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/ndelius.json
+RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/x4018-non-associations.json
+RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/x4019-personal-relationships.json
+RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/x4020-manage-prison-visits.json
+RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/x4021-incentives.json
+RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/x4022-alerts-api.json
+RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/x4023-locations-inside-prison-api.json
+RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/x4024-prisoner-base-location-api.json
 
 ENTRYPOINT sh -c 'port=4010; for file in $(ls /prismMocks/*.json | sort); do node dist/index.js mock -p $port -h 0.0.0.0 $file & port=$((port + 1)); done; wait'

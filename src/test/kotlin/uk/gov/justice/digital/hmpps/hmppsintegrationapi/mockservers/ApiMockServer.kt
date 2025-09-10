@@ -48,6 +48,7 @@ class ApiMockServer(
           UpstreamApi.PRISONER_ALERTS -> ApiMockServerConfig(4009)
           UpstreamApi.LOCATIONS_INSIDE_PRISON -> ApiMockServerConfig(4000)
           UpstreamApi.SAN -> ApiMockServerConfig(4200)
+          UpstreamApi.PRISONER_BASE_LOCATION -> ApiMockServerConfig(3999)
         }
 
       val wireMockConfig = WireMockConfiguration.wireMockConfig().port(apiMockerServerConfig.port)
