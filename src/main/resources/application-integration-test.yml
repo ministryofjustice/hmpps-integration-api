@@ -107,6 +107,9 @@ authorisation:
       roles:
         - "full-access"
       filters:
+    automated-test-client-no-filters:
+      roles:
+        - "full-access"
     config-v2-test:
       include:
         - "/v2/config/authorisation"
