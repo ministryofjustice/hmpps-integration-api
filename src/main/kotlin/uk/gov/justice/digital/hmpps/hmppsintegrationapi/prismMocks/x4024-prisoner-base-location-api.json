@@ -18,9 +18,7 @@
   "paths": {
     "/v1/persons/{nomisNumber}/prisoner-base-location": {
       "get": {
-        "tags": [
-          "Base Location Service"
-        ],
+        "tags": ["Base Location Service"],
         "summary": "Returns prisoner's base location",
         "description": "Requires role ROLE_PRISONER_BASE_LOCATION__LOCATIONS_RO",
         "operationId": "getPrisonerBaseLocation",
@@ -113,9 +111,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "status"
-        ]
+        "required": ["status"]
       },
       "PrisonerBaseLocation": {
         "type": "object",
@@ -137,13 +133,7 @@
           "lastMovementType": {
             "type": "string",
             "description": "Last movement type",
-            "enum": [
-              "Admission",
-              "Release",
-              "Transfers",
-              "Court",
-              "Temporary Absence"
-            ],
+            "enum": ["Admission", "Release", "Transfers", "Court", "Temporary Absence"],
             "example": "Admission"
           },
           "receptionDate": {
