@@ -10,12 +10,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerBas
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 
-/**
- * <p><This unreal gateway is pending for refactoring /p>
- *
- * - Actual Gateway shall be created in next enhancement, which pull out logic to an API of another Domain Service.
- * - All business logic shall be implemented inside (to be pulled out later), as the tactical solution
- */
 @Component
 class PrisonerBaseLocationGateway(
   @Value("\${services.prisoner-base-location.base-url}") baseUrl: String,
