@@ -233,14 +233,29 @@ const postAllocationData = JSON.stringify({
   testEvent: "TestEvent"
 })
 
-export default function ()  {
-  const params = {
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': __ENV.FULL_ACCESS_API_KEY,
-    },
-  };
+function verify_get_endpoints(params) {
+  for (const endpoint of get_endpoints) {
+    const res = http.get(`${baseUrl}${endpoint}`, params);
+    if (!check(res, {
+      [`GET ${endpoint} returns 200`]: (r) => r.status === 200,
+    })) {
+      exec.test.fail(`${endpoint} caused the test to fail`)
+    }
+  }
+}
 
+function verify_broken_endpoints(params) {
+  for (const endpoint of broken_endpoints) {
+    const res = http.get(`${baseUrl}${endpoint}`, params);
+    if (!check(res, {
+      [`GET ${endpoint} returns error`]: (r) => r.status >= 400,
+    })) {
+      exec.test.fail(`${endpoint} caused the test to fail`)
+    }
+  }
+}
+
+function verify_post_endpoints(params) {
   const postEducationStatusRes = http.post(`${baseUrl}${postEducationUpdateEndpoint}`, postEducationUpdateRequest, params);
   if (!check(postEducationStatusRes, {
     'POST /v1/persons/${hmppsId}/education/status returns 201': (r) => r.status === 201,
@@ -296,22 +311,22 @@ export default function ()  {
   })) {
     exec.test.fail(`${postAllocationEndpoint} caused the test to fail`)
   }
+}
 
-  for (const endpoint of get_endpoints) {
-    const res = http.get(`${baseUrl}${endpoint}`, params);
-    if (!check(res, {
-      [`GET ${endpoint} returns 200`]: (r) => r.status === 200,
-    })) {
-      exec.test.fail(`${endpoint} caused the test to fail`)
-    }
-  }
+export default function ()  {
+  const params = {
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': __ENV.FULL_ACCESS_API_KEY,
+    },
+  };
 
-  for (const endpoint of broken_endpoints) {
-    const res = http.get(`${baseUrl}${endpoint}`, params);
-    if (!check(res, {
-      [`GET ${endpoint} returns error`]: (r) => r.status >= 400,
-    })) {
-      exec.test.fail(`${endpoint} caused the test to fail`)
-    }
-  }
+  console.log(`Configured server domain: ${__ENV.DOMAIN}`)
+  console.log(`Configured hmppsId: ${__ENV.HMPPSID}`)
+
+  verify_post_endpoints(params);
+
+  verify_get_endpoints(params);
+
+  verify_broken_endpoints(params);
 };
