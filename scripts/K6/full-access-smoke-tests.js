@@ -313,6 +313,12 @@ function verify_post_endpoints(params) {
   }
 }
 
+function verify_get_person_with_env_vars(params) {
+  const url = `https://${__ENV.DOMAIN}/v1/persons/${__ENV.HMPPSID}`
+  const res = http.get(url, params);
+  console.log(`${url} -> ${res.status}`)
+}
+
 export default function ()  {
   const params = {
     headers: {
@@ -329,4 +335,6 @@ export default function ()  {
   verify_get_endpoints(params);
 
   verify_broken_endpoints(params);
+
+  verify_get_person_with_env_vars(params);
 };
