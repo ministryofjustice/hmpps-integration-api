@@ -18,5 +18,5 @@ data class ConsumerFilters(
     return false
   }
 
-  fun hasPrisonFilter(): Boolean = this.prisons?.isNotEmpty() == true
+  fun hasPrisonFilter(): Boolean = this.prisons != null
 }

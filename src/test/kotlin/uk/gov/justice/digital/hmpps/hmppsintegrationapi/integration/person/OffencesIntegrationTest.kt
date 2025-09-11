@@ -33,6 +33,19 @@ class OffencesIntegrationTest : IntegrationTestBase() {
   }
 
   @Test
+  fun `returns not found (404) for a person with empty prison filter`() {
+    /* e.g.
+    no-prisons:
+      roles:
+        - "full-access"
+      filters:
+        prisons:
+     */
+    callApiWithCN("$basePath/$nomsId/offences", cn = "no-prisons")
+      .andExpect(status().isNotFound)
+  }
+
+  @Test
   fun `returns a 400 if the hmppsId is invalid`() {
     callApiWithCN("$basePath/$invalidNomsId/offences", cn = "specific-prison")
       .andExpect(status().isBadRequest)

@@ -24,7 +24,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbati
   initializers = [ConfigDataApplicationContextInitializer::class],
   classes = [GetOffencesForPersonService::class],
 )
-internal class GetOffencesForPersonServiceEmptyFiltersTest(
+internal class GetOffencesForPersonServiceNullPrisonFilterTest(
   @MockitoBean val prisonApiGateway: PrisonApiGateway,
   @MockitoBean val getPersonService: GetPersonService,
   @MockitoBean val nDeliusGateway: NDeliusGateway,
@@ -46,7 +46,7 @@ internal class GetOffencesForPersonServiceEmptyFiltersTest(
       val nomisNumber = personFromProbationOffenderSearch.identifiers.nomisNumber!!
       val deliusCrn = personFromProbationOffenderSearch.identifiers.deliusCrn!!
       val hmppsId = nomisNumber
-      val filters = ConsumerFilters(emptyList())
+      val filters = ConsumerFilters(null)
 
       beforeEach {
         Mockito.reset(getPersonService)
