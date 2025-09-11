@@ -1,29 +1,50 @@
 const http = require('k6/http');
-const { check } = require('k6');
+const { check, fail } = require('k6');
 import encoding from 'k6/encoding';
 import exec from 'k6/execution';
 
-const cert = encoding.b64decode(__ENV.FULL_ACCESS_CERT, 'std', 's');
-const key = encoding.b64decode(__ENV.FULL_ACCESS_KEY, 'std', 's');
+/***********
+ To run this script locally, make sure the following environment variables are set:-
+
+ - DOMAIN = the fully qualified DNS name of the API server
+ - HMPPSID = the primary hmppsId to use for testing
+ - PROFILE = which testing profile to use (MAIN | LAO | NOPERMS | NOCERT)
+ - FULL_ACCESS_API_KEY = API key that has full access to the API
+ - FULL_ACCESS_CERT = certificate (either base 64 encoded or name of a file)
+ - FULL_ACCESS_KEY = private key for certificate (either base 64 encoded or name of a file)
+***********/
+
+const api_key = __ENV.FULL_ACCESS_API_KEY;
+const domain = __ENV.DOMAIN;
+const profile = __ENV.PROFILE;
+
+const cert = __ENV.FULL_ACCESS_CERT.includes(".pem") ?
+  open(__ENV.FULL_ACCESS_CERT) :
+  encoding.b64decode(__ENV.FULL_ACCESS_CERT, 'std', 's');
+
+const key = __ENV.FULL_ACCESS_KEY.includes(".key") ?
+  open(__ENV.FULL_ACCESS_KEY) :
+  encoding.b64decode(__ENV.FULL_ACCESS_KEY, 'std', 's');
+
 
 export const options = {
   tlsAuth: [
     {
-      domains: ["dev.integration-api.hmpps.service.justice.gov.uk"],
       cert,
       key,
     },
   ],
 };
 
-const baseUrl = "https://dev.integration-api.hmpps.service.justice.gov.uk";
+const baseUrl = `https://${domain}`;
+
 const hmppsId = "A8451DY";
+const primaryHmppsId = __ENV.HMPPSID;
 const hmppsIdWithLaoContext = "A4433DZ";
 const visitsHmppsId = "A8452DY"
 const alternativeHmppsId = "G6333VK";
 const plpHmppsId = "A5502DZ";
 const attendancesHmppsId = "G4328GK";
-const deliusCrn = "X725642";
 const risksCrn = "X756352";
 const prisonId = "MKI";
 const alternativeprisonId = "RSI";
@@ -80,7 +101,7 @@ const get_endpoints = [
   `/v1/prison/${alternativeprisonId}/prison-pay-bands`,
   `/v1/contacts/${contactId}`,
   `/v1/persons?first_name=john`,
-  `/v1/persons/${deliusCrn}`,
+  `/v1/persons/${primaryHmppsId}`,
   `/v1/persons/${hmppsIdWithLaoContext}/licences/conditions`,
   `/v1/persons/${hmppsId}/needs`,
   `/v1/persons/${hmppsIdWithLaoContext}/risks/mappadetail`,
@@ -98,8 +119,8 @@ const get_endpoints = [
   `/v1/visit/${visitReference}`,
   `/v1/visit/id/by-client-ref/${clientVisitReference}`,
   `/v1/prison/${prisonId}/visit/search?visitStatus=BOOKED`,
-  `/v1/persons/${deliusCrn}/protected-characteristics`,
-  `/v1/epf/person-details/${deliusCrn}/1`,
+  `/v1/persons/${primaryHmppsId}/protected-characteristics`,
+  `/v1/epf/person-details/${primaryHmppsId}/1`,
   `/v1/persons/${risksCrn}/risk-management-plan`,
   `/v1/persons/${alternativeHmppsId}/person-responsible-officer`,
   `/v1/persons/${alternativeHmppsId}/visitor/${contactId}/restrictions`,
@@ -123,8 +144,8 @@ const get_endpoints = [
   `/v1/status`,
   `/v1/persons/${hmppsId}/education/san/plan-creation-schedule`,
   `/v1/persons/${alternativeHmppsId}/education/san/review-schedule`,
-  `/v1/persons/${deliusCrn}/contact-events`,
-  `/v1/persons/${deliusCrn}/contact-events/${contactEventId}`,
+  `/v1/persons/${primaryHmppsId}/contact-events`,
+  `/v1/persons/${primaryHmppsId}/contact-events/${contactEventId}`,
 ];
 
 const broken_endpoints = []
@@ -239,7 +260,7 @@ function verify_get_endpoints(params) {
     if (!check(res, {
       [`GET ${endpoint} returns 200`]: (r) => r.status === 200,
     })) {
-      exec.test.fail(`${endpoint} caused the test to fail`)
+      fail(`${endpoint} caused the test to fail`)
     }
   }
 }
@@ -250,7 +271,7 @@ function verify_broken_endpoints(params) {
     if (!check(res, {
       [`GET ${endpoint} returns error`]: (r) => r.status >= 400,
     })) {
-      exec.test.fail(`${endpoint} caused the test to fail`)
+      fail(`${endpoint} caused the test to fail`)
     }
   }
 }
@@ -260,7 +281,7 @@ function verify_post_endpoints(params) {
   if (!check(postEducationStatusRes, {
     'POST /v1/persons/${hmppsId}/education/status returns 201': (r) => r.status === 201,
   })) {
-    exec.test.fail(`${postEducationUpdateEndpoint} caused the test to fail`)
+    fail(`${postEducationUpdateEndpoint} caused the test to fail`)
   }
 
   const postEducationALNRes = http.post(`${baseUrl}${postEducationALNUpdateEndpoint}`, postEducationALNUpdateRequest, params);
@@ -313,22 +334,58 @@ function verify_post_endpoints(params) {
   }
 }
 
-function verify_get_person_with_env_vars(params) {
-  const url = `https://${__ENV.DOMAIN}/v1/persons/${__ENV.HMPPSID}`
-  const res = http.get(url, params);
-  console.log(`${url} -> ${res.status}`)
+/**
+ * Make a GET request to the API and validate that the http response code indicates syccess.
+ * @returns the http response object
+ */
+function validate_get_request(path, params) {
+  const res = http.get(`${baseUrl}${path}`, params);
+  check(res, {
+    [`GET ${path} successful`]: (r) => r.status < 400,
+  });
+  return res;
+}
+
+function structured_verification_test(hmppsId, params) {
+  let res = validate_get_request("/v1/status", params);
+  if (res.status >= 400) {
+    return
+  }
+
+  res = validate_get_request(`/v1/persons/${hmppsId}`, params);
+
+  if (res.status >= 400) {
+    return
+  }
+
+  let probationData = res.json()["data"]["probationOffenderSearch"];
+  let crn = probationData["identifiers"]["deliusCrn"];
+
+  check(crn, {
+    [`CRN identified`]: () => crn != null,
+  })
+  check(probationData["lastName"], {
+    [`Last name identified`]: (name) => name != null,
+  })
+
+  let nomisNumber = res.json()["data"]["prisonerOffenderSearch"]["identifiers"]["nomisNumber"];
+
+  check(nomisNumber, {
+    [`Prisoner number identified`]: () => nomisNumber != null,
+  })
+
+  validate_get_request(`/v1/prison/prisoners/${nomisNumber}`, params)
 }
 
 export default function ()  {
   const params = {
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': __ENV.FULL_ACCESS_API_KEY,
+      'x-api-key': api_key,
     },
   };
 
-  console.log(`Configured server domain: ${__ENV.DOMAIN}`)
-  console.log(`Configured hmppsId: ${__ENV.HMPPSID}`)
+  console.log(`Using profile: ${profile} with base url: ${baseUrl}`)
 
   verify_post_endpoints(params);
 
@@ -336,5 +393,7 @@ export default function ()  {
 
   verify_broken_endpoints(params);
 
-  verify_get_person_with_env_vars(params);
+  if (profile === "MAIN") {
+    structured_verification_test(primaryHmppsId, params);
+  }
 };
