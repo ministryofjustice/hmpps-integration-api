@@ -103,7 +103,7 @@ authorisation:
   consumers:
     automated-test-client:
       roles:
-        - "all-endpoints-and-queues"
+        - "full-access"
       filters:
     automated-test-client-no-filters:
       roles:
@@ -120,19 +120,22 @@ authorisation:
       filters:
     specific-prison:
       roles:
-        - "all-endpoints-and-queues"
+        - "all-endpoints"
+        - "all-queues"
       filters:
         prisons:
           - MDI
     limited-prisons:
       roles:
-        - "all-endpoints-and-queues"
+        - "all-endpoints"
+        - "all-queues"
       filters:
         prisons:
           - ABC
     no-prisons:
       roles:
-        - "all-endpoints-and-queues"
+        - "all-endpoints"
+        - "all-queues"
       filters:
         prisons:
     private-prison-only:
@@ -142,7 +145,8 @@ authorisation:
       filters:
     limited-case-notes:
       roles:
-        - "all-endpoints-and-queues"
+        - "all-endpoints"
+        - "all-queues"
       filters:
         case-notes:
           - "CAB"

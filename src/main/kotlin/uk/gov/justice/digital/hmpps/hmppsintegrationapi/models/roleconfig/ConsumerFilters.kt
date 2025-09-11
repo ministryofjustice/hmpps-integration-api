@@ -23,4 +23,8 @@ data class ConsumerFilters(
   }
 
   fun hasPrisonFilter(): Boolean = this.prisons != null
+
+  fun hasCaseNotesFilter(): Boolean = this.caseNotes != null
+
+  fun hasFilters(): Boolean = hasPrisonFilter() || hasCaseNotesFilter()
 }

@@ -52,23 +52,33 @@ private fun buildAggregatedFilters(
   consumerFilters: ConsumerFilters?,
   roles: List<Role>?,
 ): ConsumerFilters? {
-  if (roles == null || roles.isEmpty() || (roles.all { it.filters == null })) return consumerFilters
-
   val consumerPseudoRole = Role(include = null, filters = consumerFilters)
+  val allRoles: List<Role> = listOf(consumerPseudoRole) + (roles ?: emptyList())
+
+  if (allRoles.all { it.filters?.hasFilters() == false }) {
+    return null
+  }
 
   val prisons =
-    (listOf(consumerPseudoRole) + roles)
-      .takeIf { role -> role.any { it.filters?.prisons != null } }
-      ?.mapNotNull { it.filters?.prisons }
-      ?.flatten()
-      ?.distinct()
+    getDistinctValuesIfNotWildcarded(
+      allRoles
+        .filter { it.filters?.hasPrisonFilter() == true }
+        .mapNotNull { it.filters?.prisons },
+    )
 
   val caseNotes =
-    (listOf(consumerPseudoRole) + roles)
-      .takeIf { role -> role.any { it.filters?.caseNotes != null } }
-      ?.mapNotNull { it.filters?.caseNotes }
-      ?.flatten()
-      ?.distinct()
+    getDistinctValuesIfNotWildcarded(
+      allRoles
+        .filter { it.filters?.hasCaseNotesFilter() == true }
+        .mapNotNull { it.filters?.caseNotes },
+    )
 
   return if (caseNotes == null && prisons == null) null else ConsumerFilters(prisons, caseNotes)
 }
+
+private fun getDistinctValuesIfNotWildcarded(allValues: List<List<String>>): List<String>? =
+  if (allValues.isEmpty()) {
+    null
+  } else {
+    allValues.flatten().distinct().takeIf { it.none { value -> value == "*" } }
+  }

@@ -99,7 +99,7 @@ authorisation:
   consumers:
     automated-test-client:
       roles:
-        - "all-endpoints-and-queues"
+        - "full-access"
     config-v2-test:
       include:
         - "/v2/config/authorisation"
@@ -113,13 +113,15 @@ authorisation:
       roles:
     limited-prisons:
       roles:
-        - "all-endpoints-and-queues"
+        - "all-endpoints"
+        - "all-queues"
       filters:
         prisons:
           - XYZ
     empty-prisons:
       roles:
-        - "all-endpoints-and-queues"
+        - "all-endpoints"
+        - "all-queues"
       filters:
         prisons:
     private-prison-only:
@@ -129,7 +131,8 @@ authorisation:
       filters:
     limited-case-notes:
       roles:
-        - "all-endpoints-and-queues"
+        - "all-endpoints"
+        - "all-queues"
       filters:
         case-notes:
           - "CAB"
