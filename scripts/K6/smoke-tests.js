@@ -34,6 +34,13 @@ export const options = {
   ],
 };
 
+const httpParams = {
+  headers: {
+    'Content-Type': 'application/json',
+    'x-api-key': api_key,
+  },
+};
+
 const baseUrl = `https://${domain}`;
 
 const hmppsId = "A8451DY";
@@ -333,9 +340,9 @@ function read_api_key(profile) {
   }
 }
 
-function verify_get_endpoints(params) {
+function verify_get_endpoints() {
   for (const endpoint of get_endpoints) {
-    const res = http.get(`${baseUrl}${endpoint}`, params);
+    const res = http.get(`${baseUrl}${endpoint}`, httpParams);
     if (!check(res, {
       [`GET ${endpoint} returns 200`]: (r) => r.status === 200,
     })) {
@@ -344,9 +351,9 @@ function verify_get_endpoints(params) {
   }
 }
 
-function verify_broken_endpoints(params) {
+function verify_broken_endpoints() {
   for (const endpoint of broken_endpoints) {
-    const res = http.get(`${baseUrl}${endpoint}`, params);
+    const res = http.get(`${baseUrl}${endpoint}`, httpParams);
     if (!check(res, {
       [`GET ${endpoint} returns error`]: (r) => r.status >= 400,
     })) {
@@ -355,7 +362,8 @@ function verify_broken_endpoints(params) {
   }
 }
 
-function verify_post_endpoints(params) {
+function verify_post_endpoints() {
+  let params = httpParams;
   const postEducationStatusRes = http.post(`${baseUrl}${postEducationUpdateEndpoint}`, postEducationUpdateRequest, params);
   if (!check(postEducationStatusRes, {
     'POST /v1/persons/${hmppsId}/education/status returns 201': (r) => r.status === 201,
@@ -417,29 +425,29 @@ function verify_post_endpoints(params) {
  * Make a GET request to the API and validate that the http response code indicates syccess.
  * @returns the http response object
  */
-function validate_get_request(path, params) {
-  const res = http.get(`${baseUrl}${path}`, params);
+function validate_get_request(path) {
+  const res = http.get(`${baseUrl}${path}`, httpParams);
   check(res, {
     [`GET ${path} successful`]: (r) => r.status < 400,
   });
   return res;
 }
 
-function validate_status_endpoint(params) {
-  const response = validate_get_request("/v1/status", params);
+function validate_status_endpoint() {
+  const response = validate_get_request("/v1/status");
   check(response, {
     ["Status endpoint reports OK"]: (res) => res.json()["data"]["status"] === "ok",
   })
   return response
 }
 
-function structured_verification_test(hmppsId, params) {
-  let res = validate_status_endpoint(params);
+function structured_verification_test(hmppsId) {
+  let res = validate_status_endpoint();
   if (res.status >= 400) {
     return
   }
 
-  res = validate_get_request(`/v1/persons/${hmppsId}`, params);
+  res = validate_get_request(`/v1/persons/${hmppsId}`);
 
   if (res.status >= 400) {
     return
@@ -461,34 +469,27 @@ function structured_verification_test(hmppsId, params) {
     [`Prisoner number identified`]: () => nomisNumber != null,
   })
 
-  validate_get_request(`/v1/prison/prisoners/${nomisNumber}`, params)
+  validate_get_request(`/v1/prison/prisoners/${nomisNumber}`)
 }
 
-function minimal_prod_verification(params) {
-  validate_status_endpoint(params);
+function minimal_prod_verification() {
+  validate_status_endpoint();
 }
 
 /************************************************************************/
 
 export default function ()  {
-  const params = {
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': api_key,
-    },
-  };
-
   console.log(`Using profile: ${profile} with base url: ${baseUrl}`)
 
   switch (profile) {
     case "MAIN":
-      verify_post_endpoints(params);
-      verify_get_endpoints(params);
-      verify_broken_endpoints(params);
-      structured_verification_test(primaryHmppsId, params);
+      verify_post_endpoints();
+      verify_get_endpoints();
+      verify_broken_endpoints();
+      structured_verification_test(primaryHmppsId);
       break
     case "PROD":
-      minimal_prod_verification(params);
+      minimal_prod_verification();
       break
     default:
       console.log(`Unsupported profile: ${profile}`);
