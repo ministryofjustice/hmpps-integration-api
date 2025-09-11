@@ -30,7 +30,6 @@ const key = __ENV.FULL_ACCESS_KEY.includes(".key") ?
 export const options = {
   tlsAuth: [
     {
-      // domains: [domain],
       cert,
       key,
     },
