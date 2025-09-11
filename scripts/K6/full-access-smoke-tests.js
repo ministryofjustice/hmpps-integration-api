@@ -12,19 +12,17 @@ import exec from 'k6/execution';
  - FULL_ACCESS_API_KEY = API key that has full access to the API
  - FULL_ACCESS_CERT = certificate (either base 64 encoded or name of a file)
  - FULL_ACCESS_KEY = private key for certificate (either base 64 encoded or name of a file)
+
+ Note that because TLS certificates are defined globally for k6 scripts, if you want to use
+ different certificates for the same URLs then you need to launch k6 separately.
 ***********/
 
-const api_key = __ENV.FULL_ACCESS_API_KEY;
 const domain = __ENV.DOMAIN;
 const profile = __ENV.PROFILE;
 
-const cert = __ENV.FULL_ACCESS_CERT.includes(".pem") ?
-  open(__ENV.FULL_ACCESS_CERT) :
-  encoding.b64decode(__ENV.FULL_ACCESS_CERT, 'std', 's');
-
-const key = __ENV.FULL_ACCESS_KEY.includes(".key") ?
-  open(__ENV.FULL_ACCESS_KEY) :
-  encoding.b64decode(__ENV.FULL_ACCESS_KEY, 'std', 's');
+const cert = read_certificate(profile);
+const key = read_private_key(profile);
+const api_key = read_api_key(profile);
 
 
 export const options = {
@@ -254,6 +252,87 @@ const postAllocationData = JSON.stringify({
   testEvent: "TestEvent"
 })
 
+function read_certificate(profile) {
+  let cert_val = ""
+  switch (profile) {
+    case "MAIN":
+      cert_val = __ENV.FULL_ACCESS_CERT;
+      break
+    case "PROD":
+      cert_val = __ENV.SMOKE_TEST_CERT;
+      break
+    case "LAO":
+      cert_val = __ENV.LIMITED_ACCESS_CERT;
+      break
+    case "NOPERMS":
+      cert_val = __ENV.NO_ACCESS_CERT;
+      break
+    case "NOCERT":
+      return ""
+    default:
+      console.log("Unknown profile: " + profile);
+      return ""
+  }
+  if (!cert_val) {
+    console.log("Unable to read certificate");
+    return ""
+  }
+  if (cert_val.includes(".pem")) {
+    return open(cert_val);
+  } else {
+    return encoding.b64decode(cert_val, 'std', 's');
+  }
+}
+
+function read_private_key(profile) {
+  let key_val = ""
+  switch (profile) {
+    case "MAIN":
+      key_val = __ENV.FULL_ACCESS_KEY;
+      break
+    case "PROD":
+      key_val = __ENV.SMOKE_TEST_KEY;
+      break
+    case "LAO":
+      key_val = __ENV.LIMITED_ACCESS_KEY;
+      break
+    case "NOPERMS":
+      key_val = __ENV.NO_ACCESS_KEY;
+      break
+    case "NOCERT":
+      return ""
+    default:
+      console.log("Unknown profile: " + profile);
+      return ""
+  }
+  if (!key_val) {
+    console.log("Unable to read private key");
+    return ""
+  }
+  if (key_val.includes(".key")) {
+    return open(key_val);
+  } else {
+    return encoding.b64decode(key_val, 'std', 's');
+  }
+}
+
+function read_api_key(profile) {
+  switch (profile) {
+    case "MAIN":
+      return __ENV.FULL_ACCESS_API_KEY
+    case "PROD":
+      return __ENV.SMOKE_TEST_API_KEY
+    case "LAO":
+      return __ENV.LIMITED_ACCESS_API_KEY;
+    case "NOPERMS":
+    case "NOCERT":
+      return __ENV.NO_ACCESS_API_KEY;
+    default:
+      console.log("Unknown profile: " + profile);
+      return ""
+  }
+}
+
 function verify_get_endpoints(params) {
   for (const endpoint of get_endpoints) {
     const res = http.get(`${baseUrl}${endpoint}`, params);
@@ -346,8 +425,16 @@ function validate_get_request(path, params) {
   return res;
 }
 
+function validate_status_endpoint(params) {
+  const response = validate_get_request("/v1/status", params);
+  check(response, {
+    ["Status endpoint reports OK"]: (res) => res.json()["data"]["status"] === "ok",
+  })
+  return response
+}
+
 function structured_verification_test(hmppsId, params) {
-  let res = validate_get_request("/v1/status", params);
+  let res = validate_status_endpoint(params);
   if (res.status >= 400) {
     return
   }
@@ -377,6 +464,12 @@ function structured_verification_test(hmppsId, params) {
   validate_get_request(`/v1/prison/prisoners/${nomisNumber}`, params)
 }
 
+function minimal_prod_verification(params) {
+  validate_status_endpoint(params);
+}
+
+/************************************************************************/
+
 export default function ()  {
   const params = {
     headers: {
@@ -387,13 +480,20 @@ export default function ()  {
 
   console.log(`Using profile: ${profile} with base url: ${baseUrl}`)
 
-  verify_post_endpoints(params);
-
-  verify_get_endpoints(params);
-
-  verify_broken_endpoints(params);
-
-  if (profile === "MAIN") {
-    structured_verification_test(primaryHmppsId, params);
+  switch (profile) {
+    case "MAIN":
+      verify_post_endpoints(params);
+      verify_get_endpoints(params);
+      verify_broken_endpoints(params);
+      structured_verification_test(primaryHmppsId, params);
+      break
+    case "PROD":
+      minimal_prod_verification(params);
+      break
+    default:
+      console.log(`Unsupported profile: ${profile}`);
+      break
   }
 };
+
+/************************************************************************/
