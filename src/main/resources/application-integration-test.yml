@@ -120,22 +120,19 @@ authorisation:
       filters:
     specific-prison:
       roles:
-        - "all-endpoints"
-        - "all-queues"
+        - "all-endpoints-and-queues"
       filters:
         prisons:
           - MDI
     limited-prisons:
       roles:
-        - "all-endpoints"
-        - "all-queues"
+        - "all-endpoints-and-queues"
       filters:
         prisons:
           - ABC
     no-prisons:
       roles:
-        - "all-endpoints"
-        - "all-queues"
+        - "all-endpoints-and-queues"
       filters:
         prisons:
     private-prison-only:
@@ -145,8 +142,7 @@ authorisation:
       filters:
     limited-case-notes:
       roles:
-        - "all-endpoints"
-        - "all-queues"
+        - "all-endpoints-and-queues"
       filters:
         case-notes:
           - "CAB"

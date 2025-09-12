@@ -113,15 +113,13 @@ authorisation:
       roles:
     limited-prisons:
       roles:
-        - "all-endpoints"
-        - "all-queues"
+        - "all-endpoints-and-queues"
       filters:
         prisons:
           - XYZ
     empty-prisons:
       roles:
-        - "all-endpoints"
-        - "all-queues"
+        - "all-endpoints-and-queues"
       filters:
         prisons:
     private-prison-only:
@@ -131,8 +129,7 @@ authorisation:
       filters:
     limited-case-notes:
       roles:
-        - "all-endpoints"
-        - "all-queues"
+        - "all-endpoints-and-queues"
       filters:
         case-notes:
           - "CAB"
