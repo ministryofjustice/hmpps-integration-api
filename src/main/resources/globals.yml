@@ -102,7 +102,7 @@ globals:
       include:
         - "/v1/hmpps/reference-data"
         - "/v1/status"
-    all-endpoints-and-queues:
+    all-endpoints:
       include:
         # Provides access to all endpoints
         - "/.*"
