@@ -40,24 +40,34 @@ class ConfigController(
 
   private fun buildFiltersList(consumerConfig: ConsumerConfig?): ConsumerFilters? {
     val aggregatedRoles: List<Role>? = consumerConfig?.roles?.mapNotNull { globalsConfig.roles[it] }
-    if (aggregatedRoles == null || aggregatedRoles.isEmpty() || (aggregatedRoles.all { it.filters == null })) return consumerConfig?.filters
+    val consumerPseudoRole = Role(include = null, filters = consumerConfig?.filters)
+    val allRoles: List<Role> = listOf(consumerPseudoRole) + (aggregatedRoles ?: emptyList())
 
-    val consumerPseudoRole = Role(include = consumerConfig.include, filters = consumerConfig.filters)
+    if (allRoles.all { it.filters?.hasFilters() == false }) {
+      return null
+    }
 
-    val prisons: List<String>? =
-      (aggregatedRoles + listOf(consumerPseudoRole))
-        .takeIf { role -> role.any { it.filters?.prisons != null } }
-        ?.mapNotNull { it.filters?.prisons }
-        ?.flatten()
-        ?.distinct()
+    val prisons =
+      getDistinctValuesIfNotWildcarded(
+        allRoles
+          .filter { it.filters?.hasPrisonFilter() == true }
+          .mapNotNull { it.filters?.prisons },
+      )
 
-    val caseNotes: List<String>? =
-      (aggregatedRoles + listOf(consumerPseudoRole))
-        .takeIf { role -> role.any { it.filters?.caseNotes != null } }
-        ?.mapNotNull { it.filters?.caseNotes }
-        ?.flatten()
-        ?.distinct()
+    val caseNotes =
+      getDistinctValuesIfNotWildcarded(
+        allRoles
+          .filter { it.filters?.hasCaseNotesFilter() == true }
+          .mapNotNull { it.filters?.caseNotes },
+      )
 
-    return ConsumerFilters(prisons, caseNotes)
+    return if (caseNotes == null && prisons == null) null else ConsumerFilters(prisons, caseNotes)
   }
+
+  private fun getDistinctValuesIfNotWildcarded(allValues: List<List<String>>): List<String>? =
+    if (allValues.isEmpty()) {
+      null
+    } else {
+      allValues.flatten().distinct().takeIf { it.none { value -> value == "*" } }
+    }
 }
