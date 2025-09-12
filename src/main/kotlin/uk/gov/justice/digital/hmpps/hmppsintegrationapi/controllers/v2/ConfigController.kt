@@ -9,6 +9,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.GlobalsConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ConfigAuthorisation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
+import kotlin.collections.orEmpty
 
 @Hidden
 @RestController("ConfigControllerV2")
@@ -24,7 +27,7 @@ class ConfigController(
   private fun mapConsumerToIncludesAndFilters(consumerConfig: ConsumerConfig?): ConfigAuthorisation =
     ConfigAuthorisation(
       endpoints = buildEndpointsList(consumerConfig),
-      filters = consumerConfig?.filters,
+      filters = buildFiltersList(consumerConfig),
     )
 
   private fun buildEndpointsList(consumerConfig: ConsumerConfig?): List<String> =
@@ -33,5 +36,38 @@ class ConfigController(
         addAll(globalsConfig.roles[consumerRole]?.include.orEmpty())
       }
       addAll(consumerConfig?.include.orEmpty())
+    }
+
+  private fun buildFiltersList(consumerConfig: ConsumerConfig?): ConsumerFilters? {
+    val aggregatedRoles: List<Role>? = consumerConfig?.roles?.mapNotNull { globalsConfig.roles[it] }
+    val consumerPseudoRole = Role(include = null, filters = consumerConfig?.filters)
+    val allRoles: List<Role> = listOf(consumerPseudoRole) + (aggregatedRoles ?: emptyList())
+
+    if (allRoles.all { it.filters?.hasFilters() == false }) {
+      return null
+    }
+
+    val prisons =
+      getDistinctValuesIfNotWildcarded(
+        allRoles
+          .filter { it.filters?.hasPrisonFilter() == true }
+          .mapNotNull { it.filters?.prisons },
+      )
+
+    val caseNotes =
+      getDistinctValuesIfNotWildcarded(
+        allRoles
+          .filter { it.filters?.hasCaseNotesFilter() == true }
+          .mapNotNull { it.filters?.caseNotes },
+      )
+
+    return if (caseNotes == null && prisons == null) null else ConsumerFilters(prisons, caseNotes)
+  }
+
+  private fun getDistinctValuesIfNotWildcarded(allValues: List<List<String>>): List<String>? =
+    if (allValues.isEmpty()) {
+      null
+    } else {
+      allValues.flatten().distinct().takeIf { it.none { value -> value == "*" } }
     }
 }

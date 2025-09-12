@@ -6,6 +6,7 @@ data class CaseNoteFilter(
   val hmppsId: String,
   val startDate: LocalDateTime? = null,
   val endDate: LocalDateTime? = null,
+  val caseNoteTypes: List<String>? = null,
   val page: Int = 1,
   val size: Int = 10,
 )

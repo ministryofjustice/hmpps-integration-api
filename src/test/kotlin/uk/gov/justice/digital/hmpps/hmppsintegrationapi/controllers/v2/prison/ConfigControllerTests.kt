@@ -33,17 +33,25 @@ class ConfigControllerTests(
 
     val actualConfig: Map<String, ConfigAuthorisation> = objectMapper.readValue(result.response.contentAsString)
     actualConfig.shouldHaveKeys("automated-test-client")
+    actualConfig["automated-test-client"]!!.filters.shouldBeNull()
 
     actualConfig.shouldHaveKeys("config-v2-test")
     actualConfig["config-v2-test"].shouldNotBeNull()
     actualConfig["config-v2-test"]!!.endpoints.shouldContainOnly("/v2/config/authorisation")
     actualConfig["config-v2-test"]!!.filters.shouldNotBeNull()
     actualConfig["config-v2-test"]!!.filters!!.prisons.shouldContainOnly("XYZ")
+    actualConfig["config-v2-test"]!!.filters!!.caseNotes.shouldBeNull()
 
     actualConfig.shouldHaveKeys("private-prison-only")
     actualConfig["private-prison-only"].shouldNotBeNull()
     actualConfig["private-prison-only"]!!.endpoints.shouldNotBeEmpty()
-    actualConfig["private-prison-only"]!!.filters.shouldNotBeNull()
-    actualConfig["private-prison-only"]!!.filters!!.prisons.shouldBeNull()
+    actualConfig["private-prison-only"]!!.filters.shouldBeNull()
+
+    actualConfig.shouldHaveKeys("limited-case-notes")
+    actualConfig["limited-case-notes"].shouldNotBeNull()
+    actualConfig["limited-case-notes"]!!.endpoints.shouldNotBeEmpty()
+    actualConfig["limited-case-notes"]!!.filters.shouldNotBeNull()
+    actualConfig["limited-case-notes"]!!.filters!!.prisons.shouldBeNull()
+    actualConfig["limited-case-notes"]!!.filters!!.caseNotes.shouldContainOnly("CAB")
   }
 }
