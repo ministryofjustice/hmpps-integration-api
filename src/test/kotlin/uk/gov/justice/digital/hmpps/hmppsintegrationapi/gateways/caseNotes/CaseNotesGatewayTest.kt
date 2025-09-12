@@ -1,6 +1,10 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.caseNotes
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.github.tomakehurst.wiremock.client.WireMock.equalTo
+import com.github.tomakehurst.wiremock.client.WireMock.equalToJson
+import com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor
+import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldExist
@@ -21,6 +25,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGatewa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.caseNotes.CNSearchNotesRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.caseNotes.CNTypeSubType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.filters.CaseNoteFilter
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -134,6 +139,70 @@ class CaseNotesGatewayTest(
           .count()
           .shouldBe(1)
         response.data!!.content.shouldExist { it.caseNoteId == id }
+      }
+
+      it("requests specific caseNote types") {
+        val caseNoteRequest = CNSearchNotesRequest(page = 1, size = 10, typeSubTypes = listOf(CNTypeSubType("KA"), CNTypeSubType("CAB")))
+        val jsonRequest = objectMapper.writeValueAsString(caseNoteRequest.toApiConformingMap())
+        caseNotesApiMockServer.stubForPost(pathNoParams, jsonRequest, responseJson, HttpStatus.OK)
+        val specificTypeCaseNoteFilter = CaseNoteFilter(hmppsId = id, caseNoteTypes = listOf("KA", "CAB"))
+        val response = caseNotesGateway.getCaseNotesForPerson(id = id, specificTypeCaseNoteFilter)
+        response.data
+          ?.content!!
+          .count()
+          .shouldBe(1)
+        response.data.content.shouldExist { it.caseNoteId == id }
+
+        caseNotesApiMockServer.verify(
+          postRequestedFor(urlEqualTo(pathNoParams))
+            .withRequestBody(
+              equalToJson(
+                """
+                {
+                  "includeSensitive" : true,
+                  "typeSubTypes" : [ {
+                    "type" : "KA",
+                    "subTypes" : []
+                  },
+                  {
+                    "type" : "CAB",
+                    "subTypes" : []
+                  }],
+                  "page" : 1,
+                  "size" : 10
+                }
+                """.trimIndent(),
+              ),
+            ).withHeader("Content-Type", equalTo("application/json")),
+        )
+      }
+
+      it("requests all caseNote types if wildcard") {
+        val caseNoteRequest = CNSearchNotesRequest(page = 1, size = 10, typeSubTypes = listOf(CNTypeSubType("KA"), CNTypeSubType("CAB")))
+        val jsonRequest = objectMapper.writeValueAsString(caseNoteRequest.toApiConformingMap())
+        caseNotesApiMockServer.stubForPost(pathNoParams, jsonRequest, responseJson, HttpStatus.OK)
+        val specificTypeCaseNoteFilter = CaseNoteFilter(hmppsId = id, caseNoteTypes = listOf("KA", "CAB", "*"))
+        val response = caseNotesGateway.getCaseNotesForPerson(id = id, specificTypeCaseNoteFilter)
+        response.data
+          ?.content!!
+          .count()
+          .shouldBe(1)
+        response.data.content.shouldExist { it.caseNoteId == id }
+
+        caseNotesApiMockServer.verify(
+          postRequestedFor(urlEqualTo(pathNoParams))
+            .withRequestBody(
+              equalToJson(
+                """
+                {
+                  "includeSensitive" : true,
+                  "page" : 1,
+                  "size" : 10
+                }
+                """.trimIndent(),
+              ),
+            ).withHeader("Content-Type", equalTo("application/json")),
+        )
       }
     },
   )

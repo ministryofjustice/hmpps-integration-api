@@ -6,6 +6,7 @@ import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.caseNotes.CNSearchNotesRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.caseNotes.CNTypeSubType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.filters.CaseNoteFilter
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -31,6 +32,11 @@ class CaseNotesGateway(
         occurredTo = filter.endDate?.let { it.toString() + "Z" },
         page = filter.page,
         size = filter.size,
+        typeSubTypes =
+          filter.caseNoteTypes
+            ?.takeIf {
+              it.none { type -> type == "*" }
+            }?.map { CNTypeSubType(it) },
       )
 
     val result =

@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig
 
 data class ConsumerFilters(
   val prisons: List<String>?,
+  val caseNotes: List<String>? = null,
 ) {
   fun matchesPrison(prisonId: String?): Boolean = matchesFilterList(prisons, prisonId)
 
@@ -19,4 +20,8 @@ data class ConsumerFilters(
   }
 
   fun hasPrisonFilter(): Boolean = this.prisons != null
+
+  fun hasCaseNotesFilter(): Boolean = this.caseNotes != null
+
+  fun hasFilters(): Boolean = hasPrisonFilter() || hasCaseNotesFilter()
 }

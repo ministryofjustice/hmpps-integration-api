@@ -113,13 +113,13 @@ authorisation:
       roles:
     limited-prisons:
       roles:
-        - "full-access"
+        - "all-endpoints"
       filters:
         prisons:
           - XYZ
     empty-prisons:
       roles:
-        - "full-access"
+        - "all-endpoints"
       filters:
         prisons:
     private-prison-only:
@@ -127,6 +127,12 @@ authorisation:
         - "private-prison"
       include:
       filters:
+    limited-case-notes:
+      roles:
+        - "all-endpoints"
+      filters:
+        case-notes:
+          - "CAB"
     redacted-client:
       include:
         - "/v1/persons/[^/]*$"
