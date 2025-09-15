@@ -1,10 +1,6 @@
 import http from "k6/http";
 import encoding from 'k6/encoding';
 
-export function importTest() {
-  return 1
-}
-
 function read_or_decode(value, suffix) {
   if (value.includes(suffix)) {
     return open(value);
