@@ -20,9 +20,7 @@ import exec from 'k6/execution';
 const domain = __ENV.DOMAIN;
 const profile = __ENV.PROFILE;
 
-const cert = read_certificate(profile);
-const key = read_private_key(profile);
-const api_key = read_api_key(profile);
+const [cert, key, api_key] = read_certificate(profile);
 
 
 export const options = {
@@ -259,86 +257,55 @@ const postAllocationData = JSON.stringify({
   testEvent: "TestEvent"
 })
 
+function read_or_decode(value, suffix) {
+  if (value.includes(suffix)) {
+    return open(value);
+  } else {
+    return encoding.b64decode(value, 'std', 's');
+  }
+}
+
 function read_certificate(profile) {
   let cert_val = ""
+  let key_val = ""
+  let api_key_val = ""
   switch (profile) {
     case "MAIN":
       cert_val = __ENV.FULL_ACCESS_CERT;
+      key_val = __ENV.FULL_ACCESS_KEY;
+      api_key_val = __ENV.FULL_ACCESS_API_KEY;
       break
     case "PROD":
       cert_val = __ENV.SMOKE_TEST_CERT;
+      key_val = __ENV.SMOKE_TEST_KEY;
+      api_key_val = __ENV.SMOKE_TEST_API_KEY;
       break
     case "LAO":
       cert_val = __ENV.LIMITED_ACCESS_CERT;
+      key_val = __ENV.LIMITED_ACCESS_KEY;
+      api_key_val = __ENV.LIMITED_ACCESS_API_KEY;
       break
     case "NOPERMS":
       cert_val = __ENV.NO_ACCESS_CERT;
-      break
-    case "NOCERT":
-      return ""
-    default:
-      console.log("Unknown profile: " + profile);
-      return ""
-  }
-  if (!cert_val) {
-    console.log("Unable to read certificate");
-    return ""
-  }
-  if (cert_val.includes(".pem")) {
-    return open(cert_val);
-  } else {
-    return encoding.b64decode(cert_val, 'std', 's');
-  }
-}
-
-function read_private_key(profile) {
-  let key_val = ""
-  switch (profile) {
-    case "MAIN":
-      key_val = __ENV.FULL_ACCESS_KEY;
-      break
-    case "PROD":
-      key_val = __ENV.SMOKE_TEST_KEY;
-      break
-    case "LAO":
-      key_val = __ENV.LIMITED_ACCESS_KEY;
-      break
-    case "NOPERMS":
       key_val = __ENV.NO_ACCESS_KEY;
+      api_key_val = __ENV.NO_ACCESS_API_KEY;
       break
     case "NOCERT":
-      return ""
+      cert_val = "";
+      key_val = "";
+      api_key_val = __ENV.NO_ACCESS_API_KEY;
+      break
     default:
       console.log("Unknown profile: " + profile);
-      return ""
   }
-  if (!key_val) {
-    console.log("Unable to read private key");
-    return ""
-  }
-  if (key_val.includes(".key")) {
-    return open(key_val);
-  } else {
-    return encoding.b64decode(key_val, 'std', 's');
-  }
+
+  return [
+    read_or_decode(cert_val, ".pem"),
+    read_or_decode(key_val, ".key"),
+    api_key_val
+  ]
 }
 
-function read_api_key(profile) {
-  switch (profile) {
-    case "MAIN":
-      return __ENV.FULL_ACCESS_API_KEY
-    case "PROD":
-      return __ENV.SMOKE_TEST_API_KEY
-    case "LAO":
-      return __ENV.LIMITED_ACCESS_API_KEY;
-    case "NOPERMS":
-    case "NOCERT":
-      return __ENV.NO_ACCESS_API_KEY;
-    default:
-      console.log("Unknown profile: " + profile);
-      return ""
-  }
-}
 
 function verify_get_endpoints() {
   for (const endpoint of get_endpoints) {
