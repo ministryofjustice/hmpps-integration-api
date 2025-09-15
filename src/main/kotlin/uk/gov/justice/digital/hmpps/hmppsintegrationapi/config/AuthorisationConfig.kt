@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 
 @Configuration
 @Component
-@ConfigurationProperties(prefix = "authorisation")
+@ConfigurationProperties(prefix = "authorisation", ignoreInvalidFields = true)
 class AuthorisationConfig {
   var consumers: Map<String, ConsumerConfig?> = emptyMap()
 }

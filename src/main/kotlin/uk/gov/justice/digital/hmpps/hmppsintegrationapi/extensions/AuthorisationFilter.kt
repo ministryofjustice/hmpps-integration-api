@@ -12,9 +12,12 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_ROLES_DSL
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.GlobalsConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mapping.getRoles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuthoriseConsumerService
 import java.io.IOException
 
@@ -24,6 +27,7 @@ import java.io.IOException
 class AuthorisationFilter(
   @Autowired val authorisationConfig: AuthorisationConfig,
   @Autowired val globalsConfig: GlobalsConfig,
+  @Autowired val featureFlagConfig: FeatureFlagConfig,
 ) : Filter {
   @Throws(IOException::class, ServletException::class)
   override fun doFilter(
@@ -72,7 +76,11 @@ class AuthorisationFilter(
     val rolesInclude =
       buildList {
         for (consumerRole in consumersRoles.orEmpty()) {
-          addAll(globalsConfig.roles[consumerRole]?.include.orEmpty())
+          if(featureFlagConfig.isEnabled(USE_ROLES_DSL)) {
+            addAll(getRoles()[consumerRole]?.include.orEmpty())
+          } else {
+            addAll(globalsConfig.roles[consumerRole]?.include.orEmpty())
+          }
         }
       }
     val roleResult =
