@@ -165,7 +165,7 @@ jobs:
       - run:
           name: Run smoke tests
           command: |
-            k6 run -e PROFILE=PROD./scripts/K6/smoke-tests.js
+            k6 run -e PROFILE=PROD ./scripts/K6/smoke-tests.js
 
 workflows:
   version: 2
