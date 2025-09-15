@@ -37,7 +37,7 @@ class ConfigController(
   private fun buildEndpointsList(consumerConfig: ConsumerConfig?): List<String> =
     buildList {
       for (consumerRole in consumerConfig?.roles.orEmpty()) {
-        if(featureFlagConfig.isEnabled(USE_ROLES_DSL)) {
+        if (featureFlagConfig.isEnabled(USE_ROLES_DSL)) {
           addAll(getRoles()[consumerRole]?.include.orEmpty())
         } else {
           addAll(globalsConfig.roles[consumerRole]?.include.orEmpty())

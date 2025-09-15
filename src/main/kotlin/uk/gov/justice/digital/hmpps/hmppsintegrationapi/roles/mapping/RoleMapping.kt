@@ -8,12 +8,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.prisonerEscortCust
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.privatePrisonRole
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.referenceDataOnly
 
-val roles = mapOf(
-  "private-prison" to privatePrisonRole,
-  "police" to policeRole,
-  "curious" to curiousRole,
-  "reference-data-only" to referenceDataOnly,
-  "full-access" to fullAccessRole,
-  "prisoner-escort-custody-service-role" to prisonerEscortCustodyServiceRole,
-  "mappa-role" to mappaRole
-)
+val roles =
+  mapOf(
+    "private-prison" to privatePrisonRole,
+    "police" to policeRole,
+    "curious" to curiousRole,
+    "reference-data-only" to referenceDataOnly,
+    "full-access" to fullAccessRole,
+    "prisoner-escort-custody-service-role" to prisonerEscortCustodyServiceRole,
+    "mappa-role" to mappaRole,
+  )
