@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mapping
 
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.allEndpointsRole
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.curiousRole
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.fullAccessRole
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mappaRole
@@ -17,4 +18,5 @@ val roles =
     "full-access" to fullAccessRole,
     "prisoner-escort-custody-service-role" to prisonerEscortCustodyServiceRole,
     "mappa-role" to mappaRole,
+    "all-endpoints" to allEndpointsRole,
   )

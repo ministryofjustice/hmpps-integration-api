@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
 
-val fullAccessRole =
+val allEndpointsRole =
   role {
     include {
       // Provides access to all endpoints
@@ -72,13 +72,5 @@ val fullAccessRole =
       -"/v1/persons/.*/education/aln-assessment"
       -"/v1/persons/.*/contact-events"
       -"/v1/persons/.*/contact-events/.*"
-    }
-    filters {
-      prisons {
-        -"*"
-      }
-      caseNotes {
-        -"*"
-      }
     }
   }
