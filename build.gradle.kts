@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "8.3.7"
-  kotlin("plugin.spring") version "2.2.10"
+  kotlin("plugin.spring") version "2.2.20"
 }
 
 configurations {
@@ -16,8 +16,8 @@ dependencies {
   runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.13.0")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
-  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.21.0")
-  implementation("io.sentry:sentry-logback:8.21.0")
+  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.21.1")
+  implementation("io.sentry:sentry-logback:8.21.1")
   implementation("org.springframework.data:spring-data-commons")
   implementation("org.springframework:spring-aop")
   implementation("org.aspectj:aspectjweaver")
