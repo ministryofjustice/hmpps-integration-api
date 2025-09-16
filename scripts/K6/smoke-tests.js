@@ -1,7 +1,7 @@
 const http = require('k6/http');
 const { check, fail } = require('k6');
 import exec from 'k6/execution';
-import { read_certificate, validate_get_request } from "./support.js"
+import { read_certificate } from "./support.js"
 
 /***********
  To run this script locally, make sure the following environment variables are set:-
@@ -339,6 +339,18 @@ function verify_post_endpoints() {
   })) {
     exec.test.fail(`${postAllocationEndpoint} caused the test to fail`)
   }
+}
+
+/**
+ * Make a GET request to the API and validate that the http response code indicates syccess.
+ * @returns the http response object
+ */
+export function validate_get_request(path) {
+  const res = http.get(`${baseUrl}${path}`, httpParams);
+  check(res, {
+    [`GET ${path} successful`]: (r) => r.status < 400,
+  });
+  return res;
 }
 
 function validate_status_endpoint() {

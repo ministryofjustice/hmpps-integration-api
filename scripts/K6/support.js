@@ -50,14 +50,4 @@ export function read_certificate(profile) {
   ]
 }
 
-/**
- * Make a GET request to the API and validate that the http response code indicates syccess.
- * @returns the http response object
- */
-export function validate_get_request(path) {
-  const res = http.get(`${baseUrl}${path}`, httpParams);
-  check(res, {
-    [`GET ${path} successful`]: (r) => r.status < 400,
-  });
-  return res;
-}
+
