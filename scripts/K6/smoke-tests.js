@@ -1,7 +1,7 @@
 const http = require('k6/http');
 const { check, fail } = require('k6');
-import encoding from 'k6/encoding';
 import exec from 'k6/execution';
+import { read_certificate, validate_get_request } from "./support.js"
 
 /***********
  To run this script locally, make sure the following environment variables are set:-
@@ -13,6 +13,9 @@ import exec from 'k6/execution';
  - FULL_ACCESS_CERT = certificate (either base 64 encoded or name of a file)
  - FULL_ACCESS_KEY = private key for certificate (either base 64 encoded or name of a file)
 
+
+ The script is run using the k6 utility from https://k6.io/
+
  Note that because TLS certificates are defined globally for k6 scripts, if you want to use
  different certificates for the same URLs then you need to launch k6 separately.
 ***********/
@@ -21,7 +24,6 @@ const domain = __ENV.DOMAIN;
 const profile = __ENV.PROFILE;
 
 const [cert, key, api_key] = read_certificate(profile);
-
 
 export const options = {
   tlsAuth: [
@@ -257,55 +259,6 @@ const postAllocationData = JSON.stringify({
   testEvent: "TestEvent"
 })
 
-function read_or_decode(value, suffix) {
-  if (value.includes(suffix)) {
-    return open(value);
-  } else {
-    return encoding.b64decode(value, 'std', 's');
-  }
-}
-
-function read_certificate(profile) {
-  let cert_val = ""
-  let key_val = ""
-  let api_key_val = ""
-  switch (profile) {
-    case "MAIN":
-      cert_val = __ENV.FULL_ACCESS_CERT;
-      key_val = __ENV.FULL_ACCESS_KEY;
-      api_key_val = __ENV.FULL_ACCESS_API_KEY;
-      break
-    case "PROD":
-      cert_val = __ENV.SMOKE_TEST_CERT;
-      key_val = __ENV.SMOKE_TEST_KEY;
-      api_key_val = __ENV.SMOKE_TEST_API_KEY;
-      break
-    case "LAO":
-      cert_val = __ENV.LIMITED_ACCESS_CERT;
-      key_val = __ENV.LIMITED_ACCESS_KEY;
-      api_key_val = __ENV.LIMITED_ACCESS_API_KEY;
-      break
-    case "NOPERMS":
-      cert_val = __ENV.NO_ACCESS_CERT;
-      key_val = __ENV.NO_ACCESS_KEY;
-      api_key_val = __ENV.NO_ACCESS_API_KEY;
-      break
-    case "NOCERT":
-      cert_val = "";
-      key_val = "";
-      api_key_val = __ENV.NO_ACCESS_API_KEY;
-      break
-    default:
-      console.log("Unknown profile: " + profile);
-  }
-
-  return [
-    read_or_decode(cert_val, ".pem"),
-    read_or_decode(key_val, ".key"),
-    api_key_val
-  ]
-}
-
 
 function verify_get_endpoints() {
   for (const endpoint of get_endpoints) {
@@ -386,18 +339,6 @@ function verify_post_endpoints() {
   })) {
     exec.test.fail(`${postAllocationEndpoint} caused the test to fail`)
   }
-}
-
-/**
- * Make a GET request to the API and validate that the http response code indicates syccess.
- * @returns the http response object
- */
-function validate_get_request(path) {
-  const res = http.get(`${baseUrl}${path}`, httpParams);
-  check(res, {
-    [`GET ${path} successful`]: (r) => r.status < 400,
-  });
-  return res;
 }
 
 function validate_status_endpoint() {
