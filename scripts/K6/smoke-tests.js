@@ -342,7 +342,7 @@ function verify_post_endpoints() {
 }
 
 /**
- * Make a GET request to the API and validate that the http response code indicates syccess.
+ * Make a GET request to the API and validate that the http response code indicates success.
  * @returns the http response object
  */
 function validate_get_request(path) {
