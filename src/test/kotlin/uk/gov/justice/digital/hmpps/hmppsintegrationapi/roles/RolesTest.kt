@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles
 import org.assertj.core.api.Assertions.assertThat
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roleConstants
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
 import kotlin.test.Test
 
 class RolesTest {

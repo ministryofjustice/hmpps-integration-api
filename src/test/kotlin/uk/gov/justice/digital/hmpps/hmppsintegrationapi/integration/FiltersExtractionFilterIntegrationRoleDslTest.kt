@@ -71,7 +71,6 @@ class FiltersExtractionFilterIntegrationRoleDslTest {
     roleName: String,
     expectedFilters: ConsumerFilters?,
   ) {
-
     val globalsConfig = GlobalsConfig()
 
     val filtersExtractionFilter =
