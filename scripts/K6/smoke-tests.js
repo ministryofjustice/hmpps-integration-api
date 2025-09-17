@@ -25,7 +25,7 @@ const profile = __ENV.PROFILE;
 
 const [cert, key, api_key] = read_certificate(profile);
 
-export const options = {
+export const options = (cert === "") ? {} : {
   tlsAuth: [
     {
       cert,
@@ -266,7 +266,7 @@ function verify_get_endpoints() {
     if (!check(res, {
       [`GET ${endpoint} returns 200`]: (r) => r.status === 200,
     })) {
-      fail(`${endpoint} caused the test to fail`)
+      fail(`${endpoint} caused the test to fail, status = ${res.status}`)
     }
   }
 }
@@ -345,7 +345,7 @@ function verify_post_endpoints() {
  * Make a GET request to the API and validate that the http response code indicates syccess.
  * @returns the http response object
  */
-export function validate_get_request(path) {
+function validate_get_request(path) {
   const res = http.get(`${baseUrl}${path}`, httpParams);
   if (!check(res, {
     [`GET ${path} successful`]: (r) => r.status < 400,
@@ -353,6 +353,16 @@ export function validate_get_request(path) {
     fail(`${path} caused the test to fail`);
   }
   return res;
+}
+
+
+function confirm_access_denied(path) {
+  const res = http.get(`${baseUrl}${path}`, httpParams);
+  if (!check(res, {
+    [`GET ${path} ACCESS DENIED`]: (r) => ((r.status === 0) || (r.status === 401) || (r.status === 403)),
+  })) {
+    fail(`${path} was not denied`);
+  }
 }
 
 function validate_status_endpoint() {
@@ -398,6 +408,10 @@ function minimal_prod_verification() {
   validate_status_endpoint();
 }
 
+function denied_endpoint_verification() {
+  confirm_access_denied(`/v1/persons?first_name=john`);
+}
+
 /************************************************************************/
 
 export default function ()  {
@@ -412,6 +426,14 @@ export default function ()  {
       break
     case "PROD":
       minimal_prod_verification();
+      break
+    case "LIMITED":
+      validate_get_request(`/v1/persons/${primaryHmppsId}/name`);
+      denied_endpoint_verification();
+      break
+    case "NOPERMS":
+    case "NOCERT":
+      denied_endpoint_verification();
       break
     default:
       console.log(`Unsupported profile: ${profile}`);
