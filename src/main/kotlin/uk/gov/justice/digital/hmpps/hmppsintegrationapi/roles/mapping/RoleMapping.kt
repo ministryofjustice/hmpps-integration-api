@@ -12,7 +12,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.referenceDataOnly
 
 val roleConstants =
   constants {
-    include {
+    allEndpoints {
       // Provides access to all endpoints
       -"/.*"
       // Provides access to all events on queue

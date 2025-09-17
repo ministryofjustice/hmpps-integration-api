@@ -6,6 +6,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mapping.roleConsta
 val allEndpoints =
   role("all-endpoints") {
     include {
-      -roleConstants.include
+      -roleConstants.allEndpoints
     }
   }

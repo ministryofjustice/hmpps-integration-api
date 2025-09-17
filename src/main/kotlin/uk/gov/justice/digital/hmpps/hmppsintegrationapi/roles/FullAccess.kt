@@ -6,7 +6,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mapping.roleConsta
 val fullAccess =
   role("full-access") {
     include {
-      -roleConstants.include
+      -roleConstants.allEndpoints
     }
     filters {
       prisons {

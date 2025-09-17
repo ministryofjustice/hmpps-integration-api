@@ -11,12 +11,26 @@ class Filters(
   val caseNotes: MutableSet<String>,
 )
 
+class RoleConstants(
+  val allEndpoints: MutableSet<String>,
+)
+
+class RoleConstantsBuilder {
+  private val allEndpoints = mutableSetOf<String>()
+
+  fun build(): RoleConstants = RoleConstants(allEndpoints)
+
+  fun allEndpoints(init: IncludeBuilder.() -> Unit) {
+    allEndpoints.addAll(IncludeBuilder().apply(init).content)
+  }
+}
+
+fun constants(init: RoleConstantsBuilder.() -> Unit): RoleConstants = RoleConstantsBuilder().apply(init).build()
+
 fun role(
   name: String,
   init: RoleBuilder.() -> Unit,
 ): Role = RoleBuilder(name).apply(init).build()
-
-fun constants(init: RoleBuilder.() -> Unit): Role = RoleBuilder("constants").apply(init).build()
 
 class RoleBuilder(
   private val name: String,
