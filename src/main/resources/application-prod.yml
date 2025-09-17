@@ -39,6 +39,8 @@ services:
     base-url: https://health-and-medication-api.hmpps.service.justice.gov.uk
   activities:
     base-url: https://activities-api.prison.service.justice.gov.uk
+  prisoner-base-location:
+    base-url: https://prisoner-base-location-api.hmpps.service.justice.gov.uk
 
 feature-flag:
   use-education-assessments-endpoints: false
