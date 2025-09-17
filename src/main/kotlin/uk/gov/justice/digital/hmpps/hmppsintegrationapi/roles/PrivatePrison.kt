@@ -2,8 +2,8 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
 
-val privatePrisonRole =
-  role {
+val privatePrison =
+  role("private-prison") {
     include {
       -"/v1/hmpps/id/by-nomis-number/[^/]*$"
       -"/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"

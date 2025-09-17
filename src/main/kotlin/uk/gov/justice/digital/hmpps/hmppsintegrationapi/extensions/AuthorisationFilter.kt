@@ -17,9 +17,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.GlobalsConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mapping.getRoles
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.Role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuthoriseConsumerService
 import java.io.IOException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mapping.roles as Roles
 
 @Component
 @Order(1)
@@ -27,7 +28,8 @@ import java.io.IOException
 class AuthorisationFilter(
   @Autowired val authorisationConfig: AuthorisationConfig,
   @Autowired val globalsConfig: GlobalsConfig,
-  @Autowired val featureFlagConfig: FeatureFlagConfig,
+  @Autowired val featureFlagConfig: FeatureFlagConfig?,
+  @Autowired(required = false) val roles: Map<String, Role> = Roles,
 ) : Filter {
   @Throws(IOException::class, ServletException::class)
   override fun doFilter(
@@ -76,8 +78,8 @@ class AuthorisationFilter(
     val rolesInclude =
       buildList {
         for (consumerRole in consumersRoles.orEmpty()) {
-          if (featureFlagConfig.isEnabled(USE_ROLES_DSL)) {
-            addAll(getRoles()[consumerRole]?.include.orEmpty())
+          if (featureFlagConfig?.isEnabled(USE_ROLES_DSL) == true) {
+            addAll(roles[consumerRole]?.include.orEmpty())
           } else {
             addAll(globalsConfig.roles[consumerRole]?.include.orEmpty())
           }

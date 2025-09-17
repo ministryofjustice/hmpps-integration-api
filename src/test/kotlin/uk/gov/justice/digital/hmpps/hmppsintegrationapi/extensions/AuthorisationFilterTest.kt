@@ -21,7 +21,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessE
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mapping.getRoles
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mapping.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.Role as DslRole
 
 class AuthorisationFilterTest {
@@ -45,8 +45,8 @@ class AuthorisationFilterTest {
     whenever(mockRequest.requestURI).thenReturn(examplePath)
     whenever(mockRequest.getAttribute("clientName")).thenReturn(exampleConsumer)
 
-    mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mapping.RolesKt")
-    every { getRoles() } returns mapOf(roleName to DslRole(include = mutableSetOf(examplePath)))
+    mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mapping.RoleMappingKt")
+    every { roles } returns mapOf(roleName to DslRole(name = "test", include = mutableSetOf(examplePath)))
   }
 
   @Test

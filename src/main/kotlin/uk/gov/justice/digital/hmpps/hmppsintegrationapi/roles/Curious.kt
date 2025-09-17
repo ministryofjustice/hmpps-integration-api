@@ -2,8 +2,8 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
 
-val curiousRole =
-  role {
+val curious =
+  role("curious") {
     include {
       -"/v1/persons/.*/plp-induction-schedule"
       -"/v1/persons/.*/plp-induction-schedule/history"

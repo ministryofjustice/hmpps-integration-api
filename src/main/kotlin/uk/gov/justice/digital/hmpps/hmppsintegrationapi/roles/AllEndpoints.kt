@@ -1,11 +1,11 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mapping.roleConstants
 
-val referenceDataOnly =
-  role {
+val allEndpoints =
+  role("all-endpoints") {
     include {
-      -"/v1/hmpps/reference-data"
-      -"/v1/status"
+      -roleConstants.include
     }
   }

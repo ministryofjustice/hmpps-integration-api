@@ -2,8 +2,8 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
 
-val mappaRole =
-  role {
+val mappa =
+  role("mappa") {
     include {
       -"/v1/persons"
       -"/v1/persons/[^/]*$"

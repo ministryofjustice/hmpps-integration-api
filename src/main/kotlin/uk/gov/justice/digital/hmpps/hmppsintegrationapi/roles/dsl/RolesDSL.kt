@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl
 
 class Role(
+  val name: String,
   val include: MutableSet<String>,
   val filters: Filters? = null,
 )
@@ -10,13 +11,20 @@ class Filters(
   val caseNotes: MutableSet<String>,
 )
 
-fun role(init: RoleBuilder.() -> Unit): Role = RoleBuilder().apply(init).build()
+fun role(
+  name: String,
+  init: RoleBuilder.() -> Unit,
+): Role = RoleBuilder(name).apply(init).build()
 
-class RoleBuilder {
+fun constants(init: RoleBuilder.() -> Unit): Role = RoleBuilder("constants").apply(init).build()
+
+class RoleBuilder(
+  private val name: String,
+) {
   private val includes = mutableSetOf<String>()
   private var filters: Filters? = null
 
-  fun build(): Role = Role(includes, filters)
+  fun build(): Role = Role(name, includes, filters)
 
   fun include(init: IncludeBuilder.() -> Unit) {
     includes.addAll(IncludeBuilder().apply(init).content)
@@ -32,6 +40,10 @@ class IncludeBuilder {
 
   operator fun String.unaryMinus() {
     content.add(this)
+  }
+
+  operator fun MutableSet<String>.unaryMinus() {
+    content.addAll(this)
   }
 }
 

@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v2
 
 import io.swagger.v3.oas.annotations.Hidden
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -13,8 +14,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ConfigAutho
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mapping.getRoles
 import kotlin.collections.orEmpty
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.Role as DslRole
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mapping.roles as Roles
 
 @Hidden
 @RestController("ConfigControllerV2")
@@ -24,6 +26,7 @@ class ConfigController(
   var authorisationConfig: AuthorisationConfig,
   var globalsConfig: GlobalsConfig,
   var featureFlagConfig: FeatureFlagConfig,
+  @Autowired(required = false) val roles: Map<String, DslRole> = Roles,
 ) {
   @GetMapping("authorisation")
   fun getAuthorisation(): Map<String, ConfigAuthorisation> = authorisationConfig.consumers.entries.associate { it.key to mapConsumerToIncludesAndFilters(it.value) }
@@ -38,7 +41,7 @@ class ConfigController(
     buildList {
       for (consumerRole in consumerConfig?.roles.orEmpty()) {
         if (featureFlagConfig.isEnabled(USE_ROLES_DSL)) {
-          addAll(getRoles()[consumerRole]?.include.orEmpty())
+          addAll(roles[consumerRole]?.include.orEmpty())
         } else {
           addAll(globalsConfig.roles[consumerRole]?.include.orEmpty())
         }
