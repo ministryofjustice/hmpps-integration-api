@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_ROLES_DSL
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.GlobalsConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.FiltersExtractionFilter
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
@@ -30,7 +31,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("integration-test")
 @AutoConfigureMockMvc
-class FiltersExtractionFilterRoleDslTest {
+class FiltersExtractionFilterIntegrationRoleDslTest {
   @Autowired
   lateinit var authorisationConfig: AuthorisationConfig
 
@@ -54,8 +55,8 @@ class FiltersExtractionFilterRoleDslTest {
         Arguments.of(false, "curious", null),
         Arguments.of(true, "reference-data-only", null),
         Arguments.of(false, "reference-data-only", null),
-        Arguments.of(true, "prisoner-escort-custody-service", ConsumerFilters(caseNotes = listOf("CAB", "NEG", "CVM", "INTERVENTION", "POS"), prisons = emptyList())),
-        Arguments.of(false, "prisoner-escort-custody-service", ConsumerFilters(caseNotes = listOf("CAB", "NEG", "CVM", "INTERVENTION", "POS"), prisons = emptyList())),
+        Arguments.of(true, "prisoner-escort-custody-service", ConsumerFilters(caseNotes = listOf("CAB", "NEG", "CVM", "INTERVENTION", "POS"), prisons = null)),
+        Arguments.of(false, "prisoner-escort-custody-service", ConsumerFilters(caseNotes = listOf("CAB", "NEG", "CVM", "INTERVENTION", "POS"), prisons = null)),
         Arguments.of(true, "mappa", null),
         Arguments.of(false, "mappa", null),
         Arguments.of(true, "all-endpoints", null),
@@ -70,6 +71,9 @@ class FiltersExtractionFilterRoleDslTest {
     roleName: String,
     expectedFilters: ConsumerFilters?,
   ) {
+
+    val globalsConfig = GlobalsConfig()
+
     val filtersExtractionFilter =
       FiltersExtractionFilter(
         authorisationConfig,

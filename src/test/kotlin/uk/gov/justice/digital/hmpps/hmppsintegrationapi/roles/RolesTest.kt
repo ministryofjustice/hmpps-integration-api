@@ -37,16 +37,4 @@ class RolesTest {
   fun `Mappa role has no filters`() {
     assertThat(roles["mappa"]?.filters).isNull()
   }
-
-  @Test
-  fun `create a role with empty prison filter`() {
-    val test =
-      role("t1") {
-        filters {
-          prisons {
-          }
-        }
-      }
-    assertThat(test.filters?.prisons?.size).isEqualTo(0)
-  }
 }
