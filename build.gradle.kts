@@ -58,7 +58,6 @@ dependencies {
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
   testImplementation(kotlin("test"))
-  testImplementation("io.mockk:mockk:1.14.4")
 }
 
 java {
