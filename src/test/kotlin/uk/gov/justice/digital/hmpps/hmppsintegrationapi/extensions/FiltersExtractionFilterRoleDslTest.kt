@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -89,5 +90,12 @@ class FiltersExtractionFilterRoleDslTest {
     verify(mockRequest, times(1)).setAttribute(eq("filters"), filtersCapture.capture())
     val actualFilters = filtersCapture?.value
     assertThat(actualFilters).isEqualTo(expectedFilters)
+  }
+
+  @Test
+  fun `test globals config is the same as DSL`() {
+    // add names to each of the globals config
+    val globalsConfig = globalsConfig.roles.mapValues { it.value.copy(name = it.key) } // apOf(it.key to it.value.copy(name = it.key)) }
+    assertThat(globalsConfig).isEqualTo(roles)
   }
 }

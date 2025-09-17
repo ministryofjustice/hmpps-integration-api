@@ -13,7 +13,9 @@ class RoleConstantsBuilder {
   fun build(): RoleConstants = RoleConstants(allEndpoints)
 
   fun allEndpoints(init: IncludeBuilder.() -> Unit) {
-    allEndpoints.addAll(IncludeBuilder().apply(init).content)
+    IncludeBuilder().apply(init).content?.let {
+      allEndpoints.addAll(it)
+    }
   }
 }
 
@@ -27,13 +29,18 @@ fun role(
 class RoleBuilder(
   private val name: String,
 ) {
-  private val includes = mutableListOf<String>()
+  private var includes: MutableList<String>? = null
   private var filters: ConsumerFilters? = null
 
   fun build(): Role = Role(name, includes, filters)
 
   fun include(init: IncludeBuilder.() -> Unit) {
-    includes.addAll(IncludeBuilder().apply(init).content)
+    IncludeBuilder().apply(init).content?.let {
+      if (includes == null) {
+        includes = mutableListOf()
+      }
+      includes?.addAll(it)
+    }
   }
 
   fun filters(init: FiltersBuilder.() -> Unit) {
@@ -42,44 +49,66 @@ class RoleBuilder(
 }
 
 class IncludeBuilder {
-  val content = mutableListOf<String>()
+  var content: MutableList<String>? = null
 
   operator fun String.unaryMinus() {
-    content.add(this)
+    if (content == null) {
+      content = mutableListOf()
+    }
+    content?.add(this)
   }
 
   operator fun MutableList<String>.unaryMinus() {
-    content.addAll(this)
+    if (content == null) {
+      content = mutableListOf()
+    }
+    content?.addAll(this)
   }
 }
 
 class PrisonsBuilder {
-  val content = mutableListOf<String>()
+  var content: MutableList<String>? = null
 
   operator fun String.unaryMinus() {
-    content.add(this)
+    if (content == null) {
+      content = mutableListOf()
+    }
+    content?.add(this)
   }
 }
 
 class CaseNotesBuilder {
-  val content = mutableListOf<String>()
+  var content: MutableList<String>? = null
 
   operator fun String.unaryMinus() {
-    content.add(this)
+    if (content == null) {
+      content = mutableListOf()
+    }
+    content?.add(this)
   }
 }
 
 class FiltersBuilder {
-  private val prisons = mutableListOf<String>()
-  private val caseNotes = mutableListOf<String>()
+  private var prisons: MutableList<String>? = null
+  private var caseNotes: MutableList<String>? = null
 
   fun build(): ConsumerFilters = ConsumerFilters(prisons, caseNotes)
 
   fun prisons(init: PrisonsBuilder.() -> Unit) {
-    prisons.addAll(PrisonsBuilder().apply(init).content)
+    PrisonsBuilder().apply(init).content?.let {
+      if (prisons == null) {
+        prisons = mutableListOf()
+      }
+      prisons?.addAll(it)
+    }
   }
 
   fun caseNotes(init: CaseNotesBuilder.() -> Unit) {
-    caseNotes.addAll(CaseNotesBuilder().apply(init).content)
+    CaseNotesBuilder().apply(init).content?.let {
+      if (caseNotes == null) {
+        caseNotes = mutableListOf()
+      }
+      caseNotes?.addAll(it)
+    }
   }
 }
