@@ -347,9 +347,11 @@ function verify_post_endpoints() {
  */
 export function validate_get_request(path) {
   const res = http.get(`${baseUrl}${path}`, httpParams);
-  check(res, {
+  if (!check(res, {
     [`GET ${path} successful`]: (r) => r.status < 400,
-  });
+  })) {
+    fail(`${path} caused the test to fail`);
+  }
   return res;
 }
 
