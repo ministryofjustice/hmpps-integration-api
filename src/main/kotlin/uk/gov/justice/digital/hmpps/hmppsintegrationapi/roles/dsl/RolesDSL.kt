@@ -1,22 +1,14 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl
 
-class Role(
-  val name: String,
-  val include: MutableSet<String>,
-  val filters: Filters? = null,
-)
-
-class Filters(
-  val prisons: MutableSet<String>,
-  val caseNotes: MutableSet<String>,
-)
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 
 class RoleConstants(
-  val allEndpoints: MutableSet<String>,
+  val allEndpoints: MutableList<String>,
 )
 
 class RoleConstantsBuilder {
-  private val allEndpoints = mutableSetOf<String>()
+  private val allEndpoints = mutableListOf<String>()
 
   fun build(): RoleConstants = RoleConstants(allEndpoints)
 
@@ -35,8 +27,8 @@ fun role(
 class RoleBuilder(
   private val name: String,
 ) {
-  private val includes = mutableSetOf<String>()
-  private var filters: Filters? = null
+  private val includes = mutableListOf<String>()
+  private var filters: ConsumerFilters? = null
 
   fun build(): Role = Role(name, includes, filters)
 
@@ -50,19 +42,19 @@ class RoleBuilder(
 }
 
 class IncludeBuilder {
-  val content = mutableSetOf<String>()
+  val content = mutableListOf<String>()
 
   operator fun String.unaryMinus() {
     content.add(this)
   }
 
-  operator fun MutableSet<String>.unaryMinus() {
+  operator fun MutableList<String>.unaryMinus() {
     content.addAll(this)
   }
 }
 
 class PrisonsBuilder {
-  val content = mutableSetOf<String>()
+  val content = mutableListOf<String>()
 
   operator fun String.unaryMinus() {
     content.add(this)
@@ -70,7 +62,7 @@ class PrisonsBuilder {
 }
 
 class CaseNotesBuilder {
-  val content = mutableSetOf<String>()
+  val content = mutableListOf<String>()
 
   operator fun String.unaryMinus() {
     content.add(this)
@@ -78,10 +70,10 @@ class CaseNotesBuilder {
 }
 
 class FiltersBuilder {
-  private val prisons = mutableSetOf<String>()
-  private val caseNotes = mutableSetOf<String>()
+  private val prisons = mutableListOf<String>()
+  private val caseNotes = mutableListOf<String>()
 
-  fun build(): Filters = Filters(prisons, caseNotes)
+  fun build(): ConsumerFilters = ConsumerFilters(prisons, caseNotes)
 
   fun prisons(init: PrisonsBuilder.() -> Unit) {
     prisons.addAll(PrisonsBuilder().apply(init).content)

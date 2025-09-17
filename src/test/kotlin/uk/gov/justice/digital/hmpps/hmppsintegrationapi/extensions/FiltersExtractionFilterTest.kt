@@ -9,6 +9,8 @@ import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_ROLES_DSL
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.GlobalsConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
@@ -21,6 +23,7 @@ class FiltersExtractionFilterTest {
     FiltersExtractionFilter(
       authorisationConfig,
       globalsConfig,
+      FeatureFlagConfig(mapOf(USE_ROLES_DSL to true)),
     )
 
   @Test
@@ -54,6 +57,7 @@ class FiltersExtractionFilterTest {
     val testRole = Role(include = null, filters = expectedFilters)
     authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, filters = ConsumerFilters(prisons = null), roles = listOf("test-role")))
     globalsConfig.roles = mapOf("test-role" to testRole)
+    filtersExtractionFilter.roles = mapOf("test-role" to testRole)
 
     // Act
     filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)
@@ -75,6 +79,7 @@ class FiltersExtractionFilterTest {
     val testRole = Role(include = null, filters = expectedFilters)
     authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, filters = ConsumerFilters(prisons = null), roles = listOf("test-role")))
     globalsConfig.roles = mapOf("test-role" to testRole)
+    filtersExtractionFilter.roles = mapOf("test-role" to testRole)
 
     // Act
     filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)
@@ -96,6 +101,7 @@ class FiltersExtractionFilterTest {
     val testRole = Role(include = null, filters = ConsumerFilters(prisons = listOf("role-filter")))
     authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, filters = ConsumerFilters(prisons = listOf("consumer-filter")), roles = listOf("test-role")))
     globalsConfig.roles = mapOf("test-role" to testRole)
+    filtersExtractionFilter.roles = mapOf("test-role" to testRole)
 
     // Act
     filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)
@@ -136,6 +142,7 @@ class FiltersExtractionFilterTest {
     val testRole = Role(include = null, filters = expectedFilters)
     authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, filters = ConsumerFilters(prisons = null), roles = listOf("test-role")))
     globalsConfig.roles = mapOf("test-role" to testRole)
+    filtersExtractionFilter.roles = mapOf("test-role" to testRole)
 
     // Act
     filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)
@@ -157,6 +164,7 @@ class FiltersExtractionFilterTest {
     val testRole = Role(include = null, filters = ConsumerFilters(prisons = null, caseNotes = listOf("role-filter")))
     authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, filters = ConsumerFilters(prisons = null, caseNotes = listOf("consumer-filter")), roles = listOf("test-role")))
     globalsConfig.roles = mapOf("test-role" to testRole)
+    filtersExtractionFilter.roles = mapOf("test-role" to testRole)
 
     // Act
     filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)
@@ -178,6 +186,7 @@ class FiltersExtractionFilterTest {
     val testRole = Role(include = null, filters = ConsumerFilters(prisons = listOf("role-filter"), caseNotes = listOf("role-filter")))
     authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, filters = ConsumerFilters(prisons = listOf("consumer-filter"), caseNotes = listOf("consumer-filter")), roles = listOf("test-role")))
     globalsConfig.roles = mapOf("test-role" to testRole)
+    filtersExtractionFilter.roles = mapOf("test-role" to testRole)
 
     // Act
     filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)

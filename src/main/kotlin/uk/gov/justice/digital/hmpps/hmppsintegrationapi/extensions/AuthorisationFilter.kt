@@ -17,10 +17,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.GlobalsConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.Role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuthoriseConsumerService
 import java.io.IOException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mapping.roles as Roles
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles as Roles
 
 @Component
 @Order(1)
@@ -29,8 +28,9 @@ class AuthorisationFilter(
   @Autowired val authorisationConfig: AuthorisationConfig,
   @Autowired val globalsConfig: GlobalsConfig,
   @Autowired val featureFlagConfig: FeatureFlagConfig?,
-  @Autowired(required = false) val roles: Map<String, Role> = Roles,
 ) : Filter {
+  var roles = Roles
+
   @Throws(IOException::class, ServletException::class)
   override fun doFilter(
     request: ServletRequest,

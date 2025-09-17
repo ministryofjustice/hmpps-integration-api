@@ -11,11 +11,14 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_ROLES_DSL
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.GlobalsConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 import java.io.IOException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles as Roles
 
 @Component
 @Order(2)
@@ -25,7 +28,10 @@ class FiltersExtractionFilter
   constructor(
     var authorisationConfig: AuthorisationConfig,
     val globalsConfig: GlobalsConfig,
+    val featureFlagConfig: FeatureFlagConfig?,
   ) : Filter {
+    var roles = Roles
+
     @Throws(IOException::class, ServletException::class)
     override fun doFilter(
       request: ServletRequest,
@@ -40,8 +46,14 @@ class FiltersExtractionFilter
         return
       }
 
-      val aggregatedRoles: List<Role>? = consumerConfig.roles?.mapNotNull { globalsConfig.roles[it] }
-
+      val aggregatedRoles: List<Role>? =
+        consumerConfig.roles?.mapNotNull {
+          if (featureFlagConfig?.isEnabled(USE_ROLES_DSL) == true) {
+            roles[it]
+          } else {
+            globalsConfig.roles[it]
+          }
+        }
       val filters = buildAggregatedFilters(consumerConfig.filters, aggregatedRoles)
       request.setAttribute("filters", filters)
       chain.doFilter(request, response)
