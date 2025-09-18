@@ -1,9 +1,14 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 
+import io.mockk.every
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -14,10 +19,11 @@ import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.whenever
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.bean.override.mockito.MockitoBean
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_ROLES_DSL
@@ -32,14 +38,24 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 @ActiveProfiles("integration-test")
 @AutoConfigureMockMvc
 class FiltersExtractionFilterIntegrationRoleDslTest {
-  @Autowired
+  @MockitoBean
   lateinit var authorisationConfig: AuthorisationConfig
 
-  @Autowired
+  @MockitoSpyBean
   lateinit var globalsConfig: GlobalsConfig
 
-  @Autowired
+  @MockitoBean
   lateinit var featureFlagConfig: FeatureFlagConfig
+
+  @BeforeEach
+  fun setUp() {
+    mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
+  }
+
+  @AfterEach
+  fun after() {
+    unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
+  }
 
   companion object {
     @JvmStatic
@@ -71,12 +87,12 @@ class FiltersExtractionFilterIntegrationRoleDslTest {
     roleName: String,
     expectedFilters: ConsumerFilters?,
   ) {
-    val globalsConfig = GlobalsConfig()
+    val testGlobalsConfig = GlobalsConfig()
 
     val filtersExtractionFilter =
       FiltersExtractionFilter(
         authorisationConfig,
-        globalsConfig,
+        testGlobalsConfig,
         FeatureFlagConfig(mapOf(USE_ROLES_DSL to useDsl)),
       )
     val mockRequest = mock(HttpServletRequest::class.java)
@@ -86,9 +102,9 @@ class FiltersExtractionFilterIntegrationRoleDslTest {
     val filtersCapture = ArgumentCaptor.forClass(ConsumerFilters::class.java)
     val roleFilters = roles[roleName]?.filters
     val testRole = Role(include = null, filters = roleFilters)
-    authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, filters = ConsumerFilters(prisons = null), roles = listOf("test-role")))
-    globalsConfig.roles = mapOf("test-role" to testRole)
-    filtersExtractionFilter.roles = mapOf("test-role" to testRole)
+    whenever(authorisationConfig.consumers).thenReturn(mapOf("consumer-name" to ConsumerConfig(include = null, filters = ConsumerFilters(prisons = null), roles = listOf("test-role"))))
+    testGlobalsConfig.roles = mapOf("test-role" to testRole)
+    every { roles } returns mapOf("test-role" to testRole)
     filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)
     verify(mockRequest, times(1)).setAttribute(eq("filters"), filtersCapture.capture())
     val actualFilters = filtersCapture?.value

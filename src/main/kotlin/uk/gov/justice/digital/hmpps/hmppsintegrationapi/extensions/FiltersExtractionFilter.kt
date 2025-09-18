@@ -17,8 +17,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.GlobalsConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import java.io.IOException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles as Roles
 
 @Component
 @Order(2)
@@ -30,8 +30,6 @@ class FiltersExtractionFilter
     val globalsConfig: GlobalsConfig,
     val featureFlagConfig: FeatureFlagConfig?,
   ) : Filter {
-    var roles = Roles
-
     @Throws(IOException::class, ServletException::class)
     override fun doFilter(
       request: ServletRequest,

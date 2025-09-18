@@ -13,7 +13,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ConfigAutho
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles as Roles
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 
 @Hidden
 @RestController("ConfigControllerV2")
@@ -24,8 +24,6 @@ class ConfigController(
   var globalsConfig: GlobalsConfig,
   var featureFlagConfig: FeatureFlagConfig?,
 ) {
-  var roles = Roles
-
   @GetMapping("authorisation")
   fun getAuthorisation(): Map<String, ConfigAuthorisation> = authorisationConfig.consumers.entries.associate { it.key to mapConsumerToIncludesAndFilters(it.value) }
 
