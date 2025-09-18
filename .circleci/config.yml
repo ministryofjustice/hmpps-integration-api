@@ -154,9 +154,9 @@ jobs:
           name: Run smoke tests
           command: |
             k6 run -e PROFILE=MAIN ./scripts/K6/smoke-tests.js
-            k6 run -e PROFILE=LAO ./scripts/K6/limited-access-smoke-tests.js
-            k6 run -e PROFILE=NOPERMS ./scripts/K6/no-access-with-certs-smoke-tests.js
-            k6 run -e PROFILE=NOCERT ./scripts/K6/no-access-without-certs-smoke-tests.js
+            k6 run -e PROFILE=LIMITED ./scripts/K6/smoke-tests.js
+            k6 run -e PROFILE=NOPERMS ./scripts/K6/smoke-tests.js
+            k6 run -e PROFILE=NOCERT ./scripts/K6/smoke-tests.js
   smoke-tests-higher-envs:
     docker:
       - image: grafana/k6:1.0.0

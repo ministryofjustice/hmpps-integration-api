@@ -2,11 +2,13 @@ import http from "k6/http";
 import encoding from 'k6/encoding';
 
 function read_or_decode(value, suffix) {
+  if (value === "") {
+    return "";
+  }
   if (value.includes(suffix)) {
     return open(value);
-  } else {
-    return encoding.b64decode(value, 'std', 's');
   }
+  return encoding.b64decode(value, 'std', 's');
 }
 
 export function read_certificate(profile) {
@@ -24,7 +26,7 @@ export function read_certificate(profile) {
       key_val = __ENV.SMOKE_TEST_KEY;
       api_key_val = __ENV.SMOKE_TEST_API_KEY;
       break
-    case "LAO":
+    case "LIMITED":
       cert_val = __ENV.LIMITED_ACCESS_CERT;
       key_val = __ENV.LIMITED_ACCESS_KEY;
       api_key_val = __ENV.LIMITED_ACCESS_API_KEY;
@@ -50,14 +52,4 @@ export function read_certificate(profile) {
   ]
 }
 
-/**
- * Make a GET request to the API and validate that the http response code indicates syccess.
- * @returns the http response object
- */
-export function validate_get_request(path) {
-  const res = http.get(`${baseUrl}${path}`, httpParams);
-  check(res, {
-    [`GET ${path} successful`]: (r) => r.status < 400,
-  });
-  return res;
-}
+
