@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.config
 
 import io.sentry.Sentry
+import io.sentry.SentryEvent
+import io.sentry.SentryLevel
 import jakarta.validation.ValidationException
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -92,7 +94,7 @@ class HmppsIntegrationApiExceptionHandler {
 
   @ExceptionHandler(EntityNotFoundException::class)
   fun handle(e: EntityNotFoundException): ResponseEntity<ErrorResponse> {
-    logAndCapture("Not found (404) returned with message {}", e)
+    logInfo("Not found (404) returned with message {}", e)
     return ResponseEntity
       .status(NOT_FOUND)
       .body(
@@ -236,6 +238,17 @@ class HmppsIntegrationApiExceptionHandler {
   ) {
     log.error(message, e.message)
     Sentry.captureException(e)
+  }
+
+  /**
+   * Logs, and records in Sentry, an informational message.
+   */
+  private fun logInfo(
+    message: String,
+    e: Exception,
+  ) {
+    log.info(message, e)
+    Sentry.captureMessage(message, SentryLevel.INFO)
   }
 
   companion object {
