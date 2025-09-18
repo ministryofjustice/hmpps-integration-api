@@ -68,6 +68,7 @@ feature-flag:
   education-aln-trigger-enabled: true
   use-contact-events-endpoint: true
   use-stubbed-contact-events-data: false
+  use-roles-dsl: true
 
 authorisation:
   consumers:

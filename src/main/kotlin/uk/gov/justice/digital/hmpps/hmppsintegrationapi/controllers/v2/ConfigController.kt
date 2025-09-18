@@ -6,12 +6,14 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_ROLES_DSL
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.GlobalsConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ConfigAuthorisation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
-import kotlin.collections.orEmpty
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 
 @Hidden
 @RestController("ConfigControllerV2")
@@ -20,6 +22,7 @@ import kotlin.collections.orEmpty
 class ConfigController(
   var authorisationConfig: AuthorisationConfig,
   var globalsConfig: GlobalsConfig,
+  var featureFlagConfig: FeatureFlagConfig?,
 ) {
   @GetMapping("authorisation")
   fun getAuthorisation(): Map<String, ConfigAuthorisation> = authorisationConfig.consumers.entries.associate { it.key to mapConsumerToIncludesAndFilters(it.value) }
@@ -33,7 +36,11 @@ class ConfigController(
   private fun buildEndpointsList(consumerConfig: ConsumerConfig?): List<String> =
     buildList {
       for (consumerRole in consumerConfig?.roles.orEmpty()) {
-        addAll(globalsConfig.roles[consumerRole]?.include.orEmpty())
+        if (featureFlagConfig?.isEnabled(USE_ROLES_DSL) == true) {
+          addAll(roles[consumerRole]?.include.orEmpty())
+        } else {
+          addAll(globalsConfig.roles[consumerRole]?.include.orEmpty())
+        }
       }
       addAll(consumerConfig?.include.orEmpty())
     }
