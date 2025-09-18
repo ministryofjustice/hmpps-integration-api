@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.config
 
 import io.sentry.Sentry
-import io.sentry.SentryEvent
 import io.sentry.SentryLevel
 import jakarta.validation.ValidationException
 import org.slf4j.LoggerFactory
@@ -248,7 +247,7 @@ class HmppsIntegrationApiExceptionHandler {
     e: Exception,
   ) {
     log.info(message, e)
-    Sentry.captureMessage(message, SentryLevel.INFO)
+    Sentry.captureMessage("$message : ${e.message}", SentryLevel.INFO)
   }
 
   companion object {
