@@ -75,7 +75,7 @@ class ContactEventsController(
   }
 
   @GetMapping("{contactEventId}")
-  @Tag(name = "Contact Event")
+  @Tag(name = "Contact Events")
   @Operation(
     summary = "Returns a Contact Event for a person and contact event id.",
     responses = [
