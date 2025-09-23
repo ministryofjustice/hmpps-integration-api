@@ -163,7 +163,8 @@
           <main id="content" class="technical-documentation" data-module="anchored-headings">
             <h1 id="about">About</h1>
 <p>HMPPS External API (formerly HMPPS Integration API) is a RESTFul API that provides a single point of entry for organisations to access data about a person within the prison and probation services of Ministry of Justice (MOJ) such as the National Offender Management Information System (NOMIS). It uses a HMPPS ID for a person.</p>
-<p>Additionally the API is supported by an events based system which triggers SNS notifications by processing upstream MoJ domain events which are related to the information served by the API. This allows the clients of our API to be notified when a change occurs to a domain that is of interest to them.</p>
+<p>Additionally the API is supported by an event notification system that can inform consumers when data exposed by the API endpoints they have access to has changed.
+Only notifications related to endpoints that consumers have access to will be sent, and the notifications are sent via an AWS SQS queue.</p>
 <h2 id="diagrams">Diagrams</h2>
 <p>The <a href="https://c4model.com/">C4 model</a> is used for visualising the technical architecture of the service.</p>
 <h3 id="context-diagram">Context diagram</h3>
@@ -173,17 +174,17 @@
 <p>The API <a href="https://c4model.com/#ContainerDiagram">container diagram</a> provides a more in-depth view of the different upstreams APIs that are used to retrieve data from the HMPPS systems such as the <a href="https://prison-api-dev.prison.service.justice.gov.uk/swagger-ui/index.html">Prison API</a> for NOMIS.</p>
 <p><a href="https://raw.githubusercontent.com/ministryofjustice/hmpps-integration-api/main/docs/diagrams/container.svg"><a href="https://raw.githubusercontent.com/ministryofjustice/hmpps-integration-api/main/docs/diagrams/container.svg" rel="noopener noreferrer"><img src="https://raw.githubusercontent.com/ministryofjustice/hmpps-integration-api/main/docs/diagrams/container.svg" alt="Container diagram" /></a></a></p>
 
-              <div data-module='page-expiry' data-last-reviewed-on="2025-07-25">
+              <div data-module='page-expiry' data-last-reviewed-on="2026-03-23">
     <div class='page-expiry--not-expired'>
-      This page was last reviewed on 25 April 2025.
+      This page was last reviewed on 23 September 2025.
 
-        It needs to be reviewed again on 25 July 2025
+        It needs to be reviewed again on 23 March 2026
         by the page owner <a href="">#hmpps-integration-api-alerts</a>
         .
     </div>
 
     <div class='page-expiry--expired' hidden>
-      This page was set to be reviewed before 25 July 2025
+      This page was set to be reviewed before 23 March 2026
        by the page owner <a href="">#hmpps-integration-api-alerts</a>.
       This might mean the content is out of date.
     </div>

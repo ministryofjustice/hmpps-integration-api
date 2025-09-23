@@ -163,8 +163,8 @@
           <main id="content" class="technical-documentation" data-module="anchored-headings">
             <h1 id="hmpps-external-events">HMPPS External Events</h1>
 <p>HMPPS External Events (formerly HMPPS Integration Events) is an events based system which triggers SNS notifications by processing upstream MoJ domain events which are related to the information served by the API. This allows the clients of our API to be notified when a change occurs to a domain that is of interest to them.</p>
-<p>Consumers who want to receive Integration Events, will need an SQS queue and Subscription to the Integration Events Topic created. This will provide them with a queue that receives events when they are put on the Integration Event topic.</p>
-<p>Email <a href="mailto:hmpps-integration-api@digital.justice.gov.uk">hmpps-integration-api@digital.justice.gov.uk</a> to request access to this Events service, and any specific events.</p>
+<p>Consumers who want to receive Integration Events, will be provided with a dedicated AWS SQS queue that automatically subscribes to notifications for the API endpoints they have access to.</p>
+<p>Email <a href="mailto:hmpps-integration-api@justice.gov.uk">hmpps-integration-api@justice.gov.uk</a> to request access to this Events service.</p>
 <h2 id="available-events">Available Events</h2>
 <p>Below is a list of all the events that you can currently receive notifications about if something changes.
 It details the endpoints the events relate to, and information about what triggers an event to be sent.</p>
@@ -879,17 +879,17 @@ It details the endpoints the events relate to, and information about what trigge
 
 <hr>
 
-              <div data-module='page-expiry' data-last-reviewed-on="2025-09-09">
+              <div data-module='page-expiry' data-last-reviewed-on="2026-03-23">
     <div class='page-expiry--not-expired'>
-      This page was last reviewed on 9 June 2025.
+      This page was last reviewed on 23 September 2025.
 
-        It needs to be reviewed again on 9 September 2025
+        It needs to be reviewed again on 23 March 2026
         by the page owner <a href="">#hmpps-integration-api-alerts</a>
         .
     </div>
 
     <div class='page-expiry--expired' hidden>
-      This page was set to be reviewed before 9 September 2025
+      This page was set to be reviewed before 23 March 2026
        by the page owner <a href="">#hmpps-integration-api-alerts</a>.
       This might mean the content is out of date.
     </div>
