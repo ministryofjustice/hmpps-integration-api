@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.io.ClassPathResource
@@ -77,18 +78,18 @@ interface AuthorisationConfigProvider {
 }
 
 class DefaultAuthorisationConfigProvider : AuthorisationConfigProvider {
+  val log = LoggerFactory.getLogger(this.javaClass)
+
   override fun getConfig(environment: String): AuthorisationConfig {
     val mapper = ObjectMapper(YAMLFactory()).registerKotlinModule()
     try {
-      val consumers =
+      val authConfig =
         mapper
           .readTree(ClassPathResource("application-$environment.yml").file)
           .path("authorisation")
-          .path("consumers")
-      val authConfig = AuthorisationConfig()
-      authConfig.consumers = mapper.convertValue(consumers, object : TypeReference<Map<String, ConsumerConfig?>>() {})
-      return authConfig
+      return mapper.convertValue(authConfig, object : TypeReference<AuthorisationConfig>() {})
     } catch (e: FileNotFoundException) {
+      log.warn("No authorisation configuration found for environment: $environment")
       return AuthorisationConfig()
     }
   }
