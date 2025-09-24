@@ -50,40 +50,36 @@ class PermissionChecker(val environmentPropertyProvider: EnvironmentPropertyProv
     return if (keyParts.size >= 3) keyParts[2] else "{unknown}"
   }
 
-  private fun grantsAccess(key: String, value: String, endpoint: String): Boolean =
-    isDirectAccess(key, value, endpoint) ||
-    isRoleAccess(key, value, endpoint)
+  private fun grantsAccess(key: String, value: String, endpoint: String): Boolean = isDirectAccess(key, value, endpoint) || isRoleAccess(key, value, endpoint)
 
-  private fun isRoleAccess(key: String, value: String, endpoint: String): Boolean =
-    isRoleDef(key) && roleCanAccess(value, endpoint)
+  private fun isRoleAccess(key: String, value: String, endpoint: String): Boolean = isRoleDef(key) && roleCanAccess(value, endpoint)
 
-  private fun isDirectAccess(key: String, value: String, endpoint: String): Boolean =
-    isInclude(key) && value.equals(endpoint)
+  private fun isDirectAccess(key: String, value: String, endpoint: String): Boolean = isInclude(key) && value.equals(endpoint)
 
-  private fun isInclude(key: String): Boolean =
-    key.contains(".include[")
+  private fun isInclude(key: String): Boolean = key.contains(".include[")
 
-  private fun isRoleDef(key: String): Boolean =
-    key.contains(".roles[")
+  private fun isRoleDef(key: String): Boolean = key.contains(".roles[")
 
-  private fun roleCanAccess(roleName: String, endpoint: String): Boolean =
-    roles[roleName]?.include?.contains(endpoint) == true
+  private fun roleCanAccess(roleName: String, endpoint: String): Boolean = roles[roleName]?.include?.contains(endpoint) == true
 }
 
 /**
  * Provides access to the properties of an environment (as strings).
  */
 interface EnvironmentPropertyProvider {
-  fun getConfig(environment: String): Map<String,String>
+  fun getConfig(environment: String): Map<String, String>
 }
 
-class DefaultEnvironmentPropertyProvider: EnvironmentPropertyProvider {
-  override fun getConfig(environment: String): Map<String,String> {
+class DefaultEnvironmentPropertyProvider : EnvironmentPropertyProvider {
+  override fun getConfig(environment: String): Map<String, String> {
     val yaml = YamlPropertiesFactoryBean()
     yaml.setResources(ClassPathResource("application-$environment.yml"))
-    return stringProperties(yaml.getObject()!!)
+    try {
+      return stringProperties(yaml.getObject()!!)
+    } catch (e: IllegalStateException) {
+      return emptyMap()
+    }
   }
 
-  private fun stringProperties(properties: Properties): Map<String, String> =
-    properties.map { it.key.toString() to it.value.toString() }.toMap()
+  private fun stringProperties(properties: Properties): Map<String, String> = properties.map { it.key.toString() to it.value.toString() }.toMap()
 }

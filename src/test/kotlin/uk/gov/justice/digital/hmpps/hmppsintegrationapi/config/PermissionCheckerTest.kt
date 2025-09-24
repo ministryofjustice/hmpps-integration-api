@@ -27,7 +27,12 @@ class PermissionCheckerTest {
 
   @Test
   fun `no matching consumers`() {
-    assertEquals(0, permissionChecker.consumersWithPermission("/v1/badpath", "dev").size)
+    assertEquals(0, permissionChecker.consumersWithPermission("/v0/badpath", "dev").size)
+  }
+
+  @Test
+  fun `no matching environment`() {
+    assertEquals(0, permissionChecker.consumersWithPermission("/v1/status", "notfound").size)
   }
 
   @Test
