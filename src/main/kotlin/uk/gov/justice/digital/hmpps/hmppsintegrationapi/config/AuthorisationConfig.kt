@@ -41,17 +41,14 @@ class PermissionChecker(
   fun consumersWithPermission(
     endpoint: String,
     environment: String,
-  ): List<String> {
-    val matches = mutableSetOf<String>()
-
-    for ((name, config) in authProvider.getConfig(environment).consumers) {
-      if (hasAccess(config, endpoint)) {
-        matches.add(name)
-      }
-    }
-
-    return matches.toList().sorted()
-  }
+  ): List<String> =
+    authProvider
+      .getConfig(environment)
+      .consumers
+      .filter { hasAccess(it.value, endpoint) }
+      .map { it.key }
+      .toList()
+      .sorted()
 
   private fun hasAccess(
     config: ConsumerConfig?,
