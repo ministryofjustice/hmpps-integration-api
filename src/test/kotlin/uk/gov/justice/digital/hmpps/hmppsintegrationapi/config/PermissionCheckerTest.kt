@@ -61,11 +61,12 @@ class PermissionCheckerTest {
   @Test
   fun `validate core PermissionChecker behaviour`() {
     val authConfig = AuthorisationConfig()
-    authConfig.consumers = mapOf(
-      "c1" to ConsumerConfig(include = listOf("/tester"), filters = null, roles = listOf()),
-      "c2" to ConsumerConfig(include = listOf("/tester", "/other"), filters = null, roles = listOf()),
-      "c3" to ConsumerConfig(include = listOf("/other"), filters = null, roles = listOf()),
-    )
+    authConfig.consumers =
+      mapOf(
+        "c1" to ConsumerConfig(include = listOf("/tester"), filters = null, roles = listOf()),
+        "c2" to ConsumerConfig(include = listOf("/tester", "/other"), filters = null, roles = listOf()),
+        "c3" to ConsumerConfig(include = listOf("/other"), filters = null, roles = listOf()),
+      )
     val provider = mock(AuthorisationConfigProvider::class.java)
     whenever(provider.getConfig(any())).thenReturn(authConfig)
 
@@ -74,5 +75,4 @@ class PermissionCheckerTest {
     assertContains(matches, "c1")
     assertContains(matches, "c2")
   }
-
 }

@@ -52,7 +52,10 @@ class PermissionChecker(
     return matches.toList().sorted()
   }
 
-  private fun hasAccess(config: ConsumerConfig?, endpoint: String) : Boolean {
+  private fun hasAccess(
+    config: ConsumerConfig?,
+    endpoint: String,
+  ): Boolean {
     if (config?.include?.contains(endpoint) == true) return true
     for (roleName in config?.roles ?: emptyList()) {
       if (roleCanAccess(roleName, endpoint)) return true
@@ -64,7 +67,6 @@ class PermissionChecker(
     roleName: String,
     endpoint: String,
   ): Boolean = roles[roleName]?.include?.contains(endpoint) == true
-
 }
 
 /**
@@ -78,9 +80,11 @@ class DefaultAuthorisationConfigProvider : AuthorisationConfigProvider {
   override fun getConfig(environment: String): AuthorisationConfig {
     val mapper = ObjectMapper(YAMLFactory()).registerKotlinModule()
     try {
-      val consumers = mapper.readTree(ClassPathResource("application-$environment.yml").file)
-        .path("authorisation")
-        .path("consumers")
+      val consumers =
+        mapper
+          .readTree(ClassPathResource("application-$environment.yml").file)
+          .path("authorisation")
+          .path("consumers")
       val authConfig = AuthorisationConfig()
       authConfig.consumers = mapper.convertValue(consumers, object : TypeReference<Map<String, ConsumerConfig?>>() {})
       return authConfig
@@ -88,5 +92,4 @@ class DefaultAuthorisationConfigProvider : AuthorisationConfigProvider {
       return AuthorisationConfig()
     }
   }
-
 }
