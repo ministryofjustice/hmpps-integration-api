@@ -7,8 +7,7 @@ import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
-import java.util.*
-
+import java.util.Properties
 
 @Configuration
 @Component
@@ -17,23 +16,28 @@ class AuthorisationConfig {
   var consumers: Map<String, ConsumerConfig?> = emptyMap()
 }
 
-
 /**
  * Utility to determine whether a consumer has permissions for an endpoint in a particular environment.
  */
-class PermissionChecker(val environmentPropertyProvider: EnvironmentPropertyProvider = DefaultEnvironmentPropertyProvider()) {
-
+class PermissionChecker(
+  val environmentPropertyProvider: EnvironmentPropertyProvider = DefaultEnvironmentPropertyProvider(),
+) {
   /**
    * Returns true if the user has access to an endpoint in an environment.
    */
-  fun hasPermission(endpoint: String, environment: String, username: String): Boolean {
-    return consumersWithPermission(endpoint, environment).contains(username)
-  }
+  fun hasPermission(
+    endpoint: String,
+    environment: String,
+    username: String,
+  ): Boolean = consumersWithPermission(endpoint, environment).contains(username)
 
   /**
    * Returns a sorted list of all users with access to an endpoint in an environment.
    */
-  fun consumersWithPermission(endpoint: String, environment: String): List<String> {
+  fun consumersWithPermission(
+    endpoint: String,
+    environment: String,
+  ): List<String> {
     val matches = mutableSetOf<String>()
 
     for ((key, value) in environmentPropertyProvider.getConfig(environment)) {
@@ -50,17 +54,32 @@ class PermissionChecker(val environmentPropertyProvider: EnvironmentPropertyProv
     return if (keyParts.size >= 3) keyParts[2] else "{unknown}"
   }
 
-  private fun grantsAccess(key: String, value: String, endpoint: String): Boolean = isDirectAccess(key, value, endpoint) || isRoleAccess(key, value, endpoint)
+  private fun grantsAccess(
+    key: String,
+    value: String,
+    endpoint: String,
+  ): Boolean = isDirectAccess(key, value, endpoint) || isRoleAccess(key, value, endpoint)
 
-  private fun isRoleAccess(key: String, value: String, endpoint: String): Boolean = isRoleDef(key) && roleCanAccess(value, endpoint)
+  private fun isRoleAccess(
+    key: String,
+    value: String,
+    endpoint: String,
+  ): Boolean = isRoleDef(key) && roleCanAccess(value, endpoint)
 
-  private fun isDirectAccess(key: String, value: String, endpoint: String): Boolean = isInclude(key) && value.equals(endpoint)
+  private fun isDirectAccess(
+    key: String,
+    value: String,
+    endpoint: String,
+  ): Boolean = isInclude(key) && value.equals(endpoint)
 
   private fun isInclude(key: String): Boolean = key.contains(".include[")
 
   private fun isRoleDef(key: String): Boolean = key.contains(".roles[")
 
-  private fun roleCanAccess(roleName: String, endpoint: String): Boolean = roles[roleName]?.include?.contains(endpoint) == true
+  private fun roleCanAccess(
+    roleName: String,
+    endpoint: String,
+  ): Boolean = roles[roleName]?.include?.contains(endpoint) == true
 }
 
 /**

@@ -59,19 +59,19 @@ class PermissionCheckerTest {
 
   @Test
   fun `validate core PermissionChecker behaviour`() {
-    val environmentProperties = mapOf(
-      "authorisation.consumers.c1.include[0]" to "/tester",
-      "authorisation.consumers.c2.include[0]" to "/other",
-      "authorisation.consumers.c2.include[1]" to "/tester",
-      "authorisation.consumers.c3.include[1]" to "/other",
-    )
+    val environmentProperties =
+      mapOf(
+        "authorisation.consumers.c1.include[0]" to "/tester",
+        "authorisation.consumers.c2.include[0]" to "/other",
+        "authorisation.consumers.c2.include[1]" to "/tester",
+        "authorisation.consumers.c3.include[1]" to "/other",
+      )
     val config = mock(EnvironmentPropertyProvider::class.java)
     whenever(config.getConfig(any())).thenReturn(environmentProperties)
 
-    val matches = PermissionChecker(config) .consumersWithPermission("/tester", "test1")
+    val matches = PermissionChecker(config).consumersWithPermission("/tester", "test1")
     assertEquals(2, matches.size)
     assertContains(matches, "c1")
     assertContains(matches, "c2")
   }
 }
-
