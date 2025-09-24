@@ -56,20 +56,29 @@ class AuthorisationConfigTest {
     }
   }
 
+  fun listConsumersWithAccess(
+    environment: String,
+    endpoint: String,
+  ): List<String> {
+    val matches = getConfig(environment).consumersWithAccess(endpoint)
+    log.info("Consumers with access to {} in {} : {}", endpoint, environment, matches)
+    return matches
+  }
+
   @Test
   fun `show permission matches`() {
     val endpoint = "/health/readiness"
     val environment = "preprod"
-    val matches = getConfig(environment).consumersWithAccess(endpoint)
 
-    log.info("Consumers with access to {} in {} : {}", endpoint, environment, matches)
+    // Temporarily change endpoint & environment to see who has access to what, where
+    val matches = listConsumersWithAccess(environment, endpoint)
 
     assertEquals(1, matches.size)
     assertEquals("kubernetes-health-check-client", matches[0])
   }
 
   @Test
-  fun `validate core PermissionChecker behaviour`() {
+  fun `validate core endpoint matching with synthetic data`() {
     val authConfig = AuthorisationConfig()
     authConfig.consumers =
       mapOf(
