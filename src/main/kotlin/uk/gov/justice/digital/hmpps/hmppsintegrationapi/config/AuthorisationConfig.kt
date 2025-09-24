@@ -18,6 +18,30 @@ import java.io.FileNotFoundException
 @ConfigurationProperties(prefix = "authorisation")
 class AuthorisationConfig {
   var consumers: Map<String, ConsumerConfig?> = emptyMap()
+
+  fun hasAccess(
+    consumerName: String,
+    endpoint: String,
+  ): Boolean {
+    val config = consumers[consumerName]
+    if (config?.include?.contains(endpoint) == true) return true
+    for (roleName in config?.roles ?: emptyList()) {
+      if (roleCanAccess(roleName, endpoint)) return true
+    }
+    return false
+  }
+
+  fun consumersWithAccess(endpoint: String): List<String> =
+    consumers
+      .filter { hasAccess(it.key, endpoint) }
+      .map { it.key }
+      .toList()
+      .sorted()
+
+  private fun roleCanAccess(
+    roleName: String,
+    endpoint: String,
+  ): Boolean = roles[roleName]?.include?.contains(endpoint) == true
 }
 
 /**
@@ -33,7 +57,7 @@ class PermissionChecker(
     endpoint: String,
     environment: String,
     username: String,
-  ): Boolean = consumersWithPermission(endpoint, environment).contains(username)
+  ): Boolean = authProvider.getConfig(environment).hasAccess(username, endpoint)
 
   /**
    * Returns a sorted list of all users with access to an endpoint in an environment.
@@ -44,27 +68,7 @@ class PermissionChecker(
   ): List<String> =
     authProvider
       .getConfig(environment)
-      .consumers
-      .filter { hasAccess(it.value, endpoint) }
-      .map { it.key }
-      .toList()
-      .sorted()
-
-  private fun hasAccess(
-    config: ConsumerConfig?,
-    endpoint: String,
-  ): Boolean {
-    if (config?.include?.contains(endpoint) == true) return true
-    for (roleName in config?.roles ?: emptyList()) {
-      if (roleCanAccess(roleName, endpoint)) return true
-    }
-    return false
-  }
-
-  private fun roleCanAccess(
-    roleName: String,
-    endpoint: String,
-  ): Boolean = roles[roleName]?.include?.contains(endpoint) == true
+      .consumersWithAccess(endpoint)
 }
 
 /**
