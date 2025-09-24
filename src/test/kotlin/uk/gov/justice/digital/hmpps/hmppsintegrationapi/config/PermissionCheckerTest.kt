@@ -6,6 +6,7 @@ import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
 import org.slf4j.LoggerFactory
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
@@ -59,19 +60,19 @@ class PermissionCheckerTest {
 
   @Test
   fun `validate core PermissionChecker behaviour`() {
-    val environmentProperties =
-      mapOf(
-        "authorisation.consumers.c1.include[0]" to "/tester",
-        "authorisation.consumers.c2.include[0]" to "/other",
-        "authorisation.consumers.c2.include[1]" to "/tester",
-        "authorisation.consumers.c3.include[1]" to "/other",
-      )
-    val config = mock(EnvironmentPropertyProvider::class.java)
-    whenever(config.getConfig(any())).thenReturn(environmentProperties)
+    val authConfig = AuthorisationConfig()
+    authConfig.consumers = mapOf(
+      "c1" to ConsumerConfig(include = listOf("/tester"), filters = null, roles = listOf()),
+      "c2" to ConsumerConfig(include = listOf("/tester", "/other"), filters = null, roles = listOf()),
+      "c3" to ConsumerConfig(include = listOf("/other"), filters = null, roles = listOf()),
+    )
+    val provider = mock(AuthorisationConfigProvider::class.java)
+    whenever(provider.getConfig(any())).thenReturn(authConfig)
 
-    val matches = PermissionChecker(config).consumersWithPermission("/tester", "test1")
+    val matches = PermissionChecker(provider).consumersWithPermission("/tester", "test1")
     assertEquals(2, matches.size)
     assertContains(matches, "c1")
     assertContains(matches, "c2")
   }
+
 }

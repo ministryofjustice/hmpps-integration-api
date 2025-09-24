@@ -1,13 +1,16 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.config
 
-import org.springframework.beans.factory.config.YamlPropertiesFactoryBean
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
-import java.util.Properties
+import java.io.FileNotFoundException
 
 @Configuration
 @Component
@@ -20,7 +23,7 @@ class AuthorisationConfig {
  * Utility to determine whether a consumer has permissions for an endpoint in a particular environment.
  */
 class PermissionChecker(
-  val environmentPropertyProvider: EnvironmentPropertyProvider = DefaultEnvironmentPropertyProvider(),
+  val authProvider: AuthorisationConfigProvider = DefaultAuthorisationConfigProvider(),
 ) {
   /**
    * Returns true if the user has access to an endpoint in an environment.
@@ -40,65 +43,50 @@ class PermissionChecker(
   ): List<String> {
     val matches = mutableSetOf<String>()
 
-    for ((key, value) in environmentPropertyProvider.getConfig(environment)) {
-      if (grantsAccess(key, value, endpoint)) {
-        matches.add(propertyConsumerName(key))
+    for ((name, config) in authProvider.getConfig(environment).consumers) {
+      if (hasAccess(config, endpoint)) {
+        matches.add(name)
       }
     }
 
     return matches.toList().sorted()
   }
 
-  private fun propertyConsumerName(key: String): String {
-    val keyParts = key.split(".")
-    return if (keyParts.size >= 3) keyParts[2] else "{unknown}"
+  private fun hasAccess(config: ConsumerConfig?, endpoint: String) : Boolean {
+    if (config?.include?.contains(endpoint) == true) return true
+    for (roleName in config?.roles ?: emptyList()) {
+      if (roleCanAccess(roleName, endpoint)) return true
+    }
+    return false
   }
-
-  private fun grantsAccess(
-    key: String,
-    value: String,
-    endpoint: String,
-  ): Boolean = isDirectAccess(key, value, endpoint) || isRoleAccess(key, value, endpoint)
-
-  private fun isRoleAccess(
-    key: String,
-    value: String,
-    endpoint: String,
-  ): Boolean = isRoleDef(key) && roleCanAccess(value, endpoint)
-
-  private fun isDirectAccess(
-    key: String,
-    value: String,
-    endpoint: String,
-  ): Boolean = isInclude(key) && value.equals(endpoint)
-
-  private fun isInclude(key: String): Boolean = key.contains(".include[")
-
-  private fun isRoleDef(key: String): Boolean = key.contains(".roles[")
 
   private fun roleCanAccess(
     roleName: String,
     endpoint: String,
   ): Boolean = roles[roleName]?.include?.contains(endpoint) == true
+
 }
 
 /**
- * Provides access to the properties of an environment (as strings).
+ * Provides access to the consumer configuration in an environment.
  */
-interface EnvironmentPropertyProvider {
-  fun getConfig(environment: String): Map<String, String>
+interface AuthorisationConfigProvider {
+  fun getConfig(environment: String): AuthorisationConfig
 }
 
-class DefaultEnvironmentPropertyProvider : EnvironmentPropertyProvider {
-  override fun getConfig(environment: String): Map<String, String> {
-    val yaml = YamlPropertiesFactoryBean()
-    yaml.setResources(ClassPathResource("application-$environment.yml"))
+class DefaultAuthorisationConfigProvider : AuthorisationConfigProvider {
+  override fun getConfig(environment: String): AuthorisationConfig {
+    val mapper = ObjectMapper(YAMLFactory()).registerKotlinModule()
     try {
-      return stringProperties(yaml.getObject()!!)
-    } catch (e: IllegalStateException) {
-      return emptyMap()
+      val consumers = mapper.readTree(ClassPathResource("application-$environment.yml").file)
+        .path("authorisation")
+        .path("consumers")
+      val authConfig = AuthorisationConfig()
+      authConfig.consumers = mapper.convertValue(consumers, object : TypeReference<Map<String, ConsumerConfig?>>() {})
+      return authConfig
+    } catch (e: FileNotFoundException) {
+      return AuthorisationConfig()
     }
   }
 
-  private fun stringProperties(properties: Properties): Map<String, String> = properties.map { it.key.toString() to it.value.toString() }.toMap()
 }
