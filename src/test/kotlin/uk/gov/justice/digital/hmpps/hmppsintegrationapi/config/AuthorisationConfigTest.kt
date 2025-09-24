@@ -1,50 +1,55 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.config
 
-import org.junit.jupiter.api.Assertions
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.mock
-import org.mockito.kotlin.any
-import org.mockito.kotlin.whenever
 import org.slf4j.LoggerFactory
+import org.springframework.core.io.ClassPathResource
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
-class PermissionCheckerTest {
+class AuthorisationConfigTest {
   val log = LoggerFactory.getLogger(this.javaClass)
-  val permissionChecker = PermissionChecker()
+
+  fun getConfig(environment: String): AuthorisationConfig {
+    val mapper = ObjectMapper(YAMLFactory()).registerKotlinModule()
+    val authConfig =
+      mapper
+        .readTree(ClassPathResource("application-$environment.yml").file)
+        .path("authorisation")
+    return mapper.convertValue(authConfig, object : TypeReference<AuthorisationConfig>() {})
+  }
 
   @Test
   fun `has permission`() {
-    assertTrue(permissionChecker.hasPermission("/v1/status", "dev", "smoke-test-full-access"))
+    assertTrue(getConfig("dev").hasAccess("smoke-test-full-access", "/v1/status"))
   }
 
   @Test
   fun `has permission to generic path`() {
-    assertTrue(permissionChecker.hasPermission("/v1/persons/{hmppsId}", "dev", "smoke-test-full-access"))
+    assertTrue(getConfig("dev").hasAccess("smoke-test-full-access", "/v1/persons/{hmppsId}"))
   }
 
   @Test
   fun `has permission to specific path`() {
-    assertTrue(permissionChecker.hasPermission("/v1/persons/ABC123", "dev", "smoke-test-full-access"))
+    assertTrue(getConfig("dev").hasAccess("smoke-test-full-access", "/v1/persons/ABC123"))
   }
 
   @Test
   fun `does not have permission`() {
-    Assertions.assertFalse(permissionChecker.hasPermission("/v9/status", "dev", "smoke-test-limited-access"))
-  }
-
-  @Test
-  fun `no matching environment`() {
-    assertEquals(0, permissionChecker.consumersWithPermission("/v1/status", "notfound").size)
+    assertFalse(getConfig("dev").hasAccess("smoke-test-limited-access", "/v9/status"))
   }
 
   @Test
   fun `multiple matching consumers`() {
     for (env in listOf("dev", "preprod", "prod")) {
-      val matches = permissionChecker.consumersWithPermission("/v1/status", env)
+      val matches = getConfig(env).consumersWithAccess("/v1/status")
       assertNotEquals(0, matches.size)
       assertContains(matches, "event-service")
       assertContains(matches, "kubernetes-health-check-client")
@@ -55,7 +60,7 @@ class PermissionCheckerTest {
   fun `show permission matches`() {
     val endpoint = "/health/readiness"
     val environment = "preprod"
-    val matches = permissionChecker.consumersWithPermission(endpoint, "preprod")
+    val matches = getConfig(environment).consumersWithAccess(endpoint)
 
     log.info("Consumers with access to {} in {} : {}", endpoint, environment, matches)
 
@@ -72,10 +77,9 @@ class PermissionCheckerTest {
         "c2" to ConsumerConfig(include = listOf("/tester", "/other"), filters = null, roles = listOf()),
         "c3" to ConsumerConfig(include = listOf("/other"), filters = null, roles = listOf()),
       )
-    val provider = mock(AuthorisationConfigProvider::class.java)
-    whenever(provider.getConfig(any())).thenReturn(authConfig)
 
-    val matches = PermissionChecker(provider).consumersWithPermission("/tester", "test1")
+    val matches = authConfig.consumersWithAccess("/tester")
+
     assertEquals(2, matches.size)
     assertContains(matches, "c1")
     assertContains(matches, "c2")
