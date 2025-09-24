@@ -53,7 +53,7 @@ class AuthorisationConfig {
  * Utility to determine whether a consumer has permissions for an endpoint in a particular environment.
  */
 class PermissionChecker(
-  val authProvider: AuthorisationConfigProvider = DefaultAuthorisationConfigProvider(),
+  val authProvider: AuthorisationConfigProvider = AuthorisationConfigProvider(),
 ) {
   /**
    * Returns true if the user has access to an endpoint in an environment.
@@ -79,14 +79,10 @@ class PermissionChecker(
 /**
  * Provides access to the consumer configuration in an environment.
  */
-interface AuthorisationConfigProvider {
-  fun getConfig(environment: String): AuthorisationConfig
-}
-
-class DefaultAuthorisationConfigProvider : AuthorisationConfigProvider {
+class AuthorisationConfigProvider {
   val log = LoggerFactory.getLogger(this.javaClass)
 
-  override fun getConfig(environment: String): AuthorisationConfig {
+  fun getConfig(environment: String): AuthorisationConfig {
     val mapper = ObjectMapper(YAMLFactory()).registerKotlinModule()
     try {
       val authConfig =
