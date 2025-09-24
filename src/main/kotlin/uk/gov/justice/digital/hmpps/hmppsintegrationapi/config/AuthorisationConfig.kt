@@ -24,7 +24,7 @@ class AuthorisationConfig {
     endpoint: String,
   ): Boolean {
     val config = consumers[consumerName]
-    if (config?.include?.contains(endpoint) == true) return true
+    if (anyMatch(config?.include, endpoint)) return true
     for (roleName in config?.roles ?: emptyList()) {
       if (roleCanAccess(roleName, endpoint)) return true
     }
@@ -38,10 +38,15 @@ class AuthorisationConfig {
       .toList()
       .sorted()
 
+  private fun anyMatch(
+    patterns: List<String>?,
+    endpoint: String,
+  ): Boolean = patterns != null && patterns.any { Regex(it).matches(endpoint) }
+
   private fun roleCanAccess(
     roleName: String,
     endpoint: String,
-  ): Boolean = roles[roleName]?.include?.contains(endpoint) == true
+  ): Boolean = anyMatch(roles[roleName]?.include, endpoint)
 }
 
 /**

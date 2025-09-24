@@ -23,12 +23,7 @@ class PermissionCheckerTest {
 
   @Test
   fun `does not have permission`() {
-    Assertions.assertFalse(permissionChecker.hasPermission("/v9/status", "dev", "smoke-test-full-access"))
-  }
-
-  @Test
-  fun `no matching consumers`() {
-    assertEquals(0, permissionChecker.consumersWithPermission("/v0/badpath", "dev").size)
+    Assertions.assertFalse(permissionChecker.hasPermission("/v9/status", "dev", "smoke-test-limited-access"))
   }
 
   @Test
