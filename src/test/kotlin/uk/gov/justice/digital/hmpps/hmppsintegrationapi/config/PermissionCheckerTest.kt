@@ -22,6 +22,16 @@ class PermissionCheckerTest {
   }
 
   @Test
+  fun `has permission to generic path`() {
+    assertTrue(permissionChecker.hasPermission("/v1/persons/{hmppsId}", "dev", "smoke-test-full-access"))
+  }
+
+  @Test
+  fun `has permission to specific path`() {
+    assertTrue(permissionChecker.hasPermission("/v1/persons/ABC123", "dev", "smoke-test-full-access"))
+  }
+
+  @Test
   fun `does not have permission`() {
     Assertions.assertFalse(permissionChecker.hasPermission("/v9/status", "dev", "smoke-test-limited-access"))
   }
