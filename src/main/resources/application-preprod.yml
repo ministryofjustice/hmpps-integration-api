@@ -42,7 +42,7 @@ services:
 
 feature-flag:
   use-education-assessments-endpoints: false
-  use-eswe-curious-endpoints: false
+  use-eswe-curious-endpoints: true
   use-update-attendance-endpoint: true
   use-schedule-detail-endpoint: true
   use-search-appointments-endpoint: true
@@ -52,12 +52,12 @@ feature-flag:
   use-allocation-endpoint: true
   use-education-endpoint: true
   use-expression-of-interest-endpoint: true
-  use-prisoner-base-location-endpoint: false
+  use-prisoner-base-location-endpoint: true
   use-historical-attendances-endpoint: true
   use-suitability-endpoint: true
   use-waiting-list-endpoint: true
   san-endpoint-enabled: true
-  simple-redaction: false
+  simple-redaction: true
   education-trigger-enabled: true
   education-aln-trigger-enabled: true
   use-contact-events-endpoint: false
