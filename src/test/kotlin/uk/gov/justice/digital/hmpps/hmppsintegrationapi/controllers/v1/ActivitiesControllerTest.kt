@@ -4,6 +4,8 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import jakarta.servlet.http.HttpServletRequest
 import org.mockito.Mockito
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -47,6 +49,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAttendanceRe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetDeallocationReasonsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetScheduleDetailsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetWaitingListApplicationsByScheduleIdService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.RedactionService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -65,10 +68,17 @@ class ActivitiesControllerTest(
   @MockitoBean val activitiesQueueService: ActivitiesQueueService,
   @MockitoBean val getActivitiesSuitabilityCriteriaService: GetActivitiesSuitabilityCriteriaService,
   @MockitoBean val getWaitingListApplicationsByScheduleIdService: GetWaitingListApplicationsByScheduleIdService,
+  @MockitoBean val redactionService: RedactionService,
 ) : DescribeSpec(
     {
       val basePath = "/v1/activities"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
+
+      beforeTest {
+        doAnswer { invocation ->
+          invocation.arguments[0]
+        }.whenever(redactionService).applyPolicies(any(), any())
+      }
 
       afterTest {
         Mockito.reset(auditService)

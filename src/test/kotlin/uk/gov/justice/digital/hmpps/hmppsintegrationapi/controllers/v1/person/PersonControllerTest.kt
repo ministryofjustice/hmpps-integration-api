@@ -7,6 +7,8 @@ import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory.times
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -58,6 +60,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPhysicalChar
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonerContactsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonerEducationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitOrdersForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.RedactionService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -83,6 +86,7 @@ internal class PersonControllerTest(
   @MockitoBean val getPrisonerEducationService: GetPrisonerEducationService,
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
   @MockitoBean val redactionConfig: RedactionConfig,
+  @MockitoBean val redactionService: RedactionService,
 ) : DescribeSpec(
     {
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
@@ -125,6 +129,10 @@ internal class PersonControllerTest(
                 ),
             ),
           )
+
+          doAnswer { invocation ->
+            invocation.arguments[0]
+          }.whenever(redactionService).applyPolicies(any(), any())
         }
 
         it("gets a person with matching search criteria") {

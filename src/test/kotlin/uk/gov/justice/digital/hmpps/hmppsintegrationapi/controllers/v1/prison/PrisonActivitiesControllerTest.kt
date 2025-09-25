@@ -4,6 +4,8 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import jakarta.servlet.http.HttpServletRequest
 import org.mockito.Mockito
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -31,6 +33,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetHistoricalAttendancesService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonActivitiesService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetScheduledInstancesForPrisonerService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.RedactionService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.SearchAppointmentsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.time.LocalDate
@@ -46,6 +49,7 @@ class PrisonActivitiesControllerTest(
   @MockitoBean val getScheduledInstancesForPrisonerService: GetScheduledInstancesForPrisonerService,
   @MockitoBean val searchAppointmentsService: SearchAppointmentsService,
   @MockitoBean val getHistoricalAttendancesService: GetHistoricalAttendancesService,
+  @MockitoBean val redactionService: RedactionService,
 ) : DescribeSpec(
     {
       val basePath = "/v1/prison"
@@ -78,6 +82,10 @@ class PrisonActivitiesControllerTest(
 
         beforeEach {
           Mockito.reset(getPrisonActivitiesService)
+
+          doAnswer { invocation ->
+            invocation.arguments[0]
+          }.whenever(redactionService).applyPolicies(any(), any())
         }
 
         it("should return 200 when success") {

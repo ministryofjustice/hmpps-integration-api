@@ -5,6 +5,8 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -27,6 +29,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonerAlerts.PAPaginatedAlerts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAlertsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.RedactionService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.time.LocalDate
 
@@ -38,6 +41,7 @@ internal class AlertsControllerTest(
   @MockitoBean val getAlertsForPersonService: GetAlertsForPersonService,
   @MockitoBean val auditService: AuditService,
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
+  @MockitoBean val redactionService: RedactionService,
 ) : DescribeSpec(
     {
       val hmppsId = "A1234AA"
@@ -83,6 +87,9 @@ internal class AlertsControllerTest(
               data = toPaginatedAlerts(listOf(alert)),
             ),
           )
+          doAnswer { invocation ->
+            invocation.arguments[0]
+          }.whenever(redactionService).applyPolicies(any(), any())
         }
 
         it("returns a 200 OK status code") {

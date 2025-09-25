@@ -5,6 +5,8 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -23,6 +25,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAdjudicationsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.RedactionService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [AdjudicationsController::class])
@@ -32,6 +35,7 @@ internal class AdjudicationsControllerTest(
   @MockitoBean val getAdjudicationsForPersonService: GetAdjudicationsForPersonService,
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getPersonService: GetPersonService,
+  @MockitoBean val redactionService: RedactionService,
 ) : DescribeSpec(
     {
       val hmppsId = "A1234AA"
@@ -57,6 +61,9 @@ internal class AdjudicationsControllerTest(
                 ),
             ),
           )
+          doAnswer { invocation ->
+            invocation.arguments[0]
+          }.whenever(redactionService).applyPolicies(any(), any())
         }
 
         it("throws exception when no person found") {

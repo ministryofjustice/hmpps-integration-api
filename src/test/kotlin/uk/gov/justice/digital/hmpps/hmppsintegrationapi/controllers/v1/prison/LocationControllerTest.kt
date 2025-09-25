@@ -3,6 +3,8 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.prison
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -25,6 +27,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.locationsInsidePrison.LIPLocation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetLocationByKeyService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.LocationQueueService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.RedactionService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -36,6 +39,7 @@ class LocationControllerTest(
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getLocationByKeyService: GetLocationByKeyService,
   @MockitoBean val locationQueueService: LocationQueueService,
+  @MockitoBean val redactionService: RedactionService,
 ) : DescribeSpec({
     val prisonId = "MDI"
     val basePath = "/v1/prison/$prisonId/location"
@@ -44,6 +48,10 @@ class LocationControllerTest(
 
     beforeEach {
       Mockito.reset(auditService)
+
+      doAnswer { invocation ->
+        invocation.arguments[0]
+      }.whenever(redactionService).applyPolicies(any(), any())
     }
 
     describe("GET /{key}") {

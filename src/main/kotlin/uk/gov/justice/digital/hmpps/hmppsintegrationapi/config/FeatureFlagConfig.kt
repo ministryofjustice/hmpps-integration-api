@@ -41,6 +41,7 @@ data class FeatureFlagConfig(
     const val USE_CONTACT_EVENTS_ENDPOINT = "use-contact-events-endpoint"
     const val USE_STUBBED_CONTACT_EVENTS_DATA = "use-stubbed-contact-events-data"
     const val USE_ROLES_DSL = "use-roles-dsl"
+    const val USE_REDACTIONS_DSL = "use-redactions-dsl"
   }
 
   /**

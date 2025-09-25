@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -15,6 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtens
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ReferenceData
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.RedactionService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ReferenceDataService
 
 @WebMvcTest(controllers = [ReferenceDataController::class])
@@ -23,6 +26,7 @@ internal class ReferenceDataControllerTests(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val referenceDataService: ReferenceDataService,
   @Autowired val objectMapper: ObjectMapper,
+  @MockitoBean val redactionService: RedactionService,
 ) : DescribeSpec(
     {
       lateinit var referenceData: Response<ReferenceData?>
@@ -30,6 +34,9 @@ internal class ReferenceDataControllerTests(
         Mockito.reset(referenceDataService)
         referenceData = Response(objectMapper.readValue(testData(), ReferenceData::class.java))
         whenever(referenceDataService.referenceData()).thenReturn(referenceData)
+        doAnswer { invocation ->
+          invocation.arguments[0]
+        }.whenever(redactionService).applyPolicies(any(), any())
       }
 
       describe("returns reference data") {

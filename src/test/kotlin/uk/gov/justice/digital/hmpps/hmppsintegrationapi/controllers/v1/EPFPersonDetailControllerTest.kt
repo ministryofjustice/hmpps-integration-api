@@ -4,6 +4,8 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -18,6 +20,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMo
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetEPFPersonDetailService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.RedactionService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [EPFPersonDetailController::class])
@@ -26,6 +29,7 @@ internal class EPFPersonDetailControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getEPFPersonDetailService: GetEPFPersonDetailService,
   @MockitoBean val auditService: AuditService,
+  @MockitoBean val redactionService: RedactionService,
 ) : DescribeSpec({
     val hmppsId = "X12345"
     val eventNumber = 1234
@@ -41,6 +45,9 @@ internal class EPFPersonDetailControllerTest(
           ),
         )
         Mockito.reset(auditService)
+        doAnswer { invocation ->
+          invocation.arguments[0]
+        }.whenever(redactionService).applyPolicies(any(), any())
       }
 
       it("returns a 200 OK status code") {

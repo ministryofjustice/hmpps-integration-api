@@ -4,6 +4,8 @@ import io.kotest.assertions.json.shouldContainJsonKeyValue
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -23,6 +25,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitExtern
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitorSupport
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetFutureVisitsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.RedactionService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [FutureVisitsController::class])
@@ -32,6 +35,7 @@ class FutureVisitsControllerTest(
   @MockitoBean val getPersonService: GetPersonService,
   @MockitoBean val getFutureVisitsService: GetFutureVisitsService,
   @MockitoBean val auditService: AuditService,
+  @MockitoBean val redactionService: RedactionService,
 ) : DescribeSpec({
     val mockMvc = IntegrationAPIMockMvc(springMockMvc)
     val hmppsId = "G6980GG"
@@ -73,6 +77,10 @@ class FutureVisitsControllerTest(
       Mockito.reset(auditService)
 
       whenever(getFutureVisitsService.execute(hmppsId, filters = null)).thenReturn(Response(data = futureVisits))
+
+      doAnswer { invocation ->
+        invocation.arguments[0]
+      }.whenever(redactionService).applyPolicies(any(), any())
     }
 
     it("Returns a 200 response with data") {

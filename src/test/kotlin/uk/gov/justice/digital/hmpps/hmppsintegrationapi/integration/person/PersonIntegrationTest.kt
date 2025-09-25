@@ -93,6 +93,21 @@ class PersonIntegrationTest : IntegrationTestBase() {
     }
 
     @Nested
+    @DisplayName("And Role based Redaction is required")
+    inner class AndRoleBasedRedactionIsRequired {
+      private val clientNameWithRoleBaseRedaction = "role-based-redacted-client"
+
+      @Test
+      fun `return a person from Prisoner Offender Search with redacted and removed data`() {
+        callApiWithCN("$basePath/$pnc", clientNameWithRoleBaseRedaction)
+          .andExpect(status().isOk)
+          .andExpect(content().json(getExpectedResponse("person-offender-and-probation-search-role-based-redacted-response")))
+
+        prisonerOffenderSearchMockServer.assertValidationPassed()
+      }
+    }
+
+    @Nested
     @DisplayName("And prisoner number was merged")
     inner class AndPrisonerNumberIsMerged {
       @Test

@@ -99,6 +99,7 @@ feature-flag:
   use-contact-events-endpoint: true
   use-stubbed-contact-events-data: false
   use-roles-dsl: true
+  use-redaction-dsl: true
 
 authorisation:
   consumers:
@@ -155,6 +156,11 @@ authorisation:
     redacted-client:
       include:
         - "/v1/persons/[^/]*$"
+    role-based-redacted-client:
+      roles:
+        - curious
+      include:
+      filters:
 
 redaction:
   client-names:

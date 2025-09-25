@@ -65,6 +65,7 @@ feature-flag:
   use-contact-events-endpoint: true
   use-stubbed-contact-events-data: true
   use-roles-dsl: true
+  use-redaction-dsl: true
 
 authorisation:
   consumers:

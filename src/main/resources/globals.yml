@@ -98,6 +98,22 @@ globals:
         - "/v1/persons/.*/education/san/review-schedule"
         - "/v1/persons/.*/education/status"
         - "/v1/persons/.*/education/aln-assessment"
+      redaction-policies:
+        - name: prison-education
+          response-redactions:
+            - type: MASK
+              includes:
+                - "$..middleName"
+                - "$.data.prisonerOffenderSearch.restrictionMessage"
+                - "$.data.prisonerOffenderSearch.pncId"
+                - "$.data.prisonerOffenderSearch.identifiers.croNumber"
+                - "$.data.prisonerOffenderSearch.identifiers.deliusCrn"
+            - type: REMOVE
+              includes:
+                - "$.data.probationOffenderSearch.contactDetails"
+                - "$.data.probationOffenderSearch.currentRestriction"
+                - "$.data.probationOffenderSearch.currentExclusion"
+
     reference-data-only:
       include:
         - "/v1/hmpps/reference-data"

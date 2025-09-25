@@ -4,6 +4,8 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.mockito.Mockito
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -25,6 +27,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCommunityOffenderManagerForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonOffenderManagerForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.RedactionService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [PersonResponsibleOfficerController::class])
@@ -34,6 +37,7 @@ internal class PersonResponsibleOfficerControllerTest(
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getCommunityOffenderManagerForPersonService: GetCommunityOffenderManagerForPersonService,
   @MockitoBean val getPrisonOffenderManagerForPersonService: GetPrisonOffenderManagerForPersonService,
+  @MockitoBean val redactionService: RedactionService,
 ) : DescribeSpec() {
   init {
     val hmppsId = "11111A"
@@ -72,6 +76,10 @@ internal class PersonResponsibleOfficerControllerTest(
           ),
         )
         Mockito.reset(auditService)
+
+        doAnswer { invocation ->
+          invocation.arguments[0]
+        }.whenever(redactionService).applyPolicies(any(), any())
       }
 
       it("returns a 200 OK status code") {
