@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.junit.jupiter.api.Test
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.core.io.ClassPathResource
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
@@ -15,7 +16,9 @@ import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
 class AuthorisationConfigTest {
-  val log = LoggerFactory.getLogger(this.javaClass)
+  companion object {
+    private val logger: Logger = LoggerFactory.getLogger(this::class.java)
+  }
 
   fun getConfig(environment: String): AuthorisationConfig {
     val mapper = ObjectMapper(YAMLFactory()).registerKotlinModule()
@@ -61,7 +64,7 @@ class AuthorisationConfigTest {
     endpoint: String,
   ): List<String> {
     val matches = getConfig(environment).consumersWithAccess(endpoint)
-    log.info("Consumers with access to {} in {} : {}", endpoint, environment, matches)
+    logger.info("Consumers with access to {} in {} : {}", endpoint, environment, matches)
     return matches
   }
 
