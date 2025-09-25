@@ -12,18 +12,17 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 class AuthorisationConfig {
   var consumers: Map<String, ConsumerConfig?> = emptyMap()
 
+  /**
+   * Returns true if the consumer has access to the endpoint.
+   */
   fun hasAccess(
     consumerName: String,
     endpoint: String,
-  ): Boolean {
-    val config = consumers[consumerName]
-    if (anyMatch(config?.include, endpoint)) return true
-    for (roleName in config?.roles ?: emptyList()) {
-      if (roleCanAccess(roleName, endpoint)) return true
-    }
-    return false
-  }
+  ): Boolean = anyMatch(allIncludes(consumerName), endpoint)
 
+  /**
+   * Returns a list of consumers with access to a particular endpoint.
+   */
   fun consumersWithAccess(endpoint: String): List<String> =
     consumers
       .filter { hasAccess(it.key, endpoint) }
@@ -31,13 +30,23 @@ class AuthorisationConfig {
       .toList()
       .sorted()
 
+  /**
+   * Returns a list of all endpoint permissions for a consumer, whether direct or from roles.
+   */
+  fun allIncludes(consumerName: String): List<String> {
+    val merged = mutableSetOf<String>()
+    merged.addAll(consumers[consumerName]?.include.orEmpty())
+    for (roleName in consumers[consumerName]?.roles ?: emptyList()) {
+      merged.addAll(roles[roleName]?.include.orEmpty())
+    }
+    return merged.toList().sorted()
+  }
+
+  /**
+   * Returns true if the endpoint matches any of the patterns.
+   */
   private fun anyMatch(
     patterns: List<String>?,
     endpoint: String,
   ): Boolean = patterns != null && patterns.any { Regex(it).matches(endpoint) }
-
-  private fun roleCanAccess(
-    roleName: String,
-    endpoint: String,
-  ): Boolean = anyMatch(roles[roleName]?.include, endpoint)
 }
