@@ -104,3 +104,7 @@ authorisation:
     smoke-test:
       include:
         - "/v1/status"
+
+redaction:
+  client-names:
+    - meganexus
