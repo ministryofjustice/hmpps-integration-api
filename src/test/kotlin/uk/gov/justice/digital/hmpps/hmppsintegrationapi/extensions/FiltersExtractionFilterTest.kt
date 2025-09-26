@@ -14,9 +14,6 @@ import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_ROLES_DSL
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.GlobalsConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
@@ -24,12 +21,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 
 class FiltersExtractionFilterTest {
   private var authorisationConfig: AuthorisationConfig = AuthorisationConfig()
-  private var globalsConfig: GlobalsConfig = GlobalsConfig()
   private var filtersExtractionFilter: FiltersExtractionFilter =
     FiltersExtractionFilter(
       authorisationConfig,
-      globalsConfig,
-      FeatureFlagConfig(mapOf(USE_ROLES_DSL to true)),
     )
 
   @BeforeEach
@@ -72,7 +66,6 @@ class FiltersExtractionFilterTest {
     val expectedFilters = ConsumerFilters(prisons = listOf("filter-1", "filter-2"))
     val testRole = Role(include = null, filters = expectedFilters)
     authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, filters = ConsumerFilters(prisons = null), roles = listOf("test-role")))
-    globalsConfig.roles = mapOf("test-role" to testRole)
     every { roles } returns mapOf("test-role" to testRole)
 
     // Act
@@ -94,7 +87,6 @@ class FiltersExtractionFilterTest {
     val expectedFilters = ConsumerFilters(prisons = listOf("filter-1", "filter-2"))
     val testRole = Role(include = null, filters = expectedFilters)
     authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, filters = ConsumerFilters(prisons = null), roles = listOf("test-role")))
-    globalsConfig.roles = mapOf("test-role" to testRole)
     every { roles } returns mapOf("test-role" to testRole)
 
     // Act
@@ -116,7 +108,6 @@ class FiltersExtractionFilterTest {
     val expectedFilters = ConsumerFilters(prisons = listOf("consumer-filter", "role-filter"))
     val testRole = Role(include = null, filters = ConsumerFilters(prisons = listOf("role-filter")))
     authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, filters = ConsumerFilters(prisons = listOf("consumer-filter")), roles = listOf("test-role")))
-    globalsConfig.roles = mapOf("test-role" to testRole)
     every { roles } returns mapOf("test-role" to testRole)
 
     // Act
@@ -157,7 +148,6 @@ class FiltersExtractionFilterTest {
     val expectedFilters = ConsumerFilters(prisons = null, caseNotes = listOf("filter-1", "filter-2"))
     val testRole = Role(include = null, filters = expectedFilters)
     authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, filters = ConsumerFilters(prisons = null), roles = listOf("test-role")))
-    globalsConfig.roles = mapOf("test-role" to testRole)
     every { roles } returns mapOf("test-role" to testRole)
 
     // Act
@@ -179,7 +169,6 @@ class FiltersExtractionFilterTest {
     val expectedFilters = ConsumerFilters(prisons = null, caseNotes = listOf("consumer-filter", "role-filter"))
     val testRole = Role(include = null, filters = ConsumerFilters(prisons = null, caseNotes = listOf("role-filter")))
     authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, filters = ConsumerFilters(prisons = null, caseNotes = listOf("consumer-filter")), roles = listOf("test-role")))
-    globalsConfig.roles = mapOf("test-role" to testRole)
     every { roles } returns mapOf("test-role" to testRole)
 
     // Act
@@ -201,7 +190,6 @@ class FiltersExtractionFilterTest {
     val expectedFilters = ConsumerFilters(prisons = listOf("consumer-filter", "role-filter"), caseNotes = listOf("consumer-filter", "role-filter"))
     val testRole = Role(include = null, filters = ConsumerFilters(prisons = listOf("role-filter"), caseNotes = listOf("role-filter")))
     authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, filters = ConsumerFilters(prisons = listOf("consumer-filter"), caseNotes = listOf("consumer-filter")), roles = listOf("test-role")))
-    globalsConfig.roles = mapOf("test-role" to testRole)
     every { roles } returns mapOf("test-role" to testRole)
 
     // Act
