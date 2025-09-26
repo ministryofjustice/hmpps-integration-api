@@ -40,11 +40,11 @@ data class Contact(
   @Schema(description = "If true this address should be considered for sending mail to", example = "true")
   val mailAddress: Boolean?,
   @Schema(description = "Type of phone", example = "MOB")
-  val phoneType: String,
+  val phoneType: String?,
   @Schema(description = "Description of the type of phone", example = "Mobile")
-  val phoneTypeDescription: String,
+  val phoneTypeDescription: String?,
   @Schema(description = "Phone number", example = "+1234567890")
-  val phoneNumber: String,
+  val phoneNumber: String?,
   @Schema(description = "Extension number", example = "123")
   val extNumber: String?,
 )

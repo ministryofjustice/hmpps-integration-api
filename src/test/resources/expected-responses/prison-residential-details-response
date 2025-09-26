@@ -1,0 +1,104 @@
+{
+  "data": {
+    "topLevelLocationType": "Wings",
+    "subLocationName": "Wings",
+    "parentLocation": {
+      "key": "MDI-A-1-001",
+      "code": "001",
+      "pathHierarchy": "A-1-001",
+      "locationType": "CELL",
+      "localName": "Wing A",
+      "comments": "Not to be used",
+      "capacity": {
+        "maxCapacity": 2,
+        "workingCapacity": 2
+      },
+      "oldWorkingCapacity": -2147483648,
+      "certification": {
+        "certified": true,
+        "capacityOfCertifiedCell": 1
+      },
+      "usage": [
+        {
+          "usageType": "ADJUDICATION_HEARING",
+          "capacity": -2147483648,
+          "sequence": -2147483648
+        }
+      ],
+      "accommodationTypes": [
+        "CARE_AND_SEPARATION"
+      ],
+      "specialistCellTypes": [
+        "ACCESSIBLE_CELL"
+      ],
+      "usedFor": [
+        "CLOSE_SUPERVISION_CENTRE"
+      ],
+      "status": "ACTIVE",
+      "convertedCellType": "HOLDING_ROOM",
+      "otherConvertedCellType": "string",
+      "active": true,
+      "deactivatedByParent": false,
+      "deactivatedDate": "2023-01-23T12:23:00",
+      "deactivatedReason": "DAMAGED",
+      "deactivationReasonDescription": "Window damage",
+      "deactivatedBy": "string",
+      "proposedReactivationDate": "2026-01-24",
+      "externalReference": "2323/45M",
+      "level": 1,
+      "inactiveCells": -2147483648,
+      "numberOfCellLocations": -2147483648,
+      "isResidential": true
+    },
+    "subLocations": [
+      {
+        "key": "MDI-A-1-001",
+        "code": "001",
+        "pathHierarchy": "A-1-001",
+        "locationType": "CELL",
+        "localName": "Wing A",
+        "comments": "Not to be used",
+        "capacity": {
+          "maxCapacity": 2,
+          "workingCapacity": 2
+        },
+        "oldWorkingCapacity": -2147483648,
+        "certification": {
+          "certified": true,
+          "capacityOfCertifiedCell": 1
+        },
+        "usage": [
+          {
+            "usageType": "ADJUDICATION_HEARING",
+            "capacity": -2147483648,
+            "sequence": -2147483648
+          }
+        ],
+        "accommodationTypes": [
+          "CARE_AND_SEPARATION"
+        ],
+        "specialistCellTypes": [
+          "ACCESSIBLE_CELL"
+        ],
+        "usedFor": [
+          "CLOSE_SUPERVISION_CENTRE"
+        ],
+        "status": "ACTIVE",
+        "convertedCellType": "HOLDING_ROOM",
+        "otherConvertedCellType": "string",
+        "active": true,
+        "deactivatedByParent": false,
+        "deactivatedDate": "2023-01-23T12:23:00",
+        "deactivatedReason": "DAMAGED",
+        "deactivationReasonDescription": "Window damage",
+        "deactivatedBy": "string",
+        "proposedReactivationDate": "2026-01-24",
+        "externalReference": "2323/45M",
+        "level": 1,
+        "inactiveCells": -2147483648,
+        "numberOfCellLocations": -2147483648,
+        "isResidential": true
+      }
+    ]
+  }
+}

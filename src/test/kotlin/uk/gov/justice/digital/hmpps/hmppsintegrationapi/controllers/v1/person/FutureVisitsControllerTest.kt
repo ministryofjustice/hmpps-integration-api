@@ -19,6 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitContact
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitExternalSystemDetails
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitorSupport
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetFutureVisitsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
@@ -44,6 +45,7 @@ class FutureVisitsControllerTest(
           visitRoom = "Room",
           visitType = "Type",
           visitStatus = "Status",
+          visitSubStatus = "AUTO_APPROVED",
           outcomeStatus = "Outcome",
           visitRestriction = "Restriction",
           startTimestamp = "Start",
@@ -55,6 +57,11 @@ class FutureVisitsControllerTest(
           visitNotes = emptyList(),
           visitContact = VisitContact(name = "Name", telephone = "Telephone", email = "Email"),
           visitorSupport = VisitorSupport(description = "Description"),
+          visitExternalSystemDetails =
+            VisitExternalSystemDetails(
+              clientName = "client_name",
+              clientVisitReference = "12345",
+            ),
           applicationReference = "dfs-wjs-abc",
           reference = "dfs-wjs-abc",
           sessionTemplateReference = "dfs-wjs-xyz",

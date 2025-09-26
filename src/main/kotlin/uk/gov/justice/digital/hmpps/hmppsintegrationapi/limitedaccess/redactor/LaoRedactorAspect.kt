@@ -6,7 +6,9 @@ import org.aspectj.lang.annotation.Aspect
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.EnableAspectJAutoProxy
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.AccessFor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.LaoContext
@@ -23,6 +25,7 @@ class AopConfig
 @Component
 class LaoRedactorAspect(
   private val loaChecker: AccessFor,
+  private val featureFlagConfig: FeatureFlagConfig,
 ) {
   @Around("@annotation(redaction)")
   fun redact(
@@ -30,12 +33,13 @@ class LaoRedactorAspect(
     redaction: LaoRedaction,
   ): Any {
     val hmppsId = (joinPoint.args.first() as String).decodeUrlCharacters()
-    val laoContext = loaChecker.getAccessFor(hmppsId)?.asLaoContext()
-    if (laoContext?.isLimitedAccess() == true && redaction.mode == Mode.REJECT) {
+    val laoContext = loaChecker.getAccessFor(hmppsId)?.asLaoContext() ?: throw LimitedAccessFailedException()
+
+    if (laoContext.isLimitedAccess() && redaction.mode == Mode.REJECT) {
       throw LimitedAccessException()
     }
     val result = joinPoint.proceed()
-    return if (laoContext?.isLimitedAccess() == true) {
+    return if (laoContext.isLimitedAccess()) {
       when (result) {
         is DataResponse<*> -> redactDataResponse(result)
         is PaginatedResponse<*> -> redactPaginatedResponse(result)
@@ -66,7 +70,7 @@ class LaoRedactorAspect(
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class LaoRedaction(
-  val mode: Mode = Mode.REDACT,
+  val mode: Mode,
 ) {
   enum class Mode {
     REDACT,

@@ -15,8 +15,11 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import java.io.File
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -34,26 +37,63 @@ abstract class IntegrationTestBase {
   final val nomsId = "G2996UX"
   final val invalidNomsId = "G2996UXX"
   final val crn = "AB123123"
-  final val nomsIdNotInDelius = "A1234AA"
+  final val specificPrisonCn = "specific-prison"
   final val limitedPrisonsCn = "limited-prisons"
+  final val limitedCaseNotesCn = "limited-case-notes"
   final val noPrisonsCn = "no-prisons"
   final val emptyPrisonsCn = "empty-prisons"
   final val contactId = 123456L
+  final val nomsIdFromProbation = "G5555TT"
 
   companion object {
+    private val nomsId = "G2996UX"
+    private val nomsIdFromProbation = "G5555TT"
+
+    val gatewaysFolder = "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways"
     private val hmppsAuthMockServer = HmppsAuthMockServer()
+    val prisonerOffenderSearchMockServer = ApiMockServer.create(UpstreamApi.PRISONER_OFFENDER_SEARCH)
+    val managePomCaseMockServer = ApiMockServer.create(UpstreamApi.MANAGE_POM_CASE)
+    val plpMockServer = ApiMockServer.create(UpstreamApi.PLP)
+    val sanMockServer = ApiMockServer.create(UpstreamApi.SAN)
+    val activitiesMockServer = ApiMockServer.create(UpstreamApi.ACTIVITIES)
+    val nDeliusMockServer = ApiMockServer.create(UpstreamApi.NDELIUS_INTEGRATION_TEST)
 
     @BeforeAll
     @JvmStatic
     fun startMockServers() {
       hmppsAuthMockServer.start()
-      hmppsAuthMockServer.stubGetOAuthToken("client", "client-secret")
+      hmppsAuthMockServer.stubGetOAuthToken("client", "client-secret", HmppsAuthMockServer.TOKEN)
+
+      prisonerOffenderSearchMockServer.start()
+      prisonerOffenderSearchMockServer.stubForGet(
+        "/prisoner/$nomsId",
+        File(
+          "$gatewaysFolder/prisoneroffendersearch/fixtures/PrisonerByIdResponse.json",
+        ).readText(),
+      )
+      prisonerOffenderSearchMockServer.stubForGet(
+        "/prisoner/$nomsIdFromProbation",
+        File(
+          "$gatewaysFolder/prisoneroffendersearch/fixtures/PrisonerByIdResponse.json",
+        ).readText(),
+      )
+      nDeliusMockServer.start()
+      managePomCaseMockServer.start()
+      plpMockServer.start()
+      sanMockServer.start()
+      activitiesMockServer.start()
     }
 
     @AfterAll
     @JvmStatic
     fun stopMockServers() {
+      nDeliusMockServer.stop()
       hmppsAuthMockServer.stop()
+      prisonerOffenderSearchMockServer.stop()
+      managePomCaseMockServer.stop()
+      plpMockServer.stop()
+      sanMockServer.stop()
+      activitiesMockServer.stop()
     }
   }
 
@@ -90,6 +130,35 @@ abstract class IntegrationTestBase {
   ): ResultActions =
     mockMvc.perform(
       post(path)
+        .headers(getAuthHeader(cn))
+        .content(requestBody)
+        .contentType(org.springframework.http.MediaType.APPLICATION_JSON),
+    )
+
+  fun putApi(path: String): ResultActions =
+    mockMvc.perform(
+      put(path)
+        .headers(getAuthHeader()),
+    )
+
+  fun putApi(
+    path: String,
+    requestBody: String,
+  ): ResultActions =
+    mockMvc.perform(
+      put(path)
+        .headers(getAuthHeader())
+        .content(requestBody)
+        .contentType(org.springframework.http.MediaType.APPLICATION_JSON),
+    )
+
+  fun putApiWithCN(
+    path: String,
+    requestBody: String,
+    cn: String,
+  ): ResultActions =
+    mockMvc.perform(
+      put(path)
         .headers(getAuthHeader(cn))
         .content(requestBody)
         .contentType(org.springframework.http.MediaType.APPLICATION_JSON),

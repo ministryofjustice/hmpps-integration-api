@@ -11,6 +11,7 @@ data class Transaction(
   val description: String,
   val amount: Int,
   val date: String,
+  val clientUniqueRef: String?,
 )
 
 data class Transactions(

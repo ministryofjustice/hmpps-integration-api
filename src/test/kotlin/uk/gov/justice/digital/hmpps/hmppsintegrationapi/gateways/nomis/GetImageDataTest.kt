@@ -13,7 +13,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -23,13 +23,13 @@ import java.io.File
 @ActiveProfiles("test")
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [NomisGateway::class],
+  classes = [PrisonApiGateway::class],
 )
 class GetImageDataTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
-  private val nomisGateway: NomisGateway,
+  private val prisonApiGateway: PrisonApiGateway,
 ) : DescribeSpec({
-    val nomisApiMockServer = ApiMockServer.create(UpstreamApi.NOMIS)
+    val nomisApiMockServer = ApiMockServer.create(UpstreamApi.PRISON_API)
     val imageId = 5678
 
     beforeEach {
@@ -45,7 +45,7 @@ class GetImageDataTest(
     }
 
     it("authenticates using HMPPS Auth with credentials") {
-      nomisGateway.getImageData(imageId)
+      prisonApiGateway.getImageData(imageId)
 
       verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
     }
@@ -53,7 +53,7 @@ class GetImageDataTest(
     it("returns an image with the matching ID") {
       val expectedImage = File("src/test/resources/__files/example.jpg").readBytes()
 
-      val response = nomisGateway.getImageData(imageId)
+      val response = prisonApiGateway.getImageData(imageId)
 
       response.data.shouldBe(expectedImage)
     }
@@ -61,13 +61,13 @@ class GetImageDataTest(
     it("returns an error when 404 Not Found is returned") {
       nomisApiMockServer.stubForImageData(imageId, HttpStatus.NOT_FOUND)
 
-      val response = nomisGateway.getImageData(imageId)
+      val response = prisonApiGateway.getImageData(imageId)
 
       response.errors.shouldHaveSize(1)
       response.errors
         .first()
         .causedBy
-        .shouldBe(UpstreamApi.NOMIS)
+        .shouldBe(UpstreamApi.PRISON_API)
       response.errors
         .first()
         .type

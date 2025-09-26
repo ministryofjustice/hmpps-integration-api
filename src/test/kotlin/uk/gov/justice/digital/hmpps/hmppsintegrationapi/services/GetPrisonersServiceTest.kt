@@ -11,12 +11,12 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -28,125 +28,101 @@ internal class GetPrisonersServiceTest(
   private val getPrisonersService: GetPrisonersService,
 ) : DescribeSpec(
     {
-      // val prisoner = POSPrisoner(firstName = "Jim", lastName = "Brown", dateOfBirth = LocalDate.of(1992, 12, 3), prisonerNumber = nomsNumber)
+      val persona = personInProbationAndNomisPersona
+      val firstName = persona.firstName
+      val lastName = persona.lastName
+      val dateOfBirth = persona.dateOfBirth
 
       beforeEach {
         Mockito.reset(prisonerOffenderSearchGateway)
       }
 
       it("returns an error when the person queried is not found and no prisonId filter is applied") {
-        whenever(prisonerOffenderSearchGateway.getPersons("Qui-gon", "Jin", "1966-10-25")).thenReturn(
+        val errors = listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "MockError"))
+        whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName, dateOfBirth.toString())).thenReturn(
           Response(
-            errors =
-              listOf(
-                UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "MockError"),
-              ),
             data = emptyList(),
+            errors,
           ),
         )
 
-        val result = getPrisonersService.execute("Qui-gon", "Jin", "1966-10-25", false, null)
-        result.errors.shouldBe(
-          listOf(
-            UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "MockError"),
-          ),
-        )
+        val result = getPrisonersService.execute(firstName, lastName, dateOfBirth.toString(), false, null)
+        result.errors.shouldBe(errors)
       }
 
       it("returns the person's data when queried and no prisonId filter is applied") {
         val people =
           listOf(
-            POSPrisoner(firstName = "Qui-gon", lastName = "Jin"),
-            POSPrisoner(firstName = "John", lastName = "Jin"),
+            POSPrisoner(firstName = firstName, lastName = lastName, youthOffender = false),
+            POSPrisoner(firstName = "John", lastName = lastName, youthOffender = false),
           )
-        whenever(prisonerOffenderSearchGateway.getPersons("Qui-gon", "Jin", "1966-10-25")).thenReturn(
+        whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName, dateOfBirth.toString())).thenReturn(
           Response(
             data = people,
           ),
         )
 
-        val result = getPrisonersService.execute("Qui-gon", "Jin", "1966-10-25", false, null)
+        val result = getPrisonersService.execute(firstName, lastName, dateOfBirth.toString(), false, null)
         result.data.shouldBe(people.map { it.toPersonInPrison() })
       }
 
       it("returns an error when theres a filter prisons property but no values") {
-        whenever(prisonerOffenderSearchGateway.getPersons("Qui-gon", "Jin", "1966-10-25")).thenReturn(
+        val errors = listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "MockError"))
+        whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName, dateOfBirth.toString())).thenReturn(
           Response(
-            errors =
-              listOf(
-                UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "MockError"),
-              ),
             data = emptyList(),
+            errors,
           ),
         )
 
-        val result = getPrisonersService.execute("Qui-gon", "Jin", "1966-10-25", false, null)
-        result.errors.shouldBe(
-          listOf(
-            UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "MockError"),
-          ),
-        )
+        val result = getPrisonersService.execute(firstName, lastName, dateOfBirth.toString(), false, null)
+        result.errors.shouldBe(errors)
       }
 
       it("returns an error when the person queried for is not in a prisonId matching their config") {
         val prisonIds = ConsumerFilters(prisons = listOf("FAKE_PRISON"))
+        val errors = listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "MockError"))
         whenever(request.getAttribute("filters")).thenReturn(prisonIds)
-        whenever(prisonerOffenderSearchGateway.getPrisonerDetails("Qui-gon", "Jin", "1966-10-25", false, prisonIds.prisons)).thenReturn(
+        whenever(prisonerOffenderSearchGateway.getPrisonerDetails(firstName, lastName, dateOfBirth.toString(), false, prisonIds.prisons)).thenReturn(
           Response(
-            errors =
-              listOf(
-                UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "MockError"),
-              ),
             data = emptyList(),
+            errors,
           ),
         )
 
-        val result = getPrisonersService.execute("Qui-gon", "Jin", "1966-10-25", false, prisonIds)
-        result.errors.shouldBe(
-          listOf(
-            UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "MockError"),
-          ),
-        )
+        val result = getPrisonersService.execute(firstName, lastName, dateOfBirth.toString(), false, prisonIds)
+        result.errors.shouldBe(errors)
       }
 
       it("returns the persons data when the person queried for is in a prisonId matching their config") {
         val people =
           listOf(
-            POSPrisoner(firstName = "Qui-gon", lastName = "Jin"),
-            POSPrisoner(firstName = "John", lastName = "Jin"),
+            POSPrisoner(firstName = firstName, lastName = lastName, youthOffender = false),
+            POSPrisoner(firstName = "John", lastName = lastName, youthOffender = false),
           )
         val prisonIds = ConsumerFilters(prisons = listOf("VALID_PRISON"))
         whenever(request.getAttribute("filters")).thenReturn(prisonIds)
-        whenever(prisonerOffenderSearchGateway.getPrisonerDetails("Qui-gon", "Jin", "1966-10-25", false, prisonIds.prisons)).thenReturn(
+        whenever(prisonerOffenderSearchGateway.getPrisonerDetails(firstName, lastName, dateOfBirth.toString(), false, prisonIds.prisons)).thenReturn(
           Response(
             data = people,
           ),
         )
 
-        val result = getPrisonersService.execute("Qui-gon", "Jin", "1966-10-25", false, prisonIds)
-        result.data.size.shouldBe(people.size)
-        people
-          .map { it.toPersonInPrison() }
-          .forEachIndexed { i, prisoner: PersonInPrison ->
-            result.data[i].firstName.shouldBe(prisoner.firstName)
-            result.data[i].lastName.shouldBe(prisoner.lastName)
-            result.data[i].dateOfBirth.shouldBe(prisoner.dateOfBirth)
-          }
+        val result = getPrisonersService.execute(firstName, lastName, dateOfBirth.toString(), false, prisonIds)
+        result.data.shouldBe(people.map { it.toPersonInPrison() })
       }
 
       it("returns the no data when the query is valid but no data is found") {
         val people = emptyList<POSPrisoner>()
-
         val prisonIds = ConsumerFilters(prisons = listOf("VALID_PRISON"))
         whenever(request.getAttribute("filters")).thenReturn(prisonIds)
-        whenever(prisonerOffenderSearchGateway.getPrisonerDetails("Qui-gon", "Jin", "1966-10-25", false, prisonIds.prisons)).thenReturn(
+        whenever(prisonerOffenderSearchGateway.getPrisonerDetails(firstName, lastName, dateOfBirth.toString(), false, prisonIds.prisons)).thenReturn(
           Response(
             data = people,
           ),
         )
 
-        val result = getPrisonersService.execute("Qui-gon", "Jin", "1966-10-25", false, prisonIds)
-        result.data.size.shouldBe(0)
+        val result = getPrisonersService.execute(firstName, lastName, dateOfBirth.toString(), false, prisonIds)
         result.data.shouldBe(emptyList())
       }
     },

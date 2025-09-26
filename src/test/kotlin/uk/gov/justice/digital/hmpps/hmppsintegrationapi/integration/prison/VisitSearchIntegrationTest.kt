@@ -8,13 +8,12 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationT
 class VisitSearchIntegrationTest : IntegrationTestBase() {
   private final val prisonId = "MDI"
   final val path = "/v1/prison/$prisonId/visit/search"
-  final val hmppsId = "A1234AA"
   final val fromDate = "2024-01-01"
   final val toDate = "2024-01-14"
   final val visitStatus = "BOOKED"
   final val page = 1
   final val size = 10
-  val pathWithQueryParams = "?visitStatus=$visitStatus&page=$page&size=$size&prisonerId=$hmppsId&fromDate=$fromDate&toDate=$toDate"
+  val pathWithQueryParams = "?visitStatus=$visitStatus&page=$page&size=$size&prisonerId=$nomsId&fromDate=$fromDate&toDate=$toDate"
 
   @Test
   fun `return a prisoner with all fields populated`() {
@@ -32,7 +31,14 @@ class VisitSearchIntegrationTest : IntegrationTestBase() {
   @Test
   fun `return a 400 for invalid query string value`() {
     val invalidStatus = "ESCAPED!!!!"
-    callApi("$path?visitStatus=$invalidStatus&page=$page&size=$size&prisonerId=$hmppsId&fromDate=$fromDate&toDate=$toDate")
+    callApi("$path?visitStatus=$invalidStatus&page=$page&size=$size&prisonerId=$nomsId&fromDate=$fromDate&toDate=$toDate")
+      .andExpect(status().isBadRequest)
+  }
+
+  @Test
+  fun `missing visit status results in a 400`() {
+    val pathWithQueryParams = "?page=$page&size=$size&prisonerId=$nomsId&fromDate=$fromDate&toDate=$toDate"
+    callApi("$path$pathWithQueryParams")
       .andExpect(status().isBadRequest)
   }
 }

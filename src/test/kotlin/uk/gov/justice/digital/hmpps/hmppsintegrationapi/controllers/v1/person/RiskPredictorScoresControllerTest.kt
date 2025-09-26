@@ -6,18 +6,24 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.LaoRedactorAspect
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.GeneralPredictor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.GroupReconviction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -27,6 +33,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SexualPredi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ViolencePredictor
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetRiskPredictorScoresForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.net.URLEncoder
@@ -34,21 +41,28 @@ import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
 
 @WebMvcTest(controllers = [RiskPredictorScoresController::class])
+@Import(value = [AopAutoConfiguration::class, LaoRedactorAspect::class])
 @ActiveProfiles("test")
 internal class RiskPredictorScoresControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getRiskPredictorScoresForPersonService: GetRiskPredictorScoresForPersonService,
   @MockitoBean val auditService: AuditService,
+  @MockitoBean val getCaseAccess: GetCaseAccess,
+  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
 ) : DescribeSpec(
     {
       val hmppsId = "9999/11111A"
       val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
       val path = "/v1/persons/$encodedHmppsId/risks/scores"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
+      val laoOkCrn = "R654321"
+      val laoFailureCrn = "R754321"
 
       describe("GET $path") {
         beforeTest {
           Mockito.reset(getRiskPredictorScoresForPersonService)
+          whenever(getCaseAccess.getAccessFor(any())).thenReturn(CaseAccess(laoOkCrn, false, false, "", ""))
+          whenever(getCaseAccess.getAccessFor("R754321")).thenReturn(null)
           whenever(getRiskPredictorScoresForPersonService.execute(hmppsId)).thenReturn(
             Response(
               data =
@@ -128,6 +142,13 @@ internal class RiskPredictorScoresControllerTest(
           result.response.contentAsString.shouldContain("\"data\":[]")
         }
 
+        it("Returns 403 Forbidden for LAO case") {
+          val laoCrn = "K123456"
+          whenever(getCaseAccess.getAccessFor(laoCrn)).thenReturn(CaseAccess(laoCrn, true, false, "Exclusion Message"))
+          val result = mockMvc.performAuthorised("/v1/persons/$laoCrn/risks/scores")
+          result.response.status.shouldBe(HttpStatus.FORBIDDEN.value())
+        }
+
         it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
           whenever(getRiskPredictorScoresForPersonService.execute(hmppsId)).thenReturn(
             Response(
@@ -182,6 +203,17 @@ internal class RiskPredictorScoresControllerTest(
           assert(
             result.response.contentAsString.equals(
               "{\"status\":500,\"errorCode\":null,\"userMessage\":\"500 MockError\",\"developerMessage\":\"Unable to complete request as an upstream service is not responding\",\"moreInfo\":null}",
+            ),
+          )
+        }
+
+        it("fails with the appropriate error when LAO context has failed to be retrieved") {
+          val response = mockMvc.performAuthorised("/v1/persons/$laoFailureCrn/risks/scores")
+
+          assert(response.response.status == 500)
+          assert(
+            response.response.contentAsString.equals(
+              "{\"status\":500,\"errorCode\":null,\"userMessage\":\"LAO Check failed\",\"developerMessage\":\"LAO Check failed\",\"moreInfo\":null}",
             ),
           )
         }

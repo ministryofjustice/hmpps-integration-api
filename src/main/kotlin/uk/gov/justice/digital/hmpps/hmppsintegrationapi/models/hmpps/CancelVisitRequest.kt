@@ -1,35 +1,48 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
 import io.swagger.v3.oas.annotations.media.Schema
+import jakarta.validation.Valid
+import jakarta.validation.constraints.NotNull
 
-@Schema(description = "Private prison visit cancellation request")
+@Schema(description = "Cancel visit request")
 data class CancelVisitRequest(
   @Schema(description = "Outcome status and description", required = true)
+  @field:Valid
   val cancelOutcome: CancelOutcome,
+  @Schema(description = "Type of user cancelling the visit", required = true, example = "PRISONER", allowableValues = ["PRISONER"])
+  val userType: UserType,
   @Schema(description = "Username for user who actioned this request", required = false)
-  val actionedBy: String?,
+  val actionedBy: String? = null,
 ) {
   fun toHmppsMessage(
     who: String,
     visitReference: String,
+    actionedBy: String?,
   ): HmppsMessage =
     HmppsMessage(
       eventType = HmppsMessageEventType.VISIT_CANCELLED,
-      messageAttributes = modelToMap(visitReference),
+      messageAttributes = modelToMap(visitReference, actionedBy),
       who = who,
     )
 
-  private fun modelToMap(visitReference: String): Map<String, Any?> =
+  private fun modelToMap(
+    visitReference: String,
+    actionedBy: String?,
+  ): Map<String, Any?> =
     mapOf(
       "visitReference" to visitReference,
       "cancelOutcome" to this.cancelOutcome,
-      "actionedBy" to this.actionedBy,
+      "userType" to this.userType,
+      "actionedBy" to (actionedBy ?: this.actionedBy),
     )
 }
 
 data class CancelOutcome(
+  @Schema(description = "Outcome status", required = true)
+  @field:NotNull
   val outcomeStatus: OutcomeStatus,
-  val text: String,
+  @Schema(description = "Outcome description", required = false)
+  val text: String?,
 )
 
 enum class OutcomeStatus {

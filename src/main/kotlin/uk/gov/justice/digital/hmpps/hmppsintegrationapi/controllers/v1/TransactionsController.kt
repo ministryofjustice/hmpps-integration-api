@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
+import io.swagger.v3.oas.annotations.tags.Tags
 import jakarta.validation.Valid
 import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
@@ -38,7 +39,7 @@ import java.time.LocalDate
 
 @RestController
 @RequestMapping("/v1/prison/{prisonId}/prisoners/{hmppsId}")
-@Tag(name = "prison")
+@Tags(value = [Tag(name = "Prison"), Tag(name = "Finance")])
 class TransactionsController(
   @Autowired val auditService: AuditService,
   @Autowired val getTransactionsForPersonService: GetTransactionsForPersonService,
@@ -48,7 +49,7 @@ class TransactionsController(
 ) {
   @Operation(
     summary = "Returns all transactions for a prisoner associated with an account code that they have at a prison.",
-    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    description = "The clientUniqueRef will only be present if it was specified by an API client.<br><b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a prisoner's transactions."),
       ApiResponse(
@@ -123,7 +124,7 @@ class TransactionsController(
 
   @Operation(
     summary = "Returns details for a transaction by clientUniqueRef.",
-    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    description = "The clientUniqueRef will not be present on the response.<br><b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a transaction."),
       ApiResponse(
@@ -182,7 +183,7 @@ class TransactionsController(
 
   @Operation(
     summary = "Make a financial transaction.",
-    description = "<a href=\"#schema-transactionrequest\">Request body</a><br><b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully created a transaction."),
       ApiResponse(
@@ -255,7 +256,9 @@ class TransactionsController(
 
   @Operation(
     summary = "Transfer funds between the accounts of a prisoner.",
-    description = "Currently only able to move from spends to savings.<br><a href=\"#schema-transactiontransferrequest\">Request body</a><br><br><b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    description =
+      "Currently only able to move from spends to savings." +
+        "<br><br><b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully created a transaction transfer."),
       ApiResponse(

@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAddress
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiAddress
 import java.time.LocalDate
 
 fun generateNomisTestAddress(
@@ -17,19 +17,19 @@ fun generateNomisTestAddress(
   street: String? = "test_street",
   town: String? = "test_town",
   comment: String? = "test_comment",
-  addressUsages: List<NomisAddress.AddressUsage> =
+  addressUsages: List<PrisonApiAddress.AddressUsage> =
     listOf(
-      NomisAddress.AddressUsage(
+      PrisonApiAddress.AddressUsage(
         addressUsage = "test_addressusage",
         addressUsageDescription = "test_addressusagedescription",
       ),
-      NomisAddress.AddressUsage(
+      PrisonApiAddress.AddressUsage(
         addressUsage = "test_addressusage_02",
         addressUsageDescription = "test_addressusagedescription_02",
       ),
     ),
-): NomisAddress =
-  NomisAddress(
+): PrisonApiAddress =
+  PrisonApiAddress(
     addressType = addressType,
     country = country,
     county = county,

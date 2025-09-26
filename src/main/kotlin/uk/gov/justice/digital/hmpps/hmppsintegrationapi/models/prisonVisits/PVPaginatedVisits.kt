@@ -18,7 +18,7 @@ data class PVPaginatedVisits(
       totalCount = this.totalCount,
       isLastPage = this.isLastPage,
       count = this.count,
-      page = this.page,
+      page = this.page + 1,
       perPage = this.perPage,
     )
 }

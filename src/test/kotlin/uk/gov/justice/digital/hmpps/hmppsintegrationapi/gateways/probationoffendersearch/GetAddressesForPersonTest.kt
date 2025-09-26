@@ -8,11 +8,13 @@ import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
+import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestAddress
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
@@ -22,24 +24,24 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 @ActiveProfiles("test")
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [ProbationOffenderSearchGateway::class],
+  classes = [NDeliusGateway::class],
 )
 class GetAddressesForPersonTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
-  private val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
+  @MockitoBean val featureFlag: FeatureFlagConfig,
+  private val deliusGateway: NDeliusGateway,
 ) : DescribeSpec(
     {
-      val probationOffenderSearchApiMockServer = ApiMockServer.create(UpstreamApi.PROBATION_OFFENDER_SEARCH)
-      val path = "/search"
+      val deliusMockServer = ApiMockServer.create(UpstreamApi.NDELIUS)
       val hmppsId = "X777776"
+      val path = "/case/$hmppsId/addresses"
 
       beforeEach {
-        probationOffenderSearchApiMockServer.start()
-        probationOffenderSearchApiMockServer.stubForPost(
+
+        deliusMockServer.start()
+        deliusMockServer.stubForGet(
           path,
-          "{\"crn\": \"$hmppsId\"}",
           """
-        [
           {
             "contactDetails": {
               "addresses": [
@@ -68,28 +70,27 @@ class GetAddressesForPersonTest(
               ]
             }
           }
-        ]
       """,
         )
 
         Mockito.reset(hmppsAuthGateway)
-        whenever(hmppsAuthGateway.getClientToken("Probation Offender Search")).thenReturn(
+        whenever(hmppsAuthGateway.getClientToken("nDelius")).thenReturn(
           HmppsAuthMockServer.TOKEN,
         )
       }
 
       afterTest {
-        probationOffenderSearchApiMockServer.stop()
+        deliusMockServer.stop()
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        probationOffenderSearchGateway.getAddressesForPerson(hmppsId)
+        deliusGateway.getAddressesForPerson(hmppsId)
 
-        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("Probation Offender Search")
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("nDelius")
       }
 
       it("returns addresses for a person with the matching ID") {
-        val response = probationOffenderSearchGateway.getAddressesForPerson(hmppsId)
+        val response = deliusGateway.getAddressesForPerson(hmppsId)
 
         response.data.shouldContain(
           generateTestAddress(
@@ -102,11 +103,9 @@ class GetAddressesForPersonTest(
       }
 
       it("returns an empty list when no addresses are found") {
-        probationOffenderSearchApiMockServer.stubForPost(
+        deliusMockServer.stubForGet(
           path,
-          "{\"crn\": \"$hmppsId\"}",
           """
-        [
           {
             "firstName": "English",
             "surname": "Breakfast",
@@ -114,72 +113,63 @@ class GetAddressesForPersonTest(
               "addresses": []
             }
           }
-        ]
         """,
         )
 
-        val response = probationOffenderSearchGateway.getAddressesForPerson(hmppsId)
+        val response = deliusGateway.getAddressesForPerson(hmppsId)
 
         response.data.shouldBeEmpty()
       }
 
       it("returns an error when no results are returned") {
-        probationOffenderSearchApiMockServer.stubForPost(
+        deliusMockServer.stubForGet(
           path,
-          "{\"crn\": \"$hmppsId\"}",
-          "[]",
+          "{}",
+          HttpStatus.NOT_FOUND,
         )
 
-        val response = probationOffenderSearchGateway.getAddressesForPerson(hmppsId)
+        val response = deliusGateway.getAddressesForPerson(hmppsId)
 
         response.data.shouldBeEmpty()
       }
 
       it("returns an empty list when there is no contactDetails field") {
-        probationOffenderSearchApiMockServer.stubForPost(
+        deliusMockServer.stubForGet(
           path,
-          "{\"crn\": \"$hmppsId\"}",
           """
-        [
           {
             "firstName": "English",
             "surname": "Breakfast"
           }
-        ]
         """,
         )
 
-        val response = probationOffenderSearchGateway.getAddressesForPerson(hmppsId)
+        val response = deliusGateway.getAddressesForPerson(hmppsId)
 
         response.data.shouldBeEmpty()
       }
 
       it("returns an empty list when contactDetails field is null") {
-        probationOffenderSearchApiMockServer.stubForPost(
+        deliusMockServer.stubForGet(
           path,
-          "{\"crn\": \"$hmppsId\"}",
           """
-        [
           {
             "firstName": "English",
             "surname": "Breakfast",
             "contactDetails": null
           }
-        ]
         """,
         )
 
-        val response = probationOffenderSearchGateway.getAddressesForPerson(hmppsId)
+        val response = deliusGateway.getAddressesForPerson(hmppsId)
 
         response.data.shouldBeEmpty()
       }
 
       it("returns an empty list when contactDetails.addresses field is null") {
-        probationOffenderSearchApiMockServer.stubForPost(
+        deliusMockServer.stubForGet(
           path,
-          "{\"crn\": \"$hmppsId\"}",
           """
-        [
           {
             "firstName": "English",
             "surname": "Breakfast",
@@ -187,21 +177,18 @@ class GetAddressesForPersonTest(
               "addresses": null
             }
           }
-        ]
         """,
         )
 
-        val response = probationOffenderSearchGateway.getAddressesForPerson(hmppsId)
+        val response = deliusGateway.getAddressesForPerson(hmppsId)
 
         response.data.shouldBeEmpty()
       }
 
       it("returns an empty list when the type is an empty object") {
-        probationOffenderSearchApiMockServer.stubForPost(
+        deliusMockServer.stubForGet(
           path,
-          "{\"crn\": \"$hmppsId\"}",
           """
-        [
           {
             "firstName": "English",
             "surname": "Breakfast",
@@ -213,11 +200,10 @@ class GetAddressesForPersonTest(
               ]
             }
           }
-        ]
         """,
         )
 
-        val response = probationOffenderSearchGateway.getAddressesForPerson(hmppsId)
+        val response = deliusGateway.getAddressesForPerson(hmppsId)
 
         response.data
           .first()

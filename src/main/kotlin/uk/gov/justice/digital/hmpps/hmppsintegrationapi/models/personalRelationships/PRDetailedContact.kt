@@ -21,8 +21,8 @@ data class PRDetailedContact(
   val addresses: List<Address>,
   val phoneNumbers: List<PhoneNumber>,
   val emailAddresses: List<EmailAddress>,
-  val genderCode: String,
-  val genderDescription: String,
+  val genderCode: String?,
+  val genderDescription: String?,
 ) {
   fun toDetailedContact(): DetailedContact =
     DetailedContact(
@@ -102,9 +102,7 @@ data class Address(
       noFixedAddress = this.noFixedAddress,
       comments = this.comments,
       phoneNumbers = this.phoneNumbers.map { it.toContactPhoneNumber() },
-      createdBy = this.createdBy,
       createdTime = this.createdTime,
-      updatedBy = this.updatedBy,
       updatedTime = this.updatedTime,
     )
 }

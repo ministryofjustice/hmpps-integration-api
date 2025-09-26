@@ -24,11 +24,45 @@ open class Person(
   val identifiers: Identifiers = Identifiers(),
   @Schema(description = "An identifier from the Police National Computer (PNC)")
   val pncId: String? = null,
-  @Schema(description = "HMPPS identifier", example = "2008/0545166T")
+  @Schema(description = "HMPPS identifier", example = "X00001")
   val hmppsId: String? = null,
   val contactDetails: ContactDetailsWithEmailAndPhone? = null,
   val currentRestriction: Boolean? = null,
   val restrictionMessage: String? = null,
   val currentExclusion: Boolean? = null,
   val exclusionMessage: String? = null,
-)
+) {
+  fun copy(
+    firstName: String = this.firstName,
+    lastName: String = this.lastName,
+    middleName: String? = this.middleName,
+    dateOfBirth: LocalDate? = this.dateOfBirth,
+    gender: String? = this.gender,
+    ethnicity: String? = this.ethnicity,
+    aliases: List<Alias> = this.aliases,
+    identifiers: Identifiers = this.identifiers,
+    pncId: String? = this.pncId,
+    hmppsId: String? = this.hmppsId,
+    contactDetails: ContactDetailsWithEmailAndPhone? = this.contactDetails,
+    currentRestriction: Boolean? = this.currentRestriction,
+    restrictionMessage: String? = this.restrictionMessage,
+    currentExclusion: Boolean? = this.currentExclusion,
+    exclusionMessage: String? = this.exclusionMessage,
+  ) = Person(
+    firstName = firstName,
+    lastName = lastName,
+    middleName = middleName,
+    dateOfBirth = dateOfBirth,
+    gender = gender,
+    ethnicity = ethnicity,
+    aliases = aliases,
+    identifiers = identifiers,
+    pncId = pncId,
+    hmppsId = hmppsId,
+    contactDetails = contactDetails,
+    currentRestriction = currentRestriction,
+    restrictionMessage = restrictionMessage,
+    currentExclusion = currentExclusion,
+    exclusionMessage = exclusionMessage,
+  )
+}

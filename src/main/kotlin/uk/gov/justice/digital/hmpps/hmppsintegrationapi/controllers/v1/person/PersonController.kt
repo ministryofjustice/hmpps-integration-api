@@ -2,39 +2,56 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.person
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.headers.Header
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
+import io.swagger.v3.oas.annotations.tags.Tags
 import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.RedactionConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.IEPLevel
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetadata
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Language
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NumberOfChildren
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchRedirectionResult
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResult
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonName
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonalCareNeed
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PhysicalCharacteristics
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContact
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerEducation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.ENTITY_NOT_FOUND
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitOrders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.interfaces.toPaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCareNeedsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetIEPLevelService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageMetadataForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetLanguagesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetNameForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetNumberOfChildrenForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPhysicalCharacteristicsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonerContactsService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonerEducationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitOrdersForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
@@ -44,7 +61,7 @@ import java.time.format.DateTimeFormatter
 
 @RestController
 @RequestMapping("/v1/persons")
-@Tag(name = "persons")
+@Tag(name = "Persons")
 class PersonController(
   @Autowired val getPersonService: GetPersonService,
   @Autowired val getPersonsService: GetPersonsService,
@@ -53,7 +70,14 @@ class PersonController(
   @Autowired val getPrisonerContactsService: GetPrisonerContactsService,
   @Autowired val getIEPLevelService: GetIEPLevelService,
   @Autowired val getVisitOrdersForPersonService: GetVisitOrdersForPersonService,
+  @Autowired val getNumberOfChildrenForPersonService: GetNumberOfChildrenForPersonService,
+  @Autowired val getPhysicalCharacteristicsForPersonService: GetPhysicalCharacteristicsForPersonService,
+  @Autowired val getCareNeedsForPersonService: GetCareNeedsForPersonService,
+  @Autowired val getLanguagesForPersonService: GetLanguagesForPersonService,
+  @Autowired val getPrisonerEducationService: GetPrisonerEducationService,
   @Autowired val auditService: AuditService,
+  @Autowired val featureFlag: FeatureFlagConfig,
+  @Autowired val redactionConfig: RedactionConfig,
 ) {
   @GetMapping
   @Operation(
@@ -94,50 +118,77 @@ class PersonController(
     return response.data.paginateWith(page, perPage)
   }
 
-  @GetMapping("{encodedHmppsId}")
+  @GetMapping("{hmppsId}")
   @Operation(
     summary = "Returns a person.",
     responses = [
-      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a person with the provided HMPPS ID."),
+      ApiResponse(responseCode = "200", content = [Content(schema = Schema(implementation = OffenderSearchDataResponse::class))], description = "Successfully found a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+      ApiResponse(responseCode = "303", headers = [Header(name = "Location", description = "Redirect URL to the new person resource")], content = [Content()], description = "Redirect response due to person with the provided HMPPS ID being merged."),
     ],
   )
   fun getPerson(
-    @Parameter(description = "A URL-encoded HMPPS identifier", example = "2008%2F0545166T") @PathVariable encodedHmppsId: String,
-  ): DataResponse<OffenderSearchResponse> {
+    @Parameter(description = "A HMPPS identifier", example = "X00001") @PathVariable("hmppsId") encodedHmppsId: String,
+    @RequestAttribute clientName: String?,
+  ): ResponseEntity<DataResponse<OffenderSearchResponse>> {
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getPersonService.getCombinedDataForPerson(hmppsId)
 
-    if (response.hasErrorCausedBy(ENTITY_NOT_FOUND, causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH)) {
+    if (response.data == null && response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
+    } else if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      throw ValidationException("Bad request from upstream ${response.errors.first().description}")
     }
 
     auditService.createEvent("GET_PERSON_DETAILS", mapOf("hmppsId" to hmppsId))
-    val data = response.data
-    return DataResponse(data)
+    requireNotNull(response.data)
+
+    return when (response.data) {
+      is OffenderSearchRedirectionResult -> {
+        ResponseEntity
+          .status(HttpStatus.SEE_OTHER)
+          .header("Location", response.data.redirectUrl)
+          .build()
+      }
+      is OffenderSearchResult -> {
+        val redactedData =
+          if (featureFlag.isEnabled(FeatureFlagConfig.SIMPLE_REDACTION)) { // simple redaction: to be refactored in later releases
+            redactPersonData(response.data, clientName)
+          } else {
+            response.data
+          }
+        return ResponseEntity.ok(DataResponse(redactedData))
+      }
+    }
   }
 
-  @GetMapping("{encodedHmppsId}/images")
+  @GetMapping("{hmppsId}/images")
+  @Tags(value = [Tag(name = "Images"), Tag(name = "Reception")])
   @Operation(
     summary = "Returns metadata of images associated with a person sorted by captureDateTime (newest first).",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a person with the provided HMPPS ID. If a person doesn't have any images, then an empty list (`[]`) is returned in the `data` property."),
+      ApiResponse(responseCode = "400", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
   )
   fun getPersonImages(
-    @Parameter(description = "A URL-encoded HMPPS identifier", example = "2008%2F0545166T") @PathVariable encodedHmppsId: String,
+    @Parameter(description = "A HMPPS identifier", example = "A1234AA") @PathVariable hmppsId: String,
+    @RequestAttribute filters: ConsumerFilters?,
     @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
   ): PaginatedResponse<ImageMetadata?> {
-    val hmppsId = encodedHmppsId.decodeUrlCharacters()
-
-    val response = getImageMetadataForPersonService.execute(hmppsId)
+    val response = getImageMetadataForPersonService.execute(hmppsId, filters)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
+    }
+
+    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      throw ValidationException("Invalid HMPPS ID: $hmppsId")
     }
 
     auditService.createEvent("GET_PERSON_IMAGE", mapOf("hmppsId" to hmppsId))
@@ -173,11 +224,12 @@ class PersonController(
   }
 
   @GetMapping("{hmppsId}/contacts")
+  @Tags(value = [Tag(name = "Visits"), Tag(name = "Contacts"), Tag(name = "Reception")])
   @Operation(
     summary = "Returns a prisoners contacts.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
-      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a prisoners contacts."),
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a prisoner's contacts."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
@@ -204,11 +256,12 @@ class PersonController(
   }
 
   @GetMapping("{hmppsId}/iep-level")
+  @Tags(value = [Tag("Visits"), Tag("Activities")])
   @Operation(
     summary = "Returns a prisoners IEP level.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
-      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a prisoners contacts."),
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a prisoner's IEP level."),
       ApiResponse(responseCode = "400", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
@@ -234,10 +287,11 @@ class PersonController(
   }
 
   @GetMapping("{hmppsId}/visit-orders")
+  @Tags(value = [Tag(name = "Visits"), Tag(name = "Reception")])
   @Operation(
     summary = "Returns the number of remaining visit orders a prisoner has.",
     responses = [
-      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a prisoners visit orders."),
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a prisoner's visit orders."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
@@ -261,6 +315,154 @@ class PersonController(
     return DataResponse(response.data)
   }
 
+  @GetMapping("{hmppsId}/number-of-children")
+  @Tag(name = "Reception")
+  @Operation(
+    summary = "Returns a prisoner's number of children.",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a prisoner's number of children."),
+      ApiResponse(responseCode = "400", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  fun getPrisonersNumberofChildren(
+    @Parameter(description = "The HMPPS ID of the prisoner") @PathVariable hmppsId: String,
+    @RequestAttribute filters: ConsumerFilters?,
+  ): DataResponse<NumberOfChildren?> {
+    val response = getNumberOfChildrenForPersonService.execute(hmppsId, filters)
+
+    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Could not find person with id: $hmppsId")
+    }
+
+    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      throw ValidationException("Invalid HMPPS ID: $hmppsId")
+    }
+
+    auditService.createEvent("GET_PRISONER_NUMBER_OF_CHILDREN", mapOf("hmppsId" to hmppsId))
+
+    return DataResponse(data = response.data)
+  }
+
+  @GetMapping("{hmppsId}/physical-characteristics")
+  @Tag(name = "Reception")
+  @Operation(
+    summary = "Gets physical characteristics and distinguishing marks for a prisoner.",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a person's physical characteristics with the provided HMPPS ID."),
+      ApiResponse(responseCode = "400", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  fun getPhysicalCharacteristicsForPerson(
+    @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
+    @RequestAttribute filters: ConsumerFilters?,
+  ): DataResponse<PhysicalCharacteristics?> {
+    val response = getPhysicalCharacteristicsForPersonService.execute(hmppsId, filters = filters)
+
+    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      throw ValidationException("Bad request from upstream ${response.errors.first().description}")
+    }
+    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Could not find person with id: $hmppsId")
+    }
+
+    auditService.createEvent("GET_PERSON_PHYSICAL_CHARACTERISTICS", mapOf("hmppsId" to hmppsId))
+    return DataResponse(response.data)
+  }
+
+  @GetMapping("{hmppsId}/care-needs")
+  @Tag(name = "Reception")
+  @Operation(
+    summary = "Gets care needs for a prisoner.",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a person's care needs with the provided HMPPS ID."),
+      ApiResponse(responseCode = "400", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  fun getCareNeedsForPerson(
+    @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
+    @RequestAttribute filters: ConsumerFilters?,
+  ): DataResponse<List<PersonalCareNeed>?> {
+    val response = getCareNeedsForPersonService.execute(hmppsId, filters = filters)
+
+    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      throw ValidationException("Bad request from upstream ${response.errors.first().description}")
+    }
+    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Could not find person with id: $hmppsId")
+    }
+
+    auditService.createEvent("GET_PERSON_CARE_NEEDS", mapOf("hmppsId" to hmppsId))
+    return DataResponse(response.data)
+  }
+
+  @GetMapping("{hmppsId}/languages")
+  @Tag(name = "Reception")
+  @Operation(
+    summary = "Gets languages for a prisoner.",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a person's Language information with the provided HMPPS ID."),
+      ApiResponse(responseCode = "400", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  fun getLanguagesForPerson(
+    @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
+    @RequestAttribute filters: ConsumerFilters?,
+  ): DataResponse<List<Language>?> {
+    val response = getLanguagesForPersonService.execute(hmppsId, filters = filters)
+
+    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      throw ValidationException("Bad request from upstream ${response.errors.first().description}")
+    }
+    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Could not find person with id: $hmppsId")
+    }
+
+    auditService.createEvent("GET_LANGUAGES", mapOf("hmppsId" to hmppsId))
+    return DataResponse(response.data)
+  }
+
+  @GetMapping("{hmppsId}/education")
+  @Tag(name = "Activities")
+  @Operation(
+    summary = "Gets a prisoners education which includes their level of education, and a collection of qualifications that have been achieved.",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a person's education information with the provided HMPPS ID."),
+      ApiResponse(responseCode = "400", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  @FeatureFlag(name = FeatureFlagConfig.Companion.USE_EDUCATION_ENDPOINT)
+  fun getEducationForPerson(
+    @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
+    @RequestAttribute filters: ConsumerFilters?,
+  ): DataResponse<PrisonerEducation?> {
+    val response = getPrisonerEducationService.execute(hmppsId, filters = filters)
+
+    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      throw ValidationException("Bad request from upstream ${response.errors.first().description}")
+    }
+    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Entity not found ${response.errors.first().description}")
+    }
+
+    auditService.createEvent("GET_PRISONER_EDUCATION", mapOf("hmppsId" to hmppsId))
+    return DataResponse(response.data)
+  }
+
   private fun isValidISODateFormat(dateString: String): Boolean =
     try {
       LocalDate.parse(dateString, DateTimeFormatter.ISO_DATE)
@@ -268,4 +470,46 @@ class PersonController(
     } catch (e: Exception) {
       false
     }
+
+  /***
+   * This simple redaction method is to be replaced by "flexible redaction" in coming releases
+   */
+  private fun redactPersonData(
+    offenderData: OffenderSearchResult,
+    clientName: String? = null,
+  ) = offenderData.let { data ->
+    val targetConsumers = redactionConfig.clientNames
+    when {
+      !targetConsumers.contains(clientName) -> data
+
+      else -> {
+        val prisonerOffenderSearch =
+          data.prisonerOffenderSearch?.run {
+            copy(
+              middleName = REDACTED,
+              aliases = aliases.map { it.copy(middleName = REDACTED) }.toList(),
+              identifiers = identifiers.copy(croNumber = REDACTED, deliusCrn = REDACTED),
+              pncId = REDACTED,
+              contactDetails = null,
+              currentRestriction = null,
+              restrictionMessage = REDACTED,
+              currentExclusion = null,
+              exclusionMessage = REDACTED,
+            )
+          }
+
+        data.copy(
+          prisonerOffenderSearch = prisonerOffenderSearch,
+          probationOffenderSearch = null,
+        )
+      }
+    }
+  }
 }
+
+private const val REDACTED = "**REDACTED**"
+
+// Workaround for Swagger with generic around `@Schema` (`useReturnTypeSchema` is not applicable here)
+private data class OffenderSearchDataResponse(
+  val data: OffenderSearchResult,
+)

@@ -6,6 +6,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -18,6 +19,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
@@ -41,28 +43,26 @@ internal class StatusInformationControllerTest(
   @MockitoBean val getStatusInformationForPersonService: GetStatusInformationForPersonService,
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getCaseAccess: GetCaseAccess,
+  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
 ) : DescribeSpec(
     {
       val hmppsId = "8888/12345P"
       val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
       val path = "/v1/persons/$encodedHmppsId/status-information"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
+      val laoOkCrn = "R654321"
+      val laoFailureCrn = "R754321"
 
       describe("GET $path") {
         beforeTest {
           Mockito.reset(getStatusInformationForPersonService)
           Mockito.reset(auditService)
+          whenever(getCaseAccess.getAccessFor(any())).thenReturn(CaseAccess(laoOkCrn, false, false, "", ""))
+          whenever(getCaseAccess.getAccessFor("R754321")).thenReturn(null)
           whenever(getStatusInformationForPersonService.execute(hmppsId)).thenReturn(
             Response(
               data =
                 listOf(
-                  StatusInformation(
-                    code = "ASFO",
-                    description = "Serious Further Offence - Subject to SFO review/investigation",
-                    startDate = "2022-10-18",
-                    reviewDate = "2025-12-22",
-                    notes = "To review later on in the year.",
-                  ),
                   StatusInformation(
                     code = "WRSM",
                     description = "Warrant/Summons - Outstanding warrant or summons",
@@ -103,13 +103,6 @@ internal class StatusInformationControllerTest(
             """
           "data": [
             {
-              "code": "ASFO",
-              "description": "Serious Further Offence - Subject to SFO review/investigation",
-              "startDate": "2022-10-18",
-              "reviewDate": "2025-12-22",
-              "notes": "To review later on in the year."
-            },
-            {
               "code": "WRSM",
               "description": "Warrant/Summons - Outstanding warrant or summons",
               "startDate": "2022-09-01",
@@ -130,13 +123,6 @@ internal class StatusInformationControllerTest(
               data =
                 listOf(
                   StatusInformation(
-                    code = "ASFO",
-                    description = "Serious Further Offence - Subject to SFO review/investigation",
-                    startDate = "2022-10-18",
-                    reviewDate = "2025-12-22",
-                    notes = "To review later on in the year.",
-                  ),
-                  StatusInformation(
                     code = "WRSM",
                     description = "Warrant/Summons - Outstanding warrant or summons",
                     startDate = "2022-09-01",
@@ -152,13 +138,6 @@ internal class StatusInformationControllerTest(
           result.response.contentAsString.shouldContain(
             """
           "data": [
-            {
-              "code": "ASFO",
-              "description": "Serious Further Offence - Subject to SFO review/investigation",
-              "startDate": "2022-10-18",
-              "reviewDate": "2025-12-22",
-              "notes": "${Redactor.REDACTED}"
-            },
             {
               "code": "WRSM",
               "description": "Warrant/Summons - Outstanding warrant or summons",
@@ -195,7 +174,7 @@ internal class StatusInformationControllerTest(
               errors =
                 listOf(
                   UpstreamApiError(
-                    causedBy = UpstreamApi.NOMIS,
+                    causedBy = UpstreamApi.PRISON_API,
                     type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                   ),
                 ),
@@ -240,6 +219,17 @@ internal class StatusInformationControllerTest(
           assert(
             response.response.contentAsString.equals(
               "{\"status\":500,\"errorCode\":null,\"userMessage\":\"500 MockError\",\"developerMessage\":\"Unable to complete request as an upstream service is not responding\",\"moreInfo\":null}",
+            ),
+          )
+        }
+
+        it("fails with the appropriate error when LAO context has failed to be retrieved") {
+          val response = mockMvc.performAuthorised("/v1/persons/$laoFailureCrn/status-information")
+
+          assert(response.response.status == 500)
+          assert(
+            response.response.contentAsString.equals(
+              "{\"status\":500,\"errorCode\":null,\"userMessage\":\"LAO Check failed\",\"developerMessage\":\"LAO Check failed\",\"moreInfo\":null}",
             ),
           )
         }

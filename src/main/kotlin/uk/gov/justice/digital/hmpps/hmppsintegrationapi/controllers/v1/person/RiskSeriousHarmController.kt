@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
+import io.swagger.v3.oas.annotations.tags.Tags
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -23,12 +24,12 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 
 @RestController
 @RequestMapping("/v1/persons")
-@Tag(name = "risks")
+@Tags(value = [Tag(name = "Persons"), Tag(name = "Risks")])
 class RiskSeriousHarmController(
   @Autowired val getRiskSeriousHarmForPersonService: GetRiskSeriousHarmForPersonService,
   @Autowired val auditService: AuditService,
 ) {
-  @LaoRedaction(Mode.REDACT)
+  @LaoRedaction(Mode.REJECT)
   @GetMapping("{encodedHmppsId}/risks/serious-harm")
   @Operation(
     summary = "Returns Risk of Serious Harm (ROSH) risks associated with a person. Returns only assessments completed in the last year. This endpoint does not serve LAO (Limited Access Offender) data.",

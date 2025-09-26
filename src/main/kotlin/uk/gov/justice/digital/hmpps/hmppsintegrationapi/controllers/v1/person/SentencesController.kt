@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
+import io.swagger.v3.oas.annotations.tags.Tags
 import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
@@ -30,7 +31,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
 
 @RestController
 @RequestMapping("/v1/persons")
-@Tag(name = "persons")
+@Tag(name = "Persons")
 class SentencesController(
   @Autowired val getSentencesForPersonService: GetSentencesForPersonService,
   @Autowired val getLatestSentenceKeyDatesAndAdjustmentsForPersonService: GetLatestSentenceKeyDatesAndAdjustmentsForPersonService,
@@ -55,7 +56,7 @@ class SentencesController(
   ): PaginatedResponse<Sentence> {
     val response = getSentencesForPersonService.execute(hmppsId, filters)
 
-    if (response.hasErrorCausedBy(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+    if (response.hasErrorCausedBy(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
@@ -67,6 +68,7 @@ class SentencesController(
   }
 
   @GetMapping("{encodedHmppsId}/sentences/latest-key-dates-and-adjustments")
+  @Tags(value = [Tag("Reception"), Tag("Activities")])
   @Operation(
     summary = "Returns the key dates and adjustments about a person's release from prison for their latest sentence.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
@@ -84,7 +86,7 @@ class SentencesController(
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId, filters)
 
-    if (response.hasErrorCausedBy(UpstreamApiError.Type.ENTITY_NOT_FOUND, causedBy = UpstreamApi.NOMIS)) {
+    if (response.hasErrorCausedBy(UpstreamApiError.Type.ENTITY_NOT_FOUND, causedBy = UpstreamApi.PRISON_API)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
 

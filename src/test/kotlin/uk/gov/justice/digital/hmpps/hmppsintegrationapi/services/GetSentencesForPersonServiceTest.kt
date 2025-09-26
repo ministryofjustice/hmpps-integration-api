@@ -8,53 +8,54 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestSentence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisBooking
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiBooking
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInNomisOnlyPersona
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationOnlyPersona
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
   classes = [GetSentencesForPersonService::class],
 )
 internal class GetSentencesForPersonServiceTest(
-  @MockitoBean val nomisGateway: NomisGateway,
+  @MockitoBean val prisonApiGateway: PrisonApiGateway,
   @MockitoBean val getPersonService: GetPersonService,
   @MockitoBean val nDeliusGateway: NDeliusGateway,
   private val getSentencesForPersonService: GetSentencesForPersonService,
 ) : DescribeSpec(
     {
       val hmppsId = "A1234AA"
-      val nomisNumber = "Z99999ZZ"
-      val nDeliusCRN = "X123456"
       val filters = ConsumerFilters(null)
       val firstBookingId = 1
       val secondBookingId = 2
       val personFromProbationOffenderSearch =
         Person(
-          firstName = "Chandler",
-          lastName = "ProbationBing",
-          identifiers = Identifiers(deliusCrn = nDeliusCRN, nomisNumber = nomisNumber),
+          firstName = personInProbationAndNomisPersona.firstName,
+          lastName = personInProbationAndNomisPersona.lastName,
+          identifiers = personInProbationAndNomisPersona.identifiers,
         )
       val personNomisOnly =
         Person(
-          firstName = "Chandler",
-          lastName = "ProbationBing",
-          identifiers = Identifiers(nomisNumber = nomisNumber),
+          firstName = personInNomisOnlyPersona.firstName,
+          lastName = personInNomisOnlyPersona.lastName,
+          identifiers = personInNomisOnlyPersona.identifiers,
         )
       val personDeliusOnly =
         Person(
-          firstName = "Chandler",
-          lastName = "ProbationBing",
-          identifiers = Identifiers(deliusCrn = nDeliusCRN),
+          firstName = personInProbationOnlyPersona.firstName,
+          lastName = personInProbationOnlyPersona.lastName,
+          identifiers = personInProbationOnlyPersona.identifiers,
         )
+      val persona = personInProbationAndNomisPersona
       val personNoIdentifiers =
-        Person(firstName = "Qui-gon", lastName = "Jin")
+        Person(firstName = persona.firstName, lastName = persona.lastName)
       val nomisSentence1 = generateTestSentence()
       val nomisSentence2 = generateTestSentence()
       val nDeliusSentence1 = generateTestSentence()
@@ -64,14 +65,14 @@ internal class GetSentencesForPersonServiceTest(
         listOf(
           UpstreamApiError(
             type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR,
-            causedBy = UpstreamApi.NOMIS,
+            causedBy = UpstreamApi.PRISON_API,
           ),
         )
       val nomis404Error =
         listOf(
           UpstreamApiError(
             type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-            causedBy = UpstreamApi.NOMIS,
+            causedBy = UpstreamApi.PRISON_API,
           ),
         )
       val nDelius404Error =
@@ -88,17 +89,9 @@ internal class GetSentencesForPersonServiceTest(
             causedBy = UpstreamApi.NDELIUS,
           ),
         )
-      val probationOffenderSearch500Error =
-        listOf(
-          UpstreamApiError(
-            type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR,
-            causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
-            description = "Mock error from person service",
-          ),
-        )
 
       beforeEach {
-        Mockito.reset(nomisGateway)
+        Mockito.reset(prisonApiGateway)
         Mockito.reset(nDeliusGateway)
         Mockito.reset(getPersonService)
       }
@@ -107,12 +100,12 @@ internal class GetSentencesForPersonServiceTest(
         whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
           Response(
             data = null,
-            errors = probationOffenderSearch500Error,
+            errors = nDelius500Error,
           ),
         )
 
         val result = getSentencesForPersonService.execute(hmppsId, filters)
-        result.errors.shouldBe(probationOffenderSearch500Error)
+        result.errors.shouldBe(nDelius500Error)
       }
 
       it("No Nomis number + no Delius crn -> Return entity not found response") {
@@ -132,8 +125,7 @@ internal class GetSentencesForPersonServiceTest(
             data = personDeliusOnly,
           ),
         )
-
-        whenever(nDeliusGateway.getSentencesForPerson(nDeliusCRN)).thenReturn(
+        whenever(nDeliusGateway.getSentencesForPerson(personDeliusOnly.identifiers.deliusCrn!!)).thenReturn(
           Response(data = listOf(nDeliusSentence1, nDeliusSentence2)),
         )
 
@@ -147,8 +139,7 @@ internal class GetSentencesForPersonServiceTest(
             data = personDeliusOnly,
           ),
         )
-
-        whenever(nDeliusGateway.getSentencesForPerson(nDeliusCRN)).thenReturn(
+        whenever(nDeliusGateway.getSentencesForPerson(personDeliusOnly.identifiers.deliusCrn!!)).thenReturn(
           Response(data = emptyList(), errors = nDelius500Error),
         )
 
@@ -162,18 +153,15 @@ internal class GetSentencesForPersonServiceTest(
             data = personNomisOnly,
           ),
         )
-
-        whenever(nomisGateway.getBookingIdsForPerson(nomisNumber)).thenReturn(
+        whenever(prisonApiGateway.getBookingIdsForPerson(personNomisOnly.identifiers.nomisNumber!!)).thenReturn(
           Response(
-            data = listOf(NomisBooking(bookingId = firstBookingId), NomisBooking(bookingId = secondBookingId)),
+            data = listOf(PrisonApiBooking(bookingId = firstBookingId), PrisonApiBooking(bookingId = secondBookingId)),
           ),
         )
-
-        whenever(nomisGateway.getSentencesForBooking(firstBookingId)).thenReturn(
+        whenever(prisonApiGateway.getSentencesForBooking(firstBookingId)).thenReturn(
           Response(data = listOf(nomisSentence1)),
         )
-
-        whenever(nomisGateway.getSentencesForBooking(secondBookingId)).thenReturn(
+        whenever(prisonApiGateway.getSentencesForBooking(secondBookingId)).thenReturn(
           Response(data = listOf(nomisSentence2)),
         )
 
@@ -187,8 +175,7 @@ internal class GetSentencesForPersonServiceTest(
             data = personNomisOnly,
           ),
         )
-
-        whenever(nomisGateway.getBookingIdsForPerson(nomisNumber)).thenReturn(
+        whenever(prisonApiGateway.getBookingIdsForPerson(personNomisOnly.identifiers.nomisNumber!!)).thenReturn(
           Response(
             data = emptyList(),
             errors = nomis500Error,
@@ -205,17 +192,15 @@ internal class GetSentencesForPersonServiceTest(
             data = personNomisOnly,
           ),
         )
-
-        whenever(nomisGateway.getBookingIdsForPerson(nomisNumber)).thenReturn(
+        whenever(prisonApiGateway.getBookingIdsForPerson(personNomisOnly.identifiers.nomisNumber!!)).thenReturn(
           Response(
-            data = listOf(NomisBooking(bookingId = firstBookingId), NomisBooking(bookingId = secondBookingId)),
+            data = listOf(PrisonApiBooking(bookingId = firstBookingId), PrisonApiBooking(bookingId = secondBookingId)),
           ),
         )
-
-        whenever(nomisGateway.getSentencesForBooking(firstBookingId)).thenReturn(
+        whenever(prisonApiGateway.getSentencesForBooking(firstBookingId)).thenReturn(
           Response(data = emptyList(), errors = nomis500Error),
         )
-        whenever(nomisGateway.getSentencesForBooking(secondBookingId)).thenReturn(
+        whenever(prisonApiGateway.getSentencesForBooking(secondBookingId)).thenReturn(
           Response(data = emptyList(), errors = nomis500Error),
         )
 
@@ -229,21 +214,18 @@ internal class GetSentencesForPersonServiceTest(
             data = personFromProbationOffenderSearch,
           ),
         )
-
-        whenever(nomisGateway.getBookingIdsForPerson(nomisNumber)).thenReturn(
+        whenever(prisonApiGateway.getBookingIdsForPerson(personFromProbationOffenderSearch.identifiers.nomisNumber!!)).thenReturn(
           Response(
-            data = listOf(NomisBooking(bookingId = firstBookingId), NomisBooking(bookingId = secondBookingId)),
+            data = listOf(PrisonApiBooking(bookingId = firstBookingId), PrisonApiBooking(bookingId = secondBookingId)),
           ),
         )
-
-        whenever(nomisGateway.getSentencesForBooking(firstBookingId)).thenReturn(
+        whenever(prisonApiGateway.getSentencesForBooking(firstBookingId)).thenReturn(
           Response(data = listOf(nomisSentence1)),
         )
-        whenever(nomisGateway.getSentencesForBooking(secondBookingId)).thenReturn(
+        whenever(prisonApiGateway.getSentencesForBooking(secondBookingId)).thenReturn(
           Response(data = listOf(nomisSentence2)),
         )
-
-        whenever(nDeliusGateway.getSentencesForPerson(nDeliusCRN)).thenReturn(
+        whenever(nDeliusGateway.getSentencesForPerson(personFromProbationOffenderSearch.identifiers.deliusCrn!!)).thenReturn(
           Response(data = listOf(nDeliusSentence1, nDeliusSentence2)),
         )
 
@@ -257,21 +239,18 @@ internal class GetSentencesForPersonServiceTest(
             data = personFromProbationOffenderSearch,
           ),
         )
-
-        whenever(nomisGateway.getBookingIdsForPerson(nomisNumber)).thenReturn(
+        whenever(prisonApiGateway.getBookingIdsForPerson(personFromProbationOffenderSearch.identifiers.nomisNumber!!)).thenReturn(
           Response(
-            data = listOf(NomisBooking(bookingId = firstBookingId), NomisBooking(bookingId = secondBookingId)),
+            data = listOf(PrisonApiBooking(bookingId = firstBookingId), PrisonApiBooking(bookingId = secondBookingId)),
           ),
         )
-
-        whenever(nomisGateway.getSentencesForBooking(firstBookingId)).thenReturn(
+        whenever(prisonApiGateway.getSentencesForBooking(firstBookingId)).thenReturn(
           Response(data = listOf(nomisSentence1)),
         )
-        whenever(nomisGateway.getSentencesForBooking(secondBookingId)).thenReturn(
+        whenever(prisonApiGateway.getSentencesForBooking(secondBookingId)).thenReturn(
           Response(data = listOf(nomisSentence2)),
         )
-
-        whenever(nDeliusGateway.getSentencesForPerson(nDeliusCRN)).thenReturn(
+        whenever(nDeliusGateway.getSentencesForPerson(personFromProbationOffenderSearch.identifiers.deliusCrn!!)).thenReturn(
           Response(data = emptyList(), errors = nDelius404Error),
         )
 
@@ -285,15 +264,13 @@ internal class GetSentencesForPersonServiceTest(
             data = personFromProbationOffenderSearch,
           ),
         )
-
-        whenever(nomisGateway.getBookingIdsForPerson(nomisNumber)).thenReturn(
+        whenever(prisonApiGateway.getBookingIdsForPerson(personFromProbationOffenderSearch.identifiers.nomisNumber!!)).thenReturn(
           Response(
             data = emptyList(),
             errors = nomis404Error,
           ),
         )
-
-        whenever(nDeliusGateway.getSentencesForPerson(nDeliusCRN)).thenReturn(
+        whenever(nDeliusGateway.getSentencesForPerson(personFromProbationOffenderSearch.identifiers.deliusCrn!!)).thenReturn(
           Response(data = listOf(nDeliusSentence1, nDeliusSentence2)),
         )
 
@@ -307,21 +284,18 @@ internal class GetSentencesForPersonServiceTest(
             data = personFromProbationOffenderSearch,
           ),
         )
-
-        whenever(nomisGateway.getBookingIdsForPerson(nomisNumber)).thenReturn(
+        whenever(prisonApiGateway.getBookingIdsForPerson(personFromProbationOffenderSearch.identifiers.nomisNumber!!)).thenReturn(
           Response(
-            data = listOf(NomisBooking(bookingId = firstBookingId), NomisBooking(bookingId = secondBookingId)),
+            data = listOf(PrisonApiBooking(bookingId = firstBookingId), PrisonApiBooking(bookingId = secondBookingId)),
           ),
         )
-
-        whenever(nomisGateway.getSentencesForBooking(firstBookingId)).thenReturn(
+        whenever(prisonApiGateway.getSentencesForBooking(firstBookingId)).thenReturn(
           Response(data = emptyList(), errors = nomis404Error),
         )
-        whenever(nomisGateway.getSentencesForBooking(secondBookingId)).thenReturn(
+        whenever(prisonApiGateway.getSentencesForBooking(secondBookingId)).thenReturn(
           Response(data = emptyList(), errors = nomis404Error),
         )
-
-        whenever(nDeliusGateway.getSentencesForPerson(nDeliusCRN)).thenReturn(
+        whenever(nDeliusGateway.getSentencesForPerson(personFromProbationOffenderSearch.identifiers.deliusCrn!!)).thenReturn(
           Response(data = listOf(nDeliusSentence1, nDeliusSentence2)),
         )
 
@@ -335,8 +309,7 @@ internal class GetSentencesForPersonServiceTest(
             data = personFromProbationOffenderSearch,
           ),
         )
-
-        whenever(nomisGateway.getBookingIdsForPerson(nomisNumber)).thenReturn(
+        whenever(prisonApiGateway.getBookingIdsForPerson(personFromProbationOffenderSearch.identifiers.nomisNumber!!)).thenReturn(
           Response(
             data = emptyList(),
             errors = nomis500Error,
@@ -353,17 +326,15 @@ internal class GetSentencesForPersonServiceTest(
             data = personFromProbationOffenderSearch,
           ),
         )
-
-        whenever(nomisGateway.getBookingIdsForPerson(nomisNumber)).thenReturn(
+        whenever(prisonApiGateway.getBookingIdsForPerson(personFromProbationOffenderSearch.identifiers.nomisNumber!!)).thenReturn(
           Response(
-            data = listOf(NomisBooking(bookingId = firstBookingId), NomisBooking(bookingId = secondBookingId)),
+            data = listOf(PrisonApiBooking(bookingId = firstBookingId), PrisonApiBooking(bookingId = secondBookingId)),
           ),
         )
-
-        whenever(nomisGateway.getSentencesForBooking(firstBookingId)).thenReturn(
+        whenever(prisonApiGateway.getSentencesForBooking(firstBookingId)).thenReturn(
           Response(data = emptyList(), errors = nomis500Error),
         )
-        whenever(nomisGateway.getSentencesForBooking(secondBookingId)).thenReturn(
+        whenever(prisonApiGateway.getSentencesForBooking(secondBookingId)).thenReturn(
           Response(data = emptyList(), errors = nomis500Error),
         )
 
@@ -377,21 +348,18 @@ internal class GetSentencesForPersonServiceTest(
             data = personFromProbationOffenderSearch,
           ),
         )
-
-        whenever(nomisGateway.getBookingIdsForPerson(nomisNumber)).thenReturn(
+        whenever(prisonApiGateway.getBookingIdsForPerson(personFromProbationOffenderSearch.identifiers.nomisNumber!!)).thenReturn(
           Response(
-            data = listOf(NomisBooking(bookingId = firstBookingId), NomisBooking(bookingId = secondBookingId)),
+            data = listOf(PrisonApiBooking(bookingId = firstBookingId), PrisonApiBooking(bookingId = secondBookingId)),
           ),
         )
-
-        whenever(nomisGateway.getSentencesForBooking(firstBookingId)).thenReturn(
+        whenever(prisonApiGateway.getSentencesForBooking(firstBookingId)).thenReturn(
           Response(data = listOf(nomisSentence1)),
         )
-        whenever(nomisGateway.getSentencesForBooking(secondBookingId)).thenReturn(
+        whenever(prisonApiGateway.getSentencesForBooking(secondBookingId)).thenReturn(
           Response(data = listOf(nomisSentence2)),
         )
-
-        whenever(nDeliusGateway.getSentencesForPerson(nDeliusCRN)).thenReturn(
+        whenever(nDeliusGateway.getSentencesForPerson(personFromProbationOffenderSearch.identifiers.deliusCrn!!)).thenReturn(
           Response(data = emptyList(), errors = nDelius500Error),
         )
 
@@ -405,15 +373,13 @@ internal class GetSentencesForPersonServiceTest(
             data = personFromProbationOffenderSearch,
           ),
         )
-
-        whenever(nomisGateway.getBookingIdsForPerson(nomisNumber)).thenReturn(
+        whenever(prisonApiGateway.getBookingIdsForPerson(personFromProbationOffenderSearch.identifiers.nomisNumber!!)).thenReturn(
           Response(
             data = emptyList(),
             errors = nomis404Error,
           ),
         )
-
-        whenever(nDeliusGateway.getSentencesForPerson(nDeliusCRN)).thenReturn(
+        whenever(nDeliusGateway.getSentencesForPerson(personFromProbationOffenderSearch.identifiers.deliusCrn!!)).thenReturn(
           Response(data = emptyList(), errors = nDelius500Error),
         )
 
@@ -427,21 +393,18 @@ internal class GetSentencesForPersonServiceTest(
             data = personFromProbationOffenderSearch,
           ),
         )
-
-        whenever(nomisGateway.getBookingIdsForPerson(nomisNumber)).thenReturn(
+        whenever(prisonApiGateway.getBookingIdsForPerson(personFromProbationOffenderSearch.identifiers.nomisNumber!!)).thenReturn(
           Response(
-            data = listOf(NomisBooking(bookingId = firstBookingId), NomisBooking(bookingId = secondBookingId)),
+            data = listOf(PrisonApiBooking(bookingId = firstBookingId), PrisonApiBooking(bookingId = secondBookingId)),
           ),
         )
-
-        whenever(nomisGateway.getSentencesForBooking(firstBookingId)).thenReturn(
+        whenever(prisonApiGateway.getSentencesForBooking(firstBookingId)).thenReturn(
           Response(data = emptyList(), errors = nomis404Error),
         )
-        whenever(nomisGateway.getSentencesForBooking(secondBookingId)).thenReturn(
+        whenever(prisonApiGateway.getSentencesForBooking(secondBookingId)).thenReturn(
           Response(data = emptyList(), errors = nomis404Error),
         )
-
-        whenever(nDeliusGateway.getSentencesForPerson(nDeliusCRN)).thenReturn(
+        whenever(nDeliusGateway.getSentencesForPerson(personFromProbationOffenderSearch.identifiers.deliusCrn!!)).thenReturn(
           Response(data = emptyList(), errors = nDelius500Error),
         )
 
@@ -455,15 +418,13 @@ internal class GetSentencesForPersonServiceTest(
             data = personFromProbationOffenderSearch,
           ),
         )
-
-        whenever(nomisGateway.getBookingIdsForPerson(nomisNumber)).thenReturn(
+        whenever(prisonApiGateway.getBookingIdsForPerson(personFromProbationOffenderSearch.identifiers.nomisNumber!!)).thenReturn(
           Response(
             data = emptyList(),
             errors = nomis500Error,
           ),
         )
-
-        whenever(nDeliusGateway.getSentencesForPerson(nDeliusCRN)).thenReturn(
+        whenever(nDeliusGateway.getSentencesForPerson(personFromProbationOffenderSearch.identifiers.deliusCrn!!)).thenReturn(
           Response(data = emptyList(), errors = nDelius404Error),
         )
 

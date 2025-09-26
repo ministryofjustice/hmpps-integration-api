@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
@@ -24,7 +25,7 @@ import java.io.File
 @ActiveProfiles("test")
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [NDeliusGateway::class],
+  classes = [NDeliusGateway::class, FeatureFlagConfig::class],
 )
 class GetStatusInformationForPersonTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
@@ -64,8 +65,8 @@ class GetStatusInformationForPersonTest(
         response.data.shouldBe(
           listOf(
             StatusInformation(
-              code = "ASFO",
-              description = "Serious Further Offence - Subject to SFO review/investigation",
+              code = "WRSM",
+              description = "Warrant/Summons - Outstanding warrant or summons",
               startDate = "2020-12-04",
               reviewDate = "2030-07-25",
               notes = "No notes.",

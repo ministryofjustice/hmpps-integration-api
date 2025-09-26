@@ -3,7 +3,9 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.nomis
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.ints.shouldBeExactly
 import io.kotest.matchers.ints.shouldBeGreaterThan
+import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
@@ -14,7 +16,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -23,14 +25,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 @ActiveProfiles("test")
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [NomisGateway::class],
+  classes = [PrisonApiGateway::class],
 )
 class GetAddressesForPersonTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
-  private val nomisGateway: NomisGateway,
+  private val prisonApiGateway: PrisonApiGateway,
 ) : DescribeSpec(
     {
-      val nomisApiMockServer = ApiMockServer.create(UpstreamApi.NOMIS)
+      val nomisApiMockServer = ApiMockServer.create(UpstreamApi.PRISON_API)
       val offenderNo = "abc123"
       val addressPath = "/api/offenders/$offenderNo/addresses"
       beforeEach {
@@ -64,6 +66,16 @@ class GetAddressesForPersonTest(
                   "activeFlag": false
                 },
                 {
+                  "addressId": 8681811,
+                  "addressUsageDescription": "Do not use. No addressUsage code",
+                  "activeFlag": false
+                },
+                {
+                  "addressId": 8681821,
+                  "addressUsageDescription": "Do not use. No addressUsage code",
+                  "activeFlag": false
+                },
+                {
                   "addressId": 8681879,
                   "addressUsage": "B99",
                   "addressUsageDescription": "Glass Elevator",
@@ -84,21 +96,42 @@ class GetAddressesForPersonTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        nomisGateway.getAddressesForPerson(offenderNo)
+        prisonApiGateway.getAddressesForPerson(offenderNo)
 
         verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
       }
 
       it("returns addresses for a person with the matching ID") {
-        val response = nomisGateway.getAddressesForPerson(offenderNo)
+        val response = prisonApiGateway.getAddressesForPerson(offenderNo)
 
         response.data.count().shouldBeGreaterThan(0)
+      }
+
+      it("returns only the usages that have an addressUsage code") {
+        val response = prisonApiGateway.getAddressesForPerson(offenderNo)
+
+        response.data[0]
+          .types
+          .count()
+          .shouldBeExactly(3)
+        response.data[0]
+          .types[0]
+          .code
+          .shouldBe("A99")
+        response.data[0]
+          .types[1]
+          .code
+          .shouldBe("B99")
+        response.data[0]
+          .types[2]
+          .code
+          .shouldBe("BUS")
       }
 
       it("returns an empty list when no addresses are found") {
         nomisApiMockServer.stubForGet(addressPath, "[]")
 
-        val response = nomisGateway.getAddressesForPerson(offenderNo)
+        val response = prisonApiGateway.getAddressesForPerson(offenderNo)
 
         response.data.shouldBeEmpty()
       }
@@ -114,7 +147,7 @@ class GetAddressesForPersonTest(
           HttpStatus.NOT_FOUND,
         )
 
-        val response = nomisGateway.getAddressesForPerson(addressPath)
+        val response = prisonApiGateway.getAddressesForPerson(addressPath)
 
         response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
       }

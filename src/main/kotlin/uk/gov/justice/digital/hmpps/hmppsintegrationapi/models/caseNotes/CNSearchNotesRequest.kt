@@ -1,0 +1,45 @@
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.caseNotes
+
+data class CNSearchNotesRequest(
+  val includeSensitive: Boolean? = true,
+  val occurredFrom: String? = null,
+  val occurredTo: String? = null,
+  val typeSubTypes: List<CNTypeSubType>? = null,
+  val page: Int? = null,
+  val size: Int? = null,
+) {
+  fun toApiConformingMap(): Map<String, Any> {
+    val map = mutableMapOf<String, Any>()
+    if (includeSensitive != null) {
+      map["includeSensitive"] = includeSensitive
+    }
+    if (occurredFrom != null) {
+      map["occurredFrom"] = occurredFrom
+    }
+    if (occurredTo != null) {
+      map["occurredTo"] = occurredTo
+    }
+    if (typeSubTypes != null) {
+      map["typeSubTypes"] = typeSubTypes.map { it.toApiConformingMap() }
+    }
+    if (page != null) {
+      map["page"] = page.toInt()
+    }
+    if (size != null) {
+      map["size"] = size.toInt()
+    }
+    return map
+  }
+}
+
+data class CNTypeSubType(
+  val type: String,
+  val subTypes: List<String> = emptyList(),
+) {
+  fun toApiConformingMap(): Map<String, Any> {
+    val map = mutableMapOf<String, Any>()
+    map["type"] = type
+    map["subTypes"] = subTypes
+    return map
+  }
+}

@@ -4,7 +4,7 @@ import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -13,7 +13,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 
 @Service
 class GetTransactionsForPersonService(
-  @Autowired val nomisGateway: NomisGateway,
+  @Autowired val prisonApiGateway: PrisonApiGateway,
   @Autowired val getPersonService: GetPersonService,
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
 ) {
@@ -47,11 +47,11 @@ class GetTransactionsForPersonService(
     val nomisNumber =
       personResponse.data?.nomisNumber ?: return Response(
         data = null,
-        errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
+        errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
       )
 
     val nomisTransactions =
-      nomisGateway.getTransactionsForPerson(
+      prisonApiGateway.getTransactionsForPerson(
         prisonId,
         nomisNumber,
         accountCode,

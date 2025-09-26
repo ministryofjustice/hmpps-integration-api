@@ -95,14 +95,14 @@ class BalancesControllerTest(
         verify(getBalancesForPersonService, times(1)).execute(prisonId, hmppsId, filters = ConsumerFilters(prisons = listOf("XYZ")))
       }
 
-      it("returns a 404 NOT FOUND status code when person isn't found in probation offender search") {
+      it("returns a 404 NOT FOUND status code when person isn't found in delius") {
         whenever(getBalancesForPersonService.execute(prisonId, hmppsId, null)).thenReturn(
           Response(
             data = null,
             errors =
               listOf(
                 UpstreamApiError(
-                  causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                  causedBy = UpstreamApi.NDELIUS,
                   type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                 ),
               ),
@@ -121,7 +121,7 @@ class BalancesControllerTest(
             errors =
               listOf(
                 UpstreamApiError(
-                  causedBy = UpstreamApi.NOMIS,
+                  causedBy = UpstreamApi.PRISON_API,
                   type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                 ),
               ),
@@ -141,7 +141,7 @@ class BalancesControllerTest(
               listOf(
                 UpstreamApiError(
                   type = UpstreamApiError.Type.BAD_REQUEST,
-                  causedBy = UpstreamApi.NOMIS,
+                  causedBy = UpstreamApi.PRISON_API,
                 ),
               ),
           ),
@@ -204,7 +204,7 @@ class BalancesControllerTest(
             errors =
               listOf(
                 UpstreamApiError(
-                  causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                  causedBy = UpstreamApi.NDELIUS,
                   type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                 ),
               ),
@@ -223,7 +223,7 @@ class BalancesControllerTest(
             errors =
               listOf(
                 UpstreamApiError(
-                  causedBy = UpstreamApi.NOMIS,
+                  causedBy = UpstreamApi.PRISON_API,
                   type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                 ),
               ),
@@ -243,7 +243,7 @@ class BalancesControllerTest(
               listOf(
                 UpstreamApiError(
                   type = UpstreamApiError.Type.BAD_REQUEST,
-                  causedBy = UpstreamApi.NOMIS,
+                  causedBy = UpstreamApi.PRISON_API,
                 ),
               ),
           ),

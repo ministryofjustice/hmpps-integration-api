@@ -14,6 +14,9 @@ parameters:
   releases-slack-channel:
     type: string
     default: hmpps-integration-api-alerts
+  java-options:
+    type: string
+    default: -Xmx2g -XX:MaxMetaspaceSize=1g -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false -Dkotlin.compiler.execution.strategy=in-process -Dorg.gradle.workers.max=1
 
 slack-fail-post-step: &slack-fail-post-step
   post-steps:
@@ -84,6 +87,7 @@ jobs:
     executor:
       name: hmpps/java
       tag: "21.0"
+      java_options: << pipeline.parameters.java-options >>
     steps:
       - checkout
       - restore_cache:
@@ -98,7 +102,9 @@ jobs:
             - ~/.gradle
           key: gradle-{{ checksum "build.gradle.kts" }}
       - store_test_results:
-          path: build/test-results
+          path: build/reports/tests/unitTest
+      - store_artifacts:
+          path: build/reports/tests/unitTest
   integration-tests:
     machine:
       image: ubuntu-2204:2022.10.2
@@ -118,6 +124,10 @@ jobs:
       - run:
           name: Run integration tests
           command: make integration-test
+      - store_test_results:
+          path: build/reports/tests/integrationTest
+      - store_artifacts:
+          path: build/reports/tests/integrationTest
   create-and-push-image-to-ecr:
     docker:
       - image: ministryofjustice/cloud-platform-tools
@@ -135,14 +145,27 @@ jobs:
       - deploy:
           name: Push application Docker image
           command: make publish
-  heartbeat:
-    machine:
-      image: ubuntu-2204:2022.10.2
+  smoke-tests-dev:
+    docker:
+      - image: grafana/k6:1.0.0
     steps:
       - checkout
       - run:
-          name: Run heartbeat
-          command: make heartbeat
+          name: Run smoke tests
+          command: |
+            k6 run -e PROFILE=MAIN ./scripts/K6/smoke-tests.js
+            k6 run -e PROFILE=LIMITED ./scripts/K6/smoke-tests.js
+            k6 run -e PROFILE=NOPERMS ./scripts/K6/smoke-tests.js
+            k6 run -e PROFILE=NOCERT ./scripts/K6/smoke-tests.js
+  smoke-tests-higher-envs:
+    docker:
+      - image: grafana/k6:1.0.0
+    steps:
+      - checkout
+      - run:
+          name: Run smoke tests
+          command: |
+            k6 run -e PROFILE=PROD ./scripts/K6/smoke-tests.js
 
 workflows:
   version: 2
@@ -207,12 +230,12 @@ workflows:
           slack_channel_name: << pipeline.parameters.releases-slack-channel >>
           slack_notification: false
 
-      - heartbeat:
+      - smoke-tests-dev:
           <<: *slack-fail-post-step
-          name: post-deploy-heartbeat-for-dev
+          name: smoke-tests-for-dev
           context:
             - hmpps-common-vars
-            - hmpps-integration-api-heartbeat-dev
+            - hmpps-integration-api-smoke-test-dev
           requires:
             - deploy-to-dev
 
@@ -223,7 +246,7 @@ workflows:
             - hmpps-common-vars
             - hmpps-integration-api-preprod
           requires:
-            - post-deploy-heartbeat-for-dev
+            - smoke-tests-for-dev
           filters:
             branches:
               only:
@@ -245,6 +268,14 @@ workflows:
           slack_channel_name: << pipeline.parameters.releases-slack-channel >>
           slack_notification: false
 
+      - smoke-tests-higher-envs:
+          <<: *slack-fail-post-step
+          name: smoke-tests-for-preprod
+          context:
+            - hmpps-common-vars
+            - hmpps-integration-api-smoke-test-preprod
+          requires:
+            - deploy-to-preprod
       - create-and-push-image-to-ecr:
           <<: *slack-fail-post-step
           name: create-and-push-image-to-prod-ecr
@@ -252,7 +283,7 @@ workflows:
             - hmpps-integration-api-prod
             - hmpps-common-vars
           requires:
-            - deploy-to-preprod
+            - smoke-tests-for-preprod
           filters:
             branches:
               only:
@@ -273,6 +304,14 @@ workflows:
           helm_timeout: 5m
           slack_channel_name: << pipeline.parameters.releases-slack-channel >>
           slack_notification: false
+      - smoke-tests-higher-envs:
+          <<: *slack-fail-post-step
+          name: smoke-tests-for-prod
+          context:
+            - hmpps-common-vars
+            - hmpps-integration-api-smoke-test-prod
+          requires:
+            - deploy-to-prod
   security:
     triggers:
       - schedule:
@@ -293,9 +332,9 @@ workflows:
             - veracode-credentials
             - hmpps-common-vars
       - hmpps/trivy_latest_scan:
-                slack_channel: << pipeline.parameters.alerts-slack-channel >>
-                context:
-                  - hmpps-common-vars
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
+          context:
+            - hmpps-common-vars
   security-weekly:
     triggers:
       - schedule:

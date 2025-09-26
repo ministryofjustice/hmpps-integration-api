@@ -3,8 +3,6 @@ services:
     base-url: https://prison-api.prison.service.justice.gov.uk
   prisoner-offender-search:
     base-url: https://prisoner-search.prison.service.justice.gov.uk
-  probation-offender-search:
-    base-url: https://probation-offender-search.hmpps.service.justice.gov.uk
   ndelius:
     base-url: https://external-api-and-delius.hmpps.service.justice.gov.uk
   assess-risks-and-needs:
@@ -21,6 +19,8 @@ services:
     base-url: https://moic.service.justice.gov.uk
   plp:
     base-url: https://learningandworkprogress-api.hmpps.service.justice.gov.uk
+  san:
+    base-url: https://support-for-additional-needs-api.hmpps.service.justice.gov.uk
   non-associations:
     base-url: https://non-associations-api.hmpps.service.justice.gov.uk
   manage-prison-visits:
@@ -33,12 +33,43 @@ services:
     base-url: https://sign-in.hmpps.service.justice.gov.uk
     username: ${CLIENT_ID}
     password: ${CLIENT_SECRET}
+  locations-inside-prison:
+    base-url: https://locations-inside-prison-api.hmpps.service.justice.gov.uk
+  health-and-medication:
+    base-url: https://health-and-medication-api.hmpps.service.justice.gov.uk
+  activities:
+    base-url: https://activities-api.prison.service.justice.gov.uk
+
+feature-flag:
+  use-education-assessments-endpoints: false
+  use-eswe-curious-endpoints: true
+  use-update-attendance-endpoint: true
+  use-schedule-detail-endpoint: true
+  use-search-appointments-endpoint: true
+  use-deallocation-endpoint: true
+  use-scheduled-instances-endpoint: true
+  use-deallocation-reasons-endpoint: true
+  use-allocation-endpoint: true
+  use-education-endpoint: true
+  use-expression-of-interest-endpoint: true
+  use-prisoner-base-location-endpoint: true
+  use-historical-attendances-endpoint: true
+  use-suitability-endpoint: true
+  use-waiting-list-endpoint: true
+  san-endpoint-enabled: true
+  simple-redaction: true
+  education-trigger-enabled: true
+  education-aln-trigger-enabled: true
+  use-contact-events-endpoint: false
+  use-stubbed-contact-events-data: false
+  use-roles-dsl: true
 
 authorisation:
   consumers:
     ctrlo:
       include:
         - "/v1/epf/person-details/.*/[^/]*$"
+        - "/v1/status"
       filters:
     moj-pes:
       include:
@@ -47,21 +78,33 @@ authorisation:
         - "/v1/hmpps/id/by-nomis-number/[^/]*$"
         - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
         - "/v1/persons/.*/cell-location"
+        - "/v1/status"
       filters:
     kubernetes-health-check-client:
       include:
         - "/health/liveness"
         - "/health/readiness"
+        - "/v1/status"
       filters:
     event-service:
       include:
-        - "/v1/config/authorisation"
+        - "/v2/config/authorisation"
+        - "/v1/status"
       filters:
     meganexus:
       include:
-        - "/v1/persons/.*/plp-induction-schedule"
-        - "/v1/persons/.*/plp-induction-schedule/history"
-        - "/v1/persons/.*/plp-review-schedule"
-        - "/v1/persons/[^/]+/expression-of-interest/jobs/[^/]+$"
-        - "/v1/hmpps/id/by-nomis-number/[^/]*$"
-        - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
+      filters:
+      roles:
+        - "curious"
+    pnd:
+      include:
+      filters:
+      roles:
+        - "police"
+    smoke-test:
+      include:
+        - "/v1/status"
+
+redaction:
+  client-names:
+    - meganexus

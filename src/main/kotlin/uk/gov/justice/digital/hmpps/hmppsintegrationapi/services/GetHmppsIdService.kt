@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.CrnSupplier
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.CrnSupplier.Companion.CRN_REGEX
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsId
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -14,7 +14,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 @Service
 class GetHmppsIdService(
   private val getPersonService: GetPersonService,
-  private val probationSearch: ProbationOffenderSearchGateway,
+  private val deliusGateway: NDeliusGateway,
 ) : CrnSupplier {
   fun execute(
     nomisNumber: String,
@@ -31,7 +31,7 @@ class GetHmppsIdService(
     val hmppsId =
       person?.hmppsId ?: person?.identifiers?.nomisNumber ?: return Response(
         data = null,
-        errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
+        errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
       )
 
     return Response(data = HmppsId(hmppsId))
@@ -50,7 +50,7 @@ class GetHmppsIdService(
     if (hmppsId.matches(CRN_REGEX)) {
       hmppsId
     } else {
-      probationSearch
+      deliusGateway
         .getPerson(hmppsId)
         .data
         ?.identifiers

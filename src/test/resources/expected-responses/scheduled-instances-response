@@ -1,0 +1,26 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "activityId": 1,
+      "sessionDate": "2022-09-30",
+      "startTime": "09:00",
+      "endTime": "10:00",
+      "inCell": false,
+      "onWing": false,
+      "offWing": false,
+      "scheduleDescription": "string",
+      "activityCategory": "string",
+      "activitySummary": "Math Level 1",
+      "cancelled": false,
+      "suspended": false,
+      "autoSuspended": false,
+      "timeSlot": "AM",
+      "issuePayment": true,
+      "attendanceStatus": "WAITING",
+      "attendanceReasonCode": "SICK",
+      "paidActivity": false,
+      "possibleAdvanceAttendance": true
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.config
 
 import io.sentry.Sentry
+import io.sentry.SentryLevel
 import jakarta.validation.ValidationException
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -10,21 +11,28 @@ import org.springframework.http.HttpStatus.CONFLICT
 import org.springframework.http.HttpStatus.FORBIDDEN
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
 import org.springframework.http.HttpStatus.NOT_FOUND
+import org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE
 import org.springframework.http.ResponseEntity
+import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.web.bind.MethodArgumentNotValidException
+import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.method.annotation.HandlerMethodValidationException
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ConflictFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.HmppsAuthFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
 
 @RestControllerAdvice
 class HmppsIntegrationApiExceptionHandler {
-  @ExceptionHandler(ValidationException::class)
+  @ExceptionHandler(value = [ValidationException::class, HttpMessageNotReadableException::class])
   fun handleValidationException(e: Exception): ResponseEntity<ErrorResponse> {
     logAndCapture("Validation exception: {}", e)
     return ResponseEntity
@@ -53,9 +61,39 @@ class HmppsIntegrationApiExceptionHandler {
       )
   }
 
+  @ExceptionHandler(MethodArgumentTypeMismatchException::class)
+  fun handleTypeMismatch(e: MethodArgumentTypeMismatchException): ResponseEntity<ErrorResponse> {
+    logAndCapture("Type mismatch for parameter '${e.name}'", e)
+    return ResponseEntity
+      .status(HttpStatus.BAD_REQUEST)
+      .body(
+        ErrorResponse(
+          status = HttpStatus.BAD_REQUEST,
+          developerMessage = "Type mismatch: ${e.message}",
+          userMessage = "Invalid input type for '${e.name}'",
+        ),
+      )
+  }
+
+  @ExceptionHandler(HandlerMethodValidationException::class)
+  fun handleHandlerMethodValidationException(e: HandlerMethodValidationException): ResponseEntity<ValidationErrorResponse> {
+    logAndCapture("Validation issues in request body: {}", e)
+    return ResponseEntity
+      .status(BAD_REQUEST)
+      .body(
+        ValidationErrorResponse(
+          developerMessage = "Validation issues in request body",
+          userMessage = "Validation issues in request body",
+          validationErrors = e.allErrors.mapNotNull { it.defaultMessage },
+        ),
+      )
+  }
+
+  // Custom exceptions
+
   @ExceptionHandler(EntityNotFoundException::class)
   fun handle(e: EntityNotFoundException): ResponseEntity<ErrorResponse> {
-    logAndCapture("Not found (404) returned with message {}", e)
+    logInfo("Not found (404) returned with message {}", e)
     return ResponseEntity
       .status(NOT_FOUND)
       .body(
@@ -151,12 +189,65 @@ class HmppsIntegrationApiExceptionHandler {
       )
   }
 
+  @ExceptionHandler(FeatureNotEnabledException::class)
+  fun handleFeatureNotEnabledException(e: FeatureNotEnabledException): ResponseEntity<ErrorResponse> {
+    logAndCapture("Validation exception: {}", e)
+    return ResponseEntity
+      .status(SERVICE_UNAVAILABLE)
+      .body(
+        ErrorResponse(
+          status = SERVICE_UNAVAILABLE,
+          developerMessage = e.message,
+          userMessage = e.message,
+        ),
+      )
+  }
+
+  @ExceptionHandler(MissingServletRequestParameterException::class)
+  fun handleFMissingServletRequestParameterException(e: MissingServletRequestParameterException): ResponseEntity<ErrorResponse> {
+    logAndCapture("Missing request parameter exception: {}", e)
+    return ResponseEntity
+      .status(BAD_REQUEST)
+      .body(
+        ErrorResponse(
+          status = BAD_REQUEST,
+          developerMessage = e.message,
+          userMessage = e.message,
+        ),
+      )
+  }
+
+  @ExceptionHandler(LimitedAccessFailedException::class)
+  fun handleLimitedAccessFailedException(e: LimitedAccessFailedException): ResponseEntity<ErrorResponse> {
+    logAndCapture("Limited access failure exception: {}", e)
+    return ResponseEntity
+      .status(INTERNAL_SERVER_ERROR)
+      .body(
+        ErrorResponse(
+          status = INTERNAL_SERVER_ERROR,
+          developerMessage = e.message,
+          userMessage = e.message,
+        ),
+      )
+  }
+
   private fun logAndCapture(
     message: String,
     e: Exception,
   ) {
     log.error(message, e.message)
     Sentry.captureException(e)
+  }
+
+  /**
+   * Logs, and records in Sentry, an informational message.
+   */
+  private fun logInfo(
+    message: String,
+    e: Exception,
+  ) {
+    log.info(message, e)
+    Sentry.captureMessage("$message : ${e.message}", SentryLevel.INFO)
   }
 
   companion object {

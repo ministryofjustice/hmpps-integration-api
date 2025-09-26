@@ -1,0 +1,56 @@
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities
+
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivityScheduleAllocation
+
+data class ActivitiesActivityScheduleAllocation(
+  val id: Long,
+  val prisonerNumber: String,
+  val bookingId: Long,
+  val activitySummary: String,
+  val activityId: Long,
+  val scheduleId: Long,
+  val scheduleDescription: String,
+  val isUnemployment: Boolean,
+  val prisonPayBand: ActivitiesPrisonPayBand?,
+  val startDate: String,
+  val endDate: String?,
+  val allocatedTime: String?,
+  val allocatedBy: String?,
+  val deallocatedTime: String?,
+  val deallocatedBy: String?,
+  val deallocatedReason: ActivitiesReason?,
+  val suspendedTime: String?,
+  val suspendedBy: String?,
+  val suspendedReason: String?,
+  val status: String,
+  val plannedDeallocation: ActivitiesPlannedDeallocation?,
+  val plannedSuspension: ActivitiesPlannedSuspension?,
+  val exclusions: List<ActivitiesExclusion>,
+  val prisonerName: String? = null,
+  val prisonerFirstName: String? = null,
+  val prisonerLastName: String? = null,
+  val prisonerStatus: String? = null,
+  val prisonerPrisonCode: String? = null,
+  val cellLocation: String? = null,
+  val earliestReleaseDate: ActivitiesEarliestReleaseDate? = null,
+  val nonAssociations: Boolean? = null,
+) {
+  fun toActivityScheduleAllocation() =
+    ActivityScheduleAllocation(
+      prisonerNumber = this.prisonerNumber,
+      activitySummary = this.activitySummary,
+      isUnemployment = this.isUnemployment,
+      prisonPayBand = this.prisonPayBand?.toPrisonPayBand(),
+      startDate = this.startDate,
+      endDate = this.endDate,
+      allocatedTime = this.allocatedTime,
+      deallocatedTime = this.deallocatedTime,
+      deallocatedReason = this.deallocatedReason?.toActivityReason(),
+      suspendedTime = this.suspendedTime,
+      suspendedReason = this.suspendedReason,
+      status = this.status,
+      plannedDeallocation = this.plannedDeallocation?.toPlannedDeallocation(),
+      plannedSuspension = this.plannedSuspension?.toPlannedSuspension(),
+      exclusions = this.exclusions.map { it.toExclusion() },
+    )
+}

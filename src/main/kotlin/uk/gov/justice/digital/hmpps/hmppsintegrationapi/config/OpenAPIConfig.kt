@@ -18,8 +18,8 @@ import org.springframework.context.annotation.Configuration
 @OpenAPIDefinition(
   info =
     Info(
-      title = "HMPPS Integration API",
-      description = "A long-lived API that exposes data from HMPPS systems such as the National Offender Management Information System (NOMIS), nDelius (probation system) and Offender Assessment System (OASys), providing a single point of entry for consumers.",
+      title = "HMPPS External API",
+      description = "A long-lived API that exposes data from HMPPS systems such as the National Offender Management Information System (NOMIS), nDelius (probation system) and Offender Assessment System (OASys), providing a single point of entry for consumers. Originally known as the HMPPS Integration API.",
       license =
         License(
           name = "MIT",
@@ -69,6 +69,24 @@ class OpenAPIConfig {
               ),
             ),
           ).addSchemas(
+            "PrisonNotFound",
+            Schema<ErrorResponse>().description("Failed to find a prison with the provided prison ID.").properties(
+              mapOf(
+                "status" to Schema<Int>().type("number").example(404),
+                "userMessage" to Schema<String>().type("string").example("404 Not found error: Could not find prison with prison ID: MDI."),
+                "developerMessage" to Schema<String>().type("string").example("Could not find prison with prison with ID: MDI."),
+              ),
+            ),
+          ).addSchemas(
+            "NotFoundError",
+            Schema<ErrorResponse>().description("The requested resource could not be found.").properties(
+              mapOf(
+                "status" to Schema<Int>().type("number").example(404),
+                "userMessage" to Schema<String>().type("string").example("404 Not found error: The requested resource could not be found."),
+                "developerMessage" to Schema<String>().type("string").example("Resource not found for the given identifier."),
+              ),
+            ),
+          ).addSchemas(
             "InternalServerError",
             Schema<ErrorResponse>().description("An upstream service was not responding, so we cannot verify the accuracy of any data we did get.").properties(
               mapOf(
@@ -93,6 +111,17 @@ class OpenAPIConfig {
                 "status" to Schema<Int>().type("number").example(403),
                 "userMessage" to Schema<String>().type("string").example("Forbidden to complete action by upstream service"),
                 "developerMessage" to Schema<String>().type("string").example("Forbidden to complete action by upstream service"),
+              ),
+            ),
+          ).addSchemas(
+            "ConflictResponse",
+            Schema<ErrorResponse>().description("Action could not be completed due to a conflict").properties(
+              mapOf(
+                "status" to Schema<Int>().type("integer").example(409),
+                "userMessage" to Schema<String>().type("string").example("Action could not be completed because of a conflict with the current resource state."),
+                "developerMessage" to Schema<String>().type("string").example("Resource already exists or state transition is not allowed."),
+                "conflictField" to Schema<String>().type("string").example("username"),
+                "timestamp" to Schema<String>().type("string").example("2025-07-03T10:00:00Z"),
               ),
             ),
           )

@@ -66,8 +66,6 @@ services:
     password: clientsecret
   assess-risks-and-needs:
     base-url: http://localhost:4050
-  probation-offender-search:
-    base-url: http://localhost:4002
   probation-integration-epf:
     base-url: http://localhost:4060
   adjudications:
@@ -80,6 +78,8 @@ services:
     base-url: http://localhost:4090
   plp:
     base-url: http://localhost:4100
+  san:
+    base-url: http://localhost:4200
   non-associations:
     base-url: http://localhost:4021
   personal-relationships:
@@ -90,6 +90,12 @@ services:
     base-url: http://localhost:4024
   alerts:
     base-url: http://localhost:4025
+  locations-inside-prison:
+    base-url: http://localhost:4026
+  health-and-medication:
+    base-url: http://localhost:4027
+  activities:
+    base-url: http://localhost:4028
 
 sentry:
   traces-sample-rate: "0.05"

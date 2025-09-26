@@ -9,17 +9,19 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonVisitsGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitContact
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitExternalSystemDetails
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitorSupport
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisitContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisitorSupport
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVistExternalSystemDetails
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -30,10 +32,11 @@ class GetFutureVisitsServiceTest(
   @MockitoBean val prisonVisitsGateway: PrisonVisitsGateway,
   private val getFutureVisitsService: GetFutureVisitsService,
 ) : DescribeSpec({
-    val hmppsId = "G6980GG"
-    val nomisNumber = "F6980FF"
-    val person = Person(firstName = "Qui-gon", lastName = "Jin", hmppsId = hmppsId, identifiers = Identifiers(nomisNumber = nomisNumber))
-    val personWithoutNomisNumber = Person(firstName = "Qui-gon", lastName = "Jin", hmppsId = hmppsId)
+    val persona = personInProbationAndNomisPersona
+    val nomisNumber = persona.identifiers.nomisNumber!!
+    val deliusCrn = persona.identifiers.deliusCrn!!
+    val person = Person(firstName = persona.firstName, lastName = persona.lastName, hmppsId = nomisNumber, identifiers = persona.identifiers)
+    val personWithoutNomisNumber = Person(firstName = persona.firstName, lastName = persona.lastName, hmppsId = deliusCrn)
     val futureVisitGatewayResponse =
       listOf(
         PVVisit(
@@ -43,6 +46,7 @@ class GetFutureVisitsServiceTest(
           visitRoom = "Room",
           visitType = "Type",
           visitStatus = "Status",
+          visitSubStatus = "AUTO_APPROVED",
           outcomeStatus = "Outcome",
           visitRestriction = "Restriction",
           startTimestamp = "Start",
@@ -54,6 +58,11 @@ class GetFutureVisitsServiceTest(
           visitNotes = emptyList(),
           visitContact = PVVisitContact(name = "Name", telephone = "Telephone", email = "Email"),
           visitorSupport = PVVisitorSupport(description = "Description"),
+          visitExternalSystemDetails =
+            PVVistExternalSystemDetails(
+              clientName = "client_name",
+              clientVisitReference = "12345",
+            ),
           applicationReference = "dfs-wjs-abc",
           reference = "dfs-wjs-abc",
           sessionTemplateReference = "dfs-wjs-xyz",
@@ -68,6 +77,7 @@ class GetFutureVisitsServiceTest(
           visitRoom = "Room",
           visitType = "Type",
           visitStatus = "Status",
+          visitSubStatus = "AUTO_APPROVED",
           outcomeStatus = "Outcome",
           visitRestriction = "Restriction",
           startTimestamp = "Start",
@@ -79,6 +89,11 @@ class GetFutureVisitsServiceTest(
           visitNotes = emptyList(),
           visitContact = VisitContact(name = "Name", telephone = "Telephone", email = "Email"),
           visitorSupport = VisitorSupport(description = "Description"),
+          visitExternalSystemDetails =
+            VisitExternalSystemDetails(
+              clientName = "client_name",
+              clientVisitReference = "12345",
+            ),
           applicationReference = "dfs-wjs-abc",
           reference = "dfs-wjs-abc",
           sessionTemplateReference = "dfs-wjs-xyz",
@@ -89,7 +104,7 @@ class GetFutureVisitsServiceTest(
       Mockito.reset(getPersonService)
       Mockito.reset(prisonVisitsGateway)
 
-      whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filters = null)).thenReturn(
+      whenever(getPersonService.getPersonWithPrisonFilter(nomisNumber, filters = null)).thenReturn(
         Response(data = person),
       )
 
@@ -99,31 +114,38 @@ class GetFutureVisitsServiceTest(
     }
 
     it("returns a 200 status in the case of a successful query") {
-      val response = getFutureVisitsService.execute(hmppsId, filters = null)
+      val response = getFutureVisitsService.execute(nomisNumber, filters = null)
       response.data.shouldBe(futureVisitServiceResponse)
       response.errors.shouldBeEmpty()
     }
 
     it("returns an errors if getPersonWithPrisonFilter returns an error") {
-      val errors = listOf(UpstreamApiError(type = UpstreamApiError.Type.ENTITY_NOT_FOUND, causedBy = UpstreamApi.NOMIS, description = "Person with prison filters error"))
-      whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filters = null)).thenReturn(
+      val errors = listOf(UpstreamApiError(type = UpstreamApiError.Type.ENTITY_NOT_FOUND, causedBy = UpstreamApi.PRISON_API, description = "Person with prison filters error"))
+      whenever(getPersonService.getPersonWithPrisonFilter(nomisNumber, filters = null)).thenReturn(
         Response(data = null, errors = errors),
       )
 
-      val response = getFutureVisitsService.execute(hmppsId, filters = null)
+      val response = getFutureVisitsService.execute(nomisNumber, filters = null)
       response.data.shouldBe(null)
       response.errors.shouldBe(errors)
     }
 
     it("returns a 404 if no Nomis number found on the person") {
-      val errors = listOf(UpstreamApiError(type = UpstreamApiError.Type.ENTITY_NOT_FOUND, causedBy = UpstreamApi.NOMIS, description = "No Nomis number found for $hmppsId"))
-      whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filters = null)).thenReturn(
+      whenever(getPersonService.getPersonWithPrisonFilter(deliusCrn, filters = null)).thenReturn(
         Response(data = personWithoutNomisNumber),
       )
 
-      val response = getFutureVisitsService.execute(hmppsId, filters = null)
+      val response = getFutureVisitsService.execute(deliusCrn, filters = null)
       response.data.shouldBe(null)
-      response.errors.shouldBe(errors)
+      response.errors.shouldBe(
+        listOf(
+          UpstreamApiError(
+            type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+            causedBy = UpstreamApi.PRISON_API,
+            description = "No Nomis number found for $deliusCrn",
+          ),
+        ),
+      )
     }
 
     it("returns an errors if gateway returns an error") {
@@ -132,7 +154,7 @@ class GetFutureVisitsServiceTest(
         Response(data = null, errors = errors),
       )
 
-      val response = getFutureVisitsService.execute(hmppsId, filters = null)
+      val response = getFutureVisitsService.execute(nomisNumber, filters = null)
       response.data.shouldBe(null)
       response.errors.shouldBe(errors)
     }

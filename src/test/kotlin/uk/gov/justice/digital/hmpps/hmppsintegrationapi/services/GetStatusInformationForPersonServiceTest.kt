@@ -4,7 +4,7 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
-import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.StatusInformation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -28,110 +29,102 @@ internal class GetStatusInformationForPersonServiceTest(
   private val getStatusInformationForPersonService: GetStatusInformationForPersonService,
 ) : DescribeSpec(
     {
-      val hmppsId = "1234/56789B"
-      val deliusCrn = "X112233"
-      val statusInformation = StatusInformation(code = "ASFO", description = "Serious Further Offence - Subject to SFO review/investigation", startDate = "2013-10-17")
-      val nonMatchingStatusInformation = StatusInformation(code = "INVALID", description = "Invalid status information data", startDate = "2010-07-07")
-
+      val persona = personInProbationAndNomisPersona
+      val nomisNumber = persona.identifiers.nomisNumber!!
+      val deliusCrn = persona.identifiers.deliusCrn!!
       val person =
-        Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(deliusCrn = deliusCrn))
+        Person(firstName = persona.firstName, lastName = persona.lastName, identifiers = Identifiers(deliusCrn = deliusCrn))
+      val statusInformation = StatusInformation(code = "WRSM", description = "Warrant/Summons - Outstanding warrant or summons", startDate = "2013-10-17")
+      val nonMatchingStatusInformation = StatusInformation(code = "INVALID", description = "Invalid status information data", startDate = "2010-07-07")
+      val statusInformationList =
+        listOf(
+          statusInformation,
+          nonMatchingStatusInformation,
+        )
 
       beforeEach {
-        Mockito.reset(nDeliusGateway)
         Mockito.reset(personService)
+        Mockito.reset(nDeliusGateway)
 
         whenever(personService.execute(hmppsId = deliusCrn)).thenReturn(Response(person))
-        whenever(personService.execute(hmppsId = hmppsId)).thenReturn(Response(person))
+        whenever(personService.execute(hmppsId = nomisNumber)).thenReturn(Response(person))
 
-        whenever(nDeliusGateway.getStatusInformationForPerson(deliusCrn)).thenReturn(
-          Response(
-            data =
-              listOf(
-                statusInformation,
-                nonMatchingStatusInformation,
-              ),
-          ),
-        )
+        whenever(nDeliusGateway.getStatusInformationForPerson(deliusCrn)).thenReturn(Response(data = statusInformationList))
       }
 
       it("gets a person from getPersonService") {
-        getStatusInformationForPersonService.execute(hmppsId)
-
-        verify(personService, VerificationModeFactory.times(1)).execute(hmppsId = hmppsId)
+        getStatusInformationForPersonService.execute(nomisNumber)
+        verify(personService, times(1)).execute(hmppsId = nomisNumber)
       }
 
       it("gets person status from NDelius using a Delius crn number") {
-        getStatusInformationForPersonService.execute(hmppsId)
-
-        verify(nDeliusGateway, VerificationModeFactory.times(1)).getStatusInformationForPerson(deliusCrn)
+        getStatusInformationForPersonService.execute(deliusCrn)
+        verify(nDeliusGateway, times(1)).getStatusInformationForPerson(deliusCrn)
       }
 
       describe("when an upstream API returns an error when looking up a person by a Hmmps Id") {
+        val errors =
+          listOf(
+            UpstreamApiError(
+              causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
+              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+            ),
+          )
+
         beforeEach {
-          whenever(personService.execute(hmppsId = hmppsId)).thenReturn(
+          whenever(personService.execute(hmppsId = nomisNumber)).thenReturn(
             Response(
               data = null,
-              errors =
-                listOf(
-                  UpstreamApiError(
-                    causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
-                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                  ),
-                ),
+              errors,
             ),
           )
         }
 
         it("records upstream API errors") {
-          val response = getStatusInformationForPersonService.execute(hmppsId)
-          response.errors.shouldHaveSize(1)
+          val response = getStatusInformationForPersonService.execute(nomisNumber)
+          response.errors.shouldBe(errors)
         }
 
         it("does not get person status data from NDelius") {
-          getStatusInformationForPersonService.execute(hmppsId)
-          verify(nDeliusGateway, VerificationModeFactory.times(0)).getStatusInformationForPerson(id = deliusCrn)
+          getStatusInformationForPersonService.execute(nomisNumber)
+          verify(nDeliusGateway, times(0)).getStatusInformationForPerson(id = deliusCrn)
         }
       }
 
       it("records errors when it cannot find person status for a person") {
+        val errors =
+          listOf(
+            UpstreamApiError(
+              causedBy = UpstreamApi.NDELIUS,
+              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+            ),
+          )
         whenever(nDeliusGateway.getStatusInformationForPerson(id = deliusCrn)).thenReturn(
           Response(
             data = emptyList(),
-            errors =
-              listOf(
-                UpstreamApiError(
-                  causedBy = UpstreamApi.NDELIUS,
-                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                ),
-              ),
+            errors,
           ),
         )
 
-        val response = getStatusInformationForPersonService.execute(hmppsId)
-        response.errors.shouldHaveSize(1)
+        val response = getStatusInformationForPersonService.execute(nomisNumber)
+        response.errors.shouldBe(errors)
       }
 
       it("returns person status filtered data") {
-        val response = getStatusInformationForPersonService.execute(hmppsId)
-
-        response.data.shouldHaveSize(1)
-        response.data[0].code shouldBe "ASFO"
-        response.data[0].description shouldBe "Serious Further Offence - Subject to SFO review/investigation"
+        val response = getStatusInformationForPersonService.execute(nomisNumber)
+        response.data.shouldBe(listOf(statusInformation))
       }
 
       it("returns an error when the person status code is not in the allowed list") {
-        whenever(personService.execute(hmppsId = deliusCrn)).thenReturn(Response(person))
-        whenever(personService.execute(hmppsId = hmppsId)).thenReturn(Response(person))
         whenever(nDeliusGateway.getStatusInformationForPerson(deliusCrn)).thenReturn(
           Response(
             data = listOf(nonMatchingStatusInformation),
           ),
         )
 
-        val response = getStatusInformationForPersonService.execute(hmppsId)
-
-        response.errors.shouldHaveSize(0)
+        val response = getStatusInformationForPersonService.execute(nomisNumber)
         response.data.shouldHaveSize(0)
+        response.errors.shouldHaveSize(0)
       }
     },
   )

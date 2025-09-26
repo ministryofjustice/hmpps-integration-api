@@ -1,0 +1,23 @@
+{
+  "reviewSchedules": [
+    {
+      "reference": "628490ec-b944-4813-bdee-a2a6fe3e7d88",
+      "deadlineDate": "2025-07-21",
+      "status": "SCHEDULED",
+      "createdBy": "SMCALLISTER_GEN",
+      "createdByDisplayName": "Stephen Mcallister",
+      "createdAt": "2025-07-21T12:18:53.875633Z",
+      "createdAtPrison": "MDI",
+      "updatedBy": "SMCALLISTER_GEN",
+      "updatedByDisplayName": "Stephen Mcallister",
+      "updatedAt": "2025-07-21T12:18:53.875648Z",
+      "updatedAtPrison": "MDI",
+      "reviewCompletedDate": null,
+      "reviewKeyedInBy": null,
+      "reviewCompletedBy": null,
+      "reviewCompletedByJobRole": null,
+      "exemptionReason": null,
+      "version": 1
+    }
+  ]
+}

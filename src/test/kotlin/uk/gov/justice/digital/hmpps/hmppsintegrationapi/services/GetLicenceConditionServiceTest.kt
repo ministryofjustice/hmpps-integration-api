@@ -3,20 +3,20 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
-import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CreateAndVaryLicenceGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Licence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.LicenceCondition
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -28,9 +28,10 @@ internal class GetLicenceConditionServiceTest(
   private val getLicenceConditionService: GetLicenceConditionService,
 ) : DescribeSpec(
     {
-      val hmppsId = "1234/56789B"
-      val crn = "Z99999ZZ"
-      val person = Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(deliusCrn = crn))
+      val persona = personInProbationAndNomisPersona
+      val hmppsId = persona.identifiers.deliusCrn!!
+      val crn = hmppsId
+      val person = Person(firstName = persona.firstName, lastName = persona.lastName, identifiers = persona.identifiers)
       val licences = listOf(Licence(id = "12345"))
       val conditions = listOf(LicenceCondition(condition = "MockCondition", category = "AP"))
 
@@ -45,49 +46,47 @@ internal class GetLicenceConditionServiceTest(
 
       it("performs a search according to hmpps Id") {
         getLicenceConditionService.execute(hmppsId)
-        verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = hmppsId)
+        verify(getPersonService, times(1)).execute(hmppsId = hmppsId)
       }
 
       it("should return a list of errors if person not found") {
+        val errors =
+          listOf(
+            UpstreamApiError(
+              causedBy = UpstreamApi.CVL,
+              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+            ),
+          )
         whenever(getPersonService.execute(hmppsId = "notfound")).thenReturn(
           Response(
             data = null,
-            errors =
-              listOf(
-                UpstreamApiError(
-                  causedBy = UpstreamApi.CVL,
-                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                ),
-              ),
+            errors = errors,
           ),
         )
+
         val result = getLicenceConditionService.execute("notfound")
         result.data.licences.shouldBe(emptyList())
-        result.errors
-          .first()
-          .type
-          .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+        result.errors.shouldBe(errors)
       }
 
       it("should return a list of errors if create and vary licence gateway service returns error") {
+        val errors =
+          listOf(
+            UpstreamApiError(
+              causedBy = UpstreamApi.CVL,
+              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+            ),
+          )
         whenever(createAndVaryLicenceGateway.getLicenceSummaries(id = crn)).thenReturn(
           Response(
             data = emptyList(),
-            errors =
-              listOf(
-                UpstreamApiError(
-                  causedBy = UpstreamApi.CVL,
-                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                ),
-              ),
+            errors = errors,
           ),
         )
+
         val result = getLicenceConditionService.execute(hmppsId = hmppsId)
         result.data.licences.shouldBe(emptyList())
-        result.errors
-          .first()
-          .type
-          .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+        result.errors.shouldBe(errors)
       }
 
       it("should return licence condition from gateway") {

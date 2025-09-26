@@ -1,12 +1,15 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 
+import io.netty.channel.ChannelOption
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
+import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.ExchangeStrategies
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Mono
+import reactor.netty.http.client.HttpClient
 import reactor.util.retry.Retry
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -17,15 +20,24 @@ import java.time.Duration
 @Suppress("ktlint:standard:property-naming")
 class WebClientWrapper(
   val baseUrl: String,
+  connectTimeoutMillis: Int = 10_000,
+  responseTimeoutSeconds: Long = 15,
 ) {
   val CREATE_TRANSACTION_RETRY_HTTP_CODES = listOf(502, 503, 504, 522, 599, 499, 408)
   val MAX_RETRY_ATTEMPTS = 3L
   val MIN_BACKOFF_DURATION = Duration.ofSeconds(3)
 
+  val httpClient =
+    HttpClient
+      .create()
+      .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectTimeoutMillis)
+      .responseTimeout(Duration.ofSeconds(responseTimeoutSeconds))
+
   val client: WebClient =
     WebClient
       .builder()
       .baseUrl(baseUrl)
+      .clientConnector(ReactorClientHttpConnector(httpClient))
       .exchangeStrategies(
         ExchangeStrategies
           .builder()
@@ -51,20 +63,24 @@ class WebClientWrapper(
     uri: String,
     headers: Map<String, String>,
     upstreamApi: UpstreamApi,
-    requestBody: Map<String, Any?>? = null,
+    requestBody: Any? = null,
     forbiddenAsError: Boolean = false,
     badRequestAsError: Boolean = false,
   ): WebClientWrapperResponse<T> =
-    try {
-      val responseData =
-        getResponseBodySpec(method, uri, headers, requestBody)
-          .retrieve()
-          .bodyToMono(T::class.java)
-          .block()!!
+    if (method == HttpMethod.GET) {
+      requestWithRetry(method, uri, headers, upstreamApi, requestBody, forbiddenAsError, badRequestAsError)
+    } else {
+      try {
+        val responseData =
+          getResponseBodySpec(method, uri, headers, requestBody)
+            .retrieve()
+            .bodyToMono(T::class.java)
+            .block()!!
 
-      WebClientWrapperResponse.Success(responseData)
-    } catch (exception: WebClientResponseException) {
-      getErrorType(exception, upstreamApi, forbiddenAsError, badRequestAsError)
+        WebClientWrapperResponse.Success(responseData)
+      } catch (exception: WebClientResponseException) {
+        getErrorType(exception, upstreamApi, forbiddenAsError, badRequestAsError)
+      }
     }
 
   /**
@@ -76,7 +92,7 @@ class WebClientWrapper(
     uri: String,
     headers: Map<String, String>,
     upstreamApi: UpstreamApi,
-    requestBody: Map<String, Any?>? = null,
+    requestBody: Any? = null,
     forbiddenAsError: Boolean = false,
     badRequestAsError: Boolean = false,
   ): WebClientWrapperResponse<T> =
@@ -103,7 +119,33 @@ class WebClientWrapper(
     uri: String,
     headers: Map<String, String>,
     upstreamApi: UpstreamApi,
-    requestBody: Map<String, Any?>? = null,
+    requestBody: Any? = null,
+    forbiddenAsError: Boolean = false,
+    badRequestAsError: Boolean = false,
+  ): WebClientWrapperResponse<List<T>> =
+    if (method == HttpMethod.GET) {
+      requestListWithRetry(method, uri, headers, upstreamApi, requestBody, forbiddenAsError, badRequestAsError)
+    } else {
+      try {
+        val responseData =
+          getResponseBodySpec(method, uri, headers, requestBody)
+            .retrieve()
+            .bodyToFlux(T::class.java)
+            .collectList()
+            .block() as List<T>
+
+        WebClientWrapperResponse.Success(responseData)
+      } catch (exception: WebClientResponseException) {
+        getErrorType(exception, upstreamApi, forbiddenAsError, badRequestAsError)
+      }
+    }
+
+  inline fun <reified T> requestListWithRetry(
+    method: HttpMethod,
+    uri: String,
+    headers: Map<String, String>,
+    upstreamApi: UpstreamApi,
+    requestBody: Any? = null,
     forbiddenAsError: Boolean = false,
     badRequestAsError: Boolean = false,
   ): WebClientWrapperResponse<List<T>> =
@@ -111,8 +153,15 @@ class WebClientWrapper(
       val responseData =
         getResponseBodySpec(method, uri, headers, requestBody)
           .retrieve()
-          .bodyToFlux(T::class.java)
-          .collectList()
+          .onStatus({ status -> status.value() in CREATE_TRANSACTION_RETRY_HTTP_CODES }) { response ->
+            Mono.error(ResponseException(null, response.statusCode().value()))
+          }.bodyToFlux(T::class.java)
+          .retryWhen(
+            Retry
+              .backoff(MAX_RETRY_ATTEMPTS, MIN_BACKOFF_DURATION)
+              .filter { throwable -> throwable is ResponseException }
+              .onRetryExhaustedThrow { _, retrySignal -> throw ResponseException("External Service failed to process after max retries", HttpStatus.SERVICE_UNAVAILABLE.value()) },
+          ).collectList()
           .block() as List<T>
 
       WebClientWrapperResponse.Success(responseData)
@@ -124,7 +173,7 @@ class WebClientWrapper(
     method: HttpMethod,
     uri: String,
     headers: Map<String, String>,
-    requestBody: Map<String, Any?>? = null,
+    requestBody: Any? = null,
   ): WebClient.RequestBodySpec {
     val responseBodySpec =
       client

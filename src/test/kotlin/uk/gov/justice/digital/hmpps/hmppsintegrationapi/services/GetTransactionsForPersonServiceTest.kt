@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
@@ -25,7 +25,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
   classes = [GetTransactionsForPersonService::class],
 )
 internal class GetTransactionsForPersonServiceTest(
-  @MockitoBean val nomisGateway: NomisGateway,
+  @MockitoBean val prisonApiGateway: PrisonApiGateway,
   @MockitoBean val getPersonService: GetPersonService,
   @MockitoBean val consumerPrisonAccessService: ConsumerPrisonAccessService,
   private val getTransactionsForPersonService: GetTransactionsForPersonService,
@@ -37,11 +37,17 @@ internal class GetTransactionsForPersonServiceTest(
     val startDate = "2019-04-01"
     val endDate = "2019-04-05"
     val filters = ConsumerFilters(null)
-    val exampleTransactions = Transactions(listOf(Transaction("204564839-3", Type(code = "spends", desc = "Spends desc"), "Spends account code", 12345, "2016-10-21")))
+    val exampleTransactions =
+      Transactions(
+        listOf(
+          Transaction("204564839-3", Type(code = "EG", desc = "Example"), "Example transaction", 12345, "2016-10-21", "Client Ref"),
+          Transaction("204564840-1", Type(code = "EG 2", desc = "Another Example"), "Another Example", 7890, "2016-10-22", null),
+        ),
+      )
 
     beforeEach {
       Mockito.reset(getPersonService)
-      Mockito.reset(nomisGateway)
+      Mockito.reset(prisonApiGateway)
 
       whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Transactions>(prisonId, filters)).thenReturn(
         Response(data = null),
@@ -56,7 +62,7 @@ internal class GetTransactionsForPersonServiceTest(
       )
 
       whenever(
-        nomisGateway.getTransactionsForPerson(
+        prisonApiGateway.getTransactionsForPerson(
           prisonId,
           nomisNumber,
           accountCode,
@@ -93,7 +99,7 @@ internal class GetTransactionsForPersonServiceTest(
         filters,
       )
 
-      verify(nomisGateway, VerificationModeFactory.times(1)).getTransactionsForPerson(
+      verify(prisonApiGateway, VerificationModeFactory.times(1)).getTransactionsForPerson(
         prisonId,
         nomisNumber,
         accountCode,
@@ -123,7 +129,7 @@ internal class GetTransactionsForPersonServiceTest(
           errors =
             listOf(
               UpstreamApiError(
-                causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                causedBy = UpstreamApi.NDELIUS,
                 type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
               ),
             ),
@@ -140,7 +146,7 @@ internal class GetTransactionsForPersonServiceTest(
         )
       response
         .hasErrorCausedBy(
-          causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+          causedBy = UpstreamApi.NDELIUS,
           type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
         ).shouldBe(true)
     }
@@ -153,7 +159,7 @@ internal class GetTransactionsForPersonServiceTest(
             listOf(
               UpstreamApiError(
                 type = UpstreamApiError.Type.BAD_REQUEST,
-                causedBy = UpstreamApi.NOMIS,
+                causedBy = UpstreamApi.PRISON_API,
               ),
             ),
         ),
@@ -169,14 +175,14 @@ internal class GetTransactionsForPersonServiceTest(
         )
       response
         .hasErrorCausedBy(
-          causedBy = UpstreamApi.NOMIS,
+          causedBy = UpstreamApi.PRISON_API,
           type = UpstreamApiError.Type.BAD_REQUEST,
         ).shouldBe(true)
     }
 
     it("records upstream API errors when getTransactionsForPerson returns errors") {
       whenever(
-        nomisGateway.getTransactionsForPerson(
+        prisonApiGateway.getTransactionsForPerson(
           prisonId,
           nomisNumber,
           accountCode,
@@ -190,7 +196,7 @@ internal class GetTransactionsForPersonServiceTest(
             listOf(
               UpstreamApiError(
                 type = UpstreamApiError.Type.BAD_REQUEST,
-                causedBy = UpstreamApi.NOMIS,
+                causedBy = UpstreamApi.PRISON_API,
               ),
             ),
         ),
@@ -206,7 +212,7 @@ internal class GetTransactionsForPersonServiceTest(
         )
       response
         .hasErrorCausedBy(
-          causedBy = UpstreamApi.NOMIS,
+          causedBy = UpstreamApi.PRISON_API,
           type = UpstreamApiError.Type.BAD_REQUEST,
         ).shouldBe(true)
     }
@@ -215,7 +221,7 @@ internal class GetTransactionsForPersonServiceTest(
       val consumerFillters = ConsumerFilters(prisons = listOf("ABC"))
       val wrongPrisonId = "XYZ"
       whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Transactions>(wrongPrisonId, consumerFillters)).thenReturn(
-        Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))),
+        Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))),
       )
 
       val result =
@@ -229,7 +235,7 @@ internal class GetTransactionsForPersonServiceTest(
         )
 
       result.data.shouldBe(null)
-      result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
+      result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
     }
 
     it("returns transactions when requested from an approved prison") {

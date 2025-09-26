@@ -1,0 +1,58 @@
+{
+  "id": 123456,
+  "scheduleInstanceId": 123456,
+  "prisonerNumber": "A1234AA",
+  "attendanceReason": {
+    "id": 1,
+    "code": "SICK",
+    "description": "Sick",
+    "attended": true,
+    "capturePay": true,
+    "captureMoreDetail": true,
+    "captureCaseNote": true,
+    "captureIncentiveLevelWarning": false,
+    "captureOtherText": false,
+    "displayInAbsence": false,
+    "displaySequence": 1,
+    "notes": "Maps to ACCAB in NOMIS"
+  },
+  "comment": "Prisoner was too unwell to attend the activity.",
+  "recordedTime": "2023-09-10T09:30:00Z",
+  "recordedBy": "A.JONES",
+  "status": "WAITING",
+  "payAmount": 100,
+  "bonusAmount": 50,
+  "pieces": 0,
+  "issuePayment": true,
+  "incentiveLevelWarningIssued": true,
+  "otherAbsenceReason": "Prisoner has a valid reason to miss the activity.",
+  "caseNoteText": "Prisoner has refused to attend the activity without a valid reason to miss the activity.",
+  "attendanceHistory": [
+    {
+      "id": 123456,
+      "attendanceReason": {
+        "id": 1,
+        "code": "SICK",
+        "description": "Sick",
+        "attended": true,
+        "capturePay": true,
+        "captureMoreDetail": true,
+        "captureCaseNote": true,
+        "captureIncentiveLevelWarning": false,
+        "captureOtherText": false,
+        "displayInAbsence": false,
+        "displaySequence": 1,
+        "notes": "Maps to ACCAB in NOMIS"
+      },
+      "comment": "Prisoner was too unwell to attend the activity.",
+      "recordedTime": "2023-09-10T09:30:00Z",
+      "recordedBy": "A.JONES",
+      "issuePayment": true,
+      "incentiveLevelWarningIssued": true,
+      "otherAbsenceReason": "Prisoner has a valid reason to miss the activity.",
+      "caseNoteText": "Prisoner has refused to attend the activity without a valid reason to miss the activity."
+    }
+  ],
+  "editable": true,
+  "payable": true
+}

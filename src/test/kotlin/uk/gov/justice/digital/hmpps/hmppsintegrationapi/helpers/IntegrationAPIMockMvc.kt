@@ -19,9 +19,19 @@ class IntegrationAPIMockMvc(
     return mockMvc.perform(MockMvcRequestBuilders.get(path).header("subject-distinguished-name", subjectDistinguishedName)).andReturn()
   }
 
-  fun performAuthorisedPut(path: String): MvcResult {
+  fun performAuthorisedPut(
+    path: String,
+    requestBody: Any? = null,
+  ): MvcResult {
     val subjectDistinguishedName = "C=GB,ST=London,L=London,O=Home Office,CN=automated-test-client"
-    return mockMvc.perform(MockMvcRequestBuilders.put(path).header("subject-distinguished-name", subjectDistinguishedName)).andReturn()
+    var requestBuilder = MockMvcRequestBuilders.put(path).header("subject-distinguished-name", subjectDistinguishedName)
+    if (requestBody != null) {
+      requestBuilder =
+        requestBuilder
+          .content(asJsonString(requestBody))
+          .contentType(MediaType.APPLICATION_JSON)
+    }
+    return mockMvc.perform(requestBuilder).andReturn()
   }
 
   fun performAuthorisedWithCN(

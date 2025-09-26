@@ -7,11 +7,11 @@ data class Sentence(
   @Schema(
     description = """
       Which upstream API service the sentence originates from. Possible values are:
-      `NOMIS`,
+      `PRISON_API`,
       `NDELIUS`
     """,
-    example = "NOMIS",
-    allowableValues = ["NOMIS", "NDELIUS"],
+    example = "PRISON_API",
+    allowableValues = ["PRISON_API", "NDELIUS"],
   )
   val serviceSource: UpstreamApi,
   @Schema(

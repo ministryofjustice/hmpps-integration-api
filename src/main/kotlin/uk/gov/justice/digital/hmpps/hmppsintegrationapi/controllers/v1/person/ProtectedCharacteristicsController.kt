@@ -23,12 +23,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 
 @RestController
 @RequestMapping("/v1/persons")
-@Tag(name = "default")
+@Tag(name = "Persons")
 class ProtectedCharacteristicsController(
   @Autowired val getProtectedCharacteristicsService: GetProtectedCharacteristicsService,
   @Autowired val auditService: AuditService,
 ) {
   @GetMapping("{hmppsId}/protected-characteristics")
+  @Tag(name = "Reception")
   @Operation(
     summary = "Returns protected characteristics of a person.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",

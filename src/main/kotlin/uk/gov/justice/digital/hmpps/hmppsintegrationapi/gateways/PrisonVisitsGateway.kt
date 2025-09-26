@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -12,6 +11,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVPaginatedVisits
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisit
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitReferences
 
 @Component
 class PrisonVisitsGateway(
@@ -58,7 +58,7 @@ class PrisonVisitsGateway(
     page: Int,
     size: Int,
   ): Response<PVPaginatedVisits?> {
-    var queryString = "?prisonId=$prisonId&visitStatus=$visitStatus&page=$page&size=$size&"
+    var queryString = "?prisonId=$prisonId&visitStatus=$visitStatus&page=${page - 1}&size=$size&"
 
     if (!hmppsId.isNullOrBlank()) {
       queryString += "prisonerId=$hmppsId&"
@@ -98,7 +98,7 @@ class PrisonVisitsGateway(
 
   fun getFutureVisits(prisonerId: String): Response<List<PVVisit>?> {
     val result =
-      webClient.request<List<PVVisit>?>(
+      webClient.requestList<PVVisit>(
         HttpMethod.GET,
         "/visits/search/future/$prisonerId",
         authenticationHeader(),
@@ -109,7 +109,33 @@ class PrisonVisitsGateway(
     return when (result) {
       is WebClientWrapperResponse.Success -> {
         Response(
-          data = mapToVisits(result),
+          data = result.data,
+        )
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getVisitReferencesByClientReference(clientReference: String): Response<VisitReferences?> {
+    val result =
+      webClient.request<List<String>>(
+        HttpMethod.GET,
+        "/visits/external-system/$clientReference",
+        authenticationHeader(),
+        UpstreamApi.MANAGE_PRISON_VISITS,
+        badRequestAsError = true,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(
+          data = VisitReferences(result.data),
         )
       }
 
@@ -128,10 +154,5 @@ class PrisonVisitsGateway(
     return mapOf(
       "Authorization" to "Bearer $token",
     )
-  }
-
-  fun mapToVisits(result: WebClientWrapperResponse.Success<List<PVVisit>?>): List<PVVisit> {
-    val mappedResult: List<PVVisit> = mapper.convertValue(result.data, object : TypeReference<List<PVVisit>>() {})
-    return mappedResult
   }
 }

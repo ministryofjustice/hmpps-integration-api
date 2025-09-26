@@ -3,9 +3,9 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 import io.swagger.v3.oas.annotations.media.Schema
 
 data class StatusInformation(
-  @Schema(example = "ASFO")
+  @Schema(example = "WRSM")
   val code: String? = null,
-  @Schema(example = "Serious Further Offence - Subject to SFO review/investigation")
+  @Schema(example = "Warrant/Summons - Outstanding warrant or summons")
   val description: String? = null,
   @Schema(example = "2022-01-01")
   val startDate: String? = null,

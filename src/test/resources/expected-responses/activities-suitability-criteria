@@ -1,0 +1,27 @@
+{
+  "data": {
+    "riskLevel": "medium",
+    "isPaid": true,
+    "payRates": [{
+      "incentiveCode": "BAS",
+      "incentiveLevel": "Basic",
+      "prisonPayBand": {
+        "id": 123456,
+        "alias": "Low",
+        "description": "Pay band 1"
+      },
+      "rate": 150,
+      "pieceRate": 150,
+      "pieceRateItems": 10,
+      "startDate": "2022-09-29"
+    }],
+    "minimumEducationLevel": [
+      {
+        "educationLevelCode": "Basic",
+        "educationLevelDescription": "Basic",
+        "studyAreaCode": "ENGLA",
+        "studyAreaDescription": "English Language"
+      }
+    ]
+  }
+}

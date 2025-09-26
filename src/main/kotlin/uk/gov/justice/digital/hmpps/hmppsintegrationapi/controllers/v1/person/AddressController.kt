@@ -23,12 +23,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 
 @RestController
 @RequestMapping("/v1/persons")
-@Tag(name = "persons")
+@Tag(name = "Persons")
 class AddressController(
   @Autowired val auditService: AuditService,
   @Autowired val getAddressesForPersonService: GetAddressesForPersonService,
 ) {
   @GetMapping("{hmppsId}/addresses")
+  @Tag(name = "Reception")
   @Operation(
     summary = "Returns addresses associated with a person, ordered by startDate.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",

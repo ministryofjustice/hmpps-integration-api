@@ -3,19 +3,19 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
-import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.MappaDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationOnlyPersona
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -27,11 +27,12 @@ internal class GetMappaDetailForPersonServiceTest(
   private val getMappaDetailForPersonService: GetMappaDetailForPersonService,
 ) : DescribeSpec(
     {
-      val hmppsId = "1234/56789B"
-      val deliusCrn = "X123456"
-
       val personFromProbationOffenderSearch =
-        Person(firstName = "Phoebe", lastName = "Buffay", identifiers = Identifiers(deliusCrn = deliusCrn))
+        Person(
+          firstName = personInProbationOnlyPersona.firstName,
+          lastName = personInProbationOnlyPersona.lastName,
+          identifiers = personInProbationOnlyPersona.identifiers,
+        )
 
       val mappaDetailForPerson =
         MappaDetail(
@@ -44,6 +45,9 @@ internal class GetMappaDetailForPersonServiceTest(
           notes = "string",
         )
 
+      val deliusCrn = personFromProbationOffenderSearch.identifiers.deliusCrn!!
+      val hmppsId = deliusCrn
+
       beforeEach {
         Mockito.reset(getPersonService)
         Mockito.reset(nDeliusGateway)
@@ -53,7 +57,6 @@ internal class GetMappaDetailForPersonServiceTest(
             data = personFromProbationOffenderSearch,
           ),
         )
-
         whenever(nDeliusGateway.getMappaDetailForPerson(deliusCrn)).thenReturn(
           Response(
             data = mappaDetailForPerson,
@@ -69,14 +72,12 @@ internal class GetMappaDetailForPersonServiceTest(
         )
 
         val result = getMappaDetailForPersonService.execute(hmppsId)
-
         result.shouldBe(Response(data = mappaDetailForPerson))
       }
 
       it("gets a person using a Hmpps ID") {
         getMappaDetailForPersonService.execute(hmppsId)
-
-        verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = hmppsId)
+        verify(getPersonService, times(1)).execute(hmppsId = hmppsId)
       }
 
       it("returns a 404 when Mappa Detail is null") {
@@ -94,6 +95,7 @@ internal class GetMappaDetailForPersonServiceTest(
               ),
           ),
         )
+
         val result = getMappaDetailForPersonService.execute(hmppsId)
         result.errors.shouldBe(
           listOf(
@@ -105,26 +107,24 @@ internal class GetMappaDetailForPersonServiceTest(
         )
       }
 
-      describe("when an upstream API returns an error when looking up a person from a Hmpps ID") {
-        beforeEach {
-          whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
-            Response(
-              data = null,
-              errors =
-                listOf(
-                  UpstreamApiError(
-                    causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
-                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                  ),
-                ),
+      it("returns an error when getPersonService returns an error") {
+        val errors =
+          listOf(
+            UpstreamApiError(
+              causedBy = UpstreamApi.NDELIUS,
+              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
             ),
           )
-        }
+        whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
+          Response(
+            data = null,
+            errors,
+          ),
+        )
 
-        it("does not get mappa detail from delius") {
-          getMappaDetailForPersonService.execute(hmppsId)
-          verify(nDeliusGateway, VerificationModeFactory.times(0)).getOffencesForPerson(id = deliusCrn)
-        }
+        val response = getMappaDetailForPersonService.execute(hmppsId)
+        verify(nDeliusGateway, times(0)).getOffencesForPerson(id = deliusCrn)
+        response.errors.shouldBe(errors)
       }
     },
   )

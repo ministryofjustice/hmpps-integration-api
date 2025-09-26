@@ -1,8 +1,9 @@
-import org.gradle.internal.impldep.org.junit.experimental.categories.Categories.CategoryFilter.exclude
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "7.1.3"
-  kotlin("plugin.spring") version "2.1.20"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "8.3.7"
+  kotlin("plugin.spring") version "2.2.10"
 }
 
 configurations {
@@ -11,69 +12,91 @@ configurations {
 
 dependencies {
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
+  runtimeOnly("io.jsonwebtoken:jjwt-impl:0.13.0")
+  runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.13.0")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
-  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
-  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.5.0")
-  implementation("io.sentry:sentry-logback:8.5.0")
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.21.0")
+  implementation("io.sentry:sentry-logback:8.21.0")
   implementation("org.springframework.data:spring-data-commons")
   implementation("org.springframework:spring-aop")
   implementation("org.aspectj:aspectjweaver")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.4.2") {
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.4.10") {
     exclude("org.springframework.security", "spring-security-config")
     exclude("org.springframework.security", "spring-security-core")
     exclude("org.springframework.security", "spring-security-crypto")
     exclude("org.springframework.security", "spring-security-web")
   }
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0") {
-    constraints {
-      implementation("org.webjars:swagger-ui:5.20.1") // Fix security build HMAI-317
-    }
-  }
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+  implementation("io.github.microutils:kotlin-logging:3.0.5")
+  implementation("io.jsonwebtoken:jjwt-api:0.13.0")
   testImplementation("io.kotest:kotest-assertions-json-jvm:5.9.1")
   testImplementation("io.kotest:kotest-runner-junit5-jvm:5.9.1")
   testImplementation("io.kotest:kotest-assertions-core-jvm:5.9.1")
-  testImplementation("org.wiremock:wiremock-standalone:3.12.1")
+  testImplementation("org.wiremock:wiremock-standalone:3.13.1")
   testImplementation("io.kotest.extensions:kotest-extensions-spring:1.3.0")
-  testImplementation("org.mockito:mockito-core:5.16.1")
-  testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.3")
+  testImplementation("org.mockito:mockito-core:5.19.0")
+  testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.20.0")
+  testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
+  testImplementation("com.atlassian.oai:swagger-request-validator-wiremock:2.45.1") {
+    // Exclude WireMock artifacts
+    exclude(group = "com.github.tomakehurst", module = "wiremock")
+    exclude(group = "com.github.tomakehurst", module = "wiremock-jre8")
+    exclude(group = "com.github.tomakehurst", module = "wiremock-standalone")
+
+    // Exclude Jetty components to prevent the validator from pulling in conflicting versions
+    exclude(group = "org.eclipse.jetty")
+    exclude(group = "javax.servlet")
+  }
+  // Explicitly add all necessary Jetty and Servlet dependencies
+  testImplementation("javax.servlet:javax.servlet-api:4.0.1")
+  testImplementation("org.eclipse.jetty:jetty-util:12.1.1")
+  testImplementation("org.eclipse.jetty:jetty-server:12.1.1")
+  testImplementation("org.eclipse.jetty:jetty-http:12.1.1")
+  testImplementation("org.eclipse.jetty:jetty-io:12.1.1")
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
   testImplementation(kotlin("test"))
+  testImplementation("io.mockk:mockk:1.14.4")
 }
 
 java {
   toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
+
 repositories {
   mavenCentral()
 }
 
 tasks {
   register<Test>("unitTest") {
+    group = "verification"
     filter {
-      excludeTestsMatching("uk.gov.justice.digital.hmpps.hmppsintegrationapi.smoke*")
       excludeTestsMatching("uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration*")
     }
   }
 
-  register<Test>("smokeTest") {
-    filter {
-      includeTestsMatching("uk.gov.justice.digital.hmpps.hmppsintegrationapi.smoke*")
-    }
-  }
-
   register<Test>("integrationTest") {
+    description = "Runs the integration tests, make sure that dependencies are available first by running `make serve`."
+    group = "verification"
+    testClassesDirs = sourceSets["test"].output.classesDirs
+    classpath = sourceSets["main"].output + configurations["testRuntimeClasspath"] + sourceSets["test"].output
     filter {
       includeTestsMatching("uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration*")
     }
   }
 
-  withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions {
-      jvmTarget = "21"
+  withType<KotlinCompile> {
+    compilerOptions {
+      jvmTarget = JvmTarget.JVM_21
+      freeCompilerArgs.add("-Xannotation-default-target=param-property")
     }
   }
+}
+
+kotlin {
+  kotlinDaemonJvmArgs = listOf("-Xmx2g")
 }
 
 testlogger {

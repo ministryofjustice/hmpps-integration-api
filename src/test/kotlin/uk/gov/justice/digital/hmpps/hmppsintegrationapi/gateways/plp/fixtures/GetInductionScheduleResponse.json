@@ -1,0 +1,21 @@
+{
+  "reference": "ad40ebb7-2c21-414d-81fe-5063c6e97e88",
+  "prisonNumber": "X1234YZ",
+  "deadlineDate": "2025-03-20",
+  "scheduleCalculationRule": "NEW_PRISON_ADMISSION",
+  "scheduleStatus": "SCHEDULED",
+  "createdBy": "system",
+  "createdByDisplayName": "system",
+  "createdAt": "2025-02-28T10:25:34.949Z",
+  "createdAtPrison": "MKI",
+  "updatedBy": "system",
+  "updatedByDisplayName": "system",
+  "updatedAt": "2025-02-28T10:25:34.949Z",
+  "updatedAtPrison": "MKI",
+  "inductionPerformedBy": null,
+  "inductionPerformedByRole": null,
+  "inductionPerformedAt": null,
+  "inductionPerformedAtPrison": null,
+  "exemptionReason": null,
+  "version": null
+}

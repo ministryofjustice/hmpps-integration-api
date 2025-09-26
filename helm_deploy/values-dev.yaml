@@ -17,7 +17,7 @@ generic-service:
 
   env:
     SPRING_PROFILES_ACTIVE: dev
-    SENTRY_ENV: dev
+    SENTRY_ENVIRONMENT: dev
 
   namespace_secrets:
     hmpps-auth:
@@ -30,4 +30,13 @@ generic-service:
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
 generic-prometheus-alerts:
-  alertSeverity: digital-prison-service-dev
+  alertSeverity: hmpps-integration-api-alerts
+  sqsAlertsQueueNames:
+    - "book-a-prison-visit-dev-hmpps_prison_visits_write_events_queue"
+    - "book-a-prison-visit-dev-hmpps_prison_visits_write_events_dlq"
+    - "locations-inside-prison-development-update_from_external_system_events_queue"
+    - "locations-inside-prison-development-update_from_external_system_events_dlq"
+    - "activities-and-appointments-dev-update_from_external_system_events_queue"
+    - "activities-and-appointments-dev-update_from_external_system_events_dlq"
+  sqsAlertsOldestThreshold: 60
+  sqsAlertsTotalMessagesThreshold: 10

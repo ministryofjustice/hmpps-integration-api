@@ -38,4 +38,6 @@ data class PersonInPrison(
   val prisonName: String? = null,
   @Schema(description = "In prison cell location", example = "A-1-002")
   val cellLocation: String? = null,
+  @Schema(description = "Is the prisoner a youth offender", example = "false")
+  val youthOffender: Boolean,
 )

@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
+import io.swagger.v3.oas.annotations.tags.Tags
 import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
@@ -25,12 +26,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 
 @RestController
 @RequestMapping("/v1/persons/{hmppsId}")
-@Tag(name = "persons")
+@Tags(value = [Tag(name = "Persons"), Tag(name = "Visits")])
 class VisitRestrictionsController(
   @Autowired val auditService: AuditService,
   @Autowired val getVisitRestrictionsForPersonService: GetVisitRestrictionsForPersonService,
   @Autowired val getVisitorRestrictionsService: GetVisitorRestrictionsService,
 ) {
+  @GetMapping("/visit-restrictions")
   @Operation(
     summary = "Gets visit restrictions for a prisoner.",
     description = "Returns a prisoner's visit restrictions. Only returns the visit restrictions for the prisoner's most recent booking.",
@@ -41,7 +43,6 @@ class VisitRestrictionsController(
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
   )
-  @GetMapping("/visit-restrictions")
   fun getRestrictionsForPerson(
     @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
     @RequestAttribute filters: ConsumerFilters?,
@@ -63,7 +64,7 @@ class VisitRestrictionsController(
     summary = "Get the restrictions for a visitor.",
     description = "Provides both the global restrictions for the visitor, as well as the restrictions for the relationship between the prisoner and visitor.",
     responses = [
-      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a prisoners vistor restrictions with the provided HMPPS ID and contact ID."),
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a visitor's restrictions with the provided HMPPS ID and contact ID."),
       ApiResponse(responseCode = "400", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),

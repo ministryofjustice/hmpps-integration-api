@@ -3,25 +3,31 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchRedirectionResult
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResult
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchMatcher
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchQuery
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSIdentifierWithPrisonerNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetPersonService(
-  @Autowired val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
   @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
+  private val deliusGateway: NDeliusGateway,
 ) {
   fun execute(hmppsId: String): Response<Person?> {
-    val probationResponse = probationOffenderSearchGateway.getPerson(id = hmppsId)
+    val probationResponse = getProbationResponse(hmppsId)
     if (identifyHmppsId(hmppsId) == IdentifierType.NOMS && probationResponse.data == null) {
       val prisonResponse = prisonerOffenderSearchGateway.getPrisonOffender(hmppsId)
       return Response(data = prisonResponse.data?.toPerson(), prisonResponse.errors)
@@ -39,12 +45,13 @@ class GetPersonService(
     if (hmppsIdType == IdentifierType.UNKNOWN) {
       return Response(
         data = null,
-        errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.BAD_REQUEST)),
+        errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.BAD_REQUEST)),
       )
     }
 
     // Get a delius person, to get NOMIS number and for response
-    val probationResponse = probationOffenderSearchGateway.getPerson(id = hmppsId)
+    val probationResponse = getProbationResponse(hmppsId)
+
     if (probationResponse.errors.isNotEmpty() && !probationResponse.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       return Response(
         data = null,
@@ -60,7 +67,7 @@ class GetPersonService(
       } else {
         return Response(
           data = null,
-          errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
+          errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
         )
       }
 
@@ -126,12 +133,12 @@ class GetPersonService(
             return consumerPrisonFilterCheck
           }
         }
-
         return Response(data = NomisNumber(hmppsId))
       }
 
       IdentifierType.CRN -> {
-        val personFromProbationOffenderSearch = probationOffenderSearchGateway.getPerson(id = hmppsId)
+        val personFromProbationOffenderSearch = getProbationResponse(hmppsId)
+
         if (personFromProbationOffenderSearch.errors.isNotEmpty()) {
           return Response(
             data = null,
@@ -148,7 +155,7 @@ class GetPersonService(
                 UpstreamApiError(
                   description = "NOMIS number not found",
                   type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                  causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                  causedBy = UpstreamApi.NDELIUS,
                 ),
               ),
           )
@@ -179,31 +186,87 @@ class GetPersonService(
               UpstreamApiError(
                 description = "Invalid HMPPS ID: $hmppsId",
                 type = UpstreamApiError.Type.BAD_REQUEST,
-                causedBy = UpstreamApi.NOMIS,
+                causedBy = UpstreamApi.PRISON_API,
               ),
             ),
         )
     }
   }
 
-  fun getCombinedDataForPerson(hmppsId: String): Response<OffenderSearchResponse> {
-    val probationResponse = probationOffenderSearchGateway.getPerson(id = hmppsId)
+  fun getCombinedDataForPerson(hmppsId: String): Response<OffenderSearchResponse?> {
+    val probationResponse = getProbationResponse(hmppsId)
 
     val prisonResponse =
-      probationResponse.data?.identifiers?.nomisNumber?.let {
-        prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = it)
-      }
+      (probationResponse.data?.identifiers?.nomisNumber ?: hmppsId.takeIf { identifyHmppsId(it) == IdentifierType.NOMS })
+        ?.let { nomsNumber -> prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber) }
 
-    val data =
-      OffenderSearchResponse(
-        prisonerOffenderSearch = prisonResponse?.data?.toPerson(),
-        probationOffenderSearch = probationResponse.data,
+    val combinedErrors: List<UpstreamApiError> = probationResponse.errors + (prisonResponse?.errors ?: emptyList())
+
+    if (
+      combinedErrors.any { it.type == UpstreamApiError.Type.ENTITY_NOT_FOUND } &&
+      !combinedErrors.any { it.type == UpstreamApiError.Type.BAD_REQUEST }
+    ) {
+      findPrisonerIdMerged(hmppsId)?.let { posIdentifier ->
+        return Response(
+          data =
+            OffenderSearchRedirectionResult(
+              prisonerNumber = posIdentifier.prisonerNumber,
+              redirectUrl = "/v1/persons/${posIdentifier.prisonerNumber}",
+              removedPrisonerNumber = posIdentifier.identifier.value,
+            ),
+          errors = combinedErrors,
+        )
+      }
+    }
+
+    val probationData = probationResponse.data
+    val prisonData = prisonResponse?.data?.toPerson()
+    val data: OffenderSearchResponse? =
+      if (probationData == null && prisonData == null) null else OffenderSearchResult(prisonData, probationData)
+    return Response(data = data, errors = combinedErrors)
+  }
+
+  private fun findPrisonerIdMerged(hmppsId: String): POSIdentifierWithPrisonerNumber? {
+    val attributeSearchRequest =
+      POSAttributeSearchRequest(
+        joinType = "AND",
+        queries =
+          listOf(
+            POSAttributeSearchQuery(
+              joinType = "AND",
+              matchers =
+                listOf(
+                  POSAttributeSearchMatcher(
+                    type = "String",
+                    attribute = "identifiers.type",
+                    condition = "IS",
+                    searchTerm = "MERGED",
+                  ),
+                  POSAttributeSearchMatcher(
+                    type = "String",
+                    attribute = "identifiers.value",
+                    condition = "IS",
+                    searchTerm = hmppsId,
+                  ),
+                ),
+            ),
+          ),
       )
 
-    return Response(
-      data = data,
-      errors = (prisonResponse?.errors ?: emptyList()) + probationResponse.errors,
-    )
+    val response =
+      prisonerOffenderSearchGateway.attributeSearch(attributeSearchRequest)
+
+    return response.data
+      ?.content
+      ?.firstOrNull()
+      ?.identifiers
+      ?.firstOrNull { it.type == "MERGED" && it.value == hmppsId }
+      ?.let { identifier ->
+        response.data.content
+          .firstOrNull()
+          ?.prisonerNumber
+          ?.let { prisonerNumber -> POSIdentifierWithPrisonerNumber(prisonerNumber, identifier) }
+      }
   }
 
   fun getPersonFromNomis(nomisNumber: String) = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
@@ -262,6 +325,6 @@ class GetPersonService(
       errors = prisonResponse.errors,
     )
   }
-}
 
-fun isNomsNumber(id: String?): Boolean = id?.matches(Regex("^[A-Z]\\d{4}[A-Z]{2}+$")) == true
+  private fun getProbationResponse(hmppsId: String) = deliusGateway.getPerson(hmppsId)
+}

@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
-import ReferenceData
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.kotest.core.spec.style.DescribeSpec
@@ -15,6 +14,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ReferenceData
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 
 @ActiveProfiles("test")
@@ -28,7 +28,7 @@ class ReferenceDataServiceTest(
   private val objectMapper: ObjectMapper = ObjectMapper().registerKotlinModule(),
 ) : DescribeSpec(
     {
-      val nomisApiMockServer = ApiMockServer.create(UpstreamApi.NOMIS)
+      val nomisApiMockServer = ApiMockServer.create(UpstreamApi.PRISON_API)
       val ndeliusApiMockServer = ApiMockServer.create(UpstreamApi.NDELIUS)
 
       beforeEach {
@@ -47,6 +47,16 @@ class ReferenceDataServiceTest(
                   {
                    "code": "F",
                    "description": "Female"
+                  }
+                ],
+                "ADDRESS_TYPE": [
+                  {
+                   "code": "A1",
+                   "description": "Delius address status 1"
+                  },
+                  {
+                   "code": "A2",
+                   "description": "Delius address status 2"
                   }
                 ]
               }
@@ -101,6 +111,28 @@ class ReferenceDataServiceTest(
         """,
         )
 
+        nomisApiMockServer.stubForGet(
+          "/api/reference-domains/domains/ADDRESS_TYPE",
+          """
+          [
+            {"domain":"ADDRESS_TYPE", "code":"a", "description":"prison ADDRESS_TYPE_a"},
+            {"domain":"ADDRESS_TYPE", "code":"b", "description":"prison ADDRESS_TYPE_b"},
+            {"domain":"ADDRESS_TYPE", "code":"c", "description":"prison ADDRESS_TYPE_c"}
+          ]
+        """,
+        )
+
+        nomisApiMockServer.stubForGet(
+          "/api/reference-domains/domains/ADDR_TYPE",
+          """
+          [
+            {"domain":"ADDR_TYPE", "code":"ta", "description":"prison ADDR_TYPE_ta"},
+            {"domain":"ADDR_TYPE", "code":"tb", "description":"prison ADDR_TYPE_tb"},
+            {"domain":"ADDR_TYPE", "code":"tc", "description":"prison ADDR_TYPE_tc"}
+          ]
+        """,
+        )
+
         Mockito.reset(hmppsAuthGateway)
         whenever(hmppsAuthGateway.getClientToken("NOMIS")).thenReturn(HmppsAuthMockServer.TOKEN)
         whenever(hmppsAuthGateway.getClientToken("nDelius")).thenReturn(HmppsAuthMockServer.TOKEN)
@@ -143,7 +175,7 @@ class ReferenceDataServiceTest(
         response.data.shouldBe(null)
         response.errors[0]
           .causedBy.name
-          .shouldBe("NOMIS")
+          .shouldBe("PRISON_API")
         response.errors[0]
           .type.name
           .shouldBe("ENTITY_NOT_FOUND")
@@ -209,6 +241,31 @@ class ReferenceDataServiceTest(
                     "code": "c",
                     "description": "desc_c"
                   }
+                ],
+                "ADDRESS_TYPE": [
+                  {
+                    "code":"a",
+                    "description":"prison ADDRESS_TYPE_a"
+                  },
+                  {
+                    "code":"b",
+                    "description":"prison ADDRESS_TYPE_b"
+                  },
+                  {
+                    "code":"c",
+                    "description":"prison ADDRESS_TYPE_c"
+                  },
+                  {
+                    "code":"ta",
+                    "description":"prison ADDR_TYPE_ta"
+                  },
+                  {
+                    "code":"tb",
+                    "description":"prison ADDR_TYPE_tb"},
+                  {
+                    "code":"tc",
+                    "description":"prison ADDR_TYPE_tc"
+                  }
                 ]
               },
               "probationReferenceData": {
@@ -220,6 +277,16 @@ class ReferenceDataServiceTest(
                   {
                     "code": "F",
                     "description": "Female"
+                  }
+                ],
+                "ADDRESS_TYPE": [
+                  {
+                   "code": "A1",
+                   "description": "Delius address status 1"
+                  },
+                  {
+                   "code": "A2",
+                   "description": "Delius address status 2"
                   }
                 ]
               }

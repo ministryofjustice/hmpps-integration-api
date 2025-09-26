@@ -4,19 +4,31 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_STUBBED_CONTACT_EVENTS_DATA
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CommunityOffenderManager
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DynamicRisk
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.MappaDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Offence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonOnProbation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.StatusInformation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusContactEvent
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusContactEvents
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusSupervisions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.UserAccess
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.ContactDetailsWithAddress
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.Offender
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.ContactEventStubGenerator.generateNDeliusContactEvent
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.ContactEventStubGenerator.generateNDeliusContactEvents
 
 @Component
 class NDeliusGateway(
@@ -26,6 +38,9 @@ class NDeliusGateway(
 
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
+
+  @Autowired
+  lateinit var featureFlagConfig: FeatureFlagConfig
 
   fun getOffencesForPerson(id: String): Response<List<Offence>> {
     val result =
@@ -142,22 +157,22 @@ class NDeliusGateway(
     }
   }
 
-  fun getCommunityOffenderManagerForPerson(id: String): Response<CommunityOffenderManager> {
+  fun getCommunityOffenderManagerForPerson(crn: String): Response<CommunityOffenderManager?> {
     val result =
-      webClient.request<NDeliusSupervisions>(
+      webClient.request<NDeliusSupervisions?>(
         HttpMethod.GET,
-        "/case/$id/supervisions",
+        "/case/$crn/supervisions",
         authenticationHeader(),
         UpstreamApi.NDELIUS,
       )
     return when (result) {
       is WebClientWrapperResponse.Success -> {
-        Response(data = result.data.communityManager.toCommunityOffenderManager())
+        Response(data = result.data?.communityManager?.toCommunityOffenderManager())
       }
 
       is WebClientWrapperResponse.Error -> {
         Response(
-          data = CommunityOffenderManager(),
+          data = null,
           errors = result.errors,
         )
       }
@@ -191,4 +206,184 @@ class NDeliusGateway(
       "Authorization" to "Bearer $token",
     )
   }
+
+  fun getOffender(id: String? = null): Response<Offender?> {
+    val queryField =
+      if (isNomsNumber(id)) {
+        "nomsNumber"
+      } else {
+        "crn"
+      }
+
+    val result =
+      webClient.requestList<Offender>(
+        HttpMethod.POST,
+        "/search/probation-cases",
+        authenticationHeader(),
+        UpstreamApi.NDELIUS,
+        mapOf(queryField to id),
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        val persons = result.data
+        val person = persons.firstOrNull()?.toPerson()
+
+        Response(
+          data = persons.firstOrNull(),
+          errors =
+            if (person == null) {
+              listOf(
+                UpstreamApiError(
+                  causedBy = UpstreamApi.NDELIUS,
+                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                ),
+              )
+            } else {
+              emptyList()
+            },
+        )
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getPerson(id: String? = null): Response<PersonOnProbation?> {
+    val offender = getOffender(id)
+    return Response(data = offender.data?.toPersonOnProbation(), errors = offender.errors)
+  }
+
+  fun getPersons(
+    firstName: String?,
+    surname: String?,
+    pncNumber: String?,
+    dateOfBirth: String?,
+    searchWithinAliases: Boolean = false,
+  ): Response<List<Person>> {
+    val requestBody =
+      mapOf(
+        "firstName" to firstName,
+        "surname" to surname,
+        "pncNumber" to pncNumber,
+        "dateOfBirth" to dateOfBirth,
+        "includeAliases" to searchWithinAliases,
+      ).filterValues { it != null }
+
+    val result =
+      webClient.requestList<Offender>(
+        HttpMethod.POST,
+        "/search/probation-cases",
+        authenticationHeader(),
+        UpstreamApi.NDELIUS,
+        requestBody,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(
+          data = result.data.map { it.toPerson() }.sortedByDescending { it.dateOfBirth },
+        )
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = emptyList(),
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getAddressesForPerson(crn: String): Response<List<Address>> {
+    val result =
+      webClient.request<ContactDetailsWithAddress>(
+        HttpMethod.GET,
+        "/case/$crn/addresses",
+        authenticationHeader(),
+        UpstreamApi.NDELIUS,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        return Response(
+          result.data.contactDetails
+            ?.addresses
+            .orEmpty()
+            .map { it.toAddress() },
+        )
+      }
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = emptyList(),
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getContactEventsForPerson(
+    crn: String,
+    pageNo: Int,
+    perPage: Int,
+  ): Response<NDeliusContactEvents?> {
+    if (featureFlagConfig.isEnabled(USE_STUBBED_CONTACT_EVENTS_DATA)) {
+      return Response(generateNDeliusContactEvents(crn, perPage, pageNo, 10))
+    }
+
+    val result =
+      webClient.request<NDeliusContactEvents>(
+        HttpMethod.GET,
+        "/case/$crn/contacts?page=$pageNo&size=$perPage",
+        authenticationHeader(),
+        UpstreamApi.NDELIUS,
+        badRequestAsError = true,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getContactEventForPerson(
+    crn: String,
+    contactEventId: Long,
+  ): Response<NDeliusContactEvent?> {
+    if (featureFlagConfig.isEnabled(USE_STUBBED_CONTACT_EVENTS_DATA)) {
+      return Response(generateNDeliusContactEvent(contactEventId, crn))
+    }
+
+    val result =
+      webClient.request<NDeliusContactEvent>(
+        HttpMethod.GET,
+        "/case/$crn/contacts/$contactEventId",
+        authenticationHeader(),
+        UpstreamApi.NDELIUS,
+      )
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(result.data)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(null, result.errors)
+      }
+    }
+  }
+
+  private fun isNomsNumber(id: String?): Boolean = id?.matches(Regex("^[A-Z]\\d{4}[A-Z]{2}+$")) == true
 }

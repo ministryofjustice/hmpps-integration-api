@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
@@ -24,7 +24,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
   classes = [GetTransactionForPersonService::class],
 )
 internal class GetTransactionForPersonServiceTest(
-  @MockitoBean val nomisGateway: NomisGateway,
+  @MockitoBean val prisonApiGateway: PrisonApiGateway,
   @MockitoBean val getPersonService: GetPersonService,
   @MockitoBean val consumerPrisonAccessService: ConsumerPrisonAccessService,
   private val getTransactionForPersonService: GetTransactionForPersonService,
@@ -34,11 +34,11 @@ internal class GetTransactionForPersonServiceTest(
     val prisonId = "ABC"
     val clientUniqueRef = "client_unique_ref"
     val filters = ConsumerFilters(null)
-    val exampleTransaction = Transaction("204564839-3", Type(code = "spends", desc = "Spends desc"), "Spends account code", 12345, "2016-10-21")
+    val exampleTransaction = Transaction("204564839-3", Type(code = "spends", desc = "Spends desc"), "Spends account code", 12345, "2016-10-21", null)
 
     beforeEach {
       Mockito.reset(getPersonService)
-      Mockito.reset(nomisGateway)
+      Mockito.reset(prisonApiGateway)
 
       whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Transaction>(prisonId, filters)).thenReturn(
         Response(data = null),
@@ -53,7 +53,7 @@ internal class GetTransactionForPersonServiceTest(
       )
 
       whenever(
-        nomisGateway.getTransactionForPerson(
+        prisonApiGateway.getTransactionForPerson(
           prisonId,
           nomisNumber,
           clientUniqueRef,
@@ -84,7 +84,7 @@ internal class GetTransactionForPersonServiceTest(
         filters,
       )
 
-      verify(nomisGateway, VerificationModeFactory.times(1)).getTransactionForPerson(
+      verify(prisonApiGateway, VerificationModeFactory.times(1)).getTransactionForPerson(
         prisonId,
         nomisNumber,
         clientUniqueRef,
@@ -110,7 +110,7 @@ internal class GetTransactionForPersonServiceTest(
           errors =
             listOf(
               UpstreamApiError(
-                causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                causedBy = UpstreamApi.NDELIUS,
                 type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
               ),
             ),
@@ -125,7 +125,7 @@ internal class GetTransactionForPersonServiceTest(
         )
       response
         .hasErrorCausedBy(
-          causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+          causedBy = UpstreamApi.NDELIUS,
           type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
         ).shouldBe(true)
     }
@@ -138,7 +138,7 @@ internal class GetTransactionForPersonServiceTest(
             listOf(
               UpstreamApiError(
                 type = UpstreamApiError.Type.BAD_REQUEST,
-                causedBy = UpstreamApi.NOMIS,
+                causedBy = UpstreamApi.PRISON_API,
               ),
             ),
         ),
@@ -152,14 +152,14 @@ internal class GetTransactionForPersonServiceTest(
         )
       response
         .hasErrorCausedBy(
-          causedBy = UpstreamApi.NOMIS,
+          causedBy = UpstreamApi.PRISON_API,
           type = UpstreamApiError.Type.BAD_REQUEST,
         ).shouldBe(true)
     }
 
     it("records upstream API errors when getTransactionForPerson returns errors") {
       whenever(
-        nomisGateway.getTransactionForPerson(
+        prisonApiGateway.getTransactionForPerson(
           prisonId,
           nomisNumber,
           clientUniqueRef,
@@ -171,7 +171,7 @@ internal class GetTransactionForPersonServiceTest(
             listOf(
               UpstreamApiError(
                 type = UpstreamApiError.Type.BAD_REQUEST,
-                causedBy = UpstreamApi.NOMIS,
+                causedBy = UpstreamApi.PRISON_API,
               ),
             ),
         ),
@@ -185,7 +185,7 @@ internal class GetTransactionForPersonServiceTest(
         )
       response
         .hasErrorCausedBy(
-          causedBy = UpstreamApi.NOMIS,
+          causedBy = UpstreamApi.PRISON_API,
           type = UpstreamApiError.Type.BAD_REQUEST,
         ).shouldBe(true)
     }
@@ -194,7 +194,7 @@ internal class GetTransactionForPersonServiceTest(
       val consumerFillters = ConsumerFilters(prisons = listOf("ABC"))
       val wrongPrisonId = "XYZ"
       whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Transaction>(wrongPrisonId, consumerFillters)).thenReturn(
-        Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))),
+        Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))),
       )
 
       val result =
@@ -206,7 +206,7 @@ internal class GetTransactionForPersonServiceTest(
         )
 
       result.data.shouldBe(null)
-      result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
+      result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
     }
 
     it("returns a transaction when requested from an approved prison") {

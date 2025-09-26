@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
 import io.swagger.v3.oas.annotations.tags.Tags
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -23,19 +22,23 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetInductionSch
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetReviewScheduleForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
+/**
+ * Controller class exposing endpoints that return Learning and work progress (LWP, previously
+ * known as PLP) related data about a person.
+ */
 @RestController
 @RequestMapping("/v1/persons")
-@Tags(Tag(name = "persons"), Tag(name = "alerts"))
+@Tags(value = [Tag(name = "Persons"), Tag(name = "PLP")])
 class PLPController(
-  @Autowired val getInductionScheduleForPersonService: GetInductionScheduleForPersonService,
-  @Autowired val getReviewScheduleForPersonService: GetReviewScheduleForPersonService,
-  @Autowired val auditService: AuditService,
+  private val getInductionScheduleForPersonService: GetInductionScheduleForPersonService,
+  private val getReviewScheduleForPersonService: GetReviewScheduleForPersonService,
+  private val auditService: AuditService,
 ) {
   @GetMapping("{hmppsId}/plp-induction-schedule")
   @Operation(
-    summary = "Returns plp the current induction schedule associated with a person.",
+    summary = "Returns the current Learning and work progress (LWP/PLP) Induction Schedule associated with a person.",
     responses = [
-      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found induction schedule for a person with the provided HMPPS ID."),
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found Induction Schedule for a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
@@ -54,9 +57,9 @@ class PLPController(
 
   @GetMapping("{hmppsId}/plp-induction-schedule/history")
   @Operation(
-    summary = "Returns the plp induction schedule history associated with a person.",
+    summary = "Returns the history of changes to the Learning and work progress (LWP/PLP) Induction Schedule associated with a person.",
     responses = [
-      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found induction schedule history for a person with the provided HMPPS ID."),
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found Induction Schedule history for a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
@@ -75,14 +78,14 @@ class PLPController(
 
   @GetMapping("{hmppsId}/plp-review-schedule")
   @Operation(
-    summary = "Returns the plp review schedule associated with a person.",
+    summary = "Returns the history of Learning and work progress (LWP/PLP) Review Schedules associated with a person.",
     responses = [
-      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found induction schedule for a person with the provided HMPPS ID."),
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found Review Schedule history for a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
   )
-  fun getReviewSchedule(
+  fun getReviewScheduleHistory(
     @Parameter(description = "A HmppsId", example = "A123123") @PathVariable hmppsId: String,
     @Parameter(description = "Filter by review schedule statuses", example = "[\"COMPLETED\", \"PENDING\"]")
     @RequestParam(required = false) statuses: List<String>?,

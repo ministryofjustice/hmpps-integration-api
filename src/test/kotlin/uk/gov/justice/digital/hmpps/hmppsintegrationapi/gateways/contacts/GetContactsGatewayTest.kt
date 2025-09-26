@@ -34,7 +34,7 @@ class GetContactsGatewayTest(
       val getContactsPath = "/prisoner/$prisonerId/contact"
       val page = 1
       val size = 10
-      val pathWithQueryParams = "$getContactsPath?page=$page&size=$size"
+      val pathWithQueryParams = "$getContactsPath?page=${page - 1}&size=$size"
       val personalRelationshipsApiMockServer = ApiMockServer.create(UpstreamApi.PERSONAL_RELATIONSHIPS)
 
       beforeEach {
@@ -96,31 +96,12 @@ class GetContactsGatewayTest(
                 "comments": "Close family friend"
               }
             ],
-            "pageable": {
-              "offset": 9007199254740991,
-              "sort": {
-                "empty": true,
-                "sorted": true,
-                "unsorted": true
-              },
-              "pageSize": 1073741824,
-              "paged": true,
-              "pageNumber": 1073741824,
-              "unpaged": true
-            },
-            "last": true,
-            "totalElements": 9007199254740991,
-            "totalPages": 1073741824,
-            "first": true,
-            "size": 1073741824,
-            "number": 1073741824,
-            "sort": {
-              "empty": true,
-              "sorted": true,
-              "unsorted": true
-            },
-            "numberOfElements": 1073741824,
-            "empty": true
+            "page": {
+              "size": 10,
+              "totalElements": 1,
+              "totalPages": 1,
+              "number": 0
+            }
           }
           """.trimIndent()
 

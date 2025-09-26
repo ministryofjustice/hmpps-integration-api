@@ -14,14 +14,15 @@ class GetAlertsForPersonService(
   @Autowired val getPersonService: GetPersonService,
   @Autowired val prisonerAlertsGateway: PrisonerAlertsGateway,
 ) {
-  fun execute(
+  fun getAlerts(
     hmppsId: String,
     filters: ConsumerFilters?,
     page: Int,
     perPage: Int,
-    pndOnly: Boolean = false,
+    alertCodes: List<String> = emptyList(),
   ): Response<PaginatedAlerts?> {
     val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)
+
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = personResponse.errors)
     }
@@ -29,16 +30,16 @@ class GetAlertsForPersonService(
     val nomisNumber =
       personResponse.data?.nomisNumber ?: return Response(
         data = null,
-        errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND)),
+        errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND)),
       )
 
-    val alertsResponse = prisonerAlertsGateway.getPrisonerAlerts(nomisNumber, page, size = perPage)
+    val alertsResponse = prisonerAlertsGateway.getPrisonerAlertsForCodes(nomisNumber, page, size = perPage, alertCodes)
     if (alertsResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = alertsResponse.errors)
     }
 
     return Response(
-      data = alertsResponse.data?.toPaginatedAlerts(pndOnly),
+      data = alertsResponse.data?.toPaginatedAlertsFilterApplied(),
     )
   }
 }

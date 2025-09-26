@@ -10,6 +10,16 @@ services:
     base-url: http://localhost:3000
     username: client
     password: client-secret
+  prisoner-offender-search:
+    base-url: http://localhost:4000
+  health-and-medication:
+    base-url: http://localhost:4001
+  manage-pom-case-api:
+    base-url: http://localhost:4002
+  plp:
+    base-url: http://localhost:4003
+  san:
+    base-url: http://localhost:4200
   adjudications:
     base-url: http://localhost:4010
   assess-risks-and-needs:
@@ -18,30 +28,26 @@ services:
     base-url: http://localhost:4012
   create-and-vary-licence:
     base-url: http://localhost:4013
-  manage-pom-case-api:
-    base-url: http://localhost:4014
   ndelius:
-    base-url: http://localhost:4015
+    base-url: http://localhost:4014
   prison-api:
-    base-url: http://localhost:4016
-  prisoner-offender-search:
-    base-url: http://localhost:4017
+    base-url: http://localhost:4015
   probation-integration-epf:
-    base-url: http://localhost:4018
-  probation-offender-search:
-    base-url: http://localhost:4019
-  plp:
-    base-url: http://localhost:4020
+    base-url: http://localhost:4016
   non-associations:
-    base-url: http://localhost:4021
+    base-url: http://localhost:4018
   personal-relationships:
-    base-url: http://localhost:4022
+    base-url: http://localhost:4019
   manage-prison-visits:
-    base-url: http://localhost:4023
+    base-url: http://localhost:4020
   incentives:
-    base-url: http://localhost:4024
+    base-url: http://localhost:4021
   alerts:
-    base-url: http://localhost:4025
+    base-url: http://localhost:4022
+  locations-inside-prison:
+    base-url: http://localhost:4023
+  activities:
+    base-url: http://localhost:4004
 
 hmpps.sqs:
   provider: localstack
@@ -52,95 +58,82 @@ hmpps.sqs:
       queueName: "jobsboard-integration"
     visits:
       queueName: "visits"
+    assessmentevents:
+      queueName: "assessmentevents"
+    locations:
+      queueName: "locations"
+    activities:
+      queueName: "activities"
+    educationstatusevents:
+      queueName: "educationstatusevents"
+      subscribeFilter: '{"eventType":["prison.education.updated"]}'
+      subscribeTopicId: "domainevents"
+    educationalnevents:
+      queueName: "educationalnevents"
+      subscribeFilter: '{"eventType":["prison.education-aln-assessment.updated"]}'
+      subscribeTopicId: "domainevents"
+  topics:
+    domainevents:
+      arn: arn:aws:sns:eu-west-2:000000000000:domainevents-topic
+
+feature-flag:
+  use-education-assessments-endpoints: true
+  use-eswe-curious-endpoints: true
+  use-update-attendance-endpoint: true
+  use-schedule-detail-endpoint: true
+  use-search-appointments-endpoint: true
+  use-deallocation-endpoint: true
+  use-scheduled-instances-endpoint: true
+  use-deallocation-reasons-endpoint: true
+  use-allocation-endpoint: true
+  use-education-endpoint: true
+  use-expression-of-interest-endpoint: true
+  use-prisoner-base-location-endpoint: true
+  use-historical-attendances-endpoint: true
+  use-suitability-endpoint: true
+  use-waiting-list-endpoint: true
+  san-endpoint-enabled: true
+  simple-redaction: true
+  education-trigger-enabled: true
+  education-aln-trigger-enabled: true
+  use-contact-events-endpoint: true
+  use-stubbed-contact-events-data: false
+  use-roles-dsl: true
 
 authorisation:
   consumers:
     automated-test-client:
-      include:
-        - "/v1/persons"
-        - "/v1/persons/[^/]*$"
-        - "/v1/persons/.*/images"
-        - "/v1/persons/.*/name"
-        - "/v1/images/[^/]*$"
-        - "/v1/persons/.*/addresses"
-        - "/v1/persons/.*/offences"
-        - "/v1/persons/.*/alerts"
-        - "/v1/pnd/persons/.*/alerts"
-        - "/v1/persons/.*/alerts/pnd"
-        - "/v1/persons/.*/sentences"
-        - "/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
-        - "/v1/persons/.*/risks/scores"
-        - "/v1/persons/.*/needs"
-        - "/v1/persons/.*/risks/serious-harm"
-        - "/v1/persons/.*/reported-adjudications"
-        - "/v1/persons/.*/adjudications"
-        - "/v1/persons/.*/licences/conditions"
-        - "/v1/persons/.*/protected-characteristics"
-        - "/v1/persons/.*/risks/mappadetail"
-        - "/v1/persons/.*/risks/categories"
-        - "/v1/persons/.*/status-information"
-        - "/v1/persons/.*/risks/dynamic"
-        - "/v1/persons/.*/case-notes"
-        - "/v1/persons/.*/person-responsible-officer"
-        - "/v1/persons/.*/risk-management-plan"
-        - "/v1/persons/.*/cell-location"
-        - "/v1/persons/.*/plp-induction-schedule"
-        - "/v1/persons/.*/plp-induction-schedule/history"
-        - "/v1/persons/.*/plp-review-schedule"
-        - "/v1/persons/.*/visit-restrictions"
-        - "/v1/persons/.*/expression-of-interest/jobs/[^/]*$"
-        - "/v1/persons/.*/visit/future"
-        - "/v1/persons/.*/iep-level"
-        - "/v1/epf/person-details/.*/[^/]*$"
-        - "/v1/hmpps/id/nomis-number/[^/]*$"
-        - "/v1/hmpps/id/by-nomis-number/[^/]*$"
-        - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
-        - "/health"
-        - "/health/ping"
-        - "/health/readiness"
-        - "/health/liveness"
-        - "/info"
-        - "/v1/prison/prisoners/[^/]*$"
-        - "/v1/prison/prisoners"
-        - "/v1/prison/.*/prisoners/[^/]*/balances$"
-        - "/v1/prison/.*/prisoners/.*/accounts/.*/balances"
-        - "/v1/prison/.*/prisoners/.*/accounts/.*/transactions"
-        - "/v1/prison/.*/prisoners/.*/transactions/[^/]*$"
-        - "/v1/prison/.*/prisoners/.*/transactions"
-        - "/v1/prison/.*/prisoners/.*/transactions/transfer"
-        - "/v1/prison/.*/prisoners/.*/non-associations"
-        - "/v1/persons/.*/visitor/.*/restrictions"
-        - "/v1/visit/[^/]*$"
-        - "/v1/visit"
-        - "/v1/visit/.*/cancel"
-        - "/v1/prison/.*/visit/search[^/]*$"
-        - "/v1/contacts/[^/]*$"
-        - "/v1/persons/.*/contacts[^/]*$"
-        - "/v1/persons/.*/visit-orders"
+      roles:
+        - "full-access"
       filters:
-    config-test:
+    automated-test-client-no-filters:
+      roles:
+        - "full-access"
+    config-v2-test:
       include:
-        - "/v1/config/authorisation"
+        - "/v2/config/authorisation"
       filters:
+        prisons:
+          - XYZ
     all-access:
       include:
         - "/.*"
       filters:
+    specific-prison:
+      roles:
+        - "all-endpoints"
+      filters:
+        prisons:
+          - MDI
     limited-prisons:
       roles:
-        - "private-prison"
-      include:
-        - "/v1/hmpps/id/nomis-number/[^/]*$"
-        - "/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
+        - "all-endpoints"
       filters:
         prisons:
           - ABC
     no-prisons:
       roles:
-        - "private-prison"
-      include:
-        - "/v1/hmpps/id/nomis-number/[^/]*$"
-        - "/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
+        - "all-endpoints"
       filters:
         prisons:
     private-prison-only:
@@ -148,3 +141,21 @@ authorisation:
         - "private-prison"
       include:
       filters:
+    limited-case-notes:
+      roles:
+        - "all-endpoints"
+      filters:
+        case-notes:
+          - "CAB"
+    reference-data-only-user:
+      roles:
+        - "reference-data-only"
+      include:
+      filters:
+    redacted-client:
+      include:
+        - "/v1/persons/[^/]*$"
+
+redaction:
+  client-names:
+    - redacted-client

@@ -15,9 +15,9 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.autoconfigure.json.JsonTest
 import org.springframework.test.context.ActiveProfiles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonProtectedCharacteristics
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ReasonableAdjustment
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -33,25 +33,25 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 @JsonTest
 class GetProtectedCharacteristicsServiceTest {
   lateinit var service: GetProtectedCharacteristicsService
-  private val probationOffenderSearchGateway: ProbationOffenderSearchGateway = mock()
   private val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway = mock()
   private val consumerPrisonAccessService: ConsumerPrisonAccessService = mock()
   private val getPersonService: GetPersonService = mock()
-  val nomisGateway: NomisGateway = mock()
+  private val deliusGateway: NDeliusGateway = mock()
+
+  val prisonApiGateway: PrisonApiGateway = mock()
   val hmppsId: String = "A1234AA"
   val filters = null
 
   var mockOffender: Offender = Offender("John", "Smith", otherIds = OtherIds(nomsNumber = "mockNomsNumber"), age = 35, gender = "Male", offenderProfile = OffenderProfile(sexualOrientation = "Unknown", ethnicity = "British", nationality = "British", religion = "None", disabilities = emptyList()))
-  var mockPrisonOffender: POSPrisoner = POSPrisoner("John", "Smith", maritalStatus = "Widowed", bookingId = "bookingId", prisonId = "ABC")
+  var mockPrisonOffender: POSPrisoner = POSPrisoner(firstName = "John", lastName = "Smith", maritalStatus = "Widowed", bookingId = "bookingId", youthOffender = false, prisonId = "ABC")
   var mockReasonableAdjustment: ReasonableAdjustment = ReasonableAdjustment(treatmentCode = "abc")
 
   @BeforeEach
   fun setUp() {
-    Mockito.reset(probationOffenderSearchGateway)
     Mockito.reset(prisonerOffenderSearchGateway)
-    Mockito.reset(nomisGateway)
+    Mockito.reset(prisonApiGateway)
     Mockito.reset(consumerPrisonAccessService)
-    service = GetProtectedCharacteristicsService(probationOffenderSearchGateway, prisonerOffenderSearchGateway, nomisGateway, consumerPrisonAccessService, getPersonService)
+    service = GetProtectedCharacteristicsService(prisonerOffenderSearchGateway, prisonApiGateway, consumerPrisonAccessService, getPersonService, deliusGateway)
 
     whenever(getPersonService.identifyHmppsId(hmppsId)).thenReturn(GetPersonService.IdentifierType.NOMS)
   }
@@ -70,17 +70,17 @@ class GetProtectedCharacteristicsServiceTest {
 
   @Test
   fun `Probation offender search return errors, return error`() {
-    whenever(probationOffenderSearchGateway.getOffender(hmppsId)).thenReturn(Response<Offender?>(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PROBATION_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "MockError"))))
+    whenever(deliusGateway.getOffender(hmppsId)).thenReturn(Response<Offender?>(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NDELIUS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "MockError"))))
     val result = service.execute(hmppsId, filters)
 
     verifyNoInteractions(prisonerOffenderSearchGateway)
-    verifyNoInteractions(nomisGateway)
+    verifyNoInteractions(prisonApiGateway)
     result.data.shouldBeNull()
     result.errors.shouldHaveSize(1)
     result.errors
       .first()
       .causedBy
-      .shouldBe(UpstreamApi.PROBATION_OFFENDER_SEARCH)
+      .shouldBe(UpstreamApi.NDELIUS)
     result.errors
       .first()
       .type
@@ -94,12 +94,12 @@ class GetProtectedCharacteristicsServiceTest {
   @Test
   fun `Probation offender search return no nomsNumber, return only probation data`() {
     val mockOffender: Offender = Offender("John", "Smith", otherIds = OtherIds(), age = 35, gender = "Male", offenderProfile = OffenderProfile(sexualOrientation = "Unknown", ethnicity = "British", nationality = "British", religion = "None", disabilities = emptyList()))
-    whenever(probationOffenderSearchGateway.getOffender(hmppsId)).thenReturn(Response<Offender?>(data = mockOffender, errors = emptyList()))
+    whenever(deliusGateway.getOffender(hmppsId)).thenReturn(Response<Offender?>(data = mockOffender, errors = emptyList()))
 
     val result = service.execute(hmppsId, filters)
 
     verifyNoInteractions(prisonerOffenderSearchGateway)
-    verifyNoInteractions(nomisGateway)
+    verifyNoInteractions(prisonApiGateway)
     result.data.shouldNotBeNull()
     result.errors.shouldHaveSize(0)
     result.data!!.age.shouldBe(35)
@@ -115,9 +115,9 @@ class GetProtectedCharacteristicsServiceTest {
 
   @Test
   fun `Prisoner no booking, return data from probation and prison search`() {
-    val mockPrisonOffender: POSPrisoner = POSPrisoner("John", "Smith", maritalStatus = "Widowed")
+    val mockPrisonOffender: POSPrisoner = POSPrisoner(firstName = "John", lastName = "Smith", maritalStatus = "Widowed", youthOffender = false)
 
-    whenever(probationOffenderSearchGateway.getOffender(hmppsId)).thenReturn(Response(data = mockOffender, errors = emptyList()))
+    whenever(deliusGateway.getOffender(hmppsId)).thenReturn(Response(data = mockOffender, errors = emptyList()))
     whenever(prisonerOffenderSearchGateway.getPrisonOffender(mockOffender.otherIds.nomsNumber!!)).thenReturn(Response(data = mockPrisonOffender))
     whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<PersonProtectedCharacteristics>("ABC", filters)).thenReturn(
       Response(data = null, errors = emptyList()),
@@ -125,7 +125,7 @@ class GetProtectedCharacteristicsServiceTest {
 
     val result = service.execute(hmppsId, filters)
 
-    verifyNoInteractions(nomisGateway)
+    verifyNoInteractions(prisonApiGateway)
     result.data.shouldNotBeNull()
     result.errors.shouldHaveSize(0)
     result.data!!.age.shouldBe(35)
@@ -141,9 +141,9 @@ class GetProtectedCharacteristicsServiceTest {
 
   @Test
   fun `return reasonable adjustments data`() {
-    whenever(probationOffenderSearchGateway.getOffender(hmppsId)).thenReturn(Response(data = mockOffender, errors = emptyList()))
+    whenever(deliusGateway.getOffender(hmppsId)).thenReturn(Response(data = mockOffender, errors = emptyList()))
     whenever(prisonerOffenderSearchGateway.getPrisonOffender(mockOffender.otherIds.nomsNumber!!)).thenReturn(Response(data = mockPrisonOffender))
-    whenever(nomisGateway.getReasonableAdjustments(mockPrisonOffender.bookingId!!)).thenReturn(Response(data = listOf(mockReasonableAdjustment)))
+    whenever(prisonApiGateway.getReasonableAdjustments(mockPrisonOffender.bookingId!!)).thenReturn(Response(data = listOf(mockReasonableAdjustment)))
     whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<PersonProtectedCharacteristics>("ABC", filters)).thenReturn(
       Response(data = null, errors = emptyList()),
     )
@@ -170,9 +170,9 @@ class GetProtectedCharacteristicsServiceTest {
 
   @Test
   fun `return all expected data when approved prison`() {
-    whenever(probationOffenderSearchGateway.getOffender(hmppsId)).thenReturn(Response(data = mockOffender, errors = emptyList()))
+    whenever(deliusGateway.getOffender(hmppsId)).thenReturn(Response(data = mockOffender, errors = emptyList()))
     whenever(prisonerOffenderSearchGateway.getPrisonOffender(mockOffender.otherIds.nomsNumber!!)).thenReturn(Response(data = mockPrisonOffender))
-    whenever(nomisGateway.getReasonableAdjustments(mockPrisonOffender.bookingId!!)).thenReturn(Response(data = listOf(mockReasonableAdjustment)))
+    whenever(prisonApiGateway.getReasonableAdjustments(mockPrisonOffender.bookingId!!)).thenReturn(Response(data = listOf(mockReasonableAdjustment)))
     whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<PersonProtectedCharacteristics>("ABC", filters = ConsumerFilters(listOf("ABC")))).thenReturn(
       Response(data = null, errors = emptyList()),
     )
@@ -201,11 +201,11 @@ class GetProtectedCharacteristicsServiceTest {
   fun `returns null when protected characteristics are requested from an unapproved prison`() {
     val wrongPrisonId = "XYZ"
     val filters = ConsumerFilters(listOf("ABC"))
-    val mockPrisonOffenderInWrongPrison = POSPrisoner("John", "Smith", maritalStatus = "Widowed", bookingId = "bookingId", prisonId = wrongPrisonId)
-    whenever(probationOffenderSearchGateway.getOffender(hmppsId)).thenReturn(Response(data = mockOffender, errors = emptyList()))
+    val mockPrisonOffenderInWrongPrison = POSPrisoner(firstName = "John", lastName = "Smith", maritalStatus = "Widowed", bookingId = "bookingId", prisonId = wrongPrisonId, youthOffender = false)
+    whenever(deliusGateway.getOffender(hmppsId)).thenReturn(Response(data = mockOffender, errors = emptyList()))
     whenever(prisonerOffenderSearchGateway.getPrisonOffender(mockOffender.otherIds.nomsNumber!!)).thenReturn(Response(data = mockPrisonOffenderInWrongPrison))
     whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<PersonProtectedCharacteristics>(wrongPrisonId, filters)).thenReturn(
-      Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))),
+      Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))),
     )
 
     val result = service.execute(hmppsId, filters)
@@ -216,7 +216,7 @@ class GetProtectedCharacteristicsServiceTest {
     result.errors
       .first()
       .causedBy
-      .shouldBe(UpstreamApi.NOMIS)
+      .shouldBe(UpstreamApi.PRISON_API)
     result.errors
       .first()
       .type

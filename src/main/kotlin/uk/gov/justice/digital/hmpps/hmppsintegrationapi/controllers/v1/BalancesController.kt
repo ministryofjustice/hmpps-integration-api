@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.tags.Tag
+import io.swagger.v3.oas.annotations.tags.Tags
 import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
@@ -22,11 +24,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 
 @RestController
 @RequestMapping("/v1/prison/{prisonId}/prisoners/{hmppsId}")
+@Tags(value = [Tag(name = "Prison"), Tag(name = "Finance")])
 class BalancesController(
   @Autowired val auditService: AuditService,
   @Autowired val getBalancesForPersonService: GetBalancesForPersonService,
 ) {
   @GetMapping("/balances")
+  @Tag(name = "Reception")
   @Operation(
     summary = "Returns all accounts for a prisoner that they have at a prison.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",

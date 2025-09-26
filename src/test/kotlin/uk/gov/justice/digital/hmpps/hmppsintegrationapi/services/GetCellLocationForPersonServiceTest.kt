@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import io.kotest.core.spec.style.DescribeSpec
-import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
@@ -18,6 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -29,90 +29,83 @@ internal class GetCellLocationForPersonServiceTest(
   private val getCellLocationForPersonService: GetCellLocationForPersonService,
 ) : DescribeSpec(
     {
-      val hmppsId = "A1234AA"
+      val persona = personInProbationAndNomisPersona
+      val hmppsId = persona.identifiers.nomisNumber!!
       val filters = ConsumerFilters(null)
+      val prisonId = "MDI"
+      val prisonName = "Moorland (HMP & YOI)"
+      val cellLocation = "6-2-006"
+      val prisoner =
+        POSPrisoner(
+          firstName = persona.firstName,
+          lastName = persona.lastName,
+          inOutStatus = "IN",
+          prisonId = prisonId,
+          prisonName = prisonName,
+          cellLocation = cellLocation,
+          youthOffender = false,
+        )
 
       beforeEach {
         Mockito.reset(getPersonService)
 
         whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(data = NomisNumber(hmppsId)))
-
-        whenever(prisonerOffenderSearchGateway.getPrisonOffender(hmppsId)).thenReturn(
-          Response(data = POSPrisoner(firstName = "Qui-gon", lastName = "Jin", inOutStatus = "IN", prisonId = "MDI", prisonName = "Moorland (HMP & YOI)", cellLocation = "6-2-006")),
-        )
+        whenever(prisonerOffenderSearchGateway.getPrisonOffender(hmppsId)).thenReturn(Response(data = prisoner))
       }
 
       it("calls getNomisNumberWithPrisonFilter") {
         getCellLocationForPersonService.execute(hmppsId, filters)
-
         verify(getPersonService, VerificationModeFactory.times(1)).getNomisNumberWithPrisonFilter(hmppsId, filters)
       }
 
       it("returns a person cell location") {
         val response = getCellLocationForPersonService.execute(hmppsId, filters)
-
-        response.data.shouldBe(CellLocation(cell = "6-2-006", prisonCode = "MDI", prisonName = "Moorland (HMP & YOI)"))
+        response.data.shouldBe(CellLocation(cell = cellLocation, prisonCode = prisonId, prisonName = prisonName))
       }
 
       it("returns the upstream error when an error occurs") {
+        val errors =
+          listOf(
+            UpstreamApiError(
+              causedBy = UpstreamApi.PRISON_API,
+              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+            ),
+          )
         whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(
           Response(
             data = null,
-            errors =
-              listOf(
-                UpstreamApiError(
-                  causedBy = UpstreamApi.NOMIS,
-                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                ),
-              ),
+            errors,
           ),
         )
 
         val response = getCellLocationForPersonService.execute(hmppsId, filters)
-
-        response.errors.shouldHaveSize(1)
-        response.errors
-          .first()
-          .causedBy
-          .shouldBe(UpstreamApi.NOMIS)
-        response.errors
-          .first()
-          .type
-          .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+        response.errors.shouldBe(errors)
       }
 
       it("returns the upstream error when nomis id is not found") {
+        val errors =
+          listOf(
+            UpstreamApiError(
+              causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
+              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+            ),
+          )
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(hmppsId)).thenReturn(
           Response(
             data = null,
-            errors =
-              listOf(
-                UpstreamApiError(
-                  causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
-                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                ),
-              ),
+            errors,
           ),
         )
 
         val response = getCellLocationForPersonService.execute(hmppsId, filters)
-
-        response.errors.shouldHaveSize(1)
-        response.errors
-          .first()
-          .causedBy
-          .shouldBe(UpstreamApi.PRISONER_OFFENDER_SEARCH)
-        response.errors
-          .first()
-          .type
-          .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+        response.errors.shouldBe(errors)
       }
 
       it("failed to get prisoners nomis number") {
-        val err = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND))
-        whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(data = NomisNumber(), errors = emptyList()))
+        whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(data = NomisNumber()))
+
         val response = getCellLocationForPersonService.execute(hmppsId, filters)
-        response.errors.shouldBe(err)
+        response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
       }
     },
   )

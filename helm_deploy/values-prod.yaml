@@ -16,7 +16,7 @@ generic-service:
   env:
     SPRING_PROFILES_ACTIVE: prod
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
-    SENTRY_ENV: prod
+    SENTRY_ENVIRONMENT: prod
 
   namespace_secrets:
     hmpps-auth:
@@ -26,8 +26,16 @@ generic-service:
       APPINSIGHTS_INSTRUMENTATIONKEY: "azure-app-insights"
       SENTRY_DSN: "sentry"
 
-
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
 generic-prometheus-alerts:
-  alertSeverity: digital-prison-service
+  alertSeverity: hmpps-integration-api-alerts
+  sqsAlertsQueueNames:
+    - "book-a-prison-visit-prod-hmpps_prison_visits_write_events_queue"
+    - "book-a-prison-visit-prod-hmpps_prison_visits_write_events_dlq"
+    - "locations-inside-prison-prod-update_from_external_system_events_queue"
+    - "locations-inside-prison-prod-update_from_external_system_events_dlq"
+    - "activities-and-appointments-prod-update_from_external_system_events_queue"
+    - "activities-and-appointments-prod-update_from_external_system_events_dlq"
+  sqsAlertsOldestThreshold: 1
+  sqsAlertsTotalMessagesThreshold: 1

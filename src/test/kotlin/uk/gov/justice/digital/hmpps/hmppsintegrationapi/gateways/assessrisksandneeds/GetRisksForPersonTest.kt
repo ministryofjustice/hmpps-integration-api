@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.AssessRisksAndNeedsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
@@ -33,16 +34,18 @@ import java.time.LocalDateTime
 )
 class GetRisksForPersonTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
+  @MockitoBean val featureFlag: FeatureFlagConfig,
   val assessRisksAndNeedsGateway: AssessRisksAndNeedsGateway,
 ) : DescribeSpec(
     {
       val deliusCrn = "X777776"
-      val path = "/risks/crn/$deliusCrn"
+      val path = "/risks/rosh/$deliusCrn"
       val assessRisksAndNeedsApiMockServer = ApiMockServer.create(UpstreamApi.ASSESS_RISKS_AND_NEEDS)
 
       beforeEach {
         assessRisksAndNeedsApiMockServer.start()
         Mockito.reset(hmppsAuthGateway)
+        Mockito.reset(featureFlag)
         assessRisksAndNeedsApiMockServer.stubForGet(
           path,
           File(

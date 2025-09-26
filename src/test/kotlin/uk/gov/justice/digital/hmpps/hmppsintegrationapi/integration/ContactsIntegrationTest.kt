@@ -58,9 +58,7 @@ class ContactsIntegrationTest : IntegrationTestBase() {
                       "extNumber": "123"
                     }
                   ],
-                  "createdBy": "JD000001",
                   "createdTime": "2024-01-01T00:00:00Z",
-                  "updatedBy": "JD000001",
                   "updatedTime": "2024-01-01T00:00:00Z"
                 }
               ],

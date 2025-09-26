@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import java.time.LocalDateTime
 
-@Schema(description = "Private prison visit request")
+@Schema(description = "Create visit request")
 data class CreateVisitRequest(
   @Schema(description = "Prisoner Id", example = "AF34567G", required = true)
   @field:NotBlank
@@ -32,29 +32,33 @@ data class CreateVisitRequest(
   @Schema(description = "The finishing date and time of the visit", example = "2018-12-01T13:45:00", required = true)
   @field:NotNull
   val endTimestamp: LocalDateTime,
-  @Schema(description = "Visit Notes")
+  @Schema(description = "Visit Notes - only 1 note of each type is allowed")
+  @field:Valid
   val visitNotes: List<VisitNotes> = emptyList(),
   @Schema(description = "Contact associated with the visit", required = true)
-  @field:NotNull
+  @field:Valid
   val visitContact: VisitContact,
-  @Schema(description = "The date and time of when the visit was created in NEXUS", example = "2018-12-01T13:45:00", required = false)
+  @Schema(description = "The date and time of when the visit was created in the client system", example = "2018-12-01T13:45:00", required = false)
   val createDateTime: LocalDateTime? = null,
   @Schema(description = "List of visitors associated with the visit", required = false)
-  val visitors: Set<@Valid Visitor>? = setOf(),
+  @field:Valid
+  val visitors: Set<Visitor>? = setOf(),
   @Schema(description = "Additional support associated with the visit")
+  @field:Valid
   val visitorSupport: VisitorSupport? = null,
 ) {
   fun toHmppsMessage(who: String): HmppsMessage =
     HmppsMessage(
       eventType = HmppsMessageEventType.VISIT_CREATED,
-      messageAttributes = modelToMap(),
+      messageAttributes = modelToMap(who),
       who = who,
     )
 
-  private fun modelToMap(): Map<String, Any?> =
+  private fun modelToMap(clientName: String): Map<String, Any?> =
     mapOf(
       "prisonerId" to this.prisonerId,
       "prisonId" to this.prisonId,
+      "clientName" to clientName,
       "clientVisitReference" to this.clientVisitReference,
       "visitRoom" to this.visitRoom,
       "visitType" to this.visitType,

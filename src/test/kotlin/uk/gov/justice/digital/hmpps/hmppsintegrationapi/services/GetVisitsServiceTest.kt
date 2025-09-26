@@ -19,6 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVPa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisitContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisitorSupport
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVistExternalSystemDetails
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @ContextConfiguration(
@@ -42,6 +43,7 @@ internal class GetVisitsServiceTest(
         visitRoom = "Room",
         visitType = "Type",
         visitStatus = "Status",
+        visitSubStatus = "AUTO_APPROVED",
         outcomeStatus = "Outcome",
         visitRestriction = "Restriction",
         startTimestamp = "Start",
@@ -56,6 +58,11 @@ internal class GetVisitsServiceTest(
         reference = "dfs-wjs-abc",
         sessionTemplateReference = "dfs-wjs-xyz",
         visitorSupport = PVVisitorSupport(description = "Description"),
+        visitExternalSystemDetails =
+          PVVistExternalSystemDetails(
+            clientName = "client_name",
+            clientVisitReference = "12345",
+          ),
       )
     val paginatedVisitsData =
       PVPaginatedVisits(

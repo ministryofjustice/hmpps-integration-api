@@ -5,6 +5,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -17,11 +18,11 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.LaoRedactorAspect
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.Redactor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OtherRisks
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Risk
@@ -45,16 +46,21 @@ internal class RiskSeriousHarmControllerTest(
   @MockitoBean val getRiskSeriousHarmForPersonService: GetRiskSeriousHarmForPersonService,
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getCaseAccess: GetCaseAccess,
+  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
 ) : DescribeSpec(
     {
       val hmppsId = "9999/11111A"
       val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
       val path = "/v1/persons/$encodedHmppsId/risks/serious-harm"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
+      val laoOkCrn = "R654321"
+      val laoFailureCrn = "R754321"
 
       describe("GET $path") {
         beforeTest {
           Mockito.reset(getRiskSeriousHarmForPersonService)
+          whenever(getCaseAccess.getAccessFor(any())).thenReturn(CaseAccess(laoOkCrn, false, false, "", ""))
+          whenever(getCaseAccess.getAccessFor("R754321")).thenReturn(null)
           whenever(getRiskSeriousHarmForPersonService.execute(hmppsId)).thenReturn(
             Response(
               data =
@@ -197,141 +203,11 @@ internal class RiskSeriousHarmControllerTest(
           )
         }
 
-        it("returns the redacted risks for a person with the matching identifier") {
+        it("Returns 403 Forbidden for LAO case") {
           val laoCrn = "B123456"
           whenever(getCaseAccess.getAccessFor(laoCrn)).thenReturn(CaseAccess(laoCrn, true, false, "Exclusion Message"))
-          whenever(getRiskSeriousHarmForPersonService.execute(laoCrn)).thenReturn(
-            Response(
-              data =
-                Risks(
-                  assessedOn =
-                    LocalDateTime.of(
-                      2023,
-                      9,
-                      19,
-                      12,
-                      51,
-                      38,
-                    ),
-                  riskToSelf =
-                    RiskToSelf(
-                      suicide = Risk(risk = "YES", current = "YES", currentConcernsText = "Some text that should be redacted"),
-                      selfHarm = Risk(risk = "YES", current = "NO", previous = "YES", previousConcernsText = "Some text that should be redacted"),
-                      custody = Risk(risk = "NO"),
-                      hostelSetting = Risk(risk = "YES", current = "YES", currentConcernsText = "Some text that should be redacted", previous = "YES", previousConcernsText = "Some text that should be redacted"),
-                      vulnerability = Risk(risk = "YES", current = "YES", currentConcernsText = "Some text that should be redacted"),
-                    ),
-                  otherRisks = OtherRisks(breachOfTrust = "NO"),
-                  summary =
-                    RiskSummary(
-                      overallRiskLevel = "LOW",
-                      whoIsAtRisk = "X, Y and Z are at risk",
-                      natureOfRisk = "The nature of the risk is X",
-                      riskImminence = "the risk is imminent and more probably in X situation",
-                      riskIncreaseFactors = "If offender in situation X the risk can be higher",
-                      riskMitigationFactors = "Giving offender therapy in X will reduce the risk",
-                      riskInCommunity =
-                        mapOf(
-                          "children" to "HIGH",
-                          "public" to "HIGH",
-                          "knownAdult" to "HIGH",
-                          "staff" to "MEDIUM",
-                          "prisoners" to "LOW",
-                        ),
-                      riskInCustody =
-                        mapOf(
-                          "children" to "LOW",
-                          "public" to "LOW",
-                          "knownAdult" to "HIGH",
-                          "staff" to "VERY_HIGH",
-                          "prisoners" to "VERY_HIGH",
-                        ),
-                    ),
-                ),
-            ),
-          )
-
           val result = mockMvc.performAuthorised("/v1/persons/$laoCrn/risks/serious-harm")
-
-          result.response.contentAsString.shouldContain(
-            """
-          "data": {
-            "assessedOn": "2023-09-19T12:51:38",
-            "riskToSelf": {
-              "suicide": {
-                 "risk": "YES",
-                 "previous": null,
-                 "previousConcernsText": null,
-                 "current": "YES",
-                 "currentConcernsText": "${Redactor.REDACTED}"
-              },
-              "selfHarm": {
-                 "risk": "YES",
-                 "previous": "YES",
-                 "previousConcernsText": "${Redactor.REDACTED}",
-                 "current": "NO",
-                 "currentConcernsText": null
-              },
-              "custody": {
-                 "risk": "NO",
-                 "previous": null,
-                 "previousConcernsText": null,
-                 "current": null,
-                 "currentConcernsText": null
-              },
-              "hostelSetting": {
-                 "risk": "YES",
-                 "previous": "YES",
-                 "previousConcernsText": "${Redactor.REDACTED}",
-                 "current": "YES",
-                 "currentConcernsText": "${Redactor.REDACTED}"
-              },
-              "vulnerability": {
-                 "risk": "YES",
-                 "previous": null,
-                 "previousConcernsText": null,
-                 "current": "YES",
-                 "currentConcernsText": "${Redactor.REDACTED}"
-              }
-            },
-            "otherRisks": {
-              "escapeOrAbscond": null,
-              "controlIssuesDisruptiveBehaviour": null,
-              "breachOfTrust": "NO",
-              "riskToOtherPrisoners": null
-            },
-            "summary": {
-              "whoIsAtRisk": "${Redactor.REDACTED}",
-              "natureOfRisk": "${Redactor.REDACTED}",
-              "riskImminence": "${Redactor.REDACTED}",
-              "riskIncreaseFactors": "${Redactor.REDACTED}",
-              "riskMitigationFactors": "${Redactor.REDACTED}",
-              "overallRiskLevel": "${Redactor.REDACTED}",
-              "riskInCommunity": {
-                "${Redactor.REDACTED}":"${Redactor.REDACTED}"
-               },
-               "riskInCustody": {
-                "${Redactor.REDACTED}": "${Redactor.REDACTED}"
-               }
-            }
-          }
-          """.removeWhitespaceAndNewlines(),
-          )
-        }
-
-        it("can handle null response") {
-          val laoCrn = "N444411"
-          whenever(getCaseAccess.getAccessFor(laoCrn)).thenReturn(CaseAccess(laoCrn, true, false, "Exclusion Message"))
-          whenever(getRiskSeriousHarmForPersonService.execute(laoCrn)).thenReturn(Response(data = null))
-
-          val result = mockMvc.performAuthorised("/v1/persons/$laoCrn/risks/serious-harm")
-
-          result.response.contentAsString.shouldContain(
-            """{
-          "data": null
-          }
-          """.removeWhitespaceAndNewlines(),
-          )
+          result.response.status.shouldBe(HttpStatus.FORBIDDEN.value())
         }
 
         it("logs audit") {
@@ -385,6 +261,17 @@ internal class RiskSeriousHarmControllerTest(
           assert(
             result.response.contentAsString.equals(
               "{\"status\":500,\"errorCode\":null,\"userMessage\":\"500 MockError\",\"developerMessage\":\"Unable to complete request as an upstream service is not responding\",\"moreInfo\":null}",
+            ),
+          )
+        }
+
+        it("fails with the appropriate error when LAO context has failed to be retrieved") {
+          val response = mockMvc.performAuthorised("/v1/persons/$laoFailureCrn/risks/serious-harm")
+
+          assert(response.response.status == 500)
+          assert(
+            response.response.contentAsString.equals(
+              "{\"status\":500,\"errorCode\":null,\"userMessage\":\"LAO Check failed\",\"developerMessage\":\"LAO Check failed\",\"moreInfo\":null}",
             ),
           )
         }

@@ -24,7 +24,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 
 @RestController
 @RequestMapping("/v1/persons")
-@Tag(name = "default")
+@Tag(name = "Persons")
 class PersonResponsibleOfficerController(
   @Autowired val auditService: AuditService,
   @Autowired val getPrisonOffenderManagerForPersonService: GetPrisonOffenderManagerForPersonService,
@@ -36,8 +36,8 @@ class PersonResponsibleOfficerController(
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found the person responsible officer for a person with the provided HMPPS ID."),
-      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "400", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
   )
@@ -46,18 +46,23 @@ class PersonResponsibleOfficerController(
     @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<PersonResponsibleOfficer> {
     val prisonOffenderManager = getPrisonOffenderManagerForPersonService.execute(hmppsId, filters)
-    val communityOffenderManager = getCommunityOffenderManagerForPersonService.execute(hmppsId, filters)
 
-    if (prisonOffenderManager.hasError(UpstreamApiError.Type.BAD_REQUEST) || communityOffenderManager.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+    if (prisonOffenderManager.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Invalid HMPPS ID: $hmppsId")
     }
 
     if (prisonOffenderManager.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
-      throw EntityNotFoundException("Could not find prison offender manager related to id: $hmppsId")
+      throw EntityNotFoundException("Could not find person with id: $hmppsId")
+    }
+
+    val communityOffenderManager = getCommunityOffenderManagerForPersonService.execute(hmppsId, filters)
+
+    if (communityOffenderManager.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      throw ValidationException("Invalid HMPPS ID: $hmppsId")
     }
 
     if (communityOffenderManager.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
-      throw EntityNotFoundException("Could not find community offender manager related to id: $hmppsId")
+      throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
 
     val mergedData =
