@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "8.3.7"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.0.1"
   kotlin("plugin.spring") version "2.2.10"
 }
 
@@ -34,8 +34,8 @@ dependencies {
   testImplementation("io.kotest:kotest-assertions-json-jvm:6.0.3")
   testImplementation("io.kotest:kotest-runner-junit5-jvm:6.0.3")
   testImplementation("io.kotest:kotest-assertions-core-jvm:6.0.3")
+  testImplementation("io.kotest:kotest-extensions-spring:6.0.3")
   testImplementation("org.wiremock:wiremock-standalone:3.13.1")
-  testImplementation("io.kotest.extensions:kotest-extensions-spring:1.3.0")
   testImplementation("org.mockito:mockito-core:5.19.0")
   testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.20.0")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
@@ -92,6 +92,10 @@ tasks {
       jvmTarget = JvmTarget.JVM_21
       freeCompilerArgs.add("-Xannotation-default-target=param-property")
     }
+  }
+
+  withType<Test> {
+    systemProperty("kotest.framework.config.fqn", "uk.gov.justice.digital.hmpps.hmppsintegrationapi.kotest.ProjectConfig")
   }
 }
 
