@@ -15,7 +15,7 @@
 
 AddBoundaryTag("system", $borderColor="Black", $shape = RoundedBoxShape(), $type="")
 
-Title [Certificates] HMPPS Integration API
+Title [Certificates] HMPPS External API
 
 Boundary(consumer_app_group, "Consumer Application"){
   Container(consumer_app, "Consumer Application", "API", "Requires data from HMPPS.")
@@ -27,7 +27,7 @@ Boundary(consumer_app_group, "Consumer Application"){
   }
 }
 
-Boundary(hmpps_integration_api, "HMPPS Integration API", "") {
+Boundary(hmpps_integration_api, "HMPPS External API", "") {
   APIGateway(api_gw, "API Gateway", "")
 
   Boundary(mutual_tls, "Mutual TLS authentication", "") {

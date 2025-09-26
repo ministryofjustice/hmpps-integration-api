@@ -51,11 +51,13 @@ data class PlanReviewSchedules(
  * @param version the version number of this schedule (the highest number is the most recent version of this review schedule)
  */
 data class PlanReviewSchedule(
+  @Schema(description = "The Nomis number of the person.", example = "A1234BC", required = true)
+  val nomisNumber: String? = null,
   @Schema(example = "c88a6c48-97e2-4c04-93b5-98619966447b", required = true, description = "The unique reference of this Review")
   @get:JsonProperty("reference", required = true) val reference: UUID,
   @field:Valid
-  @Schema(example = "2023-11-19", required = true, description = "An ISO-8601 date representing date that the Review is due. ")
-  @get:JsonProperty("deadlineDate", required = false) val deadlineDate: LocalDate,
+  @Schema(example = "2023-11-19", required = false, description = "An ISO-8601 date representing date that the Review is due. ")
+  @get:JsonProperty("deadlineDate", required = false) val deadlineDate: LocalDate?,
   @field:Valid
   @Schema(example = "null", required = true, description = "")
   @get:JsonProperty("status", required = true) val status: PlanReviewScheduleStatus,
@@ -108,7 +110,7 @@ class ReviewScheduleDeserializer : JsonDeserializer<PlanReviewSchedule>() {
       updatedByDisplayName = node["updatedByDisplayName"].asText(),
       updatedAt = OffsetDateTime.parse(node["updatedAt"].asText()),
       updatedAtPrison = node["updatedAtPrison"].asText(),
-      deadlineDate = LocalDate.parse(node["deadlineDate"].asText()),
+      deadlineDate = node["deadlineDate"]?.takeUnless { it.isNull }?.asText()?.let { LocalDate.parse(it) },
       exemptionReason = node["exemptionReason"]?.takeUnless { it.isNull }?.asText(),
       reviewKeyedInBy = node["reviewKeyedInBy"]?.takeUnless { it.isNull }?.asText(),
       reviewCompletedDate = node["reviewCompletedDate"]?.takeUnless { it.isNull }?.asText()?.let { LocalDate.parse(it) },

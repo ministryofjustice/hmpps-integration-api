@@ -2,15 +2,16 @@
 title: About
 weight: 1
 owner_slack: "#hmpps-integration-api-alerts"
-last_reviewed_on: 2025-04-25
-review_in: 3 months
+last_reviewed_on: 2025-09-23
+review_in: 6 months
 ---
 
 # About
 
-HMPPS Integration API is a RESTFul API that provides a single point of entry for organisations to access data about a person within the prison and probation services of Ministry of Justice (MOJ) such as the National Offender Management Information System (NOMIS). It uses a HMPPS ID for a person.
+HMPPS External API (formerly HMPPS Integration API) is a RESTFul API that provides a single point of entry for organisations to access data about a person within the prison and probation services of Ministry of Justice (MOJ) such as the National Offender Management Information System (NOMIS). It uses a HMPPS ID for a person.
 
-Additionally the API is supported by an events based system which triggers SNS notifications by processing upstream MoJ domain events which are related to the information served by the API. This allows the clients of our API to be notified when a change occurs to a domain that is of interest to them.
+Additionally the API is supported by an event notification system that can inform consumers when data exposed by the API endpoints they have access to has changed.
+Only notifications related to endpoints that consumers have access to will be sent, and the notifications are sent via an AWS SQS queue.
 
 ## Diagrams
 

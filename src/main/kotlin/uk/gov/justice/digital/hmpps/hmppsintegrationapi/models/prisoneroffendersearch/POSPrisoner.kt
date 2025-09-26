@@ -47,6 +47,7 @@ data class POSPrisoner(
   val marks: List<POSBodyMark>? = null,
   val personalCareNeeds: List<POSPersonalCareNeed>? = null,
   val languages: List<POSLanguage>? = null,
+  val identifiers: List<POSIdentifier>? = null,
 ) {
   fun toPerson(): Person =
     Person(

@@ -13,14 +13,12 @@ import io.kotest.inspectors.shouldForAll
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.assertThrows
-import org.mockito.Mockito.mock
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.whenever
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.web.reactive.function.client.WebClientRequestException
 import org.springframework.web.reactive.function.client.WebClientResponseException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.TestApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -58,7 +56,6 @@ class WebClientWrapperTest :
     val getPath = "/test/$id"
     val postPath = "/testPost"
     val headers = mapOf("foo" to "bar")
-    val featureFlagConfig = mock(FeatureFlagConfig::class.java)
 
     beforeEach {
       mockServer.start()
@@ -68,7 +65,6 @@ class WebClientWrapperTest :
           baseUrl = mockServer.baseUrl(),
           connectTimeoutMillis = 500,
           responseTimeoutSeconds = 1,
-          featureFlagConfig = featureFlagConfig,
         )
       wrapper = spy(webClient)
       whenever(wrapper.MIN_BACKOFF_DURATION).thenReturn(Duration.ofSeconds(0L))
@@ -79,11 +75,7 @@ class WebClientWrapperTest :
       mockServer.stop()
     }
 
-    describe("when retry on all upstream gets is enabled") {
-      beforeEach {
-        whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.RETRY_ALL_UPSTREAM_GETS)).thenReturn(true)
-      }
-
+    describe("retry on all upstream gets") {
       it("calls requestWithRetry for a GET request") {
         listOf(502, 503, 504, 522, 599, 499, 408).forEach {
           mockServer.resetAll()
@@ -157,24 +149,6 @@ class WebClientWrapperTest :
           webClient.requestList<SearchModel>(HttpMethod.POST, postPath, headers, UpstreamApi.TEST, mapOf("sourceName" to "Paul"))
         }
         mockServer.verify(exactly(1), postRequestedFor(urlEqualTo(postPath)))
-      }
-    }
-
-    describe("when retry on all upstream gets is disabled") {
-      beforeEach {
-        whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.RETRY_ALL_UPSTREAM_GETS)).thenReturn(false)
-      }
-
-      it("does not call requestWithRetry for a GET request and continues to fail on first attempt") {
-        mockServer.stubForRetry("3", getPath, 2, 502, 200, """[{"sourceName" : "Harold"}]""".removeWhitespaceAndNewlines())
-        assertThrows<WebClientResponseException> { wrapper.requestList<TestModel>(HttpMethod.GET, getPath, headers, UpstreamApi.TEST) }
-        mockServer.verify(exactly(1), getRequestedFor(urlEqualTo(getPath)))
-      }
-
-      it("does not call requestWithRetry for a GET requestList and continues to fail on first attempt") {
-        mockServer.stubForRetry("4", getPath, 2, 502, 200, """[{"sourceName" : "Harold"}]""".removeWhitespaceAndNewlines())
-        assertThrows<WebClientResponseException> { wrapper.requestList<TestModel>(HttpMethod.GET, getPath, headers, UpstreamApi.TEST) }
-        mockServer.verify(exactly(1), getRequestedFor(urlEqualTo(getPath)))
       }
     }
 
@@ -431,7 +405,6 @@ class WebClientWrapperTest :
             "http://10.255.255.1:81",
             connectTimeoutMillis = 300,
             responseTimeoutSeconds = 2,
-            featureFlagConfig,
           )
 
         val exception =

@@ -20,6 +20,7 @@ services:
   locations-inside-prison.base-url: http://localhost:4026
   health-and-medication.base-url: http://localhost:4027
   activities.base-url: http://localhost:4028
+  integration-api.base-url: http://localhost:4029
 
 authorisation:
   consumers:
@@ -78,12 +79,15 @@ feature-flag:
   use-deallocation-reasons-endpoint: true
   use-allocation-endpoint: true
   use-education-endpoint: true
+  use-expression-of-interest-endpoint: true
   use-prisoner-base-location-endpoint: true
   use-historical-attendances-endpoint: true
   use-suitability-endpoint: true
   use-waiting-list-endpoint: true
   san-endpoint-enabled: true
   simple-redaction: true
-  retry-all-upstream-gets: true
   education-trigger-enabled: true
   education-aln-trigger-enabled: true
+  use-contact-events-endpoint: true
+  use-stubbed-contact-events-data: false
+  use-roles-dsl: true

@@ -4,14 +4,14 @@
 
 skinparam linetype polyline
 
-title [Container] HMPPS Integration API
+title [Container] HMPPS External API
 
 AddElementTag("not_yet_implemented", $bgColor="#D3D3D3", $fontColor="#9C9C9C")
 
-System_Ext(consumer, "Consumer Application", "An authenticated consumer of the Integration API.")
+System_Ext(consumer, "Consumer Application", "An authenticated consumer of the External API.")
 
 Boundary(aws_cloudplatform, "Cloud Platform", "A Kubernetes cluster using Amazon Web Services", $link="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/concepts/cp-tech-overview.html") {
-    Boundary(hmpps_integration_api, "HMPPS Integration API", "A single point of entry for services to retrieve data from multiple HMPPS systems."){
+    Boundary(hmpps_integration_api, "HMPPS External API", "A single point of entry for services to retrieve data from multiple HMPPS systems."){
         Container(spring_boot_api, "REST API", "Spring Boot Kotlin API", "Pulls data from upstream systems. Data is formatted into standardised models", $link="https://github.com/ministryofjustice/hmpps-integration-api")
         SystemQueue_Ext(messaging, "Messaging System", "SNS/SQS Service.",$tags="not_yet_implemented")
     }

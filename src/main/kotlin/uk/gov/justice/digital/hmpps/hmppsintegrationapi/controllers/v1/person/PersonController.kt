@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.person
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.headers.Header
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -9,6 +10,8 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import io.swagger.v3.oas.annotations.tags.Tags
 import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestAttribute
@@ -25,7 +28,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.IEPLevel
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Language
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NumberOfChildren
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchRedirectionResult
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResult
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonName
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonalCareNeed
@@ -113,19 +118,20 @@ class PersonController(
     return response.data.paginateWith(page, perPage)
   }
 
-  @GetMapping("{encodedHmppsId}")
+  @GetMapping("{hmppsId}")
   @Operation(
     summary = "Returns a person.",
     responses = [
-      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a person with the provided HMPPS ID."),
+      ApiResponse(responseCode = "200", content = [Content(schema = Schema(implementation = OffenderSearchDataResponse::class))], description = "Successfully found a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+      ApiResponse(responseCode = "303", headers = [Header(name = "Location", description = "Redirect URL to the new person resource")], content = [Content()], description = "Redirect response due to person with the provided HMPPS ID being merged."),
     ],
   )
   fun getPerson(
-    @Parameter(description = "A URL-encoded HMPPS identifier", example = "2008%2F0545166T") @PathVariable encodedHmppsId: String,
-    @RequestAttribute clientName: String,
-  ): DataResponse<OffenderSearchResponse> {
+    @Parameter(description = "A HMPPS identifier", example = "X00001") @PathVariable("hmppsId") encodedHmppsId: String,
+    @RequestAttribute clientName: String?,
+  ): ResponseEntity<DataResponse<OffenderSearchResponse>> {
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getPersonService.getCombinedDataForPerson(hmppsId)
 
@@ -134,16 +140,27 @@ class PersonController(
     } else if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Bad request from upstream ${response.errors.first().description}")
     }
-    requireNotNull(response.data)
 
     auditService.createEvent("GET_PERSON_DETAILS", mapOf("hmppsId" to hmppsId))
-    val data =
-      if (featureFlag.isEnabled(FeatureFlagConfig.SIMPLE_REDACTION)) { // simple redaction: to be refactored in later releases
-        redactPersonData(response.data, clientName)
-      } else {
-        response.data
+    requireNotNull(response.data)
+
+    return when (response.data) {
+      is OffenderSearchRedirectionResult -> {
+        ResponseEntity
+          .status(HttpStatus.SEE_OTHER)
+          .header("Location", response.data.redirectUrl)
+          .build()
       }
-    return DataResponse(data)
+      is OffenderSearchResult -> {
+        val redactedData =
+          if (featureFlag.isEnabled(FeatureFlagConfig.SIMPLE_REDACTION)) { // simple redaction: to be refactored in later releases
+            redactPersonData(response.data, clientName)
+          } else {
+            response.data
+          }
+        return ResponseEntity.ok(DataResponse(redactedData))
+      }
+    }
   }
 
   @GetMapping("{hmppsId}/images")
@@ -458,7 +475,7 @@ class PersonController(
    * This simple redaction method is to be replaced by "flexible redaction" in coming releases
    */
   private fun redactPersonData(
-    offenderData: OffenderSearchResponse,
+    offenderData: OffenderSearchResult,
     clientName: String? = null,
   ) = offenderData.let { data ->
     val targetConsumers = redactionConfig.clientNames
@@ -491,3 +508,8 @@ class PersonController(
 }
 
 private const val REDACTED = "**REDACTED**"
+
+// Workaround for Swagger with generic around `@Schema` (`useReturnTypeSchema` is not applicable here)
+private data class OffenderSearchDataResponse(
+  val data: OffenderSearchResult,
+)

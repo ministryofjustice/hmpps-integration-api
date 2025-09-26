@@ -11,20 +11,20 @@
 !include <office/Servers/certificate_authority.puml>
 !include <tupadr3/devicons/nginx.puml>
 
-Title [Authentication] HMPPS Integration API
+Title [Authentication] HMPPS External API
 
 Person(user, "User")
 
 Boundary(mutual_tls, "Mutual TLS authentication", "") {
   Container(consumer_app, "Consumer Application", "API", "Requires data from HMPPS.")
   OFF_CERTIFICATE_AUTHORITY(public_ca, "Public CA")
-  SimpleStorageService(s3_truststore, "HMPPS Integration API", "S3 Bucket", "Stores root certificate authority.")
+  SimpleStorageService(s3_truststore, "HMPPS External API", "S3 Bucket", "Stores root certificate authority.")
   OFF_CERTIFICATE_AUTHORITY(truststore, "Certificate Authority")
-  APIGateway(api_gw, "HMPPS Integration API", "API Gateway", "Manages requests from consumer applications.")
+  APIGateway(api_gw, "HMPPS External API", "API Gateway", "Manages requests from consumer applications.")
 }
 
 Boundary(client_cert_auth, "Client certificate authentication", "") {
-  ElasticKubernetesService(hmpps_integration_api, "HMPPS Integration API", "Elastic Kubernetes Service", "Uses NGINX ingress controller to manage authentication.")
+  ElasticKubernetesService(hmpps_integration_api, "HMPPS Exernal API", "Elastic Kubernetes Service", "Uses NGINX ingress controller to manage authentication.")
   OFF_CERTIFICATE_AUTHORITY(apigw_ca, "API Gateway CA")
 }
 

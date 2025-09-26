@@ -38,7 +38,6 @@ class RetryIntegrationTest : IntegrationTestBase() {
         baseUrl,
         connectTimeoutMillis = 500,
         responseTimeoutSeconds = 1,
-        featureFlagConfig = featureFlagConfig,
       )
     wrapper = spy(client)
     whenever(wrapper.MIN_BACKOFF_DURATION).thenReturn(Duration.ofSeconds(0))
@@ -54,8 +53,7 @@ class RetryIntegrationTest : IntegrationTestBase() {
     private val path = "/v1/activities/$activityId/schedules"
 
     @Test
-    fun `returns schedules (requestList) on 3rd retry with feature flag enabled for http status 502`() {
-      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.RETRY_ALL_UPSTREAM_GETS)).thenReturn(true)
+    fun `returns schedules (requestList) on 3rd retry for http status 502`() {
       activitiesMockServer.stubForRetry(
         scenario = "Retry scenario for requestList 1",
         numberOfRequests = 4,
@@ -73,8 +71,7 @@ class RetryIntegrationTest : IntegrationTestBase() {
     }
 
     @Test
-    fun `returns failure (requestList) after 3rd retry with feature flag enabled for http status 502`() {
-      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.RETRY_ALL_UPSTREAM_GETS)).thenReturn(true)
+    fun `returns failure (requestList) after 3rd retry for http status 502`() {
       activitiesMockServer.stubForRetry(
         scenario = "Retry scenario for requestList 2",
         numberOfRequests = 4,
@@ -88,21 +85,6 @@ class RetryIntegrationTest : IntegrationTestBase() {
       response.status.shouldBe(500)
       response.userMessage shouldBe "External Service failed to process after max retries"
     }
-
-    @Test
-    fun `return schedules continues to fail without retry fails on first attempt with feature flag disabled`() {
-      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.RETRY_ALL_UPSTREAM_GETS)).thenReturn(false)
-      activitiesMockServer.stubForRetry(
-        scenario = "Retry scenario for requestList 3",
-        numberOfRequests = 4,
-        failedStatus = 502,
-        endStatus = 200,
-        path = "/integration-api/activities/$activityId/schedules",
-        body = File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/activities/fixtures/GetActivitiesSchedule.json").readText(),
-      )
-      callApi(path)
-        .andExpect(MockMvcResultMatchers.status().is5xxServerError)
-    }
   }
 
   @Nested
@@ -112,9 +94,8 @@ class RetryIntegrationTest : IntegrationTestBase() {
     val path = "/v1/activities/schedule/$scheduleId"
 
     @Test
-    fun `returns schedule details (request) on 3rd retry with feature flag enabled for http status 502`() {
+    fun `returns schedule details (request) on 3rd retry for http status 502`() {
       whenever(featureFlagConfig.getConfigFlagValue(FeatureFlagConfig.USE_SCHEDULE_DETAIL_ENDPOINT)).thenReturn(true)
-      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.RETRY_ALL_UPSTREAM_GETS)).thenReturn(true)
       activitiesMockServer.stubForRetry(
         scenario = "Retry scenario for request 1",
         numberOfRequests = 4,
@@ -132,9 +113,8 @@ class RetryIntegrationTest : IntegrationTestBase() {
     }
 
     @Test
-    fun `returns failure (request) after 3rd retry with feature flag enabled for http status 502`() {
+    fun `returns failure (request) after 3rd retry for http status 502`() {
       whenever(featureFlagConfig.getConfigFlagValue(FeatureFlagConfig.USE_SCHEDULE_DETAIL_ENDPOINT)).thenReturn(true)
-      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.RETRY_ALL_UPSTREAM_GETS)).thenReturn(true)
       activitiesMockServer.stubForRetry(
         scenario = "Retry scenario for request 2",
         numberOfRequests = 4,
@@ -147,23 +127,6 @@ class RetryIntegrationTest : IntegrationTestBase() {
       val response = callApi(path).andReturn().response.contentAsJson<ErrorResponse>()
       response.status.shouldBe(500)
       response.userMessage shouldBe "External Service failed to process after max retries"
-    }
-
-    @Test
-    fun `return schedule continues to fail without retry fails on first attempt with feature flag disabled`() {
-      whenever(featureFlagConfig.getConfigFlagValue(FeatureFlagConfig.USE_SCHEDULE_DETAIL_ENDPOINT)).thenReturn(true)
-      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.RETRY_ALL_UPSTREAM_GETS)).thenReturn(false)
-      activitiesMockServer.stubForRetry(
-        scenario = "Retry scenario for request 3",
-        numberOfRequests = 4,
-        failedStatus = 502,
-        endStatus = 200,
-        path = "/integration-api/schedules/$scheduleId",
-        body = File("$gatewaysFolder/activities/fixtures/GetActivityScheduleById.json").readText(),
-      )
-
-      callApi(path)
-        .andExpect(MockMvcResultMatchers.status().is5xxServerError)
     }
   }
 }

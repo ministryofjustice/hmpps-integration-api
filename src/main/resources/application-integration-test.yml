@@ -87,15 +87,18 @@ feature-flag:
   use-deallocation-reasons-endpoint: true
   use-allocation-endpoint: true
   use-education-endpoint: true
+  use-expression-of-interest-endpoint: true
   use-prisoner-base-location-endpoint: true
   use-historical-attendances-endpoint: true
   use-suitability-endpoint: true
   use-waiting-list-endpoint: true
   san-endpoint-enabled: true
   simple-redaction: true
-  retry-all-upstream-gets: true
   education-trigger-enabled: true
   education-aln-trigger-enabled: true
+  use-contact-events-endpoint: true
+  use-stubbed-contact-events-data: false
+  use-roles-dsl: true
 
 authorisation:
   consumers:
@@ -103,6 +106,9 @@ authorisation:
       roles:
         - "full-access"
       filters:
+    automated-test-client-no-filters:
+      roles:
+        - "full-access"
     config-v2-test:
       include:
         - "/v2/config/authorisation"
@@ -115,19 +121,19 @@ authorisation:
       filters:
     specific-prison:
       roles:
-        - "full-access"
+        - "all-endpoints"
       filters:
         prisons:
           - MDI
     limited-prisons:
       roles:
-        - "full-access"
+        - "all-endpoints"
       filters:
         prisons:
           - ABC
     no-prisons:
       roles:
-        - "full-access"
+        - "all-endpoints"
       filters:
         prisons:
     private-prison-only:
@@ -135,6 +141,12 @@ authorisation:
         - "private-prison"
       include:
       filters:
+    limited-case-notes:
+      roles:
+        - "all-endpoints"
+      filters:
+        case-notes:
+          - "CAB"
     reference-data-only-user:
       roles:
         - "reference-data-only"

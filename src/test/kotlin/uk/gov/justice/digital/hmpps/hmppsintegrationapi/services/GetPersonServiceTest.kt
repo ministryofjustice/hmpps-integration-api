@@ -4,6 +4,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
@@ -23,14 +24,22 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchRedirectionResult
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResult
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonOnProbation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchMatcher
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchQuery
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSIdentifier
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPageable
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPaginatedPrisoners
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSSort
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInNomisOnlyPersona
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
@@ -93,6 +102,93 @@ internal class GetPersonServiceTest(
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber))
           .thenReturn(Response(data = null, errors = notFoundErrors(UpstreamApi.PRISONER_OFFENDER_SEARCH)))
 
+      fun givenPrisonerNumberMergedAttributeSearchReturnsEmpty() =
+        whenever(prisonerOffenderSearchGateway.attributeSearch(any())).thenReturn(
+          Response(
+            data =
+              POSPaginatedPrisoners(
+                content = emptyList(),
+                totalElements = 1,
+                totalPages = 1,
+                first = true,
+                last = true,
+                size = 10,
+                number = 0,
+                sort =
+                  POSSort(
+                    empty = false,
+                    sorted = false,
+                    unsorted = false,
+                  ),
+                numberOfElements = 1,
+                pageable =
+                  POSPageable(
+                    offset = 0,
+                    sort =
+                      POSSort(
+                        empty = false,
+                        sorted = false,
+                        unsorted = false,
+                      ),
+                    pageSize = 10,
+                    pageNumber = 1,
+                    paged = true,
+                    unpaged = false,
+                  ),
+                empty = false,
+              ),
+          ),
+        )
+
+      fun givenPrisonerNumberMergedAttributeSearchReturnsMatchingResult(
+        removedPrisonerNumber: String?,
+        mergedInToPrisonerNumber: String,
+      ) = whenever(prisonerOffenderSearchGateway.attributeSearch(any())).thenReturn(
+        Response(
+          data =
+            POSPaginatedPrisoners(
+              content =
+                listOf(
+                  POSPrisoner(
+                    firstName = "John",
+                    lastName = "Smith",
+                    prisonerNumber = mergedInToPrisonerNumber,
+                    identifiers = listOf(POSIdentifier(type = "MERGED", value = removedPrisonerNumber, issuedDate = "2020-01-01", createdDateTime = "2020-01-01")),
+                    youthOffender = false,
+                  ),
+                ),
+              totalElements = 1,
+              totalPages = 1,
+              first = true,
+              last = true,
+              size = 10,
+              number = 0,
+              sort =
+                POSSort(
+                  empty = false,
+                  sorted = false,
+                  unsorted = false,
+                ),
+              numberOfElements = 1,
+              pageable =
+                POSPageable(
+                  offset = 0,
+                  sort =
+                    POSSort(
+                      empty = false,
+                      sorted = false,
+                      unsorted = false,
+                    ),
+                  pageSize = 10,
+                  pageNumber = 1,
+                  paged = true,
+                  unpaged = false,
+                ),
+              empty = false,
+            ),
+        ),
+      )
+
       beforeEach {
         Mockito.reset(prisonerOffenderSearchGateway)
         Mockito.reset(deliusGateway)
@@ -112,6 +208,7 @@ internal class GetPersonServiceTest(
         )
 
         whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Person>(prisonId, null)).thenReturn(Response(data = null))
+        givenPrisonerNumberMergedAttributeSearchReturnsEmpty()
       }
 
       describe("execute()") {
@@ -149,13 +246,14 @@ internal class GetPersonServiceTest(
             val result = getPersonService.getCombinedDataForPerson(hmppsId)
 
             result.data.shouldNotBeNull()
-            with(result.data.prisonerOffenderSearch) {
+            val offenderSearchResult = result.data.shouldBeTypeOf<OffenderSearchResult>()
+            with(offenderSearchResult.prisonerOffenderSearch) {
               this.shouldNotBeNull()
               firstName shouldBe prisoner.firstName
               lastName shouldBe prisoner.lastName
               dateOfBirth shouldBe prisoner.dateOfBirth
             }
-            result.data.probationOffenderSearch shouldBe personOnProbation
+            offenderSearchResult.probationOffenderSearch shouldBe personOnProbation
             result.errors.shouldBeEmpty()
           }
 
@@ -164,7 +262,7 @@ internal class GetPersonServiceTest(
             givenPrisonerNotFound(nomsNumberNotFound)
             val result = getPersonService.getCombinedDataForPerson(hmppsId)
 
-            result.data shouldBe OffenderSearchResponse(prisonerOffenderSearch = null, probationOffenderSearch = personOnProbation)
+            result.data shouldBe OffenderSearchResult(prisonerOffenderSearch = null, probationOffenderSearch = personOnProbation)
             result.errors shouldBe notFoundErrors(UpstreamApi.PRISONER_OFFENDER_SEARCH)
           }
         }
@@ -182,8 +280,9 @@ internal class GetPersonServiceTest(
             val result = getPersonService.getCombinedDataForPerson(hmppsId)
 
             result.data.shouldNotBeNull()
-            result.data.probationOffenderSearch shouldBe person
-            result.data.prisonerOffenderSearch.shouldBeNull()
+            val offenderSearchResult = result.data.shouldBeTypeOf<OffenderSearchResult>()
+            offenderSearchResult.probationOffenderSearch shouldBe person
+            offenderSearchResult.prisonerOffenderSearch.shouldBeNull()
             result.errors.shouldBeEmpty()
           }
         }
@@ -218,9 +317,12 @@ internal class GetPersonServiceTest(
             val result = getPersonService.getCombinedDataForPerson(hmppsId)
 
             result.data.shouldNotBeNull()
-            result.data.probationOffenderSearch.shouldBeNull()
+            val offenderSearchResult = result.data.shouldBeTypeOf<OffenderSearchResult>()
+
+            offenderSearchResult.probationOffenderSearch
+              .shouldBeNull()
             result.errors shouldBe notFoundErrors(UpstreamApi.NDELIUS)
-            with(result.data.prisonerOffenderSearch) {
+            with(offenderSearchResult.prisonerOffenderSearch) {
               this.shouldNotBeNull()
               firstName shouldBe prisoner.firstName
               lastName shouldBe prisoner.lastName
@@ -230,6 +332,79 @@ internal class GetPersonServiceTest(
 
           it("returns errors when prisoner is not found") {
             givenPrisonerNotFound(nomisNumber)
+
+            val result = getPersonService.getCombinedDataForPerson(hmppsId)
+
+            result.data.shouldBeNull()
+            result.errors shouldBe notFoundErrors(UpstreamApi.NDELIUS, UpstreamApi.PRISONER_OFFENDER_SEARCH)
+          }
+        }
+
+        describe("Given a person with merged prisoner number is not found in Probation nor in Prison using the merged Id, and hmppsId is noms number") {
+          val prisoner = prisonerInPrisonOnly
+          val nomisNumber = prisoner.prisonerNumber!!
+          val hmppsId = nomisNumber
+          val mergedInToPrisonerNumber = "D5678EF"
+
+          fun attributeSearchRequest(hmppsId: String): POSAttributeSearchRequest =
+            POSAttributeSearchRequest(
+              joinType = "AND",
+              queries =
+                listOf(
+                  POSAttributeSearchQuery(
+                    joinType = "AND",
+                    matchers =
+                      listOf(
+                        POSAttributeSearchMatcher(
+                          type = "String",
+                          attribute = "identifiers.type",
+                          condition = "IS",
+                          searchTerm = "MERGED",
+                        ),
+                        POSAttributeSearchMatcher(
+                          type = "String",
+                          attribute = "identifiers.value",
+                          condition = "IS",
+                          searchTerm = hmppsId,
+                        ),
+                      ),
+                  ),
+                ),
+            )
+
+          beforeEach {
+            givenPersonNotFoundInProbation(id = hmppsId)
+            givenPrisonerNotFound(nomisNumber)
+          }
+
+          it("returns a redirection result with removed prisoner number, merged into prisoner number, errors, and redirect URL") {
+            givenPrisonerNumberMergedAttributeSearchReturnsMatchingResult(removedPrisonerNumber = hmppsId, mergedInToPrisonerNumber = mergedInToPrisonerNumber)
+
+            val result = getPersonService.getCombinedDataForPerson(hmppsId)
+
+            verify(prisonerOffenderSearchGateway, times(1)).attributeSearch(attributeSearchRequest(hmppsId))
+
+            result.data.shouldNotBeNull()
+            val offenderSearchRedirectionResult = result.data.shouldBeTypeOf<OffenderSearchRedirectionResult>()
+
+            result.errors.shouldContainExactlyInAnyOrder(
+              notFoundErrors(
+                UpstreamApi.NDELIUS,
+                UpstreamApi.PRISONER_OFFENDER_SEARCH,
+              ),
+            )
+
+            with(offenderSearchRedirectionResult) {
+              this.shouldNotBeNull()
+              prisonerNumber shouldBe mergedInToPrisonerNumber
+              removedPrisonerNumber shouldBe hmppsId
+              redirectUrl shouldBe "/v1/persons/$mergedInToPrisonerNumber"
+            }
+          }
+
+          it("returns a result with errors when prisoner number was not merged") {
+            givenPrisonerNumberMergedAttributeSearchReturnsEmpty()
+
             val result = getPersonService.getCombinedDataForPerson(hmppsId)
 
             result.data.shouldBeNull()

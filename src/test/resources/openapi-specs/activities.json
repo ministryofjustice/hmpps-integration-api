@@ -7,11 +7,11 @@
       "name": "HMPPS Digital Studio",
       "email": "feedback@digital.justice.gov.uk"
     },
-    "version": "2025-07-16.29328.4acbe4f"
+    "version": "2025-09-03.30911.321d8af"
   },
   "servers": [
     {
-      "url": "https://activities-api-dev.prison.service.justice.gov.uk",
+      "url": "https://activities-api.prison.service.justice.gov.uk",
       "description": "Generated server url"
     }
   ],
@@ -180,7 +180,7 @@
       "put": {
         "tags": ["scheduled-instance-controller"],
         "summary": "Update a scheduled instance.",
-        "description": "\n      Currently only cancelled sessions reasons, comments and attendances where payments should be issued can be updated\n    \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
+        "description": "\n Currently only cancelled sessions reasons, comments and attendances where payments should be issued can be updated\n \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "updateScheduledInstance",
         "parameters": [
           {
@@ -674,7 +674,7 @@
       "put": {
         "tags": ["appointment-controller"],
         "summary": "Uncancel an appointment or series of appointments",
-        "description": "\n    Uncancel an appointment or series of appointments based on the applyTo property.\n    \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
+        "description": "\n Uncancel an appointment or series of appointments based on the applyTo property.\n \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "uncancelAppointment",
         "parameters": [
           {
@@ -756,7 +756,7 @@
       "put": {
         "tags": ["appointment-controller"],
         "summary": "Cancel an appointment or series of appointments",
-        "description": "\n    Cancel an appointment or series of appointments based on the applyTo property.\n    \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
+        "description": "\n Cancel an appointment or series of appointments based on the applyTo property.\n \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "cancelAppointment",
         "parameters": [
           {
@@ -838,7 +838,7 @@
       "put": {
         "tags": ["appointment-controller"],
         "summary": "Update the attendances for multiple appointments",
-        "description": "\n    Update the attendance records for attendees on multiple appointments. This sets the current attendance records\n    for the supplied prison numbers, replacing any existing records. This supports both the initial recording of attendances\n    and changing that attendance records. There are no restrictions on when attendances can be recorded. It can be done\n    for past and future appointments.\n    \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
+        "description": "\n Update the attendance records for attendees on multiple appointments. This sets the current attendance records\n for the supplied prison numbers, replacing any existing records. This supports both the initial recording of attendances\n and changing that attendance records. There are no restrictions on when attendances can be recorded. It can be done\n for past and future appointments.\n \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "markMultipleAttendances",
         "parameters": [
           {
@@ -1210,6 +1210,26 @@
         }
       }
     },
+    "/utility/update-case-note-uuid": {
+      "post": {
+        "tags": ["utility-controller"],
+        "summary": "Update case note UUID for all the existing case notes.",
+        "description": "Can only be accessed from within the ingress. Requests from elsewhere will result in a 401 response code.",
+        "operationId": "updateCaseNoteUUID",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateCaseNoteUUIDResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/utility/publish-events": {
       "post": {
         "tags": ["utility-controller"],
@@ -1233,31 +1253,6 @@
               "text/plain": {
                 "schema": {
                   "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/utility/create-pay-history": {
-      "post": {
-        "tags": ["utility-controller"],
-        "summary": "Create pay rate history for all the existing activities",
-        "description": "Can only be accessed from within the ingress. Requests from elsewhere will result in a 401 response code.",
-        "operationId": "createActivityPayHistory",
-        "responses": {
-          "201": {
-            "description": "Created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PayHistoryMigrateResponse"
-                }
-              },
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/PayHistoryMigrateResponse"
                 }
               }
             }
@@ -1519,118 +1514,10 @@
       }
     },
     "/scheduled-events/prison/{prisonCode}": {
-      "get": {
-        "tags": ["scheduled-event-controller"],
-        "summary": "Get a list of scheduled events for a prison, prisoner, date range (max 3 months) and optional time slot.",
-        "description": "\n      Returns scheduled events for the prison, prisoner, date range (max 3 months) and optional time slot.\n      Court hearings, adjudication hearings, transfers and visits come from NOMIS (via prison API).\n      Activities and appointments come from either NOMIS or the local database depending on whether the prison is\n      marked as active for appointments and/or activities.\n      (Intended usage: Prisoner calendar / schedule)\n    \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
-        "operationId": "getScheduledEventsForSinglePrisoner",
-        "parameters": [
-          {
-            "name": "prisonCode",
-            "in": "path",
-            "description": "The 3-digit prison code.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "prisonerNumber",
-            "in": "query",
-            "description": "Prisoner number (required). Format A9999AA.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "startDate",
-            "in": "query",
-            "description": "Start date of query (required). Format YYYY-MM-DD.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "date"
-            }
-          },
-          {
-            "name": "endDate",
-            "in": "query",
-            "description": "End date of query (required). Format YYYY-MM-DD. The end date must be within 3 months of the start date)",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "date"
-            }
-          },
-          {
-            "name": "timeSlot",
-            "in": "query",
-            "description": "Time slot for the events (optional). If supplied, one of AM, PM or ED.",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "enum": ["AM", "PM", "ED"]
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful call - zero or more scheduled events found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PrisonerScheduledEvents"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorised, requires a valid Oauth2 token",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden, requires an appropriate role",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Requested resource not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
       "post": {
         "tags": ["scheduled-event-controller"],
         "summary": "Get a list of scheduled events for a prison and list of prisoner numbers for a date and time slot",
-        "description": "\n      Returns scheduled events for the prison, prisoner numbers, single date and an optional time slot.\n      Court hearings, adjudication hearings, transfers and visits come from NOMIS (via prison API).\n      Activities and appointments come from either NOMIS or the local database depending on whether the prison is\n      marked as rolled-out for activities and/or appointments.\n      (Intended usage: Unlock list)\n    \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
+        "description": "\n Returns scheduled events for the prison, prisoner numbers, single date and an optional time slot.\n Court hearings, adjudication hearings, transfers and visits come from NOMIS (via prison API).\n Activities and appointments come from either NOMIS or the local database depending on whether the prison is\n marked as rolled-out for activities and/or appointments.\n (Intended usage: Unlock list)\n \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getScheduledEventsForMultiplePrisoners",
         "parameters": [
           {
@@ -1736,7 +1623,7 @@
       "post": {
         "tags": ["scheduled-event-controller"],
         "summary": "Get a list of scheduled events for a prison and list of internal location ids numbers for a date and optional time slot",
-        "description": "\n      Returns scheduled events for the prison, internal location ids, single date and an optional time slot.\n      This endpoint only returns activities and appointments and these come from the local database.\n      This endpoint supports the creation of movement lists.\n      Note that activities are only scheduled 60 days in advance. Appointments may be scheduled for any date in the future.\n    \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
+        "description": "\n Returns scheduled events for the prison, internal location ids, single date and an optional time slot.\n This endpoint only returns activities and appointments and these come from the local database.\n This endpoint supports the creation of movement lists.\n Note that activities are only scheduled 60 days in advance. Appointments may be scheduled for any date in the future.\n \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getScheduledEventsForMultipleLocations",
         "parameters": [
           {
@@ -1847,7 +1734,7 @@
       "post": {
         "tags": ["scheduled-event-controller"],
         "summary": "Get a list of scheduled events for a prison given list of DPS location UUIDs, a date and optional time slot",
-        "description": "\n      Returns scheduled events for the prison, locations UUIDs, date and optional time slot.\n      This endpoint only returns activities and appointments and these come from the local database.\n      This endpoint supports the creation of movement lists.\n      Note that activities are only scheduled 60 days in advance. Appointments may be scheduled for any date in the future.\n    \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
+        "description": "\n Returns scheduled events for the prison, locations UUIDs, date and optional time slot.\n This endpoint only returns activities and appointments and these come from the local database.\n This endpoint supports the creation of movement lists.\n Note that activities are only scheduled 60 days in advance. Appointments may be scheduled for any date in the future.\n \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getScheduledEventsForMultipleLocationsByDPSLocationsIds",
         "parameters": [
           {
@@ -1957,7 +1844,7 @@
       "post": {
         "tags": ["rollout-controller"],
         "summary": "Creates a prison regime for a given prison",
-        "description": "If a regine exists it will overwrite it.  Called via migration dashboard only\n\nRequires one of the following roles:\n* MIGRATE_ACTIVITIES",
+        "description": "If a regine exists it will overwrite it. Called via migration dashboard only\n\nRequires one of the following roles:\n* MIGRATE_ACTIVITIES",
         "operationId": "setPrisonRegimeSlots",
         "parameters": [
           {
@@ -2153,7 +2040,7 @@
       "post": {
         "tags": ["migrate-activity-controller"],
         "summary": "Move the start date for activities their schedules and allocations for a prison",
-        "description": "\n      Move a prisons activities to a later start date.\n      Only allocations due to start before the new start date will be moved.\n      Activities that have already started will be ignored.\n      Activities that are not before the new start date will be ignored.\n    \n\nRequires one of the following roles:\n* NOMIS_ACTIVITIES\n* ACTIVITY_ADMIN",
+        "description": "\n Move a prisons activities to a later start date.\n Only allocations due to start before the new start date will be moved.\n Activities that have already started will be ignored.\n Activities that are not before the new start date will be ignored.\n \n\nRequires one of the following roles:\n* NOMIS_ACTIVITIES\n* ACTIVITY_ADMIN",
         "operationId": "moveActivityStartDates",
         "parameters": [
           {
@@ -2356,7 +2243,7 @@
       "post": {
         "tags": ["migrate-appointment-controller"],
         "summary": "Migrate an appointment from NOMIS",
-        "description": "\n    Migrate an appointment creating an appointment series with one appointment that has the supplied prisoner allocated.\n    Will return null if appointment was dropped.\n    \n\nRequires one of the following roles:\n* NOMIS_APPOINTMENTS",
+        "description": "\n Migrate an appointment creating an appointment series with one appointment that has the supplied prisoner allocated.\n Will return null if appointment was dropped.\n \n\nRequires one of the following roles:\n* NOMIS_APPOINTMENTS",
         "operationId": "migrateAppointment",
         "requestBody": {
           "content": {
@@ -2406,7 +2293,7 @@
       "post": {
         "tags": ["job-trigger-controller"],
         "summary": "Trigger the job to generate purposeful activity reports and upload to s3",
-        "description": "\n      Generates 3 csv reports which are uploaded to an s3 bucket for prison performance reporting team to process for\n      purposeful activity generation purposes and to display on the prison regime dashboard in the performance hub.\n\n      Report 1) Details of attended purposeful-activity activities\n      Report 2) Details of attended purposeful-activity appointments\n      Report 3) Prison rollout table\n\n      Can only be accessed from within the ingress. Requests from elsewhere will result in a 401 response code.\n      ",
+        "description": "\n Generates 3 csv reports which are uploaded to an s3 bucket for prison performance reporting team to process for\n purposeful activity generation purposes and to display on the prison regime dashboard in the performance hub.\n\n Report 1) Details of attended purposeful-activity activities\n Report 2) Details of attended purposeful-activity appointments\n Report 3) Prison rollout table\n\n Can only be accessed from within the ingress. Requests from elsewhere will result in a 401 response code.\n ",
         "operationId": "triggerPurposefulActivityReportsJob",
         "parameters": [
           {
@@ -2489,7 +2376,7 @@
       "post": {
         "tags": ["job-trigger-controller"],
         "summary": "Trigger the job to manage allocations",
-        "description": "\n        One or more operations to trigger for managing allocations.\n\n        Can only be accessed from within the ingress. Requests from elsewhere will result in a 401 response code.\n    ",
+        "description": "\n One or more operations to trigger for managing allocations.\n\n Can only be accessed from within the ingress. Requests from elsewhere will result in a 401 response code.\n ",
         "operationId": "triggerManageAllocationsJob",
         "parameters": [
           {
@@ -2514,6 +2401,15 @@
             "name": "withDeallocateExpiring",
             "in": "query",
             "description": "If true will run the deallocate allocations that are expiring process. Defaults to false.",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "withFixAutoSuspended",
+            "in": "query",
+            "description": "If true will attempt to unsuspend auto suspended prisoners who should have been received back into the prison already.",
             "required": false,
             "schema": {
               "type": "boolean"
@@ -2646,7 +2542,7 @@
       "post": {
         "tags": ["appointment-job-controller"],
         "summary": "Starts a job to manage appointment attendees",
-        "description": "\n      Job will retrieve all future appointments starting within the number of days defined by the days after now parameter.\n      It will retrieve the attendees for these appointments and retrieve the associated prisoner records. The status, location and\n      any other pertinent information for these prisoners will be used to determine whether the attendee records should be removed.\n      \n      Can only be accessed from within the ingress. Requests from elsewhere will result in a 401 response code.\n    ",
+        "description": "\n Job will retrieve all future appointments starting within the number of days defined by the days after now parameter.\n It will retrieve the attendees for these appointments and retrieve the associated prisoner records. The status, location and\n any other pertinent information for these prisoners will be used to determine whether the attendee records should be removed.\n \n Can only be accessed from within the ingress. Requests from elsewhere will result in a 401 response code.\n ",
         "operationId": "triggerManageAllocationsJob_1",
         "parameters": [
           {
@@ -2828,8 +2724,8 @@
       "get": {
         "tags": ["integration-api-controller"],
         "summary": "Get a list of scheduled events for a prison, prisoner, date range (max 3 months) and optional time slot.",
-        "description": "\n      Returns scheduled events for the prison, prisoner, date range (max 3 months) and optional time slot.\n      Court hearings, adjudication hearings, transfers and visits come from NOMIS (via prison API).\n      Activities and appointments come from either NOMIS or the local database depending on whether the prison is\n      marked as active for appointments and/or activities.\n      (Intended usage: Prisoner calendar / schedule)\n    \n\nRequires one of the following roles:\n* ACTIVITIES__HMPPS_INTEGRATION_API",
-        "operationId": "getScheduledEventsForSinglePrisoner_1",
+        "description": "\n Returns scheduled events for the prison, prisoner, date range (max 3 months) and optional time slot.\n Court hearings, adjudication hearings, transfers and visits come from NOMIS (via prison API).\n Activities and appointments come from either NOMIS or the local database depending on whether the prison is\n marked as active for appointments and/or activities.\n (Intended usage: Prisoner calendar / schedule)\n \n\nRequires one of the following roles:\n* ACTIVITIES__HMPPS_INTEGRATION_API",
+        "operationId": "getScheduledEventsForSinglePrisoner",
         "parameters": [
           {
             "name": "prisonCode",
@@ -2936,7 +2832,7 @@
       "post": {
         "tags": ["integration-api-controller"],
         "summary": "Get a list of scheduled events for a prison and list of prisoner numbers for a date and time slot",
-        "description": "\n      Returns scheduled events for the prison, prisoner numbers, single date and an optional time slot.\n      Court hearings, adjudication hearings, transfers and visits come from NOMIS (via prison API).\n      Activities and appointments come from either NOMIS or the local database depending on whether the prison is\n      marked as rolled-out for activities and/or appointments.\n      (Intended usage: Unlock list)\n    \n\nRequires one of the following roles:\n* ACTIVITIES__HMPPS_INTEGRATION_API",
+        "description": "\n Returns scheduled events for the prison, prisoner numbers, single date and an optional time slot.\n Court hearings, adjudication hearings, transfers and visits come from NOMIS (via prison API).\n Activities and appointments come from either NOMIS or the local database depending on whether the prison is\n marked as rolled-out for activities and/or appointments.\n (Intended usage: Unlock list)\n \n\nRequires one of the following roles:\n* ACTIVITIES__HMPPS_INTEGRATION_API",
         "operationId": "getScheduledEventsForMultiplePrisoners_1",
         "parameters": [
           {
@@ -3042,7 +2938,7 @@
       "post": {
         "tags": ["integration-api-controller"],
         "summary": "Search for appointments within the specified prison",
-        "description": "\n    Uses the supplied prison code and search parameters to filter and return appointment search results.\n    \n\nRequires one of the following roles:\n* ACTIVITIES__HMPPS_INTEGRATION_API",
+        "description": "\n Uses the supplied prison code and search parameters to filter and return appointment search results.\n \n\nRequires one of the following roles:\n* ACTIVITIES__HMPPS_INTEGRATION_API",
         "operationId": "searchAppointments",
         "parameters": [
           {
@@ -3279,7 +3175,7 @@
       "post": {
         "tags": ["appointment-controller"],
         "summary": "Search for appointments within the specified prison",
-        "description": "\n    Uses the supplied prison code and search parameters to filter and return appointment search results.\n    \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
+        "description": "\n Uses the supplied prison code and search parameters to filter and return appointment search results.\n \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "searchAppointments_1",
         "parameters": [
           {
@@ -3411,7 +3307,7 @@
       "post": {
         "tags": ["appointment-set-controller"],
         "summary": "Create a set of appointments",
-        "description": "\n    Create a set of appointments that start on the same day and add the associated prisoner as the appointment attendee.\n    \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
+        "description": "\n Create a set of appointments that start on the same day and add the associated prisoner as the appointment attendee.\n \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "createAppointmentSet",
         "parameters": [
           {
@@ -3474,7 +3370,7 @@
       "post": {
         "tags": ["appointment-series-controller"],
         "summary": "Create an appointment series with one or more appointments",
-        "description": "\n    Create an appointment series with one or more appointments and add the supplied prisoner or prisoners as appointment attendees.\n    \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
+        "description": "\n Create an appointment series with one or more appointments and add the supplied prisoner or prisoners as appointment attendees.\n \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "createAppointmentSeries",
         "parameters": [
           {
@@ -4157,7 +4053,7 @@
       "patch": {
         "tags": ["appointment-controller"],
         "summary": "Update an appointment or series of appointments",
-        "description": "\n    Update an appointment or series of appointments based on the applyTo property.\n    \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
+        "description": "\n Update an appointment or series of appointments based on the applyTo property.\n \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "updateAppointment",
         "parameters": [
           {
@@ -4843,7 +4739,7 @@
           {
             "name": "earliestSessionDate",
             "in": "query",
-            "description": "If provided will filter earliest sessions \u003E= the given date. Format YYYY-MM-DD, otherwise defaults to 4 weeks prior to the current date.",
+            "description": "If provided will filter earliest sessions >= the given date. Format YYYY-MM-DD, otherwise defaults to 4 weeks prior to the current date.",
             "required": false,
             "schema": {
               "type": "string",
@@ -6182,8 +6078,8 @@
     "/locations/prison/{prisonCode}/events-summaries": {
       "get": {
         "tags": ["location-controller"],
-        "summary": "\n      Get a list of internal locations that have events scheduled to take place on the specified date and optional time slot.\n      ",
-        "description": "\n      Returns internal locations that have events scheduled to take place on the specified date and optional time slot.\n      Will contain summary information about the events taking place at the location as well as the total number of\n      prisoners due to arrive at the location. This endpoint supports the creation of movement lists allowing\n      users to select from a sublist of only the internal locations that have events scheduled there.\n      Note that activities are only scheduled 60 days in advance. Appointments may be scheduled for any date in the future.\n    \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
+        "summary": "\n Get a list of internal locations that have events scheduled to take place on the specified date and optional time slot.\n ",
+        "description": "\n Returns internal locations that have events scheduled to take place on the specified date and optional time slot.\n Will contain summary information about the events taking place at the location as well as the total number of\n prisoners due to arrive at the location. This endpoint supports the creation of movement lists allowing\n users to select from a sublist of only the internal locations that have events scheduled there.\n Note that activities are only scheduled 60 days in advance. Appointments may be scheduled for any date in the future.\n \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getInternalLocationEventsSummary",
         "parameters": [
           {
@@ -6289,7 +6185,7 @@
           {
             "name": "earliestSessionDate",
             "in": "query",
-            "description": "If provided will filter earliest sessions \u003E= the given date. Format YYYY-MM-DD, otherwise defaults to 4 weeks prior to the current date.",
+            "description": "If provided will filter earliest sessions >= the given date. Format YYYY-MM-DD, otherwise defaults to 4 weeks prior to the current date.",
             "required": false,
             "schema": {
               "type": "string",
@@ -7473,8 +7369,8 @@
     "/appointments/{prisonCode}/{status}/attendance": {
       "get": {
         "tags": ["appointment-controller"],
-        "summary": "\n    Get a list of appointments scheduled to take place on the specified date by status\n    ",
-        "description": "\n    Returns appointments scheduled to take place on the specified date by status\n    \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
+        "summary": "\n Get a list of appointments scheduled to take place on the specified date by status\n ",
+        "description": "\n Returns appointments scheduled to take place on the specified date by status\n \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getAppointmentAttendanceByStatus",
         "parameters": [
           {
@@ -7618,8 +7514,8 @@
     "/appointments/{prisonCode}/attendance-summaries": {
       "get": {
         "tags": ["appointment-controller"],
-        "summary": "\n    Get a list of appointments scheduled to take place on the specified date along with the summary of their attendance.\n    ",
-        "description": "\n    Returns appointments scheduled to take place on the specified date along with the summary of their attendance.\n    Will contain summary information about the appointments taking place on the date as well as counts of attendees,\n    counts of those marked attended and non attended and the count of attendees with no attendance marked.\n    This endpoint supports management level views of appointment attendance and statistics.\n    \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
+        "summary": "\n Get a list of appointments scheduled to take place on the specified date along with the summary of their attendance.\n ",
+        "description": "\n Returns appointments scheduled to take place on the specified date along with the summary of their attendance.\n Will contain summary information about the appointments taking place on the date as well as counts of attendees,\n counts of those marked attended and non attended and the count of attendees with no attendance marked.\n This endpoint supports management level views of appointment attendance and statistics.\n \n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN",
         "operationId": "getAppointmentAttendanceSummaries",
         "parameters": [
           {
@@ -8020,7 +7916,7 @@
       "get": {
         "tags": ["appointment-instance-controller"],
         "summary": "Get an appointment instance by its id",
-        "description": "Returns an appointment instance and its details by its unique identifier.\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN\n* NOMIS_ACTIVITIES",
+        "description": "Returns an appointment instance and its details by its unique identifier.\n\nRequires one of the following roles:\n* PRISON\n* ACTIVITY_ADMIN\n* NOMIS_ACTIVITIES\n* ACTIVITIES_MANAGEMENT__RO",
         "operationId": "getAppointmentInstanceById",
         "parameters": [
           {
@@ -8469,7 +8365,7 @@
       "delete": {
         "tags": ["migrate-activity-controller"],
         "summary": "Delete an activity with cascade.",
-        "description": "\n      Deletes an activity and all its child entities including schedule, slots, pay, instances, attendances and allocations.\n      Only for use via by migration services to undo a failed migration.\n      \n\nRequires one of the following roles:\n* NOMIS_ACTIVITIES",
+        "description": "\n Deletes an activity and all its child entities including schedule, slots, pay, instances, attendances and allocations.\n Only for use via by migration services to undo a failed migration.\n \n\nRequires one of the following roles:\n* NOMIS_ACTIVITIES",
         "operationId": "deleteActivity",
         "parameters": [
           {
@@ -8532,8 +8428,8 @@
     "/migrate-appointment/{prisonCode}": {
       "delete": {
         "tags": ["migrate-appointment-controller"],
-        "summary": "\n      Starts a job to delete migrated appointments taking place at the supplied prison code that start on or after the\n      supplied start date and are assigned the optional category code.\n      ",
-        "description": "\n      Migrated appointments matching the supplied criteria will be soft deleted in the database. An appointment instance\n      deleted domain event used for syncing will be published for each deleted appointment. This will cause the mapped\n      appointment in NOMIS to also be deleted.\n    \n\nRequires one of the following roles:\n* NOMIS_APPOINTMENTS\n* ACTIVITY_ADMIN\n* MIGRATE_APPOINTMENTS",
+        "summary": "\n Starts a job to delete migrated appointments taking place at the supplied prison code that start on or after the\n supplied start date and are assigned the optional category code.\n ",
+        "description": "\n Migrated appointments matching the supplied criteria will be soft deleted in the database. An appointment instance\n deleted domain event used for syncing will be published for each deleted appointment. This will cause the mapped\n appointment in NOMIS to also be deleted.\n \n\nRequires one of the following roles:\n* NOMIS_APPOINTMENTS\n* ACTIVITY_ADMIN\n* MIGRATE_APPOINTMENTS",
         "operationId": "deleteMigratedAppointments",
         "parameters": [
           {
@@ -8892,7 +8788,7 @@
         "properties": {
           "applyTo": {
             "type": "string",
-            "description": "\n    Specifies which appointment or appointments this un-cancellation should apply to.\n    Defaults to THIS_APPOINTMENT meaning the un-cancellation will be applied to the appointment specified by the\n    supplied id only.\n    ",
+            "description": "\n Specifies which appointment or appointments this un-cancellation should apply to.\n Defaults to THIS_APPOINTMENT meaning the un-cancellation will be applied to the appointment specified by the\n supplied id only.\n ",
             "enum": ["THIS_APPOINTMENT", "THIS_AND_ALL_FUTURE_APPOINTMENTS", "ALL_FUTURE_APPOINTMENTS"],
             "example": "THIS_APPOINTMENT"
           }
@@ -8901,7 +8797,7 @@
       },
       "Appointment": {
         "type": "object",
-        "description": "\n  Described on the UI as an \"Appointment\" and represents the scheduled event on a specific date and time.\n  All updates and cancellations happen at this appointment level with the parent appointment series being immutable.\n  ",
+        "description": "\n Described on the UI as an \"Appointment\" and represents the scheduled event on a specific date and time.\n All updates and cancellations happen at this appointment level with the parent appointment series being immutable.\n ",
         "properties": {
           "id": {
             "type": "integer",
@@ -8935,13 +8831,13 @@
           },
           "customName": {
             "type": "string",
-            "description": "\n    Free text name further describing the appointment. Used as part of the appointment name with the\n    format \"Custom name (Category description) if specified.\n    ",
+            "description": "\n Free text name further describing the appointment. Used as part of the appointment name with the\n format \"Custom name (Category description) if specified.\n ",
             "example": "Meeting with the governor"
           },
           "internalLocationId": {
             "type": "integer",
             "format": "int64",
-            "description": "\n    The NOMIS AGENCY_INTERNAL_LOCATIONS.INTERNAL_LOCATION_ID value for mapping to NOMIS.\n    Will be null if in cell = true\n    ",
+            "description": "\n The NOMIS AGENCY_INTERNAL_LOCATIONS.INTERNAL_LOCATION_ID value for mapping to NOMIS.\n Will be null if in cell = true\n ",
             "example": 123
           },
           "dpsLocationId": {
@@ -8952,7 +8848,7 @@
           },
           "inCell": {
             "type": "boolean",
-            "description": "\n    Flag to indicate if the location of the appointment is in cell rather than an internal prison location.\n    Internal location id should be null if in cell = true\n    ",
+            "description": "\n Flag to indicate if the location of the appointment is in cell rather than an internal prison location.\n Internal location id should be null if in cell = true\n ",
             "example": false
           },
           "startDate": {
@@ -8972,7 +8868,7 @@
           },
           "extraInformation": {
             "type": "string",
-            "description": "\n    Extra information for the prisoner or prisoners attending this appointment.\n    Shown only on the appointments details page and on printed movement slips. Wing staff will be notified there is\n    extra information via the unlock list.\n    ",
+            "description": "\n Extra information for the prisoner or prisoners attending this appointment.\n Shown only on the appointments details page and on printed movement slips. Wing staff will be notified there is\n extra information via the unlock list.\n ",
             "example": "This appointment will help adjusting to life outside of prison"
           },
           "createdTime": {
@@ -8982,43 +8878,43 @@
           },
           "createdBy": {
             "type": "string",
-            "description": "\n    The username of the user authenticated via HMPPS auth that created the appointment.\n    Usually a NOMIS username\n    ",
+            "description": "\n The username of the user authenticated via HMPPS auth that created the appointment.\n Usually a NOMIS username\n ",
             "example": "AAA01U"
           },
           "updatedTime": {
             "type": "string",
             "format": "date-time",
-            "description": "\n    The date and time this appointment was last changed.\n    Will be null if this appointment has not been altered since it was created\n    "
+            "description": "\n The date and time this appointment was last changed.\n Will be null if this appointment has not been altered since it was created\n "
           },
           "updatedBy": {
             "type": "string",
-            "description": "\n    The username of the user authenticated via HMPPS auth that edited this appointment.\n    Will be null if this appointment has not been altered since it was created\n    ",
+            "description": "\n The username of the user authenticated via HMPPS auth that edited this appointment.\n Will be null if this appointment has not been altered since it was created\n ",
             "example": "AAA01U"
           },
           "cancelledTime": {
             "type": "string",
             "format": "date-time",
-            "description": "\n    The date and time this appointment was cancelled.\n    Will be null if this appointment has not been cancelled\n    "
+            "description": "\n The date and time this appointment was cancelled.\n Will be null if this appointment has not been cancelled\n "
           },
           "cancellationReasonId": {
             "type": "integer",
             "format": "int64",
-            "description": "\n    The id of the reason why this appointment was cancelled.\n    Will be null if this appointment has not been cancelled\n    ",
+            "description": "\n The id of the reason why this appointment was cancelled.\n Will be null if this appointment has not been cancelled\n ",
             "example": 12345
           },
           "cancelledBy": {
             "type": "string",
-            "description": "\n    The username of the user authenticated via HMPPS auth that cancelled this appointment.\n    Will be null if this appointment has not been cancelled\n    ",
+            "description": "\n The username of the user authenticated via HMPPS auth that cancelled this appointment.\n Will be null if this appointment has not been cancelled\n ",
             "example": "AAA01U"
           },
           "isDeleted": {
             "type": "boolean",
-            "description": "\n    Indicates that this appointment has been deleted and removed from scheduled events.\n    ",
+            "description": "\n Indicates that this appointment has been deleted and removed from scheduled events.\n ",
             "example": false
           },
           "attendees": {
             "type": "array",
-            "description": "\n    The prisoner or prisoners attending this appointment. Single appointments such as medical will have one\n    attendee. A group appointment e.g. gym or chaplaincy sessions will have more than one attendee.\n    Attendees are at the appointment level supporting alteration of attendees in any future appointment.\n    ",
+            "description": "\n The prisoner or prisoners attending this appointment. Single appointments such as medical will have one\n attendee. A group appointment e.g. gym or chaplaincy sessions will have more than one attendee.\n Attendees are at the appointment level supporting alteration of attendees in any future appointment.\n ",
             "items": {
               "$ref": "#/components/schemas/AppointmentAttendee"
             }
@@ -9044,12 +8940,12 @@
       },
       "AppointmentAttendee": {
         "type": "object",
-        "description": "\n  Described on the UI as an \"Attendee\". A prisoner attending a specific appointment in an appointment series or set.\n  ",
+        "description": "\n Described on the UI as an \"Attendee\". A prisoner attending a specific appointment in an appointment series or set.\n ",
         "properties": {
           "id": {
             "type": "integer",
             "format": "int64",
-            "description": "\n    The internally generated identifier for this prisoner attending a specific appointment in an appointment series or set.\n    N.B. this is used as the appointment instance id due to there being a one to one relationship between an appointment\n    attendee and appointment instances.\n    ",
+            "description": "\n The internally generated identifier for this prisoner attending a specific appointment in an appointment series or set.\n N.B. this is used as the appointment instance id due to there being a one to one relationship between an appointment\n attendee and appointment instances.\n ",
             "example": 123456
           },
           "prisonerNumber": {
@@ -9066,41 +8962,41 @@
           "addedTime": {
             "type": "string",
             "format": "date-time",
-            "description": "\n    The date and time this attendee was added appointment.\n    Will be null if this attendee was part of the appointment when the appointment was created\n    "
+            "description": "\n The date and time this attendee was added appointment.\n Will be null if this attendee was part of the appointment when the appointment was created\n "
           },
           "addedBy": {
             "type": "string",
-            "description": "\n    The username of the user authenticated via HMPPS auth that added this attendee to the appointment.\n    Will be null if this attendee was part of the appointment when the appointment was created\n    ",
+            "description": "\n The username of the user authenticated via HMPPS auth that added this attendee to the appointment.\n Will be null if this attendee was part of the appointment when the appointment was created\n ",
             "example": "AAA01U"
           },
           "attended": {
             "type": "boolean",
-            "description": "\n    Specifies whether the prisoner attended the specific appointment in an appointment series or set.\n    A null value means that the prisoner's attendance has not been recorded yet. \n    "
+            "description": "\n Specifies whether the prisoner attended the specific appointment in an appointment series or set.\n A null value means that the prisoner's attendance has not been recorded yet. \n "
           },
           "attendanceRecordedTime": {
             "type": "string",
             "format": "date-time",
-            "description": "\n    The latest date and time attendance was recorded. Note that attendance records can be updated and this is the most\n    recent date and time it was recorded. A null value means that the prisoner's attendance has not been recorded yet. \n    "
+            "description": "\n The latest date and time attendance was recorded. Note that attendance records can be updated and this is the most\n recent date and time it was recorded. A null value means that the prisoner's attendance has not been recorded yet. \n "
           },
           "attendanceRecordedBy": {
             "type": "string",
-            "description": "\n    The username of the user authenticated via HMPPS auth that last recorded attendance. Note that attendance records\n    can be updated and this is the most recent user that marked attendance. A null value means that the prisoner's\n    attendance has not been recorded yet. \n    ",
+            "description": "\n The username of the user authenticated via HMPPS auth that last recorded attendance. Note that attendance records\n can be updated and this is the most recent user that marked attendance. A null value means that the prisoner's\n attendance has not been recorded yet. \n ",
             "example": "AAA01U"
           },
           "removedTime": {
             "type": "string",
             "format": "date-time",
-            "description": "\n    The date and time this attendee was removed from the appointment.\n    Will be null if this attendee has not been removed from the appointment\n    "
+            "description": "\n The date and time this attendee was removed from the appointment.\n Will be null if this attendee has not been removed from the appointment\n "
           },
           "removalReasonId": {
             "type": "integer",
             "format": "int64",
-            "description": "\n    The id of the reason why this attendee was removed from the appointment.\n    Will be null if this attendee has not been removed from the appointment\n    ",
+            "description": "\n The id of the reason why this attendee was removed from the appointment.\n Will be null if this attendee has not been removed from the appointment\n ",
             "example": 12345
           },
           "removedBy": {
             "type": "string",
-            "description": "\n    The username of the user authenticated via HMPPS auth that removed this attendee from the appointment.\n    Will be null if this attendee has not been removed from the appointment\n    ",
+            "description": "\n The username of the user authenticated via HMPPS auth that removed this attendee from the appointment.\n Will be null if this attendee has not been removed from the appointment\n ",
             "example": "AAA01U"
           }
         },
@@ -9108,7 +9004,7 @@
       },
       "AppointmentSeries": {
         "type": "object",
-        "description": "\n  Described on the UI as an \"Appointment series\" and only shown for repeat appointments.\n  The top level of the standard appointment hierarchy containing the initial property values common to all appointments\n  in the series.\n  Contains the collection of all the child appointments in the series plus the schedule definition if the appointment series repeats.\n  The properties at this level cannot be changed via the API however the child appointment property values can be changed\n  independently to support rescheduling, cancelling and altered attendee lists per appointment.\n  N.B. there is no collection of attending prisoners at this top level as all attendees are per appointment. This is to\n  support attendee modification for each scheduled appointment and to prevent altering the past by editing attendees\n  in an appointment series where some appointments have past.\n  ",
+        "description": "\n Described on the UI as an \"Appointment series\" and only shown for repeat appointments.\n The top level of the standard appointment hierarchy containing the initial property values common to all appointments\n in the series.\n Contains the collection of all the child appointments in the series plus the schedule definition if the appointment series repeats.\n The properties at this level cannot be changed via the API however the child appointment property values can be changed\n independently to support rescheduling, cancelling and altered attendee lists per appointment.\n N.B. there is no collection of attending prisoners at this top level as all attendees are per appointment. This is to\n support attendee modification for each scheduled appointment and to prevent altering the past by editing attendees\n in an appointment series where some appointments have past.\n ",
         "properties": {
           "id": {
             "type": "integer",
@@ -9142,18 +9038,18 @@
           },
           "customName": {
             "type": "string",
-            "description": "\n    Free text name further describing the appointment series. Used as part of the appointment name with the\n    format \"Custom name (Category description) if specified.\n    ",
+            "description": "\n Free text name further describing the appointment series. Used as part of the appointment name with the\n format \"Custom name (Category description) if specified.\n ",
             "example": "Meeting with the governor"
           },
           "internalLocationId": {
             "type": "integer",
             "format": "int64",
-            "description": "\n    The NOMIS AGENCY_INTERNAL_LOCATIONS.INTERNAL_LOCATION_ID value for mapping to NOMIS.\n    Will be null if in cell = true\n    ",
+            "description": "\n The NOMIS AGENCY_INTERNAL_LOCATIONS.INTERNAL_LOCATION_ID value for mapping to NOMIS.\n Will be null if in cell = true\n ",
             "example": 123
           },
           "inCell": {
             "type": "boolean",
-            "description": "\n    Flag to indicate if the location of the appointment series is in cell rather than an internal prison location.\n    Internal location id should be null if in cell = true\n    ",
+            "description": "\n Flag to indicate if the location of the appointment series is in cell rather than an internal prison location.\n Internal location id should be null if in cell = true\n ",
             "example": false
           },
           "startDate": {
@@ -9173,11 +9069,11 @@
           },
           "schedule": {
             "$ref": "#/components/schemas/AppointmentSeriesSchedule",
-            "description": "\n    Describes the schedule of the appointment series i.e. how the appointments in the series repeat. The frequency of\n    those appointments and how many appointments there are in total in the series.\n    If null, the appointment series has only one appointment. Note that the presence of this property does not mean\n    there is more than one appointment as a number of appointments value of one is valid.\n    "
+            "description": "\n Describes the schedule of the appointment series i.e. how the appointments in the series repeat. The frequency of\n those appointments and how many appointments there are in total in the series.\n If null, the appointment series has only one appointment. Note that the presence of this property does not mean\n there is more than one appointment as a number of appointments value of one is valid.\n "
           },
           "extraInformation": {
             "type": "string",
-            "description": "\n    Extra information for the prisoner or prisoners attending the appointment or appointments in the series.\n    Shown only on the appointments details page and on printed movement slips. Wing staff will be notified there is\n    extra information via the unlock list.\n    ",
+            "description": "\n Extra information for the prisoner or prisoners attending the appointment or appointments in the series.\n Shown only on the appointments details page and on printed movement slips. Wing staff will be notified there is\n extra information via the unlock list.\n ",
             "example": "This appointment will help adjusting to life outside of prison"
           },
           "createdTime": {
@@ -9187,22 +9083,22 @@
           },
           "createdBy": {
             "type": "string",
-            "description": "\n    The username of the user authenticated via HMPPS auth that created the appointment series.\n    Usually a NOMIS username\n    ",
+            "description": "\n The username of the user authenticated via HMPPS auth that created the appointment series.\n Usually a NOMIS username\n ",
             "example": "AAA01U"
           },
           "updatedTime": {
             "type": "string",
             "format": "date-time",
-            "description": "\n    The date and time one or more appointments in this series was last changed.\n    Will be null if no appointments in the series have been altered since they were created\n    "
+            "description": "\n The date and time one or more appointments in this series was last changed.\n Will be null if no appointments in the series have been altered since they were created\n "
           },
           "updatedBy": {
             "type": "string",
-            "description": "\n    The username of the user authenticated via HMPPS auth that last edited one or more appointments in this series.\n    Will be null if no appointments in the series have been altered since they were created\n    ",
+            "description": "\n The username of the user authenticated via HMPPS auth that last edited one or more appointments in this series.\n Will be null if no appointments in the series have been altered since they were created\n ",
             "example": "AAA01U"
           },
           "appointments": {
             "type": "array",
-            "description": "\n    The individual appointment or appointments in this series. Non recurring appointment series will have a single\n    appointment containing the same property values as the parent appointment series. The same start date, time\n    and end time. Recurring appointment series will have one or more appointments. The first in the series will also\n    contain the same property values as the parent appointment series and subsequent appointments will have start dates\n    following on from the original start date incremented as specified by the series' schedule. Each appointment\n    can be edited independently of the parent. All properties of an appointment are separate to those of the parent\n    appointment series. The full series of appointments specified by the schedule will have been created in advance.\n    ",
+            "description": "\n The individual appointment or appointments in this series. Non recurring appointment series will have a single\n appointment containing the same property values as the parent appointment series. The same start date, time\n and end time. Recurring appointment series will have one or more appointments. The first in the series will also\n contain the same property values as the parent appointment series and subsequent appointments will have start dates\n following on from the original start date incremented as specified by the series' schedule. Each appointment\n can be edited independently of the parent. All properties of an appointment are separate to those of the parent\n appointment series. The full series of appointments specified by the schedule will have been created in advance.\n ",
             "items": {
               "$ref": "#/components/schemas/Appointment"
             }
@@ -9229,18 +9125,18 @@
       },
       "AppointmentSeriesSchedule": {
         "type": "object",
-        "description": "\n  Describes the schedule of the appointment i.e. how the appointments in the series will repeat. The frequency of\n  those appointments and how many appointments there will be in total in the series.\n  ",
+        "description": "\n Describes the schedule of the appointment i.e. how the appointments in the series will repeat. The frequency of\n those appointments and how many appointments there will be in total in the series.\n ",
         "properties": {
           "frequency": {
             "type": "string",
-            "description": "\n    The frequency of the appointments in the repeating appointment series. When they will repeat and how often\n    ",
+            "description": "\n The frequency of the appointments in the repeating appointment series. When they will repeat and how often\n ",
             "enum": ["WEEKDAY", "DAILY", "WEEKLY", "FORTNIGHTLY", "MONTHLY"],
             "example": "WEEKLY"
           },
           "numberOfAppointments": {
             "type": "integer",
             "format": "int32",
-            "description": "\n    The original total number of appointments in the appointment series i.e. the number that were created initially\n    without excluding any that were subsequently cancelled or deleted\n    ",
+            "description": "\n The original total number of appointments in the appointment series i.e. the number that were created initially\n without excluding any that were subsequently cancelled or deleted\n ",
             "example": 6,
             "minimum": 1
           }
@@ -9300,12 +9196,12 @@
           "cancellationReasonId": {
             "type": "integer",
             "format": "int64",
-            "description": "\n    Specifies the id of the reason for the cancellation. The cancellation reason, identified by this id, will determine \n    whether the cancellation is also treated as a soft delete\n    ",
+            "description": "\n Specifies the id of the reason for the cancellation. The cancellation reason, identified by this id, will determine \n whether the cancellation is also treated as a soft delete\n ",
             "example": 1234
           },
           "applyTo": {
             "type": "string",
-            "description": "\n    Specifies which appointment or appointments this cancellation should apply to.\n    Defaults to THIS_APPOINTMENT meaning the cancellation will be applied to the appointment specified by the\n    supplied id only.\n    ",
+            "description": "\n Specifies which appointment or appointments this cancellation should apply to.\n Defaults to THIS_APPOINTMENT meaning the cancellation will be applied to the appointment specified by the\n supplied id only.\n ",
             "enum": ["THIS_APPOINTMENT", "THIS_AND_ALL_FUTURE_APPOINTMENTS", "ALL_FUTURE_APPOINTMENTS"],
             "example": "THIS_APPOINTMENT"
           }
@@ -9314,7 +9210,7 @@
       },
       "MultipleAppointmentAttendanceRequest": {
         "type": "object",
-        "description": "\n  Describes how to update attendances for multiple appointments.\n  ",
+        "description": "\n Describes how to update attendances for multiple appointments.\n ",
         "properties": {
           "appointmentId": {
             "type": "integer",
@@ -9515,28 +9411,28 @@
             "type": "integer",
             "format": "int32"
           },
+          "unpaged": {
+            "type": "boolean"
+          },
           "paged": {
             "type": "boolean"
           },
           "pageNumber": {
             "type": "integer",
             "format": "int32"
-          },
-          "unpaged": {
-            "type": "boolean"
           }
         }
       },
       "PagedWaitingListApplication": {
         "type": "object",
         "properties": {
-          "totalPages": {
-            "type": "integer",
-            "format": "int32"
-          },
           "totalElements": {
             "type": "integer",
             "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
           },
           "first": {
             "type": "boolean"
@@ -9710,6 +9606,27 @@
           "status"
         ]
       },
+      "UpdateCaseNoteUUIDResponse": {
+        "type": "object",
+        "properties": {
+          "attendance": {
+            "type": "string"
+          },
+          "attendanceHistory": {
+            "type": "string"
+          },
+          "allocation": {
+            "type": "string"
+          },
+          "plannedDeallocation": {
+            "type": "string"
+          },
+          "plannedSuspension": {
+            "type": "string"
+          }
+        },
+        "required": ["allocation", "attendance", "attendanceHistory", "plannedDeallocation", "plannedSuspension"]
+      },
       "PublishEventUtilityModel": {
         "type": "object",
         "description": "Describes an event to be published to the domain events SNS topic",
@@ -9746,23 +9663,6 @@
           }
         },
         "required": ["identifiers", "outboundEvent"]
-      },
-      "PayHistoryMigrateResponse": {
-        "type": "object",
-        "properties": {
-          "payRateDataSize": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "payHistoryDataSize": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "message": {
-            "type": "string"
-          }
-        },
-        "required": ["message", "payHistoryDataSize", "payRateDataSize"]
       },
       "PrisonerAllocationRequest": {
         "type": "object",
@@ -9810,7 +9710,7 @@
       },
       "Slot": {
         "type": "object",
-        "description": "\n    Describes time slot and day (or days) the scheduled activity would run. At least one day must be specified.\n    \n    e.g. 'AM, Monday, Wednesday and Friday' or 'PM Tuesday, Thursday, Sunday'\n  ",
+        "description": "\n Describes time slot and day (or days) the scheduled activity would run. At least one day must be specified.\n \n e.g. 'AM, Monday, Wednesday and Friday' or 'PM Tuesday, Thursday, Sunday'\n ",
         "properties": {
           "weekNumber": {
             "type": "integer",
@@ -10164,7 +10064,7 @@
       },
       "ActivityScheduleLite": {
         "type": "object",
-        "description": "\n  Describes the weekly schedule for an activity. There can be several of these defined for one activity.\n  An activity schedule describes when, during the week, an activity will be run and where.\n  e.g. Tuesday PM and Thursday AM - suitable for Houseblock 2 to attend.\n  e.g. Monday AM and Thursday PM - suitable for Houseblock 3 to attend.\n  this 'lite' version of ActivitySchedule does not have allocated or instances.\n  ",
+        "description": "\n Describes the weekly schedule for an activity. There can be several of these defined for one activity.\n An activity schedule describes when, during the week, an activity will be run and where.\n e.g. Tuesday PM and Thursday AM - suitable for Houseblock 2 to attend.\n e.g. Monday AM and Thursday PM - suitable for Houseblock 3 to attend.\n this 'lite' version of ActivitySchedule does not have allocated or instances.\n ",
         "properties": {
           "id": {
             "type": "integer",
@@ -10225,7 +10125,7 @@
       },
       "ActivityScheduleSlot": {
         "type": "object",
-        "description": "\n  Describes a slot for an activity schedule. There can be several of these defined for one activity schedule.\n  An activity schedule slot describes when, during the week, an activity will be run.\n  e.g. Tuesday PM on a Monday and Thursday.\n  ",
+        "description": "\n Describes a slot for an activity schedule. There can be several of these defined for one activity schedule.\n An activity schedule slot describes when, during the week, an activity will be run.\n e.g. Tuesday PM on a Monday and Thursday.\n ",
         "properties": {
           "id": {
             "type": "integer",
@@ -10855,12 +10755,12 @@
       },
       "InternalLocationEvents": {
         "type": "object",
-        "description": "\n  The details of an internal location that has events scheduled to take place there. Supports movement lists.\n  Contains additional information about the events taking place at the location.\n  The system of record for internal locations is NOMIS and they are managed in that application.\n  ",
+        "description": "\n The details of an internal location that has events scheduled to take place there. Supports movement lists.\n Contains additional information about the events taking place at the location.\n The system of record for internal locations is NOMIS and they are managed in that application.\n ",
         "properties": {
           "id": {
             "type": "integer",
             "format": "int64",
-            "description": "\n    The id of the internal location. Mapped from AGENCY_INTERNAL_LOCATIONS.INTERNAL_LOCATION_ID in NOMIS.\n    ",
+            "description": "\n The id of the internal location. Mapped from AGENCY_INTERNAL_LOCATIONS.INTERNAL_LOCATION_ID in NOMIS.\n ",
             "example": 27723
           },
           "dpsLocationId": {
@@ -10871,7 +10771,7 @@
           },
           "prisonCode": {
             "type": "string",
-            "description": "\n    The prison code/agency id of the internal location. Mapped from AGENCY_LOCATIONS.AGY_LOC_ID in NOMIS.\n    ",
+            "description": "\n The prison code/agency id of the internal location. Mapped from AGENCY_LOCATIONS.AGY_LOC_ID in NOMIS.\n ",
             "example": "SKI"
           },
           "code": {
@@ -11217,8 +11117,14 @@
           "caseNoteId": {
             "type": "integer",
             "format": "int64",
-            "description": "The optional case note identifier which was added to the prisoner's profile along with the suspension",
+            "description": "The optional legacy case note identifier which was added to the prisoner's profile along with the suspension",
             "example": 123456
+          },
+          "dpsCaseNoteId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The optional case note UUID which was added to the prisoner's profile along with the suspension",
+            "example": "b7602cc8-e769-4cbb-8194-62d8e655992a"
           },
           "plannedBy": {
             "type": "string",
@@ -11665,11 +11571,11 @@
             "maxLength": 12,
             "minLength": 0
           },
-          "internalLocationId": {
-            "type": "integer",
-            "format": "int64",
-            "description": "\n    The NOMIS internal location id within the specified prison.\n    ",
-            "example": 123
+          "dpsLocationId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The optional DPS location UUID.",
+            "example": "b7602cc8-e769-4cbb-8194-62d8e655992a"
           },
           "startDate": {
             "type": "string",
@@ -11688,12 +11594,12 @@
           },
           "comment": {
             "type": "string",
-            "description": "\n    Notes relating to the appointment.    \n    ",
+            "description": "\n Notes relating to the appointment. \n ",
             "example": "This appointment will help adjusting to life outside of prison"
           },
           "isCancelled": {
             "type": "boolean",
-            "description": "\n    Indicates that this appointment has been cancelled\n    ",
+            "description": "\n Indicates that this appointment has been cancelled\n ",
             "example": false
           },
           "created": {
@@ -11703,7 +11609,7 @@
           },
           "createdBy": {
             "type": "string",
-            "description": "\n    The username of the user authenticated via NOMIS/HMPPS auth that created the appointment\n    ",
+            "description": "\n The username of the user authenticated via NOMIS/HMPPS auth that created the appointment\n ",
             "example": "AAA01U",
             "maxLength": 100,
             "minLength": 0
@@ -11711,36 +11617,26 @@
           "updated": {
             "type": "string",
             "format": "date-time",
-            "description": "\n    The date and time this appointment was last changed\n    "
+            "description": "\n The date and time this appointment was last changed\n "
           },
           "updatedBy": {
             "type": "string",
-            "description": "\n    The username of the user authenticated via NOMIS/HMPPS auth that modified the appointment\n    ",
+            "description": "\n The username of the user authenticated via NOMIS/HMPPS auth that modified the appointment\n ",
             "example": "AAA01U",
             "maxLength": 100,
             "minLength": 0
           }
         },
-        "required": [
-          "bookingId",
-          "categoryCode",
-          "created",
-          "createdBy",
-          "internalLocationId",
-          "prisonCode",
-          "prisonerNumber",
-          "startDate",
-          "startTime"
-        ]
+        "required": ["bookingId", "categoryCode", "created", "createdBy", "dpsLocationId", "prisonCode", "prisonerNumber", "startDate", "startTime"]
       },
       "AppointmentInstance": {
         "type": "object",
-        "description": "\n  Represents an appointment instance for a specific prisoner to attend at the specified location, date and time.\n  The fully denormalised representation of the appointment series, appointments and attendees equivalent to a row in\n  the NOMIS OFFENDER_IND_SCHEDULES table.\n  Appointment instances do not exist as database records and are the product of the join between appointment attendees,\n  appointments and appointment series. \n  The appointment attendee id is used for the appointment instance id as there is a one to one relationship between an\n  appointment attendee and appointment instances.\n  Appointment instances are used primarily for the one way sync to NOMIS.\n  ",
+        "description": "\n Represents an appointment instance for a specific prisoner to attend at the specified location, date and time.\n The fully denormalised representation of the appointment series, appointments and attendees equivalent to a row in\n the NOMIS OFFENDER_IND_SCHEDULES table.\n Appointment instances do not exist as database records and are the product of the join between appointment attendees,\n appointments and appointment series. \n The appointment attendee id is used for the appointment instance id as there is a one to one relationship between an\n appointment attendee and appointment instances.\n Appointment instances are used primarily for the one way sync to NOMIS.\n ",
         "properties": {
           "id": {
             "type": "integer",
             "format": "int64",
-            "description": "\n    The internally generated identifier for this appointment instance. N.B. this is the appointment attendee id due to\n    there being a one to one relationship between an appointment attendee and appointment instances.\n    ",
+            "description": "\n The internally generated identifier for this appointment instance. N.B. this is the appointment attendee id due to\n there being a one to one relationship between an appointment attendee and appointment instances.\n ",
             "example": 123456
           },
           "appointmentSeriesId": {
@@ -11758,7 +11654,7 @@
           "appointmentAttendeeId": {
             "type": "integer",
             "format": "int64",
-            "description": "\n    The internally generated identifier for the appointment attendee. N.B. this is used as the appointment instance id\n    due to there being a one to one relationship between an appointment attendee and appointment instances.\n    ",
+            "description": "\n The internally generated identifier for the appointment attendee. N.B. this is used as the appointment instance id\n due to there being a one to one relationship between an appointment attendee and appointment instances.\n ",
             "example": 123456
           },
           "appointmentType": {
@@ -11790,13 +11686,14 @@
           },
           "customName": {
             "type": "string",
-            "description": "\n    Free text name further describing the appointment instance. Used as part of the appointment name with the\n    format \"Appointment description (Category description) if specified.\n    ",
+            "description": "\n Free text name further describing the appointment instance. Used as part of the appointment name with the\n format \"Appointment description (Category description) if specified.\n ",
             "example": "Meeting with the governor"
           },
           "internalLocationId": {
             "type": "integer",
             "format": "int64",
-            "description": "\n    The NOMIS AGENCY_INTERNAL_LOCATIONS.INTERNAL_LOCATION_ID value for mapping to NOMIS.\n    Will be null if in cell = true\n    ",
+            "deprecated": true,
+            "description": "\n The NOMIS AGENCY_INTERNAL_LOCATIONS.INTERNAL_LOCATION_ID value for mapping to NOMIS.\n Will be null if in cell = true\n ",
             "example": 123
           },
           "dpsLocationId": {
@@ -11807,7 +11704,7 @@
           },
           "inCell": {
             "type": "boolean",
-            "description": "\n    Flag to indicate if the location of the appointment instance is in cell rather than an internal prison location.\n    Internal location id should be null if in cell = true\n    ",
+            "description": "\n Flag to indicate if the location of the appointment instance is in cell rather than an internal prison location.\n Internal location id should be null if in cell = true\n ",
             "example": false
           },
           "appointmentDate": {
@@ -11827,7 +11724,7 @@
           },
           "extraInformation": {
             "type": "string",
-            "description": "\n    Extra information for the prisoner attending this appointment instance.\n    Shown only on the appointments details page and on printed movement slips. Wing staff will be notified there is\n    extra information via the unlock list.\n    ",
+            "description": "\n Extra information for the prisoner attending this appointment instance.\n Shown only on the appointments details page and on printed movement slips. Wing staff will be notified there is\n extra information via the unlock list.\n ",
             "example": "This appointment will help adjusting to life outside of prison"
           },
           "createdTime": {
@@ -11837,17 +11734,17 @@
           },
           "createdBy": {
             "type": "string",
-            "description": "\n    The username of the user authenticated via HMPPS auth that created the appointment instance.\n    Usually a NOMIS username\n    ",
+            "description": "\n The username of the user authenticated via HMPPS auth that created the appointment instance.\n Usually a NOMIS username\n ",
             "example": "AAA01U"
           },
           "updatedTime": {
             "type": "string",
             "format": "date-time",
-            "description": "\n    The date and time this appointment instance was last changed.\n    Will be null if this appointment instance has not been altered since it was created\n    "
+            "description": "\n The date and time this appointment instance was last changed.\n Will be null if this appointment instance has not been altered since it was created\n "
           },
           "updatedBy": {
             "type": "string",
-            "description": "\n    The username of the user authenticated via HMPPS auth that edited this appointment instance.\n    Will be null if this appointment instance has not been altered since it was created\n    ",
+            "description": "\n The username of the user authenticated via HMPPS auth that edited this appointment instance.\n Will be null if this appointment instance has not been altered since it was created\n ",
             "example": "AAA01U"
           }
         },
@@ -11874,23 +11771,23 @@
         "properties": {
           "appointmentType": {
             "type": "string",
-            "description": "\n    The appointment type (INDIVIDUAL or GROUP) to match with the appointment series. Will restrict the search results to\n    appointments that are part of a series with the matching type when this search parameter is supplied.\n    ",
+            "description": "\n The appointment type (INDIVIDUAL or GROUP) to match with the appointment series. Will restrict the search results to\n appointments that are part of a series with the matching type when this search parameter is supplied.\n ",
             "enum": ["INDIVIDUAL", "GROUP"],
             "example": "INDIVIDUAL"
           },
           "startDate": {
             "type": "string",
             "format": "date",
-            "description": "\n    The start date to match with the appointments. Will restrict the search results to appointments\n    that have the matching start date when this search parameter is supplied but no end date is supplied.\n    When an end date is also supplied, the search uses a date range and will restrict the search results to\n    appointments that have a start date within the date range.\n    "
+            "description": "\n The start date to match with the appointments. Will restrict the search results to appointments\n that have the matching start date when this search parameter is supplied but no end date is supplied.\n When an end date is also supplied, the search uses a date range and will restrict the search results to\n appointments that have a start date within the date range.\n "
           },
           "endDate": {
             "type": "string",
             "format": "date",
-            "description": "\n    When an end date is supplied alongside the start date, the search uses a date range and will restrict the search results to\n    appointments that have a start date within the date range.\n    "
+            "description": "\n When an end date is supplied alongside the start date, the search uses a date range and will restrict the search results to\n appointments that have a start date within the date range.\n "
           },
           "timeSlots": {
             "type": "array",
-            "description": "\n    The time slot to match with the appointments. Will restrict the search results to appointments that have a start\n    time between the times defined by the prison for that time slot when this search parameter is supplied.\n    ",
+            "description": "\n The time slot to match with the appointments. Will restrict the search results to appointments that have a start\n time between the times defined by the prison for that time slot when this search parameter is supplied.\n ",
             "example": ["AM", "PM", "ED"],
             "items": {
               "type": "string",
@@ -11899,23 +11796,30 @@
           },
           "categoryCode": {
             "type": "string",
-            "description": "\n    The NOMIS reference code to match with the appointments. Will restrict the search results to appointments\n    that have the matching category code when this search parameter is supplied.\n    ",
+            "description": "\n The NOMIS reference code to match with the appointments. Will restrict the search results to appointments\n that have the matching category code when this search parameter is supplied.\n ",
             "example": "GYMW"
           },
           "internalLocationId": {
             "type": "integer",
             "format": "int64",
-            "description": "\n    The NOMIS internal location id to match with the appointments. Will restrict the search results to\n    appointments that have the matching internal location id when this search parameter is supplied.\n    ",
+            "deprecated": true,
+            "description": "\n The NOMIS internal location id to match with the appointments. Will restrict the search results to\n appointments that have the matching internal location id when this search parameter is supplied.\n ",
             "example": 123
+          },
+          "dpsLocationId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "\n The DPS location UUID to match with the appointments. Will restrict the search results to\n appointments that have the matching location UUID when this search parameter is supplied.\n ",
+            "example": "b7602cc8-e769-4cbb-8194-62d8e655992a"
           },
           "inCell": {
             "type": "boolean",
-            "description": "\n    The in cell flag value to match with the appointments. Will restrict the search results to appointments\n    that have the matching in cell value when this search parameter is supplied.\n    ",
+            "description": "\n The in cell flag value to match with the appointments. Will restrict the search results to appointments\n that have the matching in cell value when this search parameter is supplied.\n ",
             "example": false
           },
           "prisonerNumbers": {
             "type": "array",
-            "description": "\n    The allocated prisoner or prisoners to match with the appointments. Will restrict the search results to\n    appointments that have the at least one of the supplied prisoner numbers attending when this search parameter\n    is supplied.\n    ",
+            "description": "\n The allocated prisoner or prisoners to match with the appointments. Will restrict the search results to\n appointments that have the at least one of the supplied prisoner numbers attending when this search parameter\n is supplied.\n ",
             "example": ["A1234BC"],
             "items": {
               "type": "string"
@@ -11923,7 +11827,7 @@
           },
           "createdBy": {
             "type": "string",
-            "description": "\n    The username of the user authenticated via HMPPS auth to match with the appointments. Will restrict the\n    search results to appointments that were created by this username when this search parameter is supplied.\n    ",
+            "description": "\n The username of the user authenticated via HMPPS auth to match with the appointments. Will restrict the\n search results to appointments that were created by this username when this search parameter is supplied.\n ",
             "example": "AAA01U"
           }
         },
@@ -11931,12 +11835,12 @@
       },
       "AppointmentAttendeeSearchResult": {
         "type": "object",
-        "description": "\n  Summary search result details of a specific appointment attendee found via search. Contains properties needed to\n  make additional API calls and to populate a table of search results.\n  ",
+        "description": "\n Summary search result details of a specific appointment attendee found via search. Contains properties needed to\n make additional API calls and to populate a table of search results.\n ",
         "properties": {
           "appointmentAttendeeId": {
             "type": "integer",
             "format": "int64",
-            "description": "\n    The internally generated identifier for this prisoner attending a specific appointment in an appointment series or set.\n    N.B. this is used as the appointment instance id due to there being a one to one relationship between an appointment\n    attendee and appointment instances.\n    ",
+            "description": "\n The internally generated identifier for this prisoner attending a specific appointment in an appointment series or set.\n N.B. this is used as the appointment instance id due to there being a one to one relationship between an appointment\n attendee and appointment instances.\n ",
             "example": 123456
           },
           "prisonerNumber": {
@@ -11955,7 +11859,7 @@
       },
       "AppointmentCategorySummary": {
         "type": "object",
-        "description": "\n  Summarises an appointment category for display purposes. Contains only properties needed to make additional API calls\n  and to display.\n  ",
+        "description": "\n Summarises an appointment category for display purposes. Contains only properties needed to make additional API calls\n and to display.\n ",
         "properties": {
           "code": {
             "type": "string",
@@ -11972,7 +11876,7 @@
       },
       "AppointmentLocationSummary": {
         "type": "object",
-        "description": "\n  Summarises an appointment location for display purposes. Contains only properties needed to make additional API calls\n  and to display. NOMIS is the current system of record for appointment locations and they are managed there.\n  ",
+        "description": "\n Summarises an appointment location for display purposes. Contains only properties needed to make additional API calls\n and to display. NOMIS is the current system of record for appointment locations and they are managed there.\n ",
         "properties": {
           "id": {
             "type": "integer",
@@ -11988,7 +11892,7 @@
           },
           "prisonCode": {
             "type": "string",
-            "description": "\n    The NOMIS AGENCY_LOCATIONS.AGY_LOC_ID value for mapping to NOMIS.\n    ",
+            "description": "\n The NOMIS AGENCY_LOCATIONS.AGY_LOC_ID value for mapping to NOMIS.\n ",
             "example": "SKI"
           },
           "description": {
@@ -12001,7 +11905,7 @@
       },
       "AppointmentSearchResult": {
         "type": "object",
-        "description": "\n  Summary search result details of a specific appointment found via search. Contains properties needed to\n  make additional API calls and to populate a table of search results.\n  ",
+        "description": "\n Summary search result details of a specific appointment found via search. Contains properties needed to\n make additional API calls and to populate a table of search results.\n ",
         "properties": {
           "appointmentSeriesId": {
             "type": "integer",
@@ -12023,36 +11927,36 @@
           },
           "prisonCode": {
             "type": "string",
-            "description": "\n    The NOMIS AGENCY_LOCATIONS.AGY_LOC_ID value for mapping to NOMIS.\n    ",
+            "description": "\n The NOMIS AGENCY_LOCATIONS.AGY_LOC_ID value for mapping to NOMIS.\n ",
             "example": "SKI"
           },
           "appointmentName": {
             "type": "string",
-            "description": "\n    The appointment's name combining the optional custom name with the category description. If custom name has been\n    specified, the name format will be \"Custom name (Category description)\" \n    "
+            "description": "\n The appointment's name combining the optional custom name with the category description. If custom name has been\n specified, the name format will be \"Custom name (Category description)\" \n "
           },
           "attendees": {
             "type": "array",
-            "description": "\n    The prisoner or prisoners attending this appointment. Appointments of type INDIVIDUAL will have one\n    prisoner attending to each appointment. Appointments of type GROUP can have more than one prisoner\n    attending each appointment\n    ",
+            "description": "\n The prisoner or prisoners attending this appointment. Appointments of type INDIVIDUAL will have one\n prisoner attending to each appointment. Appointments of type GROUP can have more than one prisoner\n attending each appointment\n ",
             "items": {
               "$ref": "#/components/schemas/AppointmentAttendeeSearchResult"
             }
           },
           "category": {
             "$ref": "#/components/schemas/AppointmentCategorySummary",
-            "description": "\n    The summary of the category of this appointment\n    "
+            "description": "\n The summary of the category of this appointment\n "
           },
           "customName": {
             "type": "string",
-            "description": "\n    Free text name further describing the appointment. Used as part of the appointment name with the\n    format \"Custom name (Category description) if specified.\n    ",
+            "description": "\n Free text name further describing the appointment. Used as part of the appointment name with the\n format \"Custom name (Category description) if specified.\n ",
             "example": "Meeting with the governor"
           },
           "internalLocation": {
             "$ref": "#/components/schemas/AppointmentLocationSummary",
-            "description": "\n    The summary of the internal location this appointment will take place.\n    Will be null if in cell = true\n    "
+            "description": "\n The summary of the internal location this appointment will take place.\n Will be null if in cell = true\n "
           },
           "inCell": {
             "type": "boolean",
-            "description": "\n    Flag to indicate if the location of the appointment is in cell rather than an internal prison location.\n    Internal location will be null if in cell = true\n    ",
+            "description": "\n Flag to indicate if the location of the appointment is in cell rather than an internal prison location.\n Internal location will be null if in cell = true\n ",
             "example": false
           },
           "startDate": {
@@ -12115,16 +12019,16 @@
           "updatedTime": {
             "type": "string",
             "format": "date-time",
-            "description": "\n    The date and time this appointment was last changed.\n    Will be null if this appointment has not been altered since it was created\n    "
+            "description": "\n The date and time this appointment was last changed.\n Will be null if this appointment has not been altered since it was created\n "
           },
           "cancelledTime": {
             "type": "string",
             "format": "date-time",
-            "description": "\n    The date and time this appointment was cancelled.\n    Will be null if this appointment has not been cancelled\n    "
+            "description": "\n The date and time this appointment was cancelled.\n Will be null if this appointment has not been cancelled\n "
           },
           "cancelledBy": {
             "type": "string",
-            "description": "\n    The username of the user authenticated via HMPPS auth that cancelled this appointment.\n    Will be null if this appointment has not been cancelled\n    ",
+            "description": "\n The username of the user authenticated via HMPPS auth that cancelled this appointment.\n Will be null if this appointment has not been cancelled\n ",
             "example": "AAA01U"
           }
         },
@@ -12355,12 +12259,12 @@
       },
       "AppointmentAttendeeSummary": {
         "type": "object",
-        "description": "\n  Described on the UI as an \"Attendee\". A prisoner attending a specific appointment in an appointment series or set.\n  Contains the limited summary information needed to display the prisoner information and whether they attended or not.\n  ",
+        "description": "\n Described on the UI as an \"Attendee\". A prisoner attending a specific appointment in an appointment series or set.\n Contains the limited summary information needed to display the prisoner information and whether they attended or not.\n ",
         "properties": {
           "id": {
             "type": "integer",
             "format": "int64",
-            "description": "\n    The internally generated identifier for this prisoner attending a specific appointment in an appointment series or set.\n    N.B. this is used as the appointment instance id due to there being a one to one relationship between an appointment\n    attendee and appointment instances.\n    ",
+            "description": "\n The internally generated identifier for this prisoner attending a specific appointment in an appointment series or set.\n N.B. this is used as the appointment instance id due to there being a one to one relationship between an appointment\n attendee and appointment instances.\n ",
             "example": 123456
           },
           "prisoner": {
@@ -12369,16 +12273,16 @@
           },
           "attended": {
             "type": "boolean",
-            "description": "\n    Specifies whether the prisoner attended the specific appointment in an appointment series or set.\n    A null value means that the prisoner's attendance has not been recorded yet. \n    "
+            "description": "\n Specifies whether the prisoner attended the specific appointment in an appointment series or set.\n A null value means that the prisoner's attendance has not been recorded yet. \n "
           },
           "attendanceRecordedTime": {
             "type": "string",
             "format": "date-time",
-            "description": "\n    The latest date and time attendance was recorded. Note that attendance records can be updated and this is the most\n    recent date and time it was recorded. A null value means that the prisoner's attendance has not been recorded yet. \n    "
+            "description": "\n The latest date and time attendance was recorded. Note that attendance records can be updated and this is the most\n recent date and time it was recorded. A null value means that the prisoner's attendance has not been recorded yet. \n "
           },
           "attendanceRecordedBy": {
             "type": "string",
-            "description": "\n    The username of the user that last recorded attendance. Note that attendance records can be updated and this is the\n    most recent user that marked attendance. A null value means that the prisoner's attendance has not been recorded yet.\n    ",
+            "description": "\n The username of the user that last recorded attendance. Note that attendance records can be updated and this is the\n most recent user that marked attendance. A null value means that the prisoner's attendance has not been recorded yet.\n ",
             "example": "AAA01U"
           }
         },
@@ -12386,7 +12290,7 @@
       },
       "AppointmentDetails": {
         "type": "object",
-        "description": "\n  Described on the UI as an \"Appointment\" and represents the scheduled event on a specific date and time.\n  Contains the full details of all the appointment properties and the summary collection of prisoners attending this appointment.\n  An appointment is part of either a series of an appointments on a schedule or a set of appointments on the same day.\n  The summary information of which appointment collection they are part of is included in these details.\n  All updates and cancellations happen at this appointment level with the parent appointment series being immutable.\n  ",
+        "description": "\n Described on the UI as an \"Appointment\" and represents the scheduled event on a specific date and time.\n Contains the full details of all the appointment properties and the summary collection of prisoners attending this appointment.\n An appointment is part of either a series of an appointments on a schedule or a set of appointments on the same day.\n The summary information of which appointment collection they are part of is included in these details.\n All updates and cancellations happen at this appointment level with the parent appointment series being immutable.\n ",
         "properties": {
           "id": {
             "type": "integer",
@@ -12396,11 +12300,11 @@
           },
           "appointmentSeries": {
             "$ref": "#/components/schemas/AppointmentSeriesSummary",
-            "description": "\n    Summary of the appointment series this appointment is part of.\n    Will be null if this appointment is part of a set of appointments on the same day.\n    "
+            "description": "\n Summary of the appointment series this appointment is part of.\n Will be null if this appointment is part of a set of appointments on the same day.\n "
           },
           "appointmentSet": {
             "$ref": "#/components/schemas/AppointmentSetSummary",
-            "description": "\n    Summary of the appointment set this appointment is part of\n    Will be null if this appointment is part of a series of an appointments on a schedule.\n    "
+            "description": "\n Summary of the appointment set this appointment is part of\n Will be null if this appointment is part of a series of an appointments on a schedule.\n "
           },
           "appointmentType": {
             "type": "string",
@@ -12421,18 +12325,18 @@
           },
           "appointmentName": {
             "type": "string",
-            "description": "\n    The appointment's name combining the optional custom name with the category description. If custom name has been\n    specified, the name format will be \"Custom name (Category description)\" \n    "
+            "description": "\n The appointment's name combining the optional custom name with the category description. If custom name has been\n specified, the name format will be \"Custom name (Category description)\" \n "
           },
           "attendees": {
             "type": "array",
-            "description": "\n    Summary of the prisoner or prisoners attending this appointment and their attendance record if any.\n    Attendees are at the appointment level to allow for per appointment attendee changes.\n    ",
+            "description": "\n Summary of the prisoner or prisoners attending this appointment and their attendance record if any.\n Attendees are at the appointment level to allow for per appointment attendee changes.\n ",
             "items": {
               "$ref": "#/components/schemas/AppointmentAttendeeSummary"
             }
           },
           "category": {
             "$ref": "#/components/schemas/AppointmentCategorySummary",
-            "description": "\n    The summary of the appointment's category. Can be different to the parent appointment series if this appointment\n    has been edited.\n    "
+            "description": "\n The summary of the appointment's category. Can be different to the parent appointment series if this appointment\n has been edited.\n "
           },
           "tier": {
             "$ref": "#/components/schemas/EventTier",
@@ -12444,16 +12348,16 @@
           },
           "customName": {
             "type": "string",
-            "description": "\n    Free text name further describing the appointment. Used as part of the appointment name with the\n    format \"Custom name (Category description) if specified.\n    ",
+            "description": "\n Free text name further describing the appointment. Used as part of the appointment name with the\n format \"Custom name (Category description) if specified.\n ",
             "example": "Meeting with the governor"
           },
           "internalLocation": {
             "$ref": "#/components/schemas/AppointmentLocationSummary",
-            "description": "\n    The summary of the internal location this appointment will take place. Can be different to the parent\n    appointment series if this appointment has been edited.\n    Will be null if in cell = true\n    "
+            "description": "\n The summary of the internal location this appointment will take place. Can be different to the parent\n appointment series if this appointment has been edited.\n Will be null if in cell = true\n "
           },
           "inCell": {
             "type": "boolean",
-            "description": "\n    Flag to indicate if the location of the appointment is in cell rather than an internal prison location.\n    Internal location will be null if in cell = true\n    ",
+            "description": "\n Flag to indicate if the location of the appointment is in cell rather than an internal prison location.\n Internal location will be null if in cell = true\n ",
             "example": false
           },
           "startDate": {
@@ -12473,12 +12377,12 @@
           },
           "isExpired": {
             "type": "boolean",
-            "description": "\n    Indicates that this appointment has expired i.e. it's start date and time is in the past\n    ",
+            "description": "\n Indicates that this appointment has expired i.e. it's start date and time is in the past\n ",
             "example": false
           },
           "extraInformation": {
             "type": "string",
-            "description": "\n    Extra information for the prisoner or prisoners attending this appointment.\n    Shown only on the appointments details page and on printed movement slips. Wing staff will be notified there is\n    extra information via the unlock list.\n    ",
+            "description": "\n Extra information for the prisoner or prisoners attending this appointment.\n Shown only on the appointments details page and on printed movement slips. Wing staff will be notified there is\n extra information via the unlock list.\n ",
             "example": "This appointment will help adjusting to life outside of prison"
           },
           "createdTime": {
@@ -12488,40 +12392,40 @@
           },
           "createdBy": {
             "type": "string",
-            "description": "\n    The username of the user that created this appointment\n    "
+            "description": "\n The username of the user that created this appointment\n "
           },
           "isEdited": {
             "type": "boolean",
-            "description": "\n    Indicates that this appointment has been independently changed from the original state it was in when\n    it was created as part of an appointment series\n    ",
+            "description": "\n Indicates that this appointment has been independently changed from the original state it was in when\n it was created as part of an appointment series\n ",
             "example": false
           },
           "updatedTime": {
             "type": "string",
             "format": "date-time",
-            "description": "\n    The date and time this appointment was last changed.\n    Will be null if this appointment has not been altered since it was created\n    "
+            "description": "\n The date and time this appointment was last changed.\n Will be null if this appointment has not been altered since it was created\n "
           },
           "updatedBy": {
             "type": "string",
-            "description": "\n    The username of the user that last edited this appointment.\n    Will be null if this appointment has not been altered since it was created\n    "
+            "description": "\n The username of the user that last edited this appointment.\n Will be null if this appointment has not been altered since it was created\n "
           },
           "isCancelled": {
             "type": "boolean",
-            "description": "\n    Indicates that this appointment has been cancelled\n    ",
+            "description": "\n Indicates that this appointment has been cancelled\n ",
             "example": false
           },
           "isDeleted": {
             "type": "boolean",
-            "description": "\n    Indicates that this appointment has been deleted and removed from scheduled events.\n    ",
+            "description": "\n Indicates that this appointment has been deleted and removed from scheduled events.\n ",
             "example": false
           },
           "cancelledTime": {
             "type": "string",
             "format": "date-time",
-            "description": "\n    The date and time this appointment was cancelled.\n    Will be null if this appointment has not been cancelled\n    "
+            "description": "\n The date and time this appointment was cancelled.\n Will be null if this appointment has not been cancelled\n "
           },
           "cancelledBy": {
             "type": "string",
-            "description": "\n    The username of the user who cancelled this appointment.\n    Will be null if this appointment has not been cancelled\n    "
+            "description": "\n The username of the user who cancelled this appointment.\n Will be null if this appointment has not been cancelled\n "
           }
         },
         "required": [
@@ -12545,7 +12449,7 @@
       },
       "AppointmentSeriesSummary": {
         "type": "object",
-        "description": "\n  Described on the UI as an \"Appointment series\" and only shown for repeat appointments.\n  The top level of the standard appointment hierarchy containing summary information of a limited set of the initial\n  property values common to all appointments in the series as well as the count of appointments in the series.\n  The properties at this level cannot be changed via the API however the child appointment property values can be changed\n  independently to support rescheduling, cancelling and altered attendee lists per appointment.\n  N.B. there is no collection of attending prisoners at this top level as all attendees are per appointment. This is to\n  support attendee modification for each scheduled appointment and to prevent altering the past by editing attendees\n  in an appointment series where some appointments have past.\n  ",
+        "description": "\n Described on the UI as an \"Appointment series\" and only shown for repeat appointments.\n The top level of the standard appointment hierarchy containing summary information of a limited set of the initial\n property values common to all appointments in the series as well as the count of appointments in the series.\n The properties at this level cannot be changed via the API however the child appointment property values can be changed\n independently to support rescheduling, cancelling and altered attendee lists per appointment.\n N.B. there is no collection of attending prisoners at this top level as all attendees are per appointment. This is to\n support attendee modification for each scheduled appointment and to prevent altering the past by editing attendees\n in an appointment series where some appointments have past.\n ",
         "properties": {
           "id": {
             "type": "integer",
@@ -12555,24 +12459,24 @@
           },
           "schedule": {
             "$ref": "#/components/schemas/AppointmentSeriesSchedule",
-            "description": "\n    Describes the schedule of the appointment series i.e. how the appointments in the series repeat. The frequency of\n    those appointments and how many appointments there are in total in the series.\n    If null, the appointment series has only one appointment. Note that the presence of this property does not mean\n    there is more than one appointment as a number of appointments value of one is valid.\n    "
+            "description": "\n Describes the schedule of the appointment series i.e. how the appointments in the series repeat. The frequency of\n those appointments and how many appointments there are in total in the series.\n If null, the appointment series has only one appointment. Note that the presence of this property does not mean\n there is more than one appointment as a number of appointments value of one is valid.\n "
           },
           "appointmentCount": {
             "type": "integer",
             "format": "int32",
-            "description": "\n    The total count of appointments in the series that have not been deleted. Counts both appointments in the past and\n    those scheduled.\n    "
+            "description": "\n The total count of appointments in the series that have not been deleted. Counts both appointments in the past and\n those scheduled.\n "
           },
           "scheduledAppointmentCount": {
             "type": "integer",
             "format": "int32",
-            "description": "\n    The count of the remaining scheduled appointments in the series that have not been cancelled or deleted.\n    "
+            "description": "\n The count of the remaining scheduled appointments in the series that have not been cancelled or deleted.\n "
           }
         },
         "required": ["appointmentCount", "id", "scheduledAppointmentCount"]
       },
       "AppointmentSetSummary": {
         "type": "object",
-        "description": "\n  Described on the UI as an \"Appointment set\" or \"set of back-to-back appointments\".\n  Contains the limited summary information needed to display the fact that an appointment was created as part of a set.\n  ",
+        "description": "\n Described on the UI as an \"Appointment set\" or \"set of back-to-back appointments\".\n Contains the limited summary information needed to display the fact that an appointment was created as part of a set.\n ",
         "properties": {
           "id": {
             "type": "integer",
@@ -12583,13 +12487,13 @@
           "appointmentCount": {
             "type": "integer",
             "format": "int32",
-            "description": "\n    The number of appointments in the set that have not been deleted. Counts both appointments in the past and\n    those scheduled.\n    ",
+            "description": "\n The number of appointments in the set that have not been deleted. Counts both appointments in the past and\n those scheduled.\n ",
             "example": 3
           },
           "scheduledAppointmentCount": {
             "type": "integer",
             "format": "int32",
-            "description": "\n    The count of the remaining scheduled appointments in the set that have not been cancelled or deleted.\n    "
+            "description": "\n The count of the remaining scheduled appointments in the set that have not been cancelled or deleted.\n "
           }
         },
         "required": ["appointmentCount", "id", "scheduledAppointmentCount"]
@@ -12625,17 +12529,17 @@
           },
           "prisonCode": {
             "type": "string",
-            "description": "\n    The NOMIS AGENCY_LOCATIONS.AGY_LOC_ID value for mapping to NOMIS.\n    ",
+            "description": "\n The NOMIS AGENCY_LOCATIONS.AGY_LOC_ID value for mapping to NOMIS.\n ",
             "example": "SKI"
           },
           "cellLocation": {
             "type": "string",
-            "description": "\n    The prisoner's residential cell location when inside the prison.\n    ",
+            "description": "\n The prisoner's residential cell location when inside the prison.\n ",
             "example": "A-1-002"
           },
           "category": {
             "type": "string",
-            "description": "\n    The prisoner's category.\n    ",
+            "description": "\n The prisoner's category.\n ",
             "example": "P"
           }
         },
@@ -12661,7 +12565,7 @@
           },
           "extraInformation": {
             "type": "string",
-            "description": "\n    Extra information for the prisoner or prisoners attending the appointment. Shown only on the appointments details\n    page and on printed movement slips. Wing staff will be notified there is extra information via the unlock list.\n    ",
+            "description": "\n Extra information for the prisoner or prisoners attending the appointment. Shown only on the appointments details\n page and on printed movement slips. Wing staff will be notified there is extra information via the unlock list.\n ",
             "example": "This appointment will help adjusting to life outside of prison",
             "maxLength": 4000,
             "minLength": 0
@@ -12701,7 +12605,7 @@
           },
           "customName": {
             "type": "string",
-            "description": "\n    Free text name further describing the appointment series. Will be used to create the appointment name using the\n    format \"Custom name (Category description) if specified.\n    ",
+            "description": "\n Free text name further describing the appointment series. Will be used to create the appointment name using the\n format \"Custom name (Category description) if specified.\n ",
             "example": "Meeting with the governor",
             "maxLength": 40,
             "minLength": 0
@@ -12709,7 +12613,7 @@
           "internalLocationId": {
             "type": "integer",
             "format": "int64",
-            "description": "\n    The NOMIS internal location id within the specified prison. This must be supplied if inCell is false.\n    The internal location id must exist, must be within the prison specified by the prisonCode property and be active. \n    ",
+            "description": "\n The NOMIS internal location id within the specified prison. This must be supplied if inCell is false.\n The internal location id must exist, must be within the prison specified by the prisonCode property and be active. \n ",
             "example": 123
           },
           "dpsLocationId": {
@@ -12720,7 +12624,7 @@
           },
           "inCell": {
             "type": "boolean",
-            "description": "\n    Flag to indicate if the location of the appointments is in cell rather than an internal prison location.\n    Internal location id will be ignored if inCell is true\n    ",
+            "description": "\n Flag to indicate if the location of the appointments is in cell rather than an internal prison location.\n Internal location id will be ignored if inCell is true\n ",
             "example": false
           },
           "startDate": {
@@ -12730,7 +12634,7 @@
           },
           "appointments": {
             "type": "array",
-            "description": "\n    The list of appointments to create\n    ",
+            "description": "\n The list of appointments to create\n ",
             "items": {
               "$ref": "#/components/schemas/AppointmentSetAppointment"
             },
@@ -12741,7 +12645,7 @@
       },
       "AppointmentSet": {
         "type": "object",
-        "description": "\n  Described on the UI as an \"Appointment set\" or \"set of back-to-back appointments\".\n  Contains the initial property values common to all appointment series and appointments in the set.\n  The properties at this level cannot be changed via the API.\n  ",
+        "description": "\n Described on the UI as an \"Appointment set\" or \"set of back-to-back appointments\".\n Contains the initial property values common to all appointment series and appointments in the set.\n The properties at this level cannot be changed via the API.\n ",
         "properties": {
           "id": {
             "type": "integer",
@@ -12769,13 +12673,13 @@
           },
           "customName": {
             "type": "string",
-            "description": "\n    Free text name further describing the appointment set. Used as part of the appointment name with the\n    format \"Custom name (Category description) if specified.\n    ",
+            "description": "\n Free text name further describing the appointment set. Used as part of the appointment name with the\n format \"Custom name (Category description) if specified.\n ",
             "example": "Meeting with the governor"
           },
           "internalLocationId": {
             "type": "integer",
             "format": "int64",
-            "description": "\n    The NOMIS AGENCY_INTERNAL_LOCATIONS.INTERNAL_LOCATION_ID value for mapping to NOMIS.\n    Will be null if in cell = true\n    ",
+            "description": "\n The NOMIS AGENCY_INTERNAL_LOCATIONS.INTERNAL_LOCATION_ID value for mapping to NOMIS.\n Will be null if in cell = true\n ",
             "example": 123
           },
           "dpsLocationId": {
@@ -12786,7 +12690,7 @@
           },
           "inCell": {
             "type": "boolean",
-            "description": "\n    Flag to indicate if the location of the appointment set is in cell rather than an internal prison location.\n    Internal location id should be null if in cell = true\n    ",
+            "description": "\n Flag to indicate if the location of the appointment set is in cell rather than an internal prison location.\n Internal location id should be null if in cell = true\n ",
             "example": false
           },
           "startDate": {
@@ -12808,7 +12712,7 @@
           },
           "createdBy": {
             "type": "string",
-            "description": "\n    The username of the user authenticated via HMPPS auth that created this appointment set.\n    Usually a NOMIS username\n    ",
+            "description": "\n The username of the user authenticated via HMPPS auth that created this appointment set.\n Usually a NOMIS username\n ",
             "example": "AAA01U"
           }
         },
@@ -12861,7 +12765,7 @@
           },
           "customName": {
             "type": "string",
-            "description": "\n    Free text name further describing the appointment series. Will be used to create the appointment name using the\n    format \"Custom name (Category description) if specified.\n    ",
+            "description": "\n Free text name further describing the appointment series. Will be used to create the appointment name using the\n format \"Custom name (Category description) if specified.\n ",
             "example": "Meeting with the governor",
             "maxLength": 40,
             "minLength": 0
@@ -12869,7 +12773,7 @@
           "internalLocationId": {
             "type": "integer",
             "format": "int64",
-            "description": "\n    The NOMIS internal location id within the specified prison. This must be supplied if inCell is false.\n    The internal location id must exist, must be within the prison specified by the prisonCode property and be active. \n    ",
+            "description": "\n The NOMIS internal location id within the specified prison. This must be supplied if inCell is false.\n The internal location id must exist, must be within the prison specified by the prisonCode property and be active. \n ",
             "example": 123
           },
           "dpsLocationId": {
@@ -12880,7 +12784,7 @@
           },
           "inCell": {
             "type": "boolean",
-            "description": "\n    Flag to indicate if the location of the appointment series is in cell rather than an internal prison location.\n    Internal location id will be ignored if inCell is true\n    ",
+            "description": "\n Flag to indicate if the location of the appointment series is in cell rather than an internal prison location.\n Internal location id will be ignored if inCell is true\n ",
             "example": false
           },
           "startDate": {
@@ -12900,11 +12804,11 @@
           },
           "schedule": {
             "$ref": "#/components/schemas/AppointmentSeriesSchedule",
-            "description": "\n    Describes the schedule of the appointment series i.e. how the appointments in the series will repeat. The frequency\n    of those appointments and how many appointments there will be in total in the series.\n    Will create a single appointment if not supplied.\n    "
+            "description": "\n Describes the schedule of the appointment series i.e. how the appointments in the series will repeat. The frequency\n of those appointments and how many appointments there will be in total in the series.\n Will create a single appointment if not supplied.\n "
           },
           "extraInformation": {
             "type": "string",
-            "description": "\n    Extra information for the prisoner or prisoners attending the appointment or appointments in the series.\n    Shown only on the appointments details page and on printed movement slips. Wing staff will be notified there is\n    extra information via the unlock list.\n    ",
+            "description": "\n Extra information for the prisoner or prisoners attending the appointment or appointments in the series.\n Shown only on the appointments details page and on printed movement slips. Wing staff will be notified there is\n extra information via the unlock list.\n ",
             "example": "This appointment will help adjusting to life outside of prison",
             "maxLength": 4000,
             "minLength": 0
@@ -12912,7 +12816,7 @@
           "originalAppointmentId": {
             "type": "integer",
             "format": "int64",
-            "description": "\n    The id of the original appointment that the new appointment was copied from\n    ",
+            "description": "\n The id of the original appointment that the new appointment was copied from\n ",
             "example": 789
           }
         },
@@ -13690,7 +13594,7 @@
       },
       "ActivitySchedule": {
         "type": "object",
-        "description": "\n  Describes the weekly schedule for an activity. There can be several of these defined for one activity.\n  An activity schedule describes when, during the week, an activity will be run and where.\n  e.g. Tuesday PM and Thursday AM - suitable for Houseblock 2 to attend.\n  e.g. Monday AM and Thursday PM - suitable for Houseblock 3 to attend.\n  ",
+        "description": "\n Describes the weekly schedule for an activity. There can be several of these defined for one activity.\n An activity schedule describes when, during the week, an activity will be run and where.\n e.g. Tuesday PM and Thursday AM - suitable for Houseblock 2 to attend.\n e.g. Monday AM and Thursday PM - suitable for Houseblock 3 to attend.\n ",
         "properties": {
           "id": {
             "type": "integer",
@@ -13913,7 +13817,7 @@
           "applicationDate": {
             "type": "string",
             "format": "date",
-            "description": "\n      The updated past or present date on which the waiting list application was requested.\n      \n      Note this cannot be after the date the waiting list application was first made.\n    ",
+            "description": "\n The updated past or present date on which the waiting list application was requested.\n \n Note this cannot be after the date the waiting list application was first made.\n ",
             "example": "2023-06-23"
           },
           "requestedBy": {
@@ -13964,7 +13868,7 @@
         "properties": {
           "categoryCode": {
             "type": "string",
-            "description": "\n    The updated NOMIS reference code. Must exist and be active.\n    ",
+            "description": "\n The updated NOMIS reference code. Must exist and be active.\n ",
             "example": "GYMW"
           },
           "tierCode": {
@@ -13982,24 +13886,24 @@
           "internalLocationId": {
             "type": "integer",
             "format": "int64",
-            "description": "\n    The updated NOMIS internal location id within the specified prison. This or DPS location id must be supplied if inCell is false.\n    The internal location id must exist, must be within the prison specified by the prisonCode property on the\n    appointment and be active. \n    ",
+            "description": "\n The updated NOMIS internal location id within the specified prison. This or DPS location id must be supplied if inCell is false.\n The internal location id must exist, must be within the prison specified by the prisonCode property on the\n appointment and be active. \n ",
             "example": 123
           },
           "dpsLocationId": {
             "type": "string",
             "format": "uuid",
-            "description": "\n      The updated DPS location id within the specified prison. This or NOMIS internal location id must be supplied if inCell is false.\n      The DPS location UUID must exist, must be within the prison specified by the prisonCode property on the\n      appointment and be active. \n    ",
+            "description": "\n The updated DPS location id within the specified prison. This or NOMIS internal location id must be supplied if inCell is false.\n The DPS location UUID must exist, must be within the prison specified by the prisonCode property on the\n appointment and be active. \n ",
             "example": "b7602cc8-e769-4cbb-8194-62d8e655992a"
           },
           "inCell": {
             "type": "boolean",
-            "description": "\n    Flag to indicate if the location of the appointment or appointments is in cell rather than an internal prison location.\n    Internal location id will be ignored if inCell is true\n    ",
+            "description": "\n Flag to indicate if the location of the appointment or appointments is in cell rather than an internal prison location.\n Internal location id will be ignored if inCell is true\n ",
             "example": false
           },
           "startDate": {
             "type": "string",
             "format": "date",
-            "description": "\n    The updated date of the appointment. NOTE: this property specifies the start date to use along with the existing\n    schedule frequency to move all appointments that will take place after the appointment when used in conjunction\n    with the applyTo property\n    "
+            "description": "\n The updated date of the appointment. NOTE: this property specifies the start date to use along with the existing\n schedule frequency to move all appointments that will take place after the appointment when used in conjunction\n with the applyTo property\n "
           },
           "startTime": {
             "type": "string",
@@ -14013,7 +13917,7 @@
           },
           "extraInformation": {
             "type": "string",
-            "description": "\n    Updated extra information for the prisoner or prisoners attending the appointment or appointments.\n    Shown only on the appointments details page and on printed movement slips. Wing staff will be notified there is\n    extra information via the unlock list.\n    ",
+            "description": "\n Updated extra information for the prisoner or prisoners attending the appointment or appointments.\n Shown only on the appointments details page and on printed movement slips. Wing staff will be notified there is\n extra information via the unlock list.\n ",
             "example": "This appointment will help adjusting to life outside of prison",
             "maxLength": 4000,
             "minLength": 0
@@ -14036,7 +13940,7 @@
           },
           "applyTo": {
             "type": "string",
-            "description": "\n    Specifies which appointment or appointments this update should apply to.\n    Defaults to THIS_APPOINTMENT meaning the update will be applied to the appointment specified by the\n    supplied id only.\n    ",
+            "description": "\n Specifies which appointment or appointments this update should apply to.\n Defaults to THIS_APPOINTMENT meaning the update will be applied to the appointment specified by the\n supplied id only.\n ",
             "enum": ["THIS_APPOINTMENT", "THIS_AND_ALL_FUTURE_APPOINTMENTS", "ALL_FUTURE_APPOINTMENTS"],
             "example": "THIS_APPOINTMENT"
           },
@@ -14291,7 +14195,7 @@
       },
       "AttendanceSync": {
         "type": "object",
-        "description": "\n  Represents the key data required to synchronise an attendance with Nomis \n  ",
+        "description": "\n Represents the key data required to synchronise an attendance with Nomis \n ",
         "properties": {
           "attendanceId": {
             "type": "integer",
@@ -14929,13 +14833,13 @@
       "PageActivityCandidate": {
         "type": "object",
         "properties": {
-          "totalPages": {
-            "type": "integer",
-            "format": "int32"
-          },
           "totalElements": {
             "type": "integer",
             "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
           },
           "first": {
             "type": "boolean"
@@ -15128,6 +15032,11 @@
             "$ref": "#/components/schemas/InternalLocation",
             "description": "The NOMIS internal location for this schedule"
           },
+          "dpsLocationId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The optional DPS location UUID for this schedule"
+          },
           "cancelled": {
             "type": "boolean",
             "description": "Flag to indicate if the scheduled instance has been cancelled",
@@ -15277,7 +15186,7 @@
       },
       "AppointmentCountSummary": {
         "type": "object",
-        "description": "\n  A count summary of appointments based on a category\n  ",
+        "description": "\n A count summary of appointments based on a category\n ",
         "properties": {
           "appointmentCategorySummary": {
             "$ref": "#/components/schemas/AppointmentCategorySummary",
@@ -15394,12 +15303,12 @@
       },
       "InternalLocationEventsSummary": {
         "type": "object",
-        "description": "\n  The summary of an internal location that has events scheduled to take place there. Supports movement lists.\n  Will contain additional summary information about the events taking place at the location as well as the total\n  number of prisoners due to arrive at the location.\n  The system of record for internal locations is NOMIS and they are managed in that application.\n  ",
+        "description": "\n The summary of an internal location that has events scheduled to take place there. Supports movement lists.\n Will contain additional summary information about the events taking place at the location as well as the total\n number of prisoners due to arrive at the location.\n The system of record for internal locations is NOMIS and they are managed in that application.\n ",
         "properties": {
           "id": {
             "type": "integer",
             "format": "int64",
-            "description": "\n    The id of the internal location. Mapped from AGENCY_INTERNAL_LOCATIONS.INTERNAL_LOCATION_ID in NOMIS.\n    ",
+            "description": "\n The id of the internal location. Mapped from AGENCY_INTERNAL_LOCATIONS.INTERNAL_LOCATION_ID in NOMIS.\n ",
             "example": 27723
           },
           "dpsLocationId": {
@@ -15410,7 +15319,7 @@
           },
           "prisonCode": {
             "type": "string",
-            "description": "\n    The prison code/agency id of the internal location. Mapped from AGENCY_LOCATIONS.AGY_LOC_ID in NOMIS.\n    ",
+            "description": "\n The prison code/agency id of the internal location. Mapped from AGENCY_LOCATIONS.AGY_LOC_ID in NOMIS.\n ",
             "example": "SKI"
           },
           "code": {
@@ -15727,7 +15636,7 @@
       },
       "AllAttendance": {
         "type": "object",
-        "description": "\n  Represents the key data required to report on attendance \n  ",
+        "description": "\n Represents the key data required to report on attendance \n ",
         "properties": {
           "attendanceId": {
             "type": "integer",
@@ -15963,7 +15872,7 @@
       },
       "AppointmentAttendanceSummary": {
         "type": "object",
-        "description": "\n  Contains the summary information of a limited set the appointment properties along with counts of appointment attendance\n  records. Supports management level views of appointment attendance and statistics.\n  ",
+        "description": "\n Contains the summary information of a limited set the appointment properties along with counts of appointment attendance\n records. Supports management level views of appointment attendance and statistics.\n ",
         "properties": {
           "id": {
             "type": "integer",
@@ -15978,7 +15887,7 @@
           },
           "appointmentName": {
             "type": "string",
-            "description": "\n    The appointment's name combining the optional custom name with the category description. If custom name has been\n    specified, the name format will be \"Custom name (Category description)\" \n    "
+            "description": "\n The appointment's name combining the optional custom name with the category description. If custom name has been\n specified, the name format will be \"Custom name (Category description)\" \n "
           },
           "internalLocation": {
             "$ref": "#/components/schemas/AppointmentLocationSummary",
@@ -16035,7 +15944,7 @@
           },
           "attendees": {
             "type": "array",
-            "description": "\n    The prisoner or prisoners attending this appointment. Appointments of type INDIVIDUAL will have one\n    prisoner attending each appointment. Appointments of type GROUP can have more than one prisoner\n    attending each appointment\n    ",
+            "description": "\n The prisoner or prisoners attending this appointment. Appointments of type INDIVIDUAL will have one\n prisoner attending each appointment. Appointments of type GROUP can have more than one prisoner\n attending each appointment\n ",
             "items": {
               "$ref": "#/components/schemas/AppointmentAttendeeSearchResult"
             }
@@ -16063,7 +15972,7 @@
       },
       "AppointmentSetDetails": {
         "type": "object",
-        "description": "\n  Described on the UI as an \"Appointment set\" or \"set of back-to-back appointments\".\n  Contains the full details of the initial property values common to all appointments in the set for display purposes.\n  The properties at this level cannot be changed via the API.\n  ",
+        "description": "\n Described on the UI as an \"Appointment set\" or \"set of back-to-back appointments\".\n Contains the full details of the initial property values common to all appointments in the set for display purposes.\n The properties at this level cannot be changed via the API.\n ",
         "properties": {
           "id": {
             "type": "integer",
@@ -16078,24 +15987,24 @@
           },
           "appointmentName": {
             "type": "string",
-            "description": "\n    The appointment set's name combining the optional custom name with the category description. If custom name has been\n    specified, the name format will be \"Custom name (Category description)\" \n    "
+            "description": "\n The appointment set's name combining the optional custom name with the category description. If custom name has been\n specified, the name format will be \"Custom name (Category description)\" \n "
           },
           "category": {
             "$ref": "#/components/schemas/AppointmentCategorySummary",
-            "description": "\n    The summary of the category used to create the set of appointment series\n    "
+            "description": "\n The summary of the category used to create the set of appointment series\n "
           },
           "customName": {
             "type": "string",
-            "description": "\n    Free text name further describing the appointment set. Used as part of the appointment name with the\n    format \"Custom name (Category description) if specified.\n    ",
+            "description": "\n Free text name further describing the appointment set. Used as part of the appointment name with the\n format \"Custom name (Category description) if specified.\n ",
             "example": "Meeting with the governor"
           },
           "internalLocation": {
             "$ref": "#/components/schemas/AppointmentLocationSummary",
-            "description": "\n    The summary of the internal location of the appointment series in the set. Will be null if in cell = true\n    "
+            "description": "\n The summary of the internal location of the appointment series in the set. Will be null if in cell = true\n "
           },
           "inCell": {
             "type": "boolean",
-            "description": "\n    Flag to indicate if the location of the appointment series in the set is in cell rather than an internal prison location.\n    Internal location id should be null if in cell = true\n    ",
+            "description": "\n Flag to indicate if the location of the appointment series in the set is in cell rather than an internal prison location.\n Internal location id should be null if in cell = true\n ",
             "example": false
           },
           "startDate": {
@@ -16117,23 +16026,23 @@
           },
           "createdBy": {
             "type": "string",
-            "description": "\n    The username of the user that created this appointment set\n    "
+            "description": "\n The username of the user that created this appointment set\n "
           },
           "updatedTime": {
             "type": "string",
             "format": "date-time",
-            "description": "\n    The date and time one or more appointments in this set was last changed.\n    Will be null if no appointments in the set have been altered since they were created\n    "
+            "description": "\n The date and time one or more appointments in this set was last changed.\n Will be null if no appointments in the set have been altered since they were created\n "
           },
           "updatedBy": {
             "type": "string",
-            "description": "\n    The username of the user that last edited one or more appointments in this set.\n    Will be null if no appointments in the set have been altered since they were created\n    "
+            "description": "\n The username of the user that last edited one or more appointments in this set.\n Will be null if no appointments in the set have been altered since they were created\n "
           }
         },
         "required": ["appointmentName", "appointments", "category", "createdBy", "createdTime", "id", "inCell", "prisonCode", "startDate"]
       },
       "AppointmentSeriesDetails": {
         "type": "object",
-        "description": "\n  Described on the UI as an \"Appointment series\" and only shown for repeat appointments.\n  The top level of the standard appointment hierarchy containing full details of the initial property values common to\n  all appointments in the series for display purposes.\n  Contains the summary collection of all the child appointments in the series plus the schedule definition if the\n  appointment series repeats.\n  The properties at this level cannot be changed via the API however the child appointment property values can be changed\n  independently to support rescheduling, cancelling and altered attendee lists per appointment.\n  N.B. there is no collection of attending prisoners at this top level as all attendees are per appointment. This is to\n  support attendee modification for each scheduled appointment and to prevent altering the past by editing attendees\n  in an appointment series where some appointments have past.\n  ",
+        "description": "\n Described on the UI as an \"Appointment series\" and only shown for repeat appointments.\n The top level of the standard appointment hierarchy containing full details of the initial property values common to\n all appointments in the series for display purposes.\n Contains the summary collection of all the child appointments in the series plus the schedule definition if the\n appointment series repeats.\n The properties at this level cannot be changed via the API however the child appointment property values can be changed\n independently to support rescheduling, cancelling and altered attendee lists per appointment.\n N.B. there is no collection of attending prisoners at this top level as all attendees are per appointment. This is to\n support attendee modification for each scheduled appointment and to prevent altering the past by editing attendees\n in an appointment series where some appointments have past.\n ",
         "properties": {
           "id": {
             "type": "integer",
@@ -16154,11 +16063,11 @@
           },
           "appointmentName": {
             "type": "string",
-            "description": "\n    The appointment series' name combining the optional custom name with the category description. If custom name has been\n    specified, the name format will be \"Custom name (Category description)\" \n    "
+            "description": "\n The appointment series' name combining the optional custom name with the category description. If custom name has been\n specified, the name format will be \"Custom name (Category description)\" \n "
           },
           "category": {
             "$ref": "#/components/schemas/AppointmentCategorySummary",
-            "description": "\n    The summary of the appointment series' category\n    "
+            "description": "\n The summary of the appointment series' category\n "
           },
           "tier": {
             "$ref": "#/components/schemas/EventTier",
@@ -16170,16 +16079,16 @@
           },
           "customName": {
             "type": "string",
-            "description": "\n    Free text name further describing the appointment series. Used as part of the appointment name with the\n    format \"Custom name (Category description) if specified.\n    ",
+            "description": "\n Free text name further describing the appointment series. Used as part of the appointment name with the\n format \"Custom name (Category description) if specified.\n ",
             "example": "Meeting with the governor"
           },
           "internalLocation": {
             "$ref": "#/components/schemas/AppointmentLocationSummary",
-            "description": "\n    The summary of the internal location this appointment series will take place. Will be null if in cell = true\n    "
+            "description": "\n The summary of the internal location this appointment series will take place. Will be null if in cell = true\n "
           },
           "inCell": {
             "type": "boolean",
-            "description": "\n    Flag to indicate if the location of the appointment series is in cell rather than an internal prison location.\n    Internal location id should be null if in cell = true\n    ",
+            "description": "\n Flag to indicate if the location of the appointment series is in cell rather than an internal prison location.\n Internal location id should be null if in cell = true\n ",
             "example": false
           },
           "startDate": {
@@ -16199,11 +16108,11 @@
           },
           "schedule": {
             "$ref": "#/components/schemas/AppointmentSeriesSchedule",
-            "description": "\n    Describes the schedule of the appointment series i.e. how the appointments in the series repeat. The frequency of\n    those appointments and how many appointments there are in total in the series.\n    If null, the appointment series has only one appointment. Note that the presence of this property does not mean\n    there is more than one appointment as a number of appointments value of one is valid.\n    "
+            "description": "\n Describes the schedule of the appointment series i.e. how the appointments in the series repeat. The frequency of\n those appointments and how many appointments there are in total in the series.\n If null, the appointment series has only one appointment. Note that the presence of this property does not mean\n there is more than one appointment as a number of appointments value of one is valid.\n "
           },
           "extraInformation": {
             "type": "string",
-            "description": "\n    Extra information for the prisoner or prisoners attending the appointment or appointments in the series.\n    Shown only on the appointments details page and on printed movement slips. Wing staff will be notified there is\n    extra information via the unlock list.\n    ",
+            "description": "\n Extra information for the prisoner or prisoners attending the appointment or appointments in the series.\n Shown only on the appointments details page and on printed movement slips. Wing staff will be notified there is\n extra information via the unlock list.\n ",
             "example": "This appointment will help adjusting to life outside of prison"
           },
           "createdTime": {
@@ -16213,20 +16122,20 @@
           },
           "createdBy": {
             "type": "string",
-            "description": "\n    The username of the user that created this appointment series\n    "
+            "description": "\n The username of the user that created this appointment series\n "
           },
           "updatedTime": {
             "type": "string",
             "format": "date-time",
-            "description": "\n    The date and time one or more appointments in this series was last changed.\n    Will be null if no appointments in the series have been altered since they were created\n    "
+            "description": "\n The date and time one or more appointments in this series was last changed.\n Will be null if no appointments in the series have been altered since they were created\n "
           },
           "updatedBy": {
             "type": "string",
-            "description": "\n    The username of the user that last edited one or more appointments in this series.\n    Will be null if no appointments in the series have been altered since they were created\n    "
+            "description": "\n The username of the user that last edited one or more appointments in this series.\n Will be null if no appointments in the series have been altered since they were created\n "
           },
           "appointments": {
             "type": "array",
-            "description": "\n    Summary of the individual appointment or appointments in this series both expired and scheduled.\n    Non recurring appointment series will have a single appointment containing the same property values as the parent\n    appointment series. The same start date, time and end time. Recurring appointment series will have one or more\n    appointments. The first in the series will also contain the same property values as the parent appointment series\n    and subsequent appointments will have start dates following on from the original start date incremented as specified\n    by the series' schedule. Each appointment can be edited independently of the parent. All properties of an\n    appointment are separate to those of the parent appointment series.\n    The full series of appointments specified by the schedule will have been created in advance.\n    ",
+            "description": "\n Summary of the individual appointment or appointments in this series both expired and scheduled.\n Non recurring appointment series will have a single appointment containing the same property values as the parent\n appointment series. The same start date, time and end time. Recurring appointment series will have one or more\n appointments. The first in the series will also contain the same property values as the parent appointment series\n and subsequent appointments will have start dates following on from the original start date incremented as specified\n by the series' schedule. Each appointment can be edited independently of the parent. All properties of an\n appointment are separate to those of the parent appointment series.\n The full series of appointments specified by the schedule will have been created in advance.\n ",
             "items": {
               "$ref": "#/components/schemas/AppointmentSummary"
             }
@@ -16248,7 +16157,7 @@
       },
       "AppointmentSummary": {
         "type": "object",
-        "description": "\n  Described on the UI as an \"Appointment\" and represents the scheduled event on a specific date and time.\n  Contains the summary information of a limited set the appointment properties. N.B. does not contain \n  information on the prisoners attending this appointment to improve API performance.\n  All updates and cancellations happen at this appointment level with the parent appointment series or set being immutable.\n  ",
+        "description": "\n Described on the UI as an \"Appointment\" and represents the scheduled event on a specific date and time.\n Contains the summary information of a limited set the appointment properties. N.B. does not contain \n information on the prisoners attending this appointment to improve API performance.\n All updates and cancellations happen at this appointment level with the parent appointment series or set being immutable.\n ",
         "properties": {
           "id": {
             "type": "integer",
@@ -16279,17 +16188,17 @@
           },
           "isEdited": {
             "type": "boolean",
-            "description": "\n    Indicates that this appointment has been independently changed from the original state it was in when\n    it was created as part of an appointment series\n    ",
+            "description": "\n Indicates that this appointment has been independently changed from the original state it was in when\n it was created as part of an appointment series\n ",
             "example": false
           },
           "isCancelled": {
             "type": "boolean",
-            "description": "\n    Indicates that this appointment has been cancelled\n    ",
+            "description": "\n Indicates that this appointment has been cancelled\n ",
             "example": false
           },
           "isDeleted": {
             "type": "boolean",
-            "description": "\n    Indicates that this appointment has been deleted and removed from scheduled events.\n    ",
+            "description": "\n Indicates that this appointment has been deleted and removed from scheduled events.\n ",
             "example": false
           }
         },

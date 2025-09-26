@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_STUBBED_CONTACT_EVENTS_DATA
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address
@@ -19,10 +21,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.StatusInfor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusContactEvent
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusContactEvents
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusSupervisions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.UserAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.ContactDetailsWithAddress
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.Offender
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.ContactEventStubGenerator.generateNDeliusContactEvent
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.ContactEventStubGenerator.generateNDeliusContactEvents
 
 @Component
 class NDeliusGateway(
@@ -32,6 +38,9 @@ class NDeliusGateway(
 
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
+
+  @Autowired
+  lateinit var featureFlagConfig: FeatureFlagConfig
 
   fun getOffencesForPerson(id: String): Response<List<Offence>> {
     val result =
@@ -309,12 +318,69 @@ class NDeliusGateway(
             .map { it.toAddress() },
         )
       }
-
       is WebClientWrapperResponse.Error -> {
         Response(
           data = emptyList(),
           errors = result.errors,
         )
+      }
+    }
+  }
+
+  fun getContactEventsForPerson(
+    crn: String,
+    pageNo: Int,
+    perPage: Int,
+  ): Response<NDeliusContactEvents?> {
+    if (featureFlagConfig.isEnabled(USE_STUBBED_CONTACT_EVENTS_DATA)) {
+      return Response(generateNDeliusContactEvents(crn, perPage, pageNo, 10))
+    }
+
+    val result =
+      webClient.request<NDeliusContactEvents>(
+        HttpMethod.GET,
+        "/case/$crn/contacts?page=$pageNo&size=$perPage",
+        authenticationHeader(),
+        UpstreamApi.NDELIUS,
+        badRequestAsError = true,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getContactEventForPerson(
+    crn: String,
+    contactEventId: Long,
+  ): Response<NDeliusContactEvent?> {
+    if (featureFlagConfig.isEnabled(USE_STUBBED_CONTACT_EVENTS_DATA)) {
+      return Response(generateNDeliusContactEvent(contactEventId, crn))
+    }
+
+    val result =
+      webClient.request<NDeliusContactEvent>(
+        HttpMethod.GET,
+        "/case/$crn/contacts/$contactEventId",
+        authenticationHeader(),
+        UpstreamApi.NDELIUS,
+      )
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(result.data)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(null, result.errors)
       }
     }
   }

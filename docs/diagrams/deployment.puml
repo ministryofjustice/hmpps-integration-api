@@ -12,7 +12,7 @@
 
     'skinparam linetype polyline
 
-    Title [Deployment Flow] HMPPS Integration API
+    Title [Deployment Flow] HMPPS External API
 
     AddRelTag("subprocess", $textColor="#808080", $lineColor="#808080", $lineStyle = DashedLine())
 
@@ -23,7 +23,7 @@
     Person(engineer, "Engineer")
 
     Boundary(local, "Local", "Developer Machine"){
-        Container(hmpps_integration_api, "HMPPS Integration API", "Local Branch", $sprite=kotlin*0.4)
+        Container(hmpps_integration_api, "HMPPS External API", "Local Branch", $sprite=kotlin*0.4)
     }
 
     Container(git, "Source Control", "Git", $sprite=github-icon*0.6)
@@ -44,8 +44,8 @@
                 Container(dev_ecr, "Container Registry", "Elastic Container Registry (ECR)")
 
                 Boundary(dev_service, "Service", "Kubernetes"){
-                    Container(hmpps_integration_api_dev_pod1, "HMPPS Integration API", "Pod", $TEXT_APIPOD, $sprite=kubernetes*0.4)
-                    Container(hmpps_integration_api_dev_pod2, "HMPPS Integration API", "Pod", $TEXT_APIPOD, $sprite=kubernetes*0.4)
+                    Container(hmpps_integration_api_dev_pod1, "HMPPS External API", "Pod", $TEXT_APIPOD, $sprite=kubernetes*0.4)
+                    Container(hmpps_integration_api_dev_pod2, "HMPPS External API", "Pod", $TEXT_APIPOD, $sprite=kubernetes*0.4)
                 }
             }
 
@@ -61,8 +61,8 @@
                 Container(preprod_ecr, "Container Registry", "Elastic Container Registry (ECR)")
 
                 Boundary(preprod_service, "Service", "Kubernetes"){
-                    Container(hmpps_integration_api_preprod_pod1, "HMPPS Integration API", "Pod", $TEXT_APIPOD, $sprite=kubernetes*0.4)
-                    Container(hmpps_integration_api_preprod_pod2, "HMPPS Integration API", "Pod", $TEXT_APIPOD, $sprite=kubernetes*0.4)
+                    Container(hmpps_integration_api_preprod_pod1, "HMPPS External API", "Pod", $TEXT_APIPOD, $sprite=kubernetes*0.4)
+                    Container(hmpps_integration_api_preprod_pod2, "HMPPS External API", "Pod", $TEXT_APIPOD, $sprite=kubernetes*0.4)
                 }
             }
 
@@ -77,8 +77,8 @@
                 Container(prod_ecr, "Container Registry", "Elastic Container Registry (ECR)")
 
                 Boundary(prod_service, "Service", "Kubernetes"){
-                    Container(hmpps_integration_api_prod_pod1, "HMPPS Integration API", "Pod", $TEXT_APIPOD, $sprite=kubernetes*0.4)
-                    Container(hmpps_integration_api_prod_pod2, "HMPPS Integration API", "Pod", $TEXT_APIPOD, $sprite=kubernetes*0.4)
+                    Container(hmpps_integration_api_prod_pod1, "HMPPS External API", "Pod", $TEXT_APIPOD, $sprite=kubernetes*0.4)
+                    Container(hmpps_integration_api_prod_pod2, "HMPPS Exernal API", "Pod", $TEXT_APIPOD, $sprite=kubernetes*0.4)
                 }
             }
 
