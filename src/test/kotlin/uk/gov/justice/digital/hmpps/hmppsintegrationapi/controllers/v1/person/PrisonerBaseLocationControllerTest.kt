@@ -3,6 +3,8 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.person
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.times
@@ -23,6 +25,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonerBaseLocationForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.RedactionService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.time.LocalDate
 
@@ -32,6 +35,7 @@ internal class PrisonerBaseLocationControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getPrisonerBaseLocationForPersonService: GetPrisonerBaseLocationForPersonService,
   @MockitoBean val auditService: AuditService,
+  @MockitoBean val redactionService: RedactionService,
 ) : DescribeSpec(
     {
       val hmppsId = "A1234AA"
@@ -61,6 +65,10 @@ internal class PrisonerBaseLocationControllerTest(
           reset(getPrisonerBaseLocationForPersonService)
           reset(auditService)
           whenever(getPrisonerBaseLocationForPersonService.execute(hmppsId, filters)).thenReturn(Response(data = prisonerBaseLocationReceived()))
+
+          doAnswer { invocation ->
+            invocation.arguments[0]
+          }.whenever(redactionService).applyPolicies(any(), any())
         }
 
         it("returns a 200 OK status code") {

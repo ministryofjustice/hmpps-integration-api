@@ -6,6 +6,7 @@ import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -29,6 +30,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetRiskManagementPlansForCrnService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.RedactionService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -42,6 +44,7 @@ class RiskManagementControllerTest(
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getCaseAccess: GetCaseAccess,
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
+  @MockitoBean val redactionService: RedactionService,
 ) : DescribeSpec({
     val hmppsId = "D1974X"
     val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
@@ -95,6 +98,9 @@ class RiskManagementControllerTest(
               ),
           ),
         )
+        doAnswer { invocation ->
+          invocation.arguments[0]
+        }.whenever(redactionService).applyPolicies(any(), any())
       }
 
       it("Returns 200 OK") {

@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig
 
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.allEndpoints
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.curious
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.constants
@@ -14,6 +15,7 @@ data class Role(
   val name: String? = null,
   val include: List<String>? = null,
   val filters: ConsumerFilters? = null,
+  val redactionPolicies: List<RedactionPolicy>? = null,
 )
 
 val roleConstants =
