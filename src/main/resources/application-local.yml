@@ -57,6 +57,7 @@ feature-flag:
   use-deallocation-reasons-endpoint: true
   use-allocation-endpoint: true
   use-education-endpoint: true
+  use-expression-of-interest-endpoint: true
   use-prisoner-base-location-endpoint: true
   use-historical-attendances-endpoint: true
   use-suitability-endpoint: true
@@ -65,7 +66,9 @@ feature-flag:
   simple-redaction: true
   education-trigger-enabled: true
   education-aln-trigger-enabled: true
-  cache-auth-token: true
+  use-contact-events-endpoint: true
+  use-stubbed-contact-events-data: false
+  use-roles-dsl: true
 
 authorisation:
   consumers:

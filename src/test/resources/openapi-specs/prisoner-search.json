@@ -2,12 +2,12 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Prisoner Search",
-    "description": "<div>\n  <h2 id=\"overview\">Overview</h2>\n  <p>This service provides a number of endpoints for searching and reading prisoners that have been registered with the\n    HMPPS prison service. This may be current or previous prisoners or other people that might be in secure\n    hospitals.</p>\n  <h2 id=\"data-provided\">Data provided</h2>\n  <p>The vast majority of the data is sourced from the NOMIS system though in the future this is likely to change as\n    more HMPPS prison data is held outside NOMIS.</p>\n  <p>The data for a person is stored in Elastic Search and is updated after a record in NOMIS is changed. This is\n    typically about a minute after the data is changed in NOMIS. In the unlikely circumstance that your service needs\n    data that is 100% up to date with NOMIS then the\n    <a href=\"https://prison-api-dev.prison.service.justice.gov.uk/swagger-ui/index.html\">prison-api</a>\n    might be a better service to use.\n    One use case this might be appropriate for is if you need up-to-date data at the point a NOMIS prisoner event\n    is received; this service also updates its records as a result of NOMIS prisoner events, so you might encounter a\n    race\n    condition if your read is triggered from the same event.\n  </p>\n  <div>The data returned for each prisoner record is essentially a snapshot of key prisoner data. This includes the\n    following:\n    <ul>\n      <li>Identifiers from both NOMIS and those held in other systems</li>\n      <li>Personal details such as name and date of birth (including aliases)</li>\n      <li>Current prison status such as the current location (including cell)</li>\n      <li>Latest sentence details</li>\n      <li>Alerts</li>\n    </ul>\n    See the schema definition for the API for full details.\n  </div>\n  <h3 id=\"response-fields\">Filtering response data</h3>\n  <div>The <strong>Prisoner</strong> object returned from most endpoints has grown very large over time. This has become problematic for a few reasons:\n     <ul>\n      <li>Calls with a large number of results can have exceedingly large payloads returned, sometimes breaking response size limits</li>\n      <li>Some data points aren't suitable for all clients, in particular 3rd parties should not receive data they don't explicitly need</li>\n      <li>Most teams are only interested in a small portion of the response object; the rest is superfluous, noisy and a waste of resource</li>\n    </ul>\n  </div>\n  <p>\n    To address these issues, endpoints that return the <strong>Prisoner</strong> object now support filtering of response data via the\n    <strong>responseFields</strong> query parameter.\n  </p>\n  <p>\n    For example, to only return the prisoner's name and date of birth,\n    you would use query: <strong>/prisoner/A1234BC?responseFields=firstName,lastName,dateOfBirth</strong>\n  </p>\n  <p>\n    Note that it is also possible to specify nested objects or fields from lists of objects, for example:\n    <strong>/prisoner/A1234BC?responseFields=aliases.lastName,currentIncentive.level</strong>\n  </p>\n  <p>\n    To find which fields can be included as <strong>responseFields</strong> call the endpoint <a href=\"#/Developer information/responseFields\" target=\"_blank\">GET /response-fields</a>.\n  </p>\n  <h2 id=\"role-restrictions\">Role restrictions</h2>\n  <p>\n    Role restrictions in this service are applied by a `@PreAuthorize` annotation at either resource or service level.\n    Furthermore the annotation can be applied at individual method level or class level.\n  </p>\n  <p>\n    Each endpoint in this API documentation should normally include what restrictions are applied. If there is any doubt\n    then it is worth looking at the github repository at\n    https://github.com/ministryofjustice/hmpps-prisoner-search/ and looking at the endpoint in question.\n  </p>\n\n  The following roles are currently in use in this service:\n  <ul>\n    <li>\n      ROLE_PRISONER_SEARCH. This role grants access to all of the search endpoints.\n    </li>\n    <li>\n      ROLE_PRISONER_IN_PRISON_SEARCH. This role is limited to protect the \"/prison/{prisonId}/prisoners\" endpoint for\n      clients that only need access to this endpoint in prisoner offender search. For more general access the\n      ROLE_PRISONER_SEARCH would be more suitable.\n    </li>\n    <li>\n      ROLE_VIEW_PRISONER_DATA. This role is only needed at present for the \"/prisoner/{id}\" endpoint to retrieve\n      detailed information about a particular prisoner, as opposed to the rest of the search endpoints in this service\n      that can return multiple matches.\n    </li>\n    <li>\n      ROLE_GLOBAL_SEARCH. This role is deprecated and replaced by the ROLE_PRISONER_SEARCH. All of the endpoints in\n      this service that accept this role also accept ROLE_PRISONER_SEARCH so the latter should be used in preference.\n      It was originally created for Prison API and is still in use there.\n    </li>\n    <li>\n      ROLE_EVENTS_ADMIN. This role is only needed for the \"/events/prisoner/received/{prisonerNumber}\" endpoint\n      and is only required in the event that a prisoner event wasn't raised by the service when their data in the\n      service\n      had changed.\n    </li>\n  </ul>\n  <h2 id=\"types-of-endpoints\">Types of endpoints</h2>\n  <h3>Searching for a specific prisoner based on criteria</h3>\n  <p>\n    These are endpoints that use the core Elastic Search features to locate a prisoner record based on a set of\n    criteria;\n    for instance name, date of birth or unique identifier (such as the Police National Computer PNC number).\n    Typically, they return many results and a summary of those results would be presented to an end user.\n  </p>\n  <h3>Matching records</h3>\n  <p>\n    Similar to searching but typically using a criteria from a different system; for instance, key data from a probation\n    record or court record.\n    These will use an algorithm that matches based on data that is likely to be most reliable for matching; for\n    instance,\n    PNC number or name with date of birth.\n  </p>\n  <h3>Retrieving a specific record</h3>\n  <p>\n    Retrieving a specific record typically by a unique identifier; for instance, prisoner number (aka NOMS number). This\n    is a convenient way of viewing a summary of a prisoner record and is typically quicker than using the equivalent API\n    in <b>prison-api</b>.\n  </p>\n  <h3>Retrieving batches of records</h3>\n  <p>\n    Retrieving a batch of records either by supplying a list of identifiers or a criteria that will a match many\n    records;\n    for instance, all people in a prison wing or people to be released on a specific date.\n  </p>\n</div>\n",
+    "description": "<div>\n <h2 id=\"overview\">Overview</h2>\n <p>This service provides a number of endpoints for searching and reading prisoners that have been registered with the\n HMPPS prison service. This may be current or previous prisoners or other people that might be in secure\n hospitals.</p>\n <h2 id=\"data-provided\">Data provided</h2>\n <p>The vast majority of the data is sourced from the NOMIS system though in the future this is likely to change as\n more HMPPS prison data is held outside NOMIS.</p>\n <p>The data for a person is stored in Elastic Search and is updated after a record in NOMIS is changed. This is\n typically about a minute after the data is changed in NOMIS. In the unlikely circumstance that your service needs\n data that is 100% up to date with NOMIS then the\n <a href=\"https://prison-api-dev.prison.service.justice.gov.uk/swagger-ui/index.html\">prison-api</a>\n might be a better service to use.\n One use case this might be appropriate for is if you need up-to-date data at the point a NOMIS prisoner event\n is received; this service also updates its records as a result of NOMIS prisoner events, so you might encounter a\n race\n condition if your read is triggered from the same event.\n </p>\n <div>The data returned for each prisoner record is essentially a snapshot of key prisoner data. This includes the\n following:\n <ul>\n <li>Identifiers from both NOMIS and those held in other systems</li>\n <li>Personal details such as name and date of birth (including aliases)</li>\n <li>Current prison status such as the current location (including cell)</li>\n <li>Latest sentence details</li>\n <li>Alerts</li>\n </ul>\n See the schema definition for the API for full details.\n </div>\n <h3 id=\"response-fields\">Filtering response data</h3>\n <div>The <strong>Prisoner</strong> object returned from most endpoints has grown very large over time. This has become problematic for a few reasons:\n <ul>\n <li>Calls with a large number of results can have exceedingly large payloads returned, sometimes breaking response size limits</li>\n <li>Some data points aren't suitable for all clients, in particular 3rd parties should not receive data they don't explicitly need</li>\n <li>Most teams are only interested in a small portion of the response object; the rest is superfluous, noisy and a waste of resource</li>\n </ul>\n </div>\n <p>\n To address these issues, endpoints that return the <strong>Prisoner</strong> object now support filtering of response data via the\n <strong>responseFields</strong> query parameter.\n </p>\n <p>\n For example, to only return the prisoner's name and date of birth,\n you would use query: <strong>/prisoner/A1234BC?responseFields=firstName,lastName,dateOfBirth</strong>\n </p>\n <p>\n Note that it is also possible to specify nested objects or fields from lists of objects, for example:\n <strong>/prisoner/A1234BC?responseFields=aliases.lastName,currentIncentive.level</strong>\n </p>\n <p>\n To find which fields can be included as <strong>responseFields</strong> call the endpoint <a href=\"#/Developer information/responseFields\" target=\"_blank\">GET /response-fields</a>.\n </p>\n <h2 id=\"role-restrictions\">Role restrictions</h2>\n <p>\n Role restrictions in this service are applied by a `@PreAuthorize` annotation at either resource or service level.\n Furthermore the annotation can be applied at individual method level or class level.\n </p>\n <p>\n Each endpoint in this API documentation should normally include what restrictions are applied. If there is any doubt\n then it is worth looking at the github repository at\n https://github.com/ministryofjustice/hmpps-prisoner-search/ and looking at the endpoint in question.\n </p>\n\n The following roles are currently in use in this service:\n <ul>\n <li>\n ROLE_PRISONER_SEARCH. This role grants access to all of the search endpoints.\n </li>\n <li>\n ROLE_PRISONER_IN_PRISON_SEARCH. This role is limited to protect the \"/prison/{prisonId}/prisoners\" endpoint for\n clients that only need access to this endpoint in prisoner offender search. For more general access the\n ROLE_PRISONER_SEARCH would be more suitable.\n </li>\n <li>\n ROLE_VIEW_PRISONER_DATA. This role is only needed at present for the \"/prisoner/{id}\" endpoint to retrieve\n detailed information about a particular prisoner, as opposed to the rest of the search endpoints in this service\n that can return multiple matches.\n </li>\n <li>\n ROLE_GLOBAL_SEARCH. This role is deprecated and replaced by the ROLE_PRISONER_SEARCH. All of the endpoints in\n this service that accept this role also accept ROLE_PRISONER_SEARCH so the latter should be used in preference.\n It was originally created for Prison API and is still in use there.\n </li>\n <li>\n ROLE_EVENTS_ADMIN. This role is only needed for the \"/events/prisoner/received/{prisonerNumber}\" endpoint\n and is only required in the event that a prisoner event wasn't raised by the service when their data in the\n service\n had changed.\n </li>\n </ul>\n <h2 id=\"types-of-endpoints\">Types of endpoints</h2>\n <h3>Searching for a specific prisoner based on criteria</h3>\n <p>\n These are endpoints that use the core Elastic Search features to locate a prisoner record based on a set of\n criteria;\n for instance name, date of birth or unique identifier (such as the Police National Computer PNC number).\n Typically, they return many results and a summary of those results would be presented to an end user.\n </p>\n <h3>Matching records</h3>\n <p>\n Similar to searching but typically using a criteria from a different system; for instance, key data from a probation\n record or court record.\n These will use an algorithm that matches based on data that is likely to be most reliable for matching; for\n instance,\n PNC number or name with date of birth.\n </p>\n <h3>Retrieving a specific record</h3>\n <p>\n Retrieving a specific record typically by a unique identifier; for instance, prisoner number (aka NOMS number). This\n is a convenient way of viewing a summary of a prisoner record and is typically quicker than using the equivalent API\n in <b>prison-api</b>.\n </p>\n <h3>Retrieving batches of records</h3>\n <p>\n Retrieving a batch of records either by supplying a list of identifiers or a criteria that will a match many\n records;\n for instance, all people in a prison wing or people to be released on a specific date.\n </p>\n</div>\n",
     "contact": {
       "name": "HMPPS Digital Studio",
       "email": "feedback@digital.justice.gov.uk"
     },
-    "version": "2025-07-17.74.cc58294"
+    "version": "2025-09-01.238.7c44fac"
   },
   "servers": [
     {
@@ -83,7 +83,7 @@
       "post": {
         "tags": ["Specific use case"],
         "summary": "Match prisoners by criteria",
-        "description": "Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role",
+        "description": "This endpoint sorts by prisonerNumber. This means that calling this endpoint to retrieve\n subsequent pages *should* return the next page of results, but this is not guaranteed.\n\n Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role",
         "operationId": "findByCriteria",
         "parameters": [
           {
@@ -100,9 +100,19 @@
             "example": "[prisonerNumber,firstName,aliases.firstName,currentIncentive.level.code]"
           },
           {
+            "name": "responseFieldsClient",
+            "in": "query",
+            "description": "The name of a default list of response fields. The list can be defined for a client and\n then referenced here. This saves passing a big list of fields to prisoner search on each request.\n ",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "restricted-patients"
+          },
+          {
             "name": "page",
             "in": "query",
-            "description": "Zero-based page index (0..N)",
+            "description": "Zero-based page index (0..N). Will default to 0 if not supplied or invalid.",
             "required": false,
             "schema": {
               "type": "integer",
@@ -113,24 +123,12 @@
           {
             "name": "size",
             "in": "query",
-            "description": "The size of the page to be returned",
+            "description": "The size of the page to be returned. Will default to 10 if not supplied or invalid.",
             "required": false,
             "schema": {
               "type": "integer",
               "default": 10,
               "minimum": 1
-            }
-          },
-          {
-            "name": "sort",
-            "in": "query",
-            "description": "Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.",
-            "required": false,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
             }
           }
         ],
@@ -162,7 +160,7 @@
       "post": {
         "tags": ["Batch", "Specific use case"],
         "summary": "Match prisoners who have a release date within a range, and optionally by prison",
-        "description": "Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role",
+        "description": "This endpoint sorts by OpenSearch score and then by prisonerNumber. The score is an indication of\n how close the query matches a prisoner record, thus closest matches to the query will be returned first.\n Unfortunately sorting by score is problematic as different shards might provide different scores, thus breaking\n the paged results. Also it gives inconsistent results the higher the page number. \n \n It is thus recommended not to use paging and instead request a large page size, together with setting the\n responseFields to limit the returned response byte size (otherwise you risk hitting memory / webclient limits).\n\n Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role",
         "operationId": "findByReleaseDateAndPrison",
         "parameters": [
           {
@@ -181,7 +179,7 @@
           {
             "name": "page",
             "in": "query",
-            "description": "Zero-based page index (0..N)",
+            "description": "Zero-based page index (0..N). Will default to 0 if not supplied or invalid.",
             "required": false,
             "schema": {
               "type": "integer",
@@ -192,24 +190,12 @@
           {
             "name": "size",
             "in": "query",
-            "description": "The size of the page to be returned",
+            "description": "The size of the page to be returned. Will default to 10 if not supplied or invalid.",
             "required": false,
             "schema": {
               "type": "integer",
               "default": 10,
               "minimum": 1
-            }
-          },
-          {
-            "name": "sort",
-            "in": "query",
-            "description": "Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.",
-            "required": false,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
             }
           }
         ],
@@ -289,7 +275,7 @@
       "post": {
         "tags": ["Matching"],
         "summary": "Search for possible matches by criteria",
-        "description": "Search by prison number, PNC number, and/or name and date of birth, returning collated results by order of search.\n       This will also search aliases for possible matches. \n       Use when there is manual input, e.g. a user can select the correct match from search results.\n       Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.\n       ",
+        "description": "Search by prison number, PNC number, and/or name and date of birth, returning collated results by order of search.\n This will also search aliases for possible matches. \n Use when there is manual input, e.g. a user can select the correct match from search results.\n Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.\n ",
         "operationId": "findPossibleMatchesBySearchCriteria",
         "parameters": [
           {
@@ -371,7 +357,7 @@
       "post": {
         "tags": ["Matching", "Popular"],
         "summary": "Match prisoners by criteria",
-        "description": "Search by prisoner identifier or name and returning results for the criteria matched first.\n        Typically used when the matching data is of high quality where the first match is expected to be a near perfect match.\n        Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.\n        ",
+        "description": "Search by prisoner identifier or name and returning results for the criteria matched first.\n Typically used when the matching data is of high quality where the first match is expected to be a near perfect match.\n Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.\n ",
         "operationId": "findByCriteria_2",
         "parameters": [
           {
@@ -386,6 +372,16 @@
               }
             },
             "example": "[prisonerNumber,firstName,aliases.firstName,currentIncentive.level.code]"
+          },
+          {
+            "name": "responseFieldsClient",
+            "in": "query",
+            "description": "The name of a default list of response fields. The list can be defined for a client and\n then referenced here. This saves passing a big list of fields to prisoner search on each request.\n ",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "restricted-patients"
           }
         ],
         "requestBody": {
@@ -467,7 +463,7 @@
       "post": {
         "tags": ["Global search"],
         "summary": "Find prisoners by exact or wildcard terms for specified fields and return a paginated result set",
-        "description": "Search terms and identifiers can be provided in either or mixed case and are converted to the appropriate case.\n      This endpoint will find both exact values (full term matched) or wildcards supporting the '*' and '?' symbols.\n      The '*' symbol will match any number of characters e.g. firstName='J*' will match 'John', 'Jane', and 'James'.  \n      The '?' symbol will match any letter substituted at that position. e.g. firstName='t?ny' will match 'Tony' and 'Tiny'\n      Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.\n      ",
+        "description": "Search terms and identifiers can be provided in either or mixed case and are converted to the appropriate case.\n This endpoint will find both exact values (full term matched) or wildcards supporting the '*' and '?' symbols.\n The '*' symbol will match any number of characters e.g. firstName='J*' will match 'John', 'Jane', and 'James'. \n The '?' symbol will match any letter substituted at that position. e.g. firstName='t?ny' will match 'Tony' and 'Tiny'\n Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.\n ",
         "operationId": "prisonerDetailSearch",
         "parameters": [
           {
@@ -549,8 +545,8 @@
     "/physical-detail": {
       "post": {
         "tags": ["Experimental", "Physical detail search"],
-        "summary": "*** BETA *** Physical details search for prisoners within a prison / group of prisons - returns a paginated result set",
-        "description": "BETA endpoint - subject to change. Search by physical details.\n      If a cell location is provided then only one prison can be supplied, otherwise multiple prisons are allowed.\n      If lenient is set to false (default) then all supplied physical details must match in order for results to be returned.\n      If lenient is set to true then at least one physical detail must match.\n      Searches will return results for partial string matches, so searching for an ethnicity of white will return all\n      prisoners with ethnicity of White: Eng./Welsh/Scot./N.Irish/British, White: Irish etc.\n      Results are ordered so that prisoners that match the most criteria are returned first, then secondary order is by\n      prisoner number.\n      Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.\n      ",
+        "summary": "*** BETA EducationAndWorkPlanAPI.yml K6 README.md authenticate_docker.sh cert.pem check_certs_expiry.sh client_certificates data_analysis hmpps-integration-api-dev.tar.gz.enc local_deploy.sh publish.sh query_hmpps_dev.sh report_kubernetes.sh test_performance.sh update_openapi_specs.sh Physical details search for prisoners within a prison / group of prisons - returns a paginated result set",
+        "description": "BETA endpoint - subject to change. Search by physical details.\n If a cell location is provided then only one prison can be supplied, otherwise multiple prisons are allowed.\n If lenient is set to false (default) then all supplied physical details must match in order for results to be returned.\n If lenient is set to true then at least one physical detail must match.\n Searches will return results for partial string matches, so searching for an ethnicity of white will return all\n prisoners with ethnicity of White: Eng./Welsh/Scot./N.Irish/British, White: Irish etc.\n Results are ordered so that prisoners that match the most criteria are returned first, then secondary order is by\n prisoner number.\n Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.\n ",
         "operationId": "prisonerDetailSearch_1",
         "parameters": [
           {
@@ -633,7 +629,7 @@
       "post": {
         "tags": ["Deprecated"],
         "summary": "Match for an prisoner by criteria",
-        "description": "This is a more lenient version to other match endpoints that includes alias and fuzzy date of birth matching.\n       It will return the best group of matching prisoners based on the request\n       Specify the request criteria to match against.\n       Role required is ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH.\n       ",
+        "description": "This is a more lenient version to other match endpoints that includes alias and fuzzy date of birth matching.\n It will return the best group of matching prisoners based on the request\n Specify the request criteria to match against.\n Role required is ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH.\n ",
         "operationId": "matchPrisoners",
         "requestBody": {
           "content": {
@@ -701,7 +697,7 @@
       "post": {
         "tags": ["Experimental"],
         "summary": "Search for prisoners by keyword or identifiers within a list of prisons and return a paginated result set",
-        "description": "Words and identifiers can be provided in either or mixed case and will be matched against all indexed text and keyword fields.\n      Identifiers within the [and, or, not, exact] terms are detected and converted to the appropriate case.\n      Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.\n      ",
+        "description": "Words and identifiers can be provided in either or mixed case and will be matched against all indexed text and keyword fields.\n Identifiers within the [and, or, not, exact] terms are detected and converted to the appropriate case.\n Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.\n ",
         "operationId": "keywordSearch",
         "parameters": [
           {
@@ -784,13 +780,13 @@
       "post": {
         "tags": ["Popular", "Global search"],
         "summary": "Match prisoners by criteria",
-        "description": "Requires ROLE_GLOBAL_SEARCH role or ROLE_PRISONER_SEARCH role or PRISONER_SEARCH__PRISONER__RO",
+        "description": "This endpoint sorts by OpenSearch score and then by prisonerNumber. The score is an indication of\n how close the query matches a prisoner record, thus closest matches to the query will be returned first.\n Unfortunately sorting by score is problematic as different shards might provide different scores, thus breaking\n the paged results. Also it gives inconsistent results the higher the page number. \n \n It is thus recommended not to use paging and instead request a large page size, together with setting the\n responseFields to limit the returned response byte size (otherwise you risk hitting memory / webclient limits).\n\n Requires ROLE_GLOBAL_SEARCH role or ROLE_PRISONER_SEARCH role or PRISONER_SEARCH__PRISONER__RO",
         "operationId": "globalFindByCriteria",
         "parameters": [
           {
             "name": "page",
             "in": "query",
-            "description": "Zero-based page index (0..N)",
+            "description": "Zero-based page index (0..N). Will default to 0 if not supplied or invalid.",
             "required": false,
             "schema": {
               "type": "integer",
@@ -801,24 +797,12 @@
           {
             "name": "size",
             "in": "query",
-            "description": "The size of the page to be returned",
+            "description": "The size of the page to be returned. Will default to 10 if not supplied or invalid.",
             "required": false,
             "schema": {
               "type": "integer",
               "default": 10,
               "minimum": 1
-            }
-          },
-          {
-            "name": "sort",
-            "in": "query",
-            "description": "Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.",
-            "required": false,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
             }
           },
           {
@@ -863,7 +847,7 @@
       "post": {
         "tags": ["Attribute search"],
         "summary": "Search for prisoners by attributes",
-        "description": "<p>This endpoint allows you to create queries over all attributes from the <em>Prisoner</em> record. Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.</p>\n      <p>The request contains a list of queries to search on one or more attributes using a list of matchers. For example attribute \"lastName\"\"\n      requires a <em>StringMatcher</em> so we can query on <strong>\"lastName IS Smith\"</strong>. Other type matchers include <em>IntMatcher</em>, <em>BooleanMatcher</em>,\n      <em>DateMatcher</em> and <em>DateTimeMatcher</em>.\n      </p>\n      <p>Each query can also contain a list of sub-queries. Each sub-query can be considered as a separate query in brackets.\n      Combining multiple sub-queries gives us the ability to create complex searches using any combination of a prisoner's \n      attributes. For example we can model nested queries such as <strong>\"lastName IS Smith AND (prisonId IS MDI OR (prisonId IS OUT AND lastPrisonId IS MDI))\"</strong>.\n      </p>\n      <p>To find all attributes that can be searched for please refer to the <em>Prisoner</em> record or get them from endpoint <a target=\"_blank\" href=\"/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config#/Attribute search/getAttributes\"><strong>GET /attribute-search/attributes</strong></a>. Attributes from lists can be\n      searched for with dot notation, e.g. <strong>\"attribute=aliases.firstName\"</strong> or <strong>\"attribute=tattoos.bodyPart\"</strong>. \n      Attributes from complex objects can also be searched for with dot notation, e.g. <strong>\"attribute=currentIncentive.level.code\"</strong>.\n      </p>\n      <p>Note that when searching lists of complex objects (e.g. aliases, alerts, tattoos) if you want to search for multiple attributes within the same object then you need \n      to include them in the same query. For example, to search for alias \"John Smith\" you should search for <strong>aliases.firstName IS \"John\"</strong> and <strong>aliases.lastName IS \"Smith\"</strong> using string matchers in the same query.\n      If you search for them in different queries you will receive anyone with firstName John and also anyone with lastName Smith.\n      </p>\n      <p>Many attributes contain reference data restricted to a fixed list of values. For example, attribute \"inOutStatus\" only contains values \"IN\", \"OUT\" and \"TRN\".\n      To find which attributes use reference data and to fetch the possible attribute values see the endpoint <a target=\"_blank\" href=\"/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config#/Reference data/referenceData\"><strong>GET /reference-data/{attribute}</strong></a>.\n      </p>\n      <p>String attributes support advanced search techniques such as <a href=\"https://opensearch.org/docs/latest/query-dsl/term/fuzzy/\">fuzzy search</a> matching and <a href=\"https://opensearch.org/docs/latest/query-dsl/term/wildcard/\">wildcard search</a>. All String searches are case-insensitive (except for IS with fuzzy matching which is not supported by OpenSearch).\n      <ul>\n        <li>IS and IS_NOT require an exact match (wildcards ? and * will not work). E.g. If religion is \"Christian\" then <strong>\"religion IS Christian\"</strong> will match but <strong>\"religion IS Christ*\"</strong> will not.</li>\n        <li>For IS and CONTAINS some attributes support fuzzy matching e.g. they allow spelling mistakes. Call endpoint <strong>GET /attribute-search/attributes</strong> to see which attributes support fuzzy matching. E.g. If firstName is \"Jonathan\" then <strong>\"firstName IS Johnathon\"</strong> or <strong>\"firstName CONTAINS Johnathon\"</strong> will match. Note that fuzzy matches for IS are case sensitive but for CONTAINS they are case insensitive.</li>\n        <li>CONTAINS without wildcards (? and *) for a non-fuzzy attribute looks for the exact search term anywhere in the attribute value. E.g. If religion is \"Christian\" then <strong>\"religion CONTAINS ist\"</strong> will match.</li>\n        <li>CONTAINS with wildcards ? (single character) and/or * (zero to many characters) perform a wildcard search which must match the entire attribute value. E.g. If firstName is \"Jonathan\" then <strong>\"firstName CONTAINS Jon*\"</strong> will match but <strong>\"firstName CONTAINS nath*\"</strong> will not.</li>\n        <li>STARTSWITH checks only the prefix of the attribute value and does not support fuzzy matching or wildcards. E.g.If firstName is \"Jonathan\" then <strong>\"firstName STARTSWITH Jon\"</strong> will match but <strong>\"firstName STARTSWITH Jon*\"</strong> will not.</li> \n        <li>IN checks that the attribute value is any of the list of Strings provided in the search term. The search term should be a comma separated list of Strings to search, E.g. \"searchValue1,searchValue2,searchValue3\". This only matches exactly - no fuzzy search, wildcards or case-insensitive search is supported by OpenSearch. E.g.If firstName is \"Jonathan\" then <strong>\"firstName IN 'Jonathan,Bob,Chris'\"</strong> will match but <strong>\"firstName IN 'Adrian,Bob,Chris'\"</strong> will not.</li> \n      </ul>\n      </p>\n      <p>To assist with debugging queries we publish events in App Insights. To search in App Insights Log Analytics run query: \n      <pre>\n        AppEvents\n        | where Name == 'POSAttributeSearch'\n      </pre>\n      </p>\n      <h3>Example Requests</h3>\n      <p>Note that the default \"joinType\" is \"AND\" so it could be omitted from the examples below (but is included for clarity).</p>\n      <h4>Search for all prisoners in Moorland with a height between 150 and 180cm</h4>\n      <br/>\n      Query: <strong>\"prisonId = \"MDI\" AND (heightCentimetres >= 150 AND heightCentimetres <= 180)\"</strong>\n      <br/>\n      JSON request:\n      <br/>\n      <pre>\n        {\n          \"joinType\": \"AND\",\n          \"queries\": [\n            {\n              \"joinType\": \"AND\",\n              \"matchers\": [\n                {\n                  \"type\": \"String\",\n                  \"attribute\": \"prisonId\",\n                  \"condition\": \"IS\",\n                  \"searchTerm\": \"MDI\"\n                },\n                {\n                  \"type\": \"Int\",\n                  \"attribute\": \"heightCentimetres\",\n                  \"minValue\": 150,\n                  \"maxValue\": 180\n                }\n              ]\n            }\n          ]\n        }\n      </pre>\n      <br/>\n      <h4>Search for all prisoners in a list of cells in Moorland</h4>\n      Query: <strong>\"prisonId = \"MDI\" AND cellLocation IN (1-2-001, 1-3-014, 3-1-020)</strong>\n      <br/>\n      JSON request:\n      <br/>\n      <pre>\n        {\n          \"joinType\": \"AND\",\n          \"queries\": [\n            {\n              \"joinType\": \"AND\",\n              \"matchers\": [\n                {\n                  \"type\": \"String\",\n                  \"attribute\": \"prisonId\",\n                  \"condition\": \"IS\",\n                  \"searchTerm\": \"MDI\"\n                },\n                {\n                  \"type\": \"String\",\n                  \"attribute\": \"cellLocation\",\n                  \"condition\": \"IN\",\n                  \"searchTerm\": \"1-2-001,1-3-014,3-1-020\"\n                }\n              ]\n            }\n          ]\n        }\n      </pre>\n      <br/>\n      <h4>Search for all prisoners received since 1st Jan 2024 with a dragon tattoo on either their arm or shoulder</h4>\n      <br/>\n      Query: <strong>\"(receptionDate >= 2024-01-01) AND ((tattoos.bodyPart = \"arm\" AND tattoos.comment CONTAINS \"dragon\" ) OR (tattoos.bodyPart = \"shoulder\" AND tattoos.comment CONTAINS \"dragon\"))\"</strong>\n      <br/>\n      JSON request:\n      <br/>\n      <pre>\n        {\n          \"joinType\": \"AND\",\n          \"queries\": [\n            {\n              \"matchers\": [\n                {\n                  \"type\": \"Date\",\n                  \"attribute\": \"receptionDate\",\n                  \"minValue\": \"2024-01-01\"\n                }\n              ]\n            },\n            {\n              \"joinType\": \"OR\",\n              \"subQueries\": [\n                {\n                  \"joinType\": \"AND\",\n                  \"matchers\": [\n                    {\n                      \"type\": \"String\",\n                      \"attribute\": \"tattoos.bodyPart\",\n                      \"condition\": \"IS\",\n                      \"searchTerm\": \"arm\"\n                    },\n                    {\n                      \"type\": \"String\",\n                      \"attribute\": \"tattoos.comment\",\n                      \"condition\": \"CONTAINS\",\n                      \"searchTerm\": \"dragon\"\n                    }\n                  ]\n                },\n                {\n                  \"joinType\": \"AND\",\n                  \"matchers\": [\n                    {\n                      \"type\": \"String\",\n                      \"attribute\": \"tattoos.bodyPart\",\n                      \"condition\": \"IS\",\n                      \"searchTerm\": \"shoulder\"\n                    },\n                    {\n                      \"type\": \"String\",\n                      \"attribute\": \"tattoos.comment\",\n                      \"condition\": \"CONTAINS\",\n                      \"searchTerm\": \"dragon\"\n                    }\n                  ]\n                }\n              ]\n            }\n          ]\n        }\n      </pre>\n    ",
+        "description": "<p>This endpoint allows you to create queries over all attributes from the <em>Prisoner</em> record. Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.</p>\n <p>The request contains a list of queries to search on one or more attributes using a list of matchers. For example attribute \"lastName\"\"\n requires a <em>StringMatcher</em> so we can query on <strong>\"lastName IS Smith\"</strong>. Other type matchers include <em>IntMatcher</em>, <em>BooleanMatcher</em>,\n <em>DateMatcher</em> and <em>DateTimeMatcher</em>.\n </p>\n <p>Each query can also contain a list of sub-queries. Each sub-query can be considered as a separate query in brackets.\n Combining multiple sub-queries gives us the ability to create complex searches using any combination of a prisoner's \n attributes. For example we can model nested queries such as <strong>\"lastName IS Smith AND (prisonId IS MDI OR (prisonId IS OUT AND lastPrisonId IS MDI))\"</strong>.\n </p>\n <p>To find all attributes that can be searched for please refer to the <em>Prisoner</em> record or get them from endpoint <a target=\"_blank\" href=\"/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config#/Attribute search/getAttributes\"><strong>GET /attribute-search/attributes</strong></a>. Attributes from lists can be\n searched for with dot notation, e.g. <strong>\"attribute=aliases.firstName\"</strong> or <strong>\"attribute=tattoos.bodyPart\"</strong>. \n Attributes from complex objects can also be searched for with dot notation, e.g. <strong>\"attribute=currentIncentive.level.code\"</strong>.\n </p>\n <p>Note that when searching lists of complex objects (e.g. aliases, alerts, tattoos) if you want to search for multiple attributes within the same object then you need \n to include them in the same query. For example, to search for alias \"John Smith\" you should search for <strong>aliases.firstName IS \"John\"</strong> and <strong>aliases.lastName IS \"Smith\"</strong> using string matchers in the same query.\n If you search for them in different queries you will receive anyone with firstName John and also anyone with lastName Smith.\n </p>\n <p>Many attributes contain reference data restricted to a fixed list of values. For example, attribute \"inOutStatus\" only contains values \"IN\", \"OUT\" and \"TRN\".\n To find which attributes use reference data and to fetch the possible attribute values see the endpoint <a target=\"_blank\" href=\"/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config#/Reference data/referenceData\"><strong>GET /reference-data/{attribute}</strong></a>.\n </p>\n <p>String attributes support advanced search techniques such as <a href=\"https://opensearch.org/docs/latest/query-dsl/term/fuzzy/\">fuzzy search</a> matching and <a href=\"https://opensearch.org/docs/latest/query-dsl/term/wildcard/\">wildcard search</a>. All String searches are case-insensitive (except for IS with fuzzy matching which is not supported by OpenSearch).\n <ul>\n <li>IS and IS_NOT require an exact match (wildcards ? and EducationAndWorkPlanAPI.yml K6 README.md authenticate_docker.sh cert.pem check_certs_expiry.sh client_certificates data_analysis hmpps-integration-api-dev.tar.gz.enc local_deploy.sh publish.sh query_hmpps_dev.sh report_kubernetes.sh test_performance.sh update_openapi_specs.sh will not work). E.g. If religion is \"Christian\" then <strong>\"religion IS Christian\"</strong> will match but <strong>\"religion IS Christ*\"</strong> will not.</li>\n <li>For IS and CONTAINS some attributes support fuzzy matching e.g. they allow spelling mistakes. Call endpoint <strong>GET /attribute-search/attributes</strong> to see which attributes support fuzzy matching. E.g. If firstName is \"Jonathan\" then <strong>\"firstName IS Johnathon\"</strong> or <strong>\"firstName CONTAINS Johnathon\"</strong> will match. Note that fuzzy matches for IS are case sensitive but for CONTAINS they are case insensitive.</li>\n <li>CONTAINS without wildcards (? and *) for a non-fuzzy attribute looks for the exact search term anywhere in the attribute value. E.g. If religion is \"Christian\" then <strong>\"religion CONTAINS ist\"</strong> will match.</li>\n <li>CONTAINS with wildcards ? (single character) and/or EducationAndWorkPlanAPI.yml K6 README.md authenticate_docker.sh cert.pem check_certs_expiry.sh client_certificates data_analysis hmpps-integration-api-dev.tar.gz.enc local_deploy.sh publish.sh query_hmpps_dev.sh report_kubernetes.sh test_performance.sh update_openapi_specs.sh (zero to many characters) perform a wildcard search which must match the entire attribute value. E.g. If firstName is \"Jonathan\" then <strong>\"firstName CONTAINS Jon*\"</strong> will match but <strong>\"firstName CONTAINS nath*\"</strong> will not.</li>\n <li>STARTSWITH checks only the prefix of the attribute value and does not support fuzzy matching or wildcards. E.g.If firstName is \"Jonathan\" then <strong>\"firstName STARTSWITH Jon\"</strong> will match but <strong>\"firstName STARTSWITH Jon*\"</strong> will not.</li> \n <li>IN checks that the attribute value is any of the list of Strings provided in the search term. The search term should be a comma separated list of Strings to search, E.g. \"searchValue1,searchValue2,searchValue3\". This only matches exactly - no fuzzy search, wildcards or case-insensitive search is supported by OpenSearch. E.g.If firstName is \"Jonathan\" then <strong>\"firstName IN 'Jonathan,Bob,Chris'\"</strong> will match but <strong>\"firstName IN 'Adrian,Bob,Chris'\"</strong> will not.</li> \n </ul>\n </p>\n <p>To assist with debugging queries we publish events in App Insights. To search in App Insights Log Analytics run query: \n <pre>\n AppEvents\n | where Name == 'POSAttributeSearch'\n </pre>\n </p>\n <h3>Example Requests</h3>\n <p>Note that the default \"joinType\" is \"AND\" so it could be omitted from the examples below (but is included for clarity).</p>\n <h4>Search for all prisoners in Moorland with a height between 150 and 180cm</h4>\n <br/>\n Query: <strong>\"prisonId = \"MDI\" AND (heightCentimetres >= 150 AND heightCentimetres <= 180)\"</strong>\n <br/>\n JSON request:\n <br/>\n <pre>\n {\n \"joinType\": \"AND\",\n \"queries\": [\n {\n \"joinType\": \"AND\",\n \"matchers\": [\n {\n \"type\": \"String\",\n \"attribute\": \"prisonId\",\n \"condition\": \"IS\",\n \"searchTerm\": \"MDI\"\n },\n {\n \"type\": \"Int\",\n \"attribute\": \"heightCentimetres\",\n \"minValue\": 150,\n \"maxValue\": 180\n }\n ]\n }\n ]\n }\n </pre>\n <br/>\n <h4>Search for all prisoners in a list of cells in Moorland</h4>\n Query: <strong>\"prisonId = \"MDI\" AND cellLocation IN (1-2-001, 1-3-014, 3-1-020)</strong>\n <br/>\n JSON request:\n <br/>\n <pre>\n {\n \"joinType\": \"AND\",\n \"queries\": [\n {\n \"joinType\": \"AND\",\n \"matchers\": [\n {\n \"type\": \"String\",\n \"attribute\": \"prisonId\",\n \"condition\": \"IS\",\n \"searchTerm\": \"MDI\"\n },\n {\n \"type\": \"String\",\n \"attribute\": \"cellLocation\",\n \"condition\": \"IN\",\n \"searchTerm\": \"1-2-001,1-3-014,3-1-020\"\n }\n ]\n }\n ]\n }\n </pre>\n <br/>\n <h4>Search for all prisoners received since 1st Jan 2024 with a dragon tattoo on either their arm or shoulder</h4>\n <br/>\n Query: <strong>\"(receptionDate >= 2024-01-01) AND ((tattoos.bodyPart = \"arm\" AND tattoos.comment CONTAINS \"dragon\" ) OR (tattoos.bodyPart = \"shoulder\" AND tattoos.comment CONTAINS \"dragon\"))\"</strong>\n <br/>\n JSON request:\n <br/>\n <pre>\n {\n \"joinType\": \"AND\",\n \"queries\": [\n {\n \"matchers\": [\n {\n \"type\": \"Date\",\n \"attribute\": \"receptionDate\",\n \"minValue\": \"2024-01-01\"\n }\n ]\n },\n {\n \"joinType\": \"OR\",\n \"subQueries\": [\n {\n \"joinType\": \"AND\",\n \"matchers\": [\n {\n \"type\": \"String\",\n \"attribute\": \"tattoos.bodyPart\",\n \"condition\": \"IS\",\n \"searchTerm\": \"arm\"\n },\n {\n \"type\": \"String\",\n \"attribute\": \"tattoos.comment\",\n \"condition\": \"CONTAINS\",\n \"searchTerm\": \"dragon\"\n }\n ]\n },\n {\n \"joinType\": \"AND\",\n \"matchers\": [\n {\n \"type\": \"String\",\n \"attribute\": \"tattoos.bodyPart\",\n \"condition\": \"IS\",\n \"searchTerm\": \"shoulder\"\n },\n {\n \"type\": \"String\",\n \"attribute\": \"tattoos.comment\",\n \"condition\": \"CONTAINS\",\n \"searchTerm\": \"dragon\"\n }\n ]\n }\n ]\n }\n ]\n }\n </pre>\n\n There have been issues raised with OpenSearch sorting in that it sometimes doesn't produce stable sorting results,\n especially with higher page numbers.\n\n It is thus recommended not to use paging and instead request a large page size, together with setting the\n responseFields to limit the returned response byte size (otherwise you risk hitting memory / webclient limits).\n ",
         "operationId": "attributeSearch",
         "parameters": [
           {
@@ -1002,8 +986,8 @@
     "/reference-data/{attribute}": {
       "get": {
         "tags": ["Experimental", "Reference data", "Developer information"],
-        "summary": "*** BETA *** Reference data search",
-        "description": "BETA endpoint - reference data returned reflects the data assigned to prisoners\n      rather than all the possible values.  Only to be used for searching existing data purposes.\n      This method will also cache all reference data results for an hour and any new data will only appear after an hour.\n      Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.\n      ",
+        "summary": "*** BETA EducationAndWorkPlanAPI.yml K6 README.md authenticate_docker.sh cert.pem check_certs_expiry.sh client_certificates data_analysis hmpps-integration-api-dev.tar.gz.enc local_deploy.sh publish.sh query_hmpps_dev.sh report_kubernetes.sh test_performance.sh update_openapi_specs.sh Reference data search",
+        "description": "BETA endpoint - reference data returned reflects the data assigned to prisoners\n rather than all the possible values. Only to be used for searching existing data purposes.\n This method will also cache all reference data results for an hour and any new data will only appear after an hour.\n Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.\n ",
         "operationId": "referenceData",
         "parameters": [
           {
@@ -1095,8 +1079,8 @@
     "/reference-data/alerts/types": {
       "get": {
         "tags": ["Experimental", "Reference data", "Developer information"],
-        "summary": "*** BETA *** Alerts reference data",
-        "description": "BETA endpoint - alerts reference data returned reflects the data assigned to prisoners\n      rather than all the possible values.  Only to be used for searching existing data purposes.\n      This method will also cache all reference data results for an hour and any new data will only appear after an hour.\n      Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.\n      ",
+        "summary": "*** BETA EducationAndWorkPlanAPI.yml K6 README.md authenticate_docker.sh cert.pem check_certs_expiry.sh client_certificates data_analysis hmpps-integration-api-dev.tar.gz.enc local_deploy.sh publish.sh query_hmpps_dev.sh report_kubernetes.sh test_performance.sh update_openapi_specs.sh Alerts reference data",
+        "description": "BETA endpoint - alerts reference data returned reflects the data assigned to prisoners\n rather than all the possible values. Only to be used for searching existing data purposes.\n This method will also cache all reference data results for an hour and any new data will only appear after an hour.\n Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.\n ",
         "operationId": "alertsReferenceData",
         "responses": {
           "200": {
@@ -1154,7 +1138,7 @@
       "get": {
         "tags": ["Popular"],
         "summary": "Get prisoner by prisoner number (AKA NOMS number)",
-        "description": "Requires  ROLE_PRISONER_SEARCH or ROLE_VIEW_PRISONER_DATA role or PRISONER_SEARCH__PRISONER__RO",
+        "description": "Requires ROLE_PRISONER_SEARCH or ROLE_VIEW_PRISONER_DATA role or PRISONER_SEARCH__PRISONER__RO",
         "operationId": "findByPrisonNumber",
         "parameters": [
           {
@@ -1183,7 +1167,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Prisoner"
                 }
@@ -1205,7 +1189,7 @@
       "get": {
         "tags": ["Popular", "Batch"],
         "summary": "Get all prisoners in a prison, including restricted patients supported by a POM",
-        "description": "Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role",
+        "description": "This endpoint sorts by OpenSearch score and then by prisonerNumber. The score is an indication of\n how close the query matches a prisoner record, thus closest matches to the query will be returned first.\n Unfortunately sorting by score is problematic as different shards might provide different scores, thus breaking\n the paged results. Also it gives inconsistent results the higher the page number. \n \n It is thus recommended not to use paging and instead request a large page size, together with setting the\n responseFields to limit the returned response byte size (otherwise you risk hitting memory / webclient limits).\n\n Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role",
         "operationId": "findByPrison",
         "parameters": [
           {
@@ -1241,7 +1225,7 @@
           {
             "name": "page",
             "in": "query",
-            "description": "Zero-based page index (0..N)",
+            "description": "Zero-based page index (0..N). Will default to 0 if not supplied or invalid.",
             "required": false,
             "schema": {
               "type": "integer",
@@ -1252,24 +1236,12 @@
           {
             "name": "size",
             "in": "query",
-            "description": "The size of the page to be returned",
+            "description": "The size of the page to be returned. Will default to 10 if not supplied or invalid.",
             "required": false,
             "schema": {
               "type": "integer",
               "default": 10,
               "minimum": 1
-            }
-          },
-          {
-            "name": "sort",
-            "in": "query",
-            "description": "Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.",
-            "required": false,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
             }
           }
         ],
@@ -1291,7 +1263,7 @@
       "get": {
         "tags": ["Specific use case"],
         "summary": "Get the next page of prisoners.",
-        "description": "To be used in conjunction with /prisoner-location/all. Uses the scroll id to get the next page of\n      prisoners.  Calls should be repeated until a\n      `null` scroll id is then returned, indicating that no more data is available.  Each call will return the scroll id,\n      which should be used for the next call, rather than re-using the original scroll id.\n      Note that the OpenSearch scroll will expire after 5 minutes, so if no calls are made during that time then the\n      scroll id will be invalid.\n      Requires PRISONER_SEARCH__PRISONER_LOCATION__RO role.",
+        "description": "To be used in conjunction with /prisoner-location/all. Uses the scroll id to get the next page of\n prisoners. Calls should be repeated until a\n `null` scroll id is then returned, indicating that no more data is available. Each call will return the scroll id,\n which should be used for the next call, rather than re-using the original scroll id.\n Note that the OpenSearch scroll will expire after 5 minutes, so if no calls are made during that time then the\n scroll id will be invalid.\n Requires PRISONER_SEARCH__PRISONER_LOCATION__RO role.",
         "operationId": "scroll",
         "parameters": [
           {
@@ -1320,8 +1292,8 @@
     "/prisoner-location/all": {
       "get": {
         "tags": ["Specific use case"],
-        "summary": "Get all prisoners.  This will return the first page of results and a scroll id to retrieve the next page",
-        "description": "To be used in conjunction with /prisoner-location/scroll/{scroll-id}.\n      This endpoint will return the first page of results (10,000 per page) and also a scroll id.\n      This scroll id can then be used to make subsequent calls to return the data.\n      It is required that this call will then be followed by calls to the /scroll/{scroll-id} endpoint to retrieve all\n      the rest of the data, since it opens an OpenSearch scroll that will be cleared when no more data is available.\n      Requires PRISONER_SEARCH__PRISONER_LOCATION__RO role.",
+        "summary": "Get all prisoners. This will return the first page of results and a scroll id to retrieve the next page",
+        "description": "To be used in conjunction with /prisoner-location/scroll/{scroll-id}.\n This endpoint will return the first page of results (10,000 per page) and also a scroll id.\n This scroll id can then be used to make subsequent calls to return the data.\n It is required that this call will then be followed by calls to the /scroll/{scroll-id} endpoint to retrieve all\n the rest of the data, since it opens an OpenSearch scroll that will be cleared when no more data is available.\n Requires PRISONER_SEARCH__PRISONER_LOCATION__RO role.",
         "operationId": "findAll",
         "responses": {
           "200": {
@@ -1341,7 +1313,7 @@
       "get": {
         "tags": ["Establishment search", "Popular"],
         "summary": "Search for prisoners within a particular prison establishment",
-        "description": "This search is optimised for clients that have a simple search term typically containing the prisoner's name\n      or prisoner number. The user typically is certain the prisoner is within the establishment and knows key information \n      about the prisoner.\n      \n      Requires ROLE_PRISONER_IN_PRISON_SEARCH or ROLE_PRISONER_SEARCH role.\n      \n      Sort fields supported are: firstName, lastName, prisonerNumber, dateOfBirth, cellLocation e.g \"sort=firstName,lastName,desc\"\n      \n      Examples:\n      \n      \"/prison/BXI/prisoners?term=John&sort=firstName,lastName,desc&page=2&size=20\"\n      This will return all people in HMP Brixton whose first or last names begins with JOHN. \n      Results will be ordered by firstName, lastName descending. \n      Page 3 will be returned with a maximum of 20 results per page.\n      \n      \"/prison/WWI/prisoners?sort=cellLocation\"\n      This will return all people in HMP Wandsworth. \n      Results will be ordered by cell location ascending. \n      Page 1 will be returned with a maximum of 10 results per page.\n      \n      \"/prison/WWI/prisoners?cellLocationPrefix=WWI-2&term=smith\"\n      \"/prison/WWI/prisoners?cellLocationPrefix=2&term=smith\"\n      This will return all people in HMP Wandsworth block 2 whose name starts with SMITH. \n\n      \"/prison/WWI/prisoners?cellLocationPrefix=2-A-3-001\"\n      This will return all people in HMP Wandsworth cell WWI-2-A-3-001 \n\n      \"/prison/WWI/prisoners?term=A1234KJ\"\n      \"/prison/WWI/prisoners?term=A1234KJ bananas\"\n      This will return the single prisoner with prisoner number A1234KJ in HMP Wandsworth. \n      An empty page will be returned if not found.\n\n      \"/prison/WWI/prisoners?term=A J&fromDob=1956-01-01&toDob=2000-01-02\"\n      This will return all people in HMP Wandsworth. Born on or after 1956-01-01 and on or before 2000-01-02, \n      whose name begins with A J, e.g Alan Jones born on 1956-01-01. \n\n      \"/prison/WWI/prisoners?alerts=TACT&alerts=PEEP\"\n      This will return all people in HMP Wandsworth. With the alerts TACT or PEEP.\n\n      ",
+        "description": "This search is optimised for clients that have a simple search term typically containing the prisoner's name\n or prisoner number. The user typically is certain the prisoner is within the establishment and knows key information \n about the prisoner.\n \n Requires ROLE_PRISONER_IN_PRISON_SEARCH or ROLE_PRISONER_SEARCH role.\n \n Sort fields supported are: firstName, lastName, prisonerNumber, dateOfBirth, cellLocation e.g \"sort=firstName,lastName,desc\"\n \n Examples:\n \n \"/prison/BXI/prisoners?term=John&sort=firstName,lastName,desc&page=2&size=20\"\n This will return all people in HMP Brixton whose first or last names begins with JOHN. \n Results will be ordered by firstName, lastName descending. \n Page 3 will be returned with a maximum of 20 results per page.\n \n \"/prison/WWI/prisoners?sort=cellLocation\"\n This will return all people in HMP Wandsworth. \n Results will be ordered by cell location ascending. \n Page 1 will be returned with a maximum of 10 results per page.\n \n \"/prison/WWI/prisoners?cellLocationPrefix=WWI-2&term=smith\"\n \"/prison/WWI/prisoners?cellLocationPrefix=2&term=smith\"\n This will return all people in HMP Wandsworth block 2 whose name starts with SMITH. \n\n \"/prison/WWI/prisoners?cellLocationPrefix=2-A-3-001\"\n This will return all people in HMP Wandsworth cell WWI-2-A-3-001 \n\n \"/prison/WWI/prisoners?term=A1234KJ\"\n \"/prison/WWI/prisoners?term=A1234KJ bananas\"\n This will return the single prisoner with prisoner number A1234KJ in HMP Wandsworth. \n An empty page will be returned if not found.\n\n \"/prison/WWI/prisoners?term=A J&fromDob=1956-01-01&toDob=2000-01-02\"\n This will return all people in HMP Wandsworth. Born on or after 1956-01-01 and on or before 2000-01-02, \n whose name begins with A J, e.g Alan Jones born on 1956-01-01. \n\n \"/prison/WWI/prisoners?alerts=TACT&alerts=PEEP\"\n This will return all people in HMP Wandsworth. With the alerts TACT or PEEP.\n\n There have been issues raised with OpenSearch sorting in that it sometimes doesn't produce stable sorting results,\n especially with higher page numbers.\n\n It is thus recommended not to use paging and instead request a large page size, together with setting the\n responseFields to limit the returned response byte size (otherwise you risk hitting memory / webclient limits).\n ",
         "operationId": "search",
         "parameters": [
           {
@@ -1608,7 +1580,7 @@
         "properties": {
           "fullAddress": {
             "type": "string",
-            "description": "The full address on a single line.  No fixed address records will have the fullAddress set to 'No fixed address'. Will never be null.",
+            "description": "The full address on a single line. No fixed address records will have the fullAddress set to 'No fixed address'. Will never be null.",
             "example": 1
           },
           "postalCode": {
@@ -1769,7 +1741,7 @@
           },
           "readSkill": {
             "type": "string",
-            "description": "The level of reading skill, from domain LANG_SKILLS:\n    |Y  Yes\n    |A\tAverage\n    |D\tDyslexia\n    |G\tGood\n    |N\tNil\n    |P\tPoor\n    |R\tRefused",
+            "description": "The level of reading skill, from domain LANG_SKILLS:\n |Y Yes\n |A\tAverage\n |D\tDyslexia\n |G\tGood\n |N\tNil\n |P\tPoor\n |R\tRefused",
             "enum": ["Y", "N", "A", "D", "G", "P", "R"]
           },
           "writeSkill": {
@@ -1888,12 +1860,12 @@
             "type": "integer",
             "format": "int32"
           },
+          "paged": {
+            "type": "boolean"
+          },
           "pageNumber": {
             "type": "integer",
             "format": "int32"
-          },
-          "paged": {
-            "type": "boolean"
           },
           "unpaged": {
             "type": "boolean"
@@ -2290,7 +2262,7 @@
           "paroleEligibilityDate": {
             "type": "string",
             "format": "date",
-            "description": "Parole  Eligibility Date",
+            "description": "Parole Eligibility Date",
             "example": "2023-05-01"
           },
           "automaticReleaseDate": {
@@ -3128,7 +3100,7 @@
           },
           "lenient": {
             "type": "boolean",
-            "description": "\n        Whether all terms are required to match. If set to true then only matches on all fields will return a result.\n        If set to false then matches will return a higher score than non matches, but all will be returned.\n        Prison and cell location will always be required to match.",
+            "description": "\n Whether all terms are required to match. If set to true then only matches on all fields will return a result.\n If set to false then matches will return a higher score than non matches, but all will be returned.\n Prison and cell location will always be required to match.",
             "example": false
           },
           "pagination": {
@@ -3429,17 +3401,12 @@
                 "type": "boolean",
                 "description": "Whether the attribute must be true or false",
                 "example": true
-              },
-              "type": {
-                "type": "string",
-                "description": "Must be Boolean",
-                "example": "Boolean"
               }
             }
           }
         ],
-        "description": "A matcher for a boolean attribute from the Prisoner record",
-        "required": ["attribute", "condition", "type"]
+        "description": "A matcher for a boolean attribute from the Prisoner.\n\n The type must be set to Boolean for this matcher.\n",
+        "required": ["attribute", "condition"]
       },
       "DateMatcher": {
         "allOf": [
@@ -3475,17 +3442,12 @@
                 "type": "boolean",
                 "default": true,
                 "description": "Whether the maximum value is inclusive or exclusive"
-              },
-              "type": {
-                "type": "string",
-                "description": "Must be Date",
-                "example": "Date"
               }
             }
           }
         ],
-        "description": "A matcher for a date attribute from the Prisoner record.\n  \n  For a between clause use both min value and max value. By default the range is inclusive, but can be adjusted with minInclusive and maxInclusive.\n  \n  For <= enter only a max value, and for < set max inclusive to false.\n   \n  For >= enter only a min value, and for > set min inclusive to false.\n  \n  For equals enter the same date in both the min value and max value and leave min/max inclusive as true.\n  ",
-        "required": ["attribute", "type"]
+        "description": "A matcher for a date attribute from the Prisoner record.\n \n For a between clause use both min value and max value. By default the range is inclusive, but can be adjusted with minInclusive and maxInclusive.\n \n For <= enter only a max value, and for < set max inclusive to false.\n \n For >= enter only a min value, and for > set min inclusive to false.\n \n For equals enter the same date in both the min value and max value and leave min/max inclusive as true.\n\n The type must be set to Date for this matcher.\n ",
+        "required": ["attribute"]
       },
       "DateTimeMatcher": {
         "allOf": [
@@ -3511,17 +3473,12 @@
                 "format": "date-time",
                 "description": "The maximum value to match",
                 "example": "2024-01-31T21:00:00Z"
-              },
-              "type": {
-                "type": "string",
-                "description": "Must be DateTime",
-                "example": "DateTime"
               }
             }
           }
         ],
-        "description": "A matcher for a date time attribute from the Prisoner record.\n  \n  For a between clause use both the min and max values.\n  \n  For < enter only the max value.\n  \n  For > enter only the min value.\n",
-        "required": ["attribute", "type"]
+        "description": "A matcher for a date time attribute from the Prisoner record.\n \n For a between clause use both the min and max values.\n \n For < enter only the max value.\n \n For > enter only the min value.\n\n The type must be set to DateTime for this matcher.\n",
+        "required": ["attribute"]
       },
       "IntMatcher": {
         "allOf": [
@@ -3557,22 +3514,25 @@
                 "type": "boolean",
                 "default": true,
                 "description": "Whether the maximum value is inclusive"
-              },
-              "type": {
-                "type": "string",
-                "description": "Must be Int",
-                "example": "Int"
               }
             }
           }
         ],
-        "description": "A matcher for an integer attribute from the Prisoner record.\n  \n  For a between clause use both min value and max value. By default the range is inclusive, but can be adjusted with minInclusive and maxInclusive.\n  \n  For <= enter only a max value, and for < set max inclusive to false.\n   \n  For >= enter only a min value, and for > set min inclusive to false.\n  \n  For equals enter the same integer in both the min value and max value and leave min/max inclusive as true.\n  ",
-        "required": ["attribute", "type"]
+        "description": "A matcher for an integer attribute from the Prisoner record.\n \n For a between clause use both min value and max value. By default the range is inclusive, but can be adjusted with minInclusive and maxInclusive.\n \n For <= enter only a max value, and for < set max inclusive to false.\n \n For >= enter only a min value, and for > set min inclusive to false.\n \n For equals enter the same integer in both the min value and max value and leave min/max inclusive as true..\n\n The type must be set to Int for this matcher.\n ",
+        "required": ["attribute"]
       },
       "Matcher": {
-        "type": "object",
+        "description": "Matchers that will be applied to this query",
         "discriminator": {
-          "propertyName": "type"
+          "propertyName": "type",
+          "mapping": {
+            "Boolean": "#/components/schemas/BooleanMatcher",
+            "Date": "#/components/schemas/DateMatcher",
+            "DateTime": "#/components/schemas/DateTimeMatcher",
+            "Int": "#/components/schemas/IntMatcher",
+            "PNC": "#/components/schemas/PncMatcher",
+            "String": "#/components/schemas/StringMatcher"
+          }
         },
         "properties": {
           "type": {
@@ -3593,17 +3553,12 @@
                 "type": "string",
                 "description": "The PNC number match",
                 "example": "24/123456H"
-              },
-              "type": {
-                "type": "string",
-                "description": "Must be PNC",
-                "example": "PNC"
               }
             }
           }
         ],
-        "description": "A matcher for PNC numbers.\n  \n    This is required because PNC numbers come in various formats with 2/4 long years and with/without leading zeroes.\n     \n    This matcher will find the matching PNC regardless of which format is used. \n  ",
-        "required": ["pncNumber", "type"]
+        "description": "A matcher for PNC numbers.\n \n This is required because PNC numbers come in various formats with 2/4 long years and with/without leading zeroes.\n \n This matcher will find the matching PNC regardless of which format is used.\n\n The type must be set to PNC for this matcher.\n ",
+        "required": ["pncNumber"]
       },
       "Query": {
         "type": "object",
@@ -3674,17 +3629,12 @@
                 "type": "string",
                 "description": "The search term to apply to the attribute. Search terms are not case-sensitive.",
                 "example": "Smith"
-              },
-              "type": {
-                "type": "string",
-                "description": "Must be String",
-                "example": "String"
               }
             }
           }
         ],
-        "description": "A matcher for a string attribute from the prisoner record",
-        "required": ["attribute", "condition", "searchTerm", "type"]
+        "description": "A matcher for a string attribute from the prisoner record.\n\n The type must be set to String for this matcher.\n",
+        "required": ["attribute", "condition", "searchTerm"]
       },
       "ReferenceData": {
         "type": "object",

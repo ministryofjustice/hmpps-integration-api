@@ -39,6 +39,7 @@ abstract class IntegrationTestBase {
   final val crn = "AB123123"
   final val specificPrisonCn = "specific-prison"
   final val limitedPrisonsCn = "limited-prisons"
+  final val limitedCaseNotesCn = "limited-case-notes"
   final val noPrisonsCn = "no-prisons"
   final val emptyPrisonsCn = "empty-prisons"
   final val contactId = 123456L
@@ -55,6 +56,7 @@ abstract class IntegrationTestBase {
     val plpMockServer = ApiMockServer.create(UpstreamApi.PLP)
     val sanMockServer = ApiMockServer.create(UpstreamApi.SAN)
     val activitiesMockServer = ApiMockServer.create(UpstreamApi.ACTIVITIES)
+    val nDeliusMockServer = ApiMockServer.create(UpstreamApi.NDELIUS_INTEGRATION_TEST)
 
     @BeforeAll
     @JvmStatic
@@ -75,7 +77,7 @@ abstract class IntegrationTestBase {
           "$gatewaysFolder/prisoneroffendersearch/fixtures/PrisonerByIdResponse.json",
         ).readText(),
       )
-
+      nDeliusMockServer.start()
       managePomCaseMockServer.start()
       plpMockServer.start()
       sanMockServer.start()
@@ -85,6 +87,7 @@ abstract class IntegrationTestBase {
     @AfterAll
     @JvmStatic
     fun stopMockServers() {
+      nDeliusMockServer.stop()
       hmppsAuthMockServer.stop()
       prisonerOffenderSearchMockServer.stop()
       managePomCaseMockServer.stop()
@@ -130,6 +133,12 @@ abstract class IntegrationTestBase {
         .headers(getAuthHeader(cn))
         .content(requestBody)
         .contentType(org.springframework.http.MediaType.APPLICATION_JSON),
+    )
+
+  fun putApi(path: String): ResultActions =
+    mockMvc.perform(
+      put(path)
+        .headers(getAuthHeader()),
     )
 
   fun putApi(

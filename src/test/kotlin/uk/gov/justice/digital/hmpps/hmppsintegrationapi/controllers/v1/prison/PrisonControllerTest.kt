@@ -465,7 +465,7 @@ internal class PrisonControllerTest(
         )
       }
 
-      it("returns 400 when getResidentialHierarchyService returns not found") {
+      it("returns 400 when getResidentialHierarchyService returns Bad Request") {
         whenever(getResidentialHierarchyService.execute(prisonId, includeInactive, filters)).thenReturn(
           Response(
             data = null,
@@ -580,7 +580,7 @@ internal class PrisonControllerTest(
         )
       }
 
-      it("returns 400 when getResidentialDetailsService returns not found") {
+      it("returns 400 when getResidentialDetailsService Bad Request") {
         whenever(getResidentialDetailsService.execute(prisonId, parentPathHierarchy, filters)).thenReturn(
           Response(
             data = null,

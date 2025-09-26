@@ -31,6 +31,7 @@ class ApiMockServer(
           UpstreamApi.PLP -> ApiMockServerConfig(4003, "plp.json")
           UpstreamApi.ACTIVITIES -> ApiMockServerConfig(4004, "activities.json")
           UpstreamApi.TEST -> ApiMockServerConfig(4005, "test.json")
+          UpstreamApi.NDELIUS_INTEGRATION_TEST -> ApiMockServerConfig(4201)
           // USE PRISM
           UpstreamApi.PRISON_API -> ApiMockServerConfig(4000)
           UpstreamApi.NDELIUS -> ApiMockServerConfig(4003)

@@ -29,6 +29,7 @@ data class FeatureFlagConfig(
     const val USE_DEALLOCATION_REASONS_ENDPOINT = "use-deallocation-reasons-endpoint"
     const val USE_ALLOCATION_ENDPOINT = "use-allocation-endpoint"
     const val USE_EDUCATION_ENDPOINT = "use-education-endpoint"
+    const val USE_EXPRESSION_OF_INTEREST_ENDPOINT = "use-expression-of-interest-endpoint"
     const val USE_PRISONER_BASE_LOCATION_ENDPOINT = "use-prisoner-base-location-endpoint"
     const val USE_SUITABILITY_ENDPOINT = "use-suitability-endpoint"
     const val USE_HISTORICAL_ATTENDANCES_ENDPOINT = "use-historical-attendances-endpoint"
@@ -37,7 +38,8 @@ data class FeatureFlagConfig(
     const val SIMPLE_REDACTION = "simple-redaction"
     const val EDUCATION_TRIGGER_ENABLED = "education-trigger-enabled"
     const val EDUCATION_ALN_TRIGGER_ENABLED = "education-aln-trigger-enabled"
-    const val CACHE_AUTH_TOKEN = "cache-auth-token"
+    const val USE_CONTACT_EVENTS_ENDPOINT = "use-contact-events-endpoint"
+    const val USE_STUBBED_CONTACT_EVENTS_DATA = "use-stubbed-contact-events-data"
   }
 
   /**
