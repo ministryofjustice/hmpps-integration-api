@@ -24,7 +24,7 @@ class GetOffencesForPersonService(
     var nomisOffences: Response<List<Offence>> = Response(data = emptyList())
     var nDeliusOffences: Response<List<Offence>> = Response(data = emptyList())
 
-    if (filters != null) {
+    if (filters?.hasPrisonFilter() == true) {
       personResponse = getPersonService.getPersonWithPrisonFilter(hmppsId, filters)
       nomisNumber = personResponse.data?.identifiers?.nomisNumber ?: return Response(data = emptyList(), errors = personResponse.errors)
       nomisOffences = prisonApiGateway.getOffencesForPerson(nomisNumber)

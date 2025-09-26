@@ -98,6 +98,7 @@ feature-flag:
   education-aln-trigger-enabled: true
   use-contact-events-endpoint: true
   use-stubbed-contact-events-data: false
+  use-roles-dsl: true
 
 authorisation:
   consumers:
@@ -105,6 +106,9 @@ authorisation:
       roles:
         - "full-access"
       filters:
+    automated-test-client-no-filters:
+      roles:
+        - "full-access"
     config-v2-test:
       include:
         - "/v2/config/authorisation"
@@ -117,19 +121,19 @@ authorisation:
       filters:
     specific-prison:
       roles:
-        - "full-access"
+        - "all-endpoints"
       filters:
         prisons:
           - MDI
     limited-prisons:
       roles:
-        - "full-access"
+        - "all-endpoints"
       filters:
         prisons:
           - ABC
     no-prisons:
       roles:
-        - "full-access"
+        - "all-endpoints"
       filters:
         prisons:
     private-prison-only:
@@ -137,6 +141,12 @@ authorisation:
         - "private-prison"
       include:
       filters:
+    limited-case-notes:
+      roles:
+        - "all-endpoints"
+      filters:
+        case-notes:
+          - "CAB"
     reference-data-only-user:
       roles:
         - "reference-data-only"

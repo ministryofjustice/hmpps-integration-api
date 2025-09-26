@@ -64,6 +64,7 @@ feature-flag:
   education-aln-trigger-enabled: true
   use-contact-events-endpoint: true
   use-stubbed-contact-events-data: true
+  use-roles-dsl: true
 
 authorisation:
   consumers:
@@ -104,40 +105,9 @@ authorisation:
       filters:
     mryall:
       include:
-        - "/v1/hmpps/reference-data"
-        - "/v1/images/.*"
-        - "/v1/persons"
-        - "/v1/persons/.*/addresses"
-        - "/v1/persons/.*/adjudications"
-        - "/v1/persons/.*/alerts"
-        - "/v1/pnd/persons/.*/alerts"
-        - "/v1/persons/.*/case-notes"
-        - "/v1/persons/.*/images"
-        - "/v1/persons/.*/licences/conditions"
-        - "/v1/persons/.*/needs"
-        - "/v1/persons/.*/offences"
-        - "/v1/persons/.*/person-responsible-officer"
-        - "/v1/persons/.*/protected-characteristics"
-        - "/v1/persons/.*/reported-adjudications"
-        - "/v1/persons/.*/risk-management-plan"
-        - "/v1/persons/.*/risks/categories"
-        - "/v1/persons/.*/risks/dynamic"
-        - "/v1/persons/.*/risks/mappadetail"
-        - "/v1/persons/.*/risks/scores"
-        - "/v1/persons/.*/risks/serious-harm"
-        - "/v1/persons/.*/sentences"
-        - "/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
-        - "/v1/persons/.*/status-information"
-        - "/v1/persons/[^/]*$"
-        - "/v1/prison/prisoners/[^/]*$"
-        - "/v1/prison/prisoners"
-        - "/v1/prison/.*/prisoners/[^/]*/balances$"
-        - "/v1/prison/.*/prisoners/.*/accounts/.*/balances"
-        - "/v1/prison/.*/prisoners/.*/accounts/.*/transactions"
-        - "/v1/prison/.*/prisoners/.*/transactions/[^/]*$"
-        - "/v1/prison/.*/prisoners/.*/transactions"
-        - "/v1/status"
       filters:
+      roles:
+        - "full-access"
     kilco:
       include:
       filters:
@@ -160,11 +130,6 @@ authorisation:
         - "/v1/persons/.*/education/assessments"
         - "/v1/status"
       filters:
-    bmadley:
-      include:
-      filters:
-      roles:
-        - "full-access"
     serco:
       include:
         - "/v1/persons"
@@ -190,56 +155,14 @@ authorisation:
       filters:
     abritton:
       include:
-        - "/v1/persons"
-        - "/v1/persons/[^/]*$"
-        - "/v1/persons/.*/addresses"
-        - "/v1/persons/.*/offences"
-        - "/v1/persons/.*/alerts"
-        - "/v1/persons/.*/sentences"
-        - "/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
-        - "/v1/persons/.*/risks/scores"
-        - "/v1/persons/.*/risks/dynamic"
-        - "/v1/persons/.*/needs"
-        - "/v1/persons/.*/risks/serious-harm"
-        - "/v1/persons/.*/reported-adjudications"
-        - "/v1/persons/.*/adjudications"
-        - "/v1/persons/.*/licences/conditions"
-        - "/v1/persons/.*/case-notes"
-        - "/v1/persons/.*/protected-characteristics"
-        - "/v1/persons/.*/risks/mappadetail"
-        - "/v1/persons/.*/risks/categories"
-        - "/v1/persons/.*/status-information"
-        - "/v1/persons/.*/person-responsible-officer"
-        - "/v1/persons/.*/risk-management-plan"
-        - "/v1/hmpps/reference-data"
-        - "/v1/status"
       filters:
+      roles:
+        - "full-access"
     jbetton:
       include:
-        - "/v1/persons"
-        - "/v1/persons/[^/]*$"
-        - "/v1/persons/.*/addresses"
-        - "/v1/persons/.*/offences"
-        - "/v1/persons/.*/alerts"
-        - "/v1/persons/.*/sentences"
-        - "/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
-        - "/v1/persons/.*/risks/scores"
-        - "/v1/persons/.*/risks/dynamic"
-        - "/v1/persons/.*/needs"
-        - "/v1/persons/.*/risks/serious-harm"
-        - "/v1/persons/.*/reported-adjudications"
-        - "/v1/persons/.*/adjudications"
-        - "/v1/persons/.*/licences/conditions"
-        - "/v1/persons/.*/case-notes"
-        - "/v1/persons/.*/protected-characteristics"
-        - "/v1/persons/.*/risks/mappadetail"
-        - "/v1/persons/.*/risks/categories"
-        - "/v1/persons/.*/status-information"
-        - "/v1/persons/.*/person-responsible-officer"
-        - "/v1/persons/.*/risk-management-plan"
-        - "/v1/hmpps/reference-data"
-        - "/v1/status"
       filters:
+      roles:
+        - "full-access"
     smoke-test-full-access:
       include:
       filters:
