@@ -1,0 +1,31 @@
+name: Pipeline [GHA test]
+on:
+  push:
+    branches:
+      - '**'
+  workflow_dispatch:
+    inputs:
+      additional_docker_tag:
+        description: Additional docker tag that can be used to specify stable or testing tags
+        required: false
+        default: ''
+        type: string
+      push:
+        description: Push docker image to registry flag
+        required: true
+        default: false
+        type: boolean
+permissions:
+  contents: read
+  packages: write
+jobs:
+  helm_lint:
+    name: helm lint
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/test_helm_lint.yml@v2 # WORKFLOW_VERSION
+    secrets: inherit
+  test:
+    name: Test
+    uses: ./.github/workflows/test.yml
+    secrets: inherit
+    needs:
+      - helm_lint
