@@ -58,7 +58,7 @@ class IncludeBuilder {
     content?.add(this)
   }
 
-  operator fun MutableList<String>.unaryMinus() {
+  operator fun List<String>.unaryMinus() {
     if (content == null) {
       content = mutableListOf()
     }
