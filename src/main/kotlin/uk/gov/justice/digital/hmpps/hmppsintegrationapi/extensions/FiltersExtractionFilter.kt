@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory
 import java.io.IOException
 
 @Component
@@ -75,7 +76,7 @@ private fun buildAggregatedFilters(
     )
 
   val mappaCategories =
-    getDistinctValues(
+    getDistinctValuesForType<Any, MappaCategory>(
       allRoles
         .filter { it.filters?.hasMappaCategoriesFilter() == true }
         .mapNotNull { it.filters?.mappaCategories },
@@ -84,11 +85,11 @@ private fun buildAggregatedFilters(
   return if (caseNotes == null && prisons == null && mappaCategories == null) null else ConsumerFilters(prisons, caseNotes, mappaCategories)
 }
 
-private fun <T> getDistinctValues(allValues: List<List<T>>): List<T>? =
+private inline fun <T, reified V> getDistinctValuesForType(allValues: List<List<T>>): List<V>? =
   if (allValues.isEmpty()) {
     null
   } else {
-    allValues.flatten().distinct()
+    allValues.flatten().filterIsInstance<V>().distinct()
   }
 
 private fun getDistinctValuesIfNotWildcarded(allValues: List<List<String>>): List<String>? =

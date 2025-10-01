@@ -37,7 +37,9 @@ class ContactEventService(
   fun getCategories(filters: ConsumerFilters?): List<Number> =
     if (filters?.hasMappaCategoriesFilter() == true) {
       // Filters are applied even if empty list
-      filters.mappaCategories!!.mapNotNull { it.category }
+      filters.mappaCategories!!.filterIsInstance<MappaCategory>().mapNotNull {
+        it.category
+      }
     } else {
       // No filters to be applied - all applicable
       MappaCategory.all().mapNotNull { it.category }

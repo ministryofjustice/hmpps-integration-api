@@ -89,20 +89,31 @@ class CaseNotesBuilder {
 }
 
 class MappaCategoriesBuilder {
-  var content: MutableList<MappaCategory>? = null
+  var content: MutableList<Any>? = null
 
   operator fun MappaCategory.unaryMinus() {
+    addContent(this)
+  }
+
+  // Wildcard
+  operator fun Any.unaryMinus() {
+    if ("*" == this) {
+      addContent(this)
+    }
+  }
+
+  private fun addContent(value: Any) {
     if (content == null) {
       content = mutableListOf()
     }
-    content?.add(this)
+    content?.add(value)
   }
 }
 
 class FiltersBuilder {
   private var prisons: MutableList<String>? = null
   private var caseNotes: MutableList<String>? = null
-  private var mappaCategories: MutableList<MappaCategory>? = null
+  private var mappaCategories: MutableList<Any>? = null
 
   fun build(): ConsumerFilters = ConsumerFilters(prisons, caseNotes, mappaCategories)
 

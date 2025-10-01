@@ -1,11 +1,9 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory
-
 data class ConsumerFilters(
   val prisons: List<String>? = null,
   val caseNotes: List<String>? = null,
-  val mappaCategories: List<MappaCategory>? = null,
+  val mappaCategories: List<Any>? = null,
 ) {
   fun matchesPrison(prisonId: String?): Boolean = matchesFilterList(prisons, prisonId)
 
