@@ -5,6 +5,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.curious
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.constants
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.fullAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mappa
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mappaCat4
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.police
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.prisonerEscortCustodyService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.privatePrison
@@ -99,4 +100,5 @@ val roles =
     prisonerEscortCustodyService,
     mappa,
     allEndpoints,
+    mappaCat4,
   ).associateBy { it.name }

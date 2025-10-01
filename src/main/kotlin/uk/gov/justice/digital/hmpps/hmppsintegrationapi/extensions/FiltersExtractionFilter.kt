@@ -74,8 +74,22 @@ private fun buildAggregatedFilters(
         .mapNotNull { it.filters?.caseNotes },
     )
 
-  return if (caseNotes == null && prisons == null) null else ConsumerFilters(prisons, caseNotes)
+  val mappaCategories =
+    getDistinctValues(
+      allRoles
+        .filter { it.filters?.hasMappaCategoriesFilter() == true }
+        .mapNotNull { it.filters?.mappaCategories },
+    )
+
+  return if (caseNotes == null && prisons == null && mappaCategories == null) null else ConsumerFilters(prisons, caseNotes, mappaCategories)
 }
+
+private fun <T> getDistinctValues(allValues: List<List<T>>): List<T>? =
+  if (allValues.isEmpty()) {
+    null
+  } else {
+    allValues.flatten().distinct()
+  }
 
 private fun getDistinctValuesIfNotWildcarded(allValues: List<List<String>>): List<String>? =
   if (allValues.isEmpty()) {

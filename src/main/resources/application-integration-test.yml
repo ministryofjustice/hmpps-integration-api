@@ -105,6 +105,7 @@ authorisation:
     automated-test-client:
       roles:
         - "full-access"
+        - "mappa-cat4"
       filters:
     automated-test-client-no-filters:
       roles:

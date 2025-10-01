@@ -29,6 +29,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("integration-test")
@@ -60,7 +61,7 @@ class FiltersExtractionFilterIntegrationRoleDslTest {
         Arguments.of("curious", null),
         Arguments.of("reference-data-only", null),
         Arguments.of("prisoner-escort-custody-service", ConsumerFilters(caseNotes = listOf("CAB", "NEG", "CVM", "INTERVENTION", "POS"), prisons = null)),
-        Arguments.of("mappa", null),
+        Arguments.of("mappa", ConsumerFilters(mappaCategories = listOf(MappaCategory.CAT1, MappaCategory.CAT2, MappaCategory.CAT3, MappaCategory.CAT4))),
         Arguments.of("all-endpoints", null),
       )
   }
