@@ -56,11 +56,13 @@ class AuthorisationConfig {
   /**
    * Merges the filters from the consumer config and roles
    */
-  fun buildAggregatedFilters(
-    consumerFilters: ConsumerFilters?,
-    roles: List<Role>?,
-  ): ConsumerFilters? {
-    val consumerPseudoRole = Role(include = null, filters = consumerFilters)
+  fun allFilters(consumerName: String): ConsumerFilters? {
+    val consumerConfig: ConsumerConfig? = consumers[consumerName]
+    val roles: List<Role>? =
+      consumerConfig?.roles?.mapNotNull {
+        uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles[it]
+      }
+    val consumerPseudoRole = Role(include = null, filters = consumerConfig?.filters)
     val allRoles: List<Role> = listOf(consumerPseudoRole) + (roles ?: emptyList())
 
     if (allRoles.all { it.filters?.hasFilters() == false }) {
