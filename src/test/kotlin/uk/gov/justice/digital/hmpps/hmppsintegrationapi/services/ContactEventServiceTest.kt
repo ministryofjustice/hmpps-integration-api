@@ -2,8 +2,11 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -17,7 +20,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.ContactEventStubGenerator
 
 @ContextConfiguration(
@@ -36,6 +41,9 @@ internal class ContactEventServiceTest(
       val crn = hmppsId
       val person = Person(firstName = persona.firstName, lastName = persona.lastName, identifiers = persona.identifiers)
       val contactEvents = ContactEventStubGenerator.generateNDeliusContactEvents(crn, 10, 1, 100)
+      val mappaCategories = emptyList<Number>()
+      val mappaCats = emptyList<MappaCategory>()
+      val filters = ConsumerFilters(mappaCategories = mappaCats)
 
       beforeEach {
 
@@ -44,15 +52,15 @@ internal class ContactEventServiceTest(
         Mockito.reset(deliusGateway)
 
         whenever(personService.execute(hmppsId = hmppsId)).thenReturn(Response(person))
-        whenever(deliusGateway.getContactEventsForPerson(crn, 1, 10))
+        whenever(deliusGateway.getContactEventsForPerson(crn, 1, 10, mappaCategories))
           .thenReturn(Response(contactEvents))
 
-        whenever(deliusGateway.getContactEventForPerson(crn, 1))
+        whenever(deliusGateway.getContactEventForPerson(crn, 1, mappaCategories))
           .thenReturn(Response(contactEvents.contactEvents.first()))
       }
 
       it("contact events calls personService search with hmppsId") {
-        contactEventService.getContactEvents(hmppsId, 1, 10)
+        contactEventService.getContactEvents(hmppsId, 1, 10, filters)
         verify(personService, times(1)).execute(hmppsId = hmppsId)
       }
 
@@ -72,7 +80,7 @@ internal class ContactEventServiceTest(
         )
         val exception =
           assertThrows<EntityNotFoundException> {
-            contactEventService.getContactEvents("notfound", 1, 10)
+            contactEventService.getContactEvents("notfound", 1, 10, filters)
           }
         exception.message.shouldBe("NDelius CRN not found for notfound")
       }
@@ -86,26 +94,26 @@ internal class ContactEventServiceTest(
             ),
           )
 
-        whenever(deliusGateway.getContactEventsForPerson(crn, 1, 10)).thenReturn(
+        whenever(deliusGateway.getContactEventsForPerson(crn, 1, 10, mappaCategories)).thenReturn(
           Response(
             data = null,
             errors = errors,
           ),
         )
 
-        val result = contactEventService.getContactEvents(crn, 1, 10)
+        val result = contactEventService.getContactEvents(crn, 1, 10, filters)
         result.data?.content.shouldBe(null)
         result.errors.shouldBe(errors)
       }
 
       it("contact events should return contact events from gateway") {
-        val result = contactEventService.getContactEvents(crn, 1, 10)
+        val result = contactEventService.getContactEvents(crn, 1, 10, filters)
         result.data?.content.shouldBe(contactEvents.contactEvents.map { it.toContactEvent() })
         result.errors.count().shouldBe(0)
       }
 
       it("contact event calls personService search with hmppsId") {
-        contactEventService.getContactEvent(hmppsId, 1)
+        contactEventService.getContactEvent(hmppsId, 1, filters)
         verify(personService, times(1)).execute(hmppsId = hmppsId)
       }
 
@@ -125,7 +133,7 @@ internal class ContactEventServiceTest(
         )
         val exception =
           assertThrows<EntityNotFoundException> {
-            contactEventService.getContactEvent("notfound", 1)
+            contactEventService.getContactEvent("notfound", 1, filters)
           }
         exception.message.shouldBe("NDelius CRN not found for notfound with id 1")
       }
@@ -139,22 +147,52 @@ internal class ContactEventServiceTest(
             ),
           )
 
-        whenever(deliusGateway.getContactEventForPerson(crn, 1)).thenReturn(
+        whenever(deliusGateway.getContactEventForPerson(crn, 1, mappaCategories)).thenReturn(
           Response(
             data = null,
             errors = errors,
           ),
         )
 
-        val result = contactEventService.getContactEvent(crn, 1)
+        val result = contactEventService.getContactEvent(crn, 1, filters)
         result.data?.shouldBe(null)
         result.errors.shouldBe(errors)
       }
 
       it("contact event should return a contact event from the gateway") {
-        val result = contactEventService.getContactEvent(crn, 1)
+        val result = contactEventService.getContactEvent(crn, 1, filters)
         result.data?.shouldBe(contactEvents.contactEvents.first().toContactEvent())
         result.errors.count().shouldBe(0)
+      }
+
+      it("contact event should request all mappa categories when mappa cats are null") {
+        whenever(deliusGateway.getContactEventForPerson(any(), any(), any()))
+          .thenReturn(Response(contactEvents.contactEvents.first()))
+        val noMappaFilter = ConsumerFilters()
+        contactEventService.getContactEvent(crn, 1, noMappaFilter)
+        val captor = argumentCaptor<List<Number>>()
+        verify(deliusGateway, times(1)).getContactEventForPerson(any(), any(), captor.capture())
+        assertThat(captor.lastValue).hasSize(4)
+      }
+
+      it("contact events should request all mappa categories when mappa cats are null") {
+        whenever(deliusGateway.getContactEventsForPerson(any(), any(), any(), any()))
+          .thenReturn(Response(contactEvents))
+        val noMappaFilter = ConsumerFilters()
+        contactEventService.getContactEvents(crn, 1, 10, noMappaFilter)
+        val captor = argumentCaptor<List<Number>>()
+        verify(deliusGateway, times(1)).getContactEventsForPerson(any(), any(), any(), captor.capture())
+        assertThat(captor.lastValue).hasSize(4)
+      }
+
+      it("contact event should request no mappa categories when mappa cats are empty") {
+        whenever(deliusGateway.getContactEventForPerson(any(), any(), any()))
+          .thenReturn(Response(contactEvents.contactEvents.first()))
+        val noMappaFilter = ConsumerFilters(mappaCategories = emptyList())
+        contactEventService.getContactEvent(crn, 1, noMappaFilter)
+        val captor = argumentCaptor<List<Number>>()
+        verify(deliusGateway, times(1)).getContactEventForPerson(any(), any(), captor.capture())
+        assertThat(captor.lastValue).hasSize(0)
       }
     },
   )

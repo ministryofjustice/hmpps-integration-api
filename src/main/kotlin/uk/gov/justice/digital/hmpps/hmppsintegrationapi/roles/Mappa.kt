@@ -31,4 +31,9 @@ val mappa =
       -"/v1/hmpps/reference-data"
       -"/v1/status"
     }
+    filters {
+      mappaCategories {
+        -"*"
+      }
+    }
   }

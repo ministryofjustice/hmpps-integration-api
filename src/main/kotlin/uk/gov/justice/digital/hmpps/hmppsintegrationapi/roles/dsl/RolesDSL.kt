@@ -58,7 +58,7 @@ class IncludeBuilder {
     content?.add(this)
   }
 
-  operator fun MutableList<String>.unaryMinus() {
+  operator fun List<String>.unaryMinus() {
     if (content == null) {
       content = mutableListOf()
     }
@@ -88,11 +88,34 @@ class CaseNotesBuilder {
   }
 }
 
+class MappaCategoriesBuilder {
+  var content: MutableList<Any>? = null
+
+  operator fun MappaCategory.unaryMinus() {
+    addContent(this)
+  }
+
+  // Wildcard
+  operator fun Any.unaryMinus() {
+    if ("*" == this) {
+      addContent(this)
+    }
+  }
+
+  private fun addContent(value: Any) {
+    if (content == null) {
+      content = mutableListOf()
+    }
+    content?.add(value)
+  }
+}
+
 class FiltersBuilder {
   private var prisons: MutableList<String>? = null
   private var caseNotes: MutableList<String>? = null
+  private var mappaCategories: MutableList<Any>? = null
 
-  fun build(): ConsumerFilters = ConsumerFilters(prisons, caseNotes)
+  fun build(): ConsumerFilters = ConsumerFilters(prisons, caseNotes, mappaCategories)
 
   fun prisons(init: PrisonsBuilder.() -> Unit) {
     PrisonsBuilder().apply(init).content?.let {
@@ -110,5 +133,31 @@ class FiltersBuilder {
       }
       caseNotes?.addAll(it)
     }
+  }
+
+  fun mappaCategories(init: MappaCategoriesBuilder.() -> Unit) {
+    MappaCategoriesBuilder().apply(init).content?.let {
+      if (mappaCategories == null) {
+        mappaCategories = mutableListOf()
+      }
+      mappaCategories?.addAll(it)
+    }
+  }
+}
+
+enum class MappaCategory(
+  val category: Number?,
+) {
+  CAT1(1),
+  CAT2(2),
+  CAT3(3),
+  CAT4(4),
+  UNKNOWN(null),
+  ;
+
+  companion object {
+    fun from(category: Number): MappaCategory = entries.firstOrNull { it.category == category } ?: UNKNOWN
+
+    fun all() = entries.filter { it.category != null }
   }
 }

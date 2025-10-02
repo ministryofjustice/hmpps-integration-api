@@ -36,6 +36,7 @@ class GetContactEventsForPersonTest(
       val deliusCrn = "X777776"
       val path = "/case/$deliusCrn/contacts"
       val nDeliusApiMockServer = ApiMockServer.create(UpstreamApi.NDELIUS)
+      val mappaCategories = listOf(1)
 
       beforeEach {
         nDeliusApiMockServer.start()
@@ -48,17 +49,17 @@ class GetContactEventsForPersonTest(
       }
       it("returns contact events from delius for the matching CRN") {
         nDeliusApiMockServer.stubForGet(
-          "$path?page=1&size=10",
+          "$path?page=1&size=10&mappaCategories=1",
           MockMvcExtensions.writeAsJson(generateNDeliusContactEvents(crn = deliusCrn, pageSize = 10, pageNumber = 1, totalRecords = 100)),
         )
-        val response = nDeliusGateway.getContactEventsForPerson(deliusCrn, 1, 10)
+        val response = nDeliusGateway.getContactEventsForPerson(deliusCrn, 1, 10, mappaCategories)
         response.data?.size shouldBe 10
       }
 
       it("returns an error when 404 Not Found is returned from delius") {
-        nDeliusApiMockServer.stubForGet("$path?page=1&size=10", "", HttpStatus.NOT_FOUND)
+        nDeliusApiMockServer.stubForGet("$path?page=1&size=10&mappaCategories=1", "", HttpStatus.NOT_FOUND)
 
-        val response = nDeliusGateway.getContactEventsForPerson(deliusCrn, 1, 10)
+        val response = nDeliusGateway.getContactEventsForPerson(deliusCrn, 1, 10, mappaCategories)
 
         response.errors.shouldHaveSize(1)
         response.errors
@@ -73,16 +74,16 @@ class GetContactEventsForPersonTest(
 
       it("returns a contact event from delius for the matching CRN and contact event id") {
         nDeliusApiMockServer.stubForGet(
-          "$path/2",
+          "$path/2?mappaCategories=1",
           MockMvcExtensions.writeAsJson(generateNDeliusContactEvent(crn = deliusCrn, id = 2L)),
         )
-        val response = nDeliusGateway.getContactEventForPerson(deliusCrn, 2L)
+        val response = nDeliusGateway.getContactEventForPerson(deliusCrn, 2L, mappaCategories)
         response.data?.contactEventIdentifier.shouldBe(2)
       }
 
       it("returns an error when 404 Not Found is returned from delius for contact event id") {
-        nDeliusApiMockServer.stubForGet("$path/2", "", HttpStatus.NOT_FOUND)
-        val response = nDeliusGateway.getContactEventForPerson(deliusCrn, 2L)
+        nDeliusApiMockServer.stubForGet("$path/2?mappaCategories=1", "", HttpStatus.NOT_FOUND)
+        val response = nDeliusGateway.getContactEventForPerson(deliusCrn, 2L, mappaCategories)
         response.errors.shouldHaveSize(1)
         response.errors
           .first()
@@ -96,13 +97,13 @@ class GetContactEventsForPersonTest(
 
       it("returns stubbed contact events") {
         whenever(featureFlagConfig.isEnabled(USE_STUBBED_CONTACT_EVENTS_DATA)).thenReturn(true)
-        val response = nDeliusGateway.getContactEventsForPerson(deliusCrn, 1, 10)
+        val response = nDeliusGateway.getContactEventsForPerson(deliusCrn, 1, 10, mappaCategories)
         response.data?.size.shouldBe(10)
       }
 
       it("returns a stubbed contact event") {
         whenever(featureFlagConfig.isEnabled(USE_STUBBED_CONTACT_EVENTS_DATA)).thenReturn(true)
-        val response = nDeliusGateway.getContactEventForPerson(deliusCrn, 1)
+        val response = nDeliusGateway.getContactEventForPerson(deliusCrn, 1, mappaCategories)
         response.data?.contactEventIdentifier.shouldBe(1)
       }
     },
