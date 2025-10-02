@@ -16,6 +16,7 @@ import org.mockito.ArgumentCaptor
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
+import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -29,7 +30,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("integration-test")
@@ -61,7 +61,7 @@ class FiltersExtractionFilterIntegrationRoleDslTest {
         Arguments.of("curious", null),
         Arguments.of("reference-data-only", null),
         Arguments.of("prisoner-escort-custody-service", ConsumerFilters(caseNotes = listOf("CAB", "NEG", "CVM", "INTERVENTION", "POS"), prisons = null)),
-        Arguments.of("mappa", ConsumerFilters(mappaCategories = listOf(MappaCategory.CAT1, MappaCategory.CAT2, MappaCategory.CAT3, MappaCategory.CAT4))),
+        Arguments.of("mappa", null),
         Arguments.of("all-endpoints", null),
       )
   }
@@ -83,6 +83,7 @@ class FiltersExtractionFilterIntegrationRoleDslTest {
     val filtersCapture = ArgumentCaptor.forClass(ConsumerFilters::class.java)
     val roleFilters = roles[roleName]?.filters
     val testRole = Role(include = null, filters = roleFilters)
+    whenever(authorisationConfig.buildAggregatedFilters(any(), any())).thenCallRealMethod()
     whenever(authorisationConfig.consumers).thenReturn(mapOf("consumer-name" to ConsumerConfig(include = null, filters = ConsumerFilters(prisons = null), roles = listOf("test-role"))))
     every { roles } returns mapOf("test-role" to testRole)
     filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)

@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.mockito.ArgumentCaptor
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.times
@@ -17,6 +18,7 @@ import org.springframework.test.context.ActiveProfiles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.FiltersExtractionFilter
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory
 import kotlin.test.Test
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -25,10 +27,24 @@ import kotlin.test.Test
 class FiltersIntegrationTest {
   @Autowired lateinit var authorisationConfig: AuthorisationConfig
 
-  @Test
-  fun `ignore mappa categories with a wildcard and include all of the mappa categories after the filter`() {
-    // Given the following config
+  val filtersCapture = ArgumentCaptor.forClass(ConsumerFilters::class.java)
+  val mockRequest = mock(HttpServletRequest::class.java)
+  val mockResponse = mock(HttpServletResponse::class.java)
+  val mockChain = mock(FilterChain::class.java)
 
+  lateinit var filtersExtractionFilter: FiltersExtractionFilter
+
+  @BeforeEach
+  fun setup() {
+    filtersExtractionFilter =
+      FiltersExtractionFilter(
+        authorisationConfig,
+      )
+  }
+
+  @Test
+  fun `if a wildcard is found in any mappa configration then set categories to null`() {
+    // Given the following config
     //    automated-test-client-mappa:
     //      roles:
     //        - "full-access"
@@ -36,19 +52,26 @@ class FiltersIntegrationTest {
     //      filters:
     //        mappa-categories:
     //          - "*"
-
-    val filtersExtractionFilter =
-      FiltersExtractionFilter(
-        authorisationConfig,
-      )
-    val filtersCapture = ArgumentCaptor.forClass(ConsumerFilters::class.java)
-    val mockRequest = mock(HttpServletRequest::class.java)
-    val mockResponse = mock(HttpServletResponse::class.java)
-    val mockChain = mock(FilterChain::class.java)
     whenever(mockRequest.getAttribute("clientName")).thenReturn("automated-test-client-mappa")
     filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)
     verify(mockRequest, times(1)).setAttribute(eq("filters"), filtersCapture.capture())
+    val mappaCategories = filtersCapture.value?.mappaCategories
+    assertThat(mappaCategories).isNull()
+  }
+
+  @Test
+  fun `collates all mappa categories from config into consumer filters`() {
+    // Given the following config
+    //    roles:
+    //      - "full-access"
+    //      - "mappa-cat4"
+    //    filters:
+    //      mappa-categories:
+    //        - CAT1
+    whenever(mockRequest.getAttribute("clientName")).thenReturn("automated-test-client-mappa-2")
+    filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)
+    verify(mockRequest, times(1)).setAttribute(eq("filters"), filtersCapture.capture())
     val mappaCategories = filtersCapture.value.mappaCategories
-    assertThat(mappaCategories?.size).isEqualTo(1)
+    assertThat(mappaCategories).isEqualTo(listOf(MappaCategory.CAT1, MappaCategory.CAT4))
   }
 }

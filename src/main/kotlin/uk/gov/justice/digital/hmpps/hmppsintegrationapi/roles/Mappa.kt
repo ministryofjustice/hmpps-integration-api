@@ -1,9 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory.CAT1
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory.CAT2
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory.CAT3
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory.CAT4
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
 
 val mappa =
@@ -37,10 +33,7 @@ val mappa =
     }
     filters {
       mappaCategories {
-        -CAT1
-        -CAT2
-        -CAT3
-        -CAT4
+        -"*"
       }
     }
   }

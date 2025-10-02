@@ -35,7 +35,7 @@ class RolesTest {
 
   @Test
   fun `Mappa role has all 4 mappa categories`() {
-    assertThat(roles["mappa"]?.filters?.mappaCategories).containsAll(MappaCategory.all())
+    assertThat(roles["mappa"]?.filters?.mappaCategories).isEqualTo(listOf("*"))
   }
 
   @Test

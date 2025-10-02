@@ -12,10 +12,8 @@ import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory
 import java.io.IOException
 
 @Component
@@ -44,57 +42,8 @@ class FiltersExtractionFilter
         consumerConfig.roles?.mapNotNull {
           roles[it]
         }
-      val filters = buildAggregatedFilters(consumerConfig.filters, aggregatedRoles)
+      val filters = authorisationConfig.buildAggregatedFilters(consumerConfig.filters, aggregatedRoles)
       request.setAttribute("filters", filters)
       chain.doFilter(request, response)
     }
-  }
-
-private fun buildAggregatedFilters(
-  consumerFilters: ConsumerFilters?,
-  roles: List<Role>?,
-): ConsumerFilters? {
-  val consumerPseudoRole = Role(include = null, filters = consumerFilters)
-  val allRoles: List<Role> = listOf(consumerPseudoRole) + (roles ?: emptyList())
-
-  if (allRoles.all { it.filters?.hasFilters() == false }) {
-    return null
-  }
-
-  val prisons =
-    getDistinctValuesIfNotWildcarded(
-      allRoles
-        .filter { it.filters?.hasPrisonFilter() == true }
-        .mapNotNull { it.filters?.prisons },
-    )
-
-  val caseNotes =
-    getDistinctValuesIfNotWildcarded(
-      allRoles
-        .filter { it.filters?.hasCaseNotesFilter() == true }
-        .mapNotNull { it.filters?.caseNotes },
-    )
-
-  val mappaCategories =
-    getDistinctValuesForType<Any, MappaCategory>(
-      allRoles
-        .filter { it.filters?.hasMappaCategoriesFilter() == true }
-        .mapNotNull { it.filters?.mappaCategories },
-    )
-
-  return if (caseNotes == null && prisons == null && mappaCategories == null) null else ConsumerFilters(prisons, caseNotes, mappaCategories)
-}
-
-private inline fun <T, reified V> getDistinctValuesForType(allValues: List<List<T>>): List<V>? =
-  if (allValues.isEmpty()) {
-    null
-  } else {
-    allValues.flatten().filterIsInstance<V>().distinct()
-  }
-
-private fun getDistinctValuesIfNotWildcarded(allValues: List<List<String>>): List<String>? =
-  if (allValues.isEmpty()) {
-    null
-  } else {
-    allValues.flatten().distinct().takeIf { it.none { value -> value == "*" } }
   }
