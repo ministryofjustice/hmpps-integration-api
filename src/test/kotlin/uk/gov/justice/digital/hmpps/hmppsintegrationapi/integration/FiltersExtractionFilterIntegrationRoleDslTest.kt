@@ -16,6 +16,7 @@ import org.mockito.ArgumentCaptor
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
+import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -82,6 +83,7 @@ class FiltersExtractionFilterIntegrationRoleDslTest {
     val filtersCapture = ArgumentCaptor.forClass(ConsumerFilters::class.java)
     val roleFilters = roles[roleName]?.filters
     val testRole = Role(include = null, filters = roleFilters)
+    whenever(authorisationConfig.allFilters(any())).thenCallRealMethod()
     whenever(authorisationConfig.consumers).thenReturn(mapOf("consumer-name" to ConsumerConfig(include = null, filters = ConsumerFilters(prisons = null), roles = listOf("test-role"))))
     every { roles } returns mapOf("test-role" to testRole)
     filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)

@@ -181,13 +181,6 @@ class RiskManagementControllerTest(
         result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.page", 1)
         result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.totalPages", 1)
       }
-    }
-
-    describe("GET risk management plans returns Internal Server Error when Upstream api throws an unexpected error") {
-      beforeTest {
-        Mockito.reset(getRiskManagementService)
-        Mockito.reset(auditService)
-      }
 
       it("fails with the appropriate error when an upstream service is down") {
         whenever(getRiskManagementService.execute(any())).doThrow(

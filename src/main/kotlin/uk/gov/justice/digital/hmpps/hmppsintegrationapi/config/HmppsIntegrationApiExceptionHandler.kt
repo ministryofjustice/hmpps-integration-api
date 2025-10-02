@@ -34,7 +34,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedE
 class HmppsIntegrationApiExceptionHandler {
   @ExceptionHandler(value = [ValidationException::class, HttpMessageNotReadableException::class])
   fun handleValidationException(e: Exception): ResponseEntity<ErrorResponse> {
-    logAndCapture("Validation exception: {}", e)
+    logInfo("Validation exception", e)
     return ResponseEntity
       .status(BAD_REQUEST)
       .body(
