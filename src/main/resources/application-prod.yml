@@ -43,8 +43,8 @@ services:
     base-url: https://prisoner-base-location-api.hmpps.service.justice.gov.uk
 
 feature-flag:
-  use-education-assessments-endpoints: false
-  use-eswe-curious-endpoints: false
+  use-education-assessments-endpoints: true
+  use-eswe-curious-endpoints: true
   use-update-attendance-endpoint: true
   use-schedule-detail-endpoint: true
   use-search-appointments-endpoint: true
@@ -53,17 +53,18 @@ feature-flag:
   use-deallocation-reasons-endpoint: true
   use-allocation-endpoint: true
   use-education-endpoint: true
-  use-expression-of-interest-endpoint: false
-  use-prisoner-base-location-endpoint: false
+  use-expression-of-interest-endpoint: true
+  use-prisoner-base-location-endpoint: true
   use-historical-attendances-endpoint: true
   use-suitability-endpoint: true
   use-waiting-list-endpoint: true
   san-endpoint-enabled: true
-  simple-redaction: false
+  simple-redaction: true
   education-trigger-enabled: true
   education-aln-trigger-enabled: true
   use-contact-events-endpoint: false
   use-stubbed-contact-events-data: false
+  use-roles-dsl: true
 
 authorisation:
   consumers:
@@ -105,3 +106,7 @@ authorisation:
     smoke-test:
       include:
         - "/v1/status"
+
+redaction:
+  client-names:
+    - meganexus

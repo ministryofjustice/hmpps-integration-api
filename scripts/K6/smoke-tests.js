@@ -1,29 +1,55 @@
 const http = require('k6/http');
-const { check } = require('k6');
-import encoding from 'k6/encoding';
+const { check, fail } = require('k6');
 import exec from 'k6/execution';
+import { read_certificate } from "./support.js"
 
-const cert = encoding.b64decode(__ENV.FULL_ACCESS_CERT, 'std', 's');
-const key = encoding.b64decode(__ENV.FULL_ACCESS_KEY, 'std', 's');
+/***********
+ To run this script locally, make sure the following environment variables are set:-
 
-export const options = {
+ - DOMAIN = the fully qualified DNS name of the API server
+ - HMPPSID = the primary hmppsId to use for testing
+ - PROFILE = which testing profile to use (MAIN | LAO | NOPERMS | NOCERT)
+ - FULL_ACCESS_API_KEY = API key that has full access to the API
+ - FULL_ACCESS_CERT = certificate (either base 64 encoded or name of a file)
+ - FULL_ACCESS_KEY = private key for certificate (either base 64 encoded or name of a file)
+
+
+ The script is run using the k6 utility from https://k6.io/
+
+ Note that because TLS certificates are defined globally for k6 scripts, if you want to use
+ different certificates for the same URLs then you need to launch k6 separately.
+***********/
+
+const domain = __ENV.DOMAIN;
+const profile = __ENV.PROFILE;
+
+const [cert, key, api_key] = read_certificate(profile);
+
+export const options = (cert === "") ? {} : {
   tlsAuth: [
     {
-      domains: ["dev.integration-api.hmpps.service.justice.gov.uk"],
       cert,
       key,
     },
   ],
 };
 
-const baseUrl = "https://dev.integration-api.hmpps.service.justice.gov.uk";
+const httpParams = {
+  headers: {
+    'Content-Type': 'application/json',
+    'x-api-key': api_key,
+  },
+};
+
+const baseUrl = `https://${domain}`;
+
 const hmppsId = "A8451DY";
+const primaryHmppsId = __ENV.HMPPSID;
 const hmppsIdWithLaoContext = "A4433DZ";
 const visitsHmppsId = "A8452DY"
 const alternativeHmppsId = "G6333VK";
 const plpHmppsId = "A5502DZ";
 const attendancesHmppsId = "G4328GK";
-const deliusCrn = "X725642";
 const risksCrn = "X756352";
 const prisonId = "MKI";
 const alternativeprisonId = "RSI";
@@ -80,7 +106,7 @@ const get_endpoints = [
   `/v1/prison/${alternativeprisonId}/prison-pay-bands`,
   `/v1/contacts/${contactId}`,
   `/v1/persons?first_name=john`,
-  `/v1/persons/${deliusCrn}`,
+  `/v1/persons/${primaryHmppsId}`,
   `/v1/persons/${hmppsIdWithLaoContext}/licences/conditions`,
   `/v1/persons/${hmppsId}/needs`,
   `/v1/persons/${hmppsIdWithLaoContext}/risks/mappadetail`,
@@ -98,8 +124,8 @@ const get_endpoints = [
   `/v1/visit/${visitReference}`,
   `/v1/visit/id/by-client-ref/${clientVisitReference}`,
   `/v1/prison/${prisonId}/visit/search?visitStatus=BOOKED`,
-  `/v1/persons/${deliusCrn}/protected-characteristics`,
-  `/v1/epf/person-details/${deliusCrn}/1`,
+  `/v1/persons/${primaryHmppsId}/protected-characteristics`,
+  `/v1/epf/person-details/${primaryHmppsId}/1`,
   `/v1/persons/${risksCrn}/risk-management-plan`,
   `/v1/persons/${alternativeHmppsId}/person-responsible-officer`,
   `/v1/persons/${alternativeHmppsId}/visitor/${contactId}/restrictions`,
@@ -123,8 +149,8 @@ const get_endpoints = [
   `/v1/status`,
   `/v1/persons/${hmppsId}/education/san/plan-creation-schedule`,
   `/v1/persons/${alternativeHmppsId}/education/san/review-schedule`,
-  `/v1/persons/${deliusCrn}/contact-events`,
-  `/v1/persons/${deliusCrn}/contact-events/${contactEventId}`,
+  `/v1/persons/${primaryHmppsId}/contact-events`,
+  `/v1/persons/${primaryHmppsId}/contact-events/${contactEventId}`,
 ];
 
 const broken_endpoints = []
@@ -233,34 +259,36 @@ const postAllocationData = JSON.stringify({
   testEvent: "TestEvent"
 })
 
-function verify_get_endpoints(params) {
+
+function verify_get_endpoints() {
   for (const endpoint of get_endpoints) {
-    const res = http.get(`${baseUrl}${endpoint}`, params);
+    const res = http.get(`${baseUrl}${endpoint}`, httpParams);
     if (!check(res, {
       [`GET ${endpoint} returns 200`]: (r) => r.status === 200,
     })) {
-      exec.test.fail(`${endpoint} caused the test to fail`)
+      fail(`${endpoint} caused the test to fail, status = ${res.status}`)
     }
   }
 }
 
-function verify_broken_endpoints(params) {
+function verify_broken_endpoints() {
   for (const endpoint of broken_endpoints) {
-    const res = http.get(`${baseUrl}${endpoint}`, params);
+    const res = http.get(`${baseUrl}${endpoint}`, httpParams);
     if (!check(res, {
       [`GET ${endpoint} returns error`]: (r) => r.status >= 400,
     })) {
-      exec.test.fail(`${endpoint} caused the test to fail`)
+      fail(`${endpoint} caused the test to fail`)
     }
   }
 }
 
-function verify_post_endpoints(params) {
+function verify_post_endpoints() {
+  let params = httpParams;
   const postEducationStatusRes = http.post(`${baseUrl}${postEducationUpdateEndpoint}`, postEducationUpdateRequest, params);
   if (!check(postEducationStatusRes, {
     'POST /v1/persons/${hmppsId}/education/status returns 201': (r) => r.status === 201,
   })) {
-    exec.test.fail(`${postEducationUpdateEndpoint} caused the test to fail`)
+    fail(`${postEducationUpdateEndpoint} caused the test to fail`)
   }
 
   const postEducationALNRes = http.post(`${baseUrl}${postEducationALNUpdateEndpoint}`, postEducationALNUpdateRequest, params);
@@ -313,20 +341,104 @@ function verify_post_endpoints(params) {
   }
 }
 
+/**
+ * Make a GET request to the API and validate that the http response code indicates success.
+ * @returns the http response object
+ */
+function validate_get_request(path) {
+  const res = http.get(`${baseUrl}${path}`, httpParams);
+  if (!check(res, {
+    [`GET ${path} successful`]: (r) => r.status < 400,
+  })) {
+    fail(`${path} caused the test to fail`);
+  }
+  return res;
+}
+
+
+function confirm_access_denied(path) {
+  const res = http.get(`${baseUrl}${path}`, httpParams);
+  if (!check(res, {
+    [`GET ${path} ACCESS DENIED`]: (r) => ((r.status === 0) || (r.status === 401) || (r.status === 403)),
+  })) {
+    fail(`${path} was not denied`);
+  }
+}
+
+function validate_status_endpoint() {
+  const response = validate_get_request("/v1/status");
+  check(response, {
+    ["Status endpoint reports OK"]: (res) => res.json()["data"]["status"] === "ok",
+  })
+  return response
+}
+
+function structured_verification_test(hmppsId) {
+  let res = validate_status_endpoint();
+  if (res.status >= 400) {
+    return
+  }
+
+  res = validate_get_request(`/v1/persons/${hmppsId}`);
+
+  if (res.status >= 400) {
+    return
+  }
+
+  let probationData = res.json()["data"]["probationOffenderSearch"];
+  let crn = probationData["identifiers"]["deliusCrn"];
+
+  check(crn, {
+    [`CRN identified`]: () => crn != null,
+  })
+  check(probationData["lastName"], {
+    [`Last name identified`]: (name) => name != null,
+  })
+
+  let nomisNumber = res.json()["data"]["prisonerOffenderSearch"]["identifiers"]["nomisNumber"];
+
+  check(nomisNumber, {
+    [`Prisoner number identified`]: () => nomisNumber != null,
+  })
+
+  validate_get_request(`/v1/prison/prisoners/${nomisNumber}`)
+}
+
+function minimal_prod_verification() {
+  validate_status_endpoint();
+}
+
+function denied_endpoint_verification() {
+  confirm_access_denied(`/v1/persons?first_name=john`);
+}
+
+/************************************************************************/
+
 export default function ()  {
-  const params = {
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': __ENV.FULL_ACCESS_API_KEY,
-    },
-  };
+  console.log(`Using profile: ${profile} with base url: ${baseUrl}`)
 
-  console.log(`Configured server domain: ${__ENV.DOMAIN}`)
-  console.log(`Configured hmppsId: ${__ENV.HMPPSID}`)
-
-  verify_post_endpoints(params);
-
-  verify_get_endpoints(params);
-
-  verify_broken_endpoints(params);
+  switch (profile) {
+    case "MAIN":
+      verify_post_endpoints();
+      verify_get_endpoints();
+      verify_broken_endpoints();
+      structured_verification_test(primaryHmppsId);
+      break
+    case "PROD":
+      minimal_prod_verification();
+      break
+    case "LIMITED":
+      validate_get_request(`/v1/persons/${primaryHmppsId}/name`);
+      denied_endpoint_verification();
+      break
+    case "NOPERMS":
+    case "NOCERT":
+      denied_endpoint_verification();
+      break
+    default:
+      console.log(`Unsupported profile: ${profile}`);
+      break
+  }
 };
+
+/************************************************************************/

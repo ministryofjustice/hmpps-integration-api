@@ -100,13 +100,29 @@ feature-flag:
   education-aln-trigger-enabled: true
   use-contact-events-endpoint: true
   use-stubbed-contact-events-data: false
+  use-roles-dsl: true
 
 authorisation:
   consumers:
     automated-test-client:
       roles:
         - "full-access"
+        - "mappa-cat4"
       filters:
+    automated-test-client-mappa:
+      roles:
+        - "full-access"
+        - "mappa-cat4"
+      filters:
+        mappa-categories:
+          - "*"
+    automated-test-client-mappa-2:
+      roles:
+        - "full-access"
+        - "mappa-cat4"
+      filters:
+        mappa-categories:
+          - CAT1
     automated-test-client-no-filters:
       roles:
         - "full-access"
@@ -122,19 +138,19 @@ authorisation:
       filters:
     specific-prison:
       roles:
-        - "full-access"
+        - "all-endpoints"
       filters:
         prisons:
           - MDI
     limited-prisons:
       roles:
-        - "full-access"
+        - "all-endpoints"
       filters:
         prisons:
           - ABC
     no-prisons:
       roles:
-        - "full-access"
+        - "all-endpoints"
       filters:
         prisons:
     private-prison-only:
@@ -142,6 +158,12 @@ authorisation:
         - "private-prison"
       include:
       filters:
+    limited-case-notes:
+      roles:
+        - "all-endpoints"
+      filters:
+        case-notes:
+          - "CAB"
     reference-data-only-user:
       roles:
         - "reference-data-only"

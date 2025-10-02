@@ -33,11 +33,12 @@ internal class ContactEventsControllerTest(
       val path = "/v1/persons/$hmppsId/contact-events"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
       val events = ContactEventStubGenerator.generateNDeliusContactEvents(hmppsId, 10, 1, 100).contactEvents.map { it.toContactEvent() }
+      val filters = null
 
       describe("GET $path") {
         beforeTest {
           Mockito.reset(contactEventService)
-          whenever(contactEventService.getContactEvents(hmppsId, 1, 10)).thenReturn(
+          whenever(contactEventService.getContactEvents(hmppsId, 1, 10, filters)).thenReturn(
             Response(
               ContactEvents(
                 content = events,
@@ -60,7 +61,7 @@ internal class ContactEventsControllerTest(
 
         it("gets the contact events for a person with the matching ID") {
           mockMvc.performAuthorised(path)
-          verify(contactEventService, VerificationModeFactory.times(1)).getContactEvents(hmppsId, 1, 10)
+          verify(contactEventService, VerificationModeFactory.times(1)).getContactEvents(hmppsId, 1, 10, filters)
         }
 
         it("logs audit") {
@@ -73,7 +74,7 @@ internal class ContactEventsControllerTest(
         }
 
         it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
-          whenever(contactEventService.getContactEvents(hmppsId, 1, 10)).thenReturn(
+          whenever(contactEventService.getContactEvents(hmppsId, 1, 10, filters)).thenReturn(
             Response(
               data = null,
               errors =
@@ -92,7 +93,7 @@ internal class ContactEventsControllerTest(
         }
 
         it("returns a 400 BAD REQUEST status code when a bad request is sent to the upstream API") {
-          whenever(contactEventService.getContactEvents(hmppsId, 1, 10)).thenReturn(
+          whenever(contactEventService.getContactEvents(hmppsId, 1, 10, filters)).thenReturn(
             Response(
               data = null,
               errors =
@@ -114,7 +115,7 @@ internal class ContactEventsControllerTest(
       describe("GET $path/2") {
         beforeTest {
           Mockito.reset(contactEventService)
-          whenever(contactEventService.getContactEvent(hmppsId, 2)).thenReturn(
+          whenever(contactEventService.getContactEvent(hmppsId, 2, filters)).thenReturn(
             Response(events.first()),
           )
           Mockito.reset(auditService)
@@ -127,7 +128,7 @@ internal class ContactEventsControllerTest(
 
         it("gets the contact events for a person with the matching ID") {
           mockMvc.performAuthorised("$path/2")
-          verify(contactEventService, VerificationModeFactory.times(1)).getContactEvent(hmppsId, 2)
+          verify(contactEventService, VerificationModeFactory.times(1)).getContactEvent(hmppsId, 2, filters)
         }
 
         it("logs audit") {
@@ -140,7 +141,7 @@ internal class ContactEventsControllerTest(
         }
 
         it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
-          whenever(contactEventService.getContactEvent(hmppsId, 2)).thenReturn(
+          whenever(contactEventService.getContactEvent(hmppsId, 2, filters)).thenReturn(
             Response(
               data = null,
               errors =
@@ -159,7 +160,7 @@ internal class ContactEventsControllerTest(
         }
 
         it("returns a 400 BAD REQUEST status code when a bad request is sent to the upstream API") {
-          whenever(contactEventService.getContactEvent(hmppsId, 2)).thenReturn(
+          whenever(contactEventService.getContactEvent(hmppsId, 2, filters)).thenReturn(
             Response(
               data = null,
               errors =
