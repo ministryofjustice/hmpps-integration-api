@@ -331,12 +331,12 @@ class NDeliusGateway(
     crn: String,
     pageNo: Int,
     perPage: Int,
-    mappaCategories: List<Number>,
+    mappaCategories: List<Number>?,
   ): Response<NDeliusContactEvents?> {
     if (featureFlagConfig.isEnabled(USE_STUBBED_CONTACT_EVENTS_DATA)) {
       return Response(generateNDeliusContactEvents(crn, perPage, pageNo, 10))
     }
-    val mappaCatQueryParam = "mappaCategories=${mappaCategories.joinToString(",")}"
+    val mappaCatQueryParam = "mappaCategories=${mappaCategories?.joinToString(",")}"
     val result =
       webClient.request<NDeliusContactEvents>(
         HttpMethod.GET,
@@ -363,12 +363,12 @@ class NDeliusGateway(
   fun getContactEventForPerson(
     crn: String,
     contactEventId: Long,
-    mappaCategories: List<Number>,
+    mappaCategories: List<Number>?,
   ): Response<NDeliusContactEvent?> {
     if (featureFlagConfig.isEnabled(USE_STUBBED_CONTACT_EVENTS_DATA)) {
       return Response(generateNDeliusContactEvent(contactEventId, crn))
     }
-    val mappaCatQueryParam = "mappaCategories=${mappaCategories.joinToString(",")}"
+    val mappaCatQueryParam = "mappaCategories=${mappaCategories?.joinToString(",")}"
 
     val result =
       webClient.request<NDeliusContactEvent>(

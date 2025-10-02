@@ -8,7 +8,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactEven
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactEvents
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory
 
 @Service
 class ContactEventService(
@@ -24,7 +23,7 @@ class ContactEventService(
     val personResponse = getPersonService.execute(hmppsId = hmppsId)
     val response =
       personResponse.data?.identifiers?.deliusCrn?.let {
-        deliusGateway.getContactEventsForPerson(it, pageNo, perPage, getCategories(filters))
+        deliusGateway.getContactEventsForPerson(it, pageNo, perPage, filters?.mappaCategories())
       } ?: throw EntityNotFoundException("NDelius CRN not found for $hmppsId")
 
     val contactEvents = response.data?.toPaginated()
@@ -34,17 +33,6 @@ class ContactEventService(
     )
   }
 
-  fun getCategories(filters: ConsumerFilters?): List<Number> =
-    if (filters?.hasMappaCategoriesFilter() == true) {
-      // Filters are applied even if empty list
-      filters.mappaCategories!!.filterIsInstance<MappaCategory>().mapNotNull {
-        it.category
-      }
-    } else {
-      // No filters to be applied - all applicable
-      MappaCategory.all().mapNotNull { it.category }
-    }
-
   fun getContactEvent(
     hmppsId: String,
     contactEventId: Long,
@@ -53,7 +41,7 @@ class ContactEventService(
     val personResponse = getPersonService.execute(hmppsId = hmppsId)
     val response =
       personResponse.data?.identifiers?.deliusCrn?.let {
-        deliusGateway.getContactEventForPerson(it, contactEventId, getCategories(filters))
+        deliusGateway.getContactEventForPerson(it, contactEventId, filters?.mappaCategories())
       } ?: throw EntityNotFoundException("NDelius CRN not found for $hmppsId with id $contactEventId")
 
     return Response(
