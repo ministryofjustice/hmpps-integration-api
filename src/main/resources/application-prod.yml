@@ -41,7 +41,7 @@ services:
     base-url: https://activities-api.prison.service.justice.gov.uk
 
 feature-flag:
-  use-education-assessments-endpoints: false
+  use-education-assessments-endpoints: true
   use-eswe-curious-endpoints: true
   use-update-attendance-endpoint: true
   use-schedule-detail-endpoint: true
