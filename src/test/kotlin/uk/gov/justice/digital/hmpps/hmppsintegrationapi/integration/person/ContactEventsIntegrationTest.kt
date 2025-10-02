@@ -17,6 +17,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtens
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactEvent
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusCommunityManager
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusMappaDetail
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusSupervisions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.ContactEventStubGenerator.generateNDeliusContactEvent
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.ContactEventStubGenerator.generateNDeliusContactEvents
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
@@ -51,6 +54,11 @@ class ContactEventsIntegrationTest : IntegrationTestBase() {
       ).readText(),
     )
 
+    nDeliusMockServer.stubForGet(
+      "/case/$crn/supervisions",
+      writeAsJson(NDeliusSupervisions(NDeliusCommunityManager(), NDeliusMappaDetail(category = 4), emptyList(), emptyList(), emptyList())),
+    )
+
     nDeliusMockServer.stubForPost(
       "/search/probation-cases",
       writeAsJson(mapOf("nomsNumber" to nomsId)),
@@ -61,7 +69,7 @@ class ContactEventsIntegrationTest : IntegrationTestBase() {
   @Test
   fun `returns first page of contact events from delius with default page params with correct dates`() {
     nDeliusMockServer.stubForGet(
-      "/case/$crn/contacts?page=1&size=10",
+      "/case/$crn/contacts?page=1&size=10&mappaCategories=4",
       writeAsJson(generateNDeliusContactEvents(crn = crn, pageSize = 10, pageNumber = 1, totalRecords = 100)),
     )
 
@@ -86,7 +94,7 @@ class ContactEventsIntegrationTest : IntegrationTestBase() {
     val expectedApiContactDateTime = "2025-08-31T10:34:03.569Z"
 
     nDeliusMockServer.stubForGet(
-      "/case/$crn/contacts?page=4&size=3",
+      "/case/$crn/contacts?page=4&size=3&mappaCategories=4",
       writeAsJson(generateNDeliusContactEvents(crn = crn, pageSize = 3, pageNumber = 4, totalRecords = 10)),
     )
 
@@ -106,17 +114,11 @@ class ContactEventsIntegrationTest : IntegrationTestBase() {
     assertEquals(expectedApiCreationDateTime, JsonPath.parse(response).read("$.data[0].creationDateTime"))
     assertEquals(expectedApiUpdateDateTime, JsonPath.parse(response).read("$.data[0].updateDateTime"))
     assertEquals(expectedApiContactDateTime, JsonPath.parse(response).read("$.data[0].contactDateTime"))
-
-    /*
-      val creationDateTime: LocalDateTime,
-  val updateDateTime: LocalDateTime,
-  val contactDateTime: LocalDateTime,
-     */
   }
 
   @Test
   fun `returns 404 when ndelius returns a 404 for contact events`() {
-    callApi("$basePath/$nomsId/contact-events?page=4&perPage=3")
+    callApi("$basePath/$nomsId/contact-events?page=4&perPage=3&mappaCategories=4")
       .andExpect(status().isNotFound)
   }
 
@@ -134,7 +136,7 @@ class ContactEventsIntegrationTest : IntegrationTestBase() {
   @Test
   fun `returns 400 when ndelius returns a 400 for contact events`() {
     nDeliusMockServer.stubForGet(
-      "/case/$crn/contacts?page=4&size=3",
+      "/case/$crn/contacts?page=4&size=3&mappaCategories=4",
       "",
       HttpStatus.BAD_REQUEST,
     )
@@ -151,7 +153,7 @@ class ContactEventsIntegrationTest : IntegrationTestBase() {
 
     val deliusStub = writeAsJson(nDeliusContactEvent)
     nDeliusMockServer.stubForGet(
-      "/case/$crn/contacts/1",
+      "/case/$crn/contacts/1?mappaCategories=4",
       deliusStub,
     )
 

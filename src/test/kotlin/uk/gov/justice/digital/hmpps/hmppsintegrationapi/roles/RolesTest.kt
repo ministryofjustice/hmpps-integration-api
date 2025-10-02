@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles
 import org.assertj.core.api.Assertions.assertThat
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roleConstants
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory
 import kotlin.test.Test
 
 class RolesTest {
@@ -33,7 +34,17 @@ class RolesTest {
   }
 
   @Test
-  fun `Mappa role has no filters`() {
-    assertThat(roles["mappa"]?.filters).isNull()
+  fun `Mappa role has all 4 mappa categories`() {
+    assertThat(roles["mappa"]?.filters?.mappaCategories).isEqualTo(listOf("*"))
+  }
+
+  @Test
+  fun `Mappa Cat 4 role has only category 4`() {
+    assertThat(roles["mappa-cat4"]?.filters?.mappaCategories).isEqualTo(listOf(MappaCategory.CAT4))
+  }
+
+  @Test
+  fun `private-prison role does not have any mappa category filters `() {
+    assertThat(roles["private-prison"]?.filters?.mappaCategories).isNull()
   }
 }
