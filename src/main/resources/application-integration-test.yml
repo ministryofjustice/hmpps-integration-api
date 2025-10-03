@@ -46,6 +46,8 @@ services:
     base-url: http://localhost:4022
   locations-inside-prison:
     base-url: http://localhost:4023
+  prisoner-base-location:
+    base-url: http://localhost:4030
   activities:
     base-url: http://localhost:4004
 
@@ -89,6 +91,7 @@ feature-flag:
   use-education-endpoint: true
   use-expression-of-interest-endpoint: true
   use-prisoner-base-location-endpoint: true
+  use-prisoner-base-location-api: true
   use-historical-attendances-endpoint: true
   use-suitability-endpoint: true
   use-waiting-list-endpoint: true

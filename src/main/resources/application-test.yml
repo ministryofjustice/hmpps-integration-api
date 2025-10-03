@@ -49,6 +49,8 @@ services:
     base-url: http://localhost:4000
   activities:
     base-url: http://localhost:4004
+  prisoner-base-location:
+    base-url: http://localhost:4030
 
 hmpps.sqs:
   provider: localstack
@@ -85,6 +87,7 @@ feature-flag:
   use-allocation-endpoint: true
   use-education-endpoint: true
   use-prisoner-base-location-endpoint: true
+  use-prisoner-base-location-api: true
   use-historical-attendances-endpoint: true
   use-suitability-endpoint: true
   use-waiting-list-endpoint: true

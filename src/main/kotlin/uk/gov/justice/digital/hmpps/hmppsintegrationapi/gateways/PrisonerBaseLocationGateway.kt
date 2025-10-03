@@ -1,46 +1,68 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.LastMovementType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerBaseLocation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-/**
- * <p><This unreal gateway is pending for refactoring /p>
- *
- * - Actual Gateway shall be created in next enhancement, which pull out logic to an API of another Domain Service.
- * - All business logic shall be implemented inside (to be pulled out later), as the tactical solution
- */
 @Component
 class PrisonerBaseLocationGateway(
+  private val featureFlag: FeatureFlagConfig,
   @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
+  @Value("\${services.prisoner-base-location.base-url}") baseUrl: String,
 ) {
-  companion object {
-    private val logger: Logger = LoggerFactory.getLogger(this::class.java)
-  }
+  private val webClient = WebClientWrapper(baseUrl)
+
+  @Autowired
+  lateinit var hmppsAuthGateway: HmppsAuthGateway
 
   fun getPrisonerBaseLocation(nomisNumber: String): Response<PrisonerBaseLocation?> {
-    logger.debug("Getting prisoner base location for prisonNumber=$nomisNumber")
-    val prisonResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = nomisNumber)
-
-    // to be refactored: translate from reference data, at domain service
-    val baseLocation =
-      prisonResponse.data?.let {
-        val inPrison = it.inOutStatus == "IN"
-        PrisonerBaseLocation(
-          inPrison = inPrison,
-          prisonId = if (inPrison) it.prisonId else null,
-          lastPrisonId = it.lastPrisonId,
-          lastMovementType = it.lastMovementTypeCode?.let { translateLastMovementType(it) },
-          receptionDate = it.receptionDate?.let { LocalDate.parse(it, DateTimeFormatter.ISO_DATE) },
+    if (featureFlag.isEnabled(FeatureFlagConfig.USE_PRISONER_BASE_LOCATION_API)) { // use the new prisoner base location api (in development)
+      val result =
+        webClient.request<PrisonerBaseLocation>(
+          HttpMethod.GET,
+          "v1/persons/$nomisNumber/prisoner-base-location",
+          authenticationHeader(),
+          UpstreamApi.PRISONER_BASE_LOCATION,
         )
+
+      return when (result) {
+        is WebClientWrapperResponse.Success -> {
+          Response(data = result.data)
+        }
+
+        is WebClientWrapperResponse.Error -> {
+          Response(
+            data = null,
+            errors = result.errors,
+          )
+        }
       }
-    return Response(data = baseLocation, errors = prisonResponse.errors)
+    } else { // calculate the prisoner base location ourselves (stable)
+      val prisonResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = nomisNumber)
+
+      val baseLocation =
+        prisonResponse.data?.let {
+          val inPrison = it.inOutStatus == "IN"
+          PrisonerBaseLocation(
+            inPrison = inPrison,
+            prisonId = if (inPrison) it.prisonId else null,
+            lastPrisonId = it.lastPrisonId,
+            lastMovementType = it.lastMovementTypeCode?.let { translateLastMovementType(it) },
+            receptionDate = it.receptionDate?.let { LocalDate.parse(it, DateTimeFormatter.ISO_DATE) },
+          )
+        }
+      return Response(data = baseLocation, errors = prisonResponse.errors)
+    }
   }
 
   private fun translateLastMovementType(lastMovementTypeCode: String) =
@@ -52,4 +74,12 @@ class PrisonerBaseLocationGateway(
       "TAP" -> LastMovementType.TEMPORARY_ABSENCE
       else -> null
     }
+
+  private fun authenticationHeader(): Map<String, String> {
+    val token = hmppsAuthGateway.getClientToken("Prisoner Base Location")
+
+    return mapOf(
+      "Authorization" to "Bearer $token",
+    )
+  }
 }

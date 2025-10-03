@@ -15,10 +15,10 @@ services:
         curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4017/search?crn=sit &&
         curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4018/prisoner/A1234AL/non-associations &&
         curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4019/contact/123456789/linked-prisoners &&
+        curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4020/visits/visitReference &&
         curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4021/incentive-reviews/prisoner/A1234AA &&
-        curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4022/prisoners/A1234AA/alerts
+        curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4022/prisoners/A1234AA/alerts &&
         curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4023/locations/prison/MDI/residential-hierarchy'
-
     ports:
       - "4010:4010"
       - "4011:4011"
