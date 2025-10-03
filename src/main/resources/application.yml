@@ -97,7 +97,7 @@ services:
   activities:
     base-url: http://localhost:4028
   prisoner-base-location:
-    base-url: http://localhost:4029
+    base-url: http://localhost:4030
 
 sentry:
   traces-sample-rate: "0.05"
