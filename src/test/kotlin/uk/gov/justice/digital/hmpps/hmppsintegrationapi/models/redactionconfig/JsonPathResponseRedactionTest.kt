@@ -14,11 +14,12 @@ class JsonPathResponseRedactionTest :
           val json = """{"name":"Alice","email":"alice@example.com"}"""
           val doc: DocumentContext = JsonPath.parse(json)
 
-          val redaction = JsonPathResponseRedaction(
-            type = RedactionType.MASK,
-            paths = null, // always applies
-            includes = listOf("$.email"),
-          )
+          val redaction =
+            JsonPathResponseRedaction(
+              type = RedactionType.MASK,
+              paths = null, // always applies
+              includes = listOf("$.email"),
+            )
 
           redaction.apply("/any/uri", doc)
 
@@ -30,11 +31,12 @@ class JsonPathResponseRedactionTest :
           val json = """{"id":123,"secret":"top-secret"}"""
           val doc: DocumentContext = JsonPath.parse(json)
 
-          val redaction = JsonPathResponseRedaction(
-            type = RedactionType.REMOVE,
-            paths = listOf("/v1/persons/.*/licences/conditions"),
-            includes = listOf("$.secret"),
-          )
+          val redaction =
+            JsonPathResponseRedaction(
+              type = RedactionType.REMOVE,
+              paths = listOf("/v1/persons/.*/licences/conditions"),
+              includes = listOf("$.secret"),
+            )
 
           redaction.apply("/v1/persons/123/licences/conditions", doc)
 
@@ -46,11 +48,12 @@ class JsonPathResponseRedactionTest :
           val json = """{"id":123,"secret":"top-secret"}"""
           val doc: DocumentContext = JsonPath.parse(json)
 
-          val redaction = JsonPathResponseRedaction(
-            type = RedactionType.MASK,
-            paths = listOf("/v1/other/endpoint"),
-            includes = listOf("$.secret"),
-          )
+          val redaction =
+            JsonPathResponseRedaction(
+              type = RedactionType.MASK,
+              paths = listOf("/v1/other/endpoint"),
+              includes = listOf("$.secret"),
+            )
 
           redaction.apply("/v1/persons/123/licences/conditions", doc)
 
@@ -61,10 +64,11 @@ class JsonPathResponseRedactionTest :
           val json = """{"id":123}"""
           val doc: DocumentContext = JsonPath.parse(json)
 
-          val redaction = JsonPathResponseRedaction(
-            type = RedactionType.MASK,
-            includes = listOf("$.nonexistent"),
-          )
+          val redaction =
+            JsonPathResponseRedaction(
+              type = RedactionType.MASK,
+              includes = listOf("$.nonexistent"),
+            )
 
           // Should not throw
           redaction.apply("/any/uri", doc)

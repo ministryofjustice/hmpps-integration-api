@@ -31,152 +31,155 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.RedactionService
 
 class RedactionResponseBodyAdviceTest {
-    val roleName = "private-prison"
-    val examplePath = "/v1/persons"
-    val redactionPolicies =
-        listOf(
-            RedactionPolicy(
-                "redaction-policy",
-                listOf(JsonPathResponseRedaction(RedactionType.MASK, listOf("$..someAttribute"))),
+  val roleName = "private-prison"
+  val examplePath = "/v1/persons"
+  val redactionPolicies =
+    listOf(
+      RedactionPolicy(
+        "redaction-policy",
+        listOf(JsonPathResponseRedaction(RedactionType.MASK, listOf("$..someAttribute"))),
+      ),
+    )
+  val mockRequest = mock(HttpServletRequest::class.java)
+
+  lateinit var objectMapper: ObjectMapper
+  lateinit var authorisationConfig: AuthorisationConfig
+  lateinit var redactionService: RedactionService
+  lateinit var advice: RedactionResponseBodyAdvice
+
+  @BeforeEach
+  fun beforeEach() {
+    objectMapper = ObjectMapper()
+    authorisationConfig = mock(AuthorisationConfig::class.java)
+    redactionService = mock(RedactionService::class.java)
+
+    mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
+    every { roles } returns
+      mapOf(
+        roleName to
+          Role(
+            name = roleName,
+            include = mutableListOf(examplePath),
+            redactionPolicies = redactionPolicies,
+          ),
+      )
+
+    mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionPolicyKt")
+    every { globalRedactions } returns mapOf()
+
+    whenever(mockRequest.getAttribute("clientName")).thenReturn("clientA")
+    whenever(mockRequest.getRequestURI()).thenReturn(examplePath)
+
+    advice = RedactionResponseBodyAdvice(objectMapper, authorisationConfig, redactionService)
+  }
+
+  @AfterEach
+  fun afterEach() {
+    unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
+    unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionPolicyKt")
+  }
+
+  @Test
+  fun `should return body unchanged when not JSON`() {
+    val body = mapOf("field" to "value")
+
+    val result =
+      advice.beforeBodyWrite(
+        body,
+        mock(MethodParameter::class.java),
+        MediaType.TEXT_PLAIN,
+        HttpMessageConverter::class.java,
+        mock(),
+        mock(),
+      )
+
+    result shouldBe body
+    verifyNoInteractions(redactionService)
+  }
+
+  @Test
+  fun `should apply global and role based redaction policies`() {
+    val body = mapOf("field" to "value")
+    val bodyNode: ObjectNode = objectMapper.valueToTree(body)
+    val serverHttpRequest = ServletServerHttpRequest(mockRequest)
+    val consumerConfig = ConsumerConfig(emptyList<String>(), null, listOf(roleName))
+
+    val globalRedactionPolicy =
+      RedactionPolicy(
+        name = "global-redaction-policy",
+        responseRedactions =
+          listOf(
+            JsonPathResponseRedaction(
+              type = RedactionType.MASK,
             ),
-        )
-    val mockRequest = mock(HttpServletRequest::class.java)
+          ),
+      )
+    every { globalRedactions } returns
+      mapOf(
+        "a-global-redaction" to globalRedactionPolicy,
+      )
 
-    lateinit var objectMapper: ObjectMapper
-    lateinit var authorisationConfig: AuthorisationConfig
-    lateinit var redactionService: RedactionService
-    lateinit var advice: RedactionResponseBodyAdvice
+    whenever(authorisationConfig.consumers).thenReturn(mapOf("clientA" to consumerConfig))
+    whenever(redactionService.applyPolicies(any(), any(), any())).thenReturn(bodyNode)
 
-    @BeforeEach
-    fun beforeEach() {
-        objectMapper = ObjectMapper()
-        authorisationConfig = mock(AuthorisationConfig::class.java)
-        redactionService = mock(RedactionService::class.java)
+    advice.beforeBodyWrite(
+      body,
+      mock(MethodParameter::class.java),
+      MediaType.APPLICATION_JSON,
+      HttpMessageConverter::class.java,
+      serverHttpRequest,
+      mock(ServerHttpResponse::class.java),
+    )
 
-        mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-        every { roles } returns
-                mapOf(
-                    roleName to
-                            Role(
-                                name = roleName,
-                                include = mutableListOf(examplePath),
-                                redactionPolicies = redactionPolicies,
-                            ),
-                )
+    verify(redactionService).applyPolicies(
+      examplePath,
+      bodyNode,
+      buildList {
+        add(globalRedactionPolicy)
+        addAll(redactionPolicies)
+      },
+    )
+  }
 
-        mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionPolicyKt")
-        every { globalRedactions } returns mapOf()
+  @Test
+  fun `should apply redaction policies when JSON and clientName present`() {
+    val body = mapOf("field" to "value")
+    val bodyNode: ObjectNode = objectMapper.valueToTree(body)
 
-        whenever(mockRequest.getAttribute("clientName")).thenReturn("clientA")
-        whenever(mockRequest.getRequestURI()).thenReturn(examplePath)
+    val serverHttpRequest = ServletServerHttpRequest(mockRequest)
 
-        advice = RedactionResponseBodyAdvice(objectMapper, authorisationConfig, redactionService)
-    }
+    val consumerConfig = ConsumerConfig(emptyList<String>(), null, listOf(roleName))
 
-    @AfterEach
-    fun afterEach() {
-        unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-        unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionPolicyKt")
-    }
+    whenever(authorisationConfig.consumers).thenReturn(mapOf("clientA" to consumerConfig))
+    whenever(redactionService.applyPolicies(any(), any(), any())).thenReturn(bodyNode)
 
-    @Test
-    fun `should return body unchanged when not JSON`() {
-        val body = mapOf("field" to "value")
+    val result =
+      advice.beforeBodyWrite(
+        body,
+        mock(MethodParameter::class.java),
+        MediaType.APPLICATION_JSON,
+        HttpMessageConverter::class.java,
+        serverHttpRequest,
+        mock(ServerHttpResponse::class.java),
+      )
 
-        val result =
-            advice.beforeBodyWrite(
-                body,
-                mock(MethodParameter::class.java),
-                MediaType.TEXT_PLAIN,
-                HttpMessageConverter::class.java,
-                mock(),
-                mock(),
-            )
+    result shouldBe bodyNode
+    verify(redactionService).applyPolicies(examplePath, bodyNode, redactionPolicies)
+  }
 
-        result shouldBe body
-        verifyNoInteractions(redactionService)
-    }
+  @Test
+  fun `should return null when body is null`() {
+    val result =
+      advice.beforeBodyWrite(
+        null,
+        mock(MethodParameter::class.java),
+        MediaType.APPLICATION_JSON,
+        HttpMessageConverter::class.java,
+        mock(),
+        mock(),
+      )
 
-    @Test
-    fun `should apply global and role based redaction policies`() {
-        val body = mapOf("field" to "value")
-        val bodyNode: ObjectNode = objectMapper.valueToTree(body)
-        val serverHttpRequest = ServletServerHttpRequest(mockRequest)
-        val consumerConfig = ConsumerConfig(emptyList<String>(), null, listOf(roleName))
-
-        val globalRedactionPolicy = RedactionPolicy(
-            name = "global-redaction-policy",
-            responseRedactions = listOf(
-                JsonPathResponseRedaction(
-                    type = RedactionType.MASK,
-                )
-            )
-        )
-        every { globalRedactions } returns mapOf(
-            "a-global-redaction" to globalRedactionPolicy
-        )
-
-        whenever(authorisationConfig.consumers).thenReturn(mapOf("clientA" to consumerConfig))
-        whenever(redactionService.applyPolicies(any(), any(), any())).thenReturn(bodyNode)
-
-        advice.beforeBodyWrite(
-            body,
-            mock(MethodParameter::class.java),
-            MediaType.APPLICATION_JSON,
-            HttpMessageConverter::class.java,
-            serverHttpRequest,
-            mock(ServerHttpResponse::class.java),
-        )
-
-        verify(redactionService).applyPolicies(
-            examplePath,
-            bodyNode,
-            buildList {
-                add(globalRedactionPolicy)
-                addAll(redactionPolicies)
-            }
-        )
-    }
-
-    @Test
-    fun `should apply redaction policies when JSON and clientName present`() {
-        val body = mapOf("field" to "value")
-        val bodyNode: ObjectNode = objectMapper.valueToTree(body)
-
-        val serverHttpRequest = ServletServerHttpRequest(mockRequest)
-
-        val consumerConfig = ConsumerConfig(emptyList<String>(), null, listOf(roleName))
-
-        whenever(authorisationConfig.consumers).thenReturn(mapOf("clientA" to consumerConfig))
-        whenever(redactionService.applyPolicies(any(), any(), any())).thenReturn(bodyNode)
-
-        val result =
-            advice.beforeBodyWrite(
-                body,
-                mock(MethodParameter::class.java),
-                MediaType.APPLICATION_JSON,
-                HttpMessageConverter::class.java,
-                serverHttpRequest,
-                mock(ServerHttpResponse::class.java),
-            )
-
-        result shouldBe bodyNode
-        verify(redactionService).applyPolicies(examplePath, bodyNode, redactionPolicies)
-    }
-
-    @Test
-    fun `should return null when body is null`() {
-        val result =
-            advice.beforeBodyWrite(
-                null,
-                mock(MethodParameter::class.java),
-                MediaType.APPLICATION_JSON,
-                HttpMessageConverter::class.java,
-                mock(),
-                mock(),
-            )
-
-        result shouldBe null
-        verifyNoInteractions(redactionService)
-    }
+    result shouldBe null
+    verifyNoInteractions(redactionService)
+  }
 }
