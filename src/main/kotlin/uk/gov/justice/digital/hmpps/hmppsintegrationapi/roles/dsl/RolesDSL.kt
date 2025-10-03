@@ -1,7 +1,9 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl
 
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
+import kotlin.collections.MutableList
 
 class RoleConstants(
   val allEndpoints: MutableList<String>,
@@ -31,8 +33,9 @@ class RoleBuilder(
 ) {
   private var includes: MutableList<String>? = null
   private var filters: ConsumerFilters? = null
+  private var redactionPolicies: MutableList<RedactionPolicy>? = null
 
-  fun build(): Role = Role(name, includes, filters)
+  fun build(): Role = Role(name, includes, filters, redactionPolicies)
 
   fun include(init: IncludeBuilder.() -> Unit) {
     IncludeBuilder().apply(init).content?.let {
@@ -45,6 +48,13 @@ class RoleBuilder(
 
   fun filters(init: FiltersBuilder.() -> Unit) {
     filters = FiltersBuilder().apply(init).build()
+  }
+
+  fun redactionPolicies(init: List<RedactionPolicy>) {
+    if (redactionPolicies == null) {
+      redactionPolicies = mutableListOf()
+    }
+    redactionPolicies?.addAll(init)
   }
 }
 
