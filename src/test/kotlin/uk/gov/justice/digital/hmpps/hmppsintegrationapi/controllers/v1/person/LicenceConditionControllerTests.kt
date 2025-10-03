@@ -79,7 +79,7 @@ class LicenceConditionControllerTests(
 
           doAnswer { invocation ->
             invocation.arguments[0]
-          }.whenever(redactionService).applyPolicies(any(), any())
+          }.whenever(redactionService).applyPolicies(any(), any(), any())
         }
 
         it("throws exception when no person found") {

@@ -1,0 +1,19 @@
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction
+
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionType.MASK
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.redactionPolicy
+
+val laoMappaDetailsRedactionPolicy =
+  redactionPolicy("lao-mappa-details") {
+    responseRedactions {
+      redaction {
+        type(MASK)
+        paths {
+          -"/v1/persons/.*/risks/mappadetail"
+        }
+        includes {
+          -"$..notes"
+        }
+      }
+    }
+  }

@@ -80,7 +80,7 @@ class FutureVisitsControllerTest(
 
       doAnswer { invocation ->
         invocation.arguments[0]
-      }.whenever(redactionService).applyPolicies(any(), any())
+      }.whenever(redactionService).applyPolicies(any(), any(), any())
     }
 
     it("Returns a 200 response with data") {

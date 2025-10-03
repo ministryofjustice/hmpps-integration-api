@@ -36,7 +36,7 @@ internal class ReferenceDataControllerTests(
         whenever(referenceDataService.referenceData()).thenReturn(referenceData)
         doAnswer { invocation ->
           invocation.arguments[0]
-        }.whenever(redactionService).applyPolicies(any(), any())
+        }.whenever(redactionService).applyPolicies(any(), any(), any())
       }
 
       describe("returns reference data") {

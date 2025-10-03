@@ -95,7 +95,7 @@ feature-flag:
   use-contact-events-endpoint: true
   use-stubbed-contact-events-data: false
   use-roles-dsl: true
-  use-redaction-dsl: true
+  redaction-policy-enabled: true
 
 authorisation:
   consumers:

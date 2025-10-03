@@ -85,7 +85,7 @@ class PrisonActivitiesControllerTest(
 
           doAnswer { invocation ->
             invocation.arguments[0]
-          }.whenever(redactionService).applyPolicies(any(), any())
+          }.whenever(redactionService).applyPolicies(any(), any(), any())
         }
 
         it("should return 200 when success") {

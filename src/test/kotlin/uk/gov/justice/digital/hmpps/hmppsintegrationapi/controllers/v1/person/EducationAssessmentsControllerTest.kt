@@ -54,7 +54,7 @@ class EducationAssessmentsControllerTest(
       beforeTest {
         doAnswer { invocation ->
           invocation.arguments[0]
-        }.whenever(redactionService).applyPolicies(any(), any())
+        }.whenever(redactionService).applyPolicies(any(), any(), any())
       }
 
       describe("Notify that a given person/offender has had a change of status to their Education Assessments") {

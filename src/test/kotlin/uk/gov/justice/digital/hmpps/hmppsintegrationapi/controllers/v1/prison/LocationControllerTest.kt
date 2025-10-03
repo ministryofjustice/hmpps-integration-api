@@ -51,7 +51,7 @@ class LocationControllerTest(
 
       doAnswer { invocation ->
         invocation.arguments[0]
-      }.whenever(redactionService).applyPolicies(any(), any())
+      }.whenever(redactionService).applyPolicies(any(), any(), any())
     }
 
     describe("GET /{key}") {

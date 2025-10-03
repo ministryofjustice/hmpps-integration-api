@@ -47,7 +47,7 @@ internal class HmppsIdControllerTest(
 
         doAnswer { invocation ->
           invocation.arguments[0]
-        }.whenever(redactionService).applyPolicies(any(), any())
+        }.whenever(redactionService).applyPolicies(any(), any(), any())
 
         whenever(getHmppsIdService.execute(nomisNumber)).thenReturn(
           Response(

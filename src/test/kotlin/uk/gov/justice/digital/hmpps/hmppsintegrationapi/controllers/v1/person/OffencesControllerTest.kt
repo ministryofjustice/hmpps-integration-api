@@ -70,7 +70,7 @@ internal class OffencesControllerTest(
 
           doAnswer { invocation ->
             invocation.arguments[0]
-          }.whenever(redactionService).applyPolicies(any(), any())
+          }.whenever(redactionService).applyPolicies(any(), any(), any())
         }
 
         it("returns a 200 OK status code") {

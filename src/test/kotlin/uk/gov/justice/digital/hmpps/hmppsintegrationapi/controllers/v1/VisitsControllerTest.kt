@@ -61,7 +61,7 @@ class VisitsControllerTest(
 
         doAnswer { invocation ->
           invocation.arguments[0]
-        }.whenever(redactionService).applyPolicies(any(), any())
+        }.whenever(redactionService).applyPolicies(any(), any(), any())
       }
 
       describe("GET /v1/visit/{visitReference}") {

@@ -16,7 +16,7 @@ data class Role(
   val name: String? = null,
   val include: List<String>? = null,
   val filters: ConsumerFilters? = null,
-  val redactionPolicies: List<RedactionPolicy>? = null,
+  val redactionPolicies: List<RedactionPolicy>? = emptyList<RedactionPolicy>(),
 )
 
 val roleConstants =

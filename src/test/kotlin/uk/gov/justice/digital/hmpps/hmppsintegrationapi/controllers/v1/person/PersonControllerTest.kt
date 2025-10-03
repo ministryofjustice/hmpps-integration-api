@@ -132,7 +132,7 @@ internal class PersonControllerTest(
 
           doAnswer { invocation ->
             invocation.arguments[0]
-          }.whenever(redactionService).applyPolicies(any(), any())
+          }.whenever(redactionService).applyPolicies(any(), any(), any())
         }
 
         it("gets a person with matching search criteria") {

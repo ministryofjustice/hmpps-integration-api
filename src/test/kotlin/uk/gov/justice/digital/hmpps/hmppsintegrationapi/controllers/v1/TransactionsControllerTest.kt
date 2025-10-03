@@ -92,7 +92,7 @@ class TransactionsControllerTest(
       beforeTest {
         doAnswer { invocation ->
           invocation.arguments[0]
-        }.whenever(redactionService).applyPolicies(any(), any())
+        }.whenever(redactionService).applyPolicies(any(), any(), any())
       }
 
       it("calls the transactions service with expected parameters when supplied a date range") {

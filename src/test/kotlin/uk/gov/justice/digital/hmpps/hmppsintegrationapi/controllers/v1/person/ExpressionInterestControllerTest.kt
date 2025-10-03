@@ -35,7 +35,7 @@ class ExpressionInterestControllerTest(
       beforeTest {
         doAnswer { invocation ->
           invocation.arguments[0]
-        }.whenever(redactionService).applyPolicies(any(), any())
+        }.whenever(redactionService).applyPolicies(any(), any(), any())
       }
 
       describe("PUT $basePath/{hmppsId}/expression-of-interest/jobs/{jobId}") {

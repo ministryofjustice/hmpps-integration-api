@@ -45,7 +45,7 @@ internal class ContactEventsControllerTest(
 
           doAnswer { invocation ->
             invocation.arguments[0]
-          }.whenever(redactionService).applyPolicies(any(), any())
+          }.whenever(redactionService).applyPolicies(any(), any(), any())
 
           whenever(contactEventService.getContactEvents(hmppsId, 1, 10, filters)).thenReturn(
             Response(

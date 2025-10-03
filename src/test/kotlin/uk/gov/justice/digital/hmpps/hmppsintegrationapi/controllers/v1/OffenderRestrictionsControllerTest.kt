@@ -79,7 +79,7 @@ class OffenderRestrictionsControllerTest(
       beforeTest {
         doAnswer { invocation ->
           invocation.arguments[0]
-        }.whenever(redactionService).applyPolicies(any(), any())
+        }.whenever(redactionService).applyPolicies(any(), any(), any())
       }
 
       it("returns the correct non associations data") {

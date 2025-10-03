@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionPolicy
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.globalRedactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.RedactionService
@@ -51,20 +52,20 @@ class RedactionResponseBodyAdvice(
     }
     val tree = objectMapper.valueToTree<ObjectNode>(body)
     val servletRequest = (request as ServletServerHttpRequest).servletRequest
+    val requestUri = (request as ServletServerHttpRequest).servletRequest.requestURI
     val subjectDistinguishedName = servletRequest.getAttribute("clientName") as? String
     val redactionPolicies = getRedactionPoliciesFromRoles(subjectDistinguishedName)
-    return redactionService.applyPolicies(tree, redactionPolicies)
+    return redactionService.applyPolicies(requestUri, tree, redactionPolicies)
   }
 
   private fun getRedactionPoliciesFromRoles(subjectDistinguishedName: String?): List<RedactionPolicy> {
     val consumerConfig: ConsumerConfig? = authorisationConfig.consumers[subjectDistinguishedName]
     val consumersRoles = consumerConfig?.roles
     val redactionPolicies =
-      buildList {
-        for (consumerRole in consumersRoles.orEmpty()) {
-          addAll(roles[consumerRole]?.redactionPolicies.orEmpty())
+      globalRedactions.values +
+        consumersRoles.orEmpty().flatMap { role ->
+          roles[role]?.redactionPolicies.orEmpty()
         }
-      }
     return redactionPolicies
   }
 }
