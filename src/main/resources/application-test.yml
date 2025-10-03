@@ -87,6 +87,7 @@ feature-flag:
   use-allocation-endpoint: true
   use-education-endpoint: true
   use-prisoner-base-location-endpoint: true
+  use-prisoner-base-location-api: true
   use-historical-attendances-endpoint: true
   use-suitability-endpoint: true
   use-waiting-list-endpoint: true
