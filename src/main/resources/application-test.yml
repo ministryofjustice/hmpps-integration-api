@@ -50,7 +50,7 @@ services:
   activities:
     base-url: http://localhost:4004
   prisoner-base-location:
-    base-url: http://localhost:3999
+    base-url: http://localhost:4024
 
 hmpps.sqs:
   provider: localstack
