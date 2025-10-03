@@ -18,8 +18,7 @@ services:
         curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4020/visits/visitReference &&
         curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4021/incentive-reviews/prisoner/A1234AA &&
         curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4022/prisoners/A1234AA/alerts &&
-        curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4023/locations/prison/MDI/residential-hierarchy &&
-        curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4024/v1/persons/A1234AA/prisoner-base-location'
+        curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4023/locations/prison/MDI/residential-hierarchy'
     ports:
       - "4010:4010"
       - "4011:4011"
@@ -35,7 +34,6 @@ services:
       - "4021:4021"
       - "4022:4022"
       - "4023:4023"
-      - "4024:4024"
 
   local-stack-aws:
     image: localstack/localstack:3.0
