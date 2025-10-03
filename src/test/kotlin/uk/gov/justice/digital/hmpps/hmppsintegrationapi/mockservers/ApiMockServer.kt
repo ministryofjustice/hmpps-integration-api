@@ -32,6 +32,7 @@ class ApiMockServer(
           UpstreamApi.ACTIVITIES -> ApiMockServerConfig(4004, "activities.json")
           UpstreamApi.TEST -> ApiMockServerConfig(4005, "test.json")
           UpstreamApi.NDELIUS_INTEGRATION_TEST -> ApiMockServerConfig(4201)
+          UpstreamApi.PRISONER_BASE_LOCATION -> ApiMockServerConfig(4024)
           // USE PRISM
           UpstreamApi.PRISON_API -> ApiMockServerConfig(4000)
           UpstreamApi.NDELIUS -> ApiMockServerConfig(4003)
@@ -48,7 +49,6 @@ class ApiMockServer(
           UpstreamApi.PRISONER_ALERTS -> ApiMockServerConfig(4009)
           UpstreamApi.LOCATIONS_INSIDE_PRISON -> ApiMockServerConfig(4000)
           UpstreamApi.SAN -> ApiMockServerConfig(4200)
-          UpstreamApi.PRISONER_BASE_LOCATION -> ApiMockServerConfig(3999)
         }
 
       val wireMockConfig = WireMockConfiguration.wireMockConfig().port(apiMockerServerConfig.port)

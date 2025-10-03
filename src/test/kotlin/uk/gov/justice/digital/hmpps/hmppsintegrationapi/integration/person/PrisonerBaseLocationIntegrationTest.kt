@@ -6,12 +6,11 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 
 class PrisonerBaseLocationIntegrationTest : IntegrationTestBase() {
-  private val knownNomisNumber = nomsId
   private val unknownNomisNumber = "Z9876YX"
 
   @Test
-  fun `returns prisoner base location, having hmppsId being nomisID`() {
-    callApi(path = makePathPrisonerBaseLocation(knownNomisNumber))
+  fun `returns prisoner base location`() {
+    callApi(path = makePathPrisonerBaseLocation(nomsId))
       .andExpect(status().isOk)
       .andExpect(
         content().json(getExpectedResponse("prisoner-base-location")),
@@ -32,13 +31,13 @@ class PrisonerBaseLocationIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `return a 404 for person in wrong prison`() {
-    callApiWithCN(makePathPrisonerBaseLocation(knownNomisNumber), limitedPrisonsCn)
+    callApiWithCN(makePathPrisonerBaseLocation(nomsId), limitedPrisonsCn)
       .andExpect(status().isNotFound)
   }
 
   @Test
   fun `return a 404 when no prisons in filter`() {
-    callApiWithCN(makePathPrisonerBaseLocation(knownNomisNumber), noPrisonsCn)
+    callApiWithCN(makePathPrisonerBaseLocation(nomsId), noPrisonsCn)
       .andExpect(status().isNotFound)
   }
 
