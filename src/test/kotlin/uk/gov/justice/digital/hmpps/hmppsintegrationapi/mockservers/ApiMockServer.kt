@@ -32,7 +32,7 @@ class ApiMockServer(
           UpstreamApi.ACTIVITIES -> ApiMockServerConfig(4004, "activities.json")
           UpstreamApi.TEST -> ApiMockServerConfig(4005, "test.json")
           UpstreamApi.NDELIUS_INTEGRATION_TEST -> ApiMockServerConfig(4201)
-          UpstreamApi.PRISONER_BASE_LOCATION -> ApiMockServerConfig(4024)
+          UpstreamApi.PRISONER_BASE_LOCATION -> ApiMockServerConfig(4024, "prisoner-base-location.json")
           // USE PRISM
           UpstreamApi.PRISON_API -> ApiMockServerConfig(4000)
           UpstreamApi.NDELIUS -> ApiMockServerConfig(4003)
