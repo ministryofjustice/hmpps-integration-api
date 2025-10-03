@@ -168,6 +168,8 @@ detekt {
 
 kotlin {
   kotlinDaemonJvmArgs = listOf("-Xmx2g")
+
+  configurations.runtimeClasspath.get().resolvedConfiguration
 }
 
 testlogger {
