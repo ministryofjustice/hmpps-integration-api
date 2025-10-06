@@ -67,7 +67,7 @@ jobs:
             build/kover
             build/reports/tests
       - name: Publish Test Report
-        uses: ctrf-io/github-test-reporter@a63590595a9ae45cb646c55a314110f910d360d2
+        uses: ctrf-io/github-test-reporter@646f98cfc16c6f7a0e1f6100cabe2deb95dd2eef
         with:
           report-path: './build/test-results/unitTest/*.xml'
           use-suite-name: true
@@ -116,7 +116,7 @@ jobs:
             build/reports/tests
             build/kover
       - name: Publish Test Report
-        uses: ctrf-io/github-test-reporter@a63590595a9ae45cb646c55a314110f910d360d2
+        uses: ctrf-io/github-test-reporter@646f98cfc16c6f7a0e1f6100cabe2deb95dd2eef
         with:
           report-path: './build/test-results/integrationTest/*.xml'
           use-suite-name: true
