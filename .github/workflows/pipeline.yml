@@ -1,8 +1,8 @@
-name: Pipeline [GHA test]
+name: Pipeline
 on:
   push:
     branches:
-      - '**'
+      - 'main'
   workflow_dispatch:
     inputs:
       additional_docker_tag:
