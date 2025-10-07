@@ -28,19 +28,20 @@ class ControllerGatewayMapper {
       .flatten()
       .toSet()
 
-  private fun isInPackage(clazz: KClass<*>, packagePath: String): Boolean =
-    clazz.qualifiedName?.contains(packagePath) == true
+  private fun isInPackage(
+    clazz: KClass<*>,
+    packagePath: String,
+  ): Boolean = clazz.qualifiedName?.contains(packagePath) == true
 
   private fun toName(clazz: KClass<*>): String = clazz.javaObjectType.name.replace("$PACKAGE_NAME.", "")
 
-  private fun associations(clazz: KClass<*>) =
-    getParamList(clazz).filter { isInPackage(it, "$PACKAGE_NAME.$GATEWAYS") }.map { toName(it) }.toSet()
+  private fun associations(clazz: KClass<*>) = getParamList(clazz).filter { isInPackage(it, "$PACKAGE_NAME.$GATEWAYS") }.map { toName(it) }.toSet()
 
   fun getControllerGatewayMapping(context: ApplicationContext): Map<String, Set<String>> =
-    context.getBeansWithAnnotation(RestController::class.java)
+    context
+      .getBeansWithAnnotation(RestController::class.java)
       .values
       .map { ClassUtils.getUserClass(it).kotlin }
       .filter { isInPackage(it, PACKAGE_NAME) }
       .associate { toName(it) to associations(it) }
-
 }
