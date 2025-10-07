@@ -4,8 +4,6 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -24,7 +22,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetHmppsIdService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.RedactionService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [HmppsIdController::class])
@@ -34,28 +31,23 @@ internal class HmppsIdControllerTest(
   @MockitoBean val getHmppsIdService: GetHmppsIdService,
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getPersonService: GetPersonService,
-  @MockitoBean val redactionService: RedactionService,
 ) : DescribeSpec({
     val nomisNumber = "A1234AA"
     val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
+    beforeTest {
+      Mockito.reset(getHmppsIdService)
+
+      whenever(getHmppsIdService.execute(nomisNumber)).thenReturn(
+        Response(
+          data = HmppsId(hmppsId = nomisNumber),
+        ),
+      )
+      Mockito.reset(auditService)
+    }
+
     describe("GET /v1/hmpps/id/nomis-number/$nomisNumber") {
       val path = "/v1/hmpps/id/nomis-number/$nomisNumber"
-
-      beforeTest {
-        Mockito.reset(getHmppsIdService)
-
-        doAnswer { invocation ->
-          invocation.arguments[0]
-        }.whenever(redactionService).applyPolicies(any(), any(), any())
-
-        whenever(getHmppsIdService.execute(nomisNumber)).thenReturn(
-          Response(
-            data = HmppsId(hmppsId = nomisNumber),
-          ),
-        )
-        Mockito.reset(auditService)
-      }
 
       it("returns a 200 OK status code") {
         val result = mockMvc.performAuthorised(path)

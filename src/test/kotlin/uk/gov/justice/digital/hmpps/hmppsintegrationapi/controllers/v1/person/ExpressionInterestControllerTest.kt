@@ -4,7 +4,6 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import jakarta.validation.ValidationException
 import org.mockito.kotlin.any
-import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doNothing
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,14 +15,12 @@ import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.PutExpressionInterestService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.RedactionService
 
 @WebMvcTest(controllers = [ExpressionInterestController::class])
 @ActiveProfiles("test")
 class ExpressionInterestControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val expressionOfInterestService: PutExpressionInterestService,
-  @MockitoBean val redactionService: RedactionService,
 ) : DescribeSpec(
     {
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
@@ -31,12 +28,6 @@ class ExpressionInterestControllerTest(
       val validHmppsId = "AABCD1ABC"
       val invalidHmppsId = "INVALID_ID"
       val jobId = "5678"
-
-      beforeTest {
-        doAnswer { invocation ->
-          invocation.arguments[0]
-        }.whenever(redactionService).applyPolicies(any(), any(), any())
-      }
 
       describe("PUT $basePath/{hmppsId}/expression-of-interest/jobs/{jobId}") {
         it("should return 404 Not Found if ENTITY_NOT_FOUND error occurs") {

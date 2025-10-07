@@ -3,8 +3,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -21,7 +19,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelations
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRDetailedContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PhoneNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetContactService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.RedactionService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [ContactsController::class])
@@ -30,7 +27,6 @@ internal class ContactsControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getContactService: GetContactService,
-  @MockitoBean val redactionService: RedactionService,
 ) : DescribeSpec(
     {
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
@@ -162,12 +158,6 @@ internal class ContactsControllerTest(
           genderCode = "M",
           genderDescription = "Male",
         )
-
-      beforeTest {
-        doAnswer { invocation ->
-          invocation.arguments[0]
-        }.whenever(redactionService).applyPolicies(any(), any(), any())
-      }
 
       describe("GET Contacts") {
         beforeTest {

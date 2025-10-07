@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.laoPersonLicencesRedactionPolicy as prisonEducation
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.prisonEducationRedactionPolicy as prisonEducation
 
 val curious =
   role("curious") {

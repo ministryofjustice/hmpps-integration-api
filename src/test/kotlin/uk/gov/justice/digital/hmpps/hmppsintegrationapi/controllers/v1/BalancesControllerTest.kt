@@ -4,8 +4,6 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.mockito.internal.verification.VerificationModeFactory
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -26,7 +24,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetBalancesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.RedactionService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [BalancesController::class])
@@ -36,7 +33,6 @@ class BalancesControllerTest(
   @MockitoBean val getPersonService: GetPersonService,
   @MockitoBean val getBalancesForPersonService: GetBalancesForPersonService,
   @MockitoBean val auditService: AuditService,
-  @MockitoBean val redactionService: RedactionService,
 ) : DescribeSpec(
     {
       val hmppsId = "200313116M"
@@ -60,9 +56,6 @@ class BalancesControllerTest(
         )
 
       beforeTest {
-        doAnswer { invocation ->
-          invocation.arguments[0]
-        }.whenever(redactionService).applyPolicies(any(), any(), any())
       }
 
       describe("all balances tests") {

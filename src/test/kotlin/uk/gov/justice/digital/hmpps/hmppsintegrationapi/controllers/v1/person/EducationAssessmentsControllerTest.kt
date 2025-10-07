@@ -6,8 +6,6 @@ import jakarta.validation.ValidationException
 import org.assertj.core.api.Assertions.assertThat
 import org.mockito.Mockito
 import org.mockito.Mockito.times
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -28,7 +26,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.EducationAs
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.EducationAssessmentStatusChangeRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.EducationAssessmentService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.RedactionService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.net.URI
 import java.time.LocalDate
@@ -40,7 +37,6 @@ class EducationAssessmentsControllerTest(
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
   @MockitoBean val educationAssessmentService: EducationAssessmentService,
   @MockitoBean val auditService: AuditService,
-  @MockitoBean val redactionService: RedactionService,
 ) : DescribeSpec(
     {
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
@@ -50,12 +46,6 @@ class EducationAssessmentsControllerTest(
       val invalidHmppsId = "C1234BC"
 
       fun apiPath(hmppsId: String = validHmppsId) = "/v1/persons/$hmppsId/education/assessments/status"
-
-      beforeTest {
-        doAnswer { invocation ->
-          invocation.arguments[0]
-        }.whenever(redactionService).applyPolicies(any(), any(), any())
-      }
 
       describe("Notify that a given person/offender has had a change of status to their Education Assessments") {
         it("should return 200 given a valid request body") {

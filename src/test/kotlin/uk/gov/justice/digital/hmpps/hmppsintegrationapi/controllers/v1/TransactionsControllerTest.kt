@@ -6,8 +6,6 @@ import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.mockito.internal.verification.VerificationModeFactory
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
@@ -34,7 +32,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetTransactionF
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetTransactionsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.PostTransactionForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.PostTransactionTransferForPersonService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.RedactionService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [TransactionsController::class])
@@ -46,7 +43,6 @@ class TransactionsControllerTest(
   @MockitoBean val getTransactionForPersonService: GetTransactionForPersonService,
   @MockitoBean val postTransactionForPersonService: PostTransactionForPersonService,
   @MockitoBean val postTransactionTransferForPersonService: PostTransactionTransferForPersonService,
-  @MockitoBean val redactionService: RedactionService,
 ) : DescribeSpec(
     {
       val hmppsId = "200313116M"
@@ -88,12 +84,6 @@ class TransactionsControllerTest(
       val transactionCreateResponse = TransactionCreateResponse(transactionId = "6179604-1")
 
       val transactionTransferCreateResponse = TransactionTransferCreateResponse(debitTransactionId = "6179604-1", creditTransactionId = "6179604-1", transactionId = "6179604")
-
-      beforeTest {
-        doAnswer { invocation ->
-          invocation.arguments[0]
-        }.whenever(redactionService).applyPolicies(any(), any(), any())
-      }
 
       it("calls the transactions service with expected parameters when supplied a date range") {
         val dateParams = "?from_date=2025-01-01&to_date=2025-01-01"

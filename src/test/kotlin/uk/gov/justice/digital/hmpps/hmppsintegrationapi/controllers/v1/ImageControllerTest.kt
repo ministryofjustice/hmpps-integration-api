@@ -4,8 +4,6 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -22,7 +20,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.RedactionService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [ImageController::class])
@@ -32,7 +29,6 @@ internal class ImageControllerTest(
   @MockitoBean val getImageService: GetImageService,
   @MockitoBean val auditService: AuditService,
   @MockitoBean val featureFlag: FeatureFlagConfig,
-  @MockitoBean val redactionService: RedactionService,
 ) : DescribeSpec(
     {
       val id = 2461788
@@ -50,10 +46,6 @@ internal class ImageControllerTest(
           Mockito.reset(auditService)
 
           whenever(getImageService.getById(id)).thenReturn(Response(data = image))
-
-          doAnswer { invocation ->
-            invocation.arguments[0]
-          }.whenever(redactionService).applyPolicies(any(), any(), any())
         }
 
         it("returns a 200 OK status code") {

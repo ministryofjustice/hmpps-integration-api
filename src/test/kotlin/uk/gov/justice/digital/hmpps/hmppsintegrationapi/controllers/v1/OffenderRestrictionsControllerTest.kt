@@ -3,8 +3,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -22,7 +20,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nonAssociation.No
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nonAssociation.NonAssociations
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersNonAssociationsService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.RedactionService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [OffenderRestrictionsController::class])
@@ -31,7 +28,6 @@ class OffenderRestrictionsControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getPrisonersNonAssociationsService: GetPrisonersNonAssociationsService,
   @MockitoBean val auditService: AuditService,
-  @MockitoBean val redactionService: RedactionService,
 ) : DescribeSpec(
     {
       val prisonId = "XYZ"
@@ -75,12 +71,6 @@ class OffenderRestrictionsControllerTest(
               ),
             ),
         )
-
-      beforeTest {
-        doAnswer { invocation ->
-          invocation.arguments[0]
-        }.whenever(redactionService).applyPolicies(any(), any(), any())
-      }
 
       it("returns the correct non associations data") {
         whenever(getPrisonersNonAssociationsService.execute(hmppsId, prisonId, includeOpen = "true", includeClosed = "false", filters = null)).thenReturn(

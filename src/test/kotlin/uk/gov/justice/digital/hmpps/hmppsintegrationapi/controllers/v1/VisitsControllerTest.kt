@@ -3,8 +3,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -38,7 +36,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitorSupp
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitReferences
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitInformationByReferenceService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitReferencesByClientReferenceService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.RedactionService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.VisitQueueService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.time.LocalDateTime
@@ -51,17 +48,12 @@ class VisitsControllerTest(
   @MockitoBean val getVisitInformationByReferenceService: GetVisitInformationByReferenceService,
   @MockitoBean val visitQueueService: VisitQueueService,
   @MockitoBean val getVisitReferencesByClientReferenceService: GetVisitReferencesByClientReferenceService,
-  @MockitoBean val redactionService: RedactionService,
 ) : DescribeSpec(
     {
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
       beforeTest {
         Mockito.reset(auditService)
-
-        doAnswer { invocation ->
-          invocation.arguments[0]
-        }.whenever(redactionService).applyPolicies(any(), any(), any())
       }
 
       describe("GET /v1/visit/{visitReference}") {

@@ -10,18 +10,13 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doAnswer
-import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v2.ConfigController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ConfigAuthorisation
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.RedactionService
 
 @WebMvcTest(controllers = [ConfigController::class])
 @ActiveProfiles("test")
@@ -32,14 +27,8 @@ class ConfigControllerTests(
   private val basePath = "/v2/config/authorisation"
   private val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
-  @MockitoBean
-  lateinit var redactionService: RedactionService
-
   @BeforeEach
   fun beforeTest() {
-    doAnswer { invocation ->
-      invocation.arguments[0]
-    }.whenever(redactionService).applyPolicies(any(), any(), any())
   }
 
   @Test

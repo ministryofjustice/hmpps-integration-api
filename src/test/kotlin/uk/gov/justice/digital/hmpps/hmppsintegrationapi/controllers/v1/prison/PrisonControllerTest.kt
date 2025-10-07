@@ -4,9 +4,7 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import jakarta.servlet.http.HttpServletRequest
 import org.mockito.Mockito
-import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
-import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -49,7 +47,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersSer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetResidentialDetailsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetResidentialHierarchyService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitsService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.RedactionService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -68,7 +65,6 @@ internal class PrisonControllerTest(
   @MockitoBean val getCapacityForPrisonService: GetCapacityForPrisonService,
   @MockitoBean val getPrisonRegimeService: GetPrisonRegimeService,
   @MockitoBean val getPrisonPayBandsService: GetPrisonPayBandsService,
-  @MockitoBean val redactionService: RedactionService,
 ) : DescribeSpec(
     {
       val firstName = personInProbationAndNomisPersona.firstName
@@ -77,12 +73,6 @@ internal class PrisonControllerTest(
       val hmppsId = personInProbationAndNomisPersona.identifiers.nomisNumber!!
       val basePath = "/v1/prison"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
-
-      beforeTest {
-        doAnswer { invocation ->
-          invocation.arguments[0]
-        }.whenever(redactionService).applyPolicies(any(), any(), any())
-      }
 
       afterTest {
         Mockito.reset(getPersonService)

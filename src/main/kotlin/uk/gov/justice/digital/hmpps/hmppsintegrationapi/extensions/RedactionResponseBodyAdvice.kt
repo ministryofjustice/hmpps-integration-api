@@ -2,6 +2,11 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.jayway.jsonpath.Configuration
+import com.jayway.jsonpath.DocumentContext
+import com.jayway.jsonpath.JsonPath
+import com.jayway.jsonpath.Option
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.core.MethodParameter
@@ -17,20 +22,24 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.R
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.globalRedactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.RedactionService
 
 @ControllerAdvice
 @ConditionalOnProperty(
   prefix = "feature-flag",
-  name = ["use-redaction-dsl"],
+  name = ["redaction-policy-enabled"],
   havingValue = "true",
   matchIfMissing = false,
 )
 class RedactionResponseBodyAdvice(
   @Autowired private val objectMapper: ObjectMapper,
   @Autowired val authorisationConfig: AuthorisationConfig,
-  @Autowired val redactionService: RedactionService,
 ) : ResponseBodyAdvice<Any> {
+  val config: Configuration =
+    Configuration
+      .builder()
+      .options(Option.DEFAULT_PATH_LEAF_TO_NULL)
+      .build()
+
   override fun supports(
     returnType: MethodParameter,
     converterType: Class<out HttpMessageConverter<*>?>,
@@ -55,7 +64,25 @@ class RedactionResponseBodyAdvice(
     val requestUri = (request as ServletServerHttpRequest).servletRequest.requestURI
     val subjectDistinguishedName = servletRequest.getAttribute("clientName") as? String
     val redactionPolicies = getRedactionPoliciesFromRoles(subjectDistinguishedName)
-    return redactionService.applyPolicies(requestUri, tree, redactionPolicies)
+    return applyPolicies(requestUri, tree, redactionPolicies)
+  }
+
+  fun applyPolicies(
+    requestUri: String,
+    json: ObjectNode?,
+    policies: List<RedactionPolicy>?,
+  ): ObjectNode? {
+    val doc: DocumentContext = JsonPath.using(config).parse(json.toString())
+
+    for (policy in policies.orEmpty()) {
+      policy.responseRedactions?.forEach { redaction ->
+        redaction.apply(requestUri, doc)
+      }
+    }
+
+    // Return a fresh ObjectNode instead of mutating the input
+    val mapper = jacksonObjectMapper()
+    return mapper.valueToTree(doc.json<String>())
   }
 
   private fun getRedactionPoliciesFromRoles(subjectDistinguishedName: String?): List<RedactionPolicy> {

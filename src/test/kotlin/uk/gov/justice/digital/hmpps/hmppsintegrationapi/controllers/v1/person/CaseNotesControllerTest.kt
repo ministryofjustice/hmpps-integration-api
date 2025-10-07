@@ -4,8 +4,6 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.mockito.Mockito
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -27,7 +25,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCaseNotesForPersonService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.RedactionService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.time.LocalDateTime
 
@@ -37,7 +34,6 @@ class CaseNotesControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getCaseNotesForPersonService: GetCaseNotesForPersonService,
   @MockitoBean val auditService: AuditService,
-  @MockitoBean val redactionService: RedactionService,
 ) : DescribeSpec(
     {
       val hmppsId = "G2996UX"
@@ -69,9 +65,6 @@ class CaseNotesControllerTest(
               errors = emptyList(),
             ),
           )
-          doAnswer { invocation ->
-            invocation.arguments[0]
-          }.whenever(redactionService).applyPolicies(any(), any(), any())
         }
 
         it("logs audit") {

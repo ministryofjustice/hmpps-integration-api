@@ -4,8 +4,6 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,7 +18,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ContactEventService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.RedactionService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.ContactEventStubGenerator
 
@@ -30,7 +27,6 @@ internal class ContactEventsControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val contactEventService: ContactEventService,
   @MockitoBean val auditService: AuditService,
-  @MockitoBean val redactionService: RedactionService,
 ) : DescribeSpec(
     {
       val hmppsId = "A123456"
@@ -42,10 +38,6 @@ internal class ContactEventsControllerTest(
       describe("GET $path") {
         beforeTest {
           Mockito.reset(contactEventService)
-
-          doAnswer { invocation ->
-            invocation.arguments[0]
-          }.whenever(redactionService).applyPolicies(any(), any(), any())
 
           whenever(contactEventService.getContactEvents(hmppsId, 1, 10, filters)).thenReturn(
             Response(
