@@ -39,7 +39,7 @@ internal class ControllerGatewayMapperTest(
     assertTrue(mappings["controllers.v1.ActivitiesController"]?.contains("gateways.ActivitiesGateway") == true)
   }
 
-  private fun printAllMappings(mappings: MutableMap<String, Set<String>>) {
+  private fun printAllMappings(mappings: Map<String, Set<String>>) {
     mappings.forEach { (controller, gateways) ->
       println("  $controller -> $gateways")
     }
