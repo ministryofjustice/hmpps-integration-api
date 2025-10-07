@@ -42,11 +42,14 @@ class ControllerGatewayMapper {
 
   private fun kClass(obj: Any): KClass<out Any> = ClassUtils.getUserClass(obj).kotlin
 
-  fun getControllerGatewayMapping(context: ApplicationContext): Map<String, Set<String>> =
+  private fun extApiRestControllers(context: ApplicationContext): List<KClass<out Any>> =
     context
       .getBeansWithAnnotation(RestController::class.java)
       .values
       .map { kClass(it) }
       .filter { isInPackage(it, BASE_PACKAGE_NAME) }
+
+  fun getControllerGatewayMapping(context: ApplicationContext): Map<String, Set<String>> =
+    extApiRestControllers(context)
       .associate { simpleName(it) to injectedGatewayNames(it) }
 }
