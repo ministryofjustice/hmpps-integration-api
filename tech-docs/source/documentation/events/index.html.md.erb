@@ -394,11 +394,6 @@ It details the endpoints the events relate to, and information about what trigge
   * `LocationsInsidePrison.Location.DEACTIVATED`
   * `LocationsInsidePrison.Location.REACTIVATED`
 
-* **Endpoint:** `v1/persons/{hmppsId}/prisoner-base-location`
-* **Triggered By:**
-  * `PrisonOffenderEvents.Prisoner.RECEIVED`
-  * `PrisonOffenderEvents.Prisoner.RELEASED`
-
 ### Prison Residential Details Changed
 
 * **Endpoint:** `/v1/prison/{prisonId}/residential-details`
@@ -457,11 +452,19 @@ It details the endpoints the events relate to, and information about what trigge
       * `PrisonerOffenderSearch.Prisoner.CREATED`
       * `PrisonerOffenderSearch.Prisoner.RECEIVED`
 
-### Person Education Assessment Categories Changed
+### Person Education Assessment Changed
 
-* **Endpoint:** `v1/persons/{hmppsId}/education/assessments`
+* **Endpoint:** `/v1/persons/{hmppsId}/education/assessments`
 * **Triggered By:**
   * **New Person Events:**
-      * `PrisonerChangedCategory.LOCATION`
-      * `PrisonerChangedCategory.SENTENCE`
+      * **OR** `PrisonerOffenderSearch.Prisoner.UPDATED` (when `LOCATION` category has been changed)
+      * **OR** `PrisonerOffenderSearch.Prisoner.UPDATED` (when `SENTENCE` category has been changed)
+
+### Prisoner Base Location Changed
+
+* **Endpoint:** `/v1/persons/{hmppsId}/prisoner-base-location`
+* **Triggered By:**
+  * **New Person Events:**
+    * **OR** `PrisonOffenderEvents.Prisoner.RECEIVED` (when reason is changed to `ADMISSION` or `TRANSFERRED`)
+    * **OR** `PrisonOffenderEvents.Prisoner.RELEASED` (when reason is `RELEASED`)
 ---
