@@ -1,0 +1,100 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "HMPPS Prisoner Base Location Api",
+    "contact": { "name": "HMPPS Digital Studio", "email": "feedback@digital.justice.gov.uk" },
+    "version": "2025-10-03"
+  },
+  "servers": [
+    { "url": "https://prisoner-base-location-api-dev.hmpps.service.justice.gov.uk", "description": "Development" },
+    { "url": "https://prisoner-base-location-api-preprod.hmpps.service.justice.gov.uk", "description": "Pre-Production" },
+    { "url": "https://prisoner-base-location-api.hmpps.service.justice.gov.uk", "description": "Production" },
+    { "url": "http://localhost:8080", "description": "Local" }
+  ],
+  "security": [{ "view-prisoner-location-role": ["read"] }],
+  "tags": [],
+  "paths": {
+    "/v1/persons/{nomisNumber}/prisoner-base-location": {
+      "get": {
+        "tags": ["Base Location Service"],
+        "summary": "Returns prisoner's base location",
+        "description": "Requires role ROLE_PRISONER_BASE_LOCATION__LOCATIONS_RO",
+        "operationId": "getPrisonerBaseLocation",
+        "parameters": [
+          {
+            "name": "nomisNumber",
+            "in": "path",
+            "description": "A NOMIS number",
+            "required": true,
+            "schema": { "type": "string" },
+            "example": "A1234AA"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Prisoner's Base Location",
+            "content": { "*/*": { "schema": { "$ref": "#/components/schemas/PrisonerBaseLocation" } } }
+          },
+          "401": {
+            "description": "Unauthorized to access this endpoint",
+            "content": { "*/*": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "403": {
+            "description": "Forbidden to access this endpoint",
+            "content": { "*/*": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "404": {
+            "description": "Prisoner information not found",
+            "content": { "*/*": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "description": "An error has occurred", "content": { "*/*": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
+        },
+        "security": [{ "view-prisoner-location-role": [] }]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "integer", "format": "int32" },
+          "errorCode": { "type": "string" },
+          "userMessage": { "type": "string" },
+          "developerMessage": { "type": "string" },
+          "moreInfo": { "type": "string" }
+        },
+        "required": ["status"]
+      },
+      "PrisonerBaseLocation": {
+        "type": "object",
+        "properties": {
+          "inPrison": { "type": "boolean", "description": "In prison or not" },
+          "prisonId": { "type": "string", "description": "Prison ID", "example": "MDI" },
+          "lastPrisonId": {
+            "type": "string",
+            "description": "The last prison for the prisoner (which is the same as the prisonId if they are still inside prison)",
+            "example": "MDI"
+          },
+          "lastMovementType": {
+            "type": "string",
+            "description": "Last movement type",
+            "enum": ["Admission", "Release", "Transfers", "Court", "Temporary Absence"],
+            "example": "Admission"
+          },
+          "receptionDate": { "type": "string", "format": "date", "description": "Reception date", "example": "2025-04-01" }
+        }
+      }
+    },
+    "securitySchemes": {
+      "view-prisoner-location-role": {
+        "type": "http",
+        "description": "A HMPPS Auth access token with the `ROLE_PRISONER_BASE_LOCATION__LOCATIONS_RO` role.",
+        "name": "Authorization",
+        "in": "header",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

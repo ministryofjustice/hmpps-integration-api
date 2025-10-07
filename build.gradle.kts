@@ -3,10 +3,10 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.1.1"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.1.2"
   kotlin("plugin.spring") version "2.2.20"
   id("io.gitlab.arturbosch.detekt") version "1.23.8"
-  id("org.jetbrains.kotlinx.kover") version "0.9.1"
+  id("org.jetbrains.kotlinx.kover") version "0.9.2"
 }
 
 configurations {
@@ -19,8 +19,8 @@ dependencies {
   runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.13.0")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
-  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.22.0")
-  implementation("io.sentry:sentry-logback:8.22.0")
+  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.23.0")
+  implementation("io.sentry:sentry-logback:8.23.0")
   implementation("org.springframework.data:spring-data-commons")
   implementation("org.springframework:spring-aop")
   implementation("org.aspectj:aspectjweaver")
@@ -63,7 +63,7 @@ dependencies {
   testImplementation("org.eclipse.jetty:jetty-io:12.1.1")
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
   testImplementation(kotlin("test"))
-  testImplementation("io.mockk:mockk:1.14.5")
+  testImplementation("io.mockk:mockk:1.14.6")
 }
 
 java {

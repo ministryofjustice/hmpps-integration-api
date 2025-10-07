@@ -31,6 +31,7 @@ data class FeatureFlagConfig(
     const val USE_EDUCATION_ENDPOINT = "use-education-endpoint"
     const val USE_EXPRESSION_OF_INTEREST_ENDPOINT = "use-expression-of-interest-endpoint"
     const val USE_PRISONER_BASE_LOCATION_ENDPOINT = "use-prisoner-base-location-endpoint"
+    const val USE_PRISONER_BASE_LOCATION_API = "use-prisoner-base-location-api"
     const val USE_SUITABILITY_ENDPOINT = "use-suitability-endpoint"
     const val USE_HISTORICAL_ATTENDANCES_ENDPOINT = "use-historical-attendances-endpoint"
     const val USE_WAITING_LIST_ENDPOINT = "use-waiting-list-endpoint"
