@@ -22,7 +22,36 @@ class ControllerGatewayMapper {
       val controllerClassName = controller::class.qualifiedName?.replace("\$\$SpringCGLIB\$\$0", "")
       if ((controllerClassName == null) || !isController(controllerClassName)) {
         continue
-      }
+class ControllerGatewayMapper {
+  companion object {
+    const val PACKAGE_NAME = "uk.gov.justice.digital.hmpps.hmppsintegrationapi"
+    const val GATEWAYS = "gateways"
+  }
+
+  private fun getParamList(clazz: KClass<*>): Set<KClass<*>> =
+    clazz
+      .takeIf {
+        isInPackage(clazz)
+      }?.constructors
+      ?.map { c ->
+        c.parameters
+          .map { p ->
+            p.type.classifier as KClass<*>
+          }.flatMap { listOf(it) + getParamList(it) }
+      }.orEmpty()
+      .flatten()
+      .toSet()
+
+  private fun isInPackage(clazz: KClass<*>): Boolean = clazz.qualifiedName?.contains(PACKAGE_NAME) == true
+
+  private fun toName(clazz: KClass<*>): String = clazz.javaObjectType.name.replace("$PACKAGE_NAME.", "")
+  
+  fun getControllerGatewayMapping(context: ApplicationContext): Map<String, Set<String>> =
+    context.getBeansWithAnnotation(RestController::class.java).values.filter { isInPackage(ClassUtils.getUserClass(it).kotlin) }.associate {
+      toName(ClassUtils.getUserClass(it).kotlin) to getParamList(it::class).filter { it.qualifiedName?.contains("$PACKAGE_NAME.$GATEWAYS") == true }.map { toName(it) }.toSet()
+    }
+}
+
       val controllerClass = Class.forName(controllerClassName).kotlin
       for (parameter in controllerClass.constructors.first().parameters) {
         if (isService(parameter)) {
