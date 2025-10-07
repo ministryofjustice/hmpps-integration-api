@@ -2,7 +2,7 @@ name: Pipeline
 on:
   push:
     branches:
-      - 'HIA-964-gha-push-image'
+      - 'main'
   workflow_dispatch:
     inputs:
       additional_docker_tag:
@@ -31,7 +31,7 @@ jobs:
       - helm_lint
   build:
     name: Build docker image from hmpps-github-actions
-    if: github.ref == 'refs/heads/HIA-964-gha-push-image'
+    if: github.ref == 'main'
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/docker_build.yml@v2 # WORKFLOW_VERSION
     needs:
       - test
