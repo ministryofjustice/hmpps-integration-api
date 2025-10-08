@@ -107,8 +107,8 @@ class WebClientWrapper(
           .retryWhen(
             Retry
               .backoff(MAX_RETRY_ATTEMPTS, MIN_BACKOFF_DURATION)
-              .filter { throwable -> retryWhen(throwable) }
-              .onRetryExhaustedThrow { _, retrySignal -> throw ResponseException("External Service failed to process after max retries", HttpStatus.SERVICE_UNAVAILABLE.value(), retrySignal.failure().cause) },
+              .filter { throwable -> isSafeToRetry(throwable) }
+              .onRetryExhaustedThrow { _, retrySignal -> throw ResponseException("External Service failed to process after ${retrySignal.totalRetries()} retries", HttpStatus.SERVICE_UNAVAILABLE.value(), retrySignal.failure().cause) },
           ).block()!!
 
       WebClientWrapperResponse.Success(responseData)
@@ -116,7 +116,7 @@ class WebClientWrapper(
       getErrorType(exception, upstreamApi, forbiddenAsError, badRequestAsError)
     }
 
-  fun retryWhen(throwable: Throwable) = throwable is ResponseException || throwable is WebClientRequestException
+  fun isSafeToRetry(throwable: Throwable) = throwable is ResponseException || throwable is WebClientRequestException
 
   inline fun <reified T> requestList(
     method: HttpMethod,
@@ -163,8 +163,8 @@ class WebClientWrapper(
           .retryWhen(
             Retry
               .backoff(MAX_RETRY_ATTEMPTS, MIN_BACKOFF_DURATION)
-              .filter { throwable -> retryWhen(throwable) }
-              .onRetryExhaustedThrow { _, retrySignal -> throw ResponseException("External Service failed to process after max retries", HttpStatus.SERVICE_UNAVAILABLE.value(), retrySignal.failure().cause) },
+              .filter { throwable -> isSafeToRetry(throwable) }
+              .onRetryExhaustedThrow { _, retrySignal -> throw ResponseException("External Service failed to process after ${retrySignal.totalRetries()} retries", HttpStatus.SERVICE_UNAVAILABLE.value(), retrySignal.failure().cause) },
           ).collectList()
           .block() as List<T>
 

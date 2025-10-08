@@ -85,7 +85,7 @@ class RetryIntegrationTest : IntegrationTestBase() {
 
       val response = callApi(path).andReturn().response.contentAsJson<ErrorResponse>()
       response.status.shouldBe(500)
-      response.userMessage shouldBe "External Service failed to process after max retries"
+      response.userMessage shouldBe "External Service failed to process after 3 retries"
     }
 
     @Test
@@ -101,7 +101,7 @@ class RetryIntegrationTest : IntegrationTestBase() {
 
       val response = callApi(path).andReturn().response.contentAsJson<ErrorResponse>()
       response.status.shouldBe(500)
-      response.userMessage shouldBe "External Service failed to process after max retries"
+      response.userMessage shouldBe "External Service failed to process after 3 retries"
     }
 
     @Test
@@ -159,7 +159,7 @@ class RetryIntegrationTest : IntegrationTestBase() {
 
       val response = callApi(path).andReturn().response.contentAsJson<ErrorResponse>()
       response.status.shouldBe(500)
-      response.userMessage shouldBe "External Service failed to process after max retries"
+      response.userMessage shouldBe "External Service failed to process after 3 retries"
     }
 
     @Test
@@ -176,7 +176,7 @@ class RetryIntegrationTest : IntegrationTestBase() {
 
       val response = callApi(path).andReturn().response.contentAsJson<ErrorResponse>()
       response.status.shouldBe(500)
-      response.userMessage shouldBe "External Service failed to process after max retries"
+      response.userMessage shouldBe "External Service failed to process after 3 retries"
     }
 
     @Test
