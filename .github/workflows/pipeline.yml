@@ -2,7 +2,7 @@ name: Pipeline
 on:
   push:
     branches:
-      - 'main'
+      - 'HIA-964-gha-fixes'
   workflow_dispatch:
     inputs:
       additional_docker_tag:
@@ -26,16 +26,19 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref == 'refs/heads/main' && github.sha || github.ref }}
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 jobs:
-  helm_lint:
-    name: helm lint
-    uses: ministryofjustice/hmpps-github-actions/.github/workflows/test_helm_lint.yml@v2 # WORKFLOW_VERSION
-    secrets: inherit
   test:
     name: Test
     uses: ./.github/workflows/test.yml
     secrets: inherit
-    needs:
-      - helm_lint
+  helm_lint:
+    strategy:
+      matrix:
+        environments: ['dev', 'preprod', 'prod']
+    name: helm lint
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/test_helm_lint.yml@v2 # WORKFLOW_VERSION
+    secrets: inherit
+    with:
+      environment: ${{ matrix.environments }}
   build:
     name: Build docker image from hmpps-github-actions
     if: github.ref == 'refs/heads/main'
