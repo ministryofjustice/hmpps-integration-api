@@ -104,7 +104,7 @@ internal class MappaDetailControllerTest(
               "categoryDescription": "Behaviour",
               "startDate": "2024-03-08",
               "reviewDate": "2024-10-08",
-              "notes": "Review in a week"
+              "notes": "*** REDACTED ***"
           }
         """.removeWhitespaceAndNewlines(),
           )
@@ -139,7 +139,7 @@ internal class MappaDetailControllerTest(
               "categoryDescription": "Behaviour",
               "startDate": "2024-03-08",
               "reviewDate": "2024-10-08",
-              "notes": "${Redactor.REDACTED}"
+              "notes": "*** REDACTED ***"
           }
         """.removeWhitespaceAndNewlines(),
           )
@@ -208,7 +208,7 @@ internal class MappaDetailControllerTest(
           assert(response.response.status == 500)
           assert(
             response.response.contentAsString.equals(
-              "{\"status\":500,\"errorCode\":null,\"userMessage\":\"LAO Check failed\",\"developerMessage\":\"LAO Check failed\",\"moreInfo\":null}",
+              "{\"status\":500,\"errorCode\":null,\"userMessage\":\"LAO Check failed\",\"developerMessage\":\"LAO Check failed\",\"moreInfo\":null,\"notes\":\"*** REDACTED ***\"}",
             ),
           )
         }
