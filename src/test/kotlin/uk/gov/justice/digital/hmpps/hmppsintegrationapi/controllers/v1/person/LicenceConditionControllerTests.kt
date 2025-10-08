@@ -122,7 +122,7 @@ class LicenceConditionControllerTests(
                             "type":null,
                             "code":null,
                             "category":null,
-                            "condition":"MockCondition"
+                            "condition":"*** REDACTED ***"
                          }
                       ]
                    }
@@ -144,7 +144,7 @@ class LicenceConditionControllerTests(
                     listOf(
                       Licence(
                         id = "MockId",
-                        conditions = listOf(LicenceCondition(condition = "MockCondition")),
+                        conditions = listOf(LicenceCondition(condition = "*** REDACTED ***")),
                       ),
                     ),
                 ),
@@ -169,7 +169,7 @@ class LicenceConditionControllerTests(
                             "type":null,
                             "code":null,
                             "category":null,
-                            "condition":"${Redactor.REDACTED}"
+                            "condition":"*** REDACTED ***"
                          }
                       ]
                    }
