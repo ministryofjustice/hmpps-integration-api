@@ -131,10 +131,6 @@ class ApiMockServer(
     )
   }
 
-  fun connectionRefused(path: String) {
-    stubFor(get(path).willReturn(serviceUnavailable()))
-  }
-
   fun stubForRetry(
     scenario: String,
     path: String,
