@@ -2,7 +2,7 @@ name: Pipeline
 on:
   push:
     branches:
-      - 'HIA-964-gha-fixes'
+      - 'main'
   workflow_dispatch:
     inputs:
       additional_docker_tag:
