@@ -164,7 +164,7 @@ class WebClientWrapper(
             Retry
               .backoff(MAX_RETRY_ATTEMPTS, MIN_BACKOFF_DURATION)
               .filter { throwable -> retryWhen(throwable) }
-              .onRetryExhaustedThrow { _, _ -> throw ResponseException("External Service failed to process after max retries", HttpStatus.SERVICE_UNAVAILABLE.value()) },
+              .onRetryExhaustedThrow { _, retrySignal -> throw ResponseException("External Service failed to process after max retries", HttpStatus.SERVICE_UNAVAILABLE.value(), retrySignal.failure().cause) },
           ).collectList()
           .block() as List<T>
 
