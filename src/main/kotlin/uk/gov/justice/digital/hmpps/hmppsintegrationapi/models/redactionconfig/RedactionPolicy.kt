@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig
 
 import com.jayway.jsonpath.DocumentContext
 import com.jayway.jsonpath.PathNotFoundException
+import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.laoDynamicRiskRedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.laoMappaDetailsRedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.laoPersonLicencesRedactionPolicy
@@ -22,13 +23,15 @@ data class RedactionPolicy(
   val responseRedactions: List<ResponseRedaction>? = null,
 )
 
-private const val redactionMaskingText = "*** REDACTED ***"
+private const val REDACTION_MASKING_TEXT = "*** REDACTED ***"
 
 data class JsonPathResponseRedaction(
   override val type: RedactionType,
   override val paths: List<String>? = null,
   override val includes: List<String>? = emptyList(),
 ) : ResponseRedaction {
+  private val log: org.slf4j.Logger = LoggerFactory.getLogger(this::class.java)
+
   override fun apply(
     requestUri: String,
     doc: DocumentContext,
@@ -47,7 +50,7 @@ data class JsonPathResponseRedaction(
               doc.set(
                 com.jayway.jsonpath.JsonPath
                   .compile(jsonPath),
-                redactionMaskingText,
+                REDACTION_MASKING_TEXT,
               )
 
             RedactionType.REMOVE ->
@@ -58,7 +61,9 @@ data class JsonPathResponseRedaction(
               )
           }
         } catch (_: PathNotFoundException) {
+          log.warn("Unable to find redaction masking/removal path: $jsonPath")
         } catch (ex: Exception) {
+          log.warn("Unexpected error while finding redaction masking/removal path: $jsonPath")
         }
       }
     }
