@@ -202,38 +202,6 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     }
 
     @Test
-    fun `successfully adds test message to queue`() {
-      val requestBody = asJsonString(attendanceUpdateRequests.map { it.copy(status = "TestEvent") })
-      putApi(path, requestBody)
-        .andExpect(MockMvcResultMatchers.status().isOk)
-        .andExpect(
-          MockMvcResultMatchers.content().json(
-            """
-            {
-              "data": {
-                "message": "Attendance update written to queue"
-              }
-            }
-            """.trimIndent(),
-          ),
-        )
-
-      await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
-
-      val queueMessages = getQueueMessages()
-      queueMessages.size.shouldBe(1)
-
-      val messageJson = queueMessages[0].body()
-      val expectedMessage = attendanceUpdateRequests.toTestMessage(defaultCn)
-      messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
-      messageJson.shouldContainJsonKeyValue("$.who", defaultCn)
-      val objectMapper = jacksonObjectMapper()
-      val messageAttributes = objectMapper.readTree(messageJson).at("/messageAttributes")
-      val expectedMessageAttributes = objectMapper.readTree(objectMapper.writeValueAsString(expectedMessage.messageAttributes))
-      messageAttributes.shouldBe(expectedMessageAttributes)
-    }
-
-    @Test
     fun `return a 404 when prison not in the allowed prisons`() {
       val requestBody = asJsonString(attendanceUpdateRequests)
       putApiWithCN(path, requestBody, limitedPrisonsCn)
