@@ -10,6 +10,8 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_EPF_LIMITED_ACCESS_DATA
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationIntegrationEPFGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateCaseDetail
@@ -25,6 +27,7 @@ import java.io.File
 )
 class GetEPFPersonDetailsTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
+  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
   val probationIntegrationEPFGateway: ProbationIntegrationEPFGateway,
 ) : DescribeSpec(
     {
@@ -61,6 +64,15 @@ class GetEPFPersonDetailsTest(
 
         response.data.shouldBe(
           generateCaseDetail(),
+        )
+      }
+
+      it("returns limited access information when the feature flag is enabled") {
+        whenever(featureFlagConfig.isEnabled(USE_EPF_LIMITED_ACCESS_DATA)).thenReturn(true)
+        val response = probationIntegrationEPFGateway.getCaseDetailForPerson(hmppsId, eventNumber)
+
+        response.data.shouldBe(
+          generateCaseDetail(includeLimitedAccess = true),
         )
       }
     },

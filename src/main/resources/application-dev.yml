@@ -66,6 +66,7 @@ feature-flag:
   education-trigger-enabled: true
   education-aln-trigger-enabled: true
   use-contact-events-endpoint: true
+  use-epf-limited-access-data: true
   use-roles-dsl: true
 
 authorisation:
