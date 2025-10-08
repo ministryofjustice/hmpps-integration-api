@@ -38,13 +38,8 @@ fun generateCaseDetail(includeLimitedAccess: Boolean = false): CaseDetail =
     ageAtRelease = 24,
     limitedAccess =
       LimitedAccess(
-        excludedFrom =
-          listOf(
-            LimitedAccess.AccessLimitation(
-              email = "example@example.com",
-              message = "You are excluded from viewing the details of this case. Please contact x, y and z for more information.",
-            ),
-          ),
+        exclusionMessage = "You are excluded from viewing the details of this case. Please contact x, y and z for more information.",
+        excludedFrom = listOf(LimitedAccess.AccessLimitation(email = "example@example.com")),
         restrictedTo = listOf(),
       ).takeIf { includeLimitedAccess },
   )
