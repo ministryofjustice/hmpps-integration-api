@@ -10,6 +10,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.equalToJson
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.matching
 import com.github.tomakehurst.wiremock.client.WireMock.post
+import com.github.tomakehurst.wiremock.client.WireMock.serviceUnavailable
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.stubbing.Scenario
 import io.swagger.v3.parser.OpenAPIV3Parser
@@ -130,6 +131,10 @@ class ApiMockServer(
     )
   }
 
+  fun connectionRefused(path: String) {
+    stubFor(get(path).willReturn(serviceUnavailable()))
+  }
+
   fun stubForRetry(
     scenario: String,
     path: String,
@@ -147,10 +152,14 @@ class ApiMockServer(
           ).inScenario(scenario)
           .whenScenarioStateIs(if (it == 1) Scenario.STARTED else "RETRY${it - 1}")
           .willReturn(
-            aResponse()
-              .withHeader("Content-Type", "application/json")
-              .withStatus(if (it == numberOfRequests) endStatus else failedStatus)
-              .withBody(if (it == numberOfRequests) body else "Failed"),
+            if (failedStatus == -1 && it != numberOfRequests) {
+              serviceUnavailable()
+            } else {
+              aResponse()
+                .withHeader("Content-Type", "application/json")
+                .withStatus(if (it == numberOfRequests) endStatus else failedStatus)
+                .withBody(if (it == numberOfRequests) body else "Failed")
+            },
           ).willSetStateTo("RETRY$it"),
       )
     }

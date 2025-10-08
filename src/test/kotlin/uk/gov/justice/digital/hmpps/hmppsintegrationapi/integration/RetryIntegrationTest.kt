@@ -12,6 +12,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.util.ReflectionTestUtils
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ErrorResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
@@ -85,6 +87,37 @@ class RetryIntegrationTest : IntegrationTestBase() {
       response.status.shouldBe(500)
       response.userMessage shouldBe "External Service failed to process after max retries"
     }
+
+    @Test
+    fun `returns failure (requestList) when upstream service not available after 3 retries`() {
+      activitiesMockServer.stubForRetry(
+        scenario = "Retry scenario for requestList 3",
+        numberOfRequests = 4,
+        failedStatus = -1,
+        endStatus = 502,
+        path = "/integration-api/activities/$activityId/schedules",
+        body = File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/activities/fixtures/GetActivitiesSchedule.json").readText(),
+      )
+
+      val response = callApi(path).andReturn().response.contentAsJson<ErrorResponse>()
+      response.status.shouldBe(500)
+      response.userMessage shouldBe "External Service failed to process after max retries"
+    }
+
+    @Test
+    fun `returns success (requestList) when upstream service not available for 3 times and succeeds on last retry`() {
+      activitiesMockServer.stubForRetry(
+        scenario = "Retry scenario for requestList 4",
+        numberOfRequests = 4,
+        failedStatus = -1,
+        endStatus = 200,
+        path = "/integration-api/activities/$activityId/schedules",
+        body = File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/activities/fixtures/GetActivitiesSchedule.json").readText(),
+      )
+      callApi(path)
+        .andExpect(status().isOk)
+        .andExpect(content().json(getExpectedResponse("activities-schedule-response")))
+    }
   }
 
   @Nested
@@ -127,6 +160,40 @@ class RetryIntegrationTest : IntegrationTestBase() {
       val response = callApi(path).andReturn().response.contentAsJson<ErrorResponse>()
       response.status.shouldBe(500)
       response.userMessage shouldBe "External Service failed to process after max retries"
+    }
+
+    @Test
+    fun `returns failure (request) when upstream service not available after 3 retries`() {
+      whenever(featureFlagConfig.getConfigFlagValue(FeatureFlagConfig.USE_SCHEDULE_DETAIL_ENDPOINT)).thenReturn(true)
+      activitiesMockServer.stubForRetry(
+        scenario = "Retry scenario for request 3",
+        numberOfRequests = 4,
+        failedStatus = -1,
+        endStatus = 502,
+        path = "/integration-api/schedules/$scheduleId",
+        body = File("$gatewaysFolder/activities/fixtures/GetActivityScheduleById.json").readText(),
+      )
+
+      val response = callApi(path).andReturn().response.contentAsJson<ErrorResponse>()
+      response.status.shouldBe(500)
+      response.userMessage shouldBe "External Service failed to process after max retries"
+    }
+
+    @Test
+    fun `returns success (requestList) when upstream service not available for 3 times and succeeds on last retry`() {
+      whenever(featureFlagConfig.getConfigFlagValue(FeatureFlagConfig.USE_SCHEDULE_DETAIL_ENDPOINT)).thenReturn(true)
+      activitiesMockServer.stubForRetry(
+        scenario = "Retry scenario for request 4",
+        numberOfRequests = 4,
+        failedStatus = -1,
+        endStatus = 200,
+        path = "/integration-api/schedules/$scheduleId",
+        body = File("$gatewaysFolder/activities/fixtures/GetActivityScheduleById.json").readText(),
+      )
+
+      callApi(path)
+        .andExpect(status().isOk)
+        .andExpect(content().json(getExpectedResponse("activities-schedule-detailed-response")))
     }
   }
 }
