@@ -63,7 +63,7 @@ class WebClientWrapperTest :
       webClient =
         WebClientWrapper(
           baseUrl = mockServer.baseUrl(),
-          connectTimeoutMillis = 300000,
+          connectTimeoutMillis = 500,
           responseTimeoutSeconds = 1,
           readTimeoutSeconds = 1,
         )
