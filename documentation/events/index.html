@@ -149,6 +149,9 @@
       <li>
         <a href="../../documentation/events/index.html#available-events"><span>Available Events</span></a>
       </li>
+      <li>
+        <a href="../../documentation/events/index.html#or-prisonoffenderevents-prisoner-released-when-reason-is-released"><span>* OR PrisonOffenderEvents.Prisoner.RELEASED (when reason is RELEASED)</span></a>
+      </li>
     </ul>
   </li>
   <li>
@@ -878,8 +881,28 @@ It details the endpoints the events relate to, and information about what trigge
 </ul></li>
 </ul></li>
 </ul>
+<h3 id="person-education-assessment-changed">Person Education Assessment Changed</h3>
 
-<hr>
+<ul>
+<li><strong>Endpoint:</strong> <code>/v1/persons/{hmppsId}/education/assessments</code></li>
+<li><strong>Triggered By:</strong>
+
+<ul>
+<li><strong>OR</strong> <code>PrisonerOffenderSearch.Prisoner.UPDATED</code> (when <code>LOCATION</code> category has been changed)</li>
+<li><strong>OR</strong> <code>PrisonerOffenderSearch.Prisoner.UPDATED</code> (when <code>SENTENCE</code> category has been changed)</li>
+</ul></li>
+</ul>
+<h3 id="prisoner-base-location-changed">Prisoner Base Location Changed</h3>
+
+<ul>
+<li><strong>Endpoint:</strong> <code>/v1/persons/{hmppsId}/prisoner-base-location</code></li>
+<li><strong>Triggered By:</strong>
+
+<ul>
+<li><strong>OR</strong> <code>PrisonOffenderEvents.Prisoner.RECEIVED</code> (when reason is changed to <code>ADMISSION</code> or <code>TRANSFERRED</code>)</li>
+</ul>
+<h2 id="or-prisonoffenderevents-prisoner-released-when-reason-is-released">* <strong>OR</strong> <code>PrisonOffenderEvents.Prisoner.RELEASED</code> (when reason is <code>RELEASED</code>)</h2></li>
+</ul>
 
               <div data-module='page-expiry' data-last-reviewed-on="2026-03-30">
     <div class='page-expiry--not-expired'>
