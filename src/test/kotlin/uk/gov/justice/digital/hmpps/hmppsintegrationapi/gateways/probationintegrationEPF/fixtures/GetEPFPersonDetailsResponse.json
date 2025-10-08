@@ -5,7 +5,7 @@
     "middleName": "John",
     "surname": "Smith"
   },
-  "dateOfBirth":"2000-03-01",
+  "dateOfBirth": "2000-03-01",
   "gender": null,
   "courtAppearance": {
     "date": "2019-10-10",
@@ -22,5 +22,14 @@
   },
   "ogrsScore": 123,
   "age": 23,
-  "ageAtRelease": 24
+  "ageAtRelease": 24,
+  "limitedAccess": {
+    "excludedFrom": [
+      {
+        "email": "example@example.com",
+        "message": "You are excluded from viewing the details of this case. Please contact x, y and z for more information."
+      }
+    ],
+    "restrictedTo": []
+  }
 }
