@@ -58,7 +58,7 @@ class ResponseRedactionBuilder {
     this.type = type
   }
 
-  fun build(): JsonPathResponseRedaction = JsonPathResponseRedaction(requireNotNull(type), includes)
+  fun build(): JsonPathResponseRedaction = JsonPathResponseRedaction(requireNotNull(type), paths, includes)
 }
 
 class IncludesBuilder {

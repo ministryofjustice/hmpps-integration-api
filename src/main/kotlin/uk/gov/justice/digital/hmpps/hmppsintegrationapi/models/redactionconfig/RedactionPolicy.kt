@@ -22,6 +22,8 @@ data class RedactionPolicy(
   val responseRedactions: List<ResponseRedaction>? = null,
 )
 
+private const val redactionMaskingText = "*** REDACTED ***"
+
 data class JsonPathResponseRedaction(
   override val type: RedactionType,
   override val paths: List<String>? = null,
@@ -45,7 +47,7 @@ data class JsonPathResponseRedaction(
               doc.set(
                 com.jayway.jsonpath.JsonPath
                   .compile(jsonPath),
-                "*** REDACTED ***",
+                redactionMaskingText,
               )
 
             RedactionType.REMOVE ->

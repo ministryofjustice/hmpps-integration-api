@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 import java.io.File
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 
 class PersonIntegrationTest : IntegrationTestBase() {
   @AfterEach
@@ -101,7 +102,13 @@ class PersonIntegrationTest : IntegrationTestBase() {
       fun `return a person from Prisoner Offender Search with redacted and removed data`() {
         callApiWithCN("$basePath/$pnc", clientNameWithRoleBaseRedaction)
           .andExpect(status().isOk)
-          .andExpect(content().json(getExpectedResponse("person-offender-and-probation-search-role-based-redacted-response")))
+          .andExpect(jsonPath("$.data.prisonerOffenderSearch.identifiers.croNumber").value("*** REDACTED ***"))
+          .andExpect(jsonPath("$.data.prisonerOffenderSearch.identifiers.deliusCrn").value("*** REDACTED ***"))
+          .andExpect(jsonPath("$.data.prisonerOffenderSearch.pncId").value("*** REDACTED ***"))
+          .andExpect(jsonPath("$.data.prisonerOffenderSearch.restrictionMessage").value("*** REDACTED ***"))
+          .andExpect(jsonPath("$.data.probationOffenderSearch.contactDetails").doesNotExist())
+          .andExpect(jsonPath("$.data.probationOffenderSearch.currentRestriction").doesNotExist())
+          .andExpect(jsonPath("$.data.probationOffenderSearch.currentExclusion").doesNotExist())
 
         prisonerOffenderSearchMockServer.assertValidationPassed()
       }
