@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 
 import io.netty.channel.ChannelOption
+import io.netty.handler.timeout.ReadTimeoutHandler
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
@@ -16,12 +17,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import java.time.Duration
+import java.util.concurrent.TimeUnit
 
 @Suppress("ktlint:standard:property-naming")
 class WebClientWrapper(
   val baseUrl: String,
   connectTimeoutMillis: Int = 10_000,
   responseTimeoutSeconds: Long = 15,
+  readTimeoutSeconds: Long = 5,
 ) {
   val CREATE_TRANSACTION_RETRY_HTTP_CODES = listOf(502, 503, 504, 522, 599, 499, 408)
   val MAX_RETRY_ATTEMPTS = 3L
@@ -30,6 +33,7 @@ class WebClientWrapper(
   val httpClient =
     HttpClient
       .create()
+      .doOnConnected { connection -> connection.addHandlerFirst(ReadTimeoutHandler(readTimeoutSeconds, TimeUnit.SECONDS)) }
       .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectTimeoutMillis)
       .responseTimeout(Duration.ofSeconds(responseTimeoutSeconds))
 

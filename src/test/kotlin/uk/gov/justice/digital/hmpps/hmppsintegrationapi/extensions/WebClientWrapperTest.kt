@@ -63,8 +63,9 @@ class WebClientWrapperTest :
       webClient =
         WebClientWrapper(
           baseUrl = mockServer.baseUrl(),
-          connectTimeoutMillis = 500,
+          connectTimeoutMillis = 300000,
           responseTimeoutSeconds = 1,
+          readTimeoutSeconds = 1,
         )
       wrapper = spy(webClient)
       whenever(wrapper.MIN_BACKOFF_DURATION).thenReturn(Duration.ofSeconds(0L))
