@@ -452,4 +452,17 @@ It details the endpoints the events relate to, and information about what trigge
       * `PrisonerOffenderSearch.Prisoner.CREATED`
       * `PrisonerOffenderSearch.Prisoner.RECEIVED`
 
+### Person Education Assessment Changed
+
+* **Endpoint:** `/v1/persons/{hmppsId}/education/assessments`
+* **Triggered By:**
+      * **OR** `PrisonerOffenderSearch.Prisoner.UPDATED` (when `LOCATION` category has been changed)
+      * **OR** `PrisonerOffenderSearch.Prisoner.UPDATED` (when `SENTENCE` category has been changed)
+
+### Prisoner Base Location Changed
+
+* **Endpoint:** `/v1/persons/{hmppsId}/prisoner-base-location`
+* **Triggered By:**
+    * **OR** `PrisonOffenderEvents.Prisoner.RECEIVED` (when reason is changed to `ADMISSION` or `TRANSFERRED`)
+    * **OR** `PrisonOffenderEvents.Prisoner.RELEASED` (when reason is `RELEASED`)
 ---

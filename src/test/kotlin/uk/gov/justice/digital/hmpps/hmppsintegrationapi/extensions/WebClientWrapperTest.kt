@@ -16,8 +16,8 @@ import org.mockito.kotlin.spy
 import org.mockito.kotlin.whenever
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
-import org.springframework.web.reactive.function.client.WebClientRequestException
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.TestApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -393,7 +393,7 @@ class WebClientWrapperTest :
         mockServer.stubGetTest(getPath, """{"result": "timeout"}""", delayMillis = 2000)
 
         val exception =
-          shouldThrow<WebClientRequestException> {
+          shouldThrow<ResponseException> {
             webClient.request<StringModel>(HttpMethod.GET, getPath, headers, UpstreamApi.TEST)
           }
         exception.cause?.javaClass?.simpleName shouldBe "ReadTimeoutException"
@@ -408,7 +408,7 @@ class WebClientWrapperTest :
           )
 
         val exception =
-          shouldThrow<WebClientRequestException> {
+          shouldThrow<ResponseException> {
             timeoutWebClient.request<StringModel>(
               HttpMethod.GET,
               "/test",
