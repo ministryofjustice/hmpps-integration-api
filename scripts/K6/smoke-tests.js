@@ -155,6 +155,8 @@ const get_endpoints = [
 
 const broken_endpoints = []
 
+const crns_no_active_manager = ["X926228","X838051","X818265","X818264","X818167"]
+
 const postEducationUpdateEndpoint = `/v1/persons/${hmppsId}/education/status`
 const postEducationUpdateRequest = JSON.stringify({
   status: "EDUCATION_STARTED",
@@ -341,6 +343,12 @@ function verify_post_endpoints() {
   }
 }
 
+function verify_epf_endpoints_no_active_manager(){
+  for (const crn of crns_no_active_manager) {
+    validate_get_request(`/v1/epf/person-details/${crn}/1`)
+  }
+}
+
 /**
  * Make a GET request to the API and validate that the http response code indicates success.
  * @returns the http response object
@@ -423,6 +431,7 @@ export default function ()  {
       verify_get_endpoints();
       verify_broken_endpoints();
       structured_verification_test(primaryHmppsId);
+      verify_epf_endpoints_no_active_manager();
       break
     case "PROD":
       minimal_prod_verification();
