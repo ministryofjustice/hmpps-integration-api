@@ -268,12 +268,6 @@ function verify_get_endpoints() {
   }
 }
 
-function verify_lists_and_entries() {
-  for (const lists_and_entry of lists_and_entries) {
-    lists_and_entry()
-  }
-}
-
 function verify_broken_endpoints() {
   for (const endpoint of broken_endpoints) {
     const res = http.get(`${baseUrl}${endpoint}`, httpParams);
