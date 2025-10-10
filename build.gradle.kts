@@ -38,7 +38,7 @@ dependencies {
   testImplementation("io.kotest:kotest-runner-junit5-jvm:6.0.3")
   testImplementation("io.kotest:kotest-assertions-core-jvm:6.0.3")
   testImplementation("io.kotest:kotest-extensions-spring:6.0.3")
-  implementation("org.jetbrains.kotlinx:kover-cli:0.9.1")
+  implementation("org.jetbrains.kotlinx:kover-cli:0.9.2")
   testImplementation("org.wiremock:wiremock-standalone:3.13.1")
   testImplementation("org.mockito:mockito-core:5.20.0")
   testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.20.0")
