@@ -1,31 +1,45 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.util
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers
 
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.DeliusName
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.DeliusOfficer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.DeliusPdu
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.DeliusRefdata
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.DeliusTeam
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusContactEvent
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusContactEvents
-import java.time.LocalDateTime
+import java.time.ZonedDateTime
 import kotlin.math.ceil
 
-object ContactEventStubGenerator {
-  val baseDateTimeString = "2025-09-08T11:34:03.569"
-  val baseDateTime = LocalDateTime.parse(baseDateTimeString)
+object ContactEventHelper {
+  val baseDateTimeString = "2025-09-08T11:34:03.569+01:00"
+  val baseDateTime = ZonedDateTime.parse(baseDateTimeString)
 
   fun generateNDeliusContactEvent(
     id: Long,
     crn: String,
   ) = NDeliusContactEvent(
-    contactEventIdentifier = id,
-    contactType = "Contact Type for $id",
-    creationDateTime = baseDateTime.minusDays(id),
-    updateDateTime = baseDateTime.minusDays(id - 1),
-    offenderHmppsId = crn,
-    contactDateTime = baseDateTime.minusDays(id - 2),
-    outcome = "Outcome",
-    area = "area",
-    pdu = "PDU",
-    teamId = 1234L,
-    teamName = "Team Name",
-    officerId = 123456L,
-    officerName = "Officer Name",
+    id = id,
+    type = DeliusRefdata("1", "Contact Type for $id"),
+    createdAt = baseDateTime.minusDays(id),
+    updatedAt = baseDateTime.minusDays(id - 1),
+    crn = crn,
+    contactDate = baseDateTime.minusDays(id - 2),
+    outcome = DeliusRefdata("1", "Outcome"),
+    location = DeliusRefdata("1", "Location"),
+    officer =
+      DeliusOfficer(
+        "1",
+        DeliusName("Officer", "Name"),
+        DeliusTeam(
+          "1",
+          "Team Name",
+          DeliusPdu(
+            "1",
+            "PDU",
+            DeliusRefdata("1", "area"),
+          ),
+        ),
+      ),
     description = "description",
     notes =
       "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet " +
@@ -44,12 +58,10 @@ object ContactEventStubGenerator {
     val idFrom = ((pageNumber - 1) * pageSize) + 1
 
     return NDeliusContactEvents(
-      contactEvents =
+      content =
         (idFrom..idTo).map {
           generateNDeliusContactEvent(it.toLong(), crn)
         },
-      size = pageSize,
-      page = pageNumber,
       totalResults = totalRecords,
       totalPages = totalPages,
     )
