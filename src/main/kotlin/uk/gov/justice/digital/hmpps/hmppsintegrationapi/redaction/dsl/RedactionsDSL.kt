@@ -13,12 +13,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.R
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.ResponseRedaction
 
-val objectMapper: ObjectMapper = ObjectMapper()
-  .registerKotlinModule()
-  .registerModule(JavaTimeModule())
-  .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-  .configure(MapperFeature.REQUIRE_HANDLERS_FOR_JAVA8_TIMES, false)
-  .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+val objectMapper: ObjectMapper =
+  ObjectMapper()
+    .registerKotlinModule()
+    .registerModule(JavaTimeModule())
+    .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+    .configure(MapperFeature.REQUIRE_HANDLERS_FOR_JAVA8_TIMES, false)
+    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
 fun redactionPolicy(
   name: String,
