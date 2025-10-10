@@ -9,12 +9,14 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.AccessFor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivityCategory
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivityScheduledInstanceForPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AppointmentCategory
@@ -28,6 +30,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RunningActivity
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolicyConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetHistoricalAttendancesService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonActivitiesService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetScheduledInstancesForPrisonerService
@@ -37,6 +40,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 
 @WebMvcTest(controllers = [PrisonActivitiesController::class])
+@Import(RedactionPolicyConfig::class)
 @ActiveProfiles("test")
 class PrisonActivitiesControllerTest(
   @Autowired var springMockMvc: MockMvc,
@@ -46,6 +50,7 @@ class PrisonActivitiesControllerTest(
   @MockitoBean val getScheduledInstancesForPrisonerService: GetScheduledInstancesForPrisonerService,
   @MockitoBean val searchAppointmentsService: SearchAppointmentsService,
   @MockitoBean val getHistoricalAttendancesService: GetHistoricalAttendancesService,
+  @MockitoBean val loaChecker: AccessFor,
 ) : DescribeSpec(
     {
       val basePath = "/v1/prison"

@@ -1,79 +1,85 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig
 
-import com.jayway.jsonpath.DocumentContext
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.jayway.jsonpath.Configuration
 import com.jayway.jsonpath.JsonPath
+import com.jayway.jsonpath.Option
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.Offender
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.objectMapper
 
 class JsonPathResponseRedactionTest :
   DescribeSpec(
     {
       describe("JsonPathResponseRedaction.apply") {
 
-        it("should mask field when paths is null (always applies)") {
-          val json = """{"name":"Alice","email":"alice@example.com"}"""
-          val doc: DocumentContext = JsonPath.parse(json)
+        val response = DataResponse<Offender>(Offender("fName", "sName", listOf("mName")))
 
+        val config = Configuration.defaultConfiguration().addOptions(Option.SUPPRESS_EXCEPTIONS)
+
+        it("should mask field when paths is null (always applies)") {
           val redaction =
             JsonPathResponseRedaction(
+              objectMapper = ObjectMapper(),
               type = RedactionType.MASK,
               paths = null, // always applies
-              includes = listOf("$.email"),
+              includes = listOf("$.data.middleNames"),
             )
 
-          redaction.apply("/any/uri", doc)
+          val result = redaction.apply("/any/uri", response)
+          val doc = JsonPath.using(config).parse(objectMapper.writeValueAsString(result))
 
-          doc.read<String>("$.name") shouldBe "Alice"
-          doc.read<String>("$.email") shouldBe "*** REDACTED ***"
+          doc.read<String>("$.data.firstName") shouldBe "fName"
+          doc.read<String>("$.data.middleNames") shouldBe "**REDACTED**"
         }
 
         it("should remove field when requestUri matches one of the regex paths") {
-          val json = """{"id":123,"secret":"top-secret"}"""
-          val doc: DocumentContext = JsonPath.parse(json)
-
           val redaction =
             JsonPathResponseRedaction(
+              objectMapper = ObjectMapper(),
               type = RedactionType.REMOVE,
               paths = listOf("/v1/persons/.*/licences/conditions"),
-              includes = listOf("$.secret"),
+              includes = listOf("$.data.middleNames"),
             )
 
-          redaction.apply("/v1/persons/123/licences/conditions", doc)
+          val result = redaction.apply("/v1/persons/123/licences/conditions", response)
+          val doc = JsonPath.using(config).parse(objectMapper.writeValueAsString(result))
 
-          doc.read<Int>("$.id") shouldBe 123
-          doc.read<String>("$.secret") shouldBe null
+          doc.read<String>("$.data.firstName") shouldBe "fName"
+          doc.read<String>("$.data.middleNames") shouldBe null
         }
 
         it("should not apply when requestUri does not match paths") {
-          val json = """{"id":123,"secret":"top-secret"}"""
-          val doc: DocumentContext = JsonPath.parse(json)
-
           val redaction =
             JsonPathResponseRedaction(
+              objectMapper = ObjectMapper(),
               type = RedactionType.MASK,
               paths = listOf("/v1/other/endpoint"),
-              includes = listOf("$.secret"),
+              includes = listOf("$.data.middleNames"),
             )
 
-          redaction.apply("/v1/persons/123/licences/conditions", doc)
+          val result = redaction.apply("/v1/persons/123/licences/conditions", response)
+          val doc = JsonPath.using(config).parse(objectMapper.writeValueAsString(result))
 
-          doc.read<String>("$.secret") shouldBe "top-secret" // unchanged
+          doc.read<String>("$.data.middleNames") shouldBe listOf("mName") // unchanged
         }
 
         it("should ignore missing JSON paths without throwing") {
-          val json = """{"id":123}"""
-          val doc: DocumentContext = JsonPath.parse(json)
 
           val redaction =
             JsonPathResponseRedaction(
+              objectMapper = ObjectMapper(),
               type = RedactionType.MASK,
               includes = listOf("$.nonexistent"),
             )
 
           // Should not throw
-          redaction.apply("/any/uri", doc)
+          val result = redaction.apply("/any/uri", response)
+          val doc = JsonPath.using(config).parse(objectMapper.writeValueAsString(result))
 
-          doc.read<Int>("$.id") shouldBe 123
+          doc.read<Int>("$.data.firstName") shouldBe "fName"
         }
       }
     },

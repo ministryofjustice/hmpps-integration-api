@@ -22,7 +22,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitesp
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.LaoRedactorAspect
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.Redactor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Licence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.LicenceCondition
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonLicences
@@ -30,13 +29,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolicyConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetLicenceConditionService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
 @WebMvcTest(controllers = [LicenceConditionController::class])
-@Import(value = [AopAutoConfiguration::class, LaoRedactorAspect::class])
+@Import(value = [AopAutoConfiguration::class, LaoRedactorAspect::class, RedactionPolicyConfig::class])
 @ActiveProfiles("test")
 class LicenceConditionControllerTests(
   @Autowired var springMockMvc: MockMvc,
@@ -122,7 +122,7 @@ class LicenceConditionControllerTests(
                             "type":null,
                             "code":null,
                             "category":null,
-                            "condition":"*** REDACTED ***"
+                            "condition":"MockCondition"
                          }
                       ]
                    }
@@ -144,7 +144,7 @@ class LicenceConditionControllerTests(
                     listOf(
                       Licence(
                         id = "MockId",
-                        conditions = listOf(LicenceCondition(condition = "*** REDACTED ***")),
+                        conditions = listOf(LicenceCondition(condition = "MockCondition")),
                       ),
                     ),
                 ),
@@ -169,7 +169,7 @@ class LicenceConditionControllerTests(
                             "type":null,
                             "code":null,
                             "category":null,
-                            "condition":"*** REDACTED ***"
+                            "condition":"**REDACTED**"
                          }
                       ]
                    }
@@ -194,6 +194,23 @@ class LicenceConditionControllerTests(
         }
 
         it("fails with the appropriate error when LAO context has failed to be retrieved") {
+
+          whenever(getLicenceConditionService.execute(laoFailureCrn)).thenReturn(
+            Response(
+              data =
+                PersonLicences(
+                  hmppsId = hmppsId,
+                  licences =
+                    listOf(
+                      Licence(
+                        id = "MockId",
+                        conditions = listOf(LicenceCondition(condition = "MockCondition")),
+                      ),
+                    ),
+                ),
+            ),
+          )
+
           val response = mockMvc.performAuthorised("/v1/persons/$laoFailureCrn/licences/conditions")
 
           assert(response.response.status == 500)

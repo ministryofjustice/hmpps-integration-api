@@ -14,31 +14,31 @@
            "type": "Bespoke",
            "code": null,
            "category": null,
-           "condition": "*** REDACTED ***"
+           "condition": "**REDACTED**"
          },
          {
            "type": "Standard",
            "code": "5a105297-dce1-4d18-b9ea-4195b46b7594",
            "category": null,
-           "condition": "*** REDACTED ***"
+           "condition": "**REDACTED**"
          },
          {
            "type": "STANDARD",
            "code": "5a105297-dce1-4d18-b9ea-4195b46b7594",
            "category": "Residence at a specific place",
-           "condition": "*** REDACTED ***"
+           "condition": "**REDACTED**"
          },
          {
            "type": "STANDARD",
            "code": "5a105297-dce1-4d18-b9ea-4195b46b7594",
            "category": "Residence at a specific place",
-           "condition": "*** REDACTED ***"
+           "condition": "**REDACTED**"
          },
          {
            "type": "Standard",
            "code": "5a105297-dce1-4d18-b9ea-4195b46b7594",
            "category": null,
-           "condition": "*** REDACTED ***"
+           "condition": "**REDACTED**"
          }
        ]
      }

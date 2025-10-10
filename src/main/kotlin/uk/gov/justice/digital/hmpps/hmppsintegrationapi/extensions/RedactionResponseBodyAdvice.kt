@@ -1,13 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.jayway.jsonpath.Configuration
-import com.jayway.jsonpath.DocumentContext
-import com.jayway.jsonpath.JsonPath
 import com.jayway.jsonpath.Option
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.core.MethodParameter
 import org.springframework.http.MediaType
@@ -16,12 +10,13 @@ import org.springframework.http.server.ServerHttpRequest
 import org.springframework.http.server.ServerHttpResponse
 import org.springframework.http.server.ServletServerHttpRequest
 import org.springframework.web.bind.annotation.ControllerAdvice
+import org.springframework.web.servlet.HandlerMapping
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionPolicy
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.globalRedactions
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 
 @ControllerAdvice
 @ConditionalOnProperty(
@@ -31,8 +26,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
   matchIfMissing = false,
 )
 class RedactionResponseBodyAdvice(
-  @Autowired private val objectMapper: ObjectMapper,
-  @Autowired val authorisationConfig: AuthorisationConfig,
+  val authorisationConfig: AuthorisationConfig,
+  val globalRedactions: Map<String, RedactionPolicy>,
 ) : ResponseBodyAdvice<Any> {
   val config: Configuration =
     Configuration
@@ -56,43 +51,46 @@ class RedactionResponseBodyAdvice(
     request: ServerHttpRequest,
     response: ServerHttpResponse,
   ): Any? {
-    if (body == null || !selectedContentType.includes(MediaType.APPLICATION_JSON)) {
-      return body
-    }
-    val tree = objectMapper.valueToTree<ObjectNode>(body)
-    val servletRequest = (request as ServletServerHttpRequest).servletRequest
-    val requestUri = (request as ServletServerHttpRequest).servletRequest.requestURI
+    if (body == null) return null
+    if (!selectedContentType.includes(MediaType.APPLICATION_JSON)) return body
+
+    val servletRequest =
+      (request as ServletServerHttpRequest).servletRequest.apply {
+        (getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE) as? Map<String, String>)
+          ?.get("encodedHmppsId")
+          ?.let { setAttribute("encodedHmppsId", it) }
+      }
+    val requestUri = servletRequest.requestURI
     val subjectDistinguishedName = servletRequest.getAttribute("clientName") as? String
     val redactionPolicies = getRedactionPoliciesFromRoles(subjectDistinguishedName)
-    return applyPolicies(requestUri, tree, redactionPolicies)
+
+    return when (body) {
+      is DataResponse<*> -> applyPolicies(requestUri, body, redactionPolicies)
+      is PaginatedResponse<*> -> applyPolicies(requestUri, body, redactionPolicies)
+      else -> body
+    }
   }
 
   fun applyPolicies(
     requestUri: String,
-    json: ObjectNode?,
+    responseBody: Any,
     policies: List<RedactionPolicy>?,
-  ): ObjectNode? {
-    val doc: DocumentContext = JsonPath.using(config).parse(json.toString())
-
+  ): Any? {
+    var redactedBody = responseBody
     for (policy in policies.orEmpty()) {
       policy.responseRedactions?.forEach { redaction ->
-        redaction.apply(requestUri, doc)
+        redactedBody = redaction.apply(requestUri, redactedBody)
       }
     }
-
-    // Return a fresh ObjectNode instead of mutating the input
-    val mapper = jacksonObjectMapper()
-    return mapper.valueToTree(doc.json<String>())
+    return redactedBody
   }
 
-  private fun getRedactionPoliciesFromRoles(subjectDistinguishedName: String?): List<RedactionPolicy> {
-    val consumerConfig: ConsumerConfig? = authorisationConfig.consumers[subjectDistinguishedName]
-    val consumersRoles = consumerConfig?.roles
-    val redactionPolicies =
-      globalRedactions.values +
-        consumersRoles.orEmpty().flatMap { role ->
-          roles[role]?.redactionPolicies.orEmpty()
-        }
-    return redactionPolicies
-  }
+  private fun getRedactionPoliciesFromRoles(subjectDistinguishedName: String?): List<RedactionPolicy> =
+    buildList {
+      addAll(globalRedactions.values)
+      val consumerRoles = authorisationConfig.consumers[subjectDistinguishedName]?.roles.orEmpty()
+      consumerRoles.forEach { role ->
+        addAll(roles[role]?.redactionPolicies.orEmpty())
+      }
+    }
 }

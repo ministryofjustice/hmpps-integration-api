@@ -10,6 +10,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
@@ -18,6 +19,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.person.SentencesController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.AccessFor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HomeDetentionCurfewDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.LatestSentenceKeyDatesAndAdjustments
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NonDtoDate
@@ -30,6 +32,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceKey
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TopupSupervision
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolicyConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetLatestSentenceKeyDatesAndAdjustmentsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetSentencesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
@@ -38,12 +41,14 @@ import java.nio.charset.StandardCharsets
 import java.time.LocalDate
 
 @WebMvcTest(controllers = [SentencesController::class])
+@Import(RedactionPolicyConfig::class)
 @ActiveProfiles("test")
 internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getSentencesForPersonService: GetSentencesForPersonService,
   @MockitoBean val getLatestSentenceKeyDatesAndAdjustmentsForPersonService: GetLatestSentenceKeyDatesAndAdjustmentsForPersonService,
   @MockitoBean val auditService: AuditService,
+  @MockitoBean val loaChecker: AccessFor,
 ) : DescribeSpec(
     {
       val hmppsId = "9999/11111A"

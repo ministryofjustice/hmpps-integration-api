@@ -3,31 +3,38 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
+import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.AccessFor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nonAssociation.NonAssociation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nonAssociation.NonAssociationPrisonerDetails
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nonAssociation.NonAssociations
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolicyConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersNonAssociationsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [OffenderRestrictionsController::class])
+@Import(RedactionPolicyConfig::class)
 @ActiveProfiles("test")
 class OffenderRestrictionsControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getPrisonersNonAssociationsService: GetPrisonersNonAssociationsService,
   @MockitoBean val auditService: AuditService,
+  @MockitoBean val loaChecker: AccessFor,
 ) : DescribeSpec(
     {
       val prisonId = "XYZ"
@@ -71,6 +78,10 @@ class OffenderRestrictionsControllerTest(
               ),
             ),
         )
+
+      beforeTest {
+        whenever(loaChecker.getAccessFor(any())).thenReturn(CaseAccess("crn", false, false))
+      }
 
       it("returns the correct non associations data") {
         whenever(getPrisonersNonAssociationsService.execute(hmppsId, prisonId, includeOpen = "true", includeClosed = "false", filters = null)).thenReturn(

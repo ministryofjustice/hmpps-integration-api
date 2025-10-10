@@ -4,33 +4,40 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.AccessFor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsId
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolicyConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetHmppsIdService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [HmppsIdController::class])
+@Import(RedactionPolicyConfig::class)
 @ActiveProfiles("test")
 internal class HmppsIdControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getHmppsIdService: GetHmppsIdService,
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getPersonService: GetPersonService,
+  @MockitoBean val loaChecker: AccessFor,
 ) : DescribeSpec({
     val nomisNumber = "A1234AA"
     val mockMvc = IntegrationAPIMockMvc(springMockMvc)
@@ -43,6 +50,9 @@ internal class HmppsIdControllerTest(
           data = HmppsId(hmppsId = nomisNumber),
         ),
       )
+
+      whenever(loaChecker.getAccessFor(any())).thenReturn(CaseAccess("crn", false, false))
+
       Mockito.reset(auditService)
     }
 

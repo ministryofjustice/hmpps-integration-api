@@ -11,6 +11,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
@@ -18,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.AccessFor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Location
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.LocationCapacity
@@ -39,6 +41,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitorSupp
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.locationsInsidePrison.LIPPrisonSummary
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolicyConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCapacityForPrisonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonPayBandsService
@@ -52,6 +55,7 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 
 @WebMvcTest(controllers = [PrisonController::class])
+@Import(RedactionPolicyConfig::class)
 @ActiveProfiles("test")
 internal class PrisonControllerTest(
   @Autowired var springMockMvc: MockMvc,
@@ -65,6 +69,7 @@ internal class PrisonControllerTest(
   @MockitoBean val getCapacityForPrisonService: GetCapacityForPrisonService,
   @MockitoBean val getPrisonRegimeService: GetPrisonRegimeService,
   @MockitoBean val getPrisonPayBandsService: GetPrisonPayBandsService,
+  @MockitoBean val loaChecker: AccessFor,
 ) : DescribeSpec(
     {
       val firstName = personInProbationAndNomisPersona.firstName

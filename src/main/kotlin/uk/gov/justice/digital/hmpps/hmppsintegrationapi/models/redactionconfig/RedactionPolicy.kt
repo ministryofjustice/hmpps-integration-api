@@ -1,21 +1,22 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import com.jayway.jsonpath.Configuration
 import com.jayway.jsonpath.DocumentContext
-import com.jayway.jsonpath.PathNotFoundException
+import com.jayway.jsonpath.JsonPath
+import com.jayway.jsonpath.Option
 import org.slf4j.LoggerFactory
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.laoDynamicRiskRedactionPolicy
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.laoMappaDetailsRedactionPolicy
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.laoPersonLicencesRedactionPolicy
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.Redactor
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 
 interface ResponseRedaction {
-  val type: RedactionType
-  val paths: List<String>?
-  val includes: List<String>?
-
   fun apply(
     requestUri: String,
-    doc: DocumentContext,
-  )
+    responseBody: Any,
+  ): Any
 }
 
 data class RedactionPolicy(
@@ -23,61 +24,100 @@ data class RedactionPolicy(
   val responseRedactions: List<ResponseRedaction>? = null,
 )
 
-private const val REDACTION_MASKING_TEXT = "*** REDACTED ***"
+private const val REDACTION_MASKING_TEXT = "**REDACTED**"
 
-data class JsonPathResponseRedaction(
-  override val type: RedactionType,
-  override val paths: List<String>? = null,
-  override val includes: List<String>? = emptyList(),
+@Suppress("UNCHECKED_CAST")
+class DelegatingResponseRedaction<T : Any>(
+  val redactor: Redactor<T>,
+  val paths: List<String>?,
+) : ResponseRedaction {
+  override fun apply(
+    requestUri: String,
+    responseBody: Any,
+  ): Any {
+    val shouldApply = paths == null || paths.any { Regex(it).matches(requestUri) }
+
+    if (!shouldApply) return responseBody
+
+    return when (responseBody) {
+      is DataResponse<*> -> redactDataResponse(responseBody)
+      is PaginatedResponse<*> -> redactPaginatedResponse(responseBody)
+      else -> responseBody
+    }
+  }
+
+  private fun applyRedactors(value: Any?): Any? {
+    if (value == null) return null
+    val redactorForType = redactor.takeIf { it.type.isInstance(value) } ?: return value
+    @Suppress("UNCHECKED_CAST")
+    return (redactorForType as Redactor<Any>).redact(value)
+  }
+
+  private fun <T> redactDataResponse(response: DataResponse<T>): DataResponse<T> {
+    val redactedData = applyRedactors(response.data)
+    @Suppress("UNCHECKED_CAST")
+    return response.copy(data = redactedData as T)
+  }
+
+  private fun <T> redactPaginatedResponse(response: PaginatedResponse<T>): PaginatedResponse<T> {
+    val redactedList = response.data.map { applyRedactors(it) }
+    @Suppress("UNCHECKED_CAST")
+    return response.copy(data = redactedList as List<T>, pagination = response.pagination)
+  }
+}
+
+class JsonPathResponseRedaction(
+  val objectMapper: ObjectMapper,
+  val type: RedactionType,
+  val paths: List<String>? = null,
+  val includes: List<String>? = emptyList(),
 ) : ResponseRedaction {
   private val log: org.slf4j.Logger = LoggerFactory.getLogger(this::class.java)
+  val config: Configuration =
+    Configuration
+      .builder()
+      .options(Option.DEFAULT_PATH_LEAF_TO_NULL)
+      .build()
+
+  private val pathPatterns: List<Regex>? = paths?.map(::Regex)
 
   override fun apply(
     requestUri: String,
-    doc: DocumentContext,
-  ) {
-    val shouldRun =
-      paths
-        ?.map { Regex(it) }
-        ?.any { regex -> regex.matches(requestUri) }
-        ?: true
+    responseBody: Any,
+  ): Any {
+    val shouldRun = pathPatterns?.any { it.matches(requestUri) } ?: true
+    if (!shouldRun) return responseBody
 
-    if (shouldRun) {
-      includes?.forEach { jsonPath ->
-        try {
+    val jsonString =
+      when (responseBody) {
+        is String -> responseBody
+        else -> objectMapper.writeValueAsString(responseBody)
+      }
+
+    val doc = JsonPath.using(config).parse(jsonString)
+    includes.orEmpty().forEach { jsonPath ->
+      try {
+        if (exists(jsonPath, doc)) {
           when (type) {
-            RedactionType.MASK ->
-              doc.set(
-                com.jayway.jsonpath.JsonPath
-                  .compile(jsonPath),
-                REDACTION_MASKING_TEXT,
-              )
-
-            RedactionType.REMOVE ->
-              doc.set(
-                com.jayway.jsonpath.JsonPath
-                  .compile(jsonPath),
-                null,
-              )
+            RedactionType.MASK -> doc.set(JsonPath.compile(jsonPath), REDACTION_MASKING_TEXT)
+            RedactionType.REMOVE -> doc.delete(JsonPath.compile(jsonPath))
           }
-        } catch (_: PathNotFoundException) {
-          log.warn("Unable to find redaction masking/removal path: $jsonPath")
-        } catch (ex: Exception) {
-          log.warn("Unexpected error while finding redaction masking/removal path: $jsonPath")
         }
+      } catch (ex: Exception) {
+        log.warn("Unexpected error while applying redaction on: $jsonPath", ex)
       }
     }
+    val objectMapper = jacksonObjectMapper().registerKotlinModule()
+    return objectMapper.readValue(doc.jsonString(), responseBody::class.java)
   }
+
+  private fun exists(
+    path: String,
+    doc: DocumentContext,
+  ): Boolean = runCatching { doc.read<Any?>(path) != null }.getOrDefault(false)
 }
 
 enum class RedactionType {
   REMOVE,
   MASK,
 }
-
-val globalRedactions =
-  listOf(
-    laoPersonLicencesRedactionPolicy,
-    laoMappaDetailsRedactionPolicy,
-    laoDynamicRiskRedactionPolicy,
-  ).associateBy { it.name }

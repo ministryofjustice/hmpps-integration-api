@@ -8,19 +8,24 @@ import org.mockito.kotlin.doNothing
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.AccessFor
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolicyConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.PutExpressionInterestService
 
 @WebMvcTest(controllers = [ExpressionInterestController::class])
+@Import(RedactionPolicyConfig::class)
 @ActiveProfiles("test")
 class ExpressionInterestControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val expressionOfInterestService: PutExpressionInterestService,
+  @MockitoBean val loaChecker: AccessFor,
 ) : DescribeSpec(
     {
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)

@@ -9,12 +9,14 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.AccessFor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CateringInstruction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Diet
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.FoodAllergy
@@ -24,15 +26,18 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Personalise
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolicyConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetHealthAndDietService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [HealthAndDietController::class])
+@Import(RedactionPolicyConfig::class)
 @ActiveProfiles("test")
 internal class HealthAndDietControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getHealthAndDietService: GetHealthAndDietService,
   @MockitoBean val auditService: AuditService,
+  @MockitoBean val loaChecker: AccessFor,
 ) : DescribeSpec(
     {
       val hmppsId = "A1234AA"

@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.redactionP
 val prisonEducationRedactionPolicy =
   redactionPolicy("prison-education") {
     responseRedactions {
-      redaction {
+      jsonPath {
         type(MASK)
         includes {
           -"$..middleName"
@@ -17,7 +17,7 @@ val prisonEducationRedactionPolicy =
           -"$.data.prisonerOffenderSearch.identifiers.deliusCrn"
         }
       }
-      redaction {
+      jsonPath {
         type(REMOVE)
         includes {
           -"$.data.probationOffenderSearch.contactDetails"

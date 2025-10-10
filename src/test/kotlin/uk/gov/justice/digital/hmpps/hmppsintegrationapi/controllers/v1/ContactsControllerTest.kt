@@ -3,30 +3,37 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
+import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.AccessFor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.EmailAddress
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRDetailedContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PhoneNumber
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolicyConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetContactService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [ContactsController::class])
+@Import(RedactionPolicyConfig::class)
 @ActiveProfiles("test")
 internal class ContactsControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getContactService: GetContactService,
+  @MockitoBean val loaChecker: AccessFor,
 ) : DescribeSpec(
     {
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
@@ -158,6 +165,10 @@ internal class ContactsControllerTest(
           genderCode = "M",
           genderDescription = "Male",
         )
+
+      beforeTest {
+        whenever(loaChecker.getAccessFor(any())).thenReturn(CaseAccess("crn", false, false))
+      }
 
       describe("GET Contacts") {
         beforeTest {
