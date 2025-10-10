@@ -181,7 +181,7 @@ class NDeliusGateway(
 
   fun getCaseAccess(crn: String): Response<CaseAccess?> {
     val result =
-      webClient.request<UserAccess>(
+      webClient.requestWithRetry<UserAccess>(
         HttpMethod.POST,
         "/probation-cases/access",
         authenticationHeader(),
@@ -216,7 +216,7 @@ class NDeliusGateway(
       }
 
     val result =
-      webClient.requestList<Offender>(
+      webClient.requestListWithRetry<Offender>(
         HttpMethod.POST,
         "/search/probation-cases",
         authenticationHeader(),
@@ -276,7 +276,7 @@ class NDeliusGateway(
       ).filterValues { it != null }
 
     val result =
-      webClient.requestList<Offender>(
+      webClient.requestListWithRetry<Offender>(
         HttpMethod.POST,
         "/search/probation-cases",
         authenticationHeader(),

@@ -7,6 +7,7 @@ import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.ExchangeStrategies
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.WebClientRequestException
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Mono
 import reactor.netty.http.client.HttpClient
@@ -100,19 +101,22 @@ class WebClientWrapper(
       val responseData =
         getResponseBodySpec(method, uri, headers, requestBody)
           .retrieve()
-          .onStatus({ status -> status.value() in CREATE_TRANSACTION_RETRY_HTTP_CODES }) { response -> Mono.error(ResponseException(null, response.statusCode().value())) }
-          .bodyToMono(T::class.java)
+          .onStatus({ status -> status.value() in CREATE_TRANSACTION_RETRY_HTTP_CODES }) { response ->
+            Mono.error(ResponseException(null, response.statusCode().value()))
+          }.bodyToMono(T::class.java)
           .retryWhen(
             Retry
               .backoff(MAX_RETRY_ATTEMPTS, MIN_BACKOFF_DURATION)
-              .filter { throwable -> throwable is ResponseException }
-              .onRetryExhaustedThrow { _, retrySignal -> throw ResponseException("External Service failed to process after max retries", HttpStatus.SERVICE_UNAVAILABLE.value()) },
+              .filter { throwable -> isSafeToRetry(throwable) }
+              .onRetryExhaustedThrow { _, retrySignal -> throw ResponseException("External Service failed to process after ${retrySignal.totalRetries()} retries", HttpStatus.SERVICE_UNAVAILABLE.value(), retrySignal.failure().cause) },
           ).block()!!
 
       WebClientWrapperResponse.Success(responseData)
     } catch (exception: WebClientResponseException) {
       getErrorType(exception, upstreamApi, forbiddenAsError, badRequestAsError)
     }
+
+  fun isSafeToRetry(throwable: Throwable) = throwable is ResponseException || throwable is WebClientRequestException
 
   inline fun <reified T> requestList(
     method: HttpMethod,
@@ -159,8 +163,8 @@ class WebClientWrapper(
           .retryWhen(
             Retry
               .backoff(MAX_RETRY_ATTEMPTS, MIN_BACKOFF_DURATION)
-              .filter { throwable -> throwable is ResponseException }
-              .onRetryExhaustedThrow { _, retrySignal -> throw ResponseException("External Service failed to process after max retries", HttpStatus.SERVICE_UNAVAILABLE.value()) },
+              .filter { throwable -> isSafeToRetry(throwable) }
+              .onRetryExhaustedThrow { _, retrySignal -> throw ResponseException("External Service failed to process after ${retrySignal.totalRetries()} retries", HttpStatus.SERVICE_UNAVAILABLE.value(), retrySignal.failure().cause) },
           ).collectList()
           .block() as List<T>
 
