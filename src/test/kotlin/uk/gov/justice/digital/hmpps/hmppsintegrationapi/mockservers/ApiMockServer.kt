@@ -148,7 +148,7 @@ class ApiMockServer(
           ).inScenario(scenario)
           .whenScenarioStateIs(if (it == 1) Scenario.STARTED else "RETRY${it - 1}")
           .willReturn(
-            if (failedStatus == -1 && it != numberOfRequests) {
+            if ((failedStatus == -1 && it != numberOfRequests) || (endStatus == -1 && it == numberOfRequests)) {
               serviceUnavailable()
             } else {
               aResponse()
@@ -180,6 +180,38 @@ class ApiMockServer(
             .withBody(resBody.trimIndent()),
         ),
     )
+  }
+
+  fun stubForPostRetry(
+    scenario: String,
+    path: String,
+    numberOfRequests: Int = 4,
+    failedStatus: Int,
+    endStatus: Int,
+    reqBody: String,
+    resBody: String,
+  ) {
+    (1..numberOfRequests).forEach {
+      stubFor(
+        post(path)
+          .withHeader(
+            "Authorization",
+            matching("Bearer ${HmppsAuthMockServer.TOKEN}"),
+          ).withRequestBody(equalToJson(reqBody))
+          .inScenario(scenario)
+          .whenScenarioStateIs(if (it == 1) Scenario.STARTED else "RETRY${it - 1}")
+          .willReturn(
+            if ((failedStatus == -1 && it != numberOfRequests) || (endStatus == -1 && it == numberOfRequests)) {
+              serviceUnavailable()
+            } else {
+              aResponse()
+                .withHeader("Content-Type", "application/json")
+                .withStatus(if (it == numberOfRequests) endStatus else failedStatus)
+                .withBody(if (it == numberOfRequests) resBody else "Failed")
+            },
+          ).willSetStateTo("RETRY$it"),
+      )
+    }
   }
 
   fun stubForImageData(
