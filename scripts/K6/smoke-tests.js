@@ -379,7 +379,7 @@ function validate_contact_events(){
   check(id, {
     [`ID retrieved`]: () => id != null,
   })
-  res = validate_get_request(`/v1/persons/${primaryHmppsId}/contact-events/${id}?mappaCategories=4`);
+  validate_get_request(`/v1/persons/${primaryHmppsId}/contact-events/${id}?mappaCategories=4`);
 }
 
 function structured_verification_test(hmppsId) {
