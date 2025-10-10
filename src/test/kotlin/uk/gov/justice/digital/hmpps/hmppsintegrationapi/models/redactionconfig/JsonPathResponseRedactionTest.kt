@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.jayway.jsonpath.Configuration
 import com.jayway.jsonpath.JsonPath
 import com.jayway.jsonpath.Option
@@ -9,6 +11,8 @@ import io.kotest.matchers.shouldBe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.Offender
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.objectMapper
+
+private val mapper = ObjectMapper().registerKotlinModule()
 
 class JsonPathResponseRedactionTest :
   DescribeSpec(
@@ -22,7 +26,7 @@ class JsonPathResponseRedactionTest :
         it("should mask field when paths is null (always applies)") {
           val redaction =
             JsonPathResponseRedaction(
-              objectMapper = ObjectMapper(),
+              objectMapper = mapper,
               type = RedactionType.MASK,
               paths = null, // always applies
               includes = listOf("$.data.middleNames"),
@@ -38,7 +42,7 @@ class JsonPathResponseRedactionTest :
         it("should remove field when requestUri matches one of the regex paths") {
           val redaction =
             JsonPathResponseRedaction(
-              objectMapper = ObjectMapper(),
+              objectMapper = mapper,
               type = RedactionType.REMOVE,
               paths = listOf("/v1/persons/.*/licences/conditions"),
               includes = listOf("$.data.middleNames"),
@@ -54,7 +58,7 @@ class JsonPathResponseRedactionTest :
         it("should not apply when requestUri does not match paths") {
           val redaction =
             JsonPathResponseRedaction(
-              objectMapper = ObjectMapper(),
+              objectMapper = mapper,
               type = RedactionType.MASK,
               paths = listOf("/v1/other/endpoint"),
               includes = listOf("$.data.middleNames"),
@@ -70,7 +74,7 @@ class JsonPathResponseRedactionTest :
 
           val redaction =
             JsonPathResponseRedaction(
-              objectMapper = ObjectMapper(),
+              objectMapper = mapper,
               type = RedactionType.MASK,
               includes = listOf("$.nonexistent"),
             )

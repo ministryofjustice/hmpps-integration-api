@@ -107,7 +107,6 @@ class JsonPathResponseRedaction(
         log.warn("Unexpected error while applying redaction on: $jsonPath", ex)
       }
     }
-    val objectMapper = jacksonObjectMapper().registerKotlinModule()
     return objectMapper.readValue(doc.jsonString(), responseBody::class.java)
   }
 
