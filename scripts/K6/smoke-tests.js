@@ -60,7 +60,6 @@ const imageId = "1988315";
 const locationIdKey = "MKI-A";
 const activityId = 1162
 const scheduleId = 518
-const contactEventId = 500
 const today = new Date();
 const year = today.getFullYear();
 const month = (today.getMonth() + 1).toString().padStart(2, '0');
@@ -149,8 +148,6 @@ const get_endpoints = [
   `/v1/status`,
   `/v1/persons/${hmppsId}/education/san/plan-creation-schedule`,
   `/v1/persons/${alternativeHmppsId}/education/san/review-schedule`,
-  `/v1/persons/${primaryHmppsId}/contact-events`,
-  `/v1/persons/${primaryHmppsId}/contact-events/${contactEventId}`,
 ];
 
 const broken_endpoints = []
@@ -373,6 +370,18 @@ function validate_status_endpoint() {
   return response
 }
 
+function validate_contact_events(){
+  let res = validate_get_request(`/v1/persons/${primaryHmppsId}/contact-events?page=1&size=10&mappaCategories=4`);
+  check(res, {
+    [`Has entries`]: () => res?.json()["data"].length > 0,
+  })
+  const id = res.json()["data"][0]["contactEventIdentifier"]
+  check(id, {
+    [`ID retrieved`]: () => id != null,
+  })
+  validate_get_request(`/v1/persons/${primaryHmppsId}/contact-events/${id}?mappaCategories=4`);
+}
+
 function structured_verification_test(hmppsId) {
   let res = validate_status_endpoint();
   if (res.status >= 400) {
@@ -423,6 +432,7 @@ export default function ()  {
       verify_get_endpoints();
       verify_broken_endpoints();
       structured_verification_test(primaryHmppsId);
+      validate_contact_events()
       break
     case "PROD":
       minimal_prod_verification();

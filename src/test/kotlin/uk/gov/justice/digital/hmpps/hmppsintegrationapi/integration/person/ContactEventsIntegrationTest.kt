@@ -5,28 +5,29 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.whenever
+import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ErrorResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_CONTACT_EVENTS_ENDPOINT
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_STUBBED_CONTACT_EVENTS_DATA
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.writeAsJson
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.ContactEventHelper.generateNDeliusContactEvent
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.ContactEventHelper.generateNDeliusContactEvents
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactEvent
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusCommunityManager
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusMappaDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusSupervisions
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.ContactEventStubGenerator.generateNDeliusContactEvent
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.ContactEventStubGenerator.generateNDeliusContactEvents
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 import java.io.File
+import java.nio.charset.Charset
 import kotlin.test.assertEquals
 
-// Using a temporary Mock Server as this service cannot use prism mocks
 @TestPropertySource(properties = ["services.ndelius.base-url=http://localhost:4201"])
 class ContactEventsIntegrationTest : IntegrationTestBase() {
   @MockitoBean
@@ -35,6 +36,7 @@ class ContactEventsIntegrationTest : IntegrationTestBase() {
   @AfterEach
   fun resetValidators() {
     prisonerOffenderSearchMockServer.resetValidator()
+    nDeliusMockServer.resetValidator()
   }
 
   @BeforeEach
@@ -69,7 +71,7 @@ class ContactEventsIntegrationTest : IntegrationTestBase() {
   @Test
   fun `returns first page of contact events from delius with default page params with correct dates`() {
     nDeliusMockServer.stubForGet(
-      "/case/$crn/contacts?page=1&size=10&mappaCategories=4",
+      "/case/$crn/contacts?page=0&size=10&mappaCategories=4",
       writeAsJson(generateNDeliusContactEvents(crn = crn, pageSize = 10, pageNumber = 1, totalRecords = 100)),
     )
 
@@ -94,7 +96,7 @@ class ContactEventsIntegrationTest : IntegrationTestBase() {
     val expectedApiContactDateTime = "2025-08-31T10:34:03.569Z"
 
     nDeliusMockServer.stubForGet(
-      "/case/$crn/contacts?page=4&size=3&mappaCategories=4",
+      "/case/$crn/contacts?page=3&size=3&mappaCategories=4",
       writeAsJson(generateNDeliusContactEvents(crn = crn, pageSize = 3, pageNumber = 4, totalRecords = 10)),
     )
 
@@ -136,7 +138,7 @@ class ContactEventsIntegrationTest : IntegrationTestBase() {
   @Test
   fun `returns 400 when ndelius returns a 400 for contact events`() {
     nDeliusMockServer.stubForGet(
-      "/case/$crn/contacts?page=4&size=3&mappaCategories=4",
+      "/case/$crn/contacts?page=3&size=3&mappaCategories=4",
       "",
       HttpStatus.BAD_REQUEST,
     )
@@ -148,7 +150,7 @@ class ContactEventsIntegrationTest : IntegrationTestBase() {
   fun `returns a contact event for a person with contact event id with correct date conversion`() {
     val nDeliusContactEvent = generateNDeliusContactEvent(crn = crn, id = 1)
 
-    val expectedDeliusDate = "2025-09-07T11:34:03.569"
+    val expectedDeliusDate = "2025-09-07T11:34:03.569+01:00"
     val expectedApiDate = "2025-09-07T10:34:03.569Z"
 
     val deliusStub = writeAsJson(nDeliusContactEvent)
@@ -163,8 +165,10 @@ class ContactEventsIntegrationTest : IntegrationTestBase() {
         .andReturn()
         .response.contentAsString
 
-    assertEquals(expectedDeliusDate, JsonPath.parse(deliusStub).read("$.creationDateTime"))
+    assertEquals(expectedDeliusDate, JsonPath.parse(deliusStub).read("$.createdAt"))
     assertEquals(expectedApiDate, JsonPath.parse(response).read("$.data.creationDateTime"))
+
+    nDeliusMockServer.assertValidationPassed()
   }
 
   @Test
@@ -180,31 +184,58 @@ class ContactEventsIntegrationTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `returns stubbed data based on the pagination parameters for contact events`() {
-    whenever(featureFlagConfig.isEnabled(USE_STUBBED_CONTACT_EVENTS_DATA)).thenReturn(true)
+  fun `returns 404 when no mappa category found for person`() {
+    nDeliusMockServer.stubForGet(
+      "/case/$crn/contacts?page=5&size=2&mappaCategories=4",
+      "",
+      HttpStatus.NOT_FOUND,
+    )
+    callApi("$basePath/$nomsId/contact-events?page=5&perPage=2")
+      .andExpect(status().isNotFound)
+      .andReturn()
+      .response
+      .contentAsJson<ErrorResponse>()
+  }
+
+  @Test
+  fun `returns 200 for contact events`() {
+    nDeliusMockServer.stubForGet(
+      "/case/$crn/contacts?page=0&size=10&mappaCategories=4",
+      ClassPathResource("expected-responses/delius-contacts.json")
+        .getContentAsString(Charset.defaultCharset()),
+      HttpStatus.OK,
+    )
     val response =
-      callApi("$basePath/$nomsId/contact-events?page=5&perPage=2")
+      callApi("$basePath/$nomsId/contact-events?page=1&perPage=10")
         .andExpect(status().isOk)
         .andReturn()
         .response
         .contentAsJson<PaginatedResponse<ContactEvent>>()
-    assertEquals(2, response.data.size)
-    assertEquals(5, response.pagination.page)
-    assertEquals(true, response.pagination.isLastPage)
-    assertEquals(2, response.pagination.count)
-    assertEquals(5, response.pagination.totalPages)
-    assertEquals(10, response.pagination.totalCount)
+
+    assertEquals(1, response.pagination.page)
+    assertEquals(10, response.pagination.perPage)
+    assertEquals(4, response.pagination.totalPages)
+    assertEquals(33, response.pagination.totalCount)
+    nDeliusMockServer.assertValidationPassed()
   }
 
   @Test
-  fun `returns stubbed data based on the id for contact event`() {
-    whenever(featureFlagConfig.isEnabled(USE_STUBBED_CONTACT_EVENTS_DATA)).thenReturn(true)
+  fun `returns 200 for contact event`() {
+    nDeliusMockServer.stubForGet(
+      "/case/$crn/contacts/1?mappaCategories=4",
+      ClassPathResource("expected-responses/delius-contact.json")
+        .getContentAsString(Charset.defaultCharset()),
+      HttpStatus.OK,
+    )
     val response =
-      callApi("$basePath/$nomsId/contact-events/15")
+      callApi("$basePath/$nomsId/contact-events/1")
         .andExpect(status().isOk)
         .andReturn()
         .response
         .contentAsJson<Response<ContactEvent>>()
-    assertEquals(15, response.data.contactEventIdentifier)
+
+    assertEquals(crn, response.data.offenderHmppsId)
+
+    nDeliusMockServer.assertValidationPassed()
   }
 }

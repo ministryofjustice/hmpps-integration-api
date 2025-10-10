@@ -19,22 +19,24 @@ data class ContactEvent(
   val contactType: String,
   @Schema(description = "The outcome of that contact", required = false, example = "Referral Cancelled")
   val outcome: String? = null,
+  @Schema(description = "The location area of that contact", example = "Gloucester")
+  val location: String?,
   @Schema(description = "The probation area of that contact", example = "South West")
   val area: String,
   @Schema(description = "The probation area of that contact", example = "Public Protection Residential")
   val pdu: String,
-  @Schema(description = "The nDelius identifier for the team from where the contact originated", example = "123456")
-  val teamId: Long,
+  @Schema(description = "The nDelius identifier for the team from where the contact originated", example = "N56DTX")
+  val teamId: String,
   @Schema(description = "The name of the team from where the contact originated", example = "Approved Premises")
   val teamName: String,
-  @Schema(description = "The nDelius identifier of the officer from where the contact originated", example = "123456")
-  val officerId: Long,
+  @Schema(description = "The nDelius identifier of the officer from where the contact originated", example = "N56A070")
+  val officerId: String,
   @Schema(description = "The name of the officer from where the contact originated", example = "Jane Smith")
   val officerName: String,
   @Schema(description = "The description of the contact", example = "Approved Premises Referral")
   val description: String,
   @Schema(description = "The notes (if any) attached to the contact", example = "The referral has been cancelled")
-  val notes: String,
+  val notes: String?,
 )
 
 data class ContactEvents(

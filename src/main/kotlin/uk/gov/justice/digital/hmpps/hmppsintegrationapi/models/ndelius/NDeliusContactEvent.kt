@@ -2,63 +2,89 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactEvent
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactEvents
-import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.ZonedDateTime
 
 data class NDeliusContactEvents(
-  val size: Int,
-  val page: Int,
   val totalResults: Int,
   val totalPages: Int,
-  val contactEvents: List<NDeliusContactEvent>,
+  val content: List<NDeliusContactEvent>,
 ) {
-  fun toPaginated(): ContactEvents =
+  fun toPaginated(
+    perPage: Int,
+    pageNo: Int,
+  ): ContactEvents =
     ContactEvents(
-      content = contactEvents.map { it.toContactEvent() },
-      count = contactEvents.size,
-      page = page,
+      content = content.map { it.toContactEvent() },
+      count = content.size,
+      page = pageNo,
       totalCount = totalResults.toLong(),
       totalPages = totalPages,
-      isLastPage = page * size >= totalResults,
-      perPage = size,
+      isLastPage = pageNo * perPage >= totalResults,
+      perPage = perPage,
     )
 }
 
-data class NDeliusContactEvent(
-  val contactEventIdentifier: Long,
-  val offenderHmppsId: String,
-  val creationDateTime: LocalDateTime,
-  val updateDateTime: LocalDateTime,
-  val contactDateTime: LocalDateTime,
-  val contactType: String,
-  val outcome: String,
-  val area: String,
-  val pdu: String,
-  val teamId: Long,
-  val teamName: String,
-  val officerId: Long,
-  val officerName: String,
+data class DeliusRefdata(
+  val code: String,
   val description: String,
-  val notes: String,
+)
+
+data class DeliusName(
+  val forename: String,
+  val surname: String,
 ) {
-  fun toContactEvent(): ContactEvent {
-    val europeLondon: ZoneId = ZoneId.of("Europe/London")
-    return ContactEvent(
-      contactEventIdentifier,
-      offenderHmppsId,
-      creationDateTime.atZone(europeLondon).withZoneSameInstant(ZoneId.of("UTC")),
-      updateDateTime.atZone(europeLondon).withZoneSameInstant(ZoneId.of("UTC")),
-      contactDateTime.atZone(europeLondon).withZoneSameInstant(ZoneId.of("UTC")),
-      contactType,
-      outcome,
-      area,
-      pdu,
-      teamId,
-      teamName,
-      officerId,
-      officerName,
+  fun toName() = "$forename $surname"
+}
+
+data class DeliusOfficer(
+  val code: String,
+  val name: DeliusName,
+  val team: DeliusTeam,
+)
+
+data class DeliusPdu(
+  val code: String,
+  val description: String,
+  val provider: DeliusRefdata,
+)
+
+data class DeliusTeam(
+  val code: String,
+  val description: String,
+  val pdu: DeliusPdu,
+)
+
+data class NDeliusContactEvent(
+  val id: Long,
+  val crn: String,
+  val createdAt: ZonedDateTime,
+  val updatedAt: ZonedDateTime,
+  val contactDate: ZonedDateTime,
+  val type: DeliusRefdata,
+  val description: String,
+  val location: DeliusRefdata?,
+  val outcome: DeliusRefdata?,
+  val officer: DeliusOfficer,
+  val notes: String?,
+) {
+  fun toContactEvent(): ContactEvent =
+    ContactEvent(
+      id,
+      crn,
+      createdAt.withZoneSameInstant(ZoneId.of("UTC")),
+      updatedAt.withZoneSameInstant(ZoneId.of("UTC")),
+      contactDate.withZoneSameInstant(ZoneId.of("UTC")),
+      type.description,
+      outcome?.description,
+      location?.description,
+      officer.team.pdu.provider.description,
+      officer.team.pdu.description,
+      officer.team.code,
+      officer.team.description,
+      officer.code,
+      officer.name.toName(),
       description,
       notes,
     )
-  }
 }

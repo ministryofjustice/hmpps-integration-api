@@ -26,7 +26,7 @@ class ContactEventService(
         deliusGateway.getContactEventsForPerson(it, pageNo, perPage, filters?.mappaCategories())
       } ?: throw EntityNotFoundException("NDelius CRN not found for $hmppsId")
 
-    val contactEvents = response.data?.toPaginated()
+    val contactEvents = response.data?.toPaginated(perPage, pageNo)
     return Response(
       data = contactEvents,
       errors = response.errors,

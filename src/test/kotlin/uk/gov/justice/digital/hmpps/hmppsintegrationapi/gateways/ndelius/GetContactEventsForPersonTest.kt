@@ -10,17 +10,15 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_STUBBED_CONTACT_EVENTS_DATA
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.ContactEventHelper.generateNDeliusContactEvent
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.ContactEventHelper.generateNDeliusContactEvents
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.ContactEventStubGenerator.generateNDeliusContactEvent
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.ContactEventStubGenerator.generateNDeliusContactEvents
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -29,7 +27,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.ContactEventStubGen
 )
 class GetContactEventsForPersonTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
-  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
   val nDeliusGateway: NDeliusGateway,
 ) : DescribeSpec(
     {
@@ -49,15 +46,15 @@ class GetContactEventsForPersonTest(
       }
       it("returns contact events from delius for the matching CRN") {
         nDeliusApiMockServer.stubForGet(
-          "$path?page=1&size=10&mappaCategories=1",
+          "$path?page=0&size=10&mappaCategories=1",
           MockMvcExtensions.writeAsJson(generateNDeliusContactEvents(crn = deliusCrn, pageSize = 10, pageNumber = 1, totalRecords = 100)),
         )
         val response = nDeliusGateway.getContactEventsForPerson(deliusCrn, 1, 10, mappaCategories)
-        response.data?.size shouldBe 10
+        response.data?.content?.size shouldBe 10
       }
 
       it("returns an error when 404 Not Found is returned from delius") {
-        nDeliusApiMockServer.stubForGet("$path?page=1&size=10&mappaCategories=1", "", HttpStatus.NOT_FOUND)
+        nDeliusApiMockServer.stubForGet("$path?page=0&size=10&mappaCategories=1", "", HttpStatus.NOT_FOUND)
 
         val response = nDeliusGateway.getContactEventsForPerson(deliusCrn, 1, 10, mappaCategories)
 
@@ -78,7 +75,7 @@ class GetContactEventsForPersonTest(
           MockMvcExtensions.writeAsJson(generateNDeliusContactEvent(crn = deliusCrn, id = 2L)),
         )
         val response = nDeliusGateway.getContactEventForPerson(deliusCrn, 2L, mappaCategories)
-        response.data?.contactEventIdentifier.shouldBe(2)
+        response.data?.id.shouldBe(2)
       }
 
       it("returns an error when 404 Not Found is returned from delius for contact event id") {
@@ -93,18 +90,6 @@ class GetContactEventsForPersonTest(
           .first()
           .type
           .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
-      }
-
-      it("returns stubbed contact events") {
-        whenever(featureFlagConfig.isEnabled(USE_STUBBED_CONTACT_EVENTS_DATA)).thenReturn(true)
-        val response = nDeliusGateway.getContactEventsForPerson(deliusCrn, 1, 10, mappaCategories)
-        response.data?.size.shouldBe(10)
-      }
-
-      it("returns a stubbed contact event") {
-        whenever(featureFlagConfig.isEnabled(USE_STUBBED_CONTACT_EVENTS_DATA)).thenReturn(true)
-        val response = nDeliusGateway.getContactEventForPerson(deliusCrn, 1, mappaCategories)
-        response.data?.contactEventIdentifier.shouldBe(1)
       }
     },
   )
