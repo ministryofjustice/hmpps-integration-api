@@ -8,16 +8,22 @@ import io.kotest.matchers.maps.shouldHaveKeys
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.context.annotation.Import
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v2.ConfigController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.AccessFor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ConfigAuthorisation
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolicyConfig
 
 @WebMvcTest(controllers = [ConfigController::class])
+@Import(RedactionPolicyConfig::class)
 @ActiveProfiles("test")
 class ConfigControllerTests(
   @Autowired var springMockMvc: MockMvc,
@@ -25,6 +31,13 @@ class ConfigControllerTests(
 ) {
   private val basePath = "/v2/config/authorisation"
   private val mockMvc = IntegrationAPIMockMvc(springMockMvc)
+
+  @MockitoBean
+  lateinit var loaChecker: AccessFor
+
+  @BeforeEach
+  fun beforeTest() {
+  }
 
   @Test
   fun `will return authorise config based on application yml`() {

@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import org.springframework.data.domain.Page
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.interfaces.IPaginatedObject
 
-class PaginatedResponse<T>(
+data class PaginatedResponse<T>(
   val data: List<T>,
   val pagination: Pagination,
 ) {

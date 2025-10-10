@@ -9,6 +9,7 @@ import org.mockito.Mockito.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
@@ -21,22 +22,26 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFound
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.AccessFor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.education.EducationAssessmentSummaryResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.EducationAssessmentStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.EducationAssessmentStatusChangeRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolicyConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.EducationAssessmentService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.net.URI
 import java.time.LocalDate
 
 @WebMvcTest(controllers = [EducationAssessmentsController::class])
+@Import(RedactionPolicyConfig::class)
 @ActiveProfiles("test")
 class EducationAssessmentsControllerTest(
   private val springMockMvc: MockMvc,
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
   @MockitoBean val educationAssessmentService: EducationAssessmentService,
   @MockitoBean val auditService: AuditService,
+  @MockitoBean val loaChecker: AccessFor,
 ) : DescribeSpec(
     {
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)

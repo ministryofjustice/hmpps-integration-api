@@ -30,13 +30,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolicyConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetDynamicRisksForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
 @WebMvcTest(controllers = [DynamicRisksController::class])
-@Import(value = [AopAutoConfiguration::class, LaoRedactorAspect::class])
+@Import(value = [AopAutoConfiguration::class, LaoRedactorAspect::class, RedactionPolicyConfig::class])
 @ActiveProfiles("test")
 internal class DynamicRisksControllerTest(
   @Autowired var springMockMvc: MockMvc,
@@ -252,6 +253,29 @@ internal class DynamicRisksControllerTest(
         }
 
         it("fails with the appropriate error when LAO context has failed to be retrieved") {
+
+          whenever(getDynamicRisksForPersonService.execute(laoFailureCrn)).thenReturn(
+            Response(
+              data =
+                listOf(
+                  DynamicRisk(
+                    code = "AVIS",
+                    description = "Subject has a ViSOR record",
+                    startDate = "2023-09-08",
+                    reviewDate = "2026-04-29",
+                    notes = "Nothing to say",
+                  ),
+                  DynamicRisk(
+                    code = "RHRH",
+                    description = "High Risk of Harm",
+                    startDate = "2022-09-01",
+                    reviewDate = "2024-12-23",
+                    notes = "A lot of notes",
+                  ),
+                ),
+            ),
+          )
+
           val response = mockMvc.performAuthorised("/v1/persons/$laoFailureCrn/risks/dynamic")
 
           assert(response.response.status == 500)

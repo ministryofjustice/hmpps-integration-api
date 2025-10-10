@@ -13,9 +13,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlChar
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.AccessFor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.LaoContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.LaoRedaction.Mode
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 
 @Configuration
 @EnableAspectJAutoProxy
@@ -38,30 +36,7 @@ class LaoRedactorAspect(
     if (laoContext.isLimitedAccess() && redaction.mode == Mode.REJECT) {
       throw LimitedAccessException()
     }
-    val result = joinPoint.proceed()
-    return if (laoContext.isLimitedAccess()) {
-      when (result) {
-        is DataResponse<*> -> redactDataResponse(result)
-        is PaginatedResponse<*> -> redactPaginatedResponse(result)
-        else -> LaoRedactor.of(result)?.redact(result) ?: result
-      }
-    } else {
-      result
-    }
-  }
-
-  private fun redactDataResponse(dataResponse: DataResponse<*>): DataResponse<*> =
-    dataResponse.data
-      ?.let { LaoRedactor.of(it) }
-      ?.redact(dataResponse.data)
-      ?.let { DataResponse(it) } ?: dataResponse
-
-  private fun redactPaginatedResponse(paginatedResponse: PaginatedResponse<*>): PaginatedResponse<*> {
-    val redactor = paginatedResponse.data.firstOrNull()?.let { LaoRedactor.of(it) }
-    return PaginatedResponse(
-      paginatedResponse.data.map { redactor?.redact(it as Any) ?: it },
-      paginatedResponse.pagination,
-    )
+    return joinPoint.proceed()
   }
 
   private fun CaseAccess.asLaoContext() = LaoContext(crn, userExcluded, userRestricted, exclusionMessage, restrictionMessage)
@@ -73,7 +48,6 @@ annotation class LaoRedaction(
   val mode: Mode,
 ) {
   enum class Mode {
-    REDACT,
     REJECT,
   }
 }

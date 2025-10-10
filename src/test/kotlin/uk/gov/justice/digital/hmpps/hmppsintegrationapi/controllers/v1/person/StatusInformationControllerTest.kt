@@ -30,13 +30,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.StatusInfor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolicyConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetStatusInformationForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
 @WebMvcTest(controllers = [StatusInformationController::class])
-@Import(value = [AopAutoConfiguration::class, LaoRedactorAspect::class])
+@Import(value = [AopAutoConfiguration::class, LaoRedactorAspect::class, RedactionPolicyConfig::class])
 @ActiveProfiles("test")
 internal class StatusInformationControllerTest(
   @Autowired var springMockMvc: MockMvc,
@@ -224,6 +225,21 @@ internal class StatusInformationControllerTest(
         }
 
         it("fails with the appropriate error when LAO context has failed to be retrieved") {
+          whenever(getStatusInformationForPersonService.execute(laoFailureCrn)).thenReturn(
+            Response(
+              data =
+                listOf(
+                  StatusInformation(
+                    code = "WRSM",
+                    description = "Warrant/Summons - Outstanding warrant or summons",
+                    startDate = "2022-09-01",
+                    reviewDate = "2024-12-23",
+                    notes = "A lot of notes",
+                  ),
+                ),
+            ),
+          )
+
           val response = mockMvc.performAuthorised("/v1/persons/$laoFailureCrn/status-information")
 
           assert(response.response.status == 500)
