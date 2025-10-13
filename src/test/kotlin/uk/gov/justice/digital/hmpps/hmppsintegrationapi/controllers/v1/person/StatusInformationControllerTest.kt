@@ -38,7 +38,7 @@ import java.nio.charset.StandardCharsets
 
 @WebMvcTest(controllers = [StatusInformationController::class])
 @Import(value = [AopAutoConfiguration::class, LaoRedactorAspect::class, RedactionPolicyConfig::class])
-@ActiveProfiles("test")
+@ActiveProfiles("test-redaction-enabled")
 internal class StatusInformationControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getStatusInformationForPersonService: GetStatusInformationForPersonService,

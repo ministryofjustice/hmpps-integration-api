@@ -37,7 +37,7 @@ import java.nio.charset.StandardCharsets
 
 @WebMvcTest(controllers = [LicenceConditionController::class])
 @Import(value = [AopAutoConfiguration::class, LaoRedactorAspect::class, RedactionPolicyConfig::class])
-@ActiveProfiles("test")
+@ActiveProfiles("test-redaction-enabled")
 class LicenceConditionControllerTests(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getLicenceConditionService: GetLicenceConditionService,

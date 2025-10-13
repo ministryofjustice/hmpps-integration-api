@@ -3,13 +3,11 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
-import org.mockito.kotlin.any
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
@@ -17,7 +15,6 @@ import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.AccessFor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CancelOutcome
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CancelVisitRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CreateVisitRequest
@@ -36,9 +33,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitRestri
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visitor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitorSupport
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitReferences
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolicyConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitInformationByReferenceService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitReferencesByClientReferenceService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.VisitQueueService
@@ -46,7 +41,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 import java.time.LocalDateTime
 
 @WebMvcTest(controllers = [VisitsController::class])
-@Import(RedactionPolicyConfig::class)
 @ActiveProfiles("test")
 class VisitsControllerTest(
   @Autowired var springMockMvc: MockMvc,
@@ -54,15 +48,9 @@ class VisitsControllerTest(
   @MockitoBean val getVisitInformationByReferenceService: GetVisitInformationByReferenceService,
   @MockitoBean val visitQueueService: VisitQueueService,
   @MockitoBean val getVisitReferencesByClientReferenceService: GetVisitReferencesByClientReferenceService,
-  @MockitoBean val loaChecker: AccessFor,
 ) : DescribeSpec(
     {
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
-
-      beforeTest {
-        Mockito.reset(auditService)
-        whenever(loaChecker.getAccessFor(any())).thenReturn(CaseAccess("crn", false, false))
-      }
 
       describe("GET /v1/visit/{visitReference}") {
         val visitReference = "1234567"

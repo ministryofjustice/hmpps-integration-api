@@ -5,10 +5,7 @@ management.endpoint:
   health.cache.time-to-live: 0
   info.cache.time-to-live: 0
 
-# Use ports <4010, reuse if required
 services:
-  prison-api:
-    base-url: http://localhost:4000
   hmpps-auth:
     base-url: http://localhost:3000
     username: client
@@ -23,34 +20,36 @@ services:
     base-url: http://localhost:4003
   san:
     base-url: http://localhost:4200
-  ndelius:
-    base-url: http://localhost:4003
-  assess-risks-and-needs:
-    base-url: http://localhost:4004
-  probation-integration-epf:
-    base-url: http://localhost:4005
   adjudications:
-    base-url: http://localhost:4006
-  create-and-vary-licence:
-    base-url: http://localhost:4007
+    base-url: http://localhost:4010
+  assess-risks-and-needs:
+    base-url: http://localhost:4011
   case-notes:
-    base-url: http://localhost:4008
+    base-url: http://localhost:4012
+  create-and-vary-licence:
+    base-url: http://localhost:4013
+  ndelius:
+    base-url: http://localhost:4014
+  prison-api:
+    base-url: http://localhost:4015
+  probation-integration-epf:
+    base-url: http://localhost:4016
   non-associations:
-    base-url: http://localhost:4005
+    base-url: http://localhost:4018
   personal-relationships:
-    base-url: http://localhost:4006
+    base-url: http://localhost:4019
   manage-prison-visits:
-    base-url: http://localhost:4007
+    base-url: http://localhost:4020
   incentives:
-    base-url: http://localhost:4008
+    base-url: http://localhost:4021
   alerts:
-    base-url: http://localhost:4009
+    base-url: http://localhost:4022
   locations-inside-prison:
-    base-url: http://localhost:4000
-  activities:
-    base-url: http://localhost:4004
+    base-url: http://localhost:4023
   prisoner-base-location:
     base-url: http://localhost:4030
+  activities:
+    base-url: http://localhost:4004
 
 hmpps.sqs:
   provider: localstack
@@ -71,6 +70,10 @@ hmpps.sqs:
       queueName: "educationstatusevents"
       subscribeFilter: '{"eventType":["prison.education.updated"]}'
       subscribeTopicId: "domainevents"
+    educationalnevents:
+      queueName: "educationalnevents"
+      subscribeFilter: '{"eventType":["prison.education-aln-assessment.updated"]}'
+      subscribeTopicId: "domainevents"
   topics:
     domainevents:
       arn: arn:aws:sns:eu-west-2:000000000000:domainevents-topic
@@ -86,6 +89,7 @@ feature-flag:
   use-deallocation-reasons-endpoint: true
   use-allocation-endpoint: true
   use-education-endpoint: true
+  use-expression-of-interest-endpoint: true
   use-prisoner-base-location-endpoint: true
   use-prisoner-base-location-api: true
   use-historical-attendances-endpoint: true
@@ -98,11 +102,30 @@ feature-flag:
   use-contact-events-endpoint: true
   use-stubbed-contact-events-data: false
   use-roles-dsl: true
-  redaction-policy-enabled: false
+  redaction-policy-enabled: true
 
 authorisation:
   consumers:
     automated-test-client:
+      roles:
+        - "full-access"
+        - "mappa-cat4"
+      filters:
+    automated-test-client-mappa:
+      roles:
+        - "full-access"
+        - "mappa-cat4"
+      filters:
+        mappa-categories:
+          - "*"
+    automated-test-client-mappa-2:
+      roles:
+        - "full-access"
+        - "mappa-cat4"
+      filters:
+        mappa-categories:
+          - CAT1
+    automated-test-client-no-filters:
       roles:
         - "full-access"
     config-v2-test:
@@ -111,18 +134,23 @@ authorisation:
       filters:
         prisons:
           - XYZ
-    no-include-or-roles:
-    empty-include:
+    all-access:
       include:
-    empty-roles:
+        - "/.*"
+      filters:
+    specific-prison:
       roles:
+        - "all-endpoints"
+      filters:
+        prisons:
+          - MDI
     limited-prisons:
       roles:
         - "all-endpoints"
       filters:
         prisons:
-          - XYZ
-    empty-prisons:
+          - ABC
+    no-prisons:
       roles:
         - "all-endpoints"
       filters:
@@ -138,6 +166,20 @@ authorisation:
       filters:
         case-notes:
           - "CAB"
+    reference-data-only-user:
+      roles:
+        - "reference-data-only"
+      include:
+      filters:
     redacted-client:
       include:
         - "/v1/persons/[^/]*$"
+    role-based-redacted-client:
+      roles:
+        - curious
+      include:
+      filters:
+
+redaction:
+  client-names:
+    - redacted-client

@@ -4,35 +4,28 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
-import org.mockito.kotlin.any
 import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.AccessFor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolicyConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetEPFPersonDetailService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [EPFPersonDetailController::class])
-@Import(RedactionPolicyConfig::class)
 @ActiveProfiles("test")
 internal class EPFPersonDetailControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getEPFPersonDetailService: GetEPFPersonDetailService,
   @MockitoBean val auditService: AuditService,
-  @MockitoBean val loaChecker: AccessFor,
 ) : DescribeSpec({
     val hmppsId = "X12345"
     val eventNumber = 1234
@@ -48,7 +41,6 @@ internal class EPFPersonDetailControllerTest(
           ),
         )
         Mockito.reset(auditService)
-        whenever(loaChecker.getAccessFor(any())).thenReturn(CaseAccess("crn", false, false))
       }
 
       it("returns a 200 OK status code") {

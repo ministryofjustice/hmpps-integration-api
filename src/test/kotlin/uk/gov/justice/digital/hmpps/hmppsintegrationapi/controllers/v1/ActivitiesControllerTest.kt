@@ -4,20 +4,17 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import jakarta.servlet.http.HttpServletRequest
 import org.mockito.Mockito
-import org.mockito.kotlin.any
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.AccessFor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivitySchedule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivityScheduleAllocation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivityScheduleDetailed
@@ -43,8 +40,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Suitability
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.WaitingListApplication
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolicyConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ActivitiesQueueService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetActivitiesScheduleService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetActivitiesSuitabilityCriteriaService
@@ -58,7 +53,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 @WebMvcTest(controllers = [ActivitiesController::class])
-@Import(RedactionPolicyConfig::class)
 @ActiveProfiles("test")
 class ActivitiesControllerTest(
   @Autowired var springMockMvc: MockMvc,
@@ -71,15 +65,10 @@ class ActivitiesControllerTest(
   @MockitoBean val activitiesQueueService: ActivitiesQueueService,
   @MockitoBean val getActivitiesSuitabilityCriteriaService: GetActivitiesSuitabilityCriteriaService,
   @MockitoBean val getWaitingListApplicationsByScheduleIdService: GetWaitingListApplicationsByScheduleIdService,
-  @MockitoBean val loaChecker: AccessFor,
 ) : DescribeSpec(
     {
       val basePath = "/v1/activities"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
-
-      beforeTest {
-        whenever(loaChecker.getAccessFor(any())).thenReturn(CaseAccess("crn", false, false))
-      }
 
       afterTest {
         Mockito.reset(auditService)

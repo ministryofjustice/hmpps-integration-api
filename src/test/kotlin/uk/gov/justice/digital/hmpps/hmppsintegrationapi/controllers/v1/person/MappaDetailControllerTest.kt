@@ -34,7 +34,7 @@ import java.nio.charset.StandardCharsets
 
 @WebMvcTest(controllers = [MappaDetailController::class])
 @Import(value = [AopAutoConfiguration::class, LaoRedactorAspect::class, RedactionPolicyConfig::class])
-@ActiveProfiles("test")
+@ActiveProfiles("test-redaction-enabled")
 internal class MappaDetailControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getMappaDetailForPersonService: GetMappaDetailForPersonService,

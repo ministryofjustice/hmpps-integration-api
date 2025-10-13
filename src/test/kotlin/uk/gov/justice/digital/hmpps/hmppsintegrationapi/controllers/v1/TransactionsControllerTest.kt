@@ -6,12 +6,10 @@ import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.mockito.internal.verification.VerificationModeFactory
-import org.mockito.kotlin.any
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
@@ -20,7 +18,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ValidationErrorRe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.AccessFor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionCreateResponse
@@ -30,9 +27,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Type
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolicyConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetTransactionForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetTransactionsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.PostTransactionForPersonService
@@ -40,7 +35,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.PostTransaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [TransactionsController::class])
-@Import(RedactionPolicyConfig::class)
 @ActiveProfiles("test")
 class TransactionsControllerTest(
   @Autowired var springMockMvc: MockMvc,
@@ -49,7 +43,6 @@ class TransactionsControllerTest(
   @MockitoBean val getTransactionForPersonService: GetTransactionForPersonService,
   @MockitoBean val postTransactionForPersonService: PostTransactionForPersonService,
   @MockitoBean val postTransactionTransferForPersonService: PostTransactionTransferForPersonService,
-  @MockitoBean val loaChecker: AccessFor,
 ) : DescribeSpec(
     {
       val hmppsId = "200313116M"
@@ -91,10 +84,6 @@ class TransactionsControllerTest(
       val transactionCreateResponse = TransactionCreateResponse(transactionId = "6179604-1")
 
       val transactionTransferCreateResponse = TransactionTransferCreateResponse(debitTransactionId = "6179604-1", creditTransactionId = "6179604-1", transactionId = "6179604")
-
-      beforeTest {
-        whenever(loaChecker.getAccessFor(any())).thenReturn(CaseAccess("crn", false, false))
-      }
 
       it("calls the transactions service with expected parameters when supplied a date range") {
         val dateParams = "?from_date=2025-01-01&to_date=2025-01-01"

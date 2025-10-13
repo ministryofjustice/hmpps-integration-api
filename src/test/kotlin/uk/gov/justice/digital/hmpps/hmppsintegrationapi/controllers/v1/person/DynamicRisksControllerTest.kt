@@ -38,7 +38,7 @@ import java.nio.charset.StandardCharsets
 
 @WebMvcTest(controllers = [DynamicRisksController::class])
 @Import(value = [AopAutoConfiguration::class, LaoRedactorAspect::class, RedactionPolicyConfig::class])
-@ActiveProfiles("test")
+@ActiveProfiles("test-redaction-enabled")
 internal class DynamicRisksControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getDynamicRisksForPersonService: GetDynamicRisksForPersonService,

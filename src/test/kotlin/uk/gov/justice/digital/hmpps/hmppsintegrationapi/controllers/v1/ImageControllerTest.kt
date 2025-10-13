@@ -4,13 +4,11 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
-import org.mockito.kotlin.any
 import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
@@ -18,24 +16,19 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.AccessFor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolicyConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [ImageController::class])
-@Import(RedactionPolicyConfig::class)
 @ActiveProfiles("test")
 internal class ImageControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getImageService: GetImageService,
   @MockitoBean val auditService: AuditService,
   @MockitoBean val featureFlag: FeatureFlagConfig,
-  @MockitoBean val loaChecker: AccessFor,
 ) : DescribeSpec(
     {
       val id = 2461788
@@ -53,8 +46,6 @@ internal class ImageControllerTest(
           Mockito.reset(auditService)
 
           whenever(getImageService.getById(id)).thenReturn(Response(data = image))
-
-          whenever(loaChecker.getAccessFor(any())).thenReturn(CaseAccess("crn", false, false))
         }
 
         it("returns a 200 OK status code") {
