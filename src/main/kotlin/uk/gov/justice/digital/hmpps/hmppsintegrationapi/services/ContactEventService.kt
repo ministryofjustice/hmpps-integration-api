@@ -23,10 +23,10 @@ class ContactEventService(
     val personResponse = getPersonService.execute(hmppsId = hmppsId)
     val response =
       personResponse.data?.identifiers?.deliusCrn?.let {
-        deliusGateway.getContactEventsForPerson(it, pageNo, perPage, filters?.mappaCategories())
+        deliusGateway.getContactEventsForPerson(it, pageNo, perPage, ConsumerFilters.mappaCategories(filters))
       } ?: throw EntityNotFoundException("NDelius CRN not found for $hmppsId")
 
-    val contactEvents = response.data?.toPaginated()
+    val contactEvents = response.data?.toPaginated(perPage, pageNo)
     return Response(
       data = contactEvents,
       errors = response.errors,
@@ -41,7 +41,7 @@ class ContactEventService(
     val personResponse = getPersonService.execute(hmppsId = hmppsId)
     val response =
       personResponse.data?.identifiers?.deliusCrn?.let {
-        deliusGateway.getContactEventForPerson(it, contactEventId, filters?.mappaCategories())
+        deliusGateway.getContactEventForPerson(it, contactEventId, ConsumerFilters.mappaCategories(filters))
       } ?: throw EntityNotFoundException("NDelius CRN not found for $hmppsId with id $contactEventId")
 
     return Response(

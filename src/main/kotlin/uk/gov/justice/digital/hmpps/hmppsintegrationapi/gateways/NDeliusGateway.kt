@@ -4,8 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_STUBBED_CONTACT_EVENTS_DATA
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address
@@ -27,8 +25,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusSu
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.UserAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.ContactDetailsWithAddress
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.Offender
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.ContactEventStubGenerator.generateNDeliusContactEvent
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.ContactEventStubGenerator.generateNDeliusContactEvents
 
 @Component
 class NDeliusGateway(
@@ -38,9 +34,6 @@ class NDeliusGateway(
 
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
-
-  @Autowired
-  lateinit var featureFlagConfig: FeatureFlagConfig
 
   fun getOffencesForPerson(id: String): Response<List<Offence>> {
     val result =
@@ -181,7 +174,7 @@ class NDeliusGateway(
 
   fun getCaseAccess(crn: String): Response<CaseAccess?> {
     val result =
-      webClient.request<UserAccess>(
+      webClient.requestWithRetry<UserAccess>(
         HttpMethod.POST,
         "/probation-cases/access",
         authenticationHeader(),
@@ -216,7 +209,7 @@ class NDeliusGateway(
       }
 
     val result =
-      webClient.requestList<Offender>(
+      webClient.requestListWithRetry<Offender>(
         HttpMethod.POST,
         "/search/probation-cases",
         authenticationHeader(),
@@ -276,7 +269,7 @@ class NDeliusGateway(
       ).filterValues { it != null }
 
     val result =
-      webClient.requestList<Offender>(
+      webClient.requestListWithRetry<Offender>(
         HttpMethod.POST,
         "/search/probation-cases",
         authenticationHeader(),
@@ -333,14 +326,11 @@ class NDeliusGateway(
     perPage: Int,
     mappaCategories: List<Number>?,
   ): Response<NDeliusContactEvents?> {
-    if (featureFlagConfig.isEnabled(USE_STUBBED_CONTACT_EVENTS_DATA)) {
-      return Response(generateNDeliusContactEvents(crn, perPage, pageNo, 10))
-    }
     val mappaCatQueryParam = "mappaCategories=${mappaCategories?.joinToString(",")}"
     val result =
       webClient.request<NDeliusContactEvents>(
         HttpMethod.GET,
-        "/case/$crn/contacts?page=$pageNo&size=$perPage&$mappaCatQueryParam",
+        "/case/$crn/contacts?page=${pageNo - 1}&size=$perPage&$mappaCatQueryParam",
         authenticationHeader(),
         UpstreamApi.NDELIUS,
         badRequestAsError = true,
@@ -365,9 +355,6 @@ class NDeliusGateway(
     contactEventId: Long,
     mappaCategories: List<Number>?,
   ): Response<NDeliusContactEvent?> {
-    if (featureFlagConfig.isEnabled(USE_STUBBED_CONTACT_EVENTS_DATA)) {
-      return Response(generateNDeliusContactEvent(contactEventId, crn))
-    }
     val mappaCatQueryParam = "mappaCategories=${mappaCategories?.joinToString(",")}"
 
     val result =

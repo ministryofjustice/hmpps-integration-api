@@ -1,5 +1,7 @@
-const http = require('k6/http');
-const { check, fail } = require('k6');
+import http from 'k6/http';
+// const http = require('k6/http');
+// const { check, fail } = require('k6');
+import { check, fail } from 'k6';
 import exec from 'k6/execution';
 import { read_certificate } from "./support.js"
 
@@ -60,7 +62,6 @@ const imageId = "1988315";
 const locationIdKey = "MKI-A";
 const activityId = 1162
 const scheduleId = 518
-const contactEventId = 500
 const today = new Date();
 const year = today.getFullYear();
 const month = (today.getMonth() + 1).toString().padStart(2, '0');
@@ -149,8 +150,6 @@ const get_endpoints = [
   `/v1/status`,
   `/v1/persons/${hmppsId}/education/san/plan-creation-schedule`,
   `/v1/persons/${alternativeHmppsId}/education/san/review-schedule`,
-  `/v1/persons/${primaryHmppsId}/contact-events`,
-  `/v1/persons/${primaryHmppsId}/contact-events/${contactEventId}`,
 ];
 
 const broken_endpoints = []
@@ -266,7 +265,7 @@ function verify_get_endpoints() {
     if (!check(res, {
       [`GET ${endpoint} returns 200`]: (r) => r.status === 200,
     })) {
-      fail(`${endpoint} caused the test to fail, status = ${res.status}`)
+      exec.test.fail(`${endpoint} caused the test to fail, status = ${res.status}`)
     }
   }
 }
@@ -277,7 +276,7 @@ function verify_broken_endpoints() {
     if (!check(res, {
       [`GET ${endpoint} returns error`]: (r) => r.status >= 400,
     })) {
-      fail(`${endpoint} caused the test to fail`)
+      exec.test.fail(`${endpoint} caused the test to fail`)
     }
   }
 }
@@ -350,7 +349,7 @@ function validate_get_request(path) {
   if (!check(res, {
     [`GET ${path} successful`]: (r) => r.status < 400,
   })) {
-    fail(`${path} caused the test to fail`);
+    exec.test.fail(`${path} caused the test to fail`);
   }
   return res;
 }
@@ -361,7 +360,7 @@ function confirm_access_denied(path) {
   if (!check(res, {
     [`GET ${path} ACCESS DENIED`]: (r) => ((r.status === 0) || (r.status === 401) || (r.status === 403)),
   })) {
-    fail(`${path} was not denied`);
+    exec.test.fail(`${path} was not denied`);
   }
 }
 
@@ -373,16 +372,25 @@ function validate_status_endpoint() {
   return response
 }
 
-function structured_verification_test(hmppsId) {
-  let res = validate_status_endpoint();
-  if (res.status >= 400) {
+function validate_contact_events(){
+  let res = validate_get_request(`/v1/persons/${primaryHmppsId}/contact-events?page=1&size=10`);
+  if (res.status !== 200) {
     return
   }
+  check(res, {
+    [`Has entries`]: () => res?.json()["data"].length > 0,
+  })
+  const id = res.json()["data"][0]["contactEventIdentifier"]
+  check(id, {
+    [`ID retrieved`]: () => id != null,
+  })
+  validate_get_request(`/v1/persons/${primaryHmppsId}/contact-events/${id}?mappaCategories=4`);
+}
 
-  res = validate_get_request(`/v1/persons/${hmppsId}`);
-
+function verify_get_person(hmppsId) {
+  let res = validate_get_request(`/v1/persons/${hmppsId}`);
   if (res.status >= 400) {
-    return
+    return null
   }
 
   let probationData = res.json()["data"]["probationOffenderSearch"];
@@ -401,9 +409,27 @@ function structured_verification_test(hmppsId) {
     [`Prisoner number identified`]: () => nomisNumber != null,
   })
 
-  validate_get_request(`/v1/prison/prisoners/${nomisNumber}`)
+  return nomisNumber
 }
 
+function structured_verification_test(hmppsId) {
+  let res = validate_status_endpoint();
+  if (res.status >= 400) {
+    return
+  }
+
+  let nomisNumber = verify_get_person(hmppsId)
+
+  if (nomisNumber != null) {
+    validate_get_request(`/v1/prison/prisoners/${nomisNumber}`)
+  }
+
+  validate_contact_events()
+}
+
+/**
+ * Minimal verification for environments with sensitive data.
+ */
 function minimal_prod_verification() {
   validate_status_endpoint();
 }
@@ -412,24 +438,35 @@ function denied_endpoint_verification() {
   confirm_access_denied(`/v1/persons?first_name=john`);
 }
 
+function simple_endpoint_tests() {
+  verify_post_endpoints();
+  verify_get_endpoints();
+  verify_broken_endpoints();
+}
+
+/**
+ * Test using a consumer that has access to some endpoints but not others.
+ */
+function partial_access_tests() {
+  validate_get_request(`/v1/persons/${primaryHmppsId}/name`);
+  denied_endpoint_verification();
+}
+
 /************************************************************************/
 
 export default function ()  {
-  console.log(`Using profile: ${profile} with base url: ${baseUrl}`)
+  console.log(`Using profile: ${profile} with base url: ${baseUrl}`);
 
   switch (profile) {
     case "MAIN":
-      verify_post_endpoints();
-      verify_get_endpoints();
-      verify_broken_endpoints();
+      simple_endpoint_tests();
       structured_verification_test(primaryHmppsId);
       break
     case "PROD":
       minimal_prod_verification();
       break
     case "LIMITED":
-      validate_get_request(`/v1/persons/${primaryHmppsId}/name`);
-      denied_endpoint_verification();
+      partial_access_tests();
       break
     case "NOPERMS":
     case "NOCERT":

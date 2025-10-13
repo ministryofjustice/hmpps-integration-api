@@ -8,7 +8,7 @@ services:
   assess-risks-and-needs:
     base-url: https://assess-risks-and-needs-dev.hmpps.service.justice.gov.uk
   probation-integration-epf:
-    base-url: https://effective-proposal-framework-and-delius-dev.hmpps.service.justice.gov.uk
+    base-url: https://external-api-and-delius-dev.hmpps.service.justice.gov.uk
   adjudications:
     base-url: https://manage-adjudications-api-dev.hmpps.service.justice.gov.uk
   create-and-vary-licence:
@@ -66,7 +66,6 @@ feature-flag:
   education-trigger-enabled: true
   education-aln-trigger-enabled: true
   use-contact-events-endpoint: true
-  use-stubbed-contact-events-data: true
   use-roles-dsl: true
 
 authorisation:

@@ -5,6 +5,7 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.web.reactive.function.BodyInserters
+import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeStrategies
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientRequestException
@@ -102,13 +103,13 @@ class WebClientWrapper(
         getResponseBodySpec(method, uri, headers, requestBody)
           .retrieve()
           .onStatus({ status -> status.value() in CREATE_TRANSACTION_RETRY_HTTP_CODES }) { response ->
-            Mono.error(ResponseException(null, response.statusCode().value()))
+            retryError(response, upstreamApi, method, uri)
           }.bodyToMono(T::class.java)
           .retryWhen(
             Retry
               .backoff(MAX_RETRY_ATTEMPTS, MIN_BACKOFF_DURATION)
               .filter { throwable -> isSafeToRetry(throwable) }
-              .onRetryExhaustedThrow { _, retrySignal -> throw ResponseException("External Service failed to process after ${retrySignal.totalRetries()} retries", HttpStatus.SERVICE_UNAVAILABLE.value(), retrySignal.failure().cause) },
+              .onRetryExhaustedThrow { _, retrySignal -> throw ResponseException("External Service failed to process after ${retrySignal.totalRetries()} retries with ${retrySignal.failure().message}", HttpStatus.SERVICE_UNAVAILABLE.value(), retrySignal.failure().cause) },
           ).block()!!
 
       WebClientWrapperResponse.Success(responseData)
@@ -158,13 +159,13 @@ class WebClientWrapper(
         getResponseBodySpec(method, uri, headers, requestBody)
           .retrieve()
           .onStatus({ status -> status.value() in CREATE_TRANSACTION_RETRY_HTTP_CODES }) { response ->
-            Mono.error(ResponseException(null, response.statusCode().value()))
+            retryError(response, upstreamApi, method, uri)
           }.bodyToFlux(T::class.java)
           .retryWhen(
             Retry
               .backoff(MAX_RETRY_ATTEMPTS, MIN_BACKOFF_DURATION)
               .filter { throwable -> isSafeToRetry(throwable) }
-              .onRetryExhaustedThrow { _, retrySignal -> throw ResponseException("External Service failed to process after ${retrySignal.totalRetries()} retries", HttpStatus.SERVICE_UNAVAILABLE.value(), retrySignal.failure().cause) },
+              .onRetryExhaustedThrow { _, retrySignal -> throw ResponseException("External Service failed to process after ${retrySignal.totalRetries()} retries with ${retrySignal.failure().message}", HttpStatus.SERVICE_UNAVAILABLE.value(), retrySignal.failure().cause) },
           ).collectList()
           .block() as List<T>
 
@@ -172,6 +173,19 @@ class WebClientWrapper(
     } catch (exception: WebClientResponseException) {
       getErrorType(exception, upstreamApi, forbiddenAsError, badRequestAsError)
     }
+
+  fun retryError(
+    response: ClientResponse,
+    upstreamApi: UpstreamApi,
+    method: HttpMethod,
+    uri: String,
+  ): Mono<ResponseException> =
+    Mono.error(
+      ResponseException(
+        message = "Call to upstream api ${upstreamApi.name} failed. ${method.name()} for $uri returned ${response.statusCode().value()}",
+        statusCode = response.statusCode().value(),
+      ),
+    )
 
   fun getResponseBodySpec(
     method: HttpMethod,
