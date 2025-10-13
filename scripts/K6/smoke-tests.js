@@ -373,7 +373,7 @@ function validate_status_endpoint() {
 }
 
 function validate_contact_events(){
-  let res = validate_get_request(`/v1/persons/${primaryHmppsId}/contact-events?page=1&size=10&mappaCategories=4`);
+  let res = validate_get_request(`/v1/persons/${primaryHmppsId}/contact-events?page=1&size=10`);
   if (res.status !== 200) {
     return
   }
