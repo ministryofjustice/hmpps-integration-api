@@ -1,0 +1,1232 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "API Reference",
+    "contact": {
+      "name": "Probation Integration Team",
+      "url": "https://mojdt.slack.com/archives/C02HQ4M2YQN",
+      "email": "probation-integration-team@digital.justice.gov.uk"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://github.com/ministryofjustice/hmpps-probation-integration-services/blob/main/LICENSE"
+    },
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "security": [
+    {
+      "hmpps-auth-token": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Identifier Converter",
+      "description": "Requires PROBATION_API__HMPPS_API__CASE_DETAIL"
+    },
+    {
+      "name": "Case Details",
+      "description": "Requires PROBATION_API__HMPPS_API__CASE_DETAIL"
+    },
+    {
+      "name": "Contacts",
+      "description": "Requires PROBATION_API__HMPPS_API__CASE_DETAIL"
+    }
+  ],
+  "paths": {
+    "/probation-cases/access": {
+      "get": {
+        "tags": ["lao-access-controller"],
+        "operationId": "caseAccess",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CrnRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserAccess"
+                },
+                "example": {
+                  "access": [
+                    {
+                      "crn": "A123456",
+                      "userExcluded": false,
+                      "userRestricted": false
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["lao-access-controller"],
+        "operationId": "caseAccess_1",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CrnRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserAccess"
+                },
+                "example": {
+                  "access": [
+                    {
+                      "crn": "A123456",
+                      "userExcluded": false,
+                      "userRestricted": false
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search/probation-cases": {
+      "post": {
+        "tags": ["search-controller"],
+        "operationId": "searchProbationCases",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SearchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProbationCaseDetail"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reference-data": {
+      "get": {
+        "tags": ["Identifier Converter"],
+        "summary": "Gets delius reference data ",
+        "operationId": "refData",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProbationReferenceData"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/identifier-converter/noms-to-crn/{nomsId}": {
+      "get": {
+        "tags": ["Identifier Converter"],
+        "summary": "Gets the corresponding CRN from delius for the provided nomsId if found",
+        "operationId": "nomsToCrn",
+        "parameters": [
+          {
+            "name": "nomsId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonIdentifier"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/exists-in-delius/crn/{crn}": {
+      "get": {
+        "tags": ["Identifier Converter"],
+        "summary": "Check if crn exists in delius for the provided crn",
+        "operationId": "checkIfPersonExists",
+        "parameters": [
+          {
+            "name": "crn",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonExists"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/case/{crn}/supervisions": {
+      "get": {
+        "tags": ["Case Details"],
+        "summary": "Get a list of supervisions (called “events” in Delius) for a probation case, by CRN",
+        "operationId": "supervisions",
+        "parameters": [
+          {
+            "name": "crn",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupervisionResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/case/{crn}/contacts": {
+      "get": {
+        "tags": ["Contacts"],
+        "operationId": "getVisorContacts",
+        "parameters": [
+          {
+            "name": "crn",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "mappaCategories",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContactsLogged"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/case/{crn}/contacts/{contactId}": {
+      "get": {
+        "tags": ["Contacts"],
+        "operationId": "getContact",
+        "parameters": [
+          {
+            "name": "crn",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "contactId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "mappaCategories",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContactLogged"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/case/{crn}/addresses": {
+      "get": {
+        "tags": ["Case Details"],
+        "operationId": "addresses",
+        "parameters": [
+          {
+            "name": "crn",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddressWrapper"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CrnRequest": {
+        "type": "object",
+        "properties": {
+          "crns": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 500,
+            "minItems": 1
+          }
+        },
+        "required": ["crns"]
+      },
+      "CaseAccess": {
+        "type": "object",
+        "properties": {
+          "crn": {
+            "type": "string"
+          },
+          "userExcluded": {
+            "type": "boolean"
+          },
+          "userRestricted": {
+            "type": "boolean"
+          },
+          "exclusionMessage": {
+            "type": "string"
+          },
+          "restrictionMessage": {
+            "type": "string"
+          }
+        },
+        "required": ["crn", "userExcluded", "userRestricted"]
+      },
+      "UserAccess": {
+        "type": "object",
+        "properties": {
+          "access": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CaseAccess"
+            }
+          }
+        },
+        "required": ["access"]
+      },
+      "SearchRequest": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "surname": {
+            "type": "string"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date"
+          },
+          "pncNumber": {
+            "type": "string"
+          },
+          "crn": {
+            "type": "string"
+          },
+          "nomsNumber": {
+            "type": "string"
+          },
+          "includeAliases": {
+            "type": "boolean"
+          }
+        },
+        "required": ["includeAliases"]
+      },
+      "CaseAlias": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "surname": {
+            "type": "string"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date"
+          },
+          "gender": {
+            "type": "string"
+          },
+          "middleNames": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": ["middleNames"]
+      },
+      "CaseDisability": {
+        "type": "object",
+        "properties": {
+          "disabilityType": {
+            "$ref": "#/components/schemas/CodedValue"
+          },
+          "condition": {
+            "$ref": "#/components/schemas/CodedValue"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "required": ["disabilityType"]
+      },
+      "CaseProfile": {
+        "type": "object",
+        "properties": {
+          "ethnicity": {
+            "type": "string"
+          },
+          "nationality": {
+            "type": "string"
+          },
+          "religion": {
+            "type": "string"
+          },
+          "sexualOrientation": {
+            "type": "string"
+          },
+          "disabilities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CaseDisability"
+            }
+          }
+        },
+        "required": ["disabilities"]
+      },
+      "CodedValue": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": ["code", "description"]
+      },
+      "ContactDetails": {
+        "type": "object",
+        "properties": {
+          "phoneNumbers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PhoneNumber"
+            }
+          },
+          "emailAddresses": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": ["emailAddresses", "phoneNumbers"]
+      },
+      "OtherIds": {
+        "type": "object",
+        "properties": {
+          "crn": {
+            "type": "string"
+          },
+          "pncNumber": {
+            "type": "string"
+          },
+          "nomsNumber": {
+            "type": "string"
+          },
+          "croNumber": {
+            "type": "string"
+          }
+        },
+        "required": ["crn"]
+      },
+      "PhoneNumber": {
+        "type": "object",
+        "properties": {
+          "number": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          }
+        },
+        "required": ["number", "type"]
+      },
+      "ProbationCaseDetail": {
+        "type": "object",
+        "properties": {
+          "otherIds": {
+            "$ref": "#/components/schemas/OtherIds"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "surname": {
+            "type": "string"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date"
+          },
+          "gender": {
+            "type": "string"
+          },
+          "middleNames": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "offenderProfile": {
+            "$ref": "#/components/schemas/CaseProfile"
+          },
+          "contactDetails": {
+            "$ref": "#/components/schemas/ContactDetails"
+          },
+          "offenderAliases": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CaseAlias"
+            }
+          },
+          "activeProbationManagedSentence": {
+            "type": "boolean"
+          },
+          "currentRestriction": {
+            "type": "boolean"
+          },
+          "restrictionMessage": {
+            "type": "string"
+          },
+          "currentExclusion": {
+            "type": "boolean"
+          },
+          "exclusionMessage": {
+            "type": "string"
+          },
+          "age": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "activeProbationManagedSentence",
+          "age",
+          "currentExclusion",
+          "currentRestriction",
+          "firstName",
+          "gender",
+          "middleNames",
+          "offenderAliases",
+          "offenderProfile",
+          "otherIds",
+          "surname"
+        ]
+      },
+      "ProbationReferenceData": {
+        "type": "object",
+        "properties": {
+          "probationReferenceData": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/RefData"
+              }
+            }
+          }
+        },
+        "required": ["probationReferenceData"]
+      },
+      "RefData": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "reference data code",
+            "example": "M"
+          },
+          "description": {
+            "type": "string",
+            "description": "reference data description",
+            "example": "MALE"
+          }
+        },
+        "required": ["code", "description"]
+      },
+      "PersonIdentifier": {
+        "type": "object",
+        "properties": {
+          "crn": {
+            "type": "string"
+          },
+          "nomsId": {
+            "type": "string"
+          }
+        },
+        "required": ["crn", "nomsId"]
+      },
+      "PersonExists": {
+        "type": "object",
+        "properties": {
+          "crn": {
+            "type": "string"
+          },
+          "existsInDelius": {
+            "type": "boolean"
+          }
+        },
+        "required": ["crn", "existsInDelius"]
+      },
+      "CourtAppearance": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "court": {
+            "type": "string"
+          },
+          "plea": {
+            "type": "string"
+          }
+        },
+        "required": ["court", "date", "type"]
+      },
+      "DynamicRiskRegistration": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "RCCO"
+          },
+          "description": {
+            "type": "string",
+            "example": "Child Concerns"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "reviewDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "required": ["code", "description", "startDate"]
+      },
+      "Manager": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "$ref": "#/components/schemas/Name"
+          },
+          "username": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "telephoneNumber": {
+            "type": "string"
+          },
+          "team": {
+            "$ref": "#/components/schemas/Team"
+          },
+          "allocated": {
+            "type": "boolean"
+          }
+        },
+        "required": ["allocated", "code", "name", "team"]
+      },
+      "MappaDetail": {
+        "type": "object",
+        "properties": {
+          "level": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "levelDescription": {
+            "type": "string"
+          },
+          "category": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "categoryDescription": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "reviewDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "required": ["startDate"]
+      },
+      "Name": {
+        "type": "object",
+        "properties": {
+          "forename": {
+            "type": "string"
+          },
+          "surname": {
+            "type": "string"
+          }
+        },
+        "required": ["forename", "surname"]
+      },
+      "Offence": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "count": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "code": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "mainCategory": {
+            "$ref": "#/components/schemas/OffenceCategory"
+          },
+          "subCategory": {
+            "$ref": "#/components/schemas/OffenceCategory"
+          },
+          "schedule15SexualOffence": {
+            "type": "boolean"
+          },
+          "schedule15ViolentOffence": {
+            "type": "boolean"
+          }
+        },
+        "required": ["code", "description"]
+      },
+      "OffenceCategory": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": ["code", "description"]
+      },
+      "PersonStatusRegistration": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "ASFO"
+          },
+          "description": {
+            "type": "string",
+            "example": "Serious Further Offence - Subject to SFO review/investigation"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "reviewDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "required": ["code", "description", "startDate"]
+      },
+      "Provider": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": ["code", "description"]
+      },
+      "Sentence": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "length": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "lengthUnits": {
+            "type": "string",
+            "enum": ["Hours", "Days", "Weeks", "Months", "Years"]
+          },
+          "custodial": {
+            "type": "boolean"
+          }
+        },
+        "required": ["custodial", "date", "description"]
+      },
+      "Supervision": {
+        "type": "object",
+        "properties": {
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "sentence": {
+            "$ref": "#/components/schemas/Sentence"
+          },
+          "mainOffence": {
+            "$ref": "#/components/schemas/Offence"
+          },
+          "additionalOffences": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Offence"
+            }
+          },
+          "courtAppearances": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CourtAppearance"
+            }
+          }
+        },
+        "required": ["active", "number"]
+      },
+      "SupervisionResponse": {
+        "type": "object",
+        "properties": {
+          "communityManager": {
+            "$ref": "#/components/schemas/Manager"
+          },
+          "mappaDetail": {
+            "$ref": "#/components/schemas/MappaDetail"
+          },
+          "supervisions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Supervision"
+            }
+          },
+          "dynamicRisks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DynamicRiskRegistration"
+            }
+          },
+          "personStatus": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PersonStatusRegistration"
+            }
+          }
+        },
+        "required": ["communityManager", "dynamicRisks", "personStatus", "supervisions"]
+      },
+      "Team": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "telephoneNumber": {
+            "type": "string"
+          },
+          "provider": {
+            "$ref": "#/components/schemas/Provider"
+          }
+        },
+        "required": ["code", "description", "provider"]
+      },
+      "ContactLogged": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "crn": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "contactDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "type": {
+            "$ref": "#/components/schemas/CodedValue"
+          },
+          "description": {
+            "type": "string"
+          },
+          "location": {
+            "$ref": "#/components/schemas/CodedValue"
+          },
+          "outcome": {
+            "$ref": "#/components/schemas/CodedValue"
+          },
+          "officer": {
+            "$ref": "#/components/schemas/Officer"
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "required": ["contactDate", "createdAt", "crn", "description", "id", "officer", "type", "updatedAt"]
+      },
+      "ContactsLogged": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContactLogged"
+            }
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalResults": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": ["content", "totalPages", "totalResults"]
+      },
+      "Officer": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "$ref": "#/components/schemas/Name"
+          },
+          "team": {
+            "$ref": "#/components/schemas/OfficerTeam"
+          }
+        },
+        "required": ["code", "name", "team"]
+      },
+      "OfficerPdu": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "provider": {
+            "$ref": "#/components/schemas/Provider"
+          }
+        },
+        "required": ["code", "description", "provider"]
+      },
+      "OfficerTeam": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "pdu": {
+            "$ref": "#/components/schemas/OfficerPdu"
+          }
+        },
+        "required": ["code", "description", "pdu"]
+      },
+      "AddressWrapper": {
+        "type": "object",
+        "properties": {
+          "contactDetails": {
+            "$ref": "#/components/schemas/ContactDetailAddresses"
+          }
+        },
+        "required": ["contactDetails"]
+      },
+      "CaseAddress": {
+        "type": "object",
+        "properties": {
+          "noFixedAbode": {
+            "type": "boolean"
+          },
+          "type": {
+            "$ref": "#/components/schemas/CodedValue"
+          },
+          "buildingName": {
+            "type": "string"
+          },
+          "addressNumber": {
+            "type": "string"
+          },
+          "streetName": {
+            "type": "string"
+          },
+          "town": {
+            "type": "string"
+          },
+          "district": {
+            "type": "string"
+          },
+          "county": {
+            "type": "string"
+          },
+          "postcode": {
+            "type": "string"
+          },
+          "from": {
+            "type": "string",
+            "format": "date"
+          },
+          "to": {
+            "type": "string",
+            "format": "date"
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "required": ["noFixedAbode", "type"]
+      },
+      "ContactDetailAddresses": {
+        "type": "object",
+        "properties": {
+          "addresses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CaseAddress"
+            }
+          }
+        },
+        "required": ["addresses"]
+      }
+    },
+    "securitySchemes": {
+      "hmpps-auth-token": {
+        "type": "http",
+        "name": "Authorization",
+        "in": "header",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

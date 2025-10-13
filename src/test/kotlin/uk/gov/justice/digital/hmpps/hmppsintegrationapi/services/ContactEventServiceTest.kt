@@ -16,6 +16,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.ContactEventHelper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -23,7 +24,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.ContactEventStubGenerator
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -40,7 +40,7 @@ internal class ContactEventServiceTest(
       val hmppsId = persona.identifiers.deliusCrn!!
       val crn = hmppsId
       val person = Person(firstName = persona.firstName, lastName = persona.lastName, identifiers = persona.identifiers)
-      val contactEvents = ContactEventStubGenerator.generateNDeliusContactEvents(crn, 10, 1, 100)
+      val contactEvents = ContactEventHelper.generateNDeliusContactEvents(crn, 10, 1, 100)
       val mappaCategories = emptyList<Number>()
       val mappaCats = emptyList<MappaCategory>()
       val filters = ConsumerFilters(mappaCategories = mappaCats)
@@ -56,7 +56,7 @@ internal class ContactEventServiceTest(
           .thenReturn(Response(contactEvents))
 
         whenever(deliusGateway.getContactEventForPerson(crn, 1, mappaCategories))
-          .thenReturn(Response(contactEvents.contactEvents.first()))
+          .thenReturn(Response(contactEvents.content.first()))
       }
 
       it("contact events calls personService search with hmppsId") {
@@ -108,7 +108,7 @@ internal class ContactEventServiceTest(
 
       it("contact events should return contact events from gateway") {
         val result = contactEventService.getContactEvents(crn, 1, 10, filters)
-        result.data?.content.shouldBe(contactEvents.contactEvents.map { it.toContactEvent() })
+        result.data?.content.shouldBe(contactEvents.content.map { it.toContactEvent() })
         result.errors.count().shouldBe(0)
       }
 
@@ -161,13 +161,13 @@ internal class ContactEventServiceTest(
 
       it("contact event should return a contact event from the gateway") {
         val result = contactEventService.getContactEvent(crn, 1, filters)
-        result.data?.shouldBe(contactEvents.contactEvents.first().toContactEvent())
+        result.data?.shouldBe(contactEvents.content.first().toContactEvent())
         result.errors.count().shouldBe(0)
       }
 
       it("contact event should request all mappa categories when mappa cats are null") {
         whenever(deliusGateway.getContactEventForPerson(any(), any(), any()))
-          .thenReturn(Response(contactEvents.contactEvents.first()))
+          .thenReturn(Response(contactEvents.content.first()))
         val noMappaFilter = ConsumerFilters()
         contactEventService.getContactEvent(crn, 1, noMappaFilter)
         val captor = argumentCaptor<List<Number>>()
@@ -187,7 +187,7 @@ internal class ContactEventServiceTest(
 
       it("contact event should request no mappa categories when mappa cats are empty") {
         whenever(deliusGateway.getContactEventForPerson(any(), any(), any()))
-          .thenReturn(Response(contactEvents.contactEvents.first()))
+          .thenReturn(Response(contactEvents.content.first()))
         val noMappaFilter = ConsumerFilters(mappaCategories = emptyList())
         contactEventService.getContactEvent(crn, 1, noMappaFilter)
         val captor = argumentCaptor<List<Number>>()
