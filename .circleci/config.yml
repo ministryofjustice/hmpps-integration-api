@@ -152,7 +152,7 @@ jobs:
       - checkout
       - run:
           name: Run main smoke tests
-          command: k6 run -e PROFILE=MAIN ./scripts/K6/smoke-tests.js &&
+          command: k6 run -e PROFILE=MAIN ./scripts/K6/smoke-tests.js
       - run:
           name: Run restricted permissions smoke tests
           command: k6 run -e PROFILE=LIMITED ./scripts/K6/smoke-tests.js
