@@ -42,5 +42,4 @@ data class ConsumerFilters(
   fun hasMappaCategoriesFilter(): Boolean = this.mappaCategories != null
 
   fun hasFilters(): Boolean = hasPrisonFilter() || hasCaseNotesFilter() || hasMappaCategoriesFilter()
-
 }
