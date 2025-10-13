@@ -89,7 +89,7 @@ class RetryIntegrationTest : IntegrationTestBase() {
 
       val response = callApi(path).andReturn().response.contentAsJson<ErrorResponse>()
       response.status.shouldBe(500)
-      response.userMessage shouldBe "External Service failed to process after 3 retries"
+      response.userMessage shouldBe "External Service failed to process after 3 retries with Call to upstream api ACTIVITIES failed. GET for /integration-api/activities/123456/schedules returned 502"
     }
 
     @Test
@@ -105,7 +105,7 @@ class RetryIntegrationTest : IntegrationTestBase() {
 
       val response = callApi(path).andReturn().response.contentAsJson<ErrorResponse>()
       response.status.shouldBe(500)
-      response.userMessage shouldBe "External Service failed to process after 3 retries"
+      response.userMessage shouldBe "External Service failed to process after 3 retries with Call to upstream api ACTIVITIES failed. GET for /integration-api/activities/123456/schedules returned 502"
     }
 
     @Test
@@ -163,7 +163,7 @@ class RetryIntegrationTest : IntegrationTestBase() {
 
       val response = callApi(path).andReturn().response.contentAsJson<ErrorResponse>()
       response.status.shouldBe(500)
-      response.userMessage shouldBe "External Service failed to process after 3 retries"
+      response.userMessage shouldBe "External Service failed to process after 3 retries with Call to upstream api ACTIVITIES failed. GET for /integration-api/schedules/123456 returned 502"
     }
 
     @Test
@@ -180,7 +180,7 @@ class RetryIntegrationTest : IntegrationTestBase() {
 
       val response = callApi(path).andReturn().response.contentAsJson<ErrorResponse>()
       response.status.shouldBe(500)
-      response.userMessage shouldBe "External Service failed to process after 3 retries"
+      response.userMessage shouldBe "External Service failed to process after 3 retries with Call to upstream api ACTIVITIES failed. GET for /integration-api/schedules/123456 returned 502"
     }
 
     @Test
