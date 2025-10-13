@@ -40,7 +40,6 @@ data class FeatureFlagConfig(
     const val EDUCATION_TRIGGER_ENABLED = "education-trigger-enabled"
     const val EDUCATION_ALN_TRIGGER_ENABLED = "education-aln-trigger-enabled"
     const val USE_CONTACT_EVENTS_ENDPOINT = "use-contact-events-endpoint"
-    const val USE_STUBBED_CONTACT_EVENTS_DATA = "use-stubbed-contact-events-data"
     const val REDACTION_POLICY_ENABLED = "redaction-policy-enabled"
   }
 
