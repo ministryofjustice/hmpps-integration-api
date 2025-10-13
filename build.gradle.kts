@@ -24,7 +24,7 @@ dependencies {
   implementation("org.springframework.data:spring-data-commons")
   implementation("org.springframework:spring-aop")
   implementation("org.aspectj:aspectjweaver")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.4.11") {
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.5.0") {
     exclude("org.springframework.security", "spring-security-config")
     exclude("org.springframework.security", "spring-security-core")
     exclude("org.springframework.security", "spring-security-crypto")
@@ -55,10 +55,10 @@ dependencies {
   }
   // Explicitly add all necessary Jetty and Servlet dependencies
   testImplementation("javax.servlet:javax.servlet-api:4.0.1")
-  testImplementation("org.eclipse.jetty:jetty-util:12.1.1")
-  testImplementation("org.eclipse.jetty:jetty-server:12.1.1")
-  testImplementation("org.eclipse.jetty:jetty-http:12.1.1")
-  testImplementation("org.eclipse.jetty:jetty-io:12.1.1")
+  testImplementation("org.eclipse.jetty:jetty-util:12.1.2")
+  testImplementation("org.eclipse.jetty:jetty-server:12.1.2")
+  testImplementation("org.eclipse.jetty:jetty-http:12.1.2")
+  testImplementation("org.eclipse.jetty:jetty-io:12.1.2")
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
   testImplementation(kotlin("test"))
   testImplementation("io.mockk:mockk:1.14.6")
