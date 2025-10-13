@@ -2,7 +2,7 @@
 title: HMPPS Integration Events
 weight: 6
 owner_slack: "#hmpps-integration-api-alerts"
-last_reviewed_on: 2025-09-30
+last_reviewed_on: 2025-10-13
 review_in: 6 months
 ---
 
@@ -15,9 +15,10 @@ Consumers who want to receive Integration Events, will be provided with a dedica
 Email [hmpps-external-api@justice.gov.uk](mailto:hmpps-external-api@justice.gov.uk) to request access to this Events service.
 
 ## Notification Message Structure
-The notification message content is a JSON structure containing an event ID, an event type (see "available events", below), the URL at which the updated data is available and some additional metadata.
+The notification message content is a JSON structure containing an event ID, an event type, the URL at which the updated data is available and potentially some additional metadata.
 
-For example:-
+For example:
+
 ```
 {
   "eventId":123456,
@@ -28,7 +29,6 @@ For example:-
   "lastModifiedDateTime":"2025-10-13T12:42:00.002387"
 }
 ```
-Note that the example has been formatted with one attribute per line for readability, while the published event does not include line breaks.
 
 ## Available Events
 Below is a list of all the events that you can currently receive notifications about if something changes.
@@ -38,12 +38,12 @@ It details the endpoints the events relate to, and information about what trigge
 
  * **Endpoint:** `/v1/persons/{hmppsId}/risks/dynamic`
  * **Event ID:** `DYNAMIC_RISKS_CHANGED`
-  * **Triggered by:**
+ * **Triggered by:**
   * `ProbationCase.Registration.ADDED`
   * `ProbationCase.Registration.UPDATED`
   * `ProbationCase.Registration.DELETED`
   * `ProbationCase.Registration.DEREGISTERED`
-* **As well as one of the following dynamic risks register types being present:**
+ * **As well as one of the following dynamic risks register types being present:**
   * Child Concerns (`RCCO`)
       * Safeguarding concerns where a child is at risk from the offender.
   * Child Protection (`RCPR`)
@@ -523,4 +523,5 @@ It details the endpoints the events relate to, and information about what trigge
 * **Triggered By:**
     * **OR** `PrisonOffenderEvents.Prisoner.RECEIVED` (when reason is changed to `ADMISSION` or `TRANSFERRED`)
     * **OR** `PrisonOffenderEvents.Prisoner.RELEASED` (when reason is `RELEASED`)
+
 ---
