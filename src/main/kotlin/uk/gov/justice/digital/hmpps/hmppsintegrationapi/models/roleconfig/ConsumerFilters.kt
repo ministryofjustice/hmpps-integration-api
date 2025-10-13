@@ -43,14 +43,4 @@ data class ConsumerFilters(
 
   fun hasFilters(): Boolean = hasPrisonFilter() || hasCaseNotesFilter() || hasMappaCategoriesFilter()
 
-  fun mappaCategories(): List<Number> =
-    if (this.hasMappaCategoriesFilter()) {
-      // Filters are applied even if empty list
-      this.mappaCategories!!.filterIsInstance<MappaCategory>().mapNotNull {
-        it.category
-      }
-    } else {
-      // No filters to be applied - all applicable
-      MappaCategory.all().mapNotNull { it.category }
-    }
 }
