@@ -147,16 +147,21 @@ jobs:
           command: make publish
   smoke-tests-dev:
     docker:
-      - image: grafana/k6:1.0.0
+      - image: grafana/k6:1.3.0
     steps:
       - checkout
       - run:
-          name: Run smoke tests
-          command: |
-            k6 run -e PROFILE=MAIN ./scripts/K6/smoke-tests.js
-            k6 run -e PROFILE=LIMITED ./scripts/K6/smoke-tests.js
-            k6 run -e PROFILE=NOPERMS ./scripts/K6/smoke-tests.js
-            k6 run -e PROFILE=NOCERT ./scripts/K6/smoke-tests.js
+          name: Run main smoke tests
+          command: k6 run -e PROFILE=MAIN ./scripts/K6/smoke-tests.js &&
+      - run:
+          name: Run restricted permissions smoke tests
+          command: k6 run -e PROFILE=LIMITED ./scripts/K6/smoke-tests.js
+      - run:
+          name: Run no permissions smoke tests
+          command: k6 run -e PROFILE=NOPERMS ./scripts/K6/smoke-tests.js
+      - run:
+          name: Run no certificate smoke tests
+          command: k6 run -e PROFILE=NOCERT ./scripts/K6/smoke-tests.js
   smoke-tests-higher-envs:
     docker:
       - image: grafana/k6:1.0.0
