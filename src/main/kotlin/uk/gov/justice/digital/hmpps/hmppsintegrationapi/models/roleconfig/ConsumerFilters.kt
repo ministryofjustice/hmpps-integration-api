@@ -7,6 +7,19 @@ data class ConsumerFilters(
   val caseNotes: List<String>? = null,
   val mappaCategories: List<Any>? = null,
 ) {
+  companion object {
+    fun mappaCategories(filters: ConsumerFilters?): List<Number> =
+      if (filters?.hasMappaCategoriesFilter() == true) {
+        // Filters are applied even if empty list
+        filters.mappaCategories!!.filterIsInstance<MappaCategory>().mapNotNull {
+          it.category
+        }
+      } else {
+        // No filters to be applied - all applicable
+        MappaCategory.all().mapNotNull { it.category }
+      }
+  }
+
   fun matchesPrison(prisonId: String?): Boolean = matchesFilterList(prisons, prisonId)
 
   private fun matchesFilterList(
