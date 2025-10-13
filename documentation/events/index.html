@@ -152,9 +152,6 @@
       <li>
         <a href="../../documentation/events/index.html#available-events"><span>Available Events</span></a>
       </li>
-      <li>
-        <a href="../../documentation/events/index.html#or-prisonoffenderevents-prisoner-released-when-reason-is-released"><span>* OR PrisonOffenderEvents.Prisoner.RELEASED (when reason is RELEASED)</span></a>
-      </li>
     </ul>
   </li>
   <li>
@@ -174,35 +171,35 @@
 <p>Consumers who want to receive Integration Events, will be provided with a dedicated AWS SQS queue that automatically subscribes to notifications for the API endpoints they have access to.</p>
 <p>Email <a href="mailto:hmpps-external-api@justice.gov.uk">hmpps-external-api@justice.gov.uk</a> to request access to this Events service.</p>
 <h2 id="notification-message-structure">Notification Message Structure</h2>
-<p>The notification message content is a JSON structure containing an event ID, an event type (see &ldquo;available events&rdquo;, below), the URL at which the updated data is available and some additional metadata.</p>
-<p>For example:-
-<code>
-{
-  &quot;eventId&quot;:123456,
-  &quot;hmppsId&quot;:&quot;X688624&quot;,
-  &quot;eventType&quot;:&quot;PERSON_NAME_CHANGED&quot;,
-  &quot;prisonId&quot;:null,
-  &quot;url&quot;:&quot;http://{api-domain}/events/person-name-changed/X688624&quot;,
-  &quot;lastModifiedDateTime&quot;:&quot;2025-10-13T12:42:00.002387&quot;
+<p>The notification message content is a JSON structure containing an event ID, an event type, the URL at which the updated data is available and potentially some additional metadata.</p>
+<p>For example:</p>
+<div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>{
+  "eventId":123456,
+  "hmppsId":"X688624",
+  "eventType":"PERSON_NAME_CHANGED",
+  "prisonId":null,
+  "url":"http://{api-domain}/events/person-name-changed/X688624",
+  "lastModifiedDateTime":"2025-10-13T12:42:00.002387"
 }
-</code>
-Note that the example has been formatted with one attribute per line for readability, while the published event does not include line breaks.</p>
-<h2 id="available-events">Available Events</h2>
+</code></pre></div><h2 id="available-events">Available Events</h2>
 <p>Below is a list of all the events that you can currently receive notifications about if something changes.
 It details the endpoints the events relate to, and information about what triggers an event to be sent.</p>
 <h3 id="dynamic-risks-changed">Dynamic Risks Changed</h3>
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/persons/{hmppsId}/risks/dynamic</code></li>
-<li><strong>Event ID:</strong> <code>DYNAMIC_RISKS_CHANGED</code>
+<li><strong>Event ID:</strong> <code>DYNAMIC_RISKS_CHANGED</code></li>
+<li><strong>Triggered by:</strong>
 
 <ul>
-<li><strong>Triggered by:</strong></li>
 <li><code>ProbationCase.Registration.ADDED</code></li>
 <li><code>ProbationCase.Registration.UPDATED</code></li>
 <li><code>ProbationCase.Registration.DELETED</code></li>
 <li><code>ProbationCase.Registration.DEREGISTERED</code></li>
-<li><strong>As well as one of the following dynamic risks register types being present:</strong></li>
+</ul></li>
+<li><strong>As well as one of the following dynamic risks register types being present:</strong>
+
+<ul>
 <li>Child Concerns (<code>RCCO</code>)
 
 <ul>
@@ -959,21 +956,23 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>OR</strong> <code>PrisonOffenderEvents.Prisoner.RECEIVED</code> (when reason is changed to <code>ADMISSION</code> or <code>TRANSFERRED</code>)</li>
-</ul>
-<h2 id="or-prisonoffenderevents-prisoner-released-when-reason-is-released">* <strong>OR</strong> <code>PrisonOffenderEvents.Prisoner.RELEASED</code> (when reason is <code>RELEASED</code>)</h2></li>
+<li><strong>OR</strong> <code>PrisonOffenderEvents.Prisoner.RELEASED</code> (when reason is <code>RELEASED</code>)</li>
+</ul></li>
 </ul>
 
-              <div data-module='page-expiry' data-last-reviewed-on="2026-03-30">
+<hr>
+
+              <div data-module='page-expiry' data-last-reviewed-on="2026-04-13">
     <div class='page-expiry--not-expired'>
-      This page was last reviewed on 30 September 2025.
+      This page was last reviewed on 13 October 2025.
 
-        It needs to be reviewed again on 30 March 2026
+        It needs to be reviewed again on 13 April 2026
         by the page owner <a href="">#hmpps-integration-api-alerts</a>
         .
     </div>
 
     <div class='page-expiry--expired' hidden>
-      This page was set to be reviewed before 30 March 2026
+      This page was set to be reviewed before 13 April 2026
        by the page owner <a href="">#hmpps-integration-api-alerts</a>.
       This might mean the content is out of date.
     </div>
