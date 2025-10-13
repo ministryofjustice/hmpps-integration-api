@@ -1,5 +1,7 @@
-const http = require('k6/http');
-const { check, fail } = require('k6');
+import http from 'k6/http';
+// const http = require('k6/http');
+// const { check, fail } = require('k6');
+import { check, fail } from 'k6';
 import exec from 'k6/execution';
 import { read_certificate } from "./support.js"
 
@@ -263,7 +265,7 @@ function verify_get_endpoints() {
     if (!check(res, {
       [`GET ${endpoint} returns 200`]: (r) => r.status === 200,
     })) {
-      fail(`${endpoint} caused the test to fail, status = ${res.status}`)
+      exec.test.fail(`${endpoint} caused the test to fail, status = ${res.status}`)
     }
   }
 }
@@ -274,7 +276,7 @@ function verify_broken_endpoints() {
     if (!check(res, {
       [`GET ${endpoint} returns error`]: (r) => r.status >= 400,
     })) {
-      fail(`${endpoint} caused the test to fail`)
+      exec.test.fail(`${endpoint} caused the test to fail`)
     }
   }
 }
@@ -347,7 +349,7 @@ function validate_get_request(path) {
   if (!check(res, {
     [`GET ${path} successful`]: (r) => r.status < 400,
   })) {
-    fail(`${path} caused the test to fail`);
+    exec.test.fail(`${path} caused the test to fail`);
   }
   return res;
 }
@@ -358,7 +360,7 @@ function confirm_access_denied(path) {
   if (!check(res, {
     [`GET ${path} ACCESS DENIED`]: (r) => ((r.status === 0) || (r.status === 401) || (r.status === 403)),
   })) {
-    fail(`${path} was not denied`);
+    exec.test.fail(`${path} was not denied`);
   }
 }
 
@@ -372,6 +374,9 @@ function validate_status_endpoint() {
 
 function validate_contact_events(){
   let res = validate_get_request(`/v1/persons/${primaryHmppsId}/contact-events?page=1&size=10&mappaCategories=4`);
+  if (res.status !== 200) {
+    return
+  }
   check(res, {
     [`Has entries`]: () => res?.json()["data"].length > 0,
   })
@@ -382,16 +387,10 @@ function validate_contact_events(){
   validate_get_request(`/v1/persons/${primaryHmppsId}/contact-events/${id}?mappaCategories=4`);
 }
 
-function structured_verification_test(hmppsId) {
-  let res = validate_status_endpoint();
+function verify_get_person(hmppsId) {
+  let res = validate_get_request(`/v1/persons/${hmppsId}`);
   if (res.status >= 400) {
-    return
-  }
-
-  res = validate_get_request(`/v1/persons/${hmppsId}`);
-
-  if (res.status >= 400) {
-    return
+    return null
   }
 
   let probationData = res.json()["data"]["probationOffenderSearch"];
@@ -410,9 +409,27 @@ function structured_verification_test(hmppsId) {
     [`Prisoner number identified`]: () => nomisNumber != null,
   })
 
-  validate_get_request(`/v1/prison/prisoners/${nomisNumber}`)
+  return nomisNumber
 }
 
+function structured_verification_test(hmppsId) {
+  let res = validate_status_endpoint();
+  if (res.status >= 400) {
+    return
+  }
+
+  let nomisNumber = verify_get_person(hmppsId)
+
+  if (nomisNumber != null) {
+    validate_get_request(`/v1/prison/prisoners/${nomisNumber}`)
+  }
+
+  validate_contact_events()
+}
+
+/**
+ * Minimal verification for environments with sensitive data.
+ */
 function minimal_prod_verification() {
   validate_status_endpoint();
 }
@@ -421,25 +438,35 @@ function denied_endpoint_verification() {
   confirm_access_denied(`/v1/persons?first_name=john`);
 }
 
+function simple_endpoint_tests() {
+  verify_post_endpoints();
+  verify_get_endpoints();
+  verify_broken_endpoints();
+}
+
+/**
+ * Test using a consumer that has access to some endpoints but not others.
+ */
+function partial_access_tests() {
+  validate_get_request(`/v1/persons/${primaryHmppsId}/name`);
+  denied_endpoint_verification();
+}
+
 /************************************************************************/
 
 export default function ()  {
-  console.log(`Using profile: ${profile} with base url: ${baseUrl}`)
+  console.log(`Using profile: ${profile} with base url: ${baseUrl}`);
 
   switch (profile) {
     case "MAIN":
-      verify_post_endpoints();
-      verify_get_endpoints();
-      verify_broken_endpoints();
+      simple_endpoint_tests();
       structured_verification_test(primaryHmppsId);
-      validate_contact_events()
       break
     case "PROD":
       minimal_prod_verification();
       break
     case "LIMITED":
-      validate_get_request(`/v1/persons/${primaryHmppsId}/name`);
-      denied_endpoint_verification();
+      partial_access_tests();
       break
     case "NOPERMS":
     case "NOCERT":
