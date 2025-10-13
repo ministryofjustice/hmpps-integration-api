@@ -147,6 +147,9 @@
     <a href="../../documentation/events/index.html"><span>HMPPS External Events</span></a>
     <ul>
       <li>
+        <a href="../../documentation/events/index.html#notification-message-structure"><span>Notification Message Structure</span></a>
+      </li>
+      <li>
         <a href="../../documentation/events/index.html#available-events"><span>Available Events</span></a>
       </li>
       <li>
@@ -170,6 +173,20 @@
 <p>HMPPS External Events (formerly HMPPS Integration Events) is an events based system which triggers SNS notifications by processing upstream MoJ domain events which are related to the information served by the API. This allows the clients of our API to be notified when a change occurs to a domain that is of interest to them.</p>
 <p>Consumers who want to receive Integration Events, will be provided with a dedicated AWS SQS queue that automatically subscribes to notifications for the API endpoints they have access to.</p>
 <p>Email <a href="mailto:hmpps-external-api@justice.gov.uk">hmpps-external-api@justice.gov.uk</a> to request access to this Events service.</p>
+<h2 id="notification-message-structure">Notification Message Structure</h2>
+<p>The notification message content is a JSON structure containing an event ID, an event type (see &ldquo;available events&rdquo;, below), the URL at which the updated data is available and some additional metadata.</p>
+<p>For example:-
+<code>
+{
+  &quot;eventId&quot;:123456,
+  &quot;hmppsId&quot;:&quot;X688624&quot;,
+  &quot;eventType&quot;:&quot;PERSON_NAME_CHANGED&quot;,
+  &quot;prisonId&quot;:null,
+  &quot;url&quot;:&quot;http://{api-domain}/events/person-name-changed/X688624&quot;,
+  &quot;lastModifiedDateTime&quot;:&quot;2025-10-13T12:42:00.002387&quot;
+}
+</code>
+Note that the example has been formatted with one attribute per line for readability, while the published event does not include line breaks.</p>
 <h2 id="available-events">Available Events</h2>
 <p>Below is a list of all the events that you can currently receive notifications about if something changes.
 It details the endpoints the events relate to, and information about what triggers an event to be sent.</p>
@@ -177,9 +194,10 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/persons/{hmppsId}/risks/dynamic</code></li>
-<li><strong>Triggered by:</strong>
+<li><strong>Event ID:</strong> <code>DYNAMIC_RISKS_CHANGED</code>
 
 <ul>
+<li><strong>Triggered by:</strong></li>
 <li><code>ProbationCase.Registration.ADDED</code></li>
 <li><code>ProbationCase.Registration.UPDATED</code></li>
 <li><code>ProbationCase.Registration.DELETED</code></li>
@@ -220,6 +238,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/persons/{hmppsId}/status-information</code></li>
+<li><strong>Event ID:</strong> <code>PROBATION_STATUS_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -238,6 +257,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/persons/{hmppsId}/risks/mappadetail</code></li>
+<li><strong>Event ID:</strong> <code>MAPPA_DETAIL_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -256,6 +276,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/persons/{hmppsId}/risks/scores</code></li>
+<li><strong>Event ID:</strong> <code>RISK_SCORE_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -268,6 +289,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/persons/{hmppsId}/sentences/latest-key-dates-and-adjustments</code></li>
+<li><strong>Event ID:</strong> <code>KEY_DATES_AND_ADJUSTMENTS_PRISONER_RELEASE</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -292,6 +314,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/persons/{hmppsId}/licences/conditions</code></li>
+<li><strong>Event ID:</strong> <code>LICENCE_CONDITION_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -303,6 +326,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/persons/{hmppsId}/risks/serious-harm</code></li>
+<li><strong>Event ID:</strong> <code>RISK_OF_SERIOUS_HARM_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -313,6 +337,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/persons/{hmppsId}/plp-induction-schedule/history</code></li>
+<li><strong>Event ID:</strong> <code>PLP_INDUCTION_SCHEDULE_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -323,6 +348,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/persons/{hmppsId}/plp-review-schedule</code></li>
+<li><strong>Event ID:</strong> <code>PLP_REVIEW_SCHEDULE_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -333,6 +359,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/persons/{hmppsId}</code></li>
+<li><strong>Event ID:</strong> <code>PERSON_STATUS_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -348,6 +375,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/persons/{hmppsId}/addresses</code></li>
+<li><strong>Event ID:</strong> <code>PERSON_ADDRESS_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -372,6 +400,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/persons/{hmppsId}/contacts</code></li>
+<li><strong>Event ID:</strong> <code>PERSON_CONTACTS_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -397,6 +426,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/persons/{hmppsId}/iep-level</code></li>
+<li><strong>Event ID:</strong> <code>PERSON_IEP_LEVEL_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -421,6 +451,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/persons/{hmppsId}/visitor/{contactId}/restrictions</code></li>
+<li><strong>Event ID:</strong> <code>PERSON_VISITOR_RESTRICTIONS_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -432,6 +463,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/persons/{hmppsId}/visit-restrictions</code></li>
+<li><strong>Event ID:</strong> <code>PERSON_VISIT_RESTRICTIONS_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -450,6 +482,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/persons/{hmppsId}/visits/future</code></li>
+<li><strong>Event ID:</strong> <code>PERSON_FUTURE_VISITS_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -462,6 +495,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/persons/{hmppsId}/alerts</code></li>
+<li><strong>Event ID:</strong> <code>PERSON_ALERTS_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -487,6 +521,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/pnd/persons/{hmppsId}/alerts</code></li>
+<li><strong>Event ID:</strong> <code>PERSON_PND_ALERTS_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -517,6 +552,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/persons/{hmppsId}/case-notes</code></li>
+<li><strong>Event ID:</strong> <code>PERSON_CASE_NOTES_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -541,6 +577,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/persons/{hmppsId}/name</code></li>
+<li><strong>Event ID:</strong> <code>PERSON_NAME_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -559,6 +596,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/persons/{hmppsId}/cell-location</code></li>
+<li><strong>Event ID:</strong> <code>PERSON_CELL_LOCATION_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -577,6 +615,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/persons/{hmppsId}/sentences</code></li>
+<li><strong>Event ID:</strong> <code>PERSON_SENTENCES_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -595,6 +634,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/persons/{hmppsId}/person-responsible-officer</code></li>
+<li><strong>Event ID:</strong> <code>PERSON_RESPONSIBLE_OFFICER_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -619,6 +659,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/persons/{hmppsId}/protected-characteristics</code></li>
+<li><strong>Event ID:</strong> <code>PERSON_PROTECTED_CHARACTERISTICS_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -636,6 +677,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/persons/{hmppsId}/reported-adjudications</code></li>
+<li><strong>Event ID:</strong> <code>PERSON_REPORTED_ADJUDICATIONS_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -662,6 +704,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/persons/{hmppsId}/number-of-children</code></li>
+<li><strong>Event ID:</strong> <code>PERSON_NUMBER_OF_CHILDREN_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -679,6 +722,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/persons/{hmppsId}/physical-characteristics</code></li>
+<li><strong>Event ID:</strong> <code>PERSON_PHYSICAL_CHARACTERISTICS_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -697,6 +741,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/persons/{hmppsId}/images</code></li>
+<li><strong>Event ID:</strong> <code>PERSON_IMAGES_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -714,6 +759,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/prison/prisoners</code></li>
+<li><strong>Event ID:</strong> <code>PRISONERS_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -726,6 +772,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/prison/prisoners/{hmppsId}</code></li>
+<li><strong>Event ID:</strong> <code>PRISONER_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -738,6 +785,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/prison/{prisonId}/prisoners/{hmppsId}/non-associations</code></li>
+<li><strong>Event ID:</strong> <code>PRISONER_NON_ASSOCIATIONS_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -754,6 +802,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/prison/{prisonId}/visit/search</code></li>
+<li><strong>Event ID:</strong> <code>PRISON_VISITS_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -766,6 +815,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/prison/{prisonId}/residential-hierarchy</code></li>
+<li><strong>Event ID:</strong> <code>PRISON_RESIDENTIAL_HIERARCHY_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -780,6 +830,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/prison/{prisonId}/location/{locationKey}</code></li>
+<li><strong>Event ID:</strong> <code>PRISON_LOCATION_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -794,6 +845,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/prison/{prisonId}/residential-details</code></li>
+<li><strong>Event ID:</strong> <code>PRISON_RESIDENTIAL_DETAILS_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -808,6 +860,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/prison/{prisonId}/capacity</code></li>
+<li><strong>Event ID:</strong> <code>PRISON_CAPACITY_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -822,6 +875,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/visit/{visitReference}</code></li>
+<li><strong>Event ID:</strong> <code>VISIT_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -834,6 +888,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/persons/{hmppsId}/health-and-diet</code></li>
+<li><strong>Event ID:</strong> <code>PERSON_HEALTH_AND_DIET_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -851,6 +906,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/persons/{hmppsId}/care-needs</code></li>
+<li><strong>Event ID:</strong> <code>PERSON_CARE_NEEDS_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -868,6 +924,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/persons/{hmppsId}/languages</code></li>
+<li><strong>Event ID:</strong> <code>PERSON_LANGUAGES_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -885,6 +942,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/persons/{hmppsId}/education/assessments</code></li>
+<li><strong>Event ID:</strong> <code>PERSON_EDUCATION_ASSESSMENTS_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
@@ -896,6 +954,7 @@ It details the endpoints the events relate to, and information about what trigge
 
 <ul>
 <li><strong>Endpoint:</strong> <code>/v1/persons/{hmppsId}/prisoner-base-location</code></li>
+<li><strong>Event ID:</strong> <code>PRISONER_BASE_LOCATION_CHANGED</code></li>
 <li><strong>Triggered By:</strong>
 
 <ul>
