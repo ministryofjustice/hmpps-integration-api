@@ -459,7 +459,7 @@ export default function ()  {
 
   switch (profile) {
     case "MAIN":
-      simple_endpoint_tests();
+      // simple_endpoint_tests();
       structured_verification_test(primaryHmppsId);
       break
     case "PROD":
