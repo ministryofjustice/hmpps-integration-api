@@ -90,7 +90,6 @@ const get_endpoints = [
   `/v1/persons/${hmppsId}/number-of-children`,
   `/v1/persons/${hmppsId}/physical-characteristics`,
   `/v1/persons/${hmppsId}/care-needs`,
-  `/v1/pnd/persons/${hmppsId}/alerts`,
   `/v1/prison/prisoners?first_name=john`,
   `/v1/prison/prisoners/${hmppsId}`,
   `/v1/prison/${prisonId}/prisoners/${hmppsId}/balances`,
@@ -106,48 +105,33 @@ const get_endpoints = [
   `/v1/prison/${alternativeprisonId}/activities`,
   `/v1/prison/${alternativeprisonId}/prison-pay-bands`,
   `/v1/contacts/${contactId}`,
-  `/v1/persons?first_name=john`,
-  `/v1/persons/${primaryHmppsId}`,
-  `/v1/persons/${hmppsIdWithLaoContext}/licences/conditions`,
   `/v1/persons/${hmppsId}/needs`,
-  `/v1/persons/${hmppsIdWithLaoContext}/risks/mappadetail`,
-  `/v1/persons/${hmppsIdWithLaoContext}/risks/scores`,
   `/v1/persons/${hmppsId}/plp-induction-schedule`,
   `/v1/persons/${hmppsId}/plp-induction-schedule/history`,
   `/v1/persons/${plpHmppsId}/plp-review-schedule`,
-  `/v1/persons/${hmppsIdWithLaoContext}/status-information`,
   `/v1/persons/${hmppsId}/sentences/latest-key-dates-and-adjustments`,
-  `/v1/persons/${hmppsIdWithLaoContext}/risks/serious-harm`,
-  `/v1/persons/${hmppsIdWithLaoContext}/risks/scores`,
-  `/v1/persons/${hmppsIdWithLaoContext}/risks/dynamic`,
   `/v1/hmpps/id/nomis-number/${hmppsId}`,
   `/v1/persons/${visitsHmppsId}/visit/future`,
   `/v1/visit/${visitReference}`,
   `/v1/visit/id/by-client-ref/${clientVisitReference}`,
   `/v1/prison/${prisonId}/visit/search?visitStatus=BOOKED`,
   `/v1/persons/${primaryHmppsId}/protected-characteristics`,
-  `/v1/epf/person-details/${primaryHmppsId}/1`,
   `/v1/persons/${risksCrn}/risk-management-plan`,
   `/v1/persons/${alternativeHmppsId}/person-responsible-officer`,
   `/v1/persons/${alternativeHmppsId}/visitor/${contactId}/restrictions`,
   `/v1/persons/${hmppsId}/images`,
   `/v1/persons/${hmppsId}/images/${imageId}`,
   `/v1/persons/${hmppsId}/case-notes`,
-  `/v1/hmpps/reference-data`,
-  `/v2/config/authorisation`,
   `/v1/persons/${hmppsId}/health-and-diet`,
   `/v1/persons/${hmppsId}/languages`,
   `/v1/persons/${plpHmppsId}/education`,
   `/v1/persons/${hmppsId}/prisoner-base-location`,
   `/v1/activities/${activityId}/schedules`,
-  `/v1/activities/attendance-reasons`,
   `/v1/activities/schedule/${scheduleId}`,
   `/v1/prison/${prisonId}/prisoners/${hmppsId}/scheduled-instances?startDate=${startDate}&endDate=${endDate}`,
-  `/v1/activities/deallocation-reasons`,
   `/v1/prison/prisoners/${attendancesHmppsId}/activities/attendances?startDate=${attendancesStartDate}&endDate=${attendancesEndDate}`,
   `/v1/activities/schedule/${scheduleId}/waiting-list-applications`,
   `/v1/activities/schedule/${scheduleId}/suitability-criteria`,
-  `/v1/status`,
   `/v1/persons/${hmppsId}/education/san/plan-creation-schedule`,
   `/v1/persons/${alternativeHmppsId}/education/san/review-schedule`,
 ];
@@ -364,27 +348,51 @@ function confirm_access_denied(path) {
   }
 }
 
-function validate_status_endpoint() {
-  const response = validate_get_request("/v1/status");
-  check(response, {
+/**
+ * Validates the generic endpoints (status, config, refdata).
+ *
+ * @returns true if the status endpoint worked
+ */
+function verify_system_endpoints() {
+  let response = validate_get_request("/v1/status");
+  if (!check(response, {
     ["Status endpoint reports OK"]: (res) => res.json()["data"]["status"] === "ok",
-  })
-  return response
+  })) {
+    return false
+  }
+
+  validate_get_request("/v2/config/authorisation");
+
+  return true
 }
 
-function validate_contact_events(){
-  let res = validate_get_request(`/v1/persons/${primaryHmppsId}/contact-events?page=1&size=10`);
+function verify_contact_events(hmppsId){
+  let res = validate_get_request(`/v1/persons/${hmppsId}/contact-events?page=1&size=10`);
   if (res.status !== 200) {
     return
   }
   check(res, {
-    [`Has entries`]: () => res?.json()["data"].length > 0,
+    [`Contact events found`]: () => res?.json()["data"].length > 0,
   })
   const id = res.json()["data"][0]["contactEventIdentifier"]
   check(id, {
-    [`ID retrieved`]: () => id != null,
+    [`Contact event ID found`]: () => id != null,
   })
-  validate_get_request(`/v1/persons/${primaryHmppsId}/contact-events/${id}?mappaCategories=4`);
+  validate_get_request(`/v1/persons/${hmppsId}/contact-events/${id}?mappaCategories=4`);
+}
+
+function validate_person_search(lastName, dob) {
+  let res = validate_get_request(`/v1/persons?last_name=${lastName}&date_of_birth=${dob}`);
+  if (res.status !== 200) {
+    return
+  }
+  let data = res.json()["data"];
+  check(data, {
+    [`Person search found at least 1 match`]: (data) => data.length >= 1,
+  })
+  check(data, {
+    [`Search result last name matches`]: (data) => data[0]["lastName"].toLowerCase() === lastName.toLowerCase(),
+  })
 }
 
 function verify_get_person(hmppsId) {
@@ -395,13 +403,17 @@ function verify_get_person(hmppsId) {
 
   let probationData = res.json()["data"]["probationOffenderSearch"];
   let crn = probationData["identifiers"]["deliusCrn"];
+  let lastName = probationData["lastName"];
+  let dob = probationData["dateOfBirth"];
 
   check(crn, {
     [`CRN identified`]: () => crn != null,
   })
-  check(probationData["lastName"], {
+  check(lastName, {
     [`Last name identified`]: (name) => name != null,
   })
+
+  validate_person_search(lastName, dob, crn);
 
   let nomisNumber = res.json()["data"]["prisonerOffenderSearch"]["identifiers"]["nomisNumber"];
 
@@ -412,32 +424,26 @@ function verify_get_person(hmppsId) {
   return nomisNumber
 }
 
-function structured_verification_test(hmppsId) {
-  let res = validate_status_endpoint();
-  if (res.status >= 400) {
-    return
-  }
-
-  let nomisNumber = verify_get_person(hmppsId)
-
-  if (nomisNumber != null) {
-    validate_get_request(`/v1/prison/prisoners/${nomisNumber}`)
-  }
-
-  validate_contact_events()
-}
 
 /**
  * Minimal verification for environments with sensitive data.
  */
 function minimal_prod_verification() {
-  validate_status_endpoint();
+  verify_system_endpoints();
 }
 
+/**
+ * Verify that an endpoint cannot be accessed.
+ */
 function denied_endpoint_verification() {
   confirm_access_denied(`/v1/persons?first_name=john`);
 }
 
+/**
+ * Simple verification that a set of endpoints return the expected http response code.
+ *
+ * This includes GET and POST endpoints, and also any endpoints that do not work for some reason.
+ */
 function simple_endpoint_tests() {
   verify_post_endpoints();
   verify_get_endpoints();
@@ -452,6 +458,62 @@ function partial_access_tests() {
   denied_endpoint_verification();
 }
 
+function verify_reference_data() {
+  validate_get_request(`/v1/hmpps/reference-data`);
+  validate_get_request(`/v1/activities/attendance-reasons`);
+  validate_get_request(`/v1/activities/deallocation-reasons`);
+}
+
+function verify_epf() {
+  validate_get_request(`/v1/epf/person-details/${primaryHmppsId}/1`,)
+}
+
+function verify_prisons_endpoints(nomisNumber) {
+  validate_get_request(`/v1/prison/prisoners/${nomisNumber}`)
+}
+
+function verify_pnd_alerts(hmppsId) {
+  validate_get_request(`/v1/pnd/persons/${hmppsId}/alerts`,)
+}
+
+function verify_risk_endpoints(hmppsId) {
+  validate_get_request(`/v1/persons/${hmppsId}/licences/conditions`);
+  validate_get_request(`/v1/persons/${hmppsId}/status-information`);
+  validate_get_request(`/v1/persons/${hmppsId}/risks/mappadetail`);
+  validate_get_request(`/v1/persons/${hmppsId}/risks/serious-harm`);
+  validate_get_request(`/v1/persons/${hmppsId}/risks/scores`);
+  validate_get_request(`/v1/persons/${hmppsId}/risks/dynamic`);
+}
+
+/**
+ * The primary smoke test for the External API.
+ **
+ * @param hmppsId
+ */
+function structured_verification_test(hmppsId) {
+  let res = verify_system_endpoints();
+  if (res.status >= 400) {
+    console.log(`Aborting smoke test as status endpoint failed`)
+    return
+  }
+
+  verify_reference_data();
+
+  let nomisNumber = verify_get_person(hmppsId);
+
+  if (nomisNumber != null) {
+    verify_prisons_endpoints(nomisNumber);
+  } else {
+    console.log(`No nomis number found, skipping prisons tests`)
+  }
+
+  verify_contact_events(hmppsId);
+
+  verify_risk_endpoints(hmppsId);
+
+  verify_epf(hmppsId);
+  verify_pnd_alerts(hmppsId);
+}
 /************************************************************************/
 
 export default function ()  {
@@ -459,8 +521,8 @@ export default function ()  {
 
   switch (profile) {
     case "MAIN":
-      simple_endpoint_tests();
       structured_verification_test(primaryHmppsId);
+      simple_endpoint_tests();
       break
     case "PROD":
       minimal_prod_verification();
