@@ -40,7 +40,7 @@ data class FeatureFlagConfig(
     const val EDUCATION_TRIGGER_ENABLED = "education-trigger-enabled"
     const val EDUCATION_ALN_TRIGGER_ENABLED = "education-aln-trigger-enabled"
     const val USE_CONTACT_EVENTS_ENDPOINT = "use-contact-events-endpoint"
-    const val USE_EPF_LIMITED_ACCESS_DATA = "use-epf-limited-access-data"
+    const val EPF_ENDPOINT_INCLUDES_LAO = "epf-endpoint-includes-lao"
   }
 
   /**
