@@ -1,7 +1,0 @@
-{
-  "name": "k6-smoke-tests",
-  "version": "1.0.0",
-  "devDependencies": {
-    "@types/k6": "~0.48.0"
-  }
-}

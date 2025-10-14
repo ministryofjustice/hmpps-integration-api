@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.ContactEventHelper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactEvents
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -19,7 +20,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ContactEventService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.ContactEventStubGenerator
 
 @WebMvcTest(controllers = [ContactEventsController::class])
 @ActiveProfiles("test")
@@ -32,7 +32,7 @@ internal class ContactEventsControllerTest(
       val hmppsId = "A123456"
       val path = "/v1/persons/$hmppsId/contact-events"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
-      val events = ContactEventStubGenerator.generateNDeliusContactEvents(hmppsId, 10, 1, 100).contactEvents.map { it.toContactEvent() }
+      val events = ContactEventHelper.generateNDeliusContactEvents(hmppsId, 10, 1, 100).content.map { it.toContactEvent() }
       val filters = null
 
       describe("GET $path") {
