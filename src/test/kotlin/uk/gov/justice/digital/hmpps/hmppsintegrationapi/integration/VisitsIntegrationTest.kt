@@ -556,6 +556,8 @@ class VisitsIntegrationTest : IntegrationTestWithQueueBase("visits") {
           ),
         )
 
+      await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
+
       val queueMessages = getQueueMessages()
       queueMessages.size.shouldBe(1)
 

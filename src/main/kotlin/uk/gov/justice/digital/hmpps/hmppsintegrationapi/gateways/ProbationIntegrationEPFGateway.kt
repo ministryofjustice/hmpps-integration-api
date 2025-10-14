@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.EPF_ENDPOINT_INCLUDES_LAO
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseDetail
@@ -14,6 +16,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationintegrat
 @Component
 class ProbationIntegrationEPFGateway(
   @Value("\${services.probation-integration-epf.base-url}") baseUrl: String,
+  @Autowired val featureFlag: FeatureFlagConfig,
 ) {
   private val webClient = WebClientWrapper(baseUrl)
 
@@ -34,7 +37,7 @@ class ProbationIntegrationEPFGateway(
 
     return when (result) {
       is WebClientWrapperResponse.Success -> {
-        Response(data = result.data?.toCaseDetail())
+        Response(data = result.data?.toCaseDetail(includeLimitedAccess = featureFlag.isEnabled(EPF_ENDPOINT_INCLUDES_LAO)))
       }
 
       is WebClientWrapperResponse.Error -> {
