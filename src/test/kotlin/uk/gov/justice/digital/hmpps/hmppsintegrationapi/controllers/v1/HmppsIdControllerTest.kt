@@ -35,20 +35,18 @@ internal class HmppsIdControllerTest(
     val nomisNumber = "A1234AA"
     val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
-    beforeTest {
-      Mockito.reset(getHmppsIdService)
-
-      whenever(getHmppsIdService.execute(nomisNumber)).thenReturn(
-        Response(
-          data = HmppsId(hmppsId = nomisNumber),
-        ),
-      )
-
-      Mockito.reset(auditService)
-    }
-
     describe("GET /v1/hmpps/id/nomis-number/$nomisNumber") {
       val path = "/v1/hmpps/id/nomis-number/$nomisNumber"
+
+      beforeTest {
+        Mockito.reset(getHmppsIdService)
+        whenever(getHmppsIdService.execute(nomisNumber)).thenReturn(
+          Response(
+            data = HmppsId(hmppsId = nomisNumber),
+          ),
+        )
+        Mockito.reset(auditService)
+      }
 
       it("returns a 200 OK status code") {
         val result = mockMvc.performAuthorised(path)

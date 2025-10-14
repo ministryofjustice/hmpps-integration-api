@@ -8,7 +8,6 @@ import io.kotest.matchers.maps.shouldHaveKeys
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -26,10 +25,6 @@ class ConfigControllerTests(
 ) {
   private val basePath = "/v2/config/authorisation"
   private val mockMvc = IntegrationAPIMockMvc(springMockMvc)
-
-  @BeforeEach
-  fun beforeTest() {
-  }
 
   @Test
   fun `will return authorise config based on application yml`() {

@@ -38,7 +38,6 @@ internal class ContactEventsControllerTest(
       describe("GET $path") {
         beforeTest {
           Mockito.reset(contactEventService)
-
           whenever(contactEventService.getContactEvents(hmppsId, 1, 10, filters)).thenReturn(
             Response(
               ContactEvents(

@@ -21,48 +21,46 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.PutExpressionIn
 class ExpressionInterestControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val expressionOfInterestService: PutExpressionInterestService,
-) : DescribeSpec(
-    {
-      val mockMvc = IntegrationAPIMockMvc(springMockMvc)
-      val basePath = "/v1/persons"
-      val validHmppsId = "AABCD1ABC"
-      val invalidHmppsId = "INVALID_ID"
-      val jobId = "5678"
+) : DescribeSpec({
+    val mockMvc = IntegrationAPIMockMvc(springMockMvc)
+    val basePath = "/v1/persons"
+    val validHmppsId = "AABCD1ABC"
+    val invalidHmppsId = "INVALID_ID"
+    val jobId = "5678"
 
-      describe("PUT $basePath/{hmppsId}/expression-of-interest/jobs/{jobId}") {
-        it("should return 404 Not Found if ENTITY_NOT_FOUND error occurs") {
-          validHmppsId.let { id ->
-            whenever(expressionOfInterestService.sendExpressionOfInterest(id, jobId)).thenThrow(EntityNotFoundException("Could not find person with id: $id"))
-          }
-
-          val result = mockMvc.performAuthorisedPut("$basePath/$validHmppsId/expression-of-interest/jobs/$jobId")
-          result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+    describe("PUT $basePath/{hmppsId}/expression-of-interest/jobs/{jobId}") {
+      it("should return 404 Not Found if ENTITY_NOT_FOUND error occurs") {
+        validHmppsId.let { id ->
+          whenever(expressionOfInterestService.sendExpressionOfInterest(id, jobId)).thenThrow(EntityNotFoundException("Could not find person with id: $id"))
         }
 
-        it("should throw ValidationException if an invalid hmppsId is provided") {
-          invalidHmppsId.let { id ->
-            whenever(expressionOfInterestService.sendExpressionOfInterest(id, jobId)).thenThrow(ValidationException("Invalid HMPPS ID: $id"))
-          }
-
-          val result = mockMvc.performAuthorisedPut("$basePath/$invalidHmppsId/expression-of-interest/jobs/$jobId")
-          result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
-        }
-
-        it("should return 200 OK on successful expression of interest submission") {
-          validHmppsId.let { id ->
-            doNothing().whenever(expressionOfInterestService).sendExpressionOfInterest(id, jobId)
-          }
-
-          val result = mockMvc.performAuthorisedPut("$basePath/$validHmppsId/expression-of-interest/jobs/$jobId")
-          result.response.status.shouldBe(HttpStatus.OK.value())
-        }
-
-        it("should return 500 Server Error if an exception occurs") {
-          whenever(expressionOfInterestService.sendExpressionOfInterest(any(), any())).thenThrow(RuntimeException("Unexpected error"))
-
-          val result = mockMvc.performAuthorisedPut("$basePath/$validHmppsId/expression-of-interest/jobs/$jobId")
-          result.response.status.shouldBe(HttpStatus.INTERNAL_SERVER_ERROR.value())
-        }
+        val result = mockMvc.performAuthorisedPut("$basePath/$validHmppsId/expression-of-interest/jobs/$jobId")
+        result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
       }
-    },
-  )
+
+      it("should throw ValidationException if an invalid hmppsId is provided") {
+        invalidHmppsId.let { id ->
+          whenever(expressionOfInterestService.sendExpressionOfInterest(id, jobId)).thenThrow(ValidationException("Invalid HMPPS ID: $id"))
+        }
+
+        val result = mockMvc.performAuthorisedPut("$basePath/$invalidHmppsId/expression-of-interest/jobs/$jobId")
+        result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+      }
+
+      it("should return 200 OK on successful expression of interest submission") {
+        validHmppsId.let { id ->
+          doNothing().whenever(expressionOfInterestService).sendExpressionOfInterest(id, jobId)
+        }
+
+        val result = mockMvc.performAuthorisedPut("$basePath/$validHmppsId/expression-of-interest/jobs/$jobId")
+        result.response.status.shouldBe(HttpStatus.OK.value())
+      }
+
+      it("should return 500 Server Error if an exception occurs") {
+        whenever(expressionOfInterestService.sendExpressionOfInterest(any(), any())).thenThrow(RuntimeException("Unexpected error"))
+
+        val result = mockMvc.performAuthorisedPut("$basePath/$validHmppsId/expression-of-interest/jobs/$jobId")
+        result.response.status.shouldBe(HttpStatus.INTERNAL_SERVER_ERROR.value())
+      }
+    }
+  })
