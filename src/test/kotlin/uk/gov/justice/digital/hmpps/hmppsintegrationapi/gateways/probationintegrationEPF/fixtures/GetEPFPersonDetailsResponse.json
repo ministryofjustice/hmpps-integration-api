@@ -5,7 +5,7 @@
     "middleName": "John",
     "surname": "Smith"
   },
-  "dateOfBirth":"2000-03-01",
+  "dateOfBirth": "2000-03-01",
   "gender": null,
   "courtAppearance": {
     "date": "2019-10-10",
