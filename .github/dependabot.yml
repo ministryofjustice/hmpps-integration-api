@@ -11,6 +11,13 @@ updates:
           - "patch"
         patterns:
           - "*"
+    ignore:
+       # Ignore this version of kover-cli"
+      - dependency-name: "org.jetbrains.kotlinx:kover-cli"
+        versions: [ "1.0.715" ]
+      - dependency-name: "org.jetbrains.kotlinx.kover:org.jetbrains.kotlinx.kover.gradle.plugin"
+        versions: [ "1.0.715" ]
+
   - package-ecosystem: "bundler"
     directory: "/tech-docs"
     schedule:
@@ -26,9 +33,6 @@ updates:
       # Ignore this because updating breaks the tech-docs
       # I am unsure currently what the cause of this is
       - dependency-name: "middleman"
-      # Ignore this version of kover-cli"
-      - dependency-name: "org.jetbrains.kotlinx:kover-cli"
-        versions: [ "1.0.715" ]
 
   - package-ecosystem: "github-actions"
     directory: "/"
