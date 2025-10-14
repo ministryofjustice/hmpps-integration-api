@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import io.swagger.v3.oas.annotations.media.Schema
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationintegrationepf.LimitedAccess
 
 data class CaseDetail(
   val nomsId: String? = null,
@@ -14,6 +16,8 @@ data class CaseDetail(
   val rsrScore: Double? = null,
   val age: Long? = null,
   val ageAtRelease: Long? = null,
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  val limitedAccess: LimitedAccess? = null,
 )
 
 data class Name(

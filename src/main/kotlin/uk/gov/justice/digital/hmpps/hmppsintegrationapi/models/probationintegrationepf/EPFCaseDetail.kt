@@ -18,8 +18,9 @@ data class EPFCaseDetail(
   val rsrScore: Double? = null,
   val age: Long? = null,
   val ageAtRelease: Long? = null,
+  val limitedAccess: LimitedAccess? = null,
 ) {
-  fun toCaseDetail(): CaseDetail =
+  fun toCaseDetail(includeLimitedAccess: Boolean): CaseDetail =
     CaseDetail(
       nomsId = this.nomsId,
       name = Name(forename = this.name?.forename, middleName = this.name?.middleName, surname = this.name?.surname),
@@ -35,5 +36,6 @@ data class EPFCaseDetail(
       rsrScore = this.rsrScore,
       age = this.age,
       ageAtRelease = this.ageAtRelease,
+      limitedAccess = this.limitedAccess.takeIf { includeLimitedAccess },
     )
 }
