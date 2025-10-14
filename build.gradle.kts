@@ -6,7 +6,7 @@ plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.1.2"
   kotlin("plugin.spring") version "2.2.20"
   id("io.gitlab.arturbosch.detekt") version "1.23.8"
-  id("org.jetbrains.kotlinx.kover") version "0.9.2"
+  id("org.jetbrains.kotlinx.kover") version "1.0.715"
 }
 
 configurations {
@@ -38,7 +38,7 @@ dependencies {
   testImplementation("io.kotest:kotest-runner-junit5-jvm:6.0.3")
   testImplementation("io.kotest:kotest-assertions-core-jvm:6.0.3")
   testImplementation("io.kotest:kotest-extensions-spring:6.0.3")
-  implementation("org.jetbrains.kotlinx:kover-cli:0.9.2")
+  implementation("org.jetbrains.kotlinx:kover-cli:1.0.715")
   testImplementation("org.wiremock:wiremock-standalone:3.13.1")
   testImplementation("org.mockito:mockito-core:5.20.0")
   testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.20.0")
