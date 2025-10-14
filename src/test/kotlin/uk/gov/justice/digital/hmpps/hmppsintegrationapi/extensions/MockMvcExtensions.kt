@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 
-import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
@@ -18,7 +17,6 @@ object MockMvcExtensions {
       .configure(SerializationFeature.INDENT_OUTPUT, true)
       .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
       .registerModule(JavaTimeModule())
-      .setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL)
 
   fun writeAsJson(obj: Any): String = objectMapper.writeValueAsString(obj)
 
