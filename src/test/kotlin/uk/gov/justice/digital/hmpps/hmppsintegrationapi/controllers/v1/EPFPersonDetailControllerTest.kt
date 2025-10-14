@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import io.kotest.assertions.json.shouldNotContainJsonKey
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
@@ -24,61 +26,72 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 @ActiveProfiles("test")
 internal class EPFPersonDetailControllerTest(
   @Autowired var springMockMvc: MockMvc,
+  @Autowired var objectMapper: ObjectMapper,
   @MockitoBean val getEPFPersonDetailService: GetEPFPersonDetailService,
   @MockitoBean val auditService: AuditService,
-) : DescribeSpec({
-    val hmppsId = "X12345"
-    val eventNumber = 1234
-    val path = "/v1/epf/person-details/$hmppsId/$eventNumber"
-    val mockMvc = IntegrationAPIMockMvc(springMockMvc)
+) : DescribeSpec(
+    {
+      val hmppsId = "X12345"
+      val eventNumber = 1234
+      val path = "/v1/epf/person-details/$hmppsId/$eventNumber"
+      val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
-    describe("GET $path") {
-      beforeTest {
-        Mockito.reset(getEPFPersonDetailService)
-        whenever(getEPFPersonDetailService.execute(hmppsId, eventNumber)).thenReturn(
-          Response(
-            data = CaseDetail(nomsId = "ABC123"),
-          ),
-        )
-        Mockito.reset(auditService)
+      describe("GET $path") {
+        beforeTest {
+          Mockito.reset(getEPFPersonDetailService)
+          whenever(getEPFPersonDetailService.execute(hmppsId, eventNumber)).thenReturn(
+            Response(
+              data =
+                CaseDetail(
+                  nomsId = "ABC123",
+                  limitedAccess = null,
+                ),
+            ),
+          )
+          Mockito.reset(auditService)
+        }
+
+        it("returns a 200 OK status code") {
+          val result = mockMvc.performAuthorised(path)
+
+          result.response.status.shouldBe(HttpStatus.OK.value())
+        }
+
+        it("gets the person detail for a person with the matching ID") {
+          mockMvc.performAuthorised(path)
+
+          verify(getEPFPersonDetailService, VerificationModeFactory.times(1)).execute(hmppsId, eventNumber)
+        }
+
+        it("does include limited access field when value is null") {
+          mockMvc.performAuthorised(path).response.contentAsString shouldNotContainJsonKey "data.limitedAccess"
+        }
+
+        it("logs audit") {
+          mockMvc.performAuthorised(path)
+          verify(
+            auditService,
+            VerificationModeFactory.times(1),
+          ).createEvent(
+            "GET_EPF_PROBATION_CASE_INFORMATION",
+            mapOf("hmppsId" to hmppsId, "eventNumber" to eventNumber.toString()),
+          )
+        }
+
+        it("returns a 500 INTERNAL SERVER ERROR status code when upstream api return expected error") {
+
+          whenever(getEPFPersonDetailService.execute(hmppsId, eventNumber)).doThrow(
+            WebClientResponseException(500, "MockError", null, null, null, null),
+          )
+
+          val result = mockMvc.performAuthorised(path)
+          assert(result.response.status == 500)
+          assert(
+            result.response.contentAsString.equals(
+              "{\"status\":500,\"errorCode\":null,\"userMessage\":\"500 MockError\",\"developerMessage\":\"Unable to complete request as an upstream service is not responding\",\"moreInfo\":null}",
+            ),
+          )
+        }
       }
-
-      it("returns a 200 OK status code") {
-        val result = mockMvc.performAuthorised(path)
-
-        result.response.status.shouldBe(HttpStatus.OK.value())
-      }
-
-      it("gets the person detail for a person with the matching ID") {
-        mockMvc.performAuthorised(path)
-
-        verify(getEPFPersonDetailService, VerificationModeFactory.times(1)).execute(hmppsId, eventNumber)
-      }
-
-      it("logs audit") {
-        mockMvc.performAuthorised(path)
-        verify(
-          auditService,
-          VerificationModeFactory.times(1),
-        ).createEvent(
-          "GET_EPF_PROBATION_CASE_INFORMATION",
-          mapOf("hmppsId" to hmppsId, "eventNumber" to eventNumber.toString()),
-        )
-      }
-
-      it("returns a 500 INTERNAL SERVER ERROR status code when upstream api return expected error") {
-
-        whenever(getEPFPersonDetailService.execute(hmppsId, eventNumber)).doThrow(
-          WebClientResponseException(500, "MockError", null, null, null, null),
-        )
-
-        val result = mockMvc.performAuthorised(path)
-        assert(result.response.status == 500)
-        assert(
-          result.response.contentAsString.equals(
-            "{\"status\":500,\"errorCode\":null,\"userMessage\":\"500 MockError\",\"developerMessage\":\"Unable to complete request as an upstream service is not responding\",\"moreInfo\":null}",
-          ),
-        )
-      }
-    }
-  })
+    },
+  )

@@ -2,7 +2,7 @@
 title: HMPPS Integration Events
 weight: 6
 owner_slack: "#hmpps-integration-api-alerts"
-last_reviewed_on: 2025-09-30
+last_reviewed_on: 2025-10-13
 review_in: 6 months
 ---
 
@@ -14,6 +14,22 @@ Consumers who want to receive Integration Events, will be provided with a dedica
 
 Email [hmpps-external-api@justice.gov.uk](mailto:hmpps-external-api@justice.gov.uk) to request access to this Events service.
 
+## Notification Message Structure
+The notification message content is a JSON structure containing an event ID, an event type, the URL at which the updated data is available and potentially some additional metadata.
+
+For example:
+
+```
+{
+  "eventId":123456,
+  "hmppsId":"X688624",
+  "eventType":"PERSON_NAME_CHANGED",
+  "prisonId":null,
+  "url":"http://{api-domain}/events/person-name-changed/X688624",
+  "lastModifiedDateTime":"2025-10-13T12:42:00.002387"
+}
+```
+
 ## Available Events
 Below is a list of all the events that you can currently receive notifications about if something changes.
 It details the endpoints the events relate to, and information about what triggers an event to be sent.
@@ -21,12 +37,13 @@ It details the endpoints the events relate to, and information about what trigge
 ### Dynamic Risks Changed
 
  * **Endpoint:** `/v1/persons/{hmppsId}/risks/dynamic`
+ * **Event ID:** `DYNAMIC_RISKS_CHANGED`
  * **Triggered by:**
   * `ProbationCase.Registration.ADDED`
   * `ProbationCase.Registration.UPDATED`
   * `ProbationCase.Registration.DELETED`
   * `ProbationCase.Registration.DEREGISTERED`
-* **As well as one of the following dynamic risks register types being present:**
+ * **As well as one of the following dynamic risks register types being present:**
   * Child Concerns (`RCCO`)
       * Safeguarding concerns where a child is at risk from the offender.
   * Child Protection (`RCPR`)
@@ -45,6 +62,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### Probation Status Changed
 
 * **Endpoint:** `/v1/persons/{hmppsId}/status-information`
+* **Event ID:** `PROBATION_STATUS_CHANGED`
 * **Triggered By:**
   * `ProbationCase.Registration.ADDED`
   * `ProbationCase.Registration.UPDATED`
@@ -56,6 +74,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### MAPPA Detail Changed
 
 * **Endpoint:** `/v1/persons/{hmppsId}/risks/mappadetail`
+* **Event ID:** `MAPPA_DETAIL_CHANGED`
 * **Triggered By:**
   * `ProbationCase.Registration.ADDED`
   * `ProbationCase.Registration.UPDATED`
@@ -67,6 +86,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### Risk Score Changed
 
 * **Endpoint:** `/v1/persons/{hmppsId}/risks/scores`
+* **Event ID:** `RISK_SCORE_CHANGED`
 * **Triggered By:**
   * `ProbationCase.RiskScores.OGRS.MANUAL_CALCULATION`
   * `RiskAssessment.Scores.OGRS.DETERMINED`
@@ -75,6 +95,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### Key Dates and Adjustments Prisoner Release
 
 * **Endpoint:** `/v1/persons/{hmppsId}/sentences/latest-key-dates-and-adjustments`
+* **Event ID:** `KEY_DATES_AND_ADJUSTMENTS_PRISONER_RELEASE`
 * **Triggered By:**
   * **New Person Events:**
       * `ProbationCase.Engagement.CREATED`
@@ -89,6 +110,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### Licence Condition Changed
 
 * **Endpoint:** `/v1/persons/{hmppsId}/licences/conditions`
+* **Event ID:** `LICENCE_CONDITION_CHANGED`
 * **Triggered By:**
   * `CreateAndVaryALicence.Licence.ACTIVATED`
   * `CreateAndVaryALicence.Licence.INACTIVATED`
@@ -96,24 +118,28 @@ It details the endpoints the events relate to, and information about what trigge
 ### Risk of Serious Harm Changed
 
 * **Endpoint:** `/v1/persons/{hmppsId}/risks/serious-harm`
+* **Event ID:** `RISK_OF_SERIOUS_HARM_CHANGED`
 * **Triggered By:**
   * `Assessment.Summary.PRODUCED`
 
 ### PLP Induction Schedule Changed
 
 * **Endpoint:** `/v1/persons/{hmppsId}/plp-induction-schedule/history`
+* **Event ID:** `PLP_INDUCTION_SCHEDULE_CHANGED`
 * **Triggered By:**
   * `PLP.InductionSchedule.UPDATED`
 
 ### PLP Review Schedule Changed
 
 * **Endpoint:** `/v1/persons/{hmppsId}/plp-review-schedule`
+* **Event ID:** `PLP_REVIEW_SCHEDULE_CHANGED`
 * **Triggered By:**
   * `PLP.ReviewSchedule.UPDATED`
 
 ### Person Status Changed
 
 * **Endpoint:** `/v1/persons/{hmppsId}`
+* **Event ID:** `PERSON_STATUS_CHANGED`
 * **Triggered By:**
   * `ProbationCase.Engagement.CREATED`
   * `ProbationCase.PrisonIdentifier.ADDED`
@@ -125,6 +151,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### Person Address Changed
 
 * **Endpoint:** `/v1/persons/{hmppsId}/addresses`
+* **Event ID:** `PERSON_ADDRESS_CHANGED`
 * **Triggered By:**
   * **New Person Events:**
       * `ProbationCase.Engagement.CREATED`
@@ -139,6 +166,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### Person Contacts Changed
 
 * **Endpoint:** `/v1/persons/{hmppsId}/contacts`
+* **Event ID:** `PERSON_CONTACTS_CHANGED`
 * **Triggered By:**
   * **New Person Events:**
       * `ProbationCase.Engagement.CREATED`
@@ -154,6 +182,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### Person IEP Level Changed
 
 * **Endpoint:** `/v1/persons/{hmppsId}/iep-level`
+* **Event ID:** `PERSON_IEP_LEVEL_CHANGED`
 * **Triggered By:**
   * **New Person Events:**
       * `ProbationCase.Engagement.CREATED`
@@ -168,6 +197,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### Person Visitor Restrictions Changed
 
 * **Endpoint:** `/v1/persons/{hmppsId}/visitor/{contactId}/restrictions`
+* **Event ID:** `PERSON_VISITOR_RESTRICTIONS_CHANGED`
 * **Triggered By:**
   * `PrisonOffenderEvents.Prisoner.PersonRestriction.UPSERTED`
   * `PrisonOffenderEvents.Prisoner.PersonRestriction.DELETED`
@@ -175,6 +205,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### Person Visit Restrictions Changed
 
 * **Endpoint:** `/v1/persons/{hmppsId}/visit-restrictions`
+* **Event ID:** `PERSON_VISIT_RESTRICTIONS_CHANGED`
 * **Triggered By:**
   * **New Person Events:**
       * `ProbationCase.Engagement.CREATED`
@@ -186,6 +217,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### Person Future Visits Changed
 
 * **Endpoint:** `/v1/persons/{hmppsId}/visits/future`
+* **Event ID:** `PERSON_FUTURE_VISITS_CHANGED`
 * **Triggered By:**
   * `PrisonVisit.BOOKED`
   * `PrisonVisit.CHANGED`
@@ -194,6 +226,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### Person Alerts Changed
 
 * **Endpoint:** `/v1/persons/{hmppsId}/alerts`
+* **Event ID:** `PERSON_ALERTS_CHANGED`
 * **Triggered By:**
   * **New Person Events:**
       * `ProbationCase.Engagement.CREATED`
@@ -209,6 +242,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### Person PND Alerts Changed
 
 * **Endpoint:** `/v1/pnd/persons/{hmppsId}/alerts`
+* **Event ID:** `PERSON_PND_ALERTS_CHANGED`
 * **Triggered By:**
   * **New Person Events:**
       * `ProbationCase.Engagement.CREATED`
@@ -226,6 +260,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### Person Case Notes Changed
 
 * **Endpoint:** `/v1/persons/{hmppsId}/case-notes`
+* **Event ID:** `PERSON_CASE_NOTES_CHANGED`
 * **Triggered By:**
   * **New Person Events:**
       * `ProbationCase.Engagement.CREATED`
@@ -240,6 +275,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### Person Name Changed
 
 * **Endpoint:** `/v1/persons/{hmppsId}/name`
+* **Event ID:** `PERSON_NAME_CHANGED`
 * **Triggered By:**
   * **New Person Events:**
       * `ProbationCase.Engagement.CREATED`
@@ -251,6 +287,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### Person Cell Location Changed
 
 * **Endpoint:** `/v1/persons/{hmppsId}/cell-location`
+* **Event ID:** `PERSON_CELL_LOCATION_CHANGED`
 * **Triggered By:**
   * **New Person Events:**
       * `ProbationCase.Engagement.CREATED`
@@ -262,6 +299,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### Person Sentences Changed
 
 * **Endpoint:** `/v1/persons/{hmppsId}/sentences`
+* **Event ID:** `PERSON_SENTENCES_CHANGED`
 * **Triggered By:**
   * **New Person Events:**
       * `ProbationCase.Engagement.CREATED`
@@ -273,6 +311,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### Person Responsible Officer Changed
 
 * **Endpoint:** `/v1/persons/{hmppsId}/person-responsible-officer`
+* **Event ID:** `PERSON_RESPONSIBLE_OFFICER_CHANGED`
 * **Triggered By:**
   * **New Person Events:**
       * `ProbationCase.Engagement.CREATED`
@@ -287,6 +326,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### Person Protected Characteristics Changed
 
 * **Endpoint:** `/v1/persons/{hmppsId}/protected-characteristics`
+* **Event ID:** `PERSON_PROTECTED_CHARACTERISTICS_CHANGED`
 * **Triggered By:**
   * **New Person Events:**
       * `ProbationCase.Engagement.CREATED`
@@ -297,6 +337,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### Person Reported Adjudications Changed
 
 * **Endpoint:** `/v1/persons/{hmppsId}/reported-adjudications`
+* **Event ID:** `PERSON_REPORTED_ADJUDICATIONS_CHANGED`
 * **Triggered By:**
   * **New Person Events:**
       * `ProbationCase.Engagement.CREATED`
@@ -313,6 +354,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### Person Number of Children Changed
 
 * **Endpoint:** `/v1/persons/{hmppsId}/number-of-children`
+* **Event ID:** `PERSON_NUMBER_OF_CHILDREN_CHANGED`
 * **Triggered By:**
   * **New Person Events:**
       * `ProbationCase.Engagement.CREATED`
@@ -323,6 +365,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### Person Physical Characteristics Changed
 
 * **Endpoint:** `/v1/persons/{hmppsId}/physical-characteristics`
+* **Event ID:** `PERSON_PHYSICAL_CHARACTERISTICS_CHANGED`
 * **Triggered By:**
   * **New Person Events:**
       * `ProbationCase.Engagement.CREATED`
@@ -334,6 +377,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### Person Images Changed
 
 * **Endpoint:** `/v1/persons/{hmppsId}/images`
+* **Event ID:** `PERSON_IMAGES_CHANGED`
 * **Triggered By:**
   * **New Person Events:**
       * `ProbationCase.Engagement.CREATED`
@@ -344,6 +388,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### Prisoners Changed
 
 * **Endpoint:** `/v1/prison/prisoners`
+* **Event ID:** `PRISONERS_CHANGED`
 * **Triggered By:**
   * `PrisonerOffenderSearch.Prisoner.CREATED`
   * `PrisonerOffenderSearch.Prisoner.UPDATED`
@@ -352,6 +397,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### Prisoner Changed
 
 * **Endpoint:** `/v1/prison/prisoners/{hmppsId}`
+* **Event ID:** `PRISONER_CHANGED`
 * **Triggered By:**
   * `PrisonerOffenderSearch.Prisoner.CREATED`
   * `PrisonerOffenderSearch.Prisoner.UPDATED`
@@ -360,6 +406,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### Prisoner Non-Associations Changed
 
 * **Endpoint:** `/v1/prison/{prisonId}/prisoners/{hmppsId}/non-associations`
+* **Event ID:** `PRISONER_NON_ASSOCIATIONS_CHANGED`
 * **Triggered By:**
   * **New Prisoner Events:**
       * `PrisonerOffenderSearch.Prisoner.CREATED`
@@ -369,6 +416,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### Prison Visits Changed
 
 * **Endpoint:** `/v1/prison/{prisonId}/visit/search`
+* **Event ID:** `PRISON_VISITS_CHANGED`
 * **Triggered By:**
   * `PrisonVisit.BOOKED`
   * `PrisonVisit.CHANGED`
@@ -377,6 +425,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### Prison Residential Hierarchy Changed
 
 * **Endpoint:** `/v1/prison/{prisonId}/residential-hierarchy`
+* **Event ID:** `PRISON_RESIDENTIAL_HIERARCHY_CHANGED`
 * **Triggered By:**
   * `LocationsInsidePrison.Location.CREATED`
   * `LocationsInsidePrison.Location.AMENDED`
@@ -387,6 +436,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### Prison Location Changed
 
 * **Endpoint:** `/v1/prison/{prisonId}/location/{locationKey}`
+* **Event ID:** `PRISON_LOCATION_CHANGED`
 * **Triggered By:**
   * `LocationsInsidePrison.Location.CREATED`
   * `LocationsInsidePrison.Location.AMENDED`
@@ -397,6 +447,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### Prison Residential Details Changed
 
 * **Endpoint:** `/v1/prison/{prisonId}/residential-details`
+* **Event ID:** `PRISON_RESIDENTIAL_DETAILS_CHANGED`
 * **Triggered By:**
   * `LocationsInsidePrison.Location.CREATED`
   * `LocationsInsidePrison.Location.AMENDED`
@@ -407,6 +458,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### Prison Capacity Changed
 
 * **Endpoint:** `/v1/prison/{prisonId}/capacity`
+* **Event ID:** `PRISON_CAPACITY_CHANGED`
 * **Triggered By:**
   * `LocationsInsidePrison.Location.CREATED`
   * `LocationsInsidePrison.Location.DELETED`
@@ -417,6 +469,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### Visit Changed
 
 * **Endpoint:** `/v1/visit/{visitReference}`
+* **Event ID:** `VISIT_CHANGED`
 * **Triggered By:**
   * `PrisonVisit.BOOKED`
   * `PrisonVisit.CHANGED`
@@ -425,6 +478,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### Person Health and Diet Changed
 
 * **Endpoint:** `/v1/persons/{hmppsId}/health-and-diet`
+* **Event ID:** `PERSON_HEALTH_AND_DIET_CHANGED`
 * **Triggered By:**
   * **New Person Events:**
       * `ProbationCase.Engagement.CREATED`
@@ -435,6 +489,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### Person Care Needs Changed
 
 * **Endpoint:** `/v1/persons/{hmppsId}/care-needs`
+* **Event ID:** `PERSON_CARE_NEEDS_CHANGED`
 * **Triggered By:**
   * **New Person Events:**
       * `ProbationCase.Engagement.CREATED`
@@ -445,6 +500,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### Person Languages Changed
 
 * **Endpoint:** `/v1/persons/{hmppsId}/languages`
+* **Event ID:** `PERSON_LANGUAGES_CHANGED`
 * **Triggered By:**
   * **New Person Events:**
       * `ProbationCase.Engagement.CREATED`
@@ -455,6 +511,7 @@ It details the endpoints the events relate to, and information about what trigge
 ### Person Education Assessment Changed
 
 * **Endpoint:** `/v1/persons/{hmppsId}/education/assessments`
+* **Event ID:** `PERSON_EDUCATION_ASSESSMENTS_CHANGED`
 * **Triggered By:**
       * **OR** `PrisonerOffenderSearch.Prisoner.UPDATED` (when `LOCATION` category has been changed)
       * **OR** `PrisonerOffenderSearch.Prisoner.UPDATED` (when `SENTENCE` category has been changed)
@@ -462,7 +519,9 @@ It details the endpoints the events relate to, and information about what trigge
 ### Prisoner Base Location Changed
 
 * **Endpoint:** `/v1/persons/{hmppsId}/prisoner-base-location`
+* **Event ID:** `PRISONER_BASE_LOCATION_CHANGED`
 * **Triggered By:**
     * **OR** `PrisonOffenderEvents.Prisoner.RECEIVED` (when reason is changed to `ADMISSION` or `TRANSFERRED`)
     * **OR** `PrisonOffenderEvents.Prisoner.RELEASED` (when reason is `RELEASED`)
+
 ---
