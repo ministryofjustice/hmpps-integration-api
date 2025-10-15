@@ -107,6 +107,7 @@ authorisation:
     smoke-test:
       include:
         - "/v1/status"
+        - "/v2/config/authorisation"
 
 redaction:
   client-names:
