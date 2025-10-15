@@ -19,11 +19,12 @@ class GetEPFPersonDetailService(
     hmppsId: String,
     eventNumber: Int,
   ): Response<CaseDetail?> {
-    val caseDetail = if (featureFlag.isEnabled(EPF_GATEWAY_DISABLED)) {
-      deliusGateway.getEpfCaseDetailForPerson(hmppsId, eventNumber)
-    } else {
-      probationIntegrationEPFGateway.getCaseDetailForPerson(hmppsId, eventNumber)
-    }
+    val caseDetail =
+      if (featureFlag.isEnabled(EPF_GATEWAY_DISABLED)) {
+        deliusGateway.getEpfCaseDetailForPerson(hmppsId, eventNumber)
+      } else {
+        probationIntegrationEPFGateway.getCaseDetailForPerson(hmppsId, eventNumber)
+      }
 
     return Response(
       data = caseDetail.data,
