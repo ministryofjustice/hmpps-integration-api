@@ -81,6 +81,7 @@ authorisation:
       include:
         - "/v1/epf/person-details/.*/[^/]*$"
         - "/v1/status"
+        - "/v1/persons/.*/access-limitations"
       filters:
     moj-pes:
       include:

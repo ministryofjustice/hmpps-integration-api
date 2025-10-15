@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffenders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchQuery
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSIdentifierWithPrisonerNumber
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationintegrationepf.LimitedAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
@@ -325,6 +326,14 @@ class GetPersonService(
       errors = prisonResponse.errors,
     )
   }
+
+  fun getAccessLimitations(hmppsId: String): Response<LimitedAccess?> =
+    with(deliusGateway.getAccessLimitations(hmppsId)) {
+      Response(
+        data = data,
+        errors = errors,
+      )
+    }
 
   private fun getProbationResponse(hmppsId: String) = deliusGateway.getPerson(hmppsId)
 }

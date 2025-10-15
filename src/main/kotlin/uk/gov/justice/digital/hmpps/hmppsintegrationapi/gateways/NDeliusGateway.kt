@@ -27,6 +27,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusCo
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusSupervisions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.UserAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationintegrationepf.EPFCaseDetail
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationintegrationepf.LimitedAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.ContactDetailsWithAddress
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.Offender
 
@@ -222,6 +223,28 @@ class NDeliusGateway(
     }
   }
 
+  fun getAccessLimitations(crn: String): Response<LimitedAccess?> {
+    val result =
+      webClient.request<LimitedAccess?>(
+        HttpMethod.GET,
+        "/case/$crn/access-limitations",
+        authenticationHeader(),
+        UpstreamApi.NDELIUS,
+      )
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
   private fun authenticationHeader(): Map<String, String> {
     val token = hmppsAuthGateway.getClientToken("nDelius")
 
@@ -341,6 +364,7 @@ class NDeliusGateway(
             .map { it.toAddress() },
         )
       }
+
       is WebClientWrapperResponse.Error -> {
         Response(
           data = emptyList(),
