@@ -29,45 +29,46 @@ class GetAccessLimitations(
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
   val deliusGateway: NDeliusGateway,
 ) : DescribeSpec(
-  {
-    val nDeliusApiMockServer = ApiMockServer.create(UpstreamApi.NDELIUS)
-    val hmppsId = "X150876"
-    val path = "/case/$hmppsId/access-limitations"
+    {
+      val nDeliusApiMockServer = ApiMockServer.create(UpstreamApi.NDELIUS)
+      val hmppsId = "X150876"
+      val path = "/case/$hmppsId/access-limitations"
 
-    beforeEach {
-      nDeliusApiMockServer.start()
-      nDeliusApiMockServer.stubForGet(
-        path,
-        File(
-          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/ndelius/fixtures/GetAccessLimitationsResponse.json",
-        ).readText(),
-      )
+      beforeEach {
+        nDeliusApiMockServer.start()
+        nDeliusApiMockServer.stubForGet(
+          path,
+          File(
+            "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/ndelius/fixtures/GetAccessLimitationsResponse.json",
+          ).readText(),
+        )
 
-      Mockito.reset(hmppsAuthGateway)
-      Mockito.reset(featureFlagConfig)
-      whenever(hmppsAuthGateway.getClientToken("nDelius")).thenReturn(HmppsAuthMockServer.TOKEN)
-    }
+        Mockito.reset(hmppsAuthGateway)
+        Mockito.reset(featureFlagConfig)
+        whenever(hmppsAuthGateway.getClientToken("nDelius")).thenReturn(HmppsAuthMockServer.TOKEN)
+      }
 
-    afterTest {
-      nDeliusApiMockServer.stop()
-    }
+      afterTest {
+        nDeliusApiMockServer.stop()
+      }
 
-    it("authenticates using HMPPS Auth with credentials") {
-      deliusGateway.getAccessLimitations(hmppsId)
+      it("authenticates using HMPPS Auth with credentials") {
+        deliusGateway.getAccessLimitations(hmppsId)
 
-      verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("nDelius")
-    }
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("nDelius")
+      }
 
-    it("returns limited access details for the matching CRN") {
-      val response = deliusGateway.getAccessLimitations(hmppsId)
+      it("returns limited access details for the matching CRN") {
+        val response = deliusGateway.getAccessLimitations(hmppsId)
 
-      response.data.shouldBe(
-        LimitedAccess(
-          excludedFrom = listOf(),
-          exclusionMessage = null,
-          restrictedTo = listOf(LimitedAccess.AccessLimitation("someone@justice.gov.uk")),
-          restrictionMessage = "This case is restricted. Please contact someone for more information."),
-      )
-    }
-  },
-)
+        response.data.shouldBe(
+          LimitedAccess(
+            excludedFrom = listOf(),
+            exclusionMessage = null,
+            restrictedTo = listOf(LimitedAccess.AccessLimitation("someone@justice.gov.uk")),
+            restrictionMessage = "This case is restricted. Please contact someone for more information.",
+          ),
+        )
+      }
+    },
+  )

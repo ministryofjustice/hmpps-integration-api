@@ -557,12 +557,13 @@ internal class PersonControllerTest(
         beforeTest {
           Mockito.reset(auditService)
           Mockito.reset(getImageMetadataForPersonService)
-          val limitedAccess = LimitedAccess(
-            excludedFrom = listOf(LimitedAccess.AccessLimitation("someone@justice.gov.uk")),
-            exclusionMessage = "You are excluded from viewing this case. Please contact someone for more information.",
-            restrictedTo = listOf(),
-            restrictionMessage = null,
-          )
+          val limitedAccess =
+            LimitedAccess(
+              excludedFrom = listOf(LimitedAccess.AccessLimitation("someone@justice.gov.uk")),
+              exclusionMessage = "You are excluded from viewing this case. Please contact someone for more information.",
+              restrictedTo = listOf(),
+              restrictionMessage = null,
+            )
           whenever(getPersonService.getAccessLimitations(sanitisedHmppsId)).thenReturn(Response(limitedAccess))
         }
 
