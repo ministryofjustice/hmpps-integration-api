@@ -37,9 +37,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonalCar
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PhysicalCharacteristics
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerEducation
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitOrders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.interfaces.toPaginatedResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationintegrationepf.LimitedAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCareNeedsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetIEPLevelService
@@ -79,6 +81,35 @@ class PersonController(
   @Autowired val featureFlag: FeatureFlagConfig,
   @Autowired val redactionConfig: RedactionConfig,
 ) {
+  @FeatureFlag(name = FeatureFlagConfig.EPF_ENDPOINT_INCLUDES_LAO)
+  @GetMapping("/{hmppsId}/access-limitations")
+  @Operation(
+    summary = "Probation case access information for a given case",
+    description = """Returns a data structure giving Limited Access details for the probation case.
+      The information is used to identify exclusions and restrictions that prevent users from accessing details about the case.
+    """,
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  fun getAccessLimitations(
+    @PathVariable hmppsId: String,
+  ): Response<LimitedAccess?> {
+    val response = getPersonService.getAccessLimitations(hmppsId)
+
+    auditService.createEvent(
+      "GET_LIMITED_ACCESS_INFORMATION",
+      mapOf("hmppsId" to hmppsId),
+    )
+
+    return Response(
+      data = response.data,
+      errors = response.errors,
+    )
+  }
+
   @GetMapping
   @Operation(
     summary = "Returns person(s) by search criteria, sorted by date of birth (newest first). At least one query parameter must be specified.",

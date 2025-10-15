@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.allEndpoints
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.ctrlo
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.curious
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.constants
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.fullAccess
@@ -94,6 +95,7 @@ val roles =
   listOf(
     privatePrison,
     police,
+    ctrlo,
     curious,
     referenceDataOnly,
     fullAccess,

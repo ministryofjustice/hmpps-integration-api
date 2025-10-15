@@ -44,6 +44,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitOrders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationintegrationepf.LimitedAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCareNeedsForPersonService
@@ -547,6 +548,45 @@ internal class PersonControllerTest(
                }
             }
             """.removeWhitespaceAndNewlines(),
+          )
+        }
+      }
+
+      describe("GET $basePath/$sanitisedHmppsId/access-limitations") {
+        val path = "$basePath/$sanitisedHmppsId/access-limitations"
+        beforeTest {
+          Mockito.reset(auditService)
+          Mockito.reset(getImageMetadataForPersonService)
+          val limitedAccess =
+            LimitedAccess(
+              excludedFrom = listOf(LimitedAccess.AccessLimitation("someone@justice.gov.uk")),
+              exclusionMessage = "You are excluded from viewing this case. Please contact someone for more information.",
+              restrictedTo = listOf(),
+              restrictionMessage = null,
+            )
+          whenever(getPersonService.getAccessLimitations(sanitisedHmppsId)).thenReturn(Response(limitedAccess))
+        }
+
+        it("logs audit") {
+          mockMvc.performAuthorised(path)
+          verify(auditService, times(1)).createEvent("GET_LIMITED_ACCESS_INFORMATION", mapOf("hmppsId" to sanitisedHmppsId))
+        }
+
+        it("returns limited access information correctly") {
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.OK.value())
+          result.response.contentAsString.shouldBe(
+            """
+            {
+              "data": {
+                "excludedFrom": [ {"email":"someone@justice.gov.uk"} ],
+                "exclusionMessage": "You are excluded from viewing this case. Please contact someone for more information.",
+                "restrictedTo": [],
+                "restrictionMessage": null
+              },
+              "errors":[]
+            }
+        """.removeWhitespaceAndNewlines(),
           )
         }
       }

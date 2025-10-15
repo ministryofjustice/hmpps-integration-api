@@ -1,0 +1,9 @@
+{
+  "excludedFrom": [],
+  "restrictedTo": [
+    {
+      "email": "someone@justice.gov.uk"
+    }
+  ],
+  "restrictionMessage": "This case is restricted. Please contact someone for more information."
+}
