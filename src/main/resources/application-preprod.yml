@@ -72,9 +72,9 @@ authorisation:
   consumers:
     ctrlo:
       include:
-        - "/v1/epf/person-details/.*/[^/]*$"
-        - "/v1/status"
       filters:
+      roles:
+        - "ctrlo"
     moj-pes:
       include:
         - "/v1/persons/.*/name"
