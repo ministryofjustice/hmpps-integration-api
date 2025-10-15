@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.J
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.ResponseRedaction
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.JsonPathResponseRedactionBuilder.DelegatingResponseRedactionBuilder
 
 val objectMapper: ObjectMapper =
   ObjectMapper()
@@ -29,10 +30,10 @@ fun redactionPolicy(
 class RedactionPolicyBuilder(
   private val name: String,
 ) {
-  val responseRedactions = mutableListOf<ResponseRedaction>()
+  private val responseRedactions = mutableListOf<ResponseRedaction>()
 
   fun responseRedactions(init: ResponseRedactionsBuilder.() -> Unit) {
-    responseRedactions.addAll(ResponseRedactionsBuilder().apply(init).build())
+    responseRedactions += ResponseRedactionsBuilder().apply(init).build()
   }
 
   fun build(): RedactionPolicy = RedactionPolicy(name, responseRedactions)
@@ -42,7 +43,7 @@ class ResponseRedactionsBuilder {
   private val redactions = mutableListOf<ResponseRedaction>()
 
   fun jsonPath(init: JsonPathResponseRedactionBuilder.() -> Unit) {
-    redactions.add(JsonPathResponseRedactionBuilder().apply(init).build())
+    redactions += JsonPathResponseRedactionBuilder().apply(init).build()
   }
 
   fun <T : Any> delegate(
@@ -51,77 +52,67 @@ class ResponseRedactionsBuilder {
   ) {
     val builder = DelegatingResponseRedactionBuilder(redactor)
     block?.invoke(builder)
-    redactions.add(builder.build())
+    redactions += builder.build()
   }
 
-  fun build() = redactions
-}
-
-class JsonPathResponseRedactionBuilder {
-  var type: RedactionType? = null
-  var paths: MutableList<String>? = null
-  var includes: MutableList<String>? = null
-
-  fun paths(init: PathsBuilder.() -> Unit) {
-    PathsBuilder().apply(init).content?.let {
-      if (paths == null) {
-        paths = mutableListOf()
-      }
-      paths?.addAll(it)
-    }
-  }
-
-  fun includes(init: IncludesBuilder.() -> Unit) {
-    IncludesBuilder().apply(init).content?.let {
-      if (includes == null) {
-        includes = mutableListOf()
-      }
-      includes?.addAll(it)
-    }
-  }
-
-  fun type(type: RedactionType) {
-    this.type = type
-  }
-
-  fun build(): JsonPathResponseRedaction = JsonPathResponseRedaction(objectMapper, requireNotNull(type), paths, includes)
+  fun build(): List<ResponseRedaction> = redactions
 }
 
 class IncludesBuilder {
-  var content: MutableList<String>? = null
+  val entries = mutableListOf<Pair<String, RedactionType>>()
 
-  operator fun String.unaryMinus() {
-    if (content == null) {
-      content = mutableListOf()
-    }
-    content?.add(this)
+  fun path(
+    path: String,
+    type: RedactionType,
+  ) {
+    entries += path to type
   }
 }
 
 class PathsBuilder {
-  var content: MutableList<String>? = null
+  val content = mutableListOf<String>()
 
   operator fun String.unaryMinus() {
-    if (content == null) {
-      content = mutableListOf()
-    }
-    content?.add(this)
+    content += this
   }
 }
 
-class DelegatingResponseRedactionBuilder<T : Any>(
-  private val redactor: Redactor<T>,
-) {
-  var paths: MutableList<String>? = null
+class JsonPathResponseRedactionBuilder {
+  private val includeEntries = mutableListOf<Pair<String, RedactionType>>()
+  private var paths: MutableList<String>? = null
 
   fun paths(init: PathsBuilder.() -> Unit) {
-    PathsBuilder().apply(init).content?.let {
-      if (paths == null) {
-        paths = mutableListOf()
-      }
-      paths?.addAll(it)
-    }
+    val pathsBuilder = PathsBuilder().apply(init)
+    if (paths == null) paths = mutableListOf()
+    paths!!.addAll(pathsBuilder.content)
   }
 
-  fun build(): DelegatingResponseRedaction<T> = DelegatingResponseRedaction(redactor, paths)
+  fun includes(init: IncludesBuilder.() -> Unit) {
+    val b = IncludesBuilder().apply(init)
+    includeEntries += b.entries
+  }
+
+  fun build(): List<JsonPathResponseRedaction> =
+    includeEntries.map { (path, type) ->
+      JsonPathResponseRedaction(
+        objectMapper = objectMapper,
+        type = type,
+        paths = paths,
+        includes = listOf(path),
+      )
+    }
+
+  class DelegatingResponseRedactionBuilder<T : Any>(
+    private val redactor: Redactor<T>,
+  ) {
+    private var paths: MutableList<String>? = null
+
+    fun paths(init: PathsBuilder.() -> Unit) {
+      val b = PathsBuilder().apply(init)
+      if (paths == null) paths = mutableListOf()
+      paths!!.addAll(b.content)
+    }
+
+    fun build(): DelegatingResponseRedaction<T> = DelegatingResponseRedaction(redactor, paths)
+  }
 }

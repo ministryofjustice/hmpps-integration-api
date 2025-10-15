@@ -8,21 +8,19 @@ val prisonEducationRedactionPolicy =
   redactionPolicy("prison-education") {
     responseRedactions {
       jsonPath {
-        type(MASK)
         includes {
-          -"$..middleName"
-          -"$.data.prisonerOffenderSearch.restrictionMessage"
-          -"$.data.prisonerOffenderSearch.pncId"
-          -"$.data.prisonerOffenderSearch.identifiers.croNumber"
-          -"$.data.prisonerOffenderSearch.identifiers.deliusCrn"
+          path("$..middleName", MASK)
+          path("$.data.prisonerOffenderSearch.restrictionMessage", MASK)
+          path("$.data.prisonerOffenderSearch.pncId", MASK)
+          path("$.data.prisonerOffenderSearch.identifiers.croNumber", MASK)
+          path("$.data.prisonerOffenderSearch.identifiers.deliusCrn", MASK)
         }
       }
       jsonPath {
-        type(REMOVE)
         includes {
-          -"$.data.probationOffenderSearch.contactDetails"
-          -"$.data.probationOffenderSearch.currentRestriction"
-          -"$.data.probationOffenderSearch.currentExclusion"
+          path("$.data.probationOffenderSearch.contactDetails", REMOVE)
+          path("$.data.probationOffenderSearch.currentRestriction", REMOVE)
+          path("$.data.probationOffenderSearch.currentExclusion", REMOVE)
         }
       }
     }
