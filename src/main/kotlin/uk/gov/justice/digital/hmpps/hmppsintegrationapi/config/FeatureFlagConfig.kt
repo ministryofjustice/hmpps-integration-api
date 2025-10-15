@@ -41,6 +41,7 @@ data class FeatureFlagConfig(
     const val EDUCATION_ALN_TRIGGER_ENABLED = "education-aln-trigger-enabled"
     const val USE_CONTACT_EVENTS_ENDPOINT = "use-contact-events-endpoint"
     const val EPF_ENDPOINT_INCLUDES_LAO = "epf-endpoint-includes-lao"
+    const val EPF_GATEWAY_DISABLED = "epf-gateway-disabled"
   }
 
   /**
