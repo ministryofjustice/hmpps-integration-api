@@ -84,7 +84,7 @@ class PersonController(
   @GetMapping("/{hmppsId}/access-limitations")
   @Operation(
     summary = "Probation case access information for a given case",
-    description = """Accepts a CRN and returns a data structure giving Limited Access details for the probation case.
+    description = """Returns a data structure giving Limited Access details for the probation case.
       The information is used to identify exclusions and restrictions that prevent users from accessing details about the case.
     """,
     responses = [
