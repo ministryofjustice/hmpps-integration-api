@@ -81,6 +81,7 @@ class PersonController(
   @Autowired val featureFlag: FeatureFlagConfig,
   @Autowired val redactionConfig: RedactionConfig,
 ) {
+  @FeatureFlag(name = FeatureFlagConfig.EPF_ENDPOINT_INCLUDES_LAO)
   @GetMapping("/{hmppsId}/access-limitations")
   @Operation(
     summary = "Probation case access information for a given case",
