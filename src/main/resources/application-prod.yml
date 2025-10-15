@@ -65,6 +65,7 @@ feature-flag:
   education-aln-trigger-enabled: true
   use-contact-events-endpoint: false
   epf-endpoint-includes-lao: false
+  epf-gateway-disabled: false
   use-roles-dsl: true
   redaction-policy-enabled: false
 
@@ -108,6 +109,7 @@ authorisation:
     smoke-test:
       include:
         - "/v1/status"
+        - "/v2/config/authorisation"
 
 redaction:
   client-names:

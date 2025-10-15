@@ -4,9 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.EPF_ENDPOINT_INCLUDES_LAO
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CommunityOffenderManager
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DynamicRisk
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.MappaDetail
@@ -23,12 +26,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusCo
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusContactEvents
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusSupervisions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.UserAccess
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationintegrationepf.EPFCaseDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.ContactDetailsWithAddress
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.Offender
 
 @Component
 class NDeliusGateway(
   @Value("\${services.ndelius.base-url}") baseUrl: String,
+  @Autowired val featureFlag: FeatureFlagConfig,
 ) {
   private val webClient = WebClientWrapper(baseUrl)
 
@@ -188,6 +193,31 @@ class NDeliusGateway(
 
       is WebClientWrapperResponse.Error -> {
         Response(null, result.errors)
+      }
+    }
+  }
+
+  fun getEpfCaseDetailForPerson(
+    id: String,
+    eventNumber: Int,
+  ): Response<CaseDetail?> {
+    val result =
+      webClient.request<EPFCaseDetail?>(
+        HttpMethod.GET,
+        "/case-details/$id/$eventNumber",
+        authenticationHeader(),
+        UpstreamApi.NDELIUS,
+      )
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data?.toCaseDetail(includeLimitedAccess = featureFlag.isEnabled(EPF_ENDPOINT_INCLUDES_LAO)))
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
       }
     }
   }

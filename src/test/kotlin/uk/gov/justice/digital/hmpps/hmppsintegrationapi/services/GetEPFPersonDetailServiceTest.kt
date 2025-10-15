@@ -7,6 +7,9 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.EPF_GATEWAY_DISABLED
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationIntegrationEPFGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -17,6 +20,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 )
 internal class GetEPFPersonDetailServiceTest(
   @MockitoBean val probationIntegrationEPFGateway: ProbationIntegrationEPFGateway,
+  @MockitoBean val deliusGateway: NDeliusGateway,
+  @MockitoBean val featureFlag: FeatureFlagConfig,
   private val getEPFPersonDetailService: GetEPFPersonDetailService,
 ) : DescribeSpec(
     {
@@ -26,15 +31,28 @@ internal class GetEPFPersonDetailServiceTest(
 
       beforeEach {
         Mockito.reset(probationIntegrationEPFGateway)
+        Mockito.reset(deliusGateway)
 
         whenever(probationIntegrationEPFGateway.getCaseDetailForPerson(hmppsId, eventNumber)).thenReturn(
           Response(
             data = caseDetail,
           ),
         )
+        whenever(deliusGateway.getEpfCaseDetailForPerson(hmppsId, eventNumber)).thenReturn(
+          Response(
+            data = caseDetail,
+          ),
+        )
+      }
+
+      it("Returns a list of supervisions for the provided Delius CRN via EPF gateway") {
+        val result = getEPFPersonDetailService.execute(hmppsId, eventNumber)
+
+        result.shouldBe(Response(data = caseDetail))
       }
 
       it("Returns a list of supervisions for a probationer according to the provided Delius CRN") {
+        whenever(featureFlag.isEnabled(EPF_GATEWAY_DISABLED)).thenReturn(true)
         val result = getEPFPersonDetailService.execute(hmppsId, eventNumber)
 
         result.shouldBe(Response(data = caseDetail))
