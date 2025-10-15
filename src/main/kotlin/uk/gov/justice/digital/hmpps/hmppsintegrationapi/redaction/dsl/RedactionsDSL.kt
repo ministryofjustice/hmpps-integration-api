@@ -88,8 +88,8 @@ class JsonPathResponseRedactionBuilder {
   }
 
   fun includes(init: IncludesBuilder.() -> Unit) {
-    val b = IncludesBuilder().apply(init)
-    includeEntries += b.entries
+    val includesBuilder = IncludesBuilder().apply(init)
+    includeEntries += includesBuilder.entries
   }
 
   fun build(): List<JsonPathResponseRedaction> =
