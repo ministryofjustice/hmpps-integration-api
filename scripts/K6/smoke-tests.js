@@ -429,10 +429,7 @@ function verify_get_person(hmppsId) {
  * Minimal verification for environments with sensitive data.
  */
 function minimal_prod_verification() {
-  let response = validate_get_request("/v1/status");
-  if (!check(response, {
-    ["Status endpoint reports OK"]: (res) => res.json()["data"]["status"] === "ok",
-  })) {
+  verify_system_endpoints()
 }
 
 /**
