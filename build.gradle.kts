@@ -34,6 +34,8 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
   implementation("io.jsonwebtoken:jjwt-api:0.13.0")
+  implementation("com.jayway.jsonpath:json-path:2.9.0")
+
   testImplementation("io.kotest:kotest-assertions-json-jvm:6.0.3")
   testImplementation("io.kotest:kotest-runner-junit5-jvm:6.0.3")
   testImplementation("io.kotest:kotest-assertions-core-jvm:6.0.3")

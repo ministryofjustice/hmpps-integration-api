@@ -21,20 +21,20 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitesp
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.LaoRedactorAspect
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.Redactor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.MappaDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolicyConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetMappaDetailForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
 @WebMvcTest(controllers = [MappaDetailController::class])
-@Import(value = [AopAutoConfiguration::class, LaoRedactorAspect::class])
-@ActiveProfiles("test")
+@Import(value = [AopAutoConfiguration::class, LaoRedactorAspect::class, RedactionPolicyConfig::class])
+@ActiveProfiles("test-redaction-enabled")
 internal class MappaDetailControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getMappaDetailForPersonService: GetMappaDetailForPersonService,
@@ -139,7 +139,7 @@ internal class MappaDetailControllerTest(
               "categoryDescription": "Behaviour",
               "startDate": "2024-03-08",
               "reviewDate": "2024-10-08",
-              "notes": "${Redactor.REDACTED}"
+              "notes": "**REDACTED**"
           }
         """.removeWhitespaceAndNewlines(),
           )
@@ -203,6 +203,20 @@ internal class MappaDetailControllerTest(
         }
 
         it("fails with the appropriate error when LAO context has failed to be retrieved") {
+          whenever(getMappaDetailForPersonService.execute(laoFailureCrn)).thenReturn(
+            Response(
+              MappaDetail(
+                level = 2,
+                levelDescription = "A high level of risk",
+                category = 3,
+                categoryDescription = "Behaviour",
+                startDate = "2024-03-08",
+                reviewDate = "2024-10-08",
+                notes = "Review in a week",
+              ),
+            ),
+          )
+
           val response = mockMvc.performAuthorised("/v1/persons/$laoFailureCrn/risks/mappadetail")
 
           assert(response.response.status == 500)

@@ -102,6 +102,7 @@ feature-flag:
   use-contact-events-endpoint: true
   epf-endpoint-includes-lao: false
   use-roles-dsl: true
+  redaction-policy-enabled: false
 
 authorisation:
   consumers:

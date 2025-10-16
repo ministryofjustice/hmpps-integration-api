@@ -52,10 +52,6 @@ class VisitsControllerTest(
     {
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
-      beforeTest {
-        Mockito.reset(auditService)
-      }
-
       describe("GET /v1/visit/{visitReference}") {
         val visitReference = "1234567"
         val path = "/v1/visit/$visitReference"
