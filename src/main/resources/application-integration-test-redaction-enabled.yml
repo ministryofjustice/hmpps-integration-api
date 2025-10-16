@@ -79,7 +79,6 @@ hmpps.sqs:
       arn: arn:aws:sns:eu-west-2:000000000000:domainevents-topic
 
 feature-flag:
-  use-education-assessments-endpoints: true
   use-eswe-curious-endpoints: true
   use-update-attendance-endpoint: true
   use-schedule-detail-endpoint: true
@@ -95,10 +94,7 @@ feature-flag:
   use-historical-attendances-endpoint: true
   use-suitability-endpoint: true
   use-waiting-list-endpoint: true
-  san-endpoint-enabled: true
   simple-redaction: true
-  education-trigger-enabled: true
-  education-aln-trigger-enabled: true
   use-contact-events-endpoint: true
   use-stubbed-contact-events-data: false
   use-roles-dsl: true

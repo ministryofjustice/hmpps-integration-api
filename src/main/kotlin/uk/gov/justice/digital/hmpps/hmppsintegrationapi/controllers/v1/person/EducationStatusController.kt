@@ -51,8 +51,6 @@ class EducationStatusController(
     @Parameter(description = "A HMPPS person identifier", example = "A1234AA") @PathVariable hmppsId: String,
     @Valid @RequestBody request: EducationStatusChangeRequest,
   ): Response<HmppsMessageResponse> {
-    featureFlag.require(FeatureFlagConfig.EDUCATION_TRIGGER_ENABLED)
-
     val response = educationStatusService.sendEducationUpdateEvent(hmppsId, request)
     auditService.createEvent("EDUCATION_UPDATE_EVENT", mapOf("hmppsId" to hmppsId))
     return response

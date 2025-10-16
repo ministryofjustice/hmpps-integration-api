@@ -19,7 +19,6 @@ data class FeatureFlagConfig(
   val flags: Map<String, Boolean> = mutableMapOf(),
 ) {
   companion object {
-    const val USE_EDUCATION_ASSESSMENTS_ENDPOINTS = "use-education-assessments-endpoints"
     const val USE_ESWE_CURIOUS_ENDPOINTS = "use-eswe-curious-endpoints"
     const val USE_UPDATE_ATTENDANCE_ENDPOINT = "use-update-attendance-endpoint"
     const val USE_SCHEDULE_DETAIL_ENDPOINT = "use-schedule-detail-endpoint"
@@ -35,10 +34,7 @@ data class FeatureFlagConfig(
     const val USE_SUITABILITY_ENDPOINT = "use-suitability-endpoint"
     const val USE_HISTORICAL_ATTENDANCES_ENDPOINT = "use-historical-attendances-endpoint"
     const val USE_WAITING_LIST_ENDPOINT = "use-waiting-list-endpoint"
-    const val SAN_ENDPOINT_ENABLED = "san-endpoint-enabled"
     const val SIMPLE_REDACTION = "simple-redaction"
-    const val EDUCATION_TRIGGER_ENABLED = "education-trigger-enabled"
-    const val EDUCATION_ALN_TRIGGER_ENABLED = "education-aln-trigger-enabled"
     const val USE_CONTACT_EVENTS_ENDPOINT = "use-contact-events-endpoint"
     const val EPF_ENDPOINT_INCLUDES_LAO = "epf-endpoint-includes-lao"
     const val REDACTION_POLICY_ENABLED = "redaction-policy-enabled"

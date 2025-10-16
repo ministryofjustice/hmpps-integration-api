@@ -73,8 +73,6 @@ class EducationAssessmentsController(
     @Parameter(description = "A HMPPS person identifier", example = "A1234AA") @PathVariable hmppsId: String,
     @Valid @RequestBody request: EducationAssessmentStatusChangeRequest,
   ): Response<HmppsMessageResponse> {
-    featureFlag.require(FeatureFlagConfig.USE_EDUCATION_ASSESSMENTS_ENDPOINTS)
-
     val response = educationAssessmentService.sendEducationAssessmentEvent(hmppsId, request)
     auditService.createEvent("CREATE EDUCATION ASSESSMENT EVENT", mapOf("hmppsId" to hmppsId))
     return response
