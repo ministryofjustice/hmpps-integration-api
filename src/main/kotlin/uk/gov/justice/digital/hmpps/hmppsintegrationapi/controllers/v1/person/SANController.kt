@@ -11,9 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PlanCreationSchedules
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PlanReviewSchedules
@@ -33,7 +31,6 @@ class SANController(
   private val getSANReviewScheduleForPersonService: GetSANReviewScheduleForPersonService,
   private val auditService: AuditService,
 ) {
-  @FeatureFlag(name = FeatureFlagConfig.SAN_ENDPOINT_ENABLED)
   @GetMapping("{hmppsId}/education/san/plan-creation-schedule")
   @Operation(
     summary = "Returns the history of changes to the Support Additional Needs (SAN) Plan Creation Schedule associated with a person.",
@@ -55,7 +52,6 @@ class SANController(
     return DataResponse(response.data)
   }
 
-  @FeatureFlag(name = FeatureFlagConfig.SAN_ENDPOINT_ENABLED)
   @GetMapping("{hmppsId}/education/san/review-schedule")
   @Operation(
     summary = "Returns the history of changes to the Support Additional Needs (SAN) Review Schedule associated with a person.",
