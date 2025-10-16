@@ -792,25 +792,25 @@ internal class GetPersonServiceTest(
         }
 
         it("identifierForType returns CRN when hmppsId is CRN and CRN is requested") {
-          val result = getPersonService.identifierForType(GetPersonService.IdentifierType.CRN, crnNumber)
+          val result = getPersonService.convert(GetPersonService.IdentifierType.CRN, crnNumber)
           verify(corePersonRecordGateway, times(0)).corePersonRecordFor(any(), any())
           result.shouldBe(crnNumber)
         }
 
         it("identifierForType returns CRN when hmppsId is Nomis and CRN is requested") {
-          val result = getPersonService.identifierForType(GetPersonService.IdentifierType.CRN, nomsNumber)
+          val result = getPersonService.convert(GetPersonService.IdentifierType.CRN, nomsNumber)
           verify(corePersonRecordGateway, times(1)).corePersonRecordFor(any(), any())
           result.shouldBe(crnNumber)
         }
 
         it("identifierForType returns Nomis number when hmppsId is Nomis and Nomis is requested") {
-          val result = getPersonService.identifierForType(GetPersonService.IdentifierType.NOMS, nomsNumber)
+          val result = getPersonService.convert(GetPersonService.IdentifierType.NOMS, nomsNumber)
           verify(corePersonRecordGateway, times(0)).corePersonRecordFor(any(), any())
           result.shouldBe(nomsNumber)
         }
 
         it("identifierForType returns Nomis number when hmppsId is Crn and Nomis is requested") {
-          val result = getPersonService.identifierForType(GetPersonService.IdentifierType.NOMS, crnNumber)
+          val result = getPersonService.convert(GetPersonService.IdentifierType.NOMS, crnNumber)
           verify(corePersonRecordGateway, times(1)).corePersonRecordFor(any(), any())
           result.shouldBe(nomsNumber)
         }
@@ -818,7 +818,7 @@ internal class GetPersonServiceTest(
         it("identifierForType throws IllegalArgumentException when hmppsId is not recognized") {
           val error =
             assertThrows<IllegalArgumentException> {
-              getPersonService.identifierForType(GetPersonService.IdentifierType.NOMS, "INVALID")
+              getPersonService.convert(GetPersonService.IdentifierType.NOMS, "INVALID")
             }
           error.message.shouldContain("Invalid identifier INVALID")
         }
@@ -827,7 +827,7 @@ internal class GetPersonServiceTest(
           whenever(corePersonRecordGateway.corePersonRecordFor("probation", crnNumber)).thenReturn(CorePersonRecord())
           val error =
             assertThrows<EntityNotFoundException> {
-              getPersonService.identifierForType(GetPersonService.IdentifierType.NOMS, crnNumber)
+              getPersonService.convert(GetPersonService.IdentifierType.NOMS, crnNumber)
             }
           error.message.shouldContain("No single NOMS found for $crnNumber in core person record")
         }
@@ -836,7 +836,7 @@ internal class GetPersonServiceTest(
           whenever(corePersonRecordGateway.corePersonRecordFor("probation", crnNumber)).thenReturn(CorePersonRecord(identifiers = Identifiers(prisonNumbers = listOf(nomsNumber, "A1234AA"))))
           val error =
             assertThrows<EntityNotFoundException> {
-              getPersonService.identifierForType(GetPersonService.IdentifierType.NOMS, crnNumber)
+              getPersonService.convert(GetPersonService.IdentifierType.NOMS, crnNumber)
             }
           error.message.shouldContain("No single NOMS found for $crnNumber in core person record")
         }
@@ -845,7 +845,7 @@ internal class GetPersonServiceTest(
           whenever(corePersonRecordGateway.corePersonRecordFor("prison", nomsNumber)).thenReturn(CorePersonRecord())
           val error =
             assertThrows<EntityNotFoundException> {
-              getPersonService.identifierForType(GetPersonService.IdentifierType.CRN, nomsNumber)
+              getPersonService.convert(GetPersonService.IdentifierType.CRN, nomsNumber)
             }
           error.message.shouldContain("No single CRN found for $nomsNumber in core person record")
         }
@@ -854,7 +854,7 @@ internal class GetPersonServiceTest(
           whenever(corePersonRecordGateway.corePersonRecordFor("prison", nomsNumber)).thenReturn(CorePersonRecord(identifiers = Identifiers(crns = listOf(crnNumber, "AC123456"))))
           val error =
             assertThrows<EntityNotFoundException> {
-              getPersonService.identifierForType(GetPersonService.IdentifierType.CRN, nomsNumber)
+              getPersonService.convert(GetPersonService.IdentifierType.CRN, nomsNumber)
             }
           error.message.shouldContain("No single CRN found for $nomsNumber in core person record")
         }

@@ -49,7 +49,7 @@ class GetPersonService(
    * This function should always return an identifier.
    * Any exceptions caused by upstream errors will be thrown upstream
    */
-  fun identifierForType(
+  fun convert(
     identifierType: IdentifierType,
     hmppsId: String,
   ): String {
@@ -148,98 +148,81 @@ class GetPersonService(
     hmppsId: String,
     filters: ConsumerFilters?,
   ): Response<NomisNumber?> {
-    if (featureFlagConfig.isEnabled(CPR_ENABLED)) {
-      // Temporary revert to existing processing if any exception for cpr is thrown
-      runCatching { identifierForType(IdentifierType.NOMS, hmppsId) }
-        .onSuccess {
-          if (filters?.prisons != null) {
-            val prisoner = prisonerOffenderSearchGateway.getPrisonOffender(hmppsId)
-            if (prisoner.errors.isNotEmpty()) {
-              return Response(data = null, errors = prisoner.errors)
-            }
-            val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<NomisNumber>(prisoner.data?.prisonId, filters)
-            if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
-              return consumerPrisonFilterCheck
-            }
-          }
-          if (hmppsId != it) {
-            telemetryService.trackEvent("CPRNomsSuccess", mapOf("message" to "Successfully used CPR to convert $hmppsId to $it", "fromId" to hmppsId, "toId" to it))
-          }
-          return Response(data = NomisNumber(it))
-        }.onFailure { telemetryService.trackEvent("CPRNomsFailure", mapOf("message" to "Failed to use CPR to convert $hmppsId", "error" to it.message)) }
-    }
-
-    when (identifyHmppsId(hmppsId)) {
-      IdentifierType.NOMS -> {
-        val prisoner = prisonerOffenderSearchGateway.getPrisonOffender(hmppsId)
-        if (prisoner.errors.isNotEmpty()) {
-          return Response(data = null, errors = prisoner.errors)
-        }
-
-        if (filters?.prisons != null) {
-          val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<NomisNumber>(prisoner.data?.prisonId, filters)
-          if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
-            return consumerPrisonFilterCheck
-          }
-        }
-        return Response(data = NomisNumber(hmppsId))
-      }
-
-      IdentifierType.CRN -> {
-        val personFromProbationOffenderSearch = getProbationResponse(hmppsId)
-
-        if (personFromProbationOffenderSearch.errors.isNotEmpty()) {
-          return Response(
-            data = null,
-            errors = personFromProbationOffenderSearch.errors,
-          )
-        }
-
-        val nomisNumber = personFromProbationOffenderSearch.data?.identifiers?.nomisNumber
-        if (nomisNumber == null) {
-          return Response(
-            data = null,
-            errors =
-              listOf(
-                UpstreamApiError(
-                  description = "NOMIS number not found",
-                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                  causedBy = UpstreamApi.NDELIUS,
-                ),
-              ),
-          )
-        }
-
-        if (filters?.prisons != null) {
-          val prisoner = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
+    val nomisNumber =
+      when (val idType = identifyHmppsId(hmppsId)) {
+        IdentifierType.NOMS -> {
+          val prisoner = prisonerOffenderSearchGateway.getPrisonOffender(hmppsId)
           if (prisoner.errors.isNotEmpty()) {
             return Response(data = null, errors = prisoner.errors)
           }
-
-          val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<NomisNumber>(prisoner.data?.prisonId, filters)
-          if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
-            return consumerPrisonFilterCheck
+          hmppsId
+        }
+        else -> {
+          val cprNomis =
+            if (featureFlagConfig.isEnabled(CPR_ENABLED)) {
+              runCatching { convert(IdentifierType.NOMS, hmppsId) }
+                .onFailure { telemetryService.trackEvent("CPRNomsFailure", mapOf("message" to "Failed to use CPR to convert $hmppsId", "error" to it.message)) }
+                .onSuccess { telemetryService.trackEvent("CPRNomsSuccess", mapOf("message" to "Successfully used CPR to convert $hmppsId to $it", "fromId" to hmppsId, "toId" to it)) }
+                .getOrNull()
+            } else {
+              null
+            }
+          if (cprNomis != null) {
+            cprNomis
+          } else {
+            // Legacy processing
+            if (idType == IdentifierType.UNKNOWN) {
+              return Response(
+                data = null,
+                errors =
+                  listOf(
+                    UpstreamApiError(
+                      description = "Invalid HMPPS ID: $hmppsId",
+                      type = UpstreamApiError.Type.BAD_REQUEST,
+                      causedBy = UpstreamApi.PRISON_API,
+                    ),
+                  ),
+              )
+            }
+            val personFromProbationOffenderSearch = getProbationResponse(hmppsId)
+            if (personFromProbationOffenderSearch.errors.isNotEmpty()) {
+              return Response(
+                data = null,
+                errors = personFromProbationOffenderSearch.errors,
+              )
+            }
+            val legacyNomis = personFromProbationOffenderSearch.data?.identifiers?.nomisNumber
+            if (legacyNomis == null) {
+              return Response(
+                data = null,
+                errors =
+                  listOf(
+                    UpstreamApiError(
+                      description = "NOMIS number not found",
+                      type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                      causedBy = UpstreamApi.NDELIUS,
+                    ),
+                  ),
+              )
+            }
+            legacyNomis
           }
         }
-
-        return Response(
-          data = NomisNumber(nomisNumber),
-        )
+      }
+    if (filters?.prisons != null) {
+      val prisoner = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
+      if (prisoner.errors.isNotEmpty()) {
+        return Response(data = null, errors = prisoner.errors)
       }
 
-      IdentifierType.UNKNOWN ->
-        return Response(
-          data = null,
-          errors =
-            listOf(
-              UpstreamApiError(
-                description = "Invalid HMPPS ID: $hmppsId",
-                type = UpstreamApiError.Type.BAD_REQUEST,
-                causedBy = UpstreamApi.PRISON_API,
-              ),
-            ),
-        )
+      val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<NomisNumber>(prisoner.data?.prisonId, filters)
+      if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
+        return consumerPrisonFilterCheck
+      }
     }
+    return Response(
+      data = NomisNumber(nomisNumber),
+    )
   }
 
   fun getCombinedDataForPerson(hmppsId: String): Response<OffenderSearchResponse?> {
