@@ -51,8 +51,6 @@ class EducationALNAssessmentController(
     @Parameter(description = "A HMPPS person identifier", example = "A1234AA") @PathVariable hmppsId: String,
     @Valid @RequestBody request: EducationALNAssessmentsChangeRequest,
   ): Response<HmppsMessageResponse> {
-    featureFlag.require(FeatureFlagConfig.EDUCATION_ALN_TRIGGER_ENABLED)
-
     val response = educationALNAssessmentService.sendEducationALNUpdateEvent(hmppsId, request)
     auditService.createEvent("EDUCATION_ALN_ASSESSMENT_UPDATE_EVENT", mapOf("hmppsId" to hmppsId))
     return response
