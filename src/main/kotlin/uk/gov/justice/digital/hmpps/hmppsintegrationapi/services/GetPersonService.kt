@@ -3,6 +3,10 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.CPR_ENABLED
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CorePersonRecordGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
@@ -20,11 +24,15 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffenders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSIdentifierWithPrisonerNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationintegrationepf.LimitedAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
 @Service
 class GetPersonService(
   @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
+  @Autowired val corePersonRecordGateway: CorePersonRecordGateway,
+  @Autowired val featureFlagConfig: FeatureFlagConfig,
+  @Autowired val telemetryService: TelemetryService,
   private val deliusGateway: NDeliusGateway,
 ) {
   fun execute(hmppsId: String): Response<Person?> {
@@ -35,6 +43,25 @@ class GetPersonService(
     } else {
       return Response(data = probationResponse.data, errors = probationResponse.errors)
     }
+  }
+
+  /**
+   * This function should always return an identifier.
+   * Any exceptions caused by upstream errors will be thrown upstream
+   */
+  fun identifierForType(
+    identifierType: IdentifierType,
+    hmppsId: String,
+  ): String {
+    val cprType =
+      when (identifyHmppsId(hmppsId)) {
+        identifierType -> return hmppsId
+        IdentifierType.UNKNOWN -> throw IllegalArgumentException("Invalid identifier $hmppsId")
+        IdentifierType.NOMS -> "prison"
+        IdentifierType.CRN -> "probation"
+      }
+    val cpr = corePersonRecordGateway.corePersonRecordFor(cprType, hmppsId)
+    return cpr.getIdentifier(identifierType) ?: throw EntityNotFoundException("No single $identifierType found for $hmppsId in core person record")
   }
 
   fun getPersonWithPrisonFilter(
@@ -121,6 +148,27 @@ class GetPersonService(
     hmppsId: String,
     filters: ConsumerFilters?,
   ): Response<NomisNumber?> {
+    if (featureFlagConfig.isEnabled(CPR_ENABLED)) {
+      // Temporary revert to existing processing if any exception for cpr is thrown
+      runCatching { identifierForType(IdentifierType.NOMS, hmppsId) }
+        .onSuccess {
+          if (filters?.prisons != null) {
+            val prisoner = prisonerOffenderSearchGateway.getPrisonOffender(hmppsId)
+            if (prisoner.errors.isNotEmpty()) {
+              return Response(data = null, errors = prisoner.errors)
+            }
+            val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<NomisNumber>(prisoner.data?.prisonId, filters)
+            if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
+              return consumerPrisonFilterCheck
+            }
+          }
+          if (hmppsId != it) {
+            telemetryService.trackEvent("CPRNomsSuccess", mapOf("message" to "Successfully used CPR to convert $hmppsId to $it", "fromId" to hmppsId, "toId" to it))
+          }
+          return Response(data = NomisNumber(it))
+        }.onFailure { telemetryService.trackEvent("CPRNomsFailure", mapOf("message" to "Failed to use CPR to convert $hmppsId", "error" to it.message)) }
+    }
+
     when (identifyHmppsId(hmppsId)) {
       IdentifierType.NOMS -> {
         val prisoner = prisonerOffenderSearchGateway.getPrisonOffender(hmppsId)

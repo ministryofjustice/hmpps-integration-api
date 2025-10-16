@@ -68,6 +68,7 @@ feature-flag:
   epf-endpoint-includes-lao: false
   use-roles-dsl: true
   redaction-policy-enabled: true
+  cpr-enabled: true
 
 authorisation:
   consumers:
