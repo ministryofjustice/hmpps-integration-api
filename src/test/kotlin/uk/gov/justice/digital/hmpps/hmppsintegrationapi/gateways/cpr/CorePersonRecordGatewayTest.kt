@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.cpr
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import jakarta.validation.ValidationException
 import org.mockito.Mockito
@@ -25,7 +26,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGatewa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.CorePersonRecord
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -39,7 +42,8 @@ class CorePersonRecordGatewayTest(
     {
       val cprMockServer = ApiMockServer.Companion.create(UpstreamApi.CORE_PERSON_RECORD)
       val objectMapper = jacksonObjectMapper()
-      val hmppsId = "AB123123"
+      val crn = "AB123123"
+      val nomsId = "G2996UX"
 
       beforeEach {
         cprMockServer.start()
@@ -47,8 +51,8 @@ class CorePersonRecordGatewayTest(
         whenever(hmppsAuthGateway.getClientToken("CORE_PERSON_RECORD")).thenReturn(
           HmppsAuthMockServer.Companion.TOKEN,
         )
-        cprMockServer.stubForGet("/person/probation/$hmppsId", objectMapper.writeValueAsString(CorePersonRecord()), HttpStatus.OK)
-        cprMockServer.stubForGet("/person/prison/$hmppsId", objectMapper.writeValueAsString(CorePersonRecord()), HttpStatus.OK)
+        cprMockServer.stubForGet("/person/probation/$crn", objectMapper.writeValueAsString(CorePersonRecord(identifiers = Identifiers(prisonNumbers = listOf(nomsId)))), HttpStatus.OK)
+        cprMockServer.stubForGet("/person/prison/$nomsId", objectMapper.writeValueAsString(CorePersonRecord(identifiers = Identifiers(crns = listOf(crn)))), HttpStatus.OK)
       }
 
       afterTest {
@@ -56,27 +60,39 @@ class CorePersonRecordGatewayTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        corePersonRecordGateway.corePersonRecordFor("prison", hmppsId)
+        corePersonRecordGateway.corePersonRecordFor("prison", nomsId)
         verify(hmppsAuthGateway, times(1))
           .getClientToken("CORE_PERSON_RECORD")
       }
 
+      it("upstream API successfully returns a core person record error for /person/probation") {
+        val response = corePersonRecordGateway.corePersonRecordFor("probation", crn)
+        response.getIdentifier(GetPersonService.IdentifierType.NOMS).shouldBe(nomsId)
+        cprMockServer.assertValidationPassed()
+      }
+
+      it("upstream API successfully returns a core person record error for /person/prison") {
+        val response = corePersonRecordGateway.corePersonRecordFor("prison", nomsId)
+        response.getIdentifier(GetPersonService.IdentifierType.CRN).shouldBe(crn)
+        cprMockServer.assertValidationPassed()
+      }
+
       it("upstream API returns a Not Found error, throw EntityNotFoundException") {
-        cprMockServer.stubForGet("/person/probation/$hmppsId", "", HttpStatus.NOT_FOUND)
+        cprMockServer.stubForGet("/person/probation/$crn", "", HttpStatus.NOT_FOUND)
         val response =
           shouldThrow<EntityNotFoundException> {
-            corePersonRecordGateway.corePersonRecordFor("probation", hmppsId)
+            corePersonRecordGateway.corePersonRecordFor("probation", crn)
           }
-        response.message.shouldContain("Could not find core person record at /person/probation/$hmppsId")
+        response.message.shouldContain("Could not find core person record at /person/probation/$crn")
       }
 
       it("upstream API returns a bad request error, throw IllegalArgumentException") {
-        cprMockServer.stubForGet("/person/prison/$hmppsId", "", HttpStatus.BAD_REQUEST)
+        cprMockServer.stubForGet("/person/prison/$crn", "", HttpStatus.BAD_REQUEST)
         val response =
           shouldThrow<ValidationException> {
-            corePersonRecordGateway.corePersonRecordFor("prison", hmppsId)
+            corePersonRecordGateway.corePersonRecordFor("prison", crn)
           }
-        response.message.shouldContain("Invalid request to core person record /person/prison/$hmppsId")
+        response.message.shouldContain("Invalid request to core person record /person/prison/$crn")
       }
 
       it("upstream API returns an unexpected exception, throw RuntimeException") {
@@ -95,9 +111,9 @@ class CorePersonRecordGatewayTest(
         ReflectionTestUtils.setField(corePersonRecordGateway, "webClient", client)
         val response =
           shouldThrow<RuntimeException> {
-            corePersonRecordGateway.corePersonRecordFor("probation", hmppsId)
+            corePersonRecordGateway.corePersonRecordFor("probation", crn)
           }
-        response.message.shouldContain("Error retrieving core person record from /person/probation/$hmppsId")
+        response.message.shouldContain("Error retrieving core person record from /person/probation/$crn")
       }
     },
   )
