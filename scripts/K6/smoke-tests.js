@@ -333,7 +333,7 @@ function validate_get_request(path) {
   if (!check(res, {
     [`GET ${path} successful`]: (r) => r.status < 400,
   })) {
-    exec.test.fail(`${path} caused the test to fail`);
+    exec.test.fail(`GET ${path} failed, http status = ${res.status}`);
   }
   return res;
 }
@@ -464,8 +464,15 @@ function verify_reference_data() {
   validate_get_request(`/v1/activities/deallocation-reasons`);
 }
 
-function verify_epf() {
-  validate_get_request(`/v1/epf/person-details/${primaryHmppsId}/1`,)
+function verify_epf(hmppsId) {
+  validate_get_request(`/v1/epf/person-details/${hmppsId}/1`);
+
+  let res = validate_get_request(`/v1/persons/${hmppsId}/access-limitations`);
+  if (res.status === 200) {
+    check(res.json(), {
+      [`LAO exclusion data provided`]: (json) => json["data"]["excludedFrom"] != null,
+    })
+  }
 }
 
 function verify_prisons_endpoints(nomisNumber) {
@@ -512,6 +519,7 @@ function structured_verification_test(hmppsId) {
   verify_risk_endpoints(hmppsId);
 
   verify_epf(hmppsId);
+
   verify_pnd_alerts(hmppsId);
 }
 /************************************************************************/
