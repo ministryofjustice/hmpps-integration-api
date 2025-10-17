@@ -13,28 +13,29 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup K6
         uses: grafana/setup-k6-action@v1
-      - name: Run local k6 test
+      - name: Run Main profile
         uses: grafana/run-k6-action@v1
         env:
           FULL_ACCESS_CERT: ${{ secrets.DEV_SMOKE_TEST_FULL_ACCESS_CERT }}
           FULL_ACCESS_KEY: ${{ secrets.DEV_SMOKE_TEST_FULL_ACCESS_KEY }}
           FULL_ACCESS_API_KEY: ${{ secrets.DEV_SMOKE_TEST_FULL_ACCESS_API_KEY }}
-          LIMITED_ACCESS_CERT: ${{ secrets.DEV_SMOKE_TEST_LIMIITED_ACCESS_CERT }}
-          LIMITED_ACCESS_KEY: ${{ secrets.DEV_SMOKE_TEST_LIMIITED_ACCESS_KEY }}
-          LIMITED_ACCESS_API_KEY: ${{ secrets.DEV_SMOKE_TEST_LIMIITED_ACCESS_API_KEY }}
+        with:
+          path: scripts/K6/smoke-tests.js -e PROFILE=MAIN
+
+      - name: Run No access
+        uses: grafana/run-k6-action@v1
+        env:
           NO_ACCESS_CERT: ${{ secrets.DEV_SMOKE_TEST_NO_ACCESS_CERT }}
           NO_ACCESS_KEY: ${{ secrets.DEV_SMOKE_TEST_NO_ACCESS_KEY }}
           NO_ACCESS_API_KEY: ${{ secrets.DEV_SMOKE_TEST_NO_ACCESS_API_KEY }}
         with:
-          path: scripts/K6/smoke-tests.js
+          path: scripts/K6/smoke-tests.js -e PROFILE=NO_ACCESS
 
-    case "LIMITED":
-      cert_val = __ENV.LIMITED_ACCESS_CERT;
-      key_val = __ENV.LIMITED_ACCESS_KEY;
-      api_key_val = __ENV.LIMITED_ACCESS_API_KEY;
-      break
-    case "NOPERMS":
-      cert_val = __ENV.NO_ACCESS_CERT;
-      key_val = __ENV.NO_ACCESS_KEY;
-      api_key_val = __ENV.NO_ACCESS_API_KEY;
-      break
+      - name: Run Restricted access
+        uses: grafana/run-k6-action@v1
+        env:
+          NO_ACCESS_CERT: ${{ secrets.DEV_SMOKE_TEST_NO_ACCESS_CERT }}
+          NO_ACCESS_KEY: ${{ secrets.DEV_SMOKE_TEST_NO_ACCESS_KEY }}
+          NO_ACCESS_API_KEY: ${{ secrets.DEV_SMOKE_TEST_NO_ACCESS_API_KEY }}
+        with:
+          path: scripts/K6/smoke-tests.js -e PROFILE=LIMITED
