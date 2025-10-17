@@ -24,4 +24,5 @@ enum class UpstreamApi {
   HEALTH_AND_MEDICATION,
   ACTIVITIES,
   SAN,
+  CORE_PERSON_RECORD,
 }

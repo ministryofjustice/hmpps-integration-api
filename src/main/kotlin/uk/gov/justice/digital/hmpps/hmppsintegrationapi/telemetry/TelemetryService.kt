@@ -9,7 +9,15 @@ class TelemetryService(
   private val telemetryClient: TelemetryClient = TelemetryClient(),
 ) {
   @Async
-  fun trackEvent(name: String) {
-    telemetryClient.trackEvent(name)
+  fun trackEvent(
+    name: String,
+    properties: Map<String, String?> = mapOf(),
+    metrics: Map<String, Double?> = mapOf(),
+  ) {
+    telemetryClient.trackEvent(
+      name,
+      properties.filterValues { it != null },
+      metrics.filterValues { it != null },
+    )
   }
 }

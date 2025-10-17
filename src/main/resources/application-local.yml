@@ -22,6 +22,7 @@ services:
   activities.base-url: http://localhost:4028
   integration-api.base-url: http://localhost:4029
   prisoner-base-location.base-url: http://localhost:4030
+  core-person-record.base-url: http://localhost:4031
 
 hmpps.sqs:
   provider: localstack
@@ -68,6 +69,7 @@ feature-flag:
   epf-endpoint-includes-lao: false
   use-roles-dsl: true
   redaction-policy-enabled: true
+  cpr-enabled: true
 
 authorisation:
   consumers:

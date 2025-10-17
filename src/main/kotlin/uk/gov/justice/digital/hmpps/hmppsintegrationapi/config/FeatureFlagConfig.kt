@@ -39,6 +39,7 @@ data class FeatureFlagConfig(
     const val EPF_ENDPOINT_INCLUDES_LAO = "epf-endpoint-includes-lao"
     const val REDACTION_POLICY_ENABLED = "redaction-policy-enabled"
     const val EPF_GATEWAY_DISABLED = "epf-gateway-disabled"
+    const val CPR_ENABLED = "cpr-enabled"
   }
 
   /**
