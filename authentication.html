@@ -185,7 +185,10 @@
 <h3 id="example-create-and-read-a-temporary-sqs-token">Example: Create and Read a Temporary SQS Token</h3>
 <p>To make an authenticated token request to the API using the client-specific TLS certificate, private key and API key:</p>
 <div class="highlight"><pre class="highlight shell" tabindex="0"><code>curl <span class="nt">--cert</span> &lt;client-cert-file&gt; <span class="nt">--key</span> &lt;client-key-file&gt; <span class="nt">-X</span> POST https://&lt;environment&gt;.integration-api.hmpps.service.justice.gov.uk/token <span class="nt">-H</span> <span class="s1">'x-api-key: &lt;api-key&gt;'</span>
-</code></pre></div>
+</code></pre></div><p>The <code>token</code> endpoint calls the AWS STS service and returns the Credentials object from the STS response.
+https://docs.aws.amazon.com/STS/latest/APIReference/API_Credentials.html</p>
+<p>Once retrieved, the token can be used to access the AWS SQS queue directly until it expires.</p>
+
               <div data-module='page-expiry' data-last-reviewed-on="2026-03-23">
     <div class='page-expiry--not-expired'>
       This page was last reviewed on 23 September 2025.
