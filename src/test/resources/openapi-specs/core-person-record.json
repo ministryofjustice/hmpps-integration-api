@@ -29,9 +29,7 @@
   ],
   "security": [
     {
-      "bearer-jwt": [
-        "read"
-      ]
+      "bearer-jwt": ["read"]
     }
   ],
   "tags": [
@@ -43,9 +41,7 @@
   "paths": {
     "/syscon-sync/{prisonNumber}": {
       "put": {
-        "tags": [
-          "Syscon Sync"
-        ],
+        "tags": ["Syscon Sync"],
         "description": "Create a prison record",
         "operationId": "create",
         "parameters": [
@@ -106,9 +102,7 @@
     },
     "/person/probation/{defendantId}": {
       "put": {
-        "tags": [
-          "HMPPS Person API"
-        ],
+        "tags": ["HMPPS Person API"],
         "description": "Create person record by CRN. Role required is **ROLE_CORE_PERSON_RECORD_API__PROBATION_RW** . \n      Includes all fields relating to core person information",
         "operationId": "createProbationRecord",
         "parameters": [
@@ -145,9 +139,7 @@
     },
     "/person/{uuid}": {
       "get": {
-        "tags": [
-          "HMPPS Person API"
-        ],
+        "tags": ["HMPPS Person API"],
         "description": "Retrieve person record by UUID. Role required is **ROLE_CORE_PERSON_RECORD_API__RO**",
         "operationId": "getCanonicalRecord",
         "parameters": [
@@ -185,9 +177,7 @@
     },
     "/person/probation/{crn}": {
       "get": {
-        "tags": [
-          "HMPPS Person API"
-        ],
+        "tags": ["HMPPS Person API"],
         "description": "Retrieve person record by CRN. Role required is **ROLE_CORE_PERSON_RECORD_API__RO** . \n      For Identifiers the crn, prisonNumber, defendantId, cids come from all records related to this person.\n      The other Identifiers come from just this person\n      **cprUUID is not supplied on this endpoint.**",
         "operationId": "getRecord",
         "parameters": [
@@ -221,9 +211,7 @@
     },
     "/person/prison/{prisonNumber}": {
       "get": {
-        "tags": [
-          "HMPPS Person API"
-        ],
+        "tags": ["HMPPS Person API"],
         "description": "Retrieve person record by Prison Number. Role required is **ROLE_CORE_PERSON_RECORD_API__RO** . \n      For Identifiers the crn, prisonNumber, defendantId, cids come from all records related to this person.\n      The other Identifiers come from just this person\n      **cprUUID is not supplied on this endpoint.**",
         "operationId": "getRecord_1",
         "parameters": [
@@ -257,9 +245,7 @@
     },
     "/person/commonplatform/{defendantId}": {
       "get": {
-        "tags": [
-          "HMPPS Person API"
-        ],
+        "tags": ["HMPPS Person API"],
         "description": "Retrieve person record by Defendant ID. Role required is **ROLE_CORE_PERSON_RECORD_API__RO** . \n      For Identifiers the crn, prisonNumber, defendantId, cids come from all records related to this person.\n      The other Identifiers come from just this person\n      **cprUUID is not supplied on this endpoint.**",
         "operationId": "getRecord_2",
         "parameters": [
@@ -305,11 +291,7 @@
           "type": {
             "type": "string",
             "description": "The address type",
-            "enum": [
-              "BUS",
-              "HOME",
-              "WORK"
-            ],
+            "enum": ["BUS", "HOME", "WORK"],
             "example": "HOME"
           },
           "flat": {
@@ -384,12 +366,7 @@
             "description": "Is this an active address"
           }
         },
-        "required": [
-          "isActive",
-          "isMail",
-          "isPrimary",
-          "type"
-        ]
+        "required": ["isActive", "isMail", "isPrimary", "type"]
       },
       "Alias": {
         "type": "object",
@@ -427,12 +404,7 @@
           "type": {
             "type": "string",
             "description": "The alias type",
-            "enum": [
-              "A",
-              "CN",
-              "MAID",
-              "NICK"
-            ],
+            "enum": ["A", "CN", "MAID", "NICK"],
             "example": "NICK"
           }
         }
@@ -453,10 +425,7 @@
             }
           }
         },
-        "required": [
-          "emails",
-          "phoneNumbers"
-        ]
+        "required": ["emails", "phoneNumbers"]
       },
       "DemographicAttributes": {
         "type": "object",
@@ -529,12 +498,7 @@
           "type": {
             "type": "string",
             "description": "The identifier type",
-            "enum": [
-              "PNC",
-              "CRO",
-              "NINO",
-              "DL"
-            ],
+            "enum": ["PNC", "CRO", "NINO", "DL"],
             "example": "PNC"
           },
           "value": {
@@ -543,9 +507,7 @@
             "example": "2000/1234567A"
           }
         },
-        "required": [
-          "type"
-        ]
+        "required": ["type"]
       },
       "Name": {
         "type": "object",
@@ -593,13 +555,7 @@
           "type": {
             "type": "string",
             "description": "The phone type",
-            "enum": [
-              "BUS",
-              "FAX",
-              "HOME",
-              "MOB",
-              "ALTH"
-            ],
+            "enum": ["BUS", "FAX", "HOME", "MOB", "ALTH"],
             "example": "MOB"
           },
           "extension": {
@@ -608,9 +564,7 @@
             "example": "+44"
           }
         },
-        "required": [
-          "type"
-        ]
+        "required": ["type"]
       },
       "Prisoner": {
         "type": "object",
@@ -655,16 +609,7 @@
             }
           }
         },
-        "required": [
-          "addresses",
-          "aliases",
-          "contactInfo",
-          "demographicAttributes",
-          "identifiers",
-          "name",
-          "religions",
-          "sentences"
-        ]
+        "required": ["addresses", "aliases", "contactInfo", "demographicAttributes", "identifiers", "name", "religions", "sentences"]
       },
       "Religion": {
         "type": "object",
@@ -711,9 +656,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "status"
-        ]
+        "required": ["status"]
       },
       "ContactDetails": {
         "type": "object",
@@ -824,11 +767,7 @@
             "$ref": "#/components/schemas/Value"
           }
         },
-        "required": [
-          "addresses",
-          "identifiers",
-          "name"
-        ]
+        "required": ["addresses", "identifiers", "name"]
       },
       "ProbationCaseAlias": {
         "type": "object",
@@ -844,9 +783,7 @@
             "$ref": "#/components/schemas/Value"
           }
         },
-        "required": [
-          "name"
-        ]
+        "required": ["name"]
       },
       "ProbationCaseName": {
         "type": "object",
@@ -885,11 +822,7 @@
           "noFixedAbode": {
             "type": "boolean",
             "description": "Person no fixed abode",
-            "examples": [
-              "false",
-              "true",
-              "null"
-            ]
+            "examples": ["false", "true", "null"]
           },
           "startDate": {
             "type": "string",
@@ -980,10 +913,7 @@
             "description": "Person alias sex"
           }
         },
-        "required": [
-          "sex",
-          "title"
-        ]
+        "required": ["sex", "title"]
       },
       "CanonicalEthnicity": {
         "type": "object",
@@ -1181,16 +1111,7 @@
             "description": "Person identifiers"
           }
         },
-        "required": [
-          "addresses",
-          "aliases",
-          "ethnicity",
-          "identifiers",
-          "nationalities",
-          "religion",
-          "sex",
-          "title"
-        ]
+        "required": ["addresses", "aliases", "ethnicity", "identifiers", "nationalities", "religion", "sex", "title"]
       },
       "CanonicalReligion": {
         "type": "object",

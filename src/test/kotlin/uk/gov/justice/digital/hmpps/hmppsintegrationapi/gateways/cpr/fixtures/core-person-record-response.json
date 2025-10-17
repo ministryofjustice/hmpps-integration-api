@@ -58,32 +58,14 @@
     }
   ],
   "identifiers": {
-    "crns": [
-      "AB123123"
-    ],
-    "prisonNumbers": [
-      "G5555TT"
-    ],
-    "defendantIds": [
-      "46caa4e5-ae06-4226-9cb6-682cb26cf025"
-    ],
-    "cids": [
-      "1234567"
-    ],
-    "pncs": [
-      "2000/1234567A"
-    ],
-    "cros": [
-      "123456/00A"
-    ],
-    "nationalInsuranceNumbers": [
-      "QQ123456B"
-    ],
-    "driverLicenseNumbers": [
-      "SMITH840325J912"
-    ],
-    "arrestSummonsNumbers": [
-      "0700000000000002536Y"
-    ]
+    "crns": ["AB123123"],
+    "prisonNumbers": ["G5555TT"],
+    "defendantIds": ["46caa4e5-ae06-4226-9cb6-682cb26cf025"],
+    "cids": ["1234567"],
+    "pncs": ["2000/1234567A"],
+    "cros": ["123456/00A"],
+    "nationalInsuranceNumbers": ["QQ123456B"],
+    "driverLicenseNumbers": ["SMITH840325J912"],
+    "arrestSummonsNumbers": ["0700000000000002536Y"]
   }
 }
