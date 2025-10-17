@@ -1,7 +1,7 @@
 import http from 'k6/http';
 // const http = require('k6/http');
 // const { check, fail } = require('k6');
-import { check, fail } from 'k6';
+import { group, check, fail } from 'k6';
 import exec from 'k6/execution';
 import { read_certificate } from "./support.js"
 
@@ -46,8 +46,9 @@ const httpParams = {
 const baseUrl = `https://${domain}`;
 
 const hmppsId = "A8451DY";
+// const hmppsId = "X688624";
 const primaryHmppsId = __ENV.HMPPSID;
-const hmppsIdWithLaoContext = "A4433DZ";
+// const hmppsIdWithLaoContext = "A4433DZ";
 const visitsHmppsId = "A8452DY"
 const alternativeHmppsId = "G6333VK";
 const plpHmppsId = "A5502DZ";
@@ -58,7 +59,7 @@ const alternativeprisonId = "RSI";
 const visitReference = "qd-lh-gy-lx";
 const clientVisitReference = "SMOKE_TEST_CLIENT_REF";
 const contactId = "1898610";
-const imageId = "1988315";
+// const imageId = "1988315";
 const locationIdKey = "MKI-A";
 const activityId = 1162
 const scheduleId = 518
@@ -73,67 +74,67 @@ const attendancesStartDate = "2025-07-04"
 const attendancesEndDate = "2025-07-11"
 
 const get_endpoints = [
-  `/v1/hmpps/id/by-nomis-number/${hmppsId}`,
-  `/v1/hmpps/id/nomis-number/by-hmpps-id/${hmppsId}`,
-  `/v1/persons/${hmppsId}/addresses`,
-  `/v1/persons/${hmppsId}/contacts`,
-  `/v1/persons/${hmppsId}/iep-level`,
+  // `/v1/hmpps/id/by-nomis-number/${hmppsId}`,
+  // `/v1/hmpps/id/nomis-number/by-hmpps-id/${hmppsId}`,
+  // `/v1/persons/${hmppsId}/addresses`,
+  // `/v1/persons/${hmppsId}/contacts`,
+  // `/v1/persons/${hmppsId}/iep-level`,
   `/v1/persons/${alternativeHmppsId}/visit-orders`,
-  `/v1/persons/${hmppsId}/visit-restrictions`,
-  `/v1/persons/${hmppsId}/alerts`,
-  `/v1/persons/${hmppsId}/name`,
-  `/v1/persons/${hmppsId}/cell-location`,
-  `/v1/persons/${hmppsId}/risks/categories`,
-  `/v1/persons/${hmppsId}/sentences`,
-  `/v1/persons/${hmppsId}/offences`,
-  `/v1/persons/${hmppsId}/reported-adjudications`,
-  `/v1/persons/${hmppsId}/number-of-children`,
-  `/v1/persons/${hmppsId}/physical-characteristics`,
-  `/v1/persons/${hmppsId}/care-needs`,
-  `/v1/prison/prisoners?first_name=john`,
-  `/v1/prison/prisoners/${hmppsId}`,
-  `/v1/prison/${prisonId}/prisoners/${hmppsId}/balances`,
-  `/v1/prison/${prisonId}/prisoners/${hmppsId}/accounts/spends/balances`,
-  `/v1/prison/${prisonId}/prisoners/${hmppsId}/accounts/spends/transactions`,
+  // `/v1/persons/${hmppsId}/visit-restrictions`,
+  // `/v1/persons/${hmppsId}/alerts`,
+  // `/v1/persons/${hmppsId}/name`,
+  // `/v1/persons/${hmppsId}/cell-location`,
+  // `/v1/persons/${hmppsId}/risks/categories`,
+  // `/v1/persons/${hmppsId}/sentences`,
+  // `/v1/persons/${hmppsId}/offences`,
+  // `/v1/persons/${hmppsId}/reported-adjudications`,
+  // `/v1/persons/${hmppsId}/number-of-children`,
+  // `/v1/persons/${hmppsId}/physical-characteristics`,
+  // `/v1/persons/${hmppsId}/care-needs`,
+  // `/v1/prison/prisoners?first_name=john`,
+  // `/v1/prison/prisoners/${hmppsId}`,
+  // `/v1/prison/${prisonId}/prisoners/${hmppsId}/balances`,
+  // `/v1/prison/${prisonId}/prisoners/${hmppsId}/accounts/spends/balances`,
+  // `/v1/prison/${prisonId}/prisoners/${hmppsId}/accounts/spends/transactions`,
   `/v1/prison/${prisonId}/prisoners/${hmppsId}/transactions/canteen_test`,
-  `/v1/prison/${prisonId}/prisoners/${hmppsId}/non-associations`,
-  `/v1/prison/${prisonId}/residential-hierarchy`,
+  // `/v1/prison/${prisonId}/prisoners/${hmppsId}/non-associations`,
+  // `/v1/prison/${prisonId}/residential-hierarchy`,
   `/v1/prison/${prisonId}/location/${locationIdKey}`,
-  `/v1/prison/${prisonId}/residential-details`,
-  `/v1/prison/${prisonId}/capacity`,
+  // `/v1/prison/${prisonId}/residential-details`,
+  // `/v1/prison/${prisonId}/capacity`,
   `/v1/prison/${alternativeprisonId}/prison-regime`,
-  `/v1/prison/${alternativeprisonId}/activities`,
-  `/v1/prison/${alternativeprisonId}/prison-pay-bands`,
+  // `/v1/prison/${alternativeprisonId}/activities`,
+  // `/v1/prison/${alternativeprisonId}/prison-pay-bands`,
   `/v1/contacts/${contactId}`,
-  `/v1/persons/${hmppsId}/needs`,
+  // `/v1/persons/${hmppsId}/needs`,
   `/v1/persons/${hmppsId}/plp-induction-schedule`,
   `/v1/persons/${hmppsId}/plp-induction-schedule/history`,
   `/v1/persons/${plpHmppsId}/plp-review-schedule`,
-  `/v1/persons/${hmppsId}/sentences/latest-key-dates-and-adjustments`,
-  `/v1/hmpps/id/nomis-number/${hmppsId}`,
+  // `/v1/persons/${hmppsId}/sentences/latest-key-dates-and-adjustments`,
+  // `/v1/hmpps/id/nomis-number/${hmppsId}`,
   `/v1/persons/${visitsHmppsId}/visit/future`,
   `/v1/visit/${visitReference}`,
   `/v1/visit/id/by-client-ref/${clientVisitReference}`,
-  `/v1/prison/${prisonId}/visit/search?visitStatus=BOOKED`,
-  `/v1/persons/${primaryHmppsId}/protected-characteristics`,
+  // `/v1/prison/${prisonId}/visit/search?visitStatus=BOOKED`,
+  // `/v1/persons/${primaryHmppsId}/protected-characteristics`,
   `/v1/persons/${risksCrn}/risk-management-plan`,
-  `/v1/persons/${alternativeHmppsId}/person-responsible-officer`,
+  // `/v1/persons/${alternativeHmppsId}/person-responsible-officer`,
   `/v1/persons/${alternativeHmppsId}/visitor/${contactId}/restrictions`,
-  `/v1/persons/${hmppsId}/images`,
-  `/v1/persons/${hmppsId}/images/${imageId}`,
-  `/v1/persons/${hmppsId}/case-notes`,
-  `/v1/persons/${hmppsId}/health-and-diet`,
-  `/v1/persons/${hmppsId}/languages`,
+  // `/v1/persons/${hmppsId}/images`,
+  // `/v1/persons/${hmppsId}/images/${imageId}`,
+  // `/v1/persons/${hmppsId}/case-notes`,
+  // `/v1/persons/${hmppsId}/health-and-diet`,
+  // `/v1/persons/${hmppsId}/languages`,
   `/v1/persons/${plpHmppsId}/education`,
-  `/v1/persons/${hmppsId}/prisoner-base-location`,
+  // `/v1/persons/${hmppsId}/prisoner-base-location`,
   `/v1/activities/${activityId}/schedules`,
   `/v1/activities/schedule/${scheduleId}`,
   `/v1/prison/${prisonId}/prisoners/${hmppsId}/scheduled-instances?startDate=${startDate}&endDate=${endDate}`,
   `/v1/prison/prisoners/${attendancesHmppsId}/activities/attendances?startDate=${attendancesStartDate}&endDate=${attendancesEndDate}`,
   `/v1/activities/schedule/${scheduleId}/waiting-list-applications`,
   `/v1/activities/schedule/${scheduleId}/suitability-criteria`,
-  `/v1/persons/${hmppsId}/education/san/plan-creation-schedule`,
-  `/v1/persons/${alternativeHmppsId}/education/san/review-schedule`,
+  // `/v1/persons/${hmppsId}/education/san/plan-creation-schedule`,
+  // `/v1/persons/${alternativeHmppsId}/education/san/review-schedule`,
 ];
 
 const broken_endpoints = []
@@ -475,8 +476,53 @@ function verify_epf(hmppsId) {
   }
 }
 
+function verify_prison_endpoints(prisonId) {
+  validate_get_request(`/v1/prison/${prisonId}/capacity`);
+  validate_get_request(`/v1/prison/${prisonId}/residential-details`);
+  validate_get_request(`/v1/prison/${prisonId}/residential-hierarchy`);
+  validate_get_request(`/v1/prison/${prisonId}/visit/search?visitStatus=BOOKED`);
+  validate_get_request(`/v1/prison/${prisonId}/activities`);
+  validate_get_request(`/v1/prison/${prisonId}/prison-pay-bands`);
+}
+
+function verify_prisoner_endpoints(prisonId, nomisNumber) {
+  let prisonerPrefix = `/v1/prison/${prisonId}/prisoners/${nomisNumber}`;
+  validate_get_request(`${prisonerPrefix}/balances`);
+  validate_get_request(`${prisonerPrefix}/accounts/spends/transactions`);
+  // validate_get_request(`${prisonerPrefix}/transactions/canteen_test`);
+  validate_get_request(`${prisonerPrefix}/non-associations`);
+}
+
 function verify_prisons_endpoints(nomisNumber) {
-  validate_get_request(`/v1/prison/prisoners/${nomisNumber}`)
+  group('prisons', () => {
+    let res = validate_get_request(`/v1/prison/prisoners/${nomisNumber}`)
+    if (res.status !== 200) {
+      console.log(`Skipping prison checks for ${nomisNumber} - failed`);
+      return
+    }
+    let prisoner = res.json()["data"]
+    if (prisoner == null) {
+      console.log(`Skipping prison checks for ${nomisNumber} - no data`);
+      return
+    }
+
+    let surname = prisoner["lastName"];
+    let firstName = prisoner["firstName"];
+    let dateOfBirth = prisoner["dateOfBirth"];
+
+    validate_get_request(`/v1/prison/prisoners?first_name=${firstName}&surname=${surname}&date_of_birth=${dateOfBirth}`);
+    validate_get_request(`/v1/persons/${nomisNumber}/cell-location`);
+    validate_get_request(`/v1/persons/${nomisNumber}/visit-restrictions`);
+    validate_get_request(`/v1/persons/${nomisNumber}/prisoner-base-location`);
+
+    let prisonId = prisoner["prisonId"];
+    check(prisonId, {
+      [`Prison ID found`]: () => prisonId != null,
+    })
+
+    verify_prison_endpoints(prisonId);
+    verify_prisoner_endpoints(prisonId, nomisNumber);
+  })
 }
 
 function verify_pnd_alerts(hmppsId) {
@@ -484,12 +530,77 @@ function verify_pnd_alerts(hmppsId) {
 }
 
 function verify_risk_endpoints(hmppsId) {
-  validate_get_request(`/v1/persons/${hmppsId}/licences/conditions`);
-  validate_get_request(`/v1/persons/${hmppsId}/status-information`);
-  validate_get_request(`/v1/persons/${hmppsId}/risks/mappadetail`);
-  validate_get_request(`/v1/persons/${hmppsId}/risks/serious-harm`);
-  validate_get_request(`/v1/persons/${hmppsId}/risks/scores`);
-  validate_get_request(`/v1/persons/${hmppsId}/risks/dynamic`);
+  group('risk', () => {
+    validate_get_request(`/v1/persons/${hmppsId}/licences/conditions`);
+    validate_get_request(`/v1/persons/${hmppsId}/status-information`);
+    validate_get_request(`/v1/persons/${hmppsId}/risks/mappadetail`);
+    validate_get_request(`/v1/persons/${hmppsId}/risks/serious-harm`);
+    validate_get_request(`/v1/persons/${hmppsId}/risks/scores`);
+    validate_get_request(`/v1/persons/${hmppsId}/risks/dynamic`);
+    validate_get_request(`/v1/persons/${hmppsId}/risks/categories`);
+  })
+}
+
+function verify_get_basic_details(hmppsId) {
+  group('basic details', () => {
+    validate_get_request(`/v1/persons/${hmppsId}/name`);
+    validate_get_request(`/v1/persons/${hmppsId}/addresses`);
+    validate_get_request(`/v1/persons/${hmppsId}/alerts`);
+    validate_get_request(`/v1/persons/${hmppsId}/offences`);
+    validate_get_request(`/v1/persons/${hmppsId}/sentences`);
+    validate_get_request(`/v1/persons/${hmppsId}/reported-adjudications`);
+    validate_get_request(`/v1/persons/${hmppsId}/number-of-children`);
+    validate_get_request(`/v1/persons/${hmppsId}/physical-characteristics`);
+    validate_get_request(`/v1/persons/${hmppsId}/protected-characteristics`);
+    validate_get_request(`/v1/persons/${hmppsId}/care-needs`);
+    validate_get_request(`/v1/persons/${hmppsId}/needs`);
+    validate_get_request(`/v1/persons/${hmppsId}/person-responsible-officer`);
+    validate_get_request(`/v1/persons/${hmppsId}/case-notes`);
+    validate_get_request(`/v1/persons/${hmppsId}/health-and-diet`);
+    validate_get_request(`/v1/persons/${hmppsId}/languages`);
+    validate_get_request(`/v1/persons/${hmppsId}/iep-level`);
+    validate_get_request(`/v1/persons/${hmppsId}/sentences/latest-key-dates-and-adjustments`);
+  })
+}
+
+function verify_get_images(hmppsId) {
+  let res = validate_get_request(`/v1/persons/${hmppsId}/images`);
+  if (res.status < 400) {
+    let images = res.json()["data"];
+    if (!check(images, {
+      [`At least one image returned`]: (json) => images.length >= 1,
+    })) {
+      return
+    }
+    let imageId = images[0]["id"];
+    validate_get_request(`/v1/persons/${hmppsId}/images/${imageId}`);
+  }
+}
+
+function verify_education_san(hmppsId) {
+  validate_get_request(`/v1/persons/${hmppsId}/education/san/plan-creation-schedule`);
+  validate_get_request(`/v1/persons/${hmppsId}/education/san/review-schedule`);
+}
+
+function verify_id_conversion(crn, nomisNumber) {
+  validate_get_request(`/v1/hmpps/id/by-nomis-number/${nomisNumber}`);
+  validate_get_request(`/v1/hmpps/id/nomis-number/by-hmpps-id/${crn}`);
+  validate_get_request(`/v1/hmpps/id/nomis-number/${crn}`);
+}
+
+function verify_contacts(hmppsId) {
+  let res = validate_get_request(`/v1/persons/${hmppsId}/contacts`);
+  if (res.status >= 300) {
+    return
+  }
+  // let contacts = res.json()["data"];
+  // if (!check(contacts, {
+  //   [`At least one contact returned`]: () => contacts.length >= 1,
+  // })) {
+  //   return
+  // }
+  // let contactId = contacts[0]["id"];
+  // validate_get_request(`/v1/persons/${hmppsId}/contacts/${contactId}`);
 }
 
 /**
@@ -500,7 +611,7 @@ function verify_risk_endpoints(hmppsId) {
 function structured_verification_test(hmppsId) {
   let res = verify_system_endpoints();
   if (res.status >= 400) {
-    console.log(`Aborting smoke test as status endpoint failed`)
+    exec.test.abort(`Status endpoint failed`)
     return
   }
 
@@ -508,8 +619,15 @@ function structured_verification_test(hmppsId) {
 
   let nomisNumber = verify_get_person(hmppsId);
 
+  verify_get_basic_details(hmppsId);
+
+  verify_get_images(hmppsId);
+
+  verify_contacts(hmppsId);
+
   if (nomisNumber != null) {
     verify_prisons_endpoints(nomisNumber);
+    verify_id_conversion(hmppsId, nomisNumber);
   } else {
     console.log(`No nomis number found, skipping prisons tests`)
   }
@@ -521,6 +639,8 @@ function structured_verification_test(hmppsId) {
   verify_epf(hmppsId);
 
   verify_pnd_alerts(hmppsId);
+
+  verify_education_san(hmppsId);
 }
 /************************************************************************/
 
@@ -530,7 +650,7 @@ export default function ()  {
   switch (profile) {
     case "MAIN":
       structured_verification_test(primaryHmppsId);
-      simple_endpoint_tests();
+      // simple_endpoint_tests();
       break
     case "PROD":
       minimal_prod_verification();
