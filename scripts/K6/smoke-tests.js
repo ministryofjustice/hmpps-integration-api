@@ -1,6 +1,4 @@
 import http from 'k6/http';
-// const http = require('k6/http');
-// const { check, fail } = require('k6');
 import { group, check, fail } from 'k6';
 import exec from 'k6/execution';
 import { read_certificate } from "./support.js"
@@ -46,9 +44,7 @@ const httpParams = {
 const baseUrl = `https://${domain}`;
 
 const hmppsId = "A8451DY";
-// const hmppsId = "X688624";
 const primaryHmppsId = __ENV.HMPPSID;
-// const hmppsIdWithLaoContext = "A4433DZ";
 const visitsHmppsId = "A8452DY"
 const alternativeHmppsId = "G6333VK";
 const plpHmppsId = "A5502DZ";
@@ -59,7 +55,6 @@ const alternativeprisonId = "RSI";
 const visitReference = "qd-lh-gy-lx";
 const clientVisitReference = "SMOKE_TEST_CLIENT_REF";
 const contactId = "1898610";
-// const imageId = "1988315";
 const locationIdKey = "MKI-A";
 const activityId = 1162
 const scheduleId = 518
@@ -73,71 +68,29 @@ const endDate = "2022-02-01"
 const attendancesStartDate = "2025-07-04"
 const attendancesEndDate = "2025-07-11"
 
+// These endpoints don't work with the primary HMPPS ID
 const get_endpoints = [
-  // `/v1/hmpps/id/by-nomis-number/${hmppsId}`,
-  // `/v1/hmpps/id/nomis-number/by-hmpps-id/${hmppsId}`,
-  // `/v1/persons/${hmppsId}/addresses`,
-  // `/v1/persons/${hmppsId}/contacts`,
-  // `/v1/persons/${hmppsId}/iep-level`,
   `/v1/persons/${alternativeHmppsId}/visit-orders`,
-  // `/v1/persons/${hmppsId}/visit-restrictions`,
-  // `/v1/persons/${hmppsId}/alerts`,
-  // `/v1/persons/${hmppsId}/name`,
-  // `/v1/persons/${hmppsId}/cell-location`,
-  // `/v1/persons/${hmppsId}/risks/categories`,
-  // `/v1/persons/${hmppsId}/sentences`,
-  // `/v1/persons/${hmppsId}/offences`,
-  // `/v1/persons/${hmppsId}/reported-adjudications`,
-  // `/v1/persons/${hmppsId}/number-of-children`,
-  // `/v1/persons/${hmppsId}/physical-characteristics`,
-  // `/v1/persons/${hmppsId}/care-needs`,
-  // `/v1/prison/prisoners?first_name=john`,
-  // `/v1/prison/prisoners/${hmppsId}`,
-  // `/v1/prison/${prisonId}/prisoners/${hmppsId}/balances`,
-  // `/v1/prison/${prisonId}/prisoners/${hmppsId}/accounts/spends/balances`,
-  // `/v1/prison/${prisonId}/prisoners/${hmppsId}/accounts/spends/transactions`,
   `/v1/prison/${prisonId}/prisoners/${hmppsId}/transactions/canteen_test`,
-  // `/v1/prison/${prisonId}/prisoners/${hmppsId}/non-associations`,
-  // `/v1/prison/${prisonId}/residential-hierarchy`,
   `/v1/prison/${prisonId}/location/${locationIdKey}`,
-  // `/v1/prison/${prisonId}/residential-details`,
-  // `/v1/prison/${prisonId}/capacity`,
   `/v1/prison/${alternativeprisonId}/prison-regime`,
-  // `/v1/prison/${alternativeprisonId}/activities`,
-  // `/v1/prison/${alternativeprisonId}/prison-pay-bands`,
   `/v1/contacts/${contactId}`,
-  // `/v1/persons/${hmppsId}/needs`,
   `/v1/persons/${hmppsId}/plp-induction-schedule`,
   `/v1/persons/${hmppsId}/plp-induction-schedule/history`,
   `/v1/persons/${plpHmppsId}/plp-review-schedule`,
-  // `/v1/persons/${hmppsId}/sentences/latest-key-dates-and-adjustments`,
-  // `/v1/hmpps/id/nomis-number/${hmppsId}`,
   `/v1/persons/${visitsHmppsId}/visit/future`,
   `/v1/visit/${visitReference}`,
   `/v1/visit/id/by-client-ref/${clientVisitReference}`,
-  // `/v1/prison/${prisonId}/visit/search?visitStatus=BOOKED`,
-  // `/v1/persons/${primaryHmppsId}/protected-characteristics`,
   `/v1/persons/${risksCrn}/risk-management-plan`,
-  // `/v1/persons/${alternativeHmppsId}/person-responsible-officer`,
   `/v1/persons/${alternativeHmppsId}/visitor/${contactId}/restrictions`,
-  // `/v1/persons/${hmppsId}/images`,
-  // `/v1/persons/${hmppsId}/images/${imageId}`,
-  // `/v1/persons/${hmppsId}/case-notes`,
-  // `/v1/persons/${hmppsId}/health-and-diet`,
-  // `/v1/persons/${hmppsId}/languages`,
   `/v1/persons/${plpHmppsId}/education`,
-  // `/v1/persons/${hmppsId}/prisoner-base-location`,
   `/v1/activities/${activityId}/schedules`,
   `/v1/activities/schedule/${scheduleId}`,
   `/v1/prison/${prisonId}/prisoners/${hmppsId}/scheduled-instances?startDate=${startDate}&endDate=${endDate}`,
   `/v1/prison/prisoners/${attendancesHmppsId}/activities/attendances?startDate=${attendancesStartDate}&endDate=${attendancesEndDate}`,
   `/v1/activities/schedule/${scheduleId}/waiting-list-applications`,
   `/v1/activities/schedule/${scheduleId}/suitability-criteria`,
-  // `/v1/persons/${hmppsId}/education/san/plan-creation-schedule`,
-  // `/v1/persons/${alternativeHmppsId}/education/san/review-schedule`,
 ];
-
-const broken_endpoints = []
 
 const postEducationUpdateEndpoint = `/v1/persons/${hmppsId}/education/status`
 const postEducationUpdateRequest = JSON.stringify({
@@ -251,17 +204,6 @@ function verify_get_endpoints() {
       [`GET ${endpoint} returns 200`]: (r) => r.status === 200,
     })) {
       exec.test.fail(`${endpoint} caused the test to fail, status = ${res.status}`)
-    }
-  }
-}
-
-function verify_broken_endpoints() {
-  for (const endpoint of broken_endpoints) {
-    const res = http.get(`${baseUrl}${endpoint}`, httpParams);
-    if (!check(res, {
-      [`GET ${endpoint} returns error`]: (r) => r.status >= 400,
-    })) {
-      exec.test.fail(`${endpoint} caused the test to fail`)
     }
   }
 }
@@ -448,7 +390,6 @@ function denied_endpoint_verification() {
 function simple_endpoint_tests() {
   verify_post_endpoints();
   verify_get_endpoints();
-  verify_broken_endpoints();
 }
 
 /**
