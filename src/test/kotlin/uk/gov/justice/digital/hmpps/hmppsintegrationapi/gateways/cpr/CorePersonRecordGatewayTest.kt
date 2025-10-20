@@ -28,7 +28,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMoc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.CorePersonRecord
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService.IdentifierType
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -60,20 +60,20 @@ class CorePersonRecordGatewayTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        corePersonRecordGateway.corePersonRecordFor("prison", nomsId)
+        corePersonRecordGateway.corePersonRecordFor(IdentifierType.NOMS, nomsId)
         verify(hmppsAuthGateway, times(1))
           .getClientToken("CORE_PERSON_RECORD")
       }
 
       it("upstream API successfully returns a core person record error for /person/probation") {
-        val response = corePersonRecordGateway.corePersonRecordFor("probation", crn)
-        response.getIdentifier(GetPersonService.IdentifierType.NOMS).shouldBe(nomsId)
+        val response = corePersonRecordGateway.corePersonRecordFor(IdentifierType.CRN, crn)
+        response.getIdentifier(IdentifierType.NOMS).shouldBe(nomsId)
         cprMockServer.assertValidationPassed()
       }
 
       it("upstream API successfully returns a core person record error for /person/prison") {
-        val response = corePersonRecordGateway.corePersonRecordFor("prison", nomsId)
-        response.getIdentifier(GetPersonService.IdentifierType.CRN).shouldBe(crn)
+        val response = corePersonRecordGateway.corePersonRecordFor(IdentifierType.NOMS, nomsId)
+        response.getIdentifier(IdentifierType.CRN).shouldBe(crn)
         cprMockServer.assertValidationPassed()
       }
 
@@ -81,7 +81,7 @@ class CorePersonRecordGatewayTest(
         cprMockServer.stubForGet("/person/probation/$crn", "", HttpStatus.NOT_FOUND)
         val response =
           shouldThrow<EntityNotFoundException> {
-            corePersonRecordGateway.corePersonRecordFor("probation", crn)
+            corePersonRecordGateway.corePersonRecordFor(IdentifierType.CRN, crn)
           }
         response.message.shouldContain("Could not find core person record at /person/probation/$crn")
       }
@@ -90,7 +90,7 @@ class CorePersonRecordGatewayTest(
         cprMockServer.stubForGet("/person/prison/$crn", "", HttpStatus.BAD_REQUEST)
         val response =
           shouldThrow<ValidationException> {
-            corePersonRecordGateway.corePersonRecordFor("prison", crn)
+            corePersonRecordGateway.corePersonRecordFor(IdentifierType.NOMS, crn)
           }
         response.message.shouldContain("Invalid request to core person record /person/prison/$crn")
       }
@@ -111,7 +111,7 @@ class CorePersonRecordGatewayTest(
         ReflectionTestUtils.setField(corePersonRecordGateway, "webClient", client)
         val response =
           shouldThrow<RuntimeException> {
-            corePersonRecordGateway.corePersonRecordFor("probation", crn)
+            corePersonRecordGateway.corePersonRecordFor(IdentifierType.CRN, crn)
           }
         response.message.shouldContain("Error retrieving core person record from /person/probation/$crn")
       }

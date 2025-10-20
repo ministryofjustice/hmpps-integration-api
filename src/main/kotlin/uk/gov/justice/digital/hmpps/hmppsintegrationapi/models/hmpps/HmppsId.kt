@@ -1,5 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
 data class HmppsId(
-  val hmppsId: String? = null,
+  open val hmppsId: String? = null,
 )

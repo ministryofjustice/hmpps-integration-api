@@ -14,7 +14,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSea
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResult
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonId
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrisonId
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonOnProbationId
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -46,22 +49,102 @@ class GetPersonService(
   }
 
   /**
-   * This function should always return an identifier.
-   * Any exceptions caused by upstream errors will be thrown upstream
+   * Converts an hmppsId to the required person id using either CPR or the probation or prison APIs
+   * Either a person on probation id or a person in prison id.
+   *
+   * Note - existing processing also verifies that the hmppsId exists in its own domain
    */
-  fun convert(
-    identifierType: IdentifierType,
-    hmppsId: String,
-  ): String {
-    val cprType =
-      when (identifyHmppsId(hmppsId)) {
-        identifierType -> return hmppsId
-        IdentifierType.UNKNOWN -> throw IllegalArgumentException("Invalid identifier $hmppsId")
-        IdentifierType.NOMS -> "prison"
-        IdentifierType.CRN -> "probation"
+  private inline fun <reified T : PersonId> convert(hmppsId: String): Response<T?> {
+    val hmppsIdType =
+      when (val thisType = identifyHmppsId(hmppsId)) {
+        IdentifierType.UNKNOWN -> return Response(
+          data = null,
+          errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.BAD_REQUEST, description = "Invalid HMPPS ID: $hmppsId")),
+        )
+        else -> thisType
       }
-    val cpr = corePersonRecordGateway.corePersonRecordFor(cprType, hmppsId)
-    return cpr.getIdentifier(identifierType) ?: throw EntityNotFoundException("No single $identifierType found for $hmppsId in core person record")
+    val requiredType = if (T::class == PersonInPrisonId::class) IdentifierType.NOMS else IdentifierType.CRN
+
+    // If the CPR feature flag is enabled then call CPR.
+    if (featureFlagConfig.isEnabled(CPR_ENABLED)) {
+      runCatching {
+        val cpr = corePersonRecordGateway.corePersonRecordFor(hmppsIdType, hmppsId)
+        cpr.getIdentifier(requiredType) ?: throw EntityNotFoundException("No single $requiredType found for $hmppsId in core person record")
+      }.onFailure { telemetryService.trackEvent("CPRNomsFailure", mapOf("message" to "Failed to use CPR to convert $hmppsId", "error" to it.message)) }
+        .onSuccess {
+          telemetryService.trackEvent("CPRNomsSuccess", mapOf("message" to "Successfully used CPR to convert $hmppsId to $it", "fromId" to hmppsId, "toId" to it))
+          return if ((T::class == PersonInPrisonId::class)) Response(PersonInPrisonId(it, "") as T) else Response(PersonOnProbationId(it) as T)
+        }
+    }
+    // Fall back to using the prison API or probation API to get the person id
+    return when (hmppsIdType) {
+      IdentifierType.NOMS -> prisonAPIPersonId(hmppsId)
+      else -> probationAPIPersonId(hmppsId)
+    }
+  }
+
+  // Public function to get the hmpps id
+  fun getIdentifier(
+    hmppsId: String,
+    requiredType: IdentifierType,
+  ): Response<String?> {
+    val personId =
+      when (requiredType) {
+        IdentifierType.NOMS -> convert<PersonInPrisonId>(hmppsId)
+        IdentifierType.CRN -> convert<PersonOnProbationId>(hmppsId)
+        else -> return Response(
+          data = null,
+          errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.BAD_REQUEST, description = "Invalid HMPPS ID: $hmppsId")),
+        )
+      }
+    return if (personId.errors.isNotEmpty()) Response(data = null, errors = personId.errors) else Response(personId.data?.id)
+  }
+
+  /**
+   * Refactored existing processing to get a personId from either a prisonor id or a probation id starting from the prison domain
+   */
+  private inline fun <reified T : PersonId> prisonAPIPersonId(nomisNumber: String): Response<T?> {
+    val prisoner = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
+    if (prisoner.errors.isNotEmpty()) {
+      return Response(data = null, errors = prisoner.errors)
+    }
+    return if (T::class == PersonInPrisonId::class) {
+      Response(PersonInPrisonId(id = nomisNumber, prisonId = prisoner.data?.prisonId) as T)
+    } else {
+      val personOnProbation = deliusGateway.getOffender(nomisNumber)
+      if (personOnProbation.errors.isNotEmpty()) {
+        return Response(data = null, errors = personOnProbation.errors)
+      }
+      Response(PersonOnProbationId(id = personOnProbation.data?.otherIds?.crn!!) as T)
+    }
+  }
+
+  /**
+   * Refactored existing processing to get a personId from either a prisoner id or a probation id starting from the probation domain
+   */
+  private inline fun <reified T : PersonId> probationAPIPersonId(crn: String): Response<T?> {
+    val personOnProbation = getProbationResponse(crn)
+    if (personOnProbation.errors.isNotEmpty()) {
+      return Response(
+        data = null,
+        errors = personOnProbation.errors,
+      )
+    }
+    val nomisNumber = personOnProbation.data?.identifiers?.nomisNumber
+    if (nomisNumber == null && (T::class == PersonInPrisonId::class)) {
+      return Response(
+        data = null,
+        errors =
+          listOf(
+            UpstreamApiError(
+              description = "NOMIS number not found",
+              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+              causedBy = UpstreamApi.NDELIUS,
+            ),
+          ),
+      )
+    }
+    return Response(if (T::class == PersonInPrisonId::class) PersonInPrisonId(id = nomisNumber!!) as T else PersonOnProbationId(id = crn) as T)
   }
 
   fun getPersonWithPrisonFilter(
@@ -148,44 +231,23 @@ class GetPersonService(
     hmppsId: String,
     filters: ConsumerFilters?,
   ): Response<NomisNumber?> {
-    val nomisNumber =
-      when (val idType = identifyHmppsId(hmppsId)) {
-        IdentifierType.NOMS -> {
-          // No conversion required - but still need to check prisoner with nomisNumber exists
-          val prisoner = prisonerOffenderSearchGateway.getPrisonOffender(hmppsId)
+    val prisonId = convert<PersonInPrisonId>(hmppsId)
+    val nomisNumber = prisonId.data?.id ?: return Response(data = null, errors = prisonId.errors)
+
+    if (filters?.prisons != null) {
+      // Check that the prison id is available at this point
+      val prisonId =
+        if (prisonId.data.prisonId == null) {
+          val prisoner = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
           if (prisoner.errors.isNotEmpty()) {
             return Response(data = null, errors = prisoner.errors)
-          }
-          hmppsId
-        }
-        else -> {
-          // Set the nomis number from CPR if no errors and feature flag enabled
-          val cprNomis =
-            if (featureFlagConfig.isEnabled(CPR_ENABLED)) {
-              runCatching { convert(IdentifierType.NOMS, hmppsId) }
-                .onFailure { telemetryService.trackEvent("CPRNomsFailure", mapOf("message" to "Failed to use CPR to convert $hmppsId", "error" to it.message)) }
-                .onSuccess { telemetryService.trackEvent("CPRNomsSuccess", mapOf("message" to "Successfully used CPR to convert $hmppsId to $it", "fromId" to hmppsId, "toId" to it)) }
-                .getOrNull()
-            } else {
-              null
-            }
-
-          if (cprNomis == null) {
-            // Fallback to existing processing
-            val legacyConvert = legacyCrnConvert(idType, hmppsId)
-            legacyConvert.data?.nomisNumber ?: return legacyConvert
           } else {
-            cprNomis
+            prisoner.data?.prisonId
           }
+        } else {
+          prisonId.data.prisonId
         }
-      }
-    if (filters?.prisons != null) {
-      val prisoner = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
-      if (prisoner.errors.isNotEmpty()) {
-        return Response(data = null, errors = prisoner.errors)
-      }
-
-      val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<NomisNumber>(prisoner.data?.prisonId, filters)
+      val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<NomisNumber>(prisonId, filters)
       if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
         return consumerPrisonFilterCheck
       }
@@ -193,50 +255,6 @@ class GetPersonService(
     return Response(
       data = NomisNumber(nomisNumber),
     )
-  }
-
-  /**
-   * Get Nomis number from CRN using personFromProbationOffenderSearch
-   */
-  fun legacyCrnConvert(
-    identifierType: IdentifierType,
-    crn: String,
-  ): Response<NomisNumber?> {
-    if (identifierType == IdentifierType.UNKNOWN) {
-      return Response(
-        data = null,
-        errors =
-          listOf(
-            UpstreamApiError(
-              description = "Invalid HMPPS ID: $crn",
-              type = UpstreamApiError.Type.BAD_REQUEST,
-              causedBy = UpstreamApi.PRISON_API,
-            ),
-          ),
-      )
-    }
-    val personFromProbationOffenderSearch = getProbationResponse(crn)
-    if (personFromProbationOffenderSearch.errors.isNotEmpty()) {
-      return Response(
-        data = null,
-        errors = personFromProbationOffenderSearch.errors,
-      )
-    }
-    val nomisNumber = personFromProbationOffenderSearch.data?.identifiers?.nomisNumber
-    if (nomisNumber == null) {
-      return Response(
-        data = null,
-        errors =
-          listOf(
-            UpstreamApiError(
-              description = "NOMIS number not found",
-              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-              causedBy = UpstreamApi.NDELIUS,
-            ),
-          ),
-      )
-    }
-    return Response(data = NomisNumber(nomisNumber))
   }
 
   fun getCombinedDataForPerson(hmppsId: String): Response<OffenderSearchResponse?> {

@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrap
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.CorePersonRecord
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService.IdentifierType
 
 @Component
 class CorePersonRecordGateway(
@@ -34,9 +35,10 @@ class CorePersonRecordGateway(
    * There is no point passing these exceptions all the way up to a controller just to be thrown and caught by the HmppsIntegrationApiExceptionHandler
    */
   fun corePersonRecordFor(
-    cprType: String, // prison or probation
+    cprType: IdentifierType, // prison or probation
     hmppsId: String,
   ): CorePersonRecord {
+    val cprType = if (cprType == IdentifierType.NOMS) "prison" else "probation"
     val uri = "/person/$cprType/$hmppsId"
     val result =
       webClient.request<CorePersonRecord>(
