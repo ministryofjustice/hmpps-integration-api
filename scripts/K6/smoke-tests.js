@@ -447,14 +447,16 @@ function verify_prisons_endpoints(nomisNumber) {
       return
     }
 
+    validate_get_request(`/v1/persons/${nomisNumber}`); // Get person by NOMIS ID, we already got by CRN
+    validate_get_request(`/v1/persons/${nomisNumber}/cell-location`);
+    validate_get_request(`/v1/persons/${nomisNumber}/visit-restrictions`);
+    validate_get_request(`/v1/persons/${nomisNumber}/prisoner-base-location`);
+
     let surname = prisoner["lastName"];
     let firstName = prisoner["firstName"];
     let dateOfBirth = prisoner["dateOfBirth"];
 
     validate_get_request(`/v1/prison/prisoners?first_name=${firstName}&surname=${surname}&date_of_birth=${dateOfBirth}`);
-    validate_get_request(`/v1/persons/${nomisNumber}/cell-location`);
-    validate_get_request(`/v1/persons/${nomisNumber}/visit-restrictions`);
-    validate_get_request(`/v1/persons/${nomisNumber}/prisoner-base-location`);
 
     let prisonId = prisoner["prisonId"];
     check(prisonId, {
