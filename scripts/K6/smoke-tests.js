@@ -16,8 +16,8 @@ import { read_certificate } from "./support.js"
 
  The script is run using the k6 utility from https://k6.io/
 
- Note that because TLS certificates are defined globally for k6 scripts, if you want to use
- different certificates for the same URLs then you need to launch k6 separately.
+ Note that because TLS certificates are defined globally for k6 scripts, we need to launch
+ k6 separately for each certificate we want to test with.
 ***********/
 
 const domain = __ENV.DOMAIN;
