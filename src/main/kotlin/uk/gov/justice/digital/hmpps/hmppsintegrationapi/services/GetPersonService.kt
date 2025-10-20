@@ -55,14 +55,13 @@ class GetPersonService(
     hmppsId: String,
     requiredType: IdentifierType,
   ): Response<String?> {
-    val hmppsIdType =
-      when (val thisType = identifyHmppsId(hmppsId)) {
-        IdentifierType.UNKNOWN -> return Response(
-          data = null,
-          errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.BAD_REQUEST, description = "Invalid HMPPS ID: $hmppsId")),
-        )
-        else -> thisType
-      }
+    val hmppsIdType = identifyHmppsId(hmppsId)
+    if (hmppsIdType == IdentifierType.UNKNOWN) {
+      return Response(
+        data = null,
+        errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.BAD_REQUEST, description = "Invalid HMPPS ID: $hmppsId")),
+      )
+    }
     // If the CPR feature flag is enabled then call CPR.
     if (featureFlagConfig.isEnabled(CPR_ENABLED)) {
       runCatching {
