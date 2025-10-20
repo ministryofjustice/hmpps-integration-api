@@ -82,6 +82,7 @@ class GetPersonService(
 
   /**
    * Refactored existing processing to get a personId from either a prisoner id or a probation id starting from the prison domain
+   * Also verifies that the person exists in the probation api
    */
   private fun prisonAPIPersonId(
     nomisNumber: String,
@@ -104,6 +105,7 @@ class GetPersonService(
 
   /**
    * Refactored existing processing to get a personId from either a prisoner id or a probation id starting from the probation domain
+   * Also verifies that the person exists in the probation api
    */
   private fun probationAPIPersonId(
     crn: String,
