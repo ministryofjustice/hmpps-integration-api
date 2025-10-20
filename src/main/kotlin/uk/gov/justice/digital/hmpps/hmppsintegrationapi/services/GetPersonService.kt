@@ -83,7 +83,9 @@ class GetPersonService(
     }
   }
 
-  // Public function to get the hmpps id
+  /**
+   * Public function to convert and/or verify existence of a provided hmppsId
+   */
   fun getIdentifier(
     hmppsId: String,
     requiredType: IdentifierType,
@@ -101,7 +103,7 @@ class GetPersonService(
   }
 
   /**
-   * Refactored existing processing to get a personId from either a prisonor id or a probation id starting from the prison domain
+   * Refactored existing processing to get a personId from either a prisoner id or a probation id starting from the prison domain
    */
   private inline fun <reified T : PersonId> prisonAPIPersonId(nomisNumber: String): Response<T?> {
     val prisoner = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
@@ -231,11 +233,14 @@ class GetPersonService(
     hmppsId: String,
     filters: ConsumerFilters?,
   ): Response<NomisNumber?> {
+
+    //Get a PersonInPrisonId as this includes the prison Id
     val prisonId = convert<PersonInPrisonId>(hmppsId)
     val nomisNumber = prisonId.data?.id ?: return Response(data = null, errors = prisonId.errors)
 
     if (filters?.prisons != null) {
       // Check that the prison id is available at this point
+      // it will not be present if CPR or probation api has been used to convert, but will be if prison api has been used
       val prisonId =
         if (prisonId.data.prisonId == null) {
           val prisoner = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
