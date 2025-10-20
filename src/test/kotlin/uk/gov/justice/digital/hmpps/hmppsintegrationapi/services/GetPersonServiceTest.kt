@@ -784,26 +784,26 @@ internal class GetPersonServiceTest(
         }
 
         it("Crn is provided, Nomis number is required") {
-          val result = getPersonService.getIdentifier(crnNumber, IdentifierType.NOMS)
+          val result = getPersonService.convert(crnNumber, IdentifierType.NOMS)
           result.data.shouldBe(nomsNumber)
         }
 
         it("Crn is provided, Crn number is required") {
-          val result = getPersonService.getIdentifier(crnNumber, IdentifierType.CRN)
+          val result = getPersonService.convert(crnNumber, IdentifierType.CRN)
           result.data.shouldBe(crnNumber)
         }
 
         it("Nomis is provided, Crn number is required") {
-          val result = getPersonService.getIdentifier(nomsNumber, IdentifierType.CRN)
+          val result = getPersonService.convert(nomsNumber, IdentifierType.CRN)
           result.data.shouldBe(crnNumber)
         }
 
         it("Unidentified id is provided, Nomis number is required") {
-          val result = getPersonService.getIdentifier("INVALID", IdentifierType.NOMS)
+          val result = getPersonService.convert("INVALID", IdentifierType.NOMS)
           result.errors.shouldNotBeEmpty()
         }
         it("Unidentified id is provided, Crn number is required") {
-          val result = getPersonService.getIdentifier("INVALID", IdentifierType.CRN)
+          val result = getPersonService.convert("INVALID", IdentifierType.CRN)
           result.errors.shouldNotBeEmpty()
         }
       }
@@ -816,32 +816,32 @@ internal class GetPersonServiceTest(
         }
 
         it("Crn is provided, Nomis number is required") {
-          val result = getPersonService.getIdentifier(crnNumber, IdentifierType.NOMS)
+          val result = getPersonService.convert(crnNumber, IdentifierType.NOMS)
           result.data.shouldBe(nomsNumber)
         }
 
         it("Crn is provided, Crn number is required") {
-          val result = getPersonService.getIdentifier(crnNumber, IdentifierType.CRN)
+          val result = getPersonService.convert(crnNumber, IdentifierType.CRN)
           result.data.shouldBe(crnNumber)
         }
 
         it("Nomis is provided, Crn number is required - but record not in probation") {
           whenever(deliusGateway.getOffender(nomsNumber)).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NDELIUS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))))
-          val result = getPersonService.getIdentifier(nomsNumber, IdentifierType.CRN)
+          val result = getPersonService.convert(nomsNumber, IdentifierType.CRN)
           result.errors.shouldNotBeEmpty()
         }
 
         it("Nomis is provided, Crn number is required - and record in probation") {
-          val result = getPersonService.getIdentifier(nomsNumber, IdentifierType.CRN)
+          val result = getPersonService.convert(nomsNumber, IdentifierType.CRN)
           result.data.shouldBe(crnNumber)
         }
 
         it("Unidentified id is provided, Nomis number is required") {
-          val result = getPersonService.getIdentifier("INVALID", IdentifierType.NOMS)
+          val result = getPersonService.convert("INVALID", IdentifierType.NOMS)
           result.errors.shouldNotBeEmpty()
         }
         it("Unidentified id is provided, Crn number is required") {
-          val result = getPersonService.getIdentifier("INVALID", IdentifierType.CRN)
+          val result = getPersonService.convert("INVALID", IdentifierType.CRN)
           result.errors.shouldNotBeEmpty()
         }
       }
