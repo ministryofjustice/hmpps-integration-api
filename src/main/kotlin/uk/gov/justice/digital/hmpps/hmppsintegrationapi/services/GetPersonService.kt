@@ -233,8 +233,7 @@ class GetPersonService(
     hmppsId: String,
     filters: ConsumerFilters?,
   ): Response<NomisNumber?> {
-
-    //Get a PersonInPrisonId as this includes the prison Id
+    // Get a PersonInPrisonId as this includes the prison Id
     val prisonId = convert<PersonInPrisonId>(hmppsId)
     val nomisNumber = prisonId.data?.id ?: return Response(data = null, errors = prisonId.errors)
 
