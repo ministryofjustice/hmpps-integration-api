@@ -40,3 +40,4 @@ generic-prometheus-alerts:
     - "activities-and-appointments-dev-update_from_external_system_events_dlq"
   sqsAlertsOldestThreshold: 60
   sqsAlertsTotalMessagesThreshold: 10
+  ingressAlertsEnabled: false
