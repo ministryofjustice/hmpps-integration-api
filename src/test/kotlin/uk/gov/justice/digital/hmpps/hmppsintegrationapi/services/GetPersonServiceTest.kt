@@ -5,10 +5,12 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
+import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeTypeOf
+import jdk.internal.net.http.common.Log.errors
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.any
@@ -21,8 +23,12 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.CPR_ENABLED
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CorePersonRecordGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.CorePersonRecord
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchRedirectionResult
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResult
@@ -40,10 +46,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffenders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPaginatedPrisoners
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSSort
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.Offender
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.OtherIds
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInNomisOnlyPersona
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationOnlyPersona
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService.IdentifierType
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -53,7 +63,9 @@ internal class GetPersonServiceTest(
   @MockitoBean val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
   @MockitoBean val consumerPrisonAccessService: ConsumerPrisonAccessService,
   @MockitoBean val deliusGateway: NDeliusGateway,
-  @MockitoBean val featureFlag: FeatureFlagConfig,
+  @MockitoBean val corePersonRecordGateway: CorePersonRecordGateway,
+  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
+  @MockitoBean val telemetryService: TelemetryService,
   private val getPersonService: GetPersonService,
 ) : DescribeSpec(
     {
@@ -192,8 +204,6 @@ internal class GetPersonServiceTest(
       beforeEach {
         Mockito.reset(prisonerOffenderSearchGateway)
         Mockito.reset(deliusGateway)
-        Mockito.reset(featureFlag)
-
         whenever(deliusGateway.getPerson(id = crnNumber)).thenReturn(Response(data = personOnProbation))
         whenever(deliusGateway.getPerson(id = nomsNumber))
           .thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NDELIUS, UpstreamApiError.Type.ENTITY_NOT_FOUND))))
@@ -722,6 +732,117 @@ internal class GetPersonServiceTest(
 
           val result = getPersonService.getNomisNumberWithPrisonFilter(crnNumber, filters)
           result.errors.shouldBe(errors)
+        }
+      }
+
+      describe("Use CPR to retrieve Nomis number") {
+        beforeEach {
+          Mockito.reset(corePersonRecordGateway)
+          Mockito.reset(featureFlagConfig)
+          val cpr = CorePersonRecord(identifiers = Identifiers(crns = listOf(crnNumber), prisonNumbers = listOf(nomsNumber)))
+          whenever(featureFlagConfig.isEnabled(CPR_ENABLED)).thenReturn(true)
+          whenever(corePersonRecordGateway.corePersonRecordFor(IdentifierType.CRN, crnNumber)).thenReturn(cpr)
+          whenever(corePersonRecordGateway.corePersonRecordFor(IdentifierType.NOMS, nomsNumber)).thenReturn(cpr)
+        }
+
+        it("CPR returns multiple nomis number, track event and continue to existing processing") {
+          whenever(corePersonRecordGateway.corePersonRecordFor(IdentifierType.CRN, crnNumber)).thenReturn(CorePersonRecord(identifiers = Identifiers(prisonNumbers = listOf(nomsNumber, "A1234AA"))))
+          getPersonService.getNomisNumberWithPrisonFilter(crnNumber, filters = null)
+          verify(telemetryService).trackEvent(
+            "CPRNomsFailure",
+            mapOf("message" to "Failed to use CPR to convert $crnNumber", "error" to "No single NOMS found for $crnNumber in core person record"),
+          )
+        }
+
+        it("Nomis number is provided and new processing returns the nomis number") {
+          val result = getPersonService.getNomisNumberWithPrisonFilter(nomsNumber, filters = null)
+          result.data.shouldBe(NomisNumber(nomsNumber))
+        }
+
+        it("Crn is provided and new processing returns the nomis number") {
+          val result = getPersonService.getNomisNumberWithPrisonFilter(crnNumber, filters = null)
+          result.data.shouldBe(NomisNumber(nomsNumber))
+          verify(telemetryService).trackEvent(
+            "CPRNomsSuccess",
+            mapOf(
+              "message" to "Successfully used CPR to convert $crnNumber to $nomsNumber",
+              "fromId" to crnNumber,
+              "toId" to nomsNumber,
+            ),
+          )
+        }
+      }
+
+      describe("get Identifier with CPR") {
+        beforeEach {
+          Mockito.reset(corePersonRecordGateway)
+          Mockito.reset(featureFlagConfig)
+          val cpr = CorePersonRecord(identifiers = Identifiers(crns = listOf(crnNumber), prisonNumbers = listOf(nomsNumber)))
+          whenever(featureFlagConfig.isEnabled(CPR_ENABLED)).thenReturn(true)
+          whenever(corePersonRecordGateway.corePersonRecordFor(IdentifierType.CRN, crnNumber)).thenReturn(cpr)
+          whenever(corePersonRecordGateway.corePersonRecordFor(IdentifierType.NOMS, nomsNumber)).thenReturn(cpr)
+        }
+
+        it("Crn is provided, Nomis number is required") {
+          val result = getPersonService.convert(crnNumber, IdentifierType.NOMS)
+          result.data.shouldBe(nomsNumber)
+        }
+
+        it("Crn is provided, Crn number is required") {
+          val result = getPersonService.convert(crnNumber, IdentifierType.CRN)
+          result.data.shouldBe(crnNumber)
+        }
+
+        it("Nomis is provided, Crn number is required") {
+          val result = getPersonService.convert(nomsNumber, IdentifierType.CRN)
+          result.data.shouldBe(crnNumber)
+        }
+
+        it("Unidentified id is provided, Nomis number is required") {
+          val result = getPersonService.convert("INVALID", IdentifierType.NOMS)
+          result.errors.shouldNotBeEmpty()
+        }
+        it("Unidentified id is provided, Crn number is required") {
+          val result = getPersonService.convert("INVALID", IdentifierType.CRN)
+          result.errors.shouldNotBeEmpty()
+        }
+      }
+
+      describe("get Identifier without CPR") {
+        beforeEach {
+          Mockito.reset(featureFlagConfig)
+          whenever(featureFlagConfig.isEnabled(CPR_ENABLED)).thenReturn(false)
+          whenever(deliusGateway.getOffender(any())).thenReturn(Response(data = Offender("Test", "Test", otherIds = OtherIds(crn = crnNumber, nomsNumber = nomsNumber))))
+        }
+
+        it("Crn is provided, Nomis number is required") {
+          val result = getPersonService.convert(crnNumber, IdentifierType.NOMS)
+          result.data.shouldBe(nomsNumber)
+        }
+
+        it("Crn is provided, Crn number is required") {
+          val result = getPersonService.convert(crnNumber, IdentifierType.CRN)
+          result.data.shouldBe(crnNumber)
+        }
+
+        it("Nomis is provided, Crn number is required - but record not in probation") {
+          whenever(deliusGateway.getOffender(nomsNumber)).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NDELIUS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))))
+          val result = getPersonService.convert(nomsNumber, IdentifierType.CRN)
+          result.errors.shouldNotBeEmpty()
+        }
+
+        it("Nomis is provided, Crn number is required - and record in probation") {
+          val result = getPersonService.convert(nomsNumber, IdentifierType.CRN)
+          result.data.shouldBe(crnNumber)
+        }
+
+        it("Unidentified id is provided, Nomis number is required") {
+          val result = getPersonService.convert("INVALID", IdentifierType.NOMS)
+          result.errors.shouldNotBeEmpty()
+        }
+        it("Unidentified id is provided, Crn number is required") {
+          val result = getPersonService.convert("INVALID", IdentifierType.CRN)
+          result.errors.shouldNotBeEmpty()
         }
       }
     },

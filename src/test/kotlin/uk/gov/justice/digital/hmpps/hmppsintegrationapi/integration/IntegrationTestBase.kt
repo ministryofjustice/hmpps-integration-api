@@ -48,6 +48,7 @@ abstract class IntegrationTestBase {
   companion object {
     private val nomsId = "G2996UX"
     private val nomsIdFromProbation = "G5555TT"
+    private val crn = "AB123123"
 
     val gatewaysFolder = "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways"
     private val hmppsAuthMockServer = HmppsAuthMockServer()
@@ -58,11 +59,13 @@ abstract class IntegrationTestBase {
     val activitiesMockServer = ApiMockServer.create(UpstreamApi.ACTIVITIES)
     val nDeliusMockServer = ApiMockServer.create(UpstreamApi.NDELIUS_INTEGRATION_TEST)
     val prisonerBaseLocationMockServer = ApiMockServer.create(UpstreamApi.PRISONER_BASE_LOCATION)
+    val corePersonRecordGateway = ApiMockServer.create(UpstreamApi.CORE_PERSON_RECORD)
 
     @BeforeAll
     @JvmStatic
     fun startMockServers() {
       hmppsAuthMockServer.start()
+      corePersonRecordGateway.start()
       hmppsAuthMockServer.stubGetOAuthToken("client", "client-secret", HmppsAuthMockServer.TOKEN)
 
       prisonerOffenderSearchMockServer.start()
@@ -84,6 +87,18 @@ abstract class IntegrationTestBase {
           "$gatewaysFolder/prisonerbaselocation/fixtures/PrisonerBaseLocationResponse.json",
         ).readText(),
       )
+      corePersonRecordGateway.stubForGet(
+        "/person/prison/$nomsId",
+        File(
+          "$gatewaysFolder/cpr/fixtures/core-person-record-response.json",
+        ).readText(),
+      )
+      corePersonRecordGateway.stubForGet(
+        "/person/probation/$crn",
+        File(
+          "$gatewaysFolder/cpr/fixtures/core-person-record-response.json",
+        ).readText(),
+      )
       nDeliusMockServer.start()
       managePomCaseMockServer.start()
       plpMockServer.start()
@@ -103,6 +118,7 @@ abstract class IntegrationTestBase {
       sanMockServer.stop()
       activitiesMockServer.stop()
       prisonerBaseLocationMockServer.stop()
+      corePersonRecordGateway.stop()
     }
   }
 

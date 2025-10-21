@@ -48,6 +48,8 @@ services:
     base-url: http://localhost:4023
   prisoner-base-location:
     base-url: http://localhost:4030
+  core-person-record:
+    base-url: http://localhost:4031
   activities:
     base-url: http://localhost:4004
 
@@ -99,6 +101,7 @@ feature-flag:
   epf-endpoint-includes-lao: false
   use-roles-dsl: true
   redaction-policy-enabled: false
+  cpr-enabled: true
 
 authorisation:
   consumers:

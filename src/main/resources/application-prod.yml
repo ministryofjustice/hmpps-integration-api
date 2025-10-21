@@ -41,6 +41,8 @@ services:
     base-url: https://activities-api.prison.service.justice.gov.uk
   prisoner-base-location:
     base-url: https://prisoner-base-location-api.hmpps.service.justice.gov.uk
+  core-person-record:
+    base-url: https://hmpps-person-record.hmpps.service.justice.gov.uk
 
 feature-flag:
   use-eswe-curious-endpoints: true
@@ -64,6 +66,7 @@ feature-flag:
   epf-gateway-disabled: true
   use-roles-dsl: true
   redaction-policy-enabled: false
+  cpr-enabled: false
 
 authorisation:
   consumers:
