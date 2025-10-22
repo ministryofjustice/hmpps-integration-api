@@ -1,9 +1,7 @@
 {
   "firstName": "string",
   "surname": "string",
-  "middleNames": [
-    "string"
-  ],
+  "middleNames": ["string"],
   "dateOfBirth": "2019-08-24",
   "gender": "string",
   "offenderProfile": {
@@ -31,9 +29,7 @@
     {
       "firstName": "string",
       "surname": "string",
-      "middleNames": [
-        "string"
-      ],
+      "middleNames": ["string"],
       "dateOfBirth": "2019-08-24",
       "gender": "string"
     }
@@ -45,9 +41,7 @@
         "type": "TELEPHONE"
       }
     ],
-    "emailAddresses": [
-      "string"
-    ]
+    "emailAddresses": ["string"]
   },
   "otherIds": {
     "pncNumber": "2004/13116M",
