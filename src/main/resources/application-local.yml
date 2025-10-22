@@ -64,7 +64,7 @@ feature-flag:
   use-historical-attendances-endpoint: true
   use-suitability-endpoint: true
   use-waiting-list-endpoint: true
-  simple-redaction: true
+  simple-redaction: false
   use-contact-events-endpoint: true
   epf-endpoint-includes-lao: false
   use-roles-dsl: true

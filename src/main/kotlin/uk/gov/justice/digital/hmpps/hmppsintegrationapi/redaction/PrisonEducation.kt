@@ -14,9 +14,7 @@ val prisonEducationRedactionPolicy =
           path("$.data.prisonerOffenderSearch.pncId", MASK)
           path("$.data.prisonerOffenderSearch.identifiers.croNumber", MASK)
           path("$.data.prisonerOffenderSearch.identifiers.deliusCrn", MASK)
-          path("$.data.probationOffenderSearch.contactDetails", REMOVE)
-          path("$.data.probationOffenderSearch.currentRestriction", REMOVE)
-          path("$.data.probationOffenderSearch.currentExclusion", REMOVE)
+          path("$.data.probationOffenderSearch", REMOVE)
         }
       }
     }
