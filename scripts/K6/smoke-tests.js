@@ -74,7 +74,6 @@ const get_endpoints = [
   `/v1/prison/${prisonId}/prisoners/${hmppsId}/transactions/canteen_test`,
   `/v1/prison/${prisonId}/location/${locationIdKey}`,
   `/v1/prison/${alternativeprisonId}/prison-regime`,
-  `/v1/contacts/${contactId}`,
   `/v1/persons/${hmppsId}/plp-induction-schedule`,
   `/v1/persons/${hmppsId}/plp-induction-schedule/history`,
   `/v1/persons/${plpHmppsId}/plp-review-schedule`,
@@ -531,19 +530,20 @@ function verify_id_conversion(crn, nomisNumber) {
   validate_get_request(`/v1/hmpps/id/nomis-number/${crn}`);
 }
 
-function verify_contacts(hmppsId) {
+function verify_prisoner_contacts(hmppsId) {
   let res = validate_get_request(`/v1/persons/${hmppsId}/contacts`);
-  if (res.status >= 300) {
+  if (res.status !== 200) {
     return
   }
-  // let contacts = res.json()["data"];
-  // if (!check(contacts, {
-  //   [`At least one contact returned`]: () => contacts.length >= 1,
-  // })) {
-  //   return
-  // }
-  // let contactId = contacts[0]["id"];
-  // validate_get_request(`/v1/persons/${hmppsId}/contacts/${contactId}`);
+  let contacts = res.json()["data"];
+  if (!check(contacts, {
+    [`At least one prisoner contact returned`]: () => contacts.length >= 1,
+  })) {
+    return
+  }
+
+  let contactId = contacts[0]["contact"]["contactId"];
+  validate_get_request(`/v1/contacts/${contactId}`);
 }
 
 /**
@@ -566,7 +566,7 @@ function structured_verification_test(hmppsId) {
 
   verify_get_images(hmppsId);
 
-  verify_contacts(hmppsId);
+  verify_prisoner_contacts(hmppsId);
 
   if (nomisNumber != null) {
     verify_prisons_endpoints(nomisNumber);
