@@ -19,13 +19,11 @@
       ],
       "identifiers": {
         "nomisNumber": "A1234AA",
-        "croNumber": "**REDACTED**",
-        "deliusCrn": "**REDACTED**"
+        "croNumber": "**REDACTED**"
       },
       "pncId": "**REDACTED**",
       "hmppsId": null,
       "contactDetails": null
-    },
-    "probationOffenderSearch": null
+    }
   }
 }
