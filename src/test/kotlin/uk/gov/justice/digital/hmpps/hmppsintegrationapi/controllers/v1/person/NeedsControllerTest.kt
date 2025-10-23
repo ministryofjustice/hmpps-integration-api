@@ -24,8 +24,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetNeedsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
 
 @WebMvcTest(controllers = [NeedsController::class])
@@ -36,9 +34,8 @@ internal class NeedsControllerTest(
   @MockitoBean val auditService: AuditService,
 ) : DescribeSpec(
     {
-      val hmppsId = "9999/11111A"
-      val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
-      val path = "/v1/persons/$encodedHmppsId/needs"
+      val hmppsId = "A1234AA"
+      val path = "/v1/persons/$hmppsId/needs"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
       describe("GET $path") {
@@ -154,10 +151,8 @@ internal class NeedsControllerTest(
         }
 
         it("returns null embedded in a JSON object when no needs are found") {
-          val hmppsIdForPersonWithNoNeeds = "0000/11111A"
-          val encodedHmppsIdForPersonWithNoNeeds =
-            URLEncoder.encode(hmppsIdForPersonWithNoNeeds, StandardCharsets.UTF_8)
-          val needsPath = "/v1/persons/$encodedHmppsIdForPersonWithNoNeeds/needs"
+          val hmppsIdForPersonWithNoNeeds = "A1234AA"
+          val needsPath = "/v1/persons/$hmppsIdForPersonWithNoNeeds/needs"
 
           whenever(getNeedsForPersonService.execute(hmppsIdForPersonWithNoNeeds)).thenReturn(Response(data = null))
 

@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.LaoRedaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.LaoRedaction.Mode
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskPredictorScore
@@ -32,7 +31,7 @@ class RiskPredictorScoresController(
   @Autowired val auditService: AuditService,
 ) {
   @LaoRedaction(Mode.REJECT)
-  @GetMapping("{encodedHmppsId}/risks/scores")
+  @GetMapping("{hmppsId}/risks/scores")
   @Operation(
     summary = "Returns risk scores from the last year associated with a person, sorted by completedDate (newest first). This endpoint does not serve LAO (Limited Access Offender) data.",
     responses = [
@@ -42,11 +41,10 @@ class RiskPredictorScoresController(
     ],
   )
   fun getPersonRiskPredictorScores(
-    @Parameter(description = "A URL-encoded HMPPS identifier", example = "2008%2F0545166T") @PathVariable encodedHmppsId: String,
+    @Parameter(description = "HMPPS identifier", example = "A1234AA") @PathVariable hmppsId: String,
     @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
   ): PaginatedResponse<RiskPredictorScore> {
-    val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getRiskPredictorScoresForPersonService.execute(hmppsId)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {

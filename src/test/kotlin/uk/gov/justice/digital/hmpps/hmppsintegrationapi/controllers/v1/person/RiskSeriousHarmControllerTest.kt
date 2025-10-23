@@ -35,8 +35,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAcces
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolicyConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetRiskSeriousHarmForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
 
 @WebMvcTest(controllers = [RiskSeriousHarmController::class])
@@ -50,9 +48,8 @@ internal class RiskSeriousHarmControllerTest(
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
 ) : DescribeSpec(
     {
-      val hmppsId = "9999/11111A"
-      val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
-      val path = "/v1/persons/$encodedHmppsId/risks/serious-harm"
+      val hmppsId = "A1234AA"
+      val path = "/v1/persons/$hmppsId/risks/serious-harm"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
       val laoOkCrn = "R654321"
       val laoFailureCrn = "R754321"
@@ -221,9 +218,8 @@ internal class RiskSeriousHarmControllerTest(
         }
 
         it("returns null embedded in a JSON object when no risks are found") {
-          val hmppsIdForPersonWithNoRisks = "0000/11111A"
-          val encodedHmppsIdForPersonWithNoRisks = URLEncoder.encode(hmppsIdForPersonWithNoRisks, StandardCharsets.UTF_8)
-          val pathForPersonWithNoRisks = "/v1/persons/$encodedHmppsIdForPersonWithNoRisks/risks/serious-harm"
+          val hmppsIdForPersonWithNoRisks = "A1234AA"
+          val pathForPersonWithNoRisks = "/v1/persons/$hmppsIdForPersonWithNoRisks/risks/serious-harm"
 
           whenever(getRiskSeriousHarmForPersonService.execute(hmppsIdForPersonWithNoRisks)).thenReturn(Response(data = null))
 

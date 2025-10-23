@@ -33,8 +33,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetLatestSentenceKeyDatesAndAdjustmentsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetSentencesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 import java.time.LocalDate
 
 @WebMvcTest(controllers = [SentencesController::class])
@@ -46,9 +44,8 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
   @MockitoBean val auditService: AuditService,
 ) : DescribeSpec(
     {
-      val hmppsId = "9999/11111A"
-      val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
-      val path = "/v1/persons/$encodedHmppsId/sentences/latest-key-dates-and-adjustments"
+      val hmppsId = "A1234AA"
+      val path = "/v1/persons/$hmppsId/sentences/latest-key-dates-and-adjustments"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
       beforeTest {

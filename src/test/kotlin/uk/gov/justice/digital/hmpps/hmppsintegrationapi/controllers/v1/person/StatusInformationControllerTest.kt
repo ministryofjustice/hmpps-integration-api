@@ -33,8 +33,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAcces
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolicyConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetStatusInformationForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 
 @WebMvcTest(controllers = [StatusInformationController::class])
 @Import(value = [AopAutoConfiguration::class, LaoRedactorAspect::class, RedactionPolicyConfig::class])
@@ -47,9 +45,8 @@ internal class StatusInformationControllerTest(
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
 ) : DescribeSpec(
     {
-      val hmppsId = "8888/12345P"
-      val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
-      val path = "/v1/persons/$encodedHmppsId/status-information"
+      val hmppsId = "A8888AA"
+      val path = "/v1/persons/$hmppsId/status-information"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
       val laoOkCrn = "R654321"
       val laoFailureCrn = "R754321"
@@ -152,10 +149,8 @@ internal class StatusInformationControllerTest(
         }
 
         it("returns an empty list when no status information found") {
-          val hmppsIdForPersonWithNoStatusInformation = "0999/12345B"
-          val encodedHmppsIdForPersonWithNoStatusInformation =
-            URLEncoder.encode(hmppsIdForPersonWithNoStatusInformation, StandardCharsets.UTF_8)
-          val statusInformationPath = "/v1/persons/$encodedHmppsIdForPersonWithNoStatusInformation/status-information"
+          val hmppsIdForPersonWithNoStatusInformation = "A1234AA"
+          val statusInformationPath = "/v1/persons/$hmppsIdForPersonWithNoStatusInformation/status-information"
 
           whenever(getStatusInformationForPersonService.execute(hmppsIdForPersonWithNoStatusInformation)).thenReturn(
             Response(

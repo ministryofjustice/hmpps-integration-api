@@ -22,7 +22,7 @@ class LaoLicenceConditionRedactorTest {
 
   @BeforeEach
   fun setUp() {
-    whenever(request.getAttribute("encodedHmppsId")).thenReturn("12345")
+    whenever(request.getAttribute("hmppsId")).thenReturn("12345")
     RequestContextHolder.setRequestAttributes(ServletRequestAttributes(request))
     whenever(accessForMock.getAccessFor(any())).thenReturn(CaseAccess("crn", true, false))
   }

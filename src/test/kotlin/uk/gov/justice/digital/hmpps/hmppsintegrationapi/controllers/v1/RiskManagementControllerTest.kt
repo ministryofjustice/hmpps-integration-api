@@ -31,8 +31,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAcces
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolicyConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetRiskManagementPlansForCrnService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 
 @WebMvcTest(controllers = [RiskManagementController::class])
 @Import(value = [AopAutoConfiguration::class, LaoRedactorAspect::class, RedactionPolicyConfig::class])
@@ -45,7 +43,6 @@ class RiskManagementControllerTest(
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
 ) : DescribeSpec({
     val hmppsId = "D1974X"
-    val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
     val basePath = "/v1/persons/hmppsId/risk-management-plan"
     val mockMvc = IntegrationAPIMockMvc(springMockMvc)
     val laoOkCrn = "R654321"
@@ -99,7 +96,7 @@ class RiskManagementControllerTest(
       }
 
       it("Returns 200 OK") {
-        val result = mockMvc.performAuthorised("/v1/persons/$encodedHmppsId/risk-management-plan")
+        val result = mockMvc.performAuthorised("/v1/persons/$hmppsId/risk-management-plan")
         result.response.status.shouldBe(HttpStatus.OK.value())
       }
 
@@ -112,7 +109,7 @@ class RiskManagementControllerTest(
       }
 
       it("Gets a risk management plan") {
-        mockMvc.performAuthorised("/v1/persons/$encodedHmppsId/risk-management-plan")
+        mockMvc.performAuthorised("/v1/persons/$hmppsId/risk-management-plan")
         verify(getRiskManagementService, times(1)).execute(hmppsId)
       }
 
@@ -138,8 +135,6 @@ class RiskManagementControllerTest(
 
       it("Gets a 404 error if provided ID has no risk management plan") {
         val badHmppsId = "Not a real CRN"
-        val encodedBadHmppsId = URLEncoder.encode(badHmppsId, StandardCharsets.UTF_8)
-
         whenever(getRiskManagementService.execute(badHmppsId)).thenReturn(
           Response(
             null,
@@ -154,13 +149,13 @@ class RiskManagementControllerTest(
           ),
         )
 
-        val result = mockMvc.performAuthorised("/v1/persons/$encodedBadHmppsId/risk-management-plan")
+        val result = mockMvc.performAuthorised("/v1/persons/$badHmppsId/risk-management-plan")
         verify(getRiskManagementService, times(1)).execute(badHmppsId)
         assert(result.response.status == 404)
       }
 
       it("logs audit") {
-        mockMvc.performAuthorised("/v1/persons/$encodedHmppsId/risk-management-plan")
+        mockMvc.performAuthorised("/v1/persons/$hmppsId/risk-management-plan")
         verify(
           auditService,
           VerificationModeFactory.times(1),
@@ -171,7 +166,7 @@ class RiskManagementControllerTest(
       }
 
       it("returns paginated result") {
-        val result = mockMvc.performAuthorised("/v1/persons/$encodedHmppsId/risk-management-plan")
+        val result = mockMvc.performAuthorised("/v1/persons/$hmppsId/risk-management-plan")
 
         result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.page", 1)
         result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.totalPages", 1)
@@ -184,7 +179,7 @@ class RiskManagementControllerTest(
 
         val response =
           mockMvc.performAuthorised(
-            "/v1/persons/$encodedHmppsId/risk-management-plan",
+            "/v1/persons/$hmppsId/risk-management-plan",
           )
 
         assert(response.response.status == 500)

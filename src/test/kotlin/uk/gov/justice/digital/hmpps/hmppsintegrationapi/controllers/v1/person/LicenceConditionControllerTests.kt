@@ -32,8 +32,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAcces
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolicyConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetLicenceConditionService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 
 @WebMvcTest(controllers = [LicenceConditionController::class])
 @Import(value = [AopAutoConfiguration::class, LaoRedactorAspect::class, RedactionPolicyConfig::class])
@@ -45,9 +43,8 @@ class LicenceConditionControllerTests(
   @MockitoBean val getCaseAccess: GetCaseAccess,
 ) : DescribeSpec(
     {
-      val hmppsId = "9999/11111A"
-      val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
-      val path = "/v1/persons/$encodedHmppsId/licences/conditions"
+      val hmppsId = "A1234AA"
+      val path = "/v1/persons/$hmppsId/licences/conditions"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
       val laoOkCrn = "R654321"
       val laoFailureCrn = "R754321"
@@ -108,7 +105,7 @@ class LicenceConditionControllerTests(
           result.response.contentAsString.shouldContain(
             """
            "data":{
-                "hmppsId":"9999/11111A",
+                "hmppsId":"A1234AA",
                 "offenderNumber":null,
                 "licences":[
                    {
@@ -155,7 +152,7 @@ class LicenceConditionControllerTests(
           result.response.contentAsString.shouldContain(
             """
            "data":{
-                "hmppsId":"9999/11111A",
+                "hmppsId":"A1234AA",
                 "offenderNumber":null,
                 "licences":[
                    {

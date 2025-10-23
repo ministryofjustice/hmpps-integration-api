@@ -37,8 +37,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAcces
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolicyConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetRiskPredictorScoresForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
 
 @WebMvcTest(controllers = [RiskPredictorScoresController::class])
@@ -52,9 +50,8 @@ internal class RiskPredictorScoresControllerTest(
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
 ) : DescribeSpec(
     {
-      val hmppsId = "9999/11111A"
-      val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
-      val path = "/v1/persons/$encodedHmppsId/risks/scores"
+      val hmppsId = "A1234AA"
+      val path = "/v1/persons/$hmppsId/risks/scores"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
       val laoOkCrn = "R654321"
       val laoFailureCrn = "R754321"
@@ -127,10 +124,8 @@ internal class RiskPredictorScoresControllerTest(
         }
 
         it("returns an empty list embedded in a JSON object when no risk predictor scores are found") {
-          val hmppsIdForPersonWithNoRiskPredictorScores = "0000/11111A"
-          val encodedHmppsIdForPersonWithNoRiskPredictorScores =
-            URLEncoder.encode(hmppsIdForPersonWithNoRiskPredictorScores, StandardCharsets.UTF_8)
-          val scoresPath = "/v1/persons/$encodedHmppsIdForPersonWithNoRiskPredictorScores/risks/scores"
+          val hmppsIdForPersonWithNoRiskPredictorScores = "A1234AA"
+          val scoresPath = "/v1/persons/$hmppsIdForPersonWithNoRiskPredictorScores/risks/scores"
 
           whenever(getRiskPredictorScoresForPersonService.execute(hmppsIdForPersonWithNoRiskPredictorScores)).thenReturn(
             Response(

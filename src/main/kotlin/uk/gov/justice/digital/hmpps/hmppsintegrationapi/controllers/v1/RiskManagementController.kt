@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.LaoRedaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.LaoRedaction.Mode
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskManagementPlan
@@ -34,7 +33,7 @@ class RiskManagementController(
   @Autowired val auditService: AuditService,
 ) {
   @LaoRedaction(Mode.REJECT)
-  @GetMapping("/v1/persons/{encodedHmppsId}/risk-management-plan")
+  @GetMapping("/v1/persons/{hmppsId}/risk-management-plan")
   @Tag(name = "Persons")
   @Operation(
     summary = "Returns a list of Risk Management Plans created for the person with the provided HMPPS ID.",
@@ -46,11 +45,10 @@ class RiskManagementController(
     ],
   )
   fun getRiskManagementPlans(
-    @Parameter(description = "A URL-encoded HMPPS identifier", example = "2008%2F0545166T") @PathVariable encodedHmppsId: String,
+    @Parameter(description = "HMPPS identifier", example = "A1234AA") @PathVariable hmppsId: String,
     @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
   ): PaginatedResponse<RiskManagementPlan> {
-    val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getRiskManagementPlansForCrnService.execute(hmppsId)
 
     if (response.hasErrorCausedBy(UpstreamApiError.Type.ENTITY_NOT_FOUND, causedBy = UpstreamApi.RISK_MANAGEMENT_PLAN)) {

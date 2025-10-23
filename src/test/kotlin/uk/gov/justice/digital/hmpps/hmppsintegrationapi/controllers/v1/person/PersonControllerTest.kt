@@ -60,8 +60,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonerCont
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonerEducationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitOrdersForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
 import kotlin.random.Random
 
@@ -87,10 +85,9 @@ internal class PersonControllerTest(
 ) : DescribeSpec(
     {
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
-      val hmppsId = "2003/13116M"
+      val hmppsId = "A1234AA"
       val sanitisedHmppsId = "A1234AA"
-      val pncNumber = "2003/13116M"
-      val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
+      val pncNumber = "A1234AA"
       val basePath = "/v1/persons"
       val filters = null
 
@@ -270,17 +267,17 @@ internal class PersonControllerTest(
         }
 
         it("returns a 200 OK status code") {
-          val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId")
+          val result = mockMvc.performAuthorised("$basePath/$hmppsId")
           result.response.status.shouldBe(HttpStatus.OK.value())
         }
 
         it("logs audit") {
-          mockMvc.performAuthorised("$basePath/$encodedHmppsId")
+          mockMvc.performAuthorised("$basePath/$hmppsId")
           verify(auditService, times(1)).createEvent("GET_PERSON_DETAILS", mapOf("hmppsId" to hmppsId))
         }
 
         describe("404 Not found") {
-          val idThatDoesNotExist = "9999/11111Z"
+          val idThatDoesNotExist = "A4321AA"
 
           beforeTest {
             Mockito.reset(auditService)
@@ -290,8 +287,7 @@ internal class PersonControllerTest(
             whenever(getPersonService.getCombinedDataForPerson(idThatDoesNotExist))
               .thenReturn(notFoundErrorResponse(UpstreamApi.NDELIUS))
 
-            val encodedIdThatDoesNotExist = URLEncoder.encode(idThatDoesNotExist, StandardCharsets.UTF_8)
-            val result = mockMvc.performAuthorised("$basePath/$encodedIdThatDoesNotExist")
+            val result = mockMvc.performAuthorised("$basePath/$idThatDoesNotExist")
             result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
           }
 
@@ -302,20 +298,18 @@ internal class PersonControllerTest(
                 errors = notFoundErrors(UpstreamApi.PRISONER_OFFENDER_SEARCH),
               ),
             )
-
-            val encodedIdThatDoesNotExist = URLEncoder.encode(idThatDoesNotExist, StandardCharsets.UTF_8)
-            val result = mockMvc.performAuthorised("$basePath/$encodedIdThatDoesNotExist")
+            val result = mockMvc.performAuthorised("$basePath/$idThatDoesNotExist")
             result.response.status.shouldNotBe(HttpStatus.NOT_FOUND.value())
           }
         }
 
         it("gets a person with the matching ID") {
-          mockMvc.performAuthorised("$basePath/$encodedHmppsId")
+          mockMvc.performAuthorised("$basePath/$hmppsId")
           verify(getPersonService, times(1)).getCombinedDataForPerson(hmppsId)
         }
 
         it("returns a person with the matching ID") {
-          val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId")
+          val result = mockMvc.performAuthorised("$basePath/$hmppsId")
           result.response.contentAsString.shouldBe(
             """
              {
@@ -463,13 +457,13 @@ internal class PersonControllerTest(
           it("return redacted data for specific client") {
             val clientName = clientWithRedaction
 
-            val result = mockMvc.performAuthorisedWithCN("$basePath/$encodedHmppsId", cn = clientName)
+            val result = mockMvc.performAuthorisedWithCN("$basePath/$hmppsId", cn = clientName)
             result.response.status shouldBe HttpStatus.OK.value()
             result.response.contentAsString shouldBe redactedResponse
           }
 
           it("return data for other client") {
-            val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId")
+            val result = mockMvc.performAuthorised("$basePath/$hmppsId")
             result.response.status shouldBe HttpStatus.OK.value()
             result.response.contentAsString shouldBe normalResponse
           }
