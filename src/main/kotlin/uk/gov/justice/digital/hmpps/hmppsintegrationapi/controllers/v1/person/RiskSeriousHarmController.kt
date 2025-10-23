@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.LaoRedaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.LaoRedaction.Mode
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
@@ -30,7 +29,7 @@ class RiskSeriousHarmController(
   @Autowired val auditService: AuditService,
 ) {
   @LaoRedaction(Mode.REJECT)
-  @GetMapping("{encodedHmppsId}/risks/serious-harm")
+  @GetMapping("{hmppsId}/risks/serious-harm")
   @Operation(
     summary = "Returns Risk of Serious Harm (ROSH) risks associated with a person. Returns only assessments completed in the last year. This endpoint does not serve LAO (Limited Access Offender) data.",
     responses = [
@@ -40,9 +39,8 @@ class RiskSeriousHarmController(
     ],
   )
   fun getPersonRiskSeriousHarm(
-    @Parameter(description = "A URL-encoded HMPPS identifier", example = "2008%2F0545166T") @PathVariable encodedHmppsId: String,
+    @Parameter(description = "HMPPS identifier", example = "A1234AA") @PathVariable hmppsId: String,
   ): DataResponse<Risks?> {
-    val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getRiskSeriousHarmForPersonService.execute(hmppsId)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {

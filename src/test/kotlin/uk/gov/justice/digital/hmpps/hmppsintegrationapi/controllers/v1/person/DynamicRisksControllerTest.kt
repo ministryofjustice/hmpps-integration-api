@@ -33,8 +33,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAcces
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolicyConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetDynamicRisksForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 
 @WebMvcTest(controllers = [DynamicRisksController::class])
 @Import(value = [AopAutoConfiguration::class, LaoRedactorAspect::class, RedactionPolicyConfig::class])
@@ -47,9 +45,8 @@ internal class DynamicRisksControllerTest(
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
 ) : DescribeSpec(
     {
-      val hmppsId = "9999/11111A"
-      val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
-      val path = "/v1/persons/$encodedHmppsId/risks/dynamic"
+      val hmppsId = "A1234AA"
+      val path = "/v1/persons/$hmppsId/risks/dynamic"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
       val laoRedactCrn = "R123456"
       val laoOkCrn = "R654321"
@@ -180,10 +177,8 @@ internal class DynamicRisksControllerTest(
         }
 
         it("returns an empty list when no dynamic risks are found") {
-          val hmppsIdForPersonWithNoDynamicRisks = "0123/12345B"
-          val encodedHmppsIdForPersonWithNoDynamicRisks =
-            URLEncoder.encode(hmppsIdForPersonWithNoDynamicRisks, StandardCharsets.UTF_8)
-          val dynamicRisksPath = "/v1/persons/$encodedHmppsIdForPersonWithNoDynamicRisks/risks/dynamic"
+          val hmppsIdForPersonWithNoDynamicRisks = "A1234AA"
+          val dynamicRisksPath = "/v1/persons/$hmppsIdForPersonWithNoDynamicRisks/risks/dynamic"
 
           whenever(getDynamicRisksForPersonService.execute(hmppsIdForPersonWithNoDynamicRisks)).thenReturn(
             Response(

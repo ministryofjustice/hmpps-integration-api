@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessFailedException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.AccessFor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.LaoContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.LaoRedaction.Mode
@@ -30,7 +29,7 @@ class LaoRedactorAspect(
     joinPoint: ProceedingJoinPoint,
     redaction: LaoRedaction,
   ): Any {
-    val hmppsId = (joinPoint.args.first() as String).decodeUrlCharacters()
+    val hmppsId = joinPoint.args.first() as String
     val laoContext = loaChecker.getAccessFor(hmppsId)?.asLaoContext() ?: throw LimitedAccessFailedException()
 
     if (laoContext.isLimitedAccess() && redaction.mode == Mode.REJECT) {

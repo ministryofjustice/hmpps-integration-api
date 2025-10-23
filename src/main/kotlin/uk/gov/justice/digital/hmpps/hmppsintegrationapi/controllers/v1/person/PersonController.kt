@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.RedactionConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.IEPLevel
@@ -160,10 +159,9 @@ class PersonController(
     ],
   )
   fun getPerson(
-    @Parameter(description = "A HMPPS identifier", example = "X00001") @PathVariable("hmppsId") encodedHmppsId: String,
+    @Parameter(description = "A HMPPS identifier", example = "X00001") @PathVariable("hmppsId") hmppsId: String,
     @RequestAttribute clientName: String?,
   ): ResponseEntity<DataResponse<OffenderSearchResponse>> {
-    val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getPersonService.getCombinedDataForPerson(hmppsId)
 
     if (response.data == null && response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {

@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
+import java.io.File
+import org.hamcrest.Matchers.aMapWithSize
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -12,10 +14,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.writeAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
-import java.io.File
-import java.net.URLDecoder
-import org.hamcrest.Matchers.aMapWithSize
-import org.hamcrest.Matchers.hasSize
 
 @ActiveProfiles("integration-test-redaction-enabled")
 @TestPropertySource(properties = ["services.ndelius.base-url=http://localhost:4201"])
@@ -45,7 +43,7 @@ class PersonRedactionIntegrationTest : IntegrationTestBase() {
 
     nDeliusMockServer.stubForPost(
       "/search/probation-cases",
-      writeAsJson(mapOf("crn" to URLDecoder.decode(pnc, "UTF-8"))),
+      writeAsJson(mapOf("crn" to crn)),
       File(
         "$gatewaysFolder/ndelius/fixtures/GetOffenderResponse.json",
       ).readText(),
@@ -61,7 +59,7 @@ class PersonRedactionIntegrationTest : IntegrationTestBase() {
 
       @Test
       fun `return a person from Prisoner Offender Search with some data redacted`() {
-        callApiWithCN("$basePath/$pnc", clientNameWithRedaction)
+        callApiWithCN("$basePath/$crn", clientNameWithRedaction)
           .andExpect(status().isOk)
           .andExpect(content().json(getExpectedResponse("person-offender-and-probation-search-redacted-response")))
 
@@ -76,7 +74,7 @@ class PersonRedactionIntegrationTest : IntegrationTestBase() {
 
       @Test
       fun `return a person from Prisoner Offender Search with redacted and removed data`() {
-        callApiWithCN("$basePath/$pnc", clientNameWithRoleBaseRedaction)
+        callApiWithCN("$basePath/$crn", clientNameWithRoleBaseRedaction)
           .andExpect(status().isOk)
           .andExpect(jsonPath("$.data", aMapWithSize<Any,Any>(1)))
           .andExpect(jsonPath("$.data.prisonerOffenderSearch.identifiers.croNumber").value("**REDACTED**"))
