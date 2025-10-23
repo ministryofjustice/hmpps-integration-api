@@ -74,7 +74,7 @@ class JsonPathResponseRedaction(
   val config: Configuration =
     Configuration
       .builder()
-      .options(Option.DEFAULT_PATH_LEAF_TO_NULL)
+      .options(Option.AS_PATH_LIST)
       .build()
 
   private val pathPatterns: List<Regex>? = paths?.map(::Regex)
@@ -97,7 +97,7 @@ class JsonPathResponseRedaction(
       try {
         if (exists(jsonPath, doc)) {
           when (type) {
-            RedactionType.MASK -> doc.set(JsonPath.compile(jsonPath), REDACTION_MASKING_TEXT)
+            RedactionType.MASK -> doc.map(JsonPath.compile(jsonPath)) { _, _ -> REDACTION_MASKING_TEXT }
             RedactionType.REMOVE -> doc.delete(JsonPath.compile(jsonPath))
           }
         }
