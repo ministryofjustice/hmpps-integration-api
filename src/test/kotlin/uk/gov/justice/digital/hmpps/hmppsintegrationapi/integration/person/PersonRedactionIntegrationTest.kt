@@ -14,6 +14,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtens
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 import java.io.File
 import java.net.URLDecoder
+import org.hamcrest.Matchers.aMapWithSize
+import org.hamcrest.Matchers.hasSize
 
 @ActiveProfiles("integration-test-redaction-enabled")
 @TestPropertySource(properties = ["services.ndelius.base-url=http://localhost:4201"])
@@ -76,11 +78,10 @@ class PersonRedactionIntegrationTest : IntegrationTestBase() {
       fun `return a person from Prisoner Offender Search with redacted and removed data`() {
         callApiWithCN("$basePath/$pnc", clientNameWithRoleBaseRedaction)
           .andExpect(status().isOk)
+          .andExpect(jsonPath("$.data", aMapWithSize<Any,Any>(1)))
           .andExpect(jsonPath("$.data.prisonerOffenderSearch.identifiers.croNumber").value("**REDACTED**"))
           .andExpect(jsonPath("$.data.prisonerOffenderSearch.pncId").value("**REDACTED**"))
-          .andExpect(jsonPath("$.data.probationOffenderSearch.contactDetails").doesNotExist())
-          .andExpect(jsonPath("$.data.probationOffenderSearch.currentRestriction").doesNotExist())
-          .andExpect(jsonPath("$.data.probationOffenderSearch.currentExclusion").doesNotExist())
+          .andExpect(jsonPath("$.data.probationOffenderSearch").doesNotExist())
 
         prisonerOffenderSearchMockServer.assertValidationPassed()
       }
