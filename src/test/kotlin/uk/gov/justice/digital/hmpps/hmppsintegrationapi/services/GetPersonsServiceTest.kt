@@ -29,7 +29,7 @@ internal class GetPersonsServiceTest(
 ) : DescribeSpec({
     val firstName = personInProbationAndNomisPersona.firstName
     val lastName = personInProbationAndNomisPersona.lastName
-    val pncNumber = "A1234AA"
+    val pncNumber = "2003/13116M"
     val dateOfBirth = personInProbationAndNomisPersona.dateOfBirth.toString()
 
     beforeEach {

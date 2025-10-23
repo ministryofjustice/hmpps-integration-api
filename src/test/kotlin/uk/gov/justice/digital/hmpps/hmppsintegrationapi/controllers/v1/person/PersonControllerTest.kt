@@ -87,7 +87,7 @@ internal class PersonControllerTest(
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
       val hmppsId = "A1234AA"
       val sanitisedHmppsId = "A1234AA"
-      val pncNumber = "A1234AA"
+      val pncNumber = "2003/13116M"
       val basePath = "/v1/persons"
       val filters = null
 
