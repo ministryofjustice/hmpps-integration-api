@@ -97,7 +97,6 @@ class JsonPathResponseRedaction(
       try {
         if (exists(jsonPath, doc)) {
           when (type) {
-//            RedactionType.MASK -> doc.set(JsonPath.compile(jsonPath), REDACTION_MASKING_TEXT)
             RedactionType.MASK -> doc.map(JsonPath.compile(jsonPath)) { _, _ -> REDACTION_MASKING_TEXT }
             RedactionType.REMOVE -> doc.delete(JsonPath.compile(jsonPath))
           }
