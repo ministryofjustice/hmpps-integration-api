@@ -29,8 +29,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAcces
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolicyConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetMappaDetailForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 
 @WebMvcTest(controllers = [MappaDetailController::class])
 @Import(value = [AopAutoConfiguration::class, LaoRedactorAspect::class, RedactionPolicyConfig::class])
@@ -43,9 +41,8 @@ internal class MappaDetailControllerTest(
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
 ) : DescribeSpec(
     {
-      val hmppsId = "9999/11111A"
-      val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
-      val path = "/v1/persons/$encodedHmppsId/risks/mappadetail"
+      val hmppsId = "A1234AA"
+      val path = "/v1/persons/$hmppsId/risks/mappadetail"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
       val laoOkCrn = "R654321"
       val laoFailureCrn = "R754321"

@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.LatestSentenceKeyDatesAndAdjustments
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
@@ -67,7 +66,7 @@ class SentencesController(
     return response.data.paginateWith(page, perPage)
   }
 
-  @GetMapping("{encodedHmppsId}/sentences/latest-key-dates-and-adjustments")
+  @GetMapping("{hmppsId}/sentences/latest-key-dates-and-adjustments")
   @Tags(value = [Tag("Reception"), Tag("Activities")])
   @Operation(
     summary = "Returns the key dates and adjustments about a person's release from prison for their latest sentence.",
@@ -80,10 +79,9 @@ class SentencesController(
     ],
   )
   fun getPersonLatestSentenceKeyDatesAndAdjustments(
-    @Parameter(description = "A URL-encoded HMPPS identifier", example = "2008%2F0545166T") @PathVariable encodedHmppsId: String,
+    @Parameter(description = "HMPPS identifier", example = "A1234AA") @PathVariable hmppsId: String,
     @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<LatestSentenceKeyDatesAndAdjustments?> {
-    val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId, filters)
 
     if (response.hasErrorCausedBy(UpstreamApiError.Type.ENTITY_NOT_FOUND, causedBy = UpstreamApi.PRISON_API)) {

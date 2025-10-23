@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonLicences
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -26,7 +25,7 @@ class LicenceConditionController(
   @Autowired val auditService: AuditService,
   @Autowired val getLicenceConditionService: GetLicenceConditionService,
 ) {
-  @GetMapping("{encodedHmppsId}/licences/conditions")
+  @GetMapping("{hmppsId}/licences/conditions")
   @Operation(
     summary = "Returns license conditions associated with a person, sorted by createdDateTime (newest first).",
     responses = [
@@ -36,9 +35,8 @@ class LicenceConditionController(
     ],
   )
   fun getLicenceConditions(
-    @Parameter(description = "A URL-encoded HMPPS identifier", example = "2008%2F0545166T") @PathVariable encodedHmppsId: String,
+    @Parameter(description = "HMPPS identifier", example = "A1234AA") @PathVariable hmppsId: String,
   ): DataResponse<PersonLicences?> {
-    val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getLicenceConditionService.execute(hmppsId)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
