@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.LaoRedaction
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.LaoRedaction.Mode
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskManagementPlan
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -32,7 +30,6 @@ class RiskManagementController(
   @Autowired val getRiskManagementPlansForCrnService: GetRiskManagementPlansForCrnService,
   @Autowired val auditService: AuditService,
 ) {
-  @LaoRedaction(Mode.REJECT)
   @GetMapping("/v1/persons/{hmppsId}/risk-management-plan")
   @Tag(name = "Persons")
   @Operation(
