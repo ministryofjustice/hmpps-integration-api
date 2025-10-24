@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
+import org.hamcrest.Matchers.aMapWithSize
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -75,11 +76,10 @@ class PersonRedactionIntegrationTest : IntegrationTestBase() {
       fun `return a person from Prisoner Offender Search with redacted and removed data`() {
         callApiWithCN("$basePath/$crn", clientNameWithRoleBaseRedaction)
           .andExpect(status().isOk)
+          .andExpect(jsonPath("$.data", aMapWithSize<Any, Any>(1)))
           .andExpect(jsonPath("$.data.prisonerOffenderSearch.identifiers.croNumber").value("**REDACTED**"))
           .andExpect(jsonPath("$.data.prisonerOffenderSearch.pncId").value("**REDACTED**"))
-          .andExpect(jsonPath("$.data.probationOffenderSearch.contactDetails").doesNotExist())
-          .andExpect(jsonPath("$.data.probationOffenderSearch.currentRestriction").doesNotExist())
-          .andExpect(jsonPath("$.data.probationOffenderSearch.currentExclusion").doesNotExist())
+          .andExpect(jsonPath("$.data.probationOffenderSearch").doesNotExist())
 
         prisonerOffenderSearchMockServer.assertValidationPassed()
       }
