@@ -5,7 +5,6 @@ import com.jayway.jsonpath.Option
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.core.MethodParameter
-import org.springframework.core.annotation.Order
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.Series.SUCCESSFUL
 import org.springframework.http.MediaType
@@ -29,7 +28,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 
 @ControllerAdvice
-@Order(-1)
 @ConditionalOnProperty(
   prefix = "feature-flag",
   name = ["redaction-policy-enabled"],
@@ -117,38 +115,25 @@ class RedactionResponseBodyAdvice(
       }
     }
 
-  @Suppress("UNCHECKED_CAST")
   private fun laoRedactionPolicies(
     list: List<RedactionPolicy>,
     request: HttpServletRequest,
   ): List<RedactionPolicy> {
-    val performLaoCheck = list.flatMap { it.endpoints }.any { Regex(it).matches(request.requestURI) }
-    if (!performLaoCheck) {
-      return emptyList()
-    }
-    val isLaoContext = getLaoFromRequest()
-    return isLaoContext?.takeIf { it == true }?.let {
-      list.map { policy ->
-        if (policy.reject && (policy.endpoints.isEmpty() || policy.endpoints.any { Regex(it).matches(request.requestURI) })) {
-          throw LimitedAccessException()
-        } else {
-          policy
+    return list.map {
+      when(it.endpoints.any{ Regex(it).matches(request.requestURI) } && it.reject){
+       true -> {
+          if(isLao() == true) throw LimitedAccessException() else it
         }
-      }
-    } ?: emptyList()
+        else -> it
+       }
+    }
   }
 
-  @Suppress("UNCHECKED_CAST")
-  fun getLaoFromRequest(): Boolean? {
+  fun isLao(): Boolean? {
     val request = (RequestContextHolder.getRequestAttributes() as? ServletRequestAttributes)?.request
     val hmppsId = request?.getAttribute("hmppsId") as? String
-    return hmppsId?.let { id ->
-      val laoContext = request.getAttribute("deliusLaoContext") as? Map<String?, Boolean>
-      laoContext?.let {
-        laoContext[id]
-      }
-        ?: runCatching { accessFor.getAccessFor(hmppsId)?.let { it.userRestricted || it.userExcluded } }.getOrNull()
-        ?: throw LimitedAccessFailedException()
+    return hmppsId?.let {
+      accessFor.getAccessFor(hmppsId)?.let { it.userRestricted || it.userExcluded } ?: throw LimitedAccessFailedException()
     }
   }
 }
