@@ -20,6 +20,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.LaoRedactorAspect
@@ -33,7 +34,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetRiskManageme
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [RiskManagementController::class])
-@Import(value = [AopAutoConfiguration::class, LaoRedactorAspect::class, RedactionPolicyConfig::class])
+@Import(value = [WebMvcTestConfiguration::class, LaoRedactorAspect::class, AopAutoConfiguration::class, RedactionPolicyConfig::class])
 @ActiveProfiles("test")
 class RiskManagementControllerTest(
   @Autowired var springMockMvc: MockMvc,
