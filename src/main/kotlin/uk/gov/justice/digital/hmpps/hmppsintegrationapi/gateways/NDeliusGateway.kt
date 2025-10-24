@@ -428,5 +428,6 @@ class NDeliusGateway(
       }
     }
   }
+
   private fun isNomsNumber(id: String?): Boolean = id?.matches(Regex("^[A-Z]\\d{4}[A-Z]{2}+$")) == true
 }

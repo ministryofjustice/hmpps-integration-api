@@ -118,16 +118,15 @@ class RedactionResponseBodyAdvice(
   private fun laoRedactionPolicies(
     list: List<RedactionPolicy>,
     request: HttpServletRequest,
-  ): List<RedactionPolicy> {
-    return list.map {
-      when(it.endpoints.any{ Regex(it).matches(request.requestURI) } && it.reject){
-       true -> {
-          if(isLao() == true) throw LimitedAccessException() else it
+  ): List<RedactionPolicy> =
+    list.map {
+      when (it.endpoints.any { Regex(it).matches(request.requestURI) } && it.reject) {
+        true -> {
+          if (isLao() == true) throw LimitedAccessException() else it
         }
         else -> it
-       }
+      }
     }
-  }
 
   fun isLao(): Boolean? {
     val request = (RequestContextHolder.getRequestAttributes() as? ServletRequestAttributes)?.request
