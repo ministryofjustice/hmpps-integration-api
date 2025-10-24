@@ -20,6 +20,9 @@ interface ResponseRedaction {
 data class RedactionPolicy(
   val name: String? = null,
   val responseRedactions: List<ResponseRedaction>? = null,
+  val endpoints: List<String> = emptyList(),
+  val reject: Boolean = false,
+  val laoOnly: Boolean = false,
 )
 
 private const val REDACTION_MASKING_TEXT = "**REDACTED**"

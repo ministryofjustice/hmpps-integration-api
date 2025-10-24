@@ -7,6 +7,7 @@ import io.mockk.every
 import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
 import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -21,7 +22,9 @@ import org.springframework.http.converter.HttpMessageConverter
 import org.springframework.http.server.ServerHttpRequest
 import org.springframework.http.server.ServerHttpResponse
 import org.springframework.http.server.ServletServerHttpRequest
+import org.springframework.http.server.ServletServerHttpResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.ResponseRedaction
@@ -34,6 +37,7 @@ class RedactionResponseBodyAdviceTest {
   private lateinit var authorisationConfig: AuthorisationConfig
   private lateinit var globalRedactions: Map<String, RedactionPolicy>
   private lateinit var advice: RedactionResponseBodyAdvice
+  private lateinit var accessFor: GetCaseAccess
 
   private val roleName = "private-prison"
   private val examplePath = "/v1/persons"
@@ -42,6 +46,7 @@ class RedactionResponseBodyAdviceTest {
   fun setup() {
     objectMapper = ObjectMapper().registerKotlinModule()
     authorisationConfig = mock(AuthorisationConfig::class.java)
+    accessFor = mock(GetCaseAccess::class.java)
 
     // Mock global redactions
     val redaction = mock(ResponseRedaction::class.java)
@@ -67,7 +72,7 @@ class RedactionResponseBodyAdviceTest {
           ),
       )
 
-    advice = RedactionResponseBodyAdvice(authorisationConfig, globalRedactions)
+    advice = RedactionResponseBodyAdvice(authorisationConfig, globalRedactions, accessFor)
   }
 
   @AfterEach
@@ -79,6 +84,9 @@ class RedactionResponseBodyAdviceTest {
 
   @Test
   fun `should return null when body is null`() {
+    val servletResponse = mock(HttpServletResponse::class.java)
+    val response = ServletServerHttpResponse(servletResponse)
+
     val result =
       advice.beforeBodyWrite(
         null,
@@ -86,7 +94,7 @@ class RedactionResponseBodyAdviceTest {
         MediaType.APPLICATION_JSON,
         HttpMessageConverter::class.java,
         mock(ServerHttpRequest::class.java),
-        mock(ServerHttpResponse::class.java),
+        response,
       )
 
     result shouldBe null
@@ -115,6 +123,10 @@ class RedactionResponseBodyAdviceTest {
 
   @Test
   fun `should apply redaction policies when JSON and clientName present`() {
+    val servletResponse = mock(HttpServletResponse::class.java)
+    whenever(servletResponse.status).thenReturn(HttpServletResponse.SC_OK)
+    val response = ServletServerHttpResponse(servletResponse)
+
     val serverHttpRequest = mock(HttpServletRequest::class.java)
     whenever(serverHttpRequest.getAttribute("clientName")).thenReturn("clientA")
     whenever(serverHttpRequest.requestURI).thenReturn(examplePath)
@@ -151,7 +163,7 @@ class RedactionResponseBodyAdviceTest {
         MediaType.APPLICATION_JSON,
         HttpMessageConverter::class.java,
         servletRequest,
-        mock(ServerHttpResponse::class.java),
+        response,
       )
 
     verify(redaction, times(1)).apply(examplePath, body)
@@ -162,6 +174,9 @@ class RedactionResponseBodyAdviceTest {
 
   @Test
   fun `should gracefully handle client without roles`() {
+    val servletResponse = mock(HttpServletResponse::class.java)
+    whenever(servletResponse.status).thenReturn(HttpServletResponse.SC_OK)
+    val response = ServletServerHttpResponse(servletResponse)
     val serverHttpRequest = mock(HttpServletRequest::class.java)
     whenever(serverHttpRequest.getAttribute("clientName")).thenReturn("unknownClient")
     whenever(serverHttpRequest.requestURI).thenReturn(examplePath)
@@ -178,7 +193,7 @@ class RedactionResponseBodyAdviceTest {
         MediaType.APPLICATION_JSON,
         HttpMessageConverter::class.java,
         servletRequest,
-        mock(ServerHttpResponse::class.java),
+        response,
       )
 
     // Should not throw, should still return body

@@ -19,10 +19,10 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.LaoRedactorAspect
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OtherRisks
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Risk
@@ -38,7 +38,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 import java.time.LocalDateTime
 
 @WebMvcTest(controllers = [RiskSeriousHarmController::class])
-@Import(value = [AopAutoConfiguration::class, LaoRedactorAspect::class, RedactionPolicyConfig::class])
+@Import(value = [WebMvcTestConfiguration::class, AopAutoConfiguration::class, RedactionPolicyConfig::class])
 @ActiveProfiles("test")
 internal class RiskSeriousHarmControllerTest(
   @Autowired var springMockMvc: MockMvc,
@@ -59,7 +59,7 @@ internal class RiskSeriousHarmControllerTest(
           Mockito.reset(getRiskSeriousHarmForPersonService)
           whenever(getCaseAccess.getAccessFor(any())).thenReturn(CaseAccess(laoOkCrn, false, false, "", ""))
           whenever(getCaseAccess.getAccessFor("R754321")).thenReturn(null)
-          whenever(getRiskSeriousHarmForPersonService.execute(hmppsId)).thenReturn(
+          whenever(getRiskSeriousHarmForPersonService.execute(any())).thenReturn(
             Response(
               data =
                 Risks(

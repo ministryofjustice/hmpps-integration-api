@@ -63,4 +63,11 @@ data class Offender(
       this.offenderProfile.religion,
       this.offenderProfile.disabilities,
     )
+
+  fun isLao() = this.currentRestriction || this.currentExclusion
+
+  data class DeliusLaoContext(
+    val crn: String?,
+    val lao: Boolean,
+  )
 }

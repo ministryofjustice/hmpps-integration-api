@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
+import org.springframework.web.context.request.RequestContextHolder
+import org.springframework.web.context.request.ServletRequestAttributes
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.EPF_ENDPOINT_INCLUDES_LAO
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
@@ -273,6 +275,7 @@ class NDeliusGateway(
     return when (result) {
       is WebClientWrapperResponse.Success -> {
         val persons = result.data
+        setLaoInRequest(persons)
         val person = persons.firstOrNull()?.toPerson()
 
         Response(
@@ -427,6 +430,11 @@ class NDeliusGateway(
         Response(null, result.errors)
       }
     }
+  }
+
+  private fun setLaoInRequest(offenders: List<Offender>) {
+    val request = (RequestContextHolder.getRequestAttributes() as? ServletRequestAttributes)?.request
+    request?.setAttribute("deliusLaoContext", offenders.map { it.otherIds.crn to it.isLao() })
   }
 
   private fun isNomsNumber(id: String?): Boolean = id?.matches(Regex("^[A-Z]\\d{4}[A-Z]{2}+$")) == true
