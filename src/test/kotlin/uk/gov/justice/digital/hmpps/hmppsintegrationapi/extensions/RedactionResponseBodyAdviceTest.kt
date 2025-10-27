@@ -120,6 +120,27 @@ class RedactionResponseBodyAdviceTest {
   // -------------------------------------------------------------
 
   @Test
+  fun `should return body unchanged when not successful`() {
+    val body = mapOf("error" to "value")
+    val servletResponse = mock(HttpServletResponse::class.java)
+    whenever(servletResponse.status).thenReturn(HttpServletResponse.SC_BAD_REQUEST)
+    val response = ServletServerHttpResponse(servletResponse)
+    val result =
+      advice.beforeBodyWrite(
+        body,
+        mock(MethodParameter::class.java),
+        MediaType.TEXT_PLAIN,
+        HttpMessageConverter::class.java,
+        mock(ServerHttpRequest::class.java),
+        response,
+      )
+
+    result shouldBe body
+  }
+
+  // -------------------------------------------------------------
+
+  @Test
   fun `should apply redaction policies when JSON and clientName present`() {
     val serverHttpRequest = mock(HttpServletRequest::class.java)
 
