@@ -5,7 +5,6 @@ import com.jayway.jsonpath.Configuration
 import com.jayway.jsonpath.DocumentContext
 import com.jayway.jsonpath.JsonPath
 import com.jayway.jsonpath.Option
-import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.Redactor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
@@ -85,7 +84,7 @@ class JsonPathResponseRedaction(
         else -> objectMapper.writeValueAsString(responseBody)
       }
 
-    val doc = parse(jsonString)
+    val doc = parseForSearch(jsonString)
     includes.orEmpty().forEach { jsonPath ->
       redactValues(jsonPath, doc)
     }
@@ -124,7 +123,7 @@ class JsonPathResponseRedaction(
         Option.SUPPRESS_EXCEPTIONS, // Don't throw exception if not found
       ).build()
 
-  fun parse(jsonText: String): DocumentContext = JsonPath.using(searchConfiguration()).parse(jsonText)!!
+  fun parseForSearch(jsonText: String): DocumentContext = JsonPath.using(searchConfiguration()).parse(jsonText)!!
 }
 
 enum class RedactionType {

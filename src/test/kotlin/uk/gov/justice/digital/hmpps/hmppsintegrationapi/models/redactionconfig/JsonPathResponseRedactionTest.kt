@@ -89,7 +89,7 @@ class JsonPathResponseRedactionTest :
           val redactor = JsonPathResponseRedaction(mapper, RedactionType.MASK)
 
           val doc =
-            redactor.parse(
+            redactor.parseForSearch(
               """
               {"data":{"a":"A","b":{"c":"C"}}}
               """.trimIndent(),
@@ -107,7 +107,7 @@ class JsonPathResponseRedactionTest :
           val redactor = JsonPathResponseRedaction(mapper, RedactionType.MASK)
 
           val doc =
-            redactor.parse(
+            redactor.parseForSearch(
               """
               {"data":{"a":"A","b":{"c":null}, "c": "C"}}
               """.trimIndent(),
@@ -125,7 +125,7 @@ class JsonPathResponseRedactionTest :
           val redactor = JsonPathResponseRedaction(mapper, RedactionType.MASK)
 
           val doc =
-            redactor.parse(
+            redactor.parseForSearch(
               """
               {"data":{"a":"A","b":{"c":null},"c":"C"}}
               """.trimIndent(),
@@ -143,7 +143,7 @@ class JsonPathResponseRedactionTest :
           val redactor = JsonPathResponseRedaction(mapper, RedactionType.REMOVE)
 
           val doc =
-            redactor.parse(
+            redactor.parseForSearch(
               """
               {"data":{"a":"A","b":{"c":null},"c":"C"}}
               """.trimIndent(),
