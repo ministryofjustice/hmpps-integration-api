@@ -23,7 +23,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.LaoRedactorAspect
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskManagementPlan
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -34,7 +33,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetRiskManageme
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [RiskManagementController::class])
-@Import(value = [WebMvcTestConfiguration::class, LaoRedactorAspect::class, AopAutoConfiguration::class, RedactionPolicyConfig::class])
+@Import(value = [WebMvcTestConfiguration::class, AopAutoConfiguration::class, RedactionPolicyConfig::class])
 @ActiveProfiles("test")
 class RiskManagementControllerTest(
   @Autowired var springMockMvc: MockMvc,
@@ -55,7 +54,8 @@ class RiskManagementControllerTest(
         Mockito.reset(auditService)
         whenever(getCaseAccess.getAccessFor(any())).thenReturn(CaseAccess(laoOkCrn, false, false, "", ""))
         whenever(getCaseAccess.getAccessFor("R754321")).thenReturn(null)
-        whenever(getRiskManagementService.execute(hmppsId)).thenReturn(
+
+        whenever(getRiskManagementService.execute(any())).thenReturn(
           Response(
             data =
               listOf(

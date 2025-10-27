@@ -24,11 +24,17 @@ val objectMapper: ObjectMapper =
 
 fun redactionPolicy(
   name: String,
+  endpoints: List<String> = emptyList(),
+  laoOnly: Boolean = false,
+  reject: Boolean = false,
   init: RedactionPolicyBuilder.() -> Unit,
-): RedactionPolicy = RedactionPolicyBuilder(name).apply(init).build()
+): RedactionPolicy = RedactionPolicyBuilder(name, endpoints, laoOnly, reject).apply(init).build()
 
 class RedactionPolicyBuilder(
   private val name: String,
+  private val endpoints: List<String> = emptyList(),
+  private val laoOnly: Boolean = false,
+  private val reject: Boolean = false,
 ) {
   private val responseRedactions = mutableListOf<ResponseRedaction>()
 
@@ -36,7 +42,7 @@ class RedactionPolicyBuilder(
     responseRedactions += ResponseRedactionsBuilder().apply(init).build()
   }
 
-  fun build(): RedactionPolicy = RedactionPolicy(name, responseRedactions)
+  fun build(): RedactionPolicy = RedactionPolicy(name, responseRedactions, endpoints, reject, laoOnly)
 }
 
 class ResponseRedactionsBuilder {

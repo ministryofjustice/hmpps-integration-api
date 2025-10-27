@@ -22,7 +22,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfigu
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.LaoRedactorAspect
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Licence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.LicenceCondition
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonLicences
@@ -35,7 +34,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetLicenceCondi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [LicenceConditionController::class])
-@Import(value = [WebMvcTestConfiguration::class, AopAutoConfiguration::class, LaoRedactorAspect::class, RedactionPolicyConfig::class])
+@Import(value = [WebMvcTestConfiguration::class, AopAutoConfiguration::class, RedactionPolicyConfig::class])
 @ActiveProfiles("test-redaction-enabled")
 class LicenceConditionControllerTests(
   @Autowired var springMockMvc: MockMvc,
