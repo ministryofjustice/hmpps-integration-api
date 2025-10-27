@@ -70,16 +70,6 @@ class JsonPathResponseRedaction(
   val paths: List<String>? = null,
   val includes: List<String>? = emptyList(),
 ) : ResponseRedaction {
-  private val log: org.slf4j.Logger = LoggerFactory.getLogger(this::class.java)
-  val config: Configuration =
-    Configuration
-      .builder()
-      .options(
-        Option.AS_PATH_LIST, // Queries return a list of paths
-        Option.ALWAYS_RETURN_LIST, // Return a list even if empty or single value
-        Option.SUPPRESS_EXCEPTIONS, // Don't throw exception if not found
-      ).build()
-
   private val pathPatterns: List<Regex>? = paths?.map(::Regex)
 
   override fun apply(
@@ -119,7 +109,22 @@ class JsonPathResponseRedaction(
     doc: DocumentContext,
   ): List<String> = doc.read(JsonPath.compile(jsonPath))
 
-  fun parse(jsonText: String): DocumentContext = JsonPath.using(config).parse(jsonText)!!
+  /**
+   * Configure the JsonPath library to return matching paths rather than matching data.
+   *
+   * The jsonpath library doesn't provide a `find` function, so we have to configure the framework
+   * so that `read` returns a list of matching paths rather than the matching values.
+   */
+  private fun searchConfiguration(): Configuration =
+    Configuration
+      .builder()
+      .options(
+        Option.AS_PATH_LIST, // Queries return a list of paths
+        Option.ALWAYS_RETURN_LIST, // Return a list even if empty or single value
+        Option.SUPPRESS_EXCEPTIONS, // Don't throw exception if not found
+      ).build()
+
+  fun parse(jsonText: String): DocumentContext = JsonPath.using(searchConfiguration()).parse(jsonText)!!
 }
 
 enum class RedactionType {
