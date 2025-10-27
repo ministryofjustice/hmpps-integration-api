@@ -7,19 +7,38 @@ val laoRedactionPolicy =
   redactionPolicy(
     "lao-redactions",
     laoOnly = true,
-    endpoints =
-      listOf(
-        "/v1/persons/.*/licences/conditions",
-        "/v1/persons/.*/risks/dynamic",
-        "/v1/persons/.*/risks/mappadetail",
-        "/v1/persons/.*/status-information",
-      ),
   ) {
     responseRedactions {
       jsonPath {
+        paths {
+          -"/v1/persons/.*/licences/conditions"
+        }
+        includes {
+          path("$..condition", MASK)
+        }
+      }
+      jsonPath {
+        paths {
+          -"/v1/persons/.*/risks/dynamic"
+        }
         includes {
           path("$..notes", MASK)
-          path("$..condition", MASK)
+        }
+      }
+      jsonPath {
+        paths {
+          -"/v1/persons/.*/risks/mappadetail"
+        }
+        includes {
+          path("$..notes", MASK)
+        }
+      }
+      jsonPath {
+        paths {
+          -"/v1/persons/.*/status-information"
+        }
+        includes {
+          path("$..notes", MASK)
         }
       }
     }

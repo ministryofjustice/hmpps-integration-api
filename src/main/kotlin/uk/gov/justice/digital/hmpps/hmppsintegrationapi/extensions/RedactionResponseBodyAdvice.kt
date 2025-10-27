@@ -113,7 +113,8 @@ class RedactionResponseBodyAdvice(
     request: HttpServletRequest,
   ): List<RedactionPolicy> =
     list.mapNotNull {
-      if (it.endpoints.any { Regex(it).matches(request.requestURI) }) {
+      // Only check for LAO case if url matches
+      if (it.responseRedactions?.map { it.shouldRun(request.requestURI) }?.any { it == true } == true) {
         val hmppsId = request.getAttribute("hmppsId") as? String
         if (isLao(hmppsId) == true) it else null
       } else {

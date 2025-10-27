@@ -11,6 +11,8 @@ interface ResponseRedaction {
     requestUri: String,
     responseBody: Any,
   ): Any
+
+  fun shouldRun(uri: String): Boolean
 }
 
 data class RedactionPolicy(
@@ -61,6 +63,8 @@ class JsonPathResponseRedaction(
       }
     }
   }
+
+  override fun shouldRun(requestUri: String): Boolean = pathPatterns?.any { it.matches(requestUri) } == true
 
   fun allMatchingPaths(
     jsonPath: String,
