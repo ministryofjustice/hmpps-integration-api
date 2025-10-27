@@ -5,9 +5,6 @@ import com.jayway.jsonpath.Configuration
 import com.jayway.jsonpath.DocumentContext
 import com.jayway.jsonpath.JsonPath
 import com.jayway.jsonpath.Option
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.Redactor
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 
 interface ResponseRedaction {
   fun apply(
@@ -24,46 +21,6 @@ data class RedactionPolicy(
 )
 
 const val REDACTION_MASKING_TEXT = "**REDACTED**"
-
-@Suppress("UNCHECKED_CAST")
-class DelegatingResponseRedaction<T : Any>(
-  val redactor: Redactor<T>,
-  val paths: List<String>?,
-) : ResponseRedaction {
-  override fun apply(
-    requestUri: String,
-    responseBody: Any,
-  ): Any {
-    val shouldApply = paths == null || paths.any { Regex(it).matches(requestUri) }
-
-    if (!shouldApply) return responseBody
-
-    return when (responseBody) {
-      is DataResponse<*> -> redactDataResponse(responseBody)
-      is PaginatedResponse<*> -> redactPaginatedResponse(responseBody)
-      else -> responseBody
-    }
-  }
-
-  private fun applyRedactors(value: Any?): Any? {
-    if (value == null) return null
-    val redactorForType = redactor.takeIf { it.type.isInstance(value) } ?: return value
-    @Suppress("UNCHECKED_CAST")
-    return (redactorForType as Redactor<Any>).redact(value)
-  }
-
-  private fun <T> redactDataResponse(response: DataResponse<T>): DataResponse<T> {
-    val redactedData = applyRedactors(response.data)
-    @Suppress("UNCHECKED_CAST")
-    return response.copy(data = redactedData as T)
-  }
-
-  private fun <T> redactPaginatedResponse(response: PaginatedResponse<T>): PaginatedResponse<T> {
-    val redactedList = response.data.map { applyRedactors(it) }
-    @Suppress("UNCHECKED_CAST")
-    return response.copy(data = redactedList as List<T>, pagination = response.pagination)
-  }
-}
 
 class JsonPathResponseRedaction(
   val objectMapper: ObjectMapper,

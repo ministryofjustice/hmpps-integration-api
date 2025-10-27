@@ -6,13 +6,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.Redactor
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.DelegatingResponseRedaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.JsonPathResponseRedaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.ResponseRedaction
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.JsonPathResponseRedactionBuilder.DelegatingResponseRedactionBuilder
 
 val objectMapper: ObjectMapper =
   ObjectMapper()
@@ -48,15 +45,6 @@ class ResponseRedactionsBuilder {
 
   fun jsonPath(init: JsonPathResponseRedactionBuilder.() -> Unit) {
     redactions += JsonPathResponseRedactionBuilder().apply(init).build()
-  }
-
-  fun <T : Any> delegate(
-    redactor: Redactor<T>,
-    block: (DelegatingResponseRedactionBuilder<T>.() -> Unit)? = null,
-  ) {
-    val builder = DelegatingResponseRedactionBuilder(redactor)
-    block?.invoke(builder)
-    redactions += builder.build()
   }
 
   fun build(): List<ResponseRedaction> = redactions
@@ -105,18 +93,4 @@ class JsonPathResponseRedactionBuilder {
         includes = listOf(path),
       )
     }
-
-  class DelegatingResponseRedactionBuilder<T : Any>(
-    private val redactor: Redactor<T>,
-  ) {
-    private var paths: MutableList<String>? = null
-
-    fun paths(init: PathsBuilder.() -> Unit) {
-      val b = PathsBuilder().apply(init)
-      if (paths == null) paths = mutableListOf()
-      paths!!.addAll(b.content)
-    }
-
-    fun build(): DelegatingResponseRedaction<T> = DelegatingResponseRedaction(redactor, paths)
-  }
 }
