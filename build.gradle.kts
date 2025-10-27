@@ -3,8 +3,8 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.1.3"
-  kotlin("plugin.spring") version "2.2.20"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.1.4"
+  kotlin("plugin.spring") version "2.2.21"
   id("io.gitlab.arturbosch.detekt") version "1.23.8"
   id("org.jetbrains.kotlinx.kover") version "0.9.3"
 }
@@ -19,12 +19,12 @@ dependencies {
   runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.13.0")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
-  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.23.0")
-  implementation("io.sentry:sentry-logback:8.23.0")
+  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.24.0")
+  implementation("io.sentry:sentry-logback:8.24.0")
   implementation("org.springframework.data:spring-data-commons")
   implementation("org.springframework:spring-aop")
   implementation("org.aspectj:aspectjweaver")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.5.0") {
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.6.0") {
     exclude("org.springframework.security", "spring-security-config")
     exclude("org.springframework.security", "spring-security-core")
     exclude("org.springframework.security", "spring-security-crypto")
