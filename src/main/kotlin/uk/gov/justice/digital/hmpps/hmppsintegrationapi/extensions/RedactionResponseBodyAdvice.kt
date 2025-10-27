@@ -14,8 +14,6 @@ import org.springframework.http.server.ServerHttpResponse
 import org.springframework.http.server.ServletServerHttpRequest
 import org.springframework.http.server.ServletServerHttpResponse
 import org.springframework.web.bind.annotation.ControllerAdvice
-import org.springframework.web.context.request.RequestContextHolder
-import org.springframework.web.context.request.ServletRequestAttributes
 import org.springframework.web.servlet.HandlerMapping
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
@@ -122,17 +120,15 @@ class RedactionResponseBodyAdvice(
     list.map {
       when (it.endpoints.any { Regex(it).matches(request.requestURI) } && it.reject) {
         true -> {
-          if (isLao() == true) throw LimitedAccessException() else it
+          val hmppsId = request.getAttribute("hmppsId") as? String
+          if (isLao(hmppsId) == true) throw LimitedAccessException() else it
         }
         else -> it
       }
     }
 
-  fun isLao(): Boolean? {
-    val request = (RequestContextHolder.getRequestAttributes() as? ServletRequestAttributes)?.request
-    val hmppsId = request?.getAttribute("hmppsId") as? String
-    return hmppsId?.let {
+  fun isLao(hmppsId: String?): Boolean? =
+    hmppsId?.let {
       accessFor.getAccessFor(hmppsId)?.let { it.userRestricted || it.userExcluded } ?: throw LimitedAccessFailedException()
     }
-  }
 }

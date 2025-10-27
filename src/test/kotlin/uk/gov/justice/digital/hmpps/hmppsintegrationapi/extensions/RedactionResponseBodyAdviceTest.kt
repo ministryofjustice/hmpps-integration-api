@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.times
@@ -24,8 +25,10 @@ import org.springframework.http.server.ServerHttpResponse
 import org.springframework.http.server.ServletServerHttpRequest
 import org.springframework.http.server.ServletServerHttpResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.ResponseRedaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
@@ -122,6 +125,27 @@ class RedactionResponseBodyAdviceTest {
   // -------------------------------------------------------------
 
   @Test
+  fun `should return body unchanged when not successful`() {
+    val body = mapOf("error" to "value")
+    val servletResponse = mock(HttpServletResponse::class.java)
+    whenever(servletResponse.status).thenReturn(HttpServletResponse.SC_BAD_REQUEST)
+    val response = ServletServerHttpResponse(servletResponse)
+    val result =
+      advice.beforeBodyWrite(
+        body,
+        mock(MethodParameter::class.java),
+        MediaType.TEXT_PLAIN,
+        HttpMessageConverter::class.java,
+        mock(ServerHttpRequest::class.java),
+        response,
+      )
+
+    result shouldBe body
+  }
+
+  // -------------------------------------------------------------
+
+  @Test
   fun `should apply redaction policies when JSON and clientName present`() {
     val servletResponse = mock(HttpServletResponse::class.java)
     whenever(servletResponse.status).thenReturn(HttpServletResponse.SC_OK)
@@ -198,5 +222,53 @@ class RedactionResponseBodyAdviceTest {
 
     // Should not throw, should still return body
     result shouldBe body
+  }
+
+  // -------------------------------------------------------------
+
+  @Test
+  fun `should reject endpoint if lao rejection redaction in role`() {
+    val laoRedactionPolicy =
+      RedactionPolicy(
+        name = "lao-rejection-policy",
+        reject = true,
+        laoOnly = true,
+        endpoints = listOf(examplePath),
+      )
+    mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
+    every { roles } returns
+      mapOf(
+        roleName to
+          Role(
+            name = roleName,
+            include = mutableListOf(examplePath),
+            redactionPolicies = listOf(laoRedactionPolicy),
+          ),
+      )
+
+    val servletResponse = mock(HttpServletResponse::class.java)
+    whenever(servletResponse.status).thenReturn(HttpServletResponse.SC_OK)
+    val response = ServletServerHttpResponse(servletResponse)
+    val serverHttpRequest = mock(HttpServletRequest::class.java)
+    whenever(serverHttpRequest.requestURI).thenReturn(examplePath)
+    val servletRequest = ServletServerHttpRequest(serverHttpRequest)
+    whenever(accessFor.getAccessFor(any())).thenReturn(CaseAccess("crn", true, false))
+    whenever(serverHttpRequest.getAttribute("clientName")).thenReturn("clientA")
+    whenever(serverHttpRequest.getAttribute("hmppsId")).thenReturn("crn")
+    val consumerConfig = ConsumerConfig(emptyList(), null, listOf(roleName))
+    whenever(authorisationConfig.consumers).thenReturn(mapOf("clientA" to consumerConfig))
+    val body = mapOf("field" to "value")
+
+    // Should throw a limited access exception
+    assertThrows<LimitedAccessException> {
+      advice.beforeBodyWrite(
+        body,
+        mock(MethodParameter::class.java),
+        MediaType.APPLICATION_JSON,
+        HttpMessageConverter::class.java,
+        servletRequest,
+        response,
+      )
+    }
   }
 }
