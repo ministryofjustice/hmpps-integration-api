@@ -95,7 +95,7 @@ class JsonPathResponseRedactionTest :
           redactor.redactValues(".c", doc)
 
           doc.jsonString() shouldBe """
-            {"data":{"a":"A","b":{"c":"**REDACTED**"}}}
+            {"data":{"a":"A","b":{"c":"$REDACTION_MASKING_TEXT"}}}
           """.trimIndent()
         }
 
@@ -109,7 +109,7 @@ class JsonPathResponseRedactionTest :
           redactor.redactValues(".c", doc)
 
           doc.jsonString() shouldBe """
-            {"data":{"a":"A","b":{"c":"**REDACTED**"},"c":"**REDACTED**"}}
+            {"data":{"a":"A","b":{"c":"$REDACTION_MASKING_TEXT"},"c":"$REDACTION_MASKING_TEXT"}}
           """.trimIndent()
         }
 
