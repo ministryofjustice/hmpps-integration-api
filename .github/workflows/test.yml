@@ -36,7 +36,7 @@ jobs:
         run: ./gradlew detekt
       - name: Upload raw test reports on failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: detekt results
           path: |
@@ -58,7 +58,7 @@ jobs:
         run: TEST_TYPE="UNIT" ./gradlew koverBinaryReport
       - name: Upload raw test reports on failure
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: unit_test_results
           path: |
@@ -107,7 +107,7 @@ jobs:
         run: TEST_TYPE="INT" ./gradlew koverXmlReport
       - name: Upload raw test reports on failure
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: integration_test_results
           path: |
@@ -184,7 +184,7 @@ jobs:
           coverage-counter-type: LINE
         if: github.event_name == 'pull_request'
       - name: Upload coverage report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: coverage
           path: |
