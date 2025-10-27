@@ -24,7 +24,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfigu
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.LaoRedactorAspect
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.GeneralPredictor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.GroupReconviction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -41,7 +40,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 import java.time.LocalDateTime
 
 @WebMvcTest(controllers = [RiskPredictorScoresController::class])
-@Import(value = [WebMvcTestConfiguration::class, AopAutoConfiguration::class, LaoRedactorAspect::class, RedactionPolicyConfig::class])
+@Import(value = [WebMvcTestConfiguration::class, AopAutoConfiguration::class, RedactionPolicyConfig::class])
 @ActiveProfiles("test")
 internal class RiskPredictorScoresControllerTest(
   @Autowired var springMockMvc: MockMvc,
@@ -62,7 +61,7 @@ internal class RiskPredictorScoresControllerTest(
           Mockito.reset(getRiskPredictorScoresForPersonService)
           whenever(getCaseAccess.getAccessFor(any())).thenReturn(CaseAccess(laoOkCrn, false, false, "", ""))
           whenever(getCaseAccess.getAccessFor("R754321")).thenReturn(null)
-          whenever(getRiskPredictorScoresForPersonService.execute(hmppsId)).thenReturn(
+          whenever(getRiskPredictorScoresForPersonService.execute(any())).thenReturn(
             Response(
               data =
                 listOf(
