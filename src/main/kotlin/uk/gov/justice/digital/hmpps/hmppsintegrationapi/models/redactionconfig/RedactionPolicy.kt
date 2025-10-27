@@ -22,7 +22,7 @@ data class RedactionPolicy(
   val responseRedactions: List<ResponseRedaction>? = null,
 )
 
-private const val REDACTION_MASKING_TEXT = "**REDACTED**"
+const val REDACTION_MASKING_TEXT = "**REDACTED**"
 
 @Suppress("UNCHECKED_CAST")
 class DelegatingResponseRedaction<T : Any>(
@@ -74,7 +74,10 @@ class JsonPathResponseRedaction(
   val config: Configuration =
     Configuration
       .builder()
-      .options(Option.AS_PATH_LIST)
+      .options(
+        Option.AS_PATH_LIST, // Queries return a list of paths
+        Option.ALWAYS_RETURN_LIST, // Return a list even if empty or single value
+        Option.SUPPRESS_EXCEPTIONS) // Don't throw exception if not found
       .build()
 
   private val pathPatterns: List<Regex>? = paths?.map(::Regex)
@@ -92,26 +95,25 @@ class JsonPathResponseRedaction(
         else -> objectMapper.writeValueAsString(responseBody)
       }
 
-    val doc = JsonPath.using(config).parse(jsonString)
+    val doc = parse(jsonString)
     includes.orEmpty().forEach { jsonPath ->
-      try {
-        if (exists(jsonPath, doc)) {
-          when (type) {
-            RedactionType.MASK -> doc.map(JsonPath.compile(jsonPath)) { _, _ -> REDACTION_MASKING_TEXT }
-            RedactionType.REMOVE -> doc.delete(JsonPath.compile(jsonPath))
-          }
-        }
-      } catch (ex: Exception) {
-        log.warn("Unexpected error while applying redaction on: $jsonPath", ex)
-      }
+      redactValues(jsonPath, doc)
     }
     return objectMapper.readValue(doc.jsonString(), responseBody::class.java)
   }
 
-  private fun exists(
-    path: String,
-    doc: DocumentContext,
-  ): Boolean = runCatching { doc.read<Any?>(path) != null }.getOrDefault(false)
+  fun redactValues(jsonPath: String, doc: DocumentContext) {
+    for (matchedPath in allMatchingPaths(jsonPath, doc)) {
+      when (type) {
+        RedactionType.MASK -> doc.set(matchedPath, REDACTION_MASKING_TEXT)
+        RedactionType.REMOVE -> doc.delete(matchedPath)
+      }
+    }
+  }
+
+  fun allMatchingPaths(jsonPath: String, doc: DocumentContext) : List<String> = doc.read(JsonPath.compile(jsonPath))
+
+  fun parse(jsonText: String) : DocumentContext = JsonPath.using(config).parse(jsonText)!!
 }
 
 enum class RedactionType {

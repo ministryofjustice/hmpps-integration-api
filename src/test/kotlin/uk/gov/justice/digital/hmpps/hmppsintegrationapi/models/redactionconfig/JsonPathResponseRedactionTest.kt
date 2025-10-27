@@ -84,6 +84,62 @@ class JsonPathResponseRedactionTest :
 
           doc.read<Int>("$.data.firstName") shouldBe "fName"
         }
+
+        it("should handle replace-all-in-path correctly") {
+          val redactor = JsonPathResponseRedaction(mapper, RedactionType.MASK)
+
+          val doc = redactor.parse("""
+            {"data":{"a":"A","b":{"c":"C"}}}
+           """.trimIndent())
+
+          redactor.redactValues(".c", doc)
+
+          doc.jsonString() shouldBe """
+            {"data":{"a":"A","b":{"c":"**REDACTED**"}}}
+          """.trimIndent()
+        }
+
+        it("replaces multiple occurrences of a value in a path") {
+          val redactor = JsonPathResponseRedaction(mapper, RedactionType.MASK)
+
+          val doc = redactor.parse("""
+            {"data":{"a":"A","b":{"c":null}, "c": "C"}}
+           """.trimIndent())
+
+          redactor.redactValues(".c", doc)
+
+          doc.jsonString() shouldBe """
+            {"data":{"a":"A","b":{"c":"**REDACTED**"},"c":"**REDACTED**"}}
+          """.trimIndent()
+        }
+
+        it("handles no matching paths correctly") {
+          val redactor = JsonPathResponseRedaction(mapper, RedactionType.MASK)
+
+          val doc = redactor.parse("""
+            {"data":{"a":"A","b":{"c":null},"c":"C"}}
+           """.trimIndent())
+
+          redactor.redactValues(".q", doc)
+
+          doc.jsonString() shouldBe """
+            {"data":{"a":"A","b":{"c":null},"c":"C"}}
+          """.trimIndent()
+        }
+
+        it("correctly removes multiple paths") {
+          val redactor = JsonPathResponseRedaction(mapper, RedactionType.REMOVE)
+
+          val doc = redactor.parse("""
+            {"data":{"a":"A","b":{"c":null},"c":"C"}}
+           """.trimIndent())
+
+          redactor.redactValues(".c", doc)
+
+          doc.jsonString() shouldBe """
+            {"data":{"a":"A","b":{}}}
+          """.trimIndent()
+        }
       }
     },
   )
