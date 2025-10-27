@@ -240,7 +240,7 @@ class RedactionResponseBodyAdviceTest {
                   responseRedactions {
                     jsonPath {
                       paths {
-                        - examplePath
+                        -examplePath
                       }
                       includes {
                         path("$..test", MASK)
