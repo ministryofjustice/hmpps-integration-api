@@ -77,8 +77,8 @@ class JsonPathResponseRedaction(
       .options(
         Option.AS_PATH_LIST, // Queries return a list of paths
         Option.ALWAYS_RETURN_LIST, // Return a list even if empty or single value
-        Option.SUPPRESS_EXCEPTIONS) // Don't throw exception if not found
-      .build()
+        Option.SUPPRESS_EXCEPTIONS, // Don't throw exception if not found
+      ).build()
 
   private val pathPatterns: List<Regex>? = paths?.map(::Regex)
 
@@ -102,7 +102,10 @@ class JsonPathResponseRedaction(
     return objectMapper.readValue(doc.jsonString(), responseBody::class.java)
   }
 
-  fun redactValues(jsonPath: String, doc: DocumentContext) {
+  fun redactValues(
+    jsonPath: String,
+    doc: DocumentContext,
+  ) {
     for (matchedPath in allMatchingPaths(jsonPath, doc)) {
       when (type) {
         RedactionType.MASK -> doc.set(matchedPath, REDACTION_MASKING_TEXT)
@@ -111,9 +114,12 @@ class JsonPathResponseRedaction(
     }
   }
 
-  fun allMatchingPaths(jsonPath: String, doc: DocumentContext) : List<String> = doc.read(JsonPath.compile(jsonPath))
+  fun allMatchingPaths(
+    jsonPath: String,
+    doc: DocumentContext,
+  ): List<String> = doc.read(JsonPath.compile(jsonPath))
 
-  fun parse(jsonText: String) : DocumentContext = JsonPath.using(config).parse(jsonText)!!
+  fun parse(jsonText: String): DocumentContext = JsonPath.using(config).parse(jsonText)!!
 }
 
 enum class RedactionType {
