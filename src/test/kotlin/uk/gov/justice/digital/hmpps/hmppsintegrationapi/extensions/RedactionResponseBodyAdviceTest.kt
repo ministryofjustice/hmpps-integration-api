@@ -236,10 +236,12 @@ class RedactionResponseBodyAdviceTest {
                 redactionPolicy(
                   "lao-redactions",
                   laoOnly = true,
-                  endpoints = listOf(examplePath),
                 ) {
                   responseRedactions {
                     jsonPath {
+                      paths {
+                        - examplePath
+                      }
                       includes {
                         path("$..test", MASK)
                       }
