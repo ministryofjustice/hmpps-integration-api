@@ -7,6 +7,7 @@ import io.mockk.every
 import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
 import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -21,18 +22,23 @@ import org.springframework.http.converter.HttpMessageConverter
 import org.springframework.http.server.ServerHttpRequest
 import org.springframework.http.server.ServerHttpResponse
 import org.springframework.http.server.ServletServerHttpRequest
+import org.springframework.http.server.ServletServerHttpResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionPolicy
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionType.MASK
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.ResponseRedaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.redactionPolicy
 
 class RedactionResponseBodyAdviceTest {
   private lateinit var objectMapper: ObjectMapper
   private lateinit var authorisationConfig: AuthorisationConfig
-  private lateinit var globalRedactions: Map<String, RedactionPolicy>
+  private lateinit var accessFor: GetCaseAccess
   private lateinit var advice: RedactionResponseBodyAdvice
 
   private val roleName = "private-prison"
@@ -53,7 +59,7 @@ class RedactionResponseBodyAdviceTest {
         responseRedactions = listOf(redaction),
       )
 
-    globalRedactions = mapOf(globalPolicy.name to globalPolicy) as Map<String, RedactionPolicy>
+    accessFor = mock(GetCaseAccess::class.java)
 
     // mock the roles registry globally
     mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
@@ -67,7 +73,7 @@ class RedactionResponseBodyAdviceTest {
           ),
       )
 
-    advice = RedactionResponseBodyAdvice(authorisationConfig, globalRedactions)
+    advice = RedactionResponseBodyAdvice(authorisationConfig, accessFor)
   }
 
   @AfterEach
@@ -116,6 +122,11 @@ class RedactionResponseBodyAdviceTest {
   @Test
   fun `should apply redaction policies when JSON and clientName present`() {
     val serverHttpRequest = mock(HttpServletRequest::class.java)
+
+    val servletResponse = mock(HttpServletResponse::class.java)
+    whenever(servletResponse.status).thenReturn(HttpServletResponse.SC_OK)
+    val response = ServletServerHttpResponse(servletResponse)
+
     whenever(serverHttpRequest.getAttribute("clientName")).thenReturn("clientA")
     whenever(serverHttpRequest.requestURI).thenReturn(examplePath)
 
@@ -151,7 +162,7 @@ class RedactionResponseBodyAdviceTest {
         MediaType.APPLICATION_JSON,
         HttpMessageConverter::class.java,
         servletRequest,
-        mock(ServerHttpResponse::class.java),
+        response,
       )
 
     verify(redaction, times(1)).apply(examplePath, body)
@@ -163,6 +174,9 @@ class RedactionResponseBodyAdviceTest {
   @Test
   fun `should gracefully handle client without roles`() {
     val serverHttpRequest = mock(HttpServletRequest::class.java)
+    val servletResponse = mock(HttpServletResponse::class.java)
+    whenever(servletResponse.status).thenReturn(HttpServletResponse.SC_OK)
+    val response = ServletServerHttpResponse(servletResponse)
     whenever(serverHttpRequest.getAttribute("clientName")).thenReturn("unknownClient")
     whenever(serverHttpRequest.requestURI).thenReturn(examplePath)
 
@@ -178,10 +192,66 @@ class RedactionResponseBodyAdviceTest {
         MediaType.APPLICATION_JSON,
         HttpMessageConverter::class.java,
         servletRequest,
-        mock(ServerHttpResponse::class.java),
+        response,
       )
 
     // Should not throw, should still return body
     result shouldBe body
+  }
+
+  // -------------------------------------------------------------
+
+  @Test
+  fun `should reject endpoint if lao rejection redaction in role`() {
+    mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
+    every { roles } returns
+      mapOf(
+        roleName to
+          Role(
+            name = roleName,
+            include = mutableListOf(examplePath),
+            redactionPolicies =
+              listOf(
+                redactionPolicy(
+                  "lao-redactions",
+                  laoOnly = true,
+                  endpoints = listOf(examplePath),
+                ) {
+                  responseRedactions {
+                    jsonPath {
+                      includes {
+                        path("$..test", MASK)
+                      }
+                    }
+                  }
+                },
+              ),
+          ),
+      )
+
+    val servletResponse = mock(HttpServletResponse::class.java)
+    whenever(servletResponse.status).thenReturn(HttpServletResponse.SC_OK)
+    val response = ServletServerHttpResponse(servletResponse)
+    val serverHttpRequest = mock(HttpServletRequest::class.java)
+    whenever(serverHttpRequest.requestURI).thenReturn(examplePath)
+    val servletRequest = ServletServerHttpRequest(serverHttpRequest)
+    whenever(accessFor.getAccessFor(any())).thenReturn(CaseAccess("crn", true, false))
+    whenever(serverHttpRequest.getAttribute("clientName")).thenReturn("clientA")
+    whenever(serverHttpRequest.getAttribute("hmppsId")).thenReturn("crn")
+    val consumerConfig = ConsumerConfig(emptyList(), null, listOf(roleName))
+    whenever(authorisationConfig.consumers).thenReturn(mapOf("clientA" to consumerConfig))
+    val body = DataResponse(mapOf("test" to "valueToBeMasked"))
+
+    val result =
+      advice.beforeBodyWrite(
+        body,
+        mock(MethodParameter::class.java),
+        MediaType.APPLICATION_JSON,
+        HttpMessageConverter::class.java,
+        servletRequest,
+        response,
+      )
+
+    result shouldBe DataResponse(mapOf("test" to "**REDACTED**"))
   }
 }

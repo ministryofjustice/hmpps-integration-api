@@ -103,6 +103,7 @@ authorisation:
     automated-test-client:
       roles:
         - "full-access"
+        - "police"
     config-v2-test:
       include:
         - "/v2/config/authorisation"

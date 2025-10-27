@@ -18,7 +18,11 @@ data class Role(
   val include: List<String>? = null,
   val filters: ConsumerFilters? = null,
   val redactionPolicies: List<RedactionPolicy>? = emptyList<RedactionPolicy>(),
-)
+) {
+  fun laoRedactionPolicies() = redactionPolicies?.filter { it.laoOnly } ?: emptyList()
+
+  fun standardRedactionPolices() = redactionPolicies?.filter { !it.laoOnly } ?: emptyList()
+}
 
 val roleConstants =
   constants {
