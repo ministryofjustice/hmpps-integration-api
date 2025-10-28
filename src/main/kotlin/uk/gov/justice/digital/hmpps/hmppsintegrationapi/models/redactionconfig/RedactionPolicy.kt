@@ -5,10 +5,12 @@ import com.jayway.jsonpath.Configuration
 import com.jayway.jsonpath.DocumentContext
 import com.jayway.jsonpath.JsonPath
 import com.jayway.jsonpath.Option
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessFailedException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionContext
 
 interface ResponseRedaction {
   fun apply(
-    requestUri: String,
+    redactionContext: RedactionContext,
     responseBody: Any,
   ): Any
 
@@ -28,14 +30,24 @@ class JsonPathResponseRedaction(
   val type: RedactionType,
   val paths: List<String>? = null,
   val includes: List<String>? = emptyList(),
+  val laoOnly: Boolean = false,
 ) : ResponseRedaction {
   private val pathPatterns: List<Regex>? = paths?.map(::Regex)
 
   override fun apply(
-    requestUri: String,
+    redactionContext: RedactionContext,
     responseBody: Any,
   ): Any {
-    val shouldRun = pathPatterns?.any { it.matches(requestUri) } ?: true
+    var shouldRun = pathPatterns?.any { it.matches(redactionContext.requestUri) } ?: true
+
+    // check if an lao case
+    if (laoOnly && shouldRun) {
+      val isLaoCase = redactionContext.hasAccess.getAccessFor(redactionContext.hmppsId!!)?.let { it.userRestricted || it.userExcluded } ?: throw LimitedAccessFailedException()
+      if (!isLaoCase) {
+        shouldRun = false
+      }
+    }
+
     if (!shouldRun) return responseBody
 
     val jsonString =

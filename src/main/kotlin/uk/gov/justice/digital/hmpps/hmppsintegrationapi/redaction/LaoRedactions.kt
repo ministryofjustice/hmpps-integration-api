@@ -6,10 +6,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.redactionP
 val laoRedactionPolicy =
   redactionPolicy(
     "lao-redactions",
-    laoOnly = true,
   ) {
     responseRedactions {
       jsonPath {
+        laoOnly(true)
         paths {
           -"/v1/persons/.*/licences/conditions"
         }
@@ -18,23 +18,10 @@ val laoRedactionPolicy =
         }
       }
       jsonPath {
-        paths {
-          -"/v1/persons/.*/risks/dynamic"
-        }
-        includes {
-          path("$..notes", MASK)
-        }
-      }
-      jsonPath {
+        laoOnly(true)
         paths {
           -"/v1/persons/.*/risks/mappadetail"
-        }
-        includes {
-          path("$..notes", MASK)
-        }
-      }
-      jsonPath {
-        paths {
+          -"/v1/persons/.*/risks/dynamic"
           -"/v1/persons/.*/status-information"
         }
         includes {

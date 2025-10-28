@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.J
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.ResponseRedaction
+import kotlin.Boolean
 
 val objectMapper: ObjectMapper =
   ObjectMapper()
@@ -21,13 +22,11 @@ val objectMapper: ObjectMapper =
 
 fun redactionPolicy(
   name: String,
-  laoOnly: Boolean = false,
   init: RedactionPolicyBuilder.() -> Unit,
-): RedactionPolicy = RedactionPolicyBuilder(name, laoOnly).apply(init).build()
+): RedactionPolicy = RedactionPolicyBuilder(name).apply(init).build()
 
 class RedactionPolicyBuilder(
   private val name: String,
-  private val laoOnly: Boolean = false,
 ) {
   private val responseRedactions = mutableListOf<ResponseRedaction>()
 
@@ -35,7 +34,7 @@ class RedactionPolicyBuilder(
     responseRedactions += ResponseRedactionsBuilder().apply(init).build()
   }
 
-  fun build(): RedactionPolicy = RedactionPolicy(name, responseRedactions, laoOnly)
+  fun build(): RedactionPolicy = RedactionPolicy(name, responseRedactions)
 }
 
 class ResponseRedactionsBuilder {
@@ -67,9 +66,22 @@ class PathsBuilder {
   }
 }
 
+// class LaoOnlyBuilder {
+//  var laoOnly: Boolean = false
+//
+//  operator fun Boolean.unaryMinus() {
+//    laoOnly = this
+//  }
+// }
+
 class JsonPathResponseRedactionBuilder {
   private val includeEntries = mutableListOf<Pair<String, RedactionType>>()
   private var paths: MutableList<String>? = null
+  private var laoOnly: Boolean = false
+
+  fun laoOnly(laoOnly: Boolean) {
+    this.laoOnly = laoOnly
+  }
 
   fun paths(init: PathsBuilder.() -> Unit) {
     val pathsBuilder = PathsBuilder().apply(init)
@@ -89,6 +101,7 @@ class JsonPathResponseRedactionBuilder {
         type = type,
         paths = paths,
         includes = listOf(path),
+        laoOnly = laoOnly,
       )
     }
 }

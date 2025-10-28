@@ -17,12 +17,10 @@ import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.servlet.HandlerMapping
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionContext
 
 @ControllerAdvice
 @ConditionalOnProperty(
@@ -71,13 +69,9 @@ class RedactionResponseBodyAdvice(
           ?.let { setAttribute("hmppsId", it) }
       }
     val subjectDistinguishedName = servletRequest.getAttribute("clientName") as? String
-    val redactionPolicies = getRedactionPoliciesFromRoles(subjectDistinguishedName, servletRequest)
+    val redactionPolicies = getRedactionPoliciesFromRoles(subjectDistinguishedName)
 
-    return when (body) {
-      is DataResponse<*> -> applyPolicies(servletRequest, body, redactionPolicies)
-      is PaginatedResponse<*> -> applyPolicies(servletRequest, body, redactionPolicies)
-      else -> body
-    }
+    return applyPolicies(servletRequest, body, redactionPolicies)
   }
 
   fun applyPolicies(
@@ -85,45 +79,22 @@ class RedactionResponseBodyAdvice(
     responseBody: Any,
     policies: List<RedactionPolicy>?,
   ): Any? {
+    val hmppsId = request.getAttribute("hmppsId") as? String
+    val redactionContext = RedactionContext(request.requestURI, accessFor, hmppsId)
     var redactedBody = responseBody
     for (policy in policies.orEmpty()) {
       policy.responseRedactions?.forEach { redaction ->
-        redactedBody = redaction.apply(request.requestURI, redactedBody)
+        redactedBody = redaction.apply(redactionContext, redactedBody)
       }
     }
     return redactedBody
   }
 
-  private fun getRedactionPoliciesFromRoles(
-    subjectDistinguishedName: String?,
-    request: HttpServletRequest,
-  ): List<RedactionPolicy> =
+  private fun getRedactionPoliciesFromRoles(subjectDistinguishedName: String?): List<RedactionPolicy> =
     buildList {
       val consumerRoles = authorisationConfig.consumers[subjectDistinguishedName]?.roles.orEmpty()
       consumerRoles.forEach { role ->
-        // Add lao polices
-        addAll(laoRedactionPolicies(roles[role]?.laoRedactionPolicies() ?: emptyList(), request))
-        // Add standard policies
-        addAll(roles[role]?.standardRedactionPolices().orEmpty())
+        addAll(roles[role]?.redactionPolicies ?: emptyList())
       }
-    }
-
-  private fun laoRedactionPolicies(
-    list: List<RedactionPolicy>,
-    request: HttpServletRequest,
-  ): List<RedactionPolicy> =
-    list.mapNotNull {
-      // Only check for LAO case if url matches
-      if (it.responseRedactions?.map { it.shouldRun(request.requestURI) }?.any { it == true } == true) {
-        val hmppsId = request.getAttribute("hmppsId") as? String
-        if (isLao(hmppsId) == true) it else null
-      } else {
-        null
-      }
-    }
-
-  fun isLao(hmppsId: String?): Boolean? =
-    hmppsId?.let {
-      accessFor.getAccessFor(hmppsId)?.let { it.userRestricted || it.userExcluded } ?: throw LimitedAccessFailedException()
     }
 }

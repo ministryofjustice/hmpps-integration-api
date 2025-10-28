@@ -11,6 +11,9 @@ import jakarta.servlet.http.HttpServletResponse
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.times
@@ -33,6 +36,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.R
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.redactionPolicy
 
 class RedactionResponseBodyAdviceTest {
@@ -43,6 +47,7 @@ class RedactionResponseBodyAdviceTest {
 
   private val roleName = "private-prison"
   private val examplePath = "/v1/persons"
+  private lateinit var redactionContext: RedactionContext
 
   @BeforeEach
   fun setup() {
@@ -61,6 +66,7 @@ class RedactionResponseBodyAdviceTest {
 
     accessFor = mock(GetCaseAccess::class.java)
 
+    redactionContext = RedactionContext(examplePath, accessFor)
     // mock the roles registry globally
     mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
     every { roles } returns
@@ -186,7 +192,7 @@ class RedactionResponseBodyAdviceTest {
         response,
       )
 
-    verify(redaction, times(1)).apply(examplePath, body)
+    verify(redaction, times(1)).apply(any(), any())
     result shouldBe redactedBody
   }
 
@@ -222,8 +228,28 @@ class RedactionResponseBodyAdviceTest {
 
   // -------------------------------------------------------------
 
-  @Test
-  fun `should reject endpoint if lao rejection redaction in role`() {
+  companion object {
+    @JvmStatic
+    fun laoArguments() =
+      listOf(
+        // Case is not lao but an lao only reject - should not mask
+        Arguments.of(false, true, "unmaskedValue"),
+        // Case is not lao but not an LAO only rejection - should continue to MASK
+        Arguments.of(false, false, "**REDACTED**"),
+        // Case is an lao but not an LAO only rejection - should continue to MASK
+        Arguments.of(true, false, "**REDACTED**"),
+        // Case is an lao and not an LAO only rejection - should continue to MASK
+        Arguments.of(true, true, "**REDACTED**"),
+      )
+  }
+
+  @ParameterizedTest
+  @MethodSource("laoArguments")
+  fun `should handle lao redactions appropriately depending on whether the case is lao`(
+    caseIsLao: Boolean,
+    policyIsLao: Boolean,
+    expected: String,
+  ) {
     mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
     every { roles } returns
       mapOf(
@@ -235,10 +261,10 @@ class RedactionResponseBodyAdviceTest {
               listOf(
                 redactionPolicy(
                   "lao-redactions",
-                  laoOnly = true,
                 ) {
                   responseRedactions {
                     jsonPath {
+                      laoOnly(policyIsLao)
                       paths {
                         -examplePath
                       }
@@ -258,12 +284,12 @@ class RedactionResponseBodyAdviceTest {
     val serverHttpRequest = mock(HttpServletRequest::class.java)
     whenever(serverHttpRequest.requestURI).thenReturn(examplePath)
     val servletRequest = ServletServerHttpRequest(serverHttpRequest)
-    whenever(accessFor.getAccessFor(any())).thenReturn(CaseAccess("crn", true, false))
+    whenever(accessFor.getAccessFor(any())).thenReturn(CaseAccess("crn", caseIsLao, false))
     whenever(serverHttpRequest.getAttribute("clientName")).thenReturn("clientA")
     whenever(serverHttpRequest.getAttribute("hmppsId")).thenReturn("crn")
     val consumerConfig = ConsumerConfig(emptyList(), null, listOf(roleName))
     whenever(authorisationConfig.consumers).thenReturn(mapOf("clientA" to consumerConfig))
-    val body = DataResponse(mapOf("test" to "valueToBeMasked"))
+    val body = DataResponse(mapOf("test" to "unmaskedValue"))
 
     val result =
       advice.beforeBodyWrite(
@@ -275,6 +301,6 @@ class RedactionResponseBodyAdviceTest {
         response,
       )
 
-    result shouldBe DataResponse(mapOf("test" to "**REDACTED**"))
+    result shouldBe DataResponse(mapOf("test" to expected))
   }
 }
