@@ -18,7 +18,6 @@ interface ResponseRedaction {
 data class RedactionPolicy(
   val name: String? = null,
   val responseRedactions: List<ResponseRedaction>? = null,
-  val endpoints: List<String> = emptyList(),
   val laoOnly: Boolean = false,
 )
 
