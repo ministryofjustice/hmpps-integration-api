@@ -10,7 +10,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.J
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.ResponseRedaction
-import kotlin.Boolean
 
 val objectMapper: ObjectMapper =
   ObjectMapper()
