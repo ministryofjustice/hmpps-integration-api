@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -27,6 +28,7 @@ import org.springframework.http.server.ServerHttpResponse
 import org.springframework.http.server.ServletServerHttpRequest
 import org.springframework.http.server.ServletServerHttpResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
@@ -233,13 +235,15 @@ class RedactionResponseBodyAdviceTest {
     fun laoArguments() =
       listOf(
         // Case is not lao but an lao only reject - should not mask
-        Arguments.of(false, true, "unmaskedValue"),
+        Arguments.of(false, true, "crn", "unmaskedValue", false),
         // Case is not lao but not an LAO only rejection - should continue to MASK
-        Arguments.of(false, false, "**REDACTED**"),
+        Arguments.of(false, false, "crn", "**REDACTED**", false),
         // Case is an lao but not an LAO only rejection - should continue to MASK
-        Arguments.of(true, false, "**REDACTED**"),
+        Arguments.of(true, false, "crn", "**REDACTED**", false),
         // Case is an lao and not an LAO only rejection - should continue to MASK
-        Arguments.of(true, true, "**REDACTED**"),
+        Arguments.of(true, true, "crn", "**REDACTED**", false),
+        // Unable to find a crn in order to redact - throws exception
+        Arguments.of(true, true, null, "", true),
       )
   }
 
@@ -248,7 +252,9 @@ class RedactionResponseBodyAdviceTest {
   fun `should handle lao redactions appropriately depending on whether the case is lao`(
     caseIsLao: Boolean,
     policyIsLao: Boolean,
+    crn: String?,
     expected: String,
+    expectLaoException: Boolean = false,
   ) {
     mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
     every { roles } returns
@@ -286,12 +292,12 @@ class RedactionResponseBodyAdviceTest {
     val servletRequest = ServletServerHttpRequest(serverHttpRequest)
     whenever(accessFor.getAccessFor(any())).thenReturn(CaseAccess("crn", caseIsLao, false))
     whenever(serverHttpRequest.getAttribute("clientName")).thenReturn("clientA")
-    whenever(serverHttpRequest.getAttribute("hmppsId")).thenReturn("crn")
+    whenever(serverHttpRequest.getAttribute("hmppsId")).thenReturn(crn)
     val consumerConfig = ConsumerConfig(emptyList(), null, listOf(roleName))
     whenever(authorisationConfig.consumers).thenReturn(mapOf("clientA" to consumerConfig))
     val body = DataResponse(mapOf("test" to "unmaskedValue"))
 
-    val result =
+    fun callFunction(): Any? =
       advice.beforeBodyWrite(
         body,
         mock(MethodParameter::class.java),
@@ -301,6 +307,15 @@ class RedactionResponseBodyAdviceTest {
         response,
       )
 
-    result shouldBe DataResponse(mapOf("test" to expected))
+    if (expectLaoException) {
+      val exception =
+        assertThrows<LimitedAccessFailedException> {
+          callFunction()
+        }
+      exception.message shouldBe "No hmppsId available for LAO check"
+    } else {
+      val result = callFunction()
+      result shouldBe DataResponse(mapOf("test" to expected))
+    }
   }
 }

@@ -38,12 +38,10 @@ class JsonPathResponseRedaction(
     var shouldRun = pathPatterns?.any { it.matches(redactionContext.requestUri) } ?: true
     if (!shouldRun) return responseBody
 
-    // check if an lao case if the policy is an lao policy and we have the hmppsId
-    if (laoOnly && redactionContext.hmppsId != null) {
-      val isLaoCase = redactionContext.hasAccess.getAccessFor(redactionContext.hmppsId)?.let { it.userRestricted || it.userExcluded } ?: throw LimitedAccessFailedException()
-      if (!isLaoCase) {
-        return responseBody
-      }
+    if (laoOnly) {
+      val hmppsId = redactionContext.hmppsId ?: throw LimitedAccessFailedException("No hmppsId available for LAO check")
+      val isLaoCase = redactionContext.hasAccess.getAccessFor(hmppsId)?.let { it.userRestricted || it.userExcluded } ?: throw LimitedAccessFailedException()
+      if (!isLaoCase) return responseBody
     }
 
     val jsonString =
