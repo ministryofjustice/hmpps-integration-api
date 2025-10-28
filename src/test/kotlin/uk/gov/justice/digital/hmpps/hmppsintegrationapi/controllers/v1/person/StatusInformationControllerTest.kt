@@ -4,6 +4,9 @@ import io.kotest.assertions.json.shouldContainJsonKeyValue
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
+import io.mockk.every
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.any
@@ -30,6 +33,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.StatusInfor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithLaoRedactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetStatusInformationForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
@@ -52,6 +57,8 @@ internal class StatusInformationControllerTest(
 
       describe("GET $path") {
         beforeTest {
+          mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
+          every { roles["full-access"] } returns testRoleWithLaoRedactions
           Mockito.reset(getStatusInformationForPersonService)
           Mockito.reset(auditService)
           whenever(getCaseAccess.getAccessFor(any())).thenReturn(CaseAccess(laoOkCrn, false, false, "", ""))
@@ -70,6 +77,10 @@ internal class StatusInformationControllerTest(
                 ),
             ),
           )
+        }
+
+        afterTest {
+          unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
         }
 
         it("returns a 200 OK status code") {
