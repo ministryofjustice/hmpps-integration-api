@@ -68,7 +68,7 @@ feature-flag:
   epf-gateway-disabled: true
   use-roles-dsl: true
   redaction-policy-enabled: true
-  cpr-enabled: false
+  cpr-enabled: true
 
 authorisation:
   consumers:
