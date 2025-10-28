@@ -96,7 +96,7 @@ feature-flag:
   use-contact-events-endpoint: true
   epf-endpoint-includes-lao: false
   use-roles-dsl: true
-  redaction-policy-enabled: true
+  redaction-policy-enabled: false
   cpr-enabled: true
 
 authorisation:
@@ -104,7 +104,6 @@ authorisation:
     automated-test-client:
       roles:
         - "full-access"
-        - "police"
     config-v2-test:
       include:
         - "/v2/config/authorisation"
