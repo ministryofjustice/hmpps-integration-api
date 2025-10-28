@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 
 import com.jayway.jsonpath.Configuration
 import com.jayway.jsonpath.Option
-import jakarta.servlet.http.HttpServletRequest
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.core.MethodParameter
 import org.springframework.http.HttpStatus
@@ -70,17 +69,17 @@ class RedactionResponseBodyAdvice(
       }
     val subjectDistinguishedName = servletRequest.getAttribute("clientName") as? String
     val redactionPolicies = getRedactionPoliciesFromRoles(subjectDistinguishedName)
-
-    return applyPolicies(servletRequest, body, redactionPolicies)
+    val hmppsId = servletRequest.getAttribute("hmppsId") as? String
+    return applyPolicies(servletRequest.requestURI, hmppsId, body, redactionPolicies)
   }
 
   fun applyPolicies(
-    request: HttpServletRequest,
+    requestURI: String,
+    hmppsId: String?,
     responseBody: Any,
     policies: List<RedactionPolicy>?,
   ): Any? {
-    val hmppsId = request.getAttribute("hmppsId") as? String
-    val redactionContext = RedactionContext(request.requestURI, accessFor, hmppsId)
+    val redactionContext = RedactionContext(requestURI, accessFor, hmppsId)
     var redactedBody = responseBody
     for (policy in policies.orEmpty()) {
       policy.responseRedactions?.forEach { redaction ->
@@ -94,7 +93,7 @@ class RedactionResponseBodyAdvice(
     buildList {
       val consumerRoles = authorisationConfig.consumers[subjectDistinguishedName]?.roles.orEmpty()
       consumerRoles.forEach { role ->
-        addAll(roles[role]?.redactionPolicies ?: emptyList())
+        addAll(roles[role]?.redactionPolicies.orEmpty())
       }
     }
 }

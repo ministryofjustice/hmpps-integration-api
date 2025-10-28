@@ -66,14 +66,6 @@ class PathsBuilder {
   }
 }
 
-// class LaoOnlyBuilder {
-//  var laoOnly: Boolean = false
-//
-//  operator fun Boolean.unaryMinus() {
-//    laoOnly = this
-//  }
-// }
-
 class JsonPathResponseRedactionBuilder {
   private val includeEntries = mutableListOf<Pair<String, RedactionType>>()
   private var paths: MutableList<String>? = null

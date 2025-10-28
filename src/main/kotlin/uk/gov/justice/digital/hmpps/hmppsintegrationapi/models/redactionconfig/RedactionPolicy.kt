@@ -13,8 +13,6 @@ interface ResponseRedaction {
     redactionContext: RedactionContext,
     responseBody: Any,
   ): Any
-
-  fun shouldRun(uri: String): Boolean
 }
 
 data class RedactionPolicy(
@@ -40,9 +38,9 @@ class JsonPathResponseRedaction(
   ): Any {
     var shouldRun = pathPatterns?.any { it.matches(redactionContext.requestUri) } ?: true
 
-    // check if an lao case
-    if (laoOnly && shouldRun) {
-      val isLaoCase = redactionContext.hasAccess.getAccessFor(redactionContext.hmppsId!!)?.let { it.userRestricted || it.userExcluded } ?: throw LimitedAccessFailedException()
+    // check if an lao case if the policy is an lao policy and we have the hmppsId
+    if (laoOnly && shouldRun && redactionContext.hmppsId != null) {
+      val isLaoCase = redactionContext.hasAccess.getAccessFor(redactionContext.hmppsId)?.let { it.userRestricted || it.userExcluded } ?: throw LimitedAccessFailedException()
       if (!isLaoCase) {
         shouldRun = false
       }
@@ -74,8 +72,6 @@ class JsonPathResponseRedaction(
       }
     }
   }
-
-  override fun shouldRun(requestUri: String): Boolean = pathPatterns?.any { it.matches(requestUri) } == true
 
   fun allMatchingPaths(
     jsonPath: String,
