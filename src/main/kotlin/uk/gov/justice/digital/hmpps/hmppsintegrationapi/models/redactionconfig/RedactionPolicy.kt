@@ -18,7 +18,6 @@ interface ResponseRedaction {
 data class RedactionPolicy(
   val name: String? = null,
   val responseRedactions: List<ResponseRedaction>? = null,
-  val laoOnly: Boolean = false,
 )
 
 const val REDACTION_MASKING_TEXT = "**REDACTED**"
@@ -37,16 +36,15 @@ class JsonPathResponseRedaction(
     responseBody: Any,
   ): Any {
     var shouldRun = pathPatterns?.any { it.matches(redactionContext.requestUri) } ?: true
+    if (!shouldRun) return responseBody
 
     // check if an lao case if the policy is an lao policy and we have the hmppsId
-    if (laoOnly && shouldRun && redactionContext.hmppsId != null) {
+    if (laoOnly && redactionContext.hmppsId != null) {
       val isLaoCase = redactionContext.hasAccess.getAccessFor(redactionContext.hmppsId)?.let { it.userRestricted || it.userExcluded } ?: throw LimitedAccessFailedException()
       if (!isLaoCase) {
-        shouldRun = false
+        return responseBody
       }
     }
-
-    if (!shouldRun) return responseBody
 
     val jsonString =
       when (responseBody) {
