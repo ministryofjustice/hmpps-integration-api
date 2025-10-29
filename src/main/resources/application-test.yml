@@ -102,6 +102,7 @@ feature-flag:
 authorisation:
   consumers:
     automated-test-client:
+      notes: "For automated testing in a local environment"
       roles:
         - "full-access"
     config-v2-test:
@@ -112,6 +113,7 @@ authorisation:
           - XYZ
     no-include-or-roles:
     empty-include:
+      notes: "A test consumer with no permissions"
       include:
     empty-roles:
       roles:

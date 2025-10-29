@@ -73,16 +73,19 @@ feature-flag:
 authorisation:
   consumers:
     mapps:
+      notes: "See client list in Confluence"
       include:
       filters:
       roles:
         - "mappa"
     ctrlo:
+      notes: "See client list in Confluence"
       include:
       filters:
       roles:
         - "ctrlo"
     moj-pes:
+      notes: "See client list in Confluence"
       include:
         - "/v1/persons/.*/name"
         - "/v1/hmpps/id/nomis-number/[^/]*$"
@@ -92,12 +95,14 @@ authorisation:
         - "/v1/status"
       filters:
     kubernetes-health-check-client:
+      notes: "Kubernetes cluster automated healthchecks"
       include:
         - "/health/liveness"
         - "/health/readiness"
         - "/v1/status"
       filters:
     pnd:
+      notes: "See client list in Confluence"
       include:
       filters:
       roles:
@@ -120,16 +125,19 @@ authorisation:
       roles:
         - "private-prison"
     meganexus:
+      notes: "See client list in Confluence"
       include:
       filters:
       roles:
         - "curious"
     moj-esw:
+      notes: "HMPPS Education Skills and Work team"
       include:
       filters:
       roles:
         - "curious"
     serco:
+      notes: "See client list in Confluence"
       include:
         - "/v1/persons"
         - "/v1/prison/prisoners/[^/]*$"
@@ -139,11 +147,13 @@ authorisation:
         - "/v1/status"
       filters:
     unilink:
+      notes: "See client list in Confluence"
       include:
       filters:
       roles:
         - "private-prison"
     prisonerfacing:
+      notes: "See client list in Confluence"
       include:
         - "/v1/persons/.*/name"
         - "/v1/hmpps/id/by-nomis-number/[^/]*$"
@@ -163,16 +173,19 @@ authorisation:
       roles:
         - "full-access"
     smoke-test-full-access:
+      notes: "Automated post-deployment smoke tests (happy path)"
       include:
       filters:
       roles:
         - "full-access"
     smoke-test-limited-access:
+      notes: "Automated post-deployment smoke tests (some access denied)"
       include:
       filters:
       roles:
         - "private-prison"
     smoke-test-no-access:
+      notes: "Automated post-deployment smoke tests (all access denied)"
       include:
       filters:
       roles:
@@ -184,6 +197,7 @@ authorisation:
       roles:
         - "private-prison"
     sleach:
+      notes: "https://peoplefinder.service.gov.uk/people/steve-leach"
       include:
       filters:
       roles:
@@ -194,6 +208,7 @@ authorisation:
       roles:
         - "full-access"
     geoamey:
+      notes: "See client list in Confluence"
       include:
       filters:
       roles:
