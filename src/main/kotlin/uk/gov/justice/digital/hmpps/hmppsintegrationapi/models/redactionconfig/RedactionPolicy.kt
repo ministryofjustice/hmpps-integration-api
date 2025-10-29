@@ -5,7 +5,6 @@ import com.jayway.jsonpath.Configuration
 import com.jayway.jsonpath.DocumentContext
 import com.jayway.jsonpath.JsonPath
 import com.jayway.jsonpath.Option
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionContext
 
 interface ResponseRedaction {
@@ -38,11 +37,7 @@ class JsonPathResponseRedaction(
     var shouldRun = pathPatterns?.any { it.matches(redactionContext.requestUri) } ?: true
     if (!shouldRun) return responseBody
 
-    if (laoOnly) {
-      val hmppsId = redactionContext.hmppsId ?: throw LimitedAccessFailedException("No hmppsId available for LAO check")
-      val isLaoCase = redactionContext.hasAccess.getAccessFor(hmppsId)?.let { it.userRestricted || it.userExcluded } ?: throw LimitedAccessFailedException()
-      if (!isLaoCase) return responseBody
-    }
+    if (laoOnly && !redactionContext.isLimitedAccessOffender()) return responseBody
 
     val jsonString =
       when (responseBody) {
