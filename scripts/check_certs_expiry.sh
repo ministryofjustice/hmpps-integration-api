@@ -86,7 +86,7 @@ check_certificate_expiry() {
     local current_seconds
     current_seconds="$(date +%s)"
 
-    local difference=$((expiry_secoxnds - current_seconds))
+    local difference=$((expiry_seconds - current_seconds))
 
     expiry_check_poc $expiry_seconds $current_seconds $environment $certificate_name
 
