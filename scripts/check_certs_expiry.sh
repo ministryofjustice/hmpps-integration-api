@@ -61,7 +61,7 @@ generate_message() {
     local certificate_name="$3"
 
     if [ "$difference" -le $(($EXPIRY_DAY_CHECK * 24 * 60 * 60)) ]; then
-        echo "**ALERT ACTION REQUIRED** The certificate for $certificate_name in $environment will expire within the next $EXPIRY_DAY_CHECK days (in $((difference / (24 * 60 * 60))) days)."
+        echo "**ALERT ACTION REQUIRED** The certificate for $certificate_name in $environment will expire within the next $EXPIRY_DAY_CHECK day (in $((difference / (24 * 60 * 60))) day)."
     fi
 }
 
@@ -83,12 +83,12 @@ check_certificate_expiry() {
     local expiry_seconds
     expiry_seconds="$(convert_date_to_seconds "$expiry_date")"
 
-    local current_seconds
-    current_seconds="$(date +%s)"
+    local current_time
+    current_time="$(date +%s)"
 
-    local difference=$((expiry_seconds - current_seconds))
+    local difference=$((expiry_seconds - current_time))
 
-    expiry_check_poc $expiry_seconds $current_seconds $environment $certificate_name
+    expiry_check_poc $expiry_seconds $current_time $environment $certificate_name
 
     local message
     message=$(generate_message "$difference" "$environment" "$certificate_name")
@@ -99,20 +99,22 @@ check_certificate_expiry() {
 }
 
 expiry_check_poc() {
-  check_seconds="$1"
-  current_seconds="$2"
+  # Proof-of-concept for a more advanced certificate expiry check
+  expiry_time="$1"
+  current_time="$2"
   environment="$3"
   certificate_name="$4"
 
-  diff_seconds=$((current_seconds - check_seconds))
-  echo "$current_seconds - $check_seconds = $diff_seconds"
-  warn_days=(30 21 14 7 6 5 4 3 2 1 0)
-  for days in ${warn_days[@]}; do
-    min_secs=$((days * 24 * 3600))
-    max_secs=$(((days+1) * 24 * 3600))
-    echo "$days $min_secs - $max_secs"
-    if ((diff_seconds >= min_secs && diff_seconds < max_secs)); then
-      echo "**ALERT ACTION REQUIRED** The certificate for $certificate_name in $environment will expire in $days days."
+  expires_in_seconds=$((expiry_time - current_time))
+  echo "Expires in $expiry_time - $current_time = $expires_in_seconds seconds"
+  warn_day=(30 21 14 7 6 5 4 3 2 1 0)
+
+  for day in ${warn_day[@]}; do
+    start_of_day=$((day * 24 * 3600))
+    end_of_day=$(((day+1) * 24 * 3600))
+    echo "Day $day is from $start_of_day to $end_of_day seconds ago"
+    if ((expires_in_seconds >= start_of_day && expires_in_seconds < end_of_day)); then
+      echo "**ALERT ACTION REQUIRED** The certificate for $certificate_name in $environment will expire in $day days."
     fi
   done
 }
@@ -127,9 +129,9 @@ trap cleanup EXIT
 main() {
   if [ "$1" == "TEST" ]; then
     echo "*** Testing ***"
-    check_seconds="$(convert_date_to_seconds 'Oct 09 09:32:00 2025 BST')"
-    current_seconds="$(convert_date_to_seconds 'Oct 23 10:32:00 2025 BST')"
-    expiry_check_poc $check_seconds $current_seconds "dev" "tester"
+    current_time="$(convert_date_to_seconds 'Oct 09 09:32:00 2025 BST')"
+    expiry_time="$(convert_date_to_seconds 'Oct 23 10:32:00 2025 BST')"
+    expiry_check_poc $expiry_time $current_time "dev" "tester"
   else
     echo "Checking certificate expiry"
     slack_webhook_url=$(echo $SLACK_URL)
