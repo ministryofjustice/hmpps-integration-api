@@ -173,6 +173,10 @@ authorisation:
     redacted-client:
       include:
         - "/v1/persons/[^/]*$"
+    person-search-no-access-client:
+      include:
+        - "/v1/persons/[^/]*$"
+        - "/v1/persons/.*/addresses"
 
 redaction:
   client-names:
