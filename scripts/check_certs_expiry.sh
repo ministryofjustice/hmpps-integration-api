@@ -86,7 +86,9 @@ check_certificate_expiry() {
     local current_seconds
     current_seconds="$(date +%s)"
 
-    local difference=$((expiry_seconds - current_seconds))
+    local difference=$((expiry_secoxnds - current_seconds))
+
+    expiry_check_poc $expiry_seconds $current_seconds $environment $certificate_name
 
     local message
     message=$(generate_message "$difference" "$environment" "$certificate_name")
@@ -94,6 +96,25 @@ check_certificate_expiry() {
     if [ -n "${message}" ]; then
       curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"$message\"}" "$slack_webhook_url"
     fi
+}
+
+expiry_check_poc() {
+  check_seconds="$1"
+  current_seconds="$2"
+  environment="$3"
+  certificate_name="$4"
+
+  diff_seconds=$((current_seconds - check_seconds))
+  echo "$current_seconds - $check_seconds = $diff_seconds"
+  warn_days=(30 21 14 7 6 5 4 3 2 1 0)
+  for days in ${warn_days[@]}; do
+    min_secs=$((days * 24 * 3600))
+    max_secs=$(((days+1) * 24 * 3600))
+    echo "$days $min_secs - $max_secs"
+    if ((diff_seconds >= min_secs && diff_seconds < max_secs)); then
+      echo "**ALERT ACTION REQUIRED** The certificate for $certificate_name in $environment will expire in $days days."
+    fi
+  done
 }
 
 cleanup() {
@@ -104,6 +125,13 @@ cleanup() {
 trap cleanup EXIT
 
 main() {
+  if [ "$1" == "TEST" ]; then
+    echo "*** Testing ***"
+    check_seconds="$(convert_date_to_seconds 'Oct 09 09:32:00 2025 BST')"
+    current_seconds="$(convert_date_to_seconds 'Oct 23 10:32:00 2025 BST')"
+    expiry_check_poc $check_seconds $current_seconds "dev" "tester"
+  else
+    echo "Checking certificate expiry"
     slack_webhook_url=$(echo $SLACK_URL)
     configure_aws_credentials "$ENV"
     clients=$(get_folders_from_s3 "hmpps-integration-api-$ENV-certificates-backup")
@@ -111,6 +139,7 @@ main() {
     for client in $clients; do
         check_certificate_expiry "s3" "hmpps-integration-api-$ENV-certificates-backup" "/home/appuser/pem-certs/client.pem" "$ENV" "$client" "$slack_webhook_url"
     done
+  fi
 }
 
-main
+main "$@"
