@@ -88,12 +88,35 @@ check_certificate_expiry() {
 
     local difference=$((expiry_seconds - current_seconds))
 
+    expiry_check_poc $expiry_seconds current_seconds $environment $certificate_name
+
     local message
     message=$(generate_message "$difference" "$environment" "$certificate_name")
 
     if [ -n "${message}" ]; then
       curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"$message\"}" "$slack_webhook_url"
     fi
+}
+
+expiry_check_poc() {
+  # Proof-of-concept for a more advanced certificate expiry check
+  expiry_time="$1"
+  current_time="$2"
+  environment="$3"
+  certificate_name="$4"
+
+  expires_in_seconds=$((expiry_time - current_time))
+  echo "Expires in $expiry_time - $current_time = $expires_in_seconds seconds"
+  warn_day=(30 21 14 7 6 5 4 3 2 1 0)
+
+  for day in ${warn_day[@]}; do
+    start_of_day=$((day * 24 * 3600))
+    end_of_day=$(((day+1) * 24 * 3600))
+    echo "Day $day is from $start_of_day to $end_of_day seconds ago"
+    if ((expires_in_seconds >= start_of_day && expires_in_seconds < end_of_day)); then
+      echo "**ALERT ACTION REQUIRED** The certificate for $certificate_name in $environment will expire in $day days."
+    fi
+  done
 }
 
 cleanup() {
@@ -104,6 +127,13 @@ cleanup() {
 trap cleanup EXIT
 
 main() {
+  if [ "$1" == "TEST" ]; then
+    echo "*** Testing ***"
+    current_time="$(convert_date_to_seconds 'Oct 09 09:32:00 2025 BST')"
+    expiry_time="$(convert_date_to_seconds 'Oct 23 10:32:00 2025 BST')"
+    expiry_check_poc $expiry_time $current_time "dev" "tester"
+  else
+    echo "Checking certificate expiry"
     slack_webhook_url=$(echo $SLACK_URL)
     configure_aws_credentials "$ENV"
     clients=$(get_folders_from_s3 "hmpps-integration-api-$ENV-certificates-backup")
@@ -111,6 +141,7 @@ main() {
     for client in $clients; do
         check_certificate_expiry "s3" "hmpps-integration-api-$ENV-certificates-backup" "/home/appuser/pem-certs/client.pem" "$ENV" "$client" "$slack_webhook_url"
     done
+  fi
 }
 
-main
+main "$@"
