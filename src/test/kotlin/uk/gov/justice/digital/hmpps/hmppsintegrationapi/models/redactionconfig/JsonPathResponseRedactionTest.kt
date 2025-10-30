@@ -37,7 +37,7 @@ class JsonPathResponseRedactionTest :
               includes = listOf("$.data.middleNames"),
             )
 
-          val result = redaction.apply(RedactionContext("/any/uri", accessFor, telemetryService), response)
+          val result = redaction.apply("policyName", RedactionContext("/any/uri", accessFor, telemetryService), response)
           val doc = JsonPath.using(config).parse(objectMapper.writeValueAsString(result))
 
           doc.read<String>("$.data.firstName") shouldBe "fName"
@@ -53,7 +53,7 @@ class JsonPathResponseRedactionTest :
               includes = listOf("$.data.middleNames"),
             )
 
-          val result = redaction.apply(RedactionContext("/v1/persons/123/licences/conditions", accessFor, telemetryService, "crn"), response)
+          val result = redaction.apply("policyName", RedactionContext("/v1/persons/123/licences/conditions", accessFor, telemetryService, "crn"), response)
           val doc = JsonPath.using(config).parse(objectMapper.writeValueAsString(result))
 
           doc.read<String>("$.data.firstName") shouldBe "fName"
@@ -69,7 +69,7 @@ class JsonPathResponseRedactionTest :
               includes = listOf("$.data.middleNames"),
             )
 
-          val result = redaction.apply(RedactionContext("/v1/persons/123/licences/conditions", accessFor, telemetryService), response)
+          val result = redaction.apply("policyName", RedactionContext("/v1/persons/123/licences/conditions", accessFor, telemetryService), response)
           val doc = JsonPath.using(config).parse(objectMapper.writeValueAsString(result))
 
           doc.read<String>("$.data.middleNames") shouldBe listOf("mName") // unchanged
@@ -85,7 +85,7 @@ class JsonPathResponseRedactionTest :
             )
 
           // Should not throw
-          val result = redaction.apply(RedactionContext("/any/uri", accessFor, telemetryService), response)
+          val result = redaction.apply("policyName", RedactionContext("/any/uri", accessFor, telemetryService), response)
           val doc = JsonPath.using(config).parse(objectMapper.writeValueAsString(result))
 
           doc.read<Int>("$.data.firstName") shouldBe "fName"
@@ -101,7 +101,7 @@ class JsonPathResponseRedactionTest :
               """.trimIndent(),
             )
 
-          redactor.redactValues(".c", doc)
+          redactor.redactValues(".c", doc, policyName = "policyName")
 
           doc.jsonString() shouldBe
             """
@@ -119,7 +119,7 @@ class JsonPathResponseRedactionTest :
               """.trimIndent(),
             )
 
-          redactor.redactValues(".c", doc)
+          redactor.redactValues(".c", doc, policyName = "policyName")
 
           doc.jsonString() shouldBe
             """
@@ -137,7 +137,7 @@ class JsonPathResponseRedactionTest :
               """.trimIndent(),
             )
 
-          redactor.redactValues(".q", doc)
+          redactor.redactValues(".q", doc, policyName = "policyName")
 
           doc.jsonString() shouldBe
             """
@@ -155,7 +155,7 @@ class JsonPathResponseRedactionTest :
               """.trimIndent(),
             )
 
-          redactor.redactValues(".c", doc)
+          redactor.redactValues(".c", doc, policyName = "policyName")
 
           doc.jsonString() shouldBe
             """

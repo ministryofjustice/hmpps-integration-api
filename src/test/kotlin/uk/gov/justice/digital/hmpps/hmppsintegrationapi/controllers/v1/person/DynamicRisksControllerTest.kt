@@ -35,7 +35,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithLaoRedactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetDynamicRisksForPersonService
@@ -192,8 +191,11 @@ internal class DynamicRisksControllerTest(
           )
 
           // Verify a telemetry event has been written
-          // 2 notes masking
-          verify(telemetryService, times(2)).trackEvent("RedactionEvent", mapOf("type" to RedactionType.MASK.name, "uri" to "/v1/persons/$laoRedactCrn/risks/dynamic"))
+          // 2 masks on the notes fields
+          verify(telemetryService, times(1)).trackEvent(
+            "RedactionEvent",
+            mapOf("policyName" to "lao-redactions", "clientId" to "automated-test-client", "masks" to "2", "removes" to "0"),
+          )
         }
 
         it("returns an empty list when no dynamic risks are found") {
