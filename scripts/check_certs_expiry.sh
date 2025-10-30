@@ -88,35 +88,79 @@ check_certificate_expiry() {
 
     local difference=$((expiry_seconds - current_seconds))
 
-    expiry_check_poc $expiry_seconds current_seconds $environment $certificate_name
+    local approach="enhanced"
 
     local message
-    message=$(generate_message "$difference" "$environment" "$certificate_name")
+    if [ "$approach" == "enhanced" ]; then
+      message=$(enhanced_expiry_check $expiry_seconds current_seconds $environment $certificate_name)
+    else
+      message=$(generate_message "$difference" "$environment" "$certificate_name")
+    fi
 
     if [ -n "${message}" ]; then
       curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"$message\"}" "$slack_webhook_url"
     fi
 }
 
-expiry_check_poc() {
-  # Proof-of-concept for a more advanced certificate expiry check
+enhanced_expiry_check() {
   expiry_time="$1"
   current_time="$2"
   environment="$3"
   certificate_name="$4"
 
   expires_in_seconds=$((expiry_time - current_time))
-  echo "Expires in $expiry_time - $current_time = $expires_in_seconds seconds"
-  warn_day=(30 21 14 7 6 5 4 3 2 1 0)
 
-  for day in ${warn_day[@]}; do
+  warn_days=(30 21 14 7 6 5 4 3 2 1 0)
+
+  for day in ${warn_days[@]}; do
     start_of_day=$((day * 24 * 3600))
     end_of_day=$(((day+1) * 24 * 3600))
-    echo "Day $day is from $start_of_day to $end_of_day seconds ago"
     if ((expires_in_seconds >= start_of_day && expires_in_seconds < end_of_day)); then
       echo "**ALERT ACTION REQUIRED** The certificate for $certificate_name in $environment will expire in $day days."
     fi
   done
+}
+
+test_date_conversion() {
+  echo "Testing date conversion"
+
+  expected=1781784370
+  actual=$(convert_date_to_seconds 'Jun 18 12:06:10 2026 GMT')
+  if [ "$actual" != "$expected" ]; then
+    echo "!!! convert_date_to_seconds returned $actual not $expected"
+  fi
+}
+
+test_expiry_check() {
+  echo "Testing expiry checks"
+
+  current_time="$(convert_date_to_seconds 'Oct 09 09:32:00 2025 BST')"
+  expiry_time="$(convert_date_to_seconds 'Oct 23 10:32:00 2025 BST')"
+  message=$(enhanced_expiry_check $expiry_time $current_time "dev" "tester")
+  if [ "$message" != "**ALERT ACTION REQUIRED** The certificate for tester in dev will expire in 14 days." ]; then
+    echo "!!! enhanced_expiry_check (warning day) $expiry_time $current_time returned $message"
+  fi
+
+  current_time="$(convert_date_to_seconds 'Oct 09 09:32:00 2025 BST')"
+  expiry_time="$(convert_date_to_seconds 'Oct 24 10:32:00 2025 BST')"
+  message=$(enhanced_expiry_check $expiry_time $current_time "dev" "tester")
+  if [ "$message" != "" ]; then
+    echo "!!! enhanced_expiry_check (non-warning day) $expiry_time $current_time returned $message"
+  fi
+
+  current_time="$(convert_date_to_seconds 'Oct 25 09:32:00 2025 BST')"
+  expiry_time="$(convert_date_to_seconds 'Oct 24 10:32:00 2025 BST')"
+  message=$(enhanced_expiry_check $expiry_time $current_time "dev" "tester")
+  if [ "$message" != "" ]; then
+    echo "!!! enhanced_expiry_check (expired) $expiry_time $current_time returned $message"
+  fi
+}
+
+test_suite() {
+  echo "=== Testing ==="
+  test_date_conversion
+  test_expiry_check
+  echo "=== Testing complete ==="
 }
 
 cleanup() {
@@ -128,10 +172,7 @@ trap cleanup EXIT
 
 main() {
   if [ "$1" == "TEST" ]; then
-    echo "*** Testing ***"
-    current_time="$(convert_date_to_seconds 'Oct 09 09:32:00 2025 BST')"
-    expiry_time="$(convert_date_to_seconds 'Oct 23 10:32:00 2025 BST')"
-    expiry_check_poc $expiry_time $current_time "dev" "tester"
+    test_suite
   else
     echo "Checking certificate expiry"
     slack_webhook_url=$(echo $SLACK_URL)
