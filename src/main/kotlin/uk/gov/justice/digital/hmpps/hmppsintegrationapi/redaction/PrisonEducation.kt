@@ -13,7 +13,7 @@ val prisonEducationRedactionPolicy =
           path("$.data.prisonerOffenderSearch.restrictionMessage", MASK)
           path("$.data.prisonerOffenderSearch.pncId", MASK)
           path("$.data.prisonerOffenderSearch.identifiers.croNumber", MASK)
-          path("$.data.prisonerOffenderSearch.identifiers.deliusCrn", MASK)
+          path("$.dhata.prisonerOffenderSearch.identifiers.deliusCrn", MASK)
           path("$.data.probationOffenderSearch", REMOVE)
         }
       }

@@ -6,7 +6,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
 val mappaCat4 =
   role("mappa-cat4") {
     include {
-      -mappa.include!!
+      -mappa.permissions!!
     }
     filters {
       mappaCategories {

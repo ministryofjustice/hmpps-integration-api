@@ -20,7 +20,7 @@ class ConfigController(
 
   private fun mapConsumerToIncludesAndFilters(consumerName: String): ConfigAuthorisation =
     ConfigAuthorisation(
-      endpoints = authorisationConfig.allIncludes(consumerName),
+      endpoints = authorisationConfig.allPermissions(consumerName),
       filters = authorisationConfig.allFilters(consumerName),
     )
 }
