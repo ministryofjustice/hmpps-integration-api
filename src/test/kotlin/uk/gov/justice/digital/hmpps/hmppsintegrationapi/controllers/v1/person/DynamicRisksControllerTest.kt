@@ -4,10 +4,14 @@ import io.kotest.assertions.json.shouldContainJsonKeyValue
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
+import io.mockk.every
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doThrow
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
@@ -31,12 +35,15 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolicyConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionType
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithLaoRedactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetDynamicRisksForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
 @WebMvcTest(controllers = [DynamicRisksController::class])
-@Import(value = [WebMvcTestConfiguration::class, AopAutoConfiguration::class, LaoRedactorAspect::class, RedactionPolicyConfig::class])
+@Import(value = [WebMvcTestConfiguration::class, AopAutoConfiguration::class, LaoRedactorAspect::class])
 @ActiveProfiles("test-redaction-enabled")
 internal class DynamicRisksControllerTest(
   @Autowired var springMockMvc: MockMvc,
@@ -44,6 +51,7 @@ internal class DynamicRisksControllerTest(
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getCaseAccess: GetCaseAccess,
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
+  @MockitoBean val telemetryService: TelemetryService,
 ) : DescribeSpec(
     {
       val hmppsId = "A1234AA"
@@ -55,8 +63,11 @@ internal class DynamicRisksControllerTest(
 
       describe("GET $path") {
         beforeTest {
+          mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
+          every { roles["full-access"] } returns testRoleWithLaoRedactions
           Mockito.reset(getDynamicRisksForPersonService)
           Mockito.reset(auditService)
+          Mockito.reset(telemetryService)
           whenever(getCaseAccess.getAccessFor(any())).thenReturn(CaseAccess(laoOkCrn, false, false, "", ""))
           whenever(getCaseAccess.getAccessFor("R754321")).thenReturn(null)
           whenever(getDynamicRisksForPersonService.execute(hmppsId)).thenReturn(
@@ -80,6 +91,10 @@ internal class DynamicRisksControllerTest(
                 ),
             ),
           )
+        }
+
+        afterTest {
+          unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
         }
 
         it("returns a 200 OK status code") {
@@ -175,6 +190,10 @@ internal class DynamicRisksControllerTest(
           ]
         """.removeWhitespaceAndNewlines(),
           )
+
+          // Verify a telemetry event has been written
+          // 2 notes masking
+          verify(telemetryService, times(2)).trackEvent("RedactionEvent", mapOf("type" to RedactionType.MASK.name, "uri" to "/v1/persons/$laoRedactCrn/risks/dynamic"))
         }
 
         it("returns an empty list when no dynamic risks are found") {

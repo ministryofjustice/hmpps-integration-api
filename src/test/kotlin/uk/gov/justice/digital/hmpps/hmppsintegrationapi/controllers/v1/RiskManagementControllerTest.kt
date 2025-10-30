@@ -29,12 +29,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskManagem
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolicyConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetRiskManagementPlansForCrnService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [RiskManagementController::class])
-@Import(value = [WebMvcTestConfiguration::class, LaoRedactorAspect::class, AopAutoConfiguration::class, RedactionPolicyConfig::class])
+@Import(value = [WebMvcTestConfiguration::class, LaoRedactorAspect::class, AopAutoConfiguration::class])
 @ActiveProfiles("test")
 class RiskManagementControllerTest(
   @Autowired var springMockMvc: MockMvc,
