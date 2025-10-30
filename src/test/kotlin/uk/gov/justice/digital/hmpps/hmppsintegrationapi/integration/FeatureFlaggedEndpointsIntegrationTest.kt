@@ -9,10 +9,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_DEALLOCATION_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_DEALLOCATION_REASONS_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_EDUCATION_ENDPOINT
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_ESWE_CURIOUS_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_EXPRESSION_OF_INTEREST_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_HISTORICAL_ATTENDANCES_ENDPOINT
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PRISONER_BASE_LOCATION_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_SCHEDULED_INSTANCES_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_SCHEDULE_DETAIL_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_SEARCH_APPOINTMENTS_ENDPOINT
@@ -178,16 +176,6 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `get education assessment should return 503`() {
-    whenever(featureFlagConfig.require(USE_ESWE_CURIOUS_ENDPOINTS)).thenThrow(FeatureNotEnabledException(""))
-    val prisonNumber = "A1234AA"
-    val path = "/v1/persons/$prisonNumber/education/assessments"
-
-    callApi(path)
-      .andExpect(status().isServiceUnavailable)
-  }
-
-  @Test
   fun `put expression-of-interest should return 503`() {
     whenever(featureFlagConfig.require(USE_EXPRESSION_OF_INTEREST_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
     val prisonNumber = "A1234AA"
@@ -195,16 +183,6 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
     val path = "/v1/persons/$prisonNumber/expression-of-interest/jobs/$jobId"
 
     putApi(path)
-      .andExpect(status().isServiceUnavailable)
-  }
-
-  @Test
-  fun `get prisoner base location should return 503`() {
-    whenever(featureFlagConfig.require(USE_PRISONER_BASE_LOCATION_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
-    val prisonNumber = "A1234AA"
-    val path = "/v1/persons/$prisonNumber/prisoner-base-location"
-
-    callApi(path)
       .andExpect(status().isServiceUnavailable)
   }
 

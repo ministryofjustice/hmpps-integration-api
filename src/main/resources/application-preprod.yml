@@ -45,7 +45,6 @@ services:
     base-url: https://hmpps-person-record-preprod.hmpps.service.justice.gov.uk
 
 feature-flag:
-  use-eswe-curious-endpoints: true
   use-update-attendance-endpoint: true
   use-schedule-detail-endpoint: true
   use-search-appointments-endpoint: true
@@ -55,7 +54,6 @@ feature-flag:
   use-allocation-endpoint: true
   use-education-endpoint: true
   use-expression-of-interest-endpoint: true
-  use-prisoner-base-location-endpoint: true
   use-prisoner-base-location-api: false
   use-historical-attendances-endpoint: true
   use-suitability-endpoint: true
