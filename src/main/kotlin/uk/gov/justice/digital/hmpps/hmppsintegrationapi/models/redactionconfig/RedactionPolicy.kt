@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionContext
 
-interface ResponseRedaction {
+fun interface ResponseRedaction {
   fun apply(
     redactionContext: RedactionContext,
     responseBody: Any,

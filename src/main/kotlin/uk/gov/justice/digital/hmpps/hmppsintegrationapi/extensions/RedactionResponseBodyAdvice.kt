@@ -20,6 +20,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAcc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionContext
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
 @ControllerAdvice
 @ConditionalOnProperty(
@@ -31,6 +32,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionConte
 class RedactionResponseBodyAdvice(
   val authorisationConfig: AuthorisationConfig,
   val accessFor: GetCaseAccess,
+  val telemetryService: TelemetryService,
 ) : ResponseBodyAdvice<Any> {
   val config: Configuration =
     Configuration
@@ -71,7 +73,7 @@ class RedactionResponseBodyAdvice(
     val subjectDistinguishedName = servletRequest.getAttribute("clientName") as? String
     val redactionPolicies = getRedactionPoliciesFromRoles(subjectDistinguishedName)
     val hmppsId = servletRequest.getAttribute("hmppsId") as? String
-    val redactionContext = RedactionContext(requestUri, accessFor, hmppsId)
+    val redactionContext = RedactionContext(requestUri, accessFor, telemetryService, hmppsId)
     return applyPolicies(redactionContext, body, redactionPolicies)
   }
 

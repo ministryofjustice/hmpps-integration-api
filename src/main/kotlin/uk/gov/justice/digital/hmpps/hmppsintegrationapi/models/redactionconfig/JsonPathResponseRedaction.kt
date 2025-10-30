@@ -32,7 +32,7 @@ class JsonPathResponseRedaction(
 
     val doc = parseForSearch(jsonString)
     includes.orEmpty().forEach { jsonPath ->
-      redactValues(jsonPath, doc)
+      redactValues(jsonPath, doc, redactionContext)
     }
     return objectMapper.readValue(doc.jsonString(), responseBody::class.java)
   }
@@ -40,12 +40,14 @@ class JsonPathResponseRedaction(
   fun redactValues(
     jsonPath: String,
     doc: DocumentContext,
+    redactionContext: RedactionContext? = null,
   ) {
     for (matchedPath in allMatchingPaths(jsonPath, doc)) {
       when (type) {
         RedactionType.MASK -> doc.set(matchedPath, REDACTION_MASKING_TEXT)
         RedactionType.REMOVE -> doc.delete(matchedPath)
       }
+      redactionContext?.trackRedaction(type)
     }
   }
 

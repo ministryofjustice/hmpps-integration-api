@@ -40,11 +40,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.redactionPolicy
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
 class RedactionResponseBodyAdviceTest {
   private lateinit var objectMapper: ObjectMapper
   private lateinit var authorisationConfig: AuthorisationConfig
   private lateinit var accessFor: GetCaseAccess
+  private lateinit var telemetryService: TelemetryService
   private lateinit var advice: RedactionResponseBodyAdvice
 
   private val roleName = "private-prison"
@@ -67,8 +69,9 @@ class RedactionResponseBodyAdviceTest {
       )
 
     accessFor = mock(GetCaseAccess::class.java)
+    telemetryService = mock(TelemetryService::class.java)
 
-    redactionContext = RedactionContext(examplePath, accessFor)
+    redactionContext = RedactionContext(examplePath, accessFor, telemetryService)
     // mock the roles registry globally
     mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
     every { roles } returns
@@ -81,7 +84,7 @@ class RedactionResponseBodyAdviceTest {
           ),
       )
 
-    advice = RedactionResponseBodyAdvice(authorisationConfig, accessFor)
+    advice = RedactionResponseBodyAdvice(authorisationConfig, accessFor, telemetryService)
   }
 
   @AfterEach
