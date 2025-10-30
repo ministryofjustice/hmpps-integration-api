@@ -27,4 +27,22 @@ class RolesIncludeIntegrationTest : IntegrationTestBase() {
     callApiWithCN("/v1/prison/prisoners?first_name=Test", "reference-data-only-user")
       .andExpect(status().isForbidden)
   }
+
+  @Test
+  fun `person-search-no-access-client should NOT be able to access search endpoint`() {
+    callApiWithCN("/v1/persons?first_name=John", "person-search-no-access-client")
+      .andExpect(status().isForbidden)
+  }
+
+  @Test
+  fun `person-search-no-access-client should be able to access single persons endpoint`() {
+    callApiWithCN("/v1/persons/$crn", "person-search-no-access-client")
+      .andExpect(status().isOk)
+  }
+
+  @Test
+  fun `person-search-no-access-client should be able to access persons address endpoint`() {
+    callApiWithCN("/v1/persons/$crn/addresses", "person-search-no-access-client")
+      .andExpect(status().isOk)
+  }
 }
