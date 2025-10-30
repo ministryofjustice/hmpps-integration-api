@@ -5,6 +5,7 @@ import com.jayway.jsonpath.Configuration
 import com.jayway.jsonpath.DocumentContext
 import com.jayway.jsonpath.JsonPath
 import com.jayway.jsonpath.Option
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionContext
 
 interface ResponseRedaction {
@@ -20,6 +21,22 @@ data class RedactionPolicy(
 )
 
 const val REDACTION_MASKING_TEXT = "**REDACTED**"
+
+class LaoRejectRedaction(
+  val paths: List<String>? = null,
+) : ResponseRedaction {
+  private val pathPatterns: List<Regex>? = paths?.map(::Regex)
+
+  override fun apply(
+    redactionContext: RedactionContext,
+    responseBody: Any,
+  ): Any {
+    var shouldRun = pathPatterns?.any { it.matches(redactionContext.requestUri) } ?: true
+    if (!shouldRun) return responseBody
+    if (redactionContext.isLimitedAccessOffender()) throw LimitedAccessException()
+    return responseBody
+  }
+}
 
 class JsonPathResponseRedaction(
   val objectMapper: ObjectMapper,

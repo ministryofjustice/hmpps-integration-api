@@ -14,7 +14,6 @@ import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
@@ -27,7 +26,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfigu
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.LaoRedactorAspect
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.Redactor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DynamicRisk
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -40,7 +38,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetDynamicRisks
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [DynamicRisksController::class])
-@Import(value = [WebMvcTestConfiguration::class, AopAutoConfiguration::class, LaoRedactorAspect::class])
+@Import(value = [WebMvcTestConfiguration::class])
 @ActiveProfiles("test-redaction-enabled")
 internal class DynamicRisksControllerTest(
   @Autowired var springMockMvc: MockMvc,
