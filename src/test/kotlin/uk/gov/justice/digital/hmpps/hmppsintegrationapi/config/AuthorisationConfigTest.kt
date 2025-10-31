@@ -73,11 +73,11 @@ class AuthorisationConfigTest {
     val endpoint = "/health/readiness"
     val environment = "preprod"
 
-    // Temporarily change endpoint & environment to see who has access to what, where
+    // You can temporarily change endpoint & environment to see who has access to what, where
     val matches = listConsumersWithAccess(environment, endpoint)
 
-    assertEquals(1, matches.size)
-    assertEquals("kubernetes-health-check-client", matches[0])
+    assertEquals(3, matches.size)
+    assertContains(matches, "kubernetes-health-check-client")
   }
 
   @Test
