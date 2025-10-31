@@ -72,51 +72,32 @@ authorisation:
   consumers:
     mapps:
       notes: "See client list in Confluence"
-      include:
-      filters:
       roles:
         - "mappa"
     ctrlo:
       notes: "See client list in Confluence"
-      include:
-      filters:
       roles:
         - "ctrlo"
     moj-pes:
       notes: "See client list in Confluence"
-      include:
-        - "/v1/persons/.*/name"
-        - "/v1/hmpps/id/nomis-number/[^/]*$"
-        - "/v1/hmpps/id/by-nomis-number/[^/]*$"
-        - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
-        - "/v1/persons/.*/cell-location"
-        - "/v1/status"
-      filters:
+      roles:
+        - "moj-prisoner-education"
     kubernetes-health-check-client:
       notes: "Kubernetes cluster automated healthchecks"
-      include:
-        - "/health/liveness"
-        - "/health/readiness"
-        - "/v1/status"
-      filters:
+      roles:
+        - "hmpps-system"
     pnd:
       notes: "See client list in Confluence"
-      include:
-      filters:
       roles:
         - "police"
     event-service:
-      include:
-        - "/v2/config/authorisation"
-        - "/v1/status"
-      filters:
+      notes: "HMPPS External Events service"
+      roles:
+        - "hmpps-system"
     mryall:
-      include:
-      filters:
       roles:
         - "full-access"
     kilco:
-      include:
       filters:
         prisons:
           - MKI
@@ -124,71 +105,42 @@ authorisation:
         - "private-prison"
     meganexus:
       notes: "See client list in Confluence"
-      include:
-      filters:
       roles:
         - "curious"
     moj-esw:
       notes: "HMPPS Education Skills and Work team"
-      include:
-      filters:
       roles:
         - "curious"
     serco:
       notes: "See client list in Confluence"
-      include:
-        - "/v1/persons"
-        - "/v1/prison/prisoners/[^/]*$"
-        - "/v1/prison/prisoners"
-        - "/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
-        - "/v1/hmpps/id/by-nomis-number/[^/]*$"
-        - "/v1/status"
-      filters:
+      roles:
+        - "serco"
     unilink:
       notes: "See client list in Confluence"
-      include:
-      filters:
       roles:
         - "private-prison"
     prisonerfacing:
       notes: "See client list in Confluence"
-      include:
-        - "/v1/persons/.*/name"
-        - "/v1/hmpps/id/by-nomis-number/[^/]*$"
-        - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
-        - "/v1/persons/.*/cell-location"
-        - "/v1/prison/prisoners/[^/]*$" # This has been provided for testing purposes. Approval needed before access can be provided in prod.
-        - "/v1/status"
-      filters:
+      roles:
+        - "moj-prisoner-facing"
     abritton:
-      include:
-      filters:
       roles:
         - "full-access"
     jbetton:
-      include:
-      filters:
       roles:
         - "full-access"
     smoke-test-full-access:
       notes: "Automated post-deployment smoke tests (happy path)"
-      include:
-      filters:
       roles:
         - "full-access"
     smoke-test-limited-access:
       notes: "Automated post-deployment smoke tests (some access denied)"
-      include:
-      filters:
       roles:
         - "private-prison"
     smoke-test-no-access:
       notes: "Automated post-deployment smoke tests (all access denied)"
-      include:
-      filters:
       roles:
     test:
-      include:
       filters:
         prisons:
           - MKI
@@ -196,23 +148,15 @@ authorisation:
         - "private-prison"
     sleach:
       notes: "https://peoplefinder.service.gov.uk/people/steve-leach"
-      include:
-      filters:
       roles:
         - "full-access"
     pmcphee:
-      include:
-      filters:
       roles:
         - "full-access"
     geoamey:
       notes: "See client list in Confluence"
-      include:
-      filters:
       roles:
         - "prisoner-escort-custody-service"
     zkhan:
-      include:
-      filters:
       roles:
         - "full-access"
