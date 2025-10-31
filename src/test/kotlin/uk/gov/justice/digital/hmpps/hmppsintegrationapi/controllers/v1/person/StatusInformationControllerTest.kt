@@ -14,7 +14,6 @@ import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
@@ -39,7 +38,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetStatusInform
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [StatusInformationController::class])
-@Import(value = [WebMvcTestConfiguration::class, AopAutoConfiguration::class])
+@Import(value = [WebMvcTestConfiguration::class])
 @ActiveProfiles("test-redaction-enabled")
 internal class StatusInformationControllerTest(
   @Autowired var springMockMvc: MockMvc,

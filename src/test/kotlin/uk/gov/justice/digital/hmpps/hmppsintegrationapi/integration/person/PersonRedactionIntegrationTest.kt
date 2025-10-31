@@ -95,6 +95,7 @@ class PersonRedactionIntegrationTest : IntegrationTestBase() {
             "clientId" to "role-based-redacted-client",
             "masks" to "0",
             "removes" to "1",
+            "rejects" to "0",
           ),
         )
         prisonerOffenderSearchMockServer.assertValidationPassed()
