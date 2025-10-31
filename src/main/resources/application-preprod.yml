@@ -53,7 +53,6 @@ feature-flag:
   use-deallocation-reasons-endpoint: true
   use-allocation-endpoint: true
   use-education-endpoint: true
-  use-expression-of-interest-endpoint: true
   use-prisoner-base-location-api: false
   use-historical-attendances-endpoint: true
   use-suitability-endpoint: true

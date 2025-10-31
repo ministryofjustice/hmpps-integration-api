@@ -9,7 +9,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_DEALLOCATION_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_DEALLOCATION_REASONS_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_EDUCATION_ENDPOINT
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_EXPRESSION_OF_INTEREST_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_HISTORICAL_ATTENDANCES_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_SCHEDULED_INSTANCES_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_SCHEDULE_DETAIL_ENDPOINT
@@ -172,17 +171,6 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
       )
 
     postToApi(path, asJsonString(prisonerAllocationRequest))
-      .andExpect(status().isServiceUnavailable)
-  }
-
-  @Test
-  fun `put expression-of-interest should return 503`() {
-    whenever(featureFlagConfig.require(USE_EXPRESSION_OF_INTEREST_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
-    val prisonNumber = "A1234AA"
-    val jobId = 123456L
-    val path = "/v1/persons/$prisonNumber/expression-of-interest/jobs/$jobId"
-
-    putApi(path)
       .andExpect(status().isServiceUnavailable)
   }
 
