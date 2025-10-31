@@ -55,8 +55,6 @@ jobs:
   dev-smoke-tests:
     uses: ./.github/workflows/smoke-test-dev.yml
     secrets: inherit
-    needs:
-      - build
   preprod-smoke-tests:
     uses: ./.github/workflows/smoke-test-preprod.yml
     secrets: inherit
