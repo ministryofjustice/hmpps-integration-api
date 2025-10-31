@@ -96,4 +96,32 @@ class AuthorisationConfigTest {
     assertContains(matches, "c1")
     assertContains(matches, "c2")
   }
+
+  @Test
+  fun `compare missing and empty lists in ConsumerConfig`() {
+    val missing =
+      """
+      consumers:
+        tester:
+          roles:
+            - full-access
+      """.trimIndent()
+
+    val empty =
+      """
+      consumers:
+        tester:
+          include:
+          filters:
+          roles:
+            - full-access
+      """.trimIndent()
+
+    val mapper = ObjectMapper(YAMLFactory())
+    val missingConfig = mapper.readValue(missing, AuthorisationConfig::class.java)
+    val emptyConfig = mapper.readValue(empty, AuthorisationConfig::class.java)
+
+    assertEquals(missingConfig.consumers["tester"]?.permissions(), emptyConfig.consumers["tester"]?.permissions())
+    assertEquals(missingConfig.consumers["tester"]?.filters, emptyConfig.consumers["tester"]?.filters)
+  }
 }
