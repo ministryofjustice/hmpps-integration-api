@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - 'main'
+      - 'HIA-857-GHA-smoke-tests'
   workflow_dispatch:
     inputs:
       additional_docker_tag:
@@ -51,3 +52,18 @@ jobs:
       additional_docker_tag: ${{ inputs.additional_docker_tag }}
       push: ${{ inputs.push || true }}
       docker_multiplatform: false
+  dev-smoke-tests:
+    uses: ./.github/workflows/smoke-test-dev.yml
+    secrets: inherit
+    needs:
+      - build
+  preprod-smoke-tests:
+    uses: ./.github/workflows/smoke-test-preprod.yml
+    secrets: inherit
+    needs:
+      - dev-smoke-tests
+  prod-smoke-tests:
+    uses: ./.github/workflows/smoke-test-prod.yml
+    secrets: inherit
+    needs:
+      - preprod-smoke-tests
