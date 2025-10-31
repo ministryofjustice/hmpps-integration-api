@@ -8,6 +8,13 @@ val laoRedactionPolicy =
     "lao-redactions",
   ) {
     responseRedactions {
+      laoRejection {
+        paths {
+          -"/v1/persons/.*/risk-management-plan"
+          -"/v1/persons/.*/risks/scores"
+          -"/v1/persons/.*/risks/serious-harm"
+        }
+      }
       jsonPath {
         laoOnly(true)
         paths {

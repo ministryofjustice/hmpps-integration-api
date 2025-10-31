@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.JsonPathResponseRedaction
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.LaoRejectRedaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.ResponseRedaction
@@ -41,6 +42,10 @@ class ResponseRedactionsBuilder {
 
   fun jsonPath(init: JsonPathResponseRedactionBuilder.() -> Unit) {
     redactions += JsonPathResponseRedactionBuilder().apply(init).build()
+  }
+
+  fun laoRejection(init: LaoRejectRedactionBuilder.() -> Unit) {
+    redactions += LaoRejectRedactionBuilder().apply(init).build()
   }
 
   fun build(): List<ResponseRedaction> = redactions
@@ -95,4 +100,16 @@ class JsonPathResponseRedactionBuilder {
         laoOnly = laoOnly,
       )
     }
+}
+
+class LaoRejectRedactionBuilder {
+  private var paths: MutableList<String>? = null
+
+  fun paths(init: PathsBuilder.() -> Unit) {
+    val pathsBuilder = PathsBuilder().apply(init)
+    if (paths == null) paths = mutableListOf()
+    paths!!.addAll(pathsBuilder.content)
+  }
+
+  fun build(): LaoRejectRedaction = LaoRejectRedaction(paths = paths)
 }

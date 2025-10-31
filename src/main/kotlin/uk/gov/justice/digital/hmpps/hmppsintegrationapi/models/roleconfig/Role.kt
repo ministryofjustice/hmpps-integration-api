@@ -15,7 +15,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.referenceDataOnly
 
 data class Role(
   val name: String? = null,
-  val include: List<String>? = null,
+  val permissions: List<String>? = null,
   val filters: ConsumerFilters? = null,
   val redactionPolicies: List<RedactionPolicy>? = emptyList<RedactionPolicy>(),
 )
