@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.RedactionConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
@@ -78,7 +77,6 @@ class PersonController(
   @Autowired val getPrisonerEducationService: GetPrisonerEducationService,
   @Autowired val auditService: AuditService,
   @Autowired val featureFlag: FeatureFlagConfig,
-  @Autowired val redactionConfig: RedactionConfig,
 ) {
   @FeatureFlag(name = FeatureFlagConfig.EPF_ENDPOINT_INCLUDES_LAO)
   @GetMapping("/{hmppsId}/access-limitations")
@@ -160,7 +158,6 @@ class PersonController(
   )
   fun getPerson(
     @Parameter(description = "A HMPPS identifier", example = "X00001") @PathVariable("hmppsId") hmppsId: String,
-    @RequestAttribute clientName: String?,
   ): ResponseEntity<DataResponse<OffenderSearchResponse>> {
     val response = getPersonService.getCombinedDataForPerson(hmppsId)
 
@@ -180,15 +177,8 @@ class PersonController(
           .header("Location", response.data.redirectUrl)
           .build()
       }
-      is OffenderSearchResult -> {
-        val redactedData =
-          if (featureFlag.isEnabled(FeatureFlagConfig.SIMPLE_REDACTION)) { // simple redaction: to be refactored in later releases
-            redactPersonData(response.data, clientName)
-          } else {
-            response.data
-          }
-        return ResponseEntity.ok(DataResponse(redactedData))
-      }
+
+      is OffenderSearchResult -> ResponseEntity.ok(DataResponse(response.data))
     }
   }
 
@@ -499,44 +489,7 @@ class PersonController(
     } catch (e: Exception) {
       false
     }
-
-  /***
-   * This simple redaction method is to be replaced by "flexible redaction" in coming releases
-   */
-  private fun redactPersonData(
-    offenderData: OffenderSearchResult,
-    clientName: String? = null,
-  ) = offenderData.let { data ->
-    val targetConsumers = redactionConfig.clientNames
-    when {
-      !targetConsumers.contains(clientName) -> data
-
-      else -> {
-        val prisonerOffenderSearch =
-          data.prisonerOffenderSearch?.run {
-            copy(
-              middleName = REDACTED,
-              aliases = aliases.map { it.copy(middleName = REDACTED) }.toList(),
-              identifiers = identifiers.copy(croNumber = REDACTED, deliusCrn = REDACTED),
-              pncId = REDACTED,
-              contactDetails = null,
-              currentRestriction = null,
-              restrictionMessage = REDACTED,
-              currentExclusion = null,
-              exclusionMessage = REDACTED,
-            )
-          }
-
-        data.copy(
-          prisonerOffenderSearch = prisonerOffenderSearch,
-          probationOffenderSearch = null,
-        )
-      }
-    }
-  }
 }
-
-private const val REDACTED = "**REDACTED**"
 
 // Workaround for Swagger with generic around `@Schema` (`useReturnTypeSchema` is not applicable here)
 private data class OffenderSearchDataResponse(

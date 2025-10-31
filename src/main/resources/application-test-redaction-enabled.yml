@@ -92,7 +92,6 @@ feature-flag:
   use-historical-attendances-endpoint: true
   use-suitability-endpoint: true
   use-waiting-list-endpoint: true
-  simple-redaction: false
   use-contact-events-endpoint: true
   use-stubbed-contact-events-data: false
   use-roles-dsl: true
@@ -136,6 +135,3 @@ authorisation:
       filters:
         case-notes:
           - "CAB"
-    redacted-client:
-      include:
-        - "/v1/persons/[^/]*$"
