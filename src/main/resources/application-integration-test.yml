@@ -96,7 +96,6 @@ feature-flag:
   use-historical-attendances-endpoint: true
   use-suitability-endpoint: true
   use-waiting-list-endpoint: true
-  simple-redaction: false
   use-contact-events-endpoint: true
   epf-endpoint-includes-lao: false
   use-roles-dsl: true
@@ -170,14 +169,7 @@ authorisation:
         - "reference-data-only"
       include:
       filters:
-    redacted-client:
-      include:
-        - "/v1/persons/[^/]*$"
     person-search-no-access-client:
       include:
         - "/v1/persons/[^/]*$"
         - "/v1/persons/.*/addresses"
-
-redaction:
-  client-names:
-    - redacted-client

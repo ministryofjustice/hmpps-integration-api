@@ -96,7 +96,6 @@ feature-flag:
   use-historical-attendances-endpoint: true
   use-suitability-endpoint: true
   use-waiting-list-endpoint: true
-  simple-redaction: false
   use-contact-events-endpoint: true
   use-stubbed-contact-events-data: false
   use-roles-dsl: true
@@ -169,15 +168,8 @@ authorisation:
         - "reference-data-only"
       include:
       filters:
-    redacted-client:
-      include:
-        - "/v1/persons/[^/]*$"
     role-based-redacted-client:
       roles:
         - curious
       include:
       filters:
-
-redaction:
-  client-names:
-    - redacted-client
