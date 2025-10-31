@@ -5,8 +5,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
 
 val testRoleWithLaoRedactions =
   role("test-role") {
-    include {
-      -fullAccess.include!!
+    permissions {
+      -fullAccess.permissions!!
     }
     redactionPolicies(
       listOf(

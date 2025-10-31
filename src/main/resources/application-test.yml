@@ -94,7 +94,7 @@ feature-flag:
   use-contact-events-endpoint: true
   epf-endpoint-includes-lao: false
   use-roles-dsl: true
-  redaction-policy-enabled: false
+  redaction-policy-enabled: true
   cpr-enabled: true
 
 authorisation:

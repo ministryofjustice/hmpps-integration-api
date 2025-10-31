@@ -14,7 +14,6 @@ import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
@@ -27,19 +26,19 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfigu
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.Redactor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.StatusInformation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.REDACTION_MASKING_TEXT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithLaoRedactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetStatusInformationForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [StatusInformationController::class])
-@Import(value = [WebMvcTestConfiguration::class, AopAutoConfiguration::class])
+@Import(value = [WebMvcTestConfiguration::class])
 @ActiveProfiles("test-redaction-enabled")
 internal class StatusInformationControllerTest(
   @Autowired var springMockMvc: MockMvc,
@@ -151,7 +150,7 @@ internal class StatusInformationControllerTest(
               "description": "Warrant/Summons - Outstanding warrant or summons",
               "startDate": "2022-09-01",
               "reviewDate": "2024-12-23",
-              "notes": "${Redactor.REDACTED}"
+              "notes": "$REDACTION_MASKING_TEXT"
             }
           ]
         """.removeWhitespaceAndNewlines(),

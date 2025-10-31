@@ -5,4 +5,6 @@ data class ConsumerConfig(
   val filters: ConsumerFilters? = null,
   val roles: List<String>? = null,
   val notes: String? = null,
-)
+) {
+  fun permissions(): List<String>? = include
+}

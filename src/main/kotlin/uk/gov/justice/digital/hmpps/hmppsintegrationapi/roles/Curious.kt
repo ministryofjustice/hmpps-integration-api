@@ -5,7 +5,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.prisonEducatio
 
 val curious =
   role("curious") {
-    include {
+    permissions {
       -"/v1/persons/.*/plp-induction-schedule"
       -"/v1/persons/.*/plp-induction-schedule/history"
       -"/v1/persons/.*/plp-review-schedule"

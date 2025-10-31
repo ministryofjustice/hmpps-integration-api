@@ -5,7 +5,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
 
 val allEndpoints =
   role("all-endpoints") {
-    include {
+    permissions {
       -roleConstants.allEndpoints
     }
   }

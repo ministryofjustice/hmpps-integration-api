@@ -5,7 +5,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
 
 val fullAccess =
   role("full-access") {
-    include {
+    permissions {
       -roleConstants.allEndpoints
     }
     filters {

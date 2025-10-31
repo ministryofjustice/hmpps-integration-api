@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.LaoRedaction
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.LaoRedaction.Mode
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskPredictorScore
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetRiskPredictorScoresForPersonService
@@ -30,7 +28,6 @@ class RiskPredictorScoresController(
   @Autowired val getRiskPredictorScoresForPersonService: GetRiskPredictorScoresForPersonService,
   @Autowired val auditService: AuditService,
 ) {
-  @LaoRedaction(Mode.REJECT)
   @GetMapping("{hmppsId}/risks/scores")
   @Operation(
     summary = "Returns risk scores from the last year associated with a person, sorted by completedDate (newest first). This endpoint does not serve LAO (Limited Access Offender) data.",

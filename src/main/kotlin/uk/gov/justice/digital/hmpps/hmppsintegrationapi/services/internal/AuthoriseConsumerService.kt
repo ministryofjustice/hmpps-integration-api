@@ -11,7 +11,7 @@ class AuthoriseConsumerService {
     consumerConfig: ConsumerConfig?,
     requestedPath: String,
   ): Boolean {
-    consumerConfig?.include?.forEach {
+    consumerConfig?.permissions()?.forEach {
       if (Regex(it).matches(requestedPath)) {
         return true
       }
