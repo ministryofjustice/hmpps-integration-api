@@ -18,10 +18,11 @@ class RedactionContext(
 
   fun trackRedaction(
     policyName: String,
-    masks: Int,
-    removes: Int,
+    masks: Int = 0,
+    removes: Int = 0,
+    rejects: Int = 0,
   ) {
-    if (masks > 0 || removes > 0) {
+    if (masks > 0 || removes > 0 || rejects > 0) {
       telemetryService.trackEvent(
         "RedactionEvent",
         mapOf(
@@ -29,6 +30,7 @@ class RedactionContext(
           "clientId" to clientId,
           "masks" to masks.toString(),
           "removes" to removes.toString(),
+          "rejects" to rejects.toString(),
         ),
       )
     }
