@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - 'main'
-      - 'HIA-857-GHA-smoke-tests'
   workflow_dispatch:
     inputs:
       additional_docker_tag:
@@ -42,7 +41,7 @@ jobs:
       environment: ${{ matrix.environments }}
   build:
     name: Build docker image from hmpps-github-actions
-    # if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/docker_build.yml@v2 # WORKFLOW_VERSION
     needs:
       - test
