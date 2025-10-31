@@ -42,7 +42,7 @@ class AuthorisationFilterTest {
     whenever(mockRequest.getAttribute("clientName")).thenReturn(exampleConsumer)
 
     mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-    every { roles } returns mapOf(roleName to Role(name = "test", include = mutableListOf(examplePath), filters = null))
+    every { roles } returns mapOf(roleName to Role(name = "test", permissions = mutableListOf(examplePath), filters = null))
   }
 
   @AfterEach
@@ -72,7 +72,7 @@ class AuthorisationFilterTest {
   fun `calls the onward chain when path not found in roles, but found in includes`() {
     whenever(authorisationConfig.consumers).thenReturn(mapOf(exampleConsumer to ConsumerConfig(include = listOf(examplePath), filters = ConsumerFilters(prisons = null), roles = listOf())))
     // invalid Role Config
-    every { roles } returns mapOf(roleName to Role(include = emptyList(), filters = null))
+    every { roles } returns mapOf(roleName to Role(permissions = emptyList(), filters = null))
     val authorisationFilter = AuthorisationFilter(authorisationConfig)
     authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
 
@@ -103,7 +103,7 @@ class AuthorisationFilterTest {
   fun `Forbidden if limited access caused by error for path not found in roles, but found in includes`() {
     whenever(authorisationConfig.consumers).thenReturn(mapOf(exampleConsumer to ConsumerConfig(include = listOf(examplePath), filters = ConsumerFilters(prisons = null), roles = listOf())))
     // invalid Role Config
-    every { roles } returns mapOf(roleName to Role(include = emptyList(), filters = null))
+    every { roles } returns mapOf(roleName to Role(permissions = emptyList(), filters = null))
     val authorisationFilter = AuthorisationFilter(authorisationConfig)
     whenever(mockChain.doFilter(mockRequest, mockResponse)).thenThrow(ServletException(LimitedAccessException()))
 

@@ -79,7 +79,7 @@ class RedactionResponseBodyAdviceTest {
         roleName to
           Role(
             name = roleName,
-            include = mutableListOf(examplePath),
+            permissions = mutableListOf(examplePath),
             redactionPolicies = listOf(globalPolicy),
           ),
       )
@@ -180,7 +180,7 @@ class RedactionResponseBodyAdviceTest {
         roleName to
           Role(
             name = roleName,
-            include = mutableListOf(examplePath),
+            permissions = mutableListOf(examplePath),
             redactionPolicies = listOf(rolePolicy),
           ),
       )
@@ -265,7 +265,7 @@ class RedactionResponseBodyAdviceTest {
         roleName to
           Role(
             name = roleName,
-            include = mutableListOf(examplePath),
+            permissions = mutableListOf(examplePath),
             redactionPolicies =
               listOf(
                 redactionPolicy(

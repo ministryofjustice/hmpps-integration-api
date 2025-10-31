@@ -82,7 +82,7 @@ class FiltersExtractionFilterIntegrationRoleDslTest {
     val mockChain = mock(FilterChain::class.java)
     val filtersCapture = ArgumentCaptor.forClass(ConsumerFilters::class.java)
     val roleFilters = roles[roleName]?.filters
-    val testRole = Role(include = null, filters = roleFilters)
+    val testRole = Role(permissions = null, filters = roleFilters)
     whenever(authorisationConfig.allFilters(any())).thenCallRealMethod()
     whenever(authorisationConfig.consumers).thenReturn(mapOf("consumer-name" to ConsumerConfig(include = null, filters = ConsumerFilters(prisons = null), roles = listOf("test-role"))))
     every { roles } returns mapOf("test-role" to testRole)

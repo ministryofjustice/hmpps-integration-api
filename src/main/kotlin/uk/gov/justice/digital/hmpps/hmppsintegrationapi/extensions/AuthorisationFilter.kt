@@ -71,7 +71,7 @@ class AuthorisationFilter(
     val rolesInclude =
       buildList {
         for (consumerRole in consumersRoles.orEmpty()) {
-          addAll(roles[consumerRole]?.include.orEmpty())
+          addAll(roles[consumerRole]?.permissions.orEmpty())
         }
       }
     val roleResult =
