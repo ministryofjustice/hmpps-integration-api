@@ -73,7 +73,7 @@ class RedactionResponseBodyAdvice(
     val subjectDistinguishedName = servletRequest.getAttribute("clientName") as? String
     val redactionPolicies = getRedactionPoliciesFromRoles(subjectDistinguishedName)
     val hmppsId = servletRequest.getAttribute("hmppsId") as? String
-    val redactionContext = RedactionContext(requestUri, accessFor, telemetryService, hmppsId)
+    val redactionContext = RedactionContext(requestUri, accessFor, telemetryService, hmppsId, subjectDistinguishedName)
     return applyPolicies(redactionContext, body, redactionPolicies)
   }
 
@@ -85,7 +85,7 @@ class RedactionResponseBodyAdvice(
     var redactedBody = responseBody
     for (policy in policies.orEmpty()) {
       policy.responseRedactions?.forEach { redaction ->
-        redactedBody = redaction.apply(redactionContext, redactedBody)
+        redactedBody = redaction.apply(policy.name, redactionContext, redactedBody)
       }
     }
     return redactedBody

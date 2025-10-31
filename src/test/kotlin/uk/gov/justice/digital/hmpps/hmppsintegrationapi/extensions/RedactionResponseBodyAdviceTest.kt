@@ -60,7 +60,7 @@ class RedactionResponseBodyAdviceTest {
 
     // Mock global redactions
     val redaction = mock(ResponseRedaction::class.java)
-    whenever(redaction.apply(any(), any())).thenAnswer { it.arguments[1] } // no-op
+    whenever(redaction.apply(any(), any(), any())).thenAnswer { it.arguments[1] } // no-op
 
     val globalPolicy =
       RedactionPolicy(
@@ -171,7 +171,7 @@ class RedactionResponseBodyAdviceTest {
     val redaction = mock(ResponseRedaction::class.java)
     val redactedBody = mapOf("field" to "*** REDACTED ***")
 
-    whenever(redaction.apply(any(), any())).thenReturn(redactedBody)
+    whenever(redaction.apply(any(), any(), any())).thenReturn(redactedBody)
 
     val rolePolicy = RedactionPolicy("role-policy", listOf(redaction))
 
@@ -197,7 +197,7 @@ class RedactionResponseBodyAdviceTest {
         response,
       )
 
-    verify(redaction, times(1)).apply(any(), any())
+    verify(redaction, times(1)).apply(any(), any(), any())
     result shouldBe redactedBody
   }
 

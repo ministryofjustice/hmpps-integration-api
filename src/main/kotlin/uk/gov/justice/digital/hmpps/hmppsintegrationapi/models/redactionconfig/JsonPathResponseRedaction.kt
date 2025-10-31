@@ -16,6 +16,7 @@ class JsonPathResponseRedaction(
   private val pathPatterns: List<Regex>? = paths?.map(::Regex)
 
   override fun apply(
+    policyName: String,
     redactionContext: RedactionContext,
     responseBody: Any,
   ): Any {
@@ -32,7 +33,7 @@ class JsonPathResponseRedaction(
 
     val doc = parseForSearch(jsonString)
     includes.orEmpty().forEach { jsonPath ->
-      redactValues(jsonPath, doc, redactionContext)
+      redactValues(jsonPath, doc, redactionContext, policyName)
     }
     return objectMapper.readValue(doc.jsonString(), responseBody::class.java)
   }
@@ -41,14 +42,23 @@ class JsonPathResponseRedaction(
     jsonPath: String,
     doc: DocumentContext,
     redactionContext: RedactionContext? = null,
+    policyName: String,
   ) {
+    var masks = 0
+    var removes = 0
     for (matchedPath in allMatchingPaths(jsonPath, doc)) {
       when (type) {
-        RedactionType.MASK -> doc.set(matchedPath, REDACTION_MASKING_TEXT)
-        RedactionType.REMOVE -> doc.delete(matchedPath)
+        RedactionType.MASK -> {
+          doc.set(matchedPath, REDACTION_MASKING_TEXT)
+          masks++
+        }
+        RedactionType.REMOVE -> {
+          doc.delete(matchedPath)
+          removes++
+        }
       }
-      redactionContext?.trackRedaction(type)
     }
+    redactionContext?.trackRedaction(policyName, masks, removes)
   }
 
   fun allMatchingPaths(

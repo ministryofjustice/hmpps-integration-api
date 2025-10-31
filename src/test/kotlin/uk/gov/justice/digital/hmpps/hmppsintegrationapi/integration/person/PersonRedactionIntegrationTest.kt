@@ -16,7 +16,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.writeAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import java.io.File
 
@@ -89,7 +88,15 @@ class PersonRedactionIntegrationTest : IntegrationTestBase() {
           .andExpect(jsonPath("$.data.prisonerOffenderSearch.pncId").value("**REDACTED**"))
           .andExpect(jsonPath("$.data.probationOffenderSearch").doesNotExist())
 
-        verify(telemetryService, times(1)).trackEvent("RedactionEvent", mapOf("type" to RedactionType.REMOVE.name, "uri" to "$basePath/$crn"))
+        verify(telemetryService, times(1)).trackEvent(
+          "RedactionEvent",
+          mapOf(
+            "policyName" to "prison-education",
+            "clientId" to "role-based-redacted-client",
+            "masks" to "0",
+            "removes" to "1",
+          ),
+        )
         prisonerOffenderSearchMockServer.assertValidationPassed()
       }
     }

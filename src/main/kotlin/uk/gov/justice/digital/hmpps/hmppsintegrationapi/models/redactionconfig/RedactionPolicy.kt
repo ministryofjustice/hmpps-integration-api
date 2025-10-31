@@ -4,13 +4,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionConte
 
 interface ResponseRedaction {
   fun apply(
+    policyName: String,
     redactionContext: RedactionContext,
     responseBody: Any,
   ): Any
 }
 
 data class RedactionPolicy(
-  val name: String? = null,
+  val name: String,
   val responseRedactions: List<ResponseRedaction>? = null,
 )
 
