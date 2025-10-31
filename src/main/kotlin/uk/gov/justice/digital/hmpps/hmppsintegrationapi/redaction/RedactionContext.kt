@@ -20,13 +20,17 @@ class RedactionContext(
     policyName: String,
     masks: Int,
     removes: Int,
-  ) = telemetryService.trackEvent(
-    "RedactionEvent",
-    mapOf(
-      "policyName" to policyName,
-      "clientId" to clientId,
-      "masks" to masks.toString(),
-      "removes" to removes.toString(),
-    ),
-  )
+  ) {
+    if (masks > 0 || removes > 0) {
+      telemetryService.trackEvent(
+        "RedactionEvent",
+        mapOf(
+          "policyName" to policyName,
+          "clientId" to clientId,
+          "masks" to masks.toString(),
+          "removes" to removes.toString(),
+        ),
+      )
+    }
+  }
 }
