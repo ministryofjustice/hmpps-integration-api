@@ -14,8 +14,8 @@ class RoleConstantsBuilder {
 
   fun build(): RoleConstants = RoleConstants(allEndpoints)
 
-  fun allEndpoints(init: IncludeBuilder.() -> Unit) {
-    IncludeBuilder().apply(init).content?.let {
+  fun allEndpoints(init: PermissionBuilder.() -> Unit) {
+    PermissionBuilder().apply(init).content?.let {
       allEndpoints.addAll(it)
     }
   }
@@ -31,18 +31,18 @@ fun role(
 class RoleBuilder(
   private val name: String,
 ) {
-  private var includes: MutableList<String>? = null
+  private var permissions: MutableList<String>? = null
   private var filters: ConsumerFilters? = null
   private var redactionPolicies: MutableList<RedactionPolicy>? = null
 
-  fun build(): Role = Role(name, includes, filters, redactionPolicies)
+  fun build(): Role = Role(name, permissions, filters, redactionPolicies)
 
-  fun include(init: IncludeBuilder.() -> Unit) {
-    IncludeBuilder().apply(init).content?.let {
-      if (includes == null) {
-        includes = mutableListOf()
+  fun permissions(init: PermissionBuilder.() -> Unit) {
+    PermissionBuilder().apply(init).content?.let {
+      if (permissions == null) {
+        permissions = mutableListOf()
       }
-      includes?.addAll(it)
+      permissions?.addAll(it)
     }
   }
 
@@ -58,7 +58,7 @@ class RoleBuilder(
   }
 }
 
-class IncludeBuilder {
+class PermissionBuilder {
   var content: MutableList<String>? = null
 
   operator fun String.unaryMinus() {
