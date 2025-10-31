@@ -98,8 +98,6 @@ feature-flag:
   simple-redaction: false
   use-contact-events-endpoint: true
   epf-endpoint-includes-lao: false
-  use-roles-dsl: true
-  redaction-policy-enabled: false
   cpr-enabled: true
 
 authorisation:

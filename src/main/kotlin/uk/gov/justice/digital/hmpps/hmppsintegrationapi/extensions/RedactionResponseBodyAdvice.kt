@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 
 import com.jayway.jsonpath.Configuration
 import com.jayway.jsonpath.Option
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.core.MethodParameter
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.Series.SUCCESSFUL
@@ -23,12 +22,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionConte
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
 @ControllerAdvice
-@ConditionalOnProperty(
-  prefix = "feature-flag",
-  name = ["redaction-policy-enabled"],
-  havingValue = "true",
-  matchIfMissing = false,
-)
 class RedactionResponseBodyAdvice(
   val authorisationConfig: AuthorisationConfig,
   val accessFor: GetCaseAccess,

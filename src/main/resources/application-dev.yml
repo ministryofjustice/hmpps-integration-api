@@ -65,8 +65,6 @@ feature-flag:
   use-contact-events-endpoint: true
   epf-endpoint-includes-lao: true
   epf-gateway-disabled: true
-  use-roles-dsl: true
-  redaction-policy-enabled: true
   cpr-enabled: true
 
 authorisation:
