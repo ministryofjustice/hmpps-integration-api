@@ -1,0 +1,17 @@
+name: Production Smoke Test
+on:
+  workflow_call:
+jobs:
+  prod-smoke-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup K6
+        uses: grafana/setup-k6-action@v1
+      - name: Run production smoke tests
+        uses: grafana/run-k6-action@v1
+        with:
+          inspect-flags: '--env PROFILE=PROD --env DOMAIN=integration-api.hmpps.service.justice.gov.uk --env SMOKE_TEST_CERT=${{ secrets.PROD_SMOKE_TEST_CERT }} --env SMOKE_TEST_KEY=${{ secrets.PROD_SMOKE_TEST_KEY }} --env SMOKE_TEST_API_KEY=${{ secrets.PROD_SMOKE_TEST_API_KEY }}'
+          flags: '--env PROFILE=PROD --env DOMAIN=integration-api.hmpps.service.justice.gov.uk --env SMOKE_TEST_CERT=${{ secrets.PROD_SMOKE_TEST_CERT }} --env SMOKE_TEST_KEY=${{ secrets.PROD_SMOKE_TEST_KEY }} --env SMOKE_TEST_API_KEY=${{ secrets.PROD_SMOKE_TEST_API_KEY }}'
+          path: ./scripts/K6/smoke-tests.js
