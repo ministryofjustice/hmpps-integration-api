@@ -68,11 +68,11 @@ feature-flag:
 authorisation:
   consumers:
     ctrlo:
-      include:
-      filters:
+      notes: "See client list in Confluence"
       roles:
         - "ctrlo"
     moj-pes:
+      notes: "See client list in Confluence"
       include:
         - "/v1/persons/.*/name"
         - "/v1/hmpps/id/nomis-number/[^/]*$"
@@ -80,32 +80,26 @@ authorisation:
         - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
         - "/v1/persons/.*/cell-location"
         - "/v1/status"
-      filters:
     kubernetes-health-check-client:
-      include:
-        - "/health/liveness"
-        - "/health/readiness"
-        - "/v1/status"
-      filters:
+      notes: "Kubernetes cluster automated healthchecks"
+      roles:
+        - "hmpps-system"
     event-service:
-      include:
-        - "/v2/config/authorisation"
-        - "/v1/status"
-      filters:
+      notes: "HMPPS External Events service"
+      roles:
+        - "hmpps-system"
     meganexus:
-      include:
-      filters:
+      notes: "See client list in Confluence"
       roles:
         - "curious"
     pnd:
-      include:
-      filters:
+      notes: "See client list in Confluence"
       roles:
         - "police"
     smoke-test:
-      include:
-        - "/v1/status"
-        - "/v2/config/authorisation"
+      notes: "Post-deployment smoke tests"
+      roles:
+        - "hmpps-system"
 
 redaction:
   client-names:
