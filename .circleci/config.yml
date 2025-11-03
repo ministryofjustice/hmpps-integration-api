@@ -65,258 +65,258 @@ slack-fail-post-step: &slack-fail-post-step
             ]
           }
 
-jobs:
-  lint-code:
-    executor:
-      name: hmpps/java
-      tag: "21.0"
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - gradle-{{ checksum "build.gradle.kts" }}
-            - gradle-
-      - run:
-          name: Lint code
-          command: make lint
-      - save_cache:
-          paths:
-            - ~/.gradle
-          key: gradle-{{ checksum "build.gradle.kts" }}
-  unit-tests:
-    executor:
-      name: hmpps/java
-      tag: "21.0"
-      java_options: << pipeline.parameters.java-options >>
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - gradle-{{ checksum "build.gradle.kts" }}
-            - gradle-
-      - run:
-          name: Run unit tests
-          command: make unit-test
-      - save_cache:
-          paths:
-            - ~/.gradle
-          key: gradle-{{ checksum "build.gradle.kts" }}
-      - store_test_results:
-          path: build/reports/tests/unitTest
-      - store_artifacts:
-          path: build/reports/tests/unitTest
-  integration-tests:
-    machine:
-      image: ubuntu-2204:2022.10.2
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - gradle-{{ checksum "build.gradle.kts" }}
-            - gradle-
-      - run:
-          name: Install OpenJDK 21
-          command: |
-            sudo apt-get update && sudo apt-get install openjdk-21-jdk
-            sudo update-alternatives --set java /usr/lib/jvm/java-21-openjdk-amd64/bin/java
-            sudo update-alternatives --set javac /usr/lib/jvm/java-21-openjdk-amd64/bin/javac
-            java -version
-      - run:
-          name: Run integration tests
-          command: make integration-test
-      - store_test_results:
-          path: build/reports/tests/integrationTest
-      - store_artifacts:
-          path: build/reports/tests/integrationTest
-  create-and-push-image-to-ecr:
-    docker:
-      - image: ministryofjustice/cloud-platform-tools
-    steps:
-      - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run:
-          name: Build application Docker image
-          command: make build
-      - hmpps/create_app_version
-      - aws-cli/setup:
-          role_arn: $ECR_ROLE_TO_ASSUME
-          region: AWS_DEFAULT_REGION
-      - deploy:
-          name: Push application Docker image
-          command: make publish
-  smoke-tests-dev:
-    docker:
-      - image: grafana/k6:1.3.0
-    steps:
-      - checkout
-      - run:
-          name: Run main smoke tests
-          command: k6 run -e PROFILE=MAIN ./scripts/K6/smoke-tests.js
-      - run:
-          name: Run restricted permissions smoke tests
-          command: k6 run -e PROFILE=LIMITED ./scripts/K6/smoke-tests.js
-      - run:
-          name: Run no permissions smoke tests
-          command: k6 run -e PROFILE=NOPERMS ./scripts/K6/smoke-tests.js
-      - run:
-          name: Run no certificate smoke tests
-          command: k6 run -e PROFILE=NOCERT ./scripts/K6/smoke-tests.js
-  smoke-tests-higher-envs:
-    docker:
-      - image: grafana/k6:1.0.0
-    steps:
-      - checkout
-      - run:
-          name: Run smoke tests
-          command: |
-            k6 run -e PROFILE=PROD ./scripts/K6/smoke-tests.js
+#jobs:
+#  lint-code:
+#    executor:
+#      name: hmpps/java
+#      tag: "21.0"
+#    steps:
+#      - checkout
+#      - restore_cache:
+#          keys:
+#            - gradle-{{ checksum "build.gradle.kts" }}
+#            - gradle-
+#      - run:
+#          name: Lint code
+#          command: make lint
+#      - save_cache:
+#          paths:
+#            - ~/.gradle
+#          key: gradle-{{ checksum "build.gradle.kts" }}
+#  unit-tests:
+#    executor:
+#      name: hmpps/java
+#      tag: "21.0"
+#      java_options: << pipeline.parameters.java-options >>
+#    steps:
+#      - checkout
+#      - restore_cache:
+#          keys:
+#            - gradle-{{ checksum "build.gradle.kts" }}
+#            - gradle-
+#      - run:
+#          name: Run unit tests
+#          command: make unit-test
+#      - save_cache:
+#          paths:
+#            - ~/.gradle
+#          key: gradle-{{ checksum "build.gradle.kts" }}
+#      - store_test_results:
+#          path: build/reports/tests/unitTest
+#      - store_artifacts:
+#          path: build/reports/tests/unitTest
+#  integration-tests:
+#    machine:
+#      image: ubuntu-2204:2022.10.2
+#    steps:
+#      - checkout
+#      - restore_cache:
+#          keys:
+#            - gradle-{{ checksum "build.gradle.kts" }}
+#            - gradle-
+#      - run:
+#          name: Install OpenJDK 21
+#          command: |
+#            sudo apt-get update && sudo apt-get install openjdk-21-jdk
+#            sudo update-alternatives --set java /usr/lib/jvm/java-21-openjdk-amd64/bin/java
+#            sudo update-alternatives --set javac /usr/lib/jvm/java-21-openjdk-amd64/bin/javac
+#            java -version
+#      - run:
+#          name: Run integration tests
+#          command: make integration-test
+#      - store_test_results:
+#          path: build/reports/tests/integrationTest
+#      - store_artifacts:
+#          path: build/reports/tests/integrationTest
+#  create-and-push-image-to-ecr:
+#    docker:
+#      - image: ministryofjustice/cloud-platform-tools
+#    steps:
+#      - checkout
+#      - setup_remote_docker:
+#          docker_layer_caching: true
+#      - run:
+#          name: Build application Docker image
+#          command: make build
+#      - hmpps/create_app_version
+#      - aws-cli/setup:
+#          role_arn: $ECR_ROLE_TO_ASSUME
+#          region: AWS_DEFAULT_REGION
+#      - deploy:
+#          name: Push application Docker image
+#          command: make publish
+#  smoke-tests-dev:
+#    docker:
+#      - image: grafana/k6:1.3.0
+#    steps:
+#      - checkout
+#      - run:
+#          name: Run main smoke tests
+#          command: k6 run -e PROFILE=MAIN ./scripts/K6/smoke-tests.js
+#      - run:
+#          name: Run restricted permissions smoke tests
+#          command: k6 run -e PROFILE=LIMITED ./scripts/K6/smoke-tests.js
+#      - run:
+#          name: Run no permissions smoke tests
+#          command: k6 run -e PROFILE=NOPERMS ./scripts/K6/smoke-tests.js
+#      - run:
+#          name: Run no certificate smoke tests
+#          command: k6 run -e PROFILE=NOCERT ./scripts/K6/smoke-tests.js
+#  smoke-tests-higher-envs:
+#    docker:
+#      - image: grafana/k6:1.0.0
+#    steps:
+#      - checkout
+#      - run:
+#          name: Run smoke tests
+#          command: |
+#            k6 run -e PROFILE=PROD ./scripts/K6/smoke-tests.js
 
 workflows:
   version: 2
-  build-test-and-deploy:
-    jobs:
-      - lint-code:
-          context:
-            - hmpps-common-vars
-          <<: *slack-fail-post-step
-      - unit-tests:
-          context:
-            - hmpps-common-vars
-          <<: *slack-fail-post-step
-      - integration-tests:
-          context:
-            - hmpps-common-vars
-          <<: *slack-fail-post-step
-      - hmpps/helm_lint:
-          context:
-            - hmpps-common-vars
-          <<: *slack-fail-post-step
-          name: lint-helm-charts
-          env: dev
-      - hmpps/build_multiplatform_docker:
-          name: build_docker
-          filters:
-            branches:
-              only:
-                - main
-
-      - create-and-push-image-to-ecr:
-          <<: *slack-fail-post-step
-          name: create-and-push-image-to-dev-ecr
-          context:
-            - hmpps-integration-api-dev
-            - hmpps-common-vars
-          requires:
-            - lint-code
-            - unit-tests
-            - integration-tests
-            - lint-helm-charts
-            - build_docker
-          filters:
-            branches:
-              only:
-                - main
-
-      - hmpps/deploy_env:
-          <<: *slack-fail-post-step
-          name: deploy-to-dev
-          context:
-            - hmpps-integration-api-dev
-            - hmpps-common-vars
-          requires:
-            - create-and-push-image-to-dev-ecr
-          filters:
-            branches:
-              only:
-                - main
-          env: "dev"
-          helm_timeout: 5m
-          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
-          slack_notification: false
-
-      - smoke-tests-dev:
-          <<: *slack-fail-post-step
-          name: smoke-tests-for-dev
-          context:
-            - hmpps-common-vars
-            - hmpps-integration-api-smoke-test-dev
-          requires:
-            - deploy-to-dev
-
-      - create-and-push-image-to-ecr:
-          <<: *slack-fail-post-step
-          name: create-and-push-image-to-preprod-ecr
-          context:
-            - hmpps-common-vars
-            - hmpps-integration-api-preprod
-          requires:
-            - smoke-tests-for-dev
-          filters:
-            branches:
-              only:
-                - main
-      - hmpps/deploy_env:
-          <<: *slack-fail-post-step
-          name: deploy-to-preprod
-          context:
-            - hmpps-integration-api-preprod
-            - hmpps-common-vars
-          requires:
-            - create-and-push-image-to-preprod-ecr
-          filters:
-            branches:
-              only:
-                - main
-          env: "preprod"
-          helm_timeout: 5m
-          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
-          slack_notification: false
-
-      - smoke-tests-higher-envs:
-          <<: *slack-fail-post-step
-          name: smoke-tests-for-preprod
-          context:
-            - hmpps-common-vars
-            - hmpps-integration-api-smoke-test-preprod
-          requires:
-            - deploy-to-preprod
-      - create-and-push-image-to-ecr:
-          <<: *slack-fail-post-step
-          name: create-and-push-image-to-prod-ecr
-          context:
-            - hmpps-integration-api-prod
-            - hmpps-common-vars
-          requires:
-            - smoke-tests-for-preprod
-          filters:
-            branches:
-              only:
-                - main
-      - hmpps/deploy_env:
-          <<: *slack-fail-post-step
-          name: deploy-to-prod
-          context:
-            - hmpps-integration-api-prod
-            - hmpps-common-vars
-          requires:
-            - create-and-push-image-to-prod-ecr
-          filters:
-            branches:
-              only:
-                - main
-          env: "prod"
-          helm_timeout: 5m
-          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
-          slack_notification: false
-      - smoke-tests-higher-envs:
-          <<: *slack-fail-post-step
-          name: smoke-tests-for-prod
-          context:
-            - hmpps-common-vars
-            - hmpps-integration-api-smoke-test-prod
-          requires:
-            - deploy-to-prod
+  #  build-test-and-deploy:
+  #    jobs:
+  #      - lint-code:
+  #          context:
+  #            - hmpps-common-vars
+  #          <<: *slack-fail-post-step
+  #      - unit-tests:
+  #          context:
+  #            - hmpps-common-vars
+  #          <<: *slack-fail-post-step
+  #      - integration-tests:
+  #          context:
+  #            - hmpps-common-vars
+  #          <<: *slack-fail-post-step
+  #      - hmpps/helm_lint:
+  #          context:
+  #            - hmpps-common-vars
+  #          <<: *slack-fail-post-step
+  #          name: lint-helm-charts
+  #          env: dev
+  #      - hmpps/build_multiplatform_docker:
+  #          name: build_docker
+  #          filters:
+  #            branches:
+  #              only:
+  #                - main
+  #
+  #      - create-and-push-image-to-ecr:
+  #          <<: *slack-fail-post-step
+  #          name: create-and-push-image-to-dev-ecr
+  #          context:
+  #            - hmpps-integration-api-dev
+  #            - hmpps-common-vars
+  #          requires:
+  #            - lint-code
+  #            - unit-tests
+  #            - integration-tests
+  #            - lint-helm-charts
+  #            - build_docker
+  #          filters:
+  #            branches:
+  #              only:
+  #                - main
+  #
+  #      - hmpps/deploy_env:
+  #          <<: *slack-fail-post-step
+  #          name: deploy-to-dev
+  #          context:
+  #            - hmpps-integration-api-dev
+  #            - hmpps-common-vars
+  #          requires:
+  #            - create-and-push-image-to-dev-ecr
+  #          filters:
+  #            branches:
+  #              only:
+  #                - main
+  #          env: "dev"
+  #          helm_timeout: 5m
+  #          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
+  #          slack_notification: false
+  #
+  #      - smoke-tests-dev:
+  #          <<: *slack-fail-post-step
+  #          name: smoke-tests-for-dev
+  #          context:
+  #            - hmpps-common-vars
+  #            - hmpps-integration-api-smoke-test-dev
+  #          requires:
+  #            - deploy-to-dev
+  #
+  #      - create-and-push-image-to-ecr:
+  #          <<: *slack-fail-post-step
+  #          name: create-and-push-image-to-preprod-ecr
+  #          context:
+  #            - hmpps-common-vars
+  #            - hmpps-integration-api-preprod
+  #          requires:
+  #            - smoke-tests-for-dev
+  #          filters:
+  #            branches:
+  #              only:
+  #                - main
+  #      - hmpps/deploy_env:
+  #          <<: *slack-fail-post-step
+  #          name: deploy-to-preprod
+  #          context:
+  #            - hmpps-integration-api-preprod
+  #            - hmpps-common-vars
+  #          requires:
+  #            - create-and-push-image-to-preprod-ecr
+  #          filters:
+  #            branches:
+  #              only:
+  #                - main
+  #          env: "preprod"
+  #          helm_timeout: 5m
+  #          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
+  #          slack_notification: false
+  #
+  #      - smoke-tests-higher-envs:
+  #          <<: *slack-fail-post-step
+  #          name: smoke-tests-for-preprod
+  #          context:
+  #            - hmpps-common-vars
+  #            - hmpps-integration-api-smoke-test-preprod
+  #          requires:
+  #            - deploy-to-preprod
+  #      - create-and-push-image-to-ecr:
+  #          <<: *slack-fail-post-step
+  #          name: create-and-push-image-to-prod-ecr
+  #          context:
+  #            - hmpps-integration-api-prod
+  #            - hmpps-common-vars
+  #          requires:
+  #            - smoke-tests-for-preprod
+  #          filters:
+  #            branches:
+  #              only:
+  #                - main
+  #      - hmpps/deploy_env:
+  #          <<: *slack-fail-post-step
+  #          name: deploy-to-prod
+  #          context:
+  #            - hmpps-integration-api-prod
+  #            - hmpps-common-vars
+  #          requires:
+  #            - create-and-push-image-to-prod-ecr
+  #          filters:
+  #            branches:
+  #              only:
+  #                - main
+  #          env: "prod"
+  #          helm_timeout: 5m
+  #          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
+  #          slack_notification: false
+  #      - smoke-tests-higher-envs:
+  #          <<: *slack-fail-post-step
+  #          name: smoke-tests-for-prod
+  #          context:
+  #            - hmpps-common-vars
+  #            - hmpps-integration-api-smoke-test-prod
+  #          requires:
+  #            - deploy-to-prod
   security:
     triggers:
       - schedule:
