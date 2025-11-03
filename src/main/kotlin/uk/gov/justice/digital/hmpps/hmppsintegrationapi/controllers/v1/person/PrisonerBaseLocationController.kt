@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerBaseLocation
@@ -26,7 +25,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 @RequestMapping("/v1/persons")
 @Tags(value = [Tag(name = "Persons"), Tag(name = "Education")])
 class PrisonerBaseLocationController(
-  private val featureFlag: FeatureFlagConfig,
   private val getPrisonerBaseLocationForPersonService: GetPrisonerBaseLocationForPersonService,
   private val auditService: AuditService,
 ) {
@@ -43,8 +41,6 @@ class PrisonerBaseLocationController(
     @Parameter(description = "A HMPPS id", example = "A123123") @PathVariable hmppsId: String,
     @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<PrisonerBaseLocation?> {
-    featureFlag.require(FeatureFlagConfig.USE_PRISONER_BASE_LOCATION_ENDPOINT)
-
     val response = getPrisonerBaseLocationForPersonService.execute(hmppsId, filters)
     when {
       response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND) -> throw EntityNotFoundException("Could not find prisoner base location for id: $hmppsId")
