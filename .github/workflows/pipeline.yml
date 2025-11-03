@@ -85,20 +85,20 @@ jobs:
     secrets: inherit
     needs:
       - deploy_preprod
-#  deploy_prod:
-#    name: Deploy to production environment
-#    needs:
-#      - build
-#      - preprod-smoke-tests
-#    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
-#    secrets: inherit
-#    with:
-#      environment: 'prod'
-#      app_version: '${{ needs.build.outputs.app_version }}'
-#      slack_notification: 'true' # if 'true', it needs a valid PROD_RELEASES_SLACK_CHANNEL variable to be set
-#  prod-smoke-tests:
-#    uses: ./.github/workflows/smoke-test-prod.yml
-#    secrets: inherit
-#    needs:
-#      - build
-#      - deploy_prod
+  deploy_prod:
+    name: Deploy to production environment
+    needs:
+      - build
+      - preprod-smoke-tests
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
+    secrets: inherit
+    with:
+      environment: 'prod'
+      app_version: '${{ needs.build.outputs.app_version }}'
+      slack_notification: 'true' # if 'true', it needs a valid PROD_RELEASES_SLACK_CHANNEL variable to be set
+  prod-smoke-tests:
+    uses: ./.github/workflows/smoke-test-prod.yml
+    secrets: inherit
+    needs:
+      - build
+      - deploy_prod
