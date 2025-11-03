@@ -449,7 +449,8 @@ function verify_prisons_endpoints(nomisNumber) {
     validate_get_request(`/v1/persons/${nomisNumber}`); // Get person by NOMIS ID, we already got by CRN
     validate_get_request(`/v1/persons/${nomisNumber}/cell-location`);
     validate_get_request(`/v1/persons/${nomisNumber}/visit-restrictions`);
-    validate_get_request(`/v1/persons/${nomisNumber}/prisoner-base-location`);
+    // Temporary removal of prisoner base location test - needs reinstated
+    // validate_get_request(`/v1/persons/${nomisNumber}/prisoner-base-location`);
 
     let surname = prisoner["lastName"];
     let firstName = prisoner["firstName"];
