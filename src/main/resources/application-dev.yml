@@ -47,7 +47,6 @@ services:
     base-url: https://hmpps-person-record-dev.hmpps.service.justice.gov.uk
 
 feature-flag:
-  use-eswe-curious-endpoints: true
   use-update-attendance-endpoint: true
   use-schedule-detail-endpoint: true
   use-search-appointments-endpoint: true
@@ -57,8 +56,6 @@ feature-flag:
   use-allocation-endpoint: true
   use-historical-attendances-endpoint: true
   use-education-endpoint: true
-  use-expression-of-interest-endpoint: true
-  use-prisoner-base-location-endpoint: true
   use-prisoner-base-location-api: true
   use-suitability-endpoint: true
   use-waiting-list-endpoint: true
@@ -68,144 +65,98 @@ feature-flag:
   epf-gateway-disabled: true
   use-roles-dsl: true
   redaction-policy-enabled: true
-  cpr-enabled: false
+  cpr-enabled: true
 
 authorisation:
   consumers:
     mapps:
-      include:
-      filters:
+      notes: "See client list in Confluence"
       roles:
         - "mappa"
     ctrlo:
-      include:
-      filters:
+      notes: "See client list in Confluence"
       roles:
         - "ctrlo"
     moj-pes:
-      include:
-        - "/v1/persons/.*/name"
-        - "/v1/hmpps/id/nomis-number/[^/]*$"
-        - "/v1/hmpps/id/by-nomis-number/[^/]*$"
-        - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
-        - "/v1/persons/.*/cell-location"
-        - "/v1/status"
-      filters:
+      notes: "See client list in Confluence"
+      roles:
+        - "moj-prisoner-education"
     kubernetes-health-check-client:
-      include:
-        - "/health/liveness"
-        - "/health/readiness"
-        - "/v1/status"
-      filters:
+      notes: "Kubernetes cluster automated healthchecks"
+      roles:
+        - "hmpps-system"
     pnd:
-      include:
-      filters:
+      notes: "See client list in Confluence"
       roles:
         - "police"
     event-service:
-      include:
-        - "/v2/config/authorisation"
-        - "/v1/status"
-      filters:
+      notes: "HMPPS External Events service"
+      roles:
+        - "hmpps-system"
     mryall:
-      include:
-      filters:
       roles:
         - "full-access"
     kilco:
-      include:
       filters:
         prisons:
           - MKI
       roles:
         - "private-prison"
     meganexus:
-      include:
-      filters:
+      notes: "See client list in Confluence"
       roles:
         - "curious"
     moj-esw:
-      include:
-        - "/v1/persons/[^/]+/expression-of-interest/jobs/[^/]+$"
-        - "/v1/hmpps/id/by-nomis-number/[^/]*$"
-        - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
-        - "/v1/persons/[^/]*$"
-        - "/v1/persons/[^/]+/prisoner-base-location"
-        - "/v1/persons/.*/education/assessments"
-        - "/v1/status"
-      filters:
+      notes: "HMPPS Education Skills and Work team"
+      roles:
+        - "curious"
     serco:
-      include:
-        - "/v1/persons"
-        - "/v1/prison/prisoners/[^/]*$"
-        - "/v1/prison/prisoners"
-        - "/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
-        - "/v1/hmpps/id/by-nomis-number/[^/]*$"
-        - "/v1/status"
-      filters:
+      notes: "See client list in Confluence"
+      roles:
+        - "serco"
     unilink:
-      include:
-      filters:
+      notes: "See client list in Confluence"
       roles:
         - "private-prison"
     prisonerfacing:
-      include:
-        - "/v1/persons/.*/name"
-        - "/v1/hmpps/id/by-nomis-number/[^/]*$"
-        - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
-        - "/v1/persons/.*/cell-location"
-        - "/v1/prison/prisoners/[^/]*$" # This has been provided for testing purposes. Approval needed before access can be provided in prod.
-        - "/v1/status"
-      filters:
+      notes: "See client list in Confluence"
+      roles:
+        - "moj-prisoner-facing"
     abritton:
-      include:
-      filters:
       roles:
         - "full-access"
     jbetton:
-      include:
-      filters:
       roles:
         - "full-access"
     smoke-test-full-access:
-      include:
-      filters:
+      notes: "Automated post-deployment smoke tests (happy path)"
       roles:
         - "full-access"
     smoke-test-limited-access:
-      include:
-      filters:
+      notes: "Automated post-deployment smoke tests (some access denied)"
       roles:
         - "private-prison"
     smoke-test-no-access:
-      include:
-      filters:
+      notes: "Automated post-deployment smoke tests (all access denied)"
       roles:
     test:
-      include:
       filters:
         prisons:
           - MKI
       roles:
         - "private-prison"
     sleach:
-      include:
-      filters:
+      notes: "https://peoplefinder.service.gov.uk/people/steve-leach"
       roles:
         - "full-access"
     pmcphee:
-      include:
-      filters:
       roles:
         - "full-access"
     geoamey:
-      include:
-      filters:
+      notes: "See client list in Confluence"
       roles:
         - "prisoner-escort-custody-service"
     zkhan:
-      include:
-      filters:
       roles:
         - "full-access"
 

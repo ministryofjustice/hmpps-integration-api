@@ -7,7 +7,7 @@ generic-service:
   serviceAccountName: hmpps-integration-api
 
   image:
-    repository: quay.io/hmpps/hmpps-integration-api
+    repository: ghcr.io/ministryofjustice/hmpps-integration-api
     tag: app_version # override at deployment time
     port: 8080
 

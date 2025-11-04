@@ -1,3 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception
 
-class LimitedAccessFailedException : RuntimeException("LAO Check failed")
+class LimitedAccessFailedException(
+  msg: String = "LAO Check failed",
+) : RuntimeException(msg)

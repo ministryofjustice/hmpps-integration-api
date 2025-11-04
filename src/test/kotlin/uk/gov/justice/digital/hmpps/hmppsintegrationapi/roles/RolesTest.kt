@@ -9,17 +9,17 @@ import kotlin.test.Test
 class RolesTest {
   @Test
   fun `fullAccessRole includes is the same as AllEndpointsRole includes`() {
-    assertThat(roles["full-access"]?.include).isEqualTo(roles["all-endpoints"]?.include)
+    assertThat(roles["full-access"]?.permissions).isEqualTo(roles["all-endpoints"]?.permissions)
   }
 
   @Test
   fun `fullAccessRole includes holds all endpoints`() {
-    assertThat(roles["full-access"]?.include).isEqualTo(roleConstants.allEndpoints)
+    assertThat(roles["full-access"]?.permissions).isEqualTo(roleConstants.allEndpoints)
   }
 
   @Test
   fun `ReferenceDataOnlyRole includes has 2 items`() {
-    assertThat(roles["reference-data-only"]?.include?.size).isEqualTo(2)
+    assertThat(roles["reference-data-only"]?.permissions?.size).isEqualTo(2)
   }
 
   @Test

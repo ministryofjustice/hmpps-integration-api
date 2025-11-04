@@ -45,7 +45,6 @@ services:
     base-url: https://hmpps-person-record-preprod.hmpps.service.justice.gov.uk
 
 feature-flag:
-  use-eswe-curious-endpoints: true
   use-update-attendance-endpoint: true
   use-schedule-detail-endpoint: true
   use-search-appointments-endpoint: true
@@ -54,66 +53,52 @@ feature-flag:
   use-deallocation-reasons-endpoint: true
   use-allocation-endpoint: true
   use-education-endpoint: true
-  use-expression-of-interest-endpoint: true
-  use-prisoner-base-location-endpoint: true
   use-prisoner-base-location-api: false
   use-historical-attendances-endpoint: true
   use-suitability-endpoint: true
   use-waiting-list-endpoint: true
-  simple-redaction: true
+  simple-redaction: false
   use-contact-events-endpoint: false
   epf-endpoint-includes-lao: false
   epf-gateway-disabled: true
   use-roles-dsl: true
-  redaction-policy-enabled: false
+  redaction-policy-enabled: true
   cpr-enabled: false
 
 authorisation:
   consumers:
     ctrlo:
-      include:
-      filters:
+      notes: "See client list in Confluence"
       roles:
         - "ctrlo"
     moj-pes:
-      include:
-        - "/v1/persons/.*/name"
-        - "/v1/hmpps/id/nomis-number/[^/]*$"
-        - "/v1/hmpps/id/by-nomis-number/[^/]*$"
-        - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
-        - "/v1/persons/.*/cell-location"
-        - "/v1/status"
-      filters:
+      notes: "See client list in Confluence"
+      roles:
+        - "moj-prisoner-education"
     kubernetes-health-check-client:
-      include:
-        - "/health/liveness"
-        - "/health/readiness"
-        - "/v1/status"
-      filters:
+      notes: "Kubernetes cluster automated healthchecks"
+      roles:
+        - "hmpps-system"
     event-service:
-      include:
-        - "/v2/config/authorisation"
-        - "/v1/status"
-      filters:
+      notes: "HMPPS External Events service"
+      roles:
+        - "hmpps-system"
     meganexus:
-      include:
-      filters:
+      notes: "See client list in Confluence"
       roles:
         - "curious"
     pnd:
-      include:
-      filters:
+      notes: "See client list in Confluence"
       roles:
         - "police"
     pmcphee:
-      include:
-      filters:
+      notes: "ExtApi developer"
       roles:
         - "police"
     smoke-test:
-      include:
-        - "/v1/status"
-        - "/v2/config/authorisation"
+      notes: "Post-deployment smoke tests"
+      roles:
+        - "hmpps-system"
 
 redaction:
   client-names:

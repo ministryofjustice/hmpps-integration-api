@@ -1,11 +1,11 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles
 
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.laoRedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
 
 val police =
   role("police") {
-    include {
-      -"/v1/persons"
+    permissions {
       -"/v1/persons/[^/]*$"
       -"/v1/persons/.*/addresses"
       -"/v1/pnd/persons/.*/alerts"
@@ -20,4 +20,9 @@ val police =
       -"/v1/hmpps/reference-data"
       -"/v1/status"
     }
+    redactionPolicies(
+      listOf(
+        laoRedactionPolicy,
+      ),
+    )
   }

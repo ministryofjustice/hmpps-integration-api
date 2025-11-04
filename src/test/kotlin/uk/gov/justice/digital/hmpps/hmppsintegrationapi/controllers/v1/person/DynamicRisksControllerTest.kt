@@ -4,14 +4,17 @@ import io.kotest.assertions.json.shouldContainJsonKeyValue
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
+import io.mockk.every
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doThrow
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
@@ -24,19 +27,20 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfigu
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.LaoRedactorAspect
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.Redactor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DynamicRisk
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolicyConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.REDACTION_MASKING_TEXT
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithLaoRedactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetDynamicRisksForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
 @WebMvcTest(controllers = [DynamicRisksController::class])
-@Import(value = [WebMvcTestConfiguration::class, AopAutoConfiguration::class, LaoRedactorAspect::class, RedactionPolicyConfig::class])
+@Import(value = [WebMvcTestConfiguration::class])
 @ActiveProfiles("test-redaction-enabled")
 internal class DynamicRisksControllerTest(
   @Autowired var springMockMvc: MockMvc,
@@ -44,6 +48,7 @@ internal class DynamicRisksControllerTest(
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getCaseAccess: GetCaseAccess,
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
+  @MockitoBean val telemetryService: TelemetryService,
 ) : DescribeSpec(
     {
       val hmppsId = "A1234AA"
@@ -55,8 +60,11 @@ internal class DynamicRisksControllerTest(
 
       describe("GET $path") {
         beforeTest {
+          mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
+          every { roles["full-access"] } returns testRoleWithLaoRedactions
           Mockito.reset(getDynamicRisksForPersonService)
           Mockito.reset(auditService)
+          Mockito.reset(telemetryService)
           whenever(getCaseAccess.getAccessFor(any())).thenReturn(CaseAccess(laoOkCrn, false, false, "", ""))
           whenever(getCaseAccess.getAccessFor("R754321")).thenReturn(null)
           whenever(getDynamicRisksForPersonService.execute(hmppsId)).thenReturn(
@@ -80,6 +88,10 @@ internal class DynamicRisksControllerTest(
                 ),
             ),
           )
+        }
+
+        afterTest {
+          unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
         }
 
         it("returns a 200 OK status code") {
@@ -163,17 +175,24 @@ internal class DynamicRisksControllerTest(
               "description": "Subject has a ViSOR record",
               "startDate": "2023-09-08",
               "reviewDate": "2026-04-29",
-              "notes": "${Redactor.REDACTED}"
+              "notes": "$REDACTION_MASKING_TEXT"
             },
             {
               "code": "RHRH",
               "description": "High Risk of Harm",
               "startDate": "2022-09-01",
               "reviewDate": "2024-12-23",
-              "notes": "${Redactor.REDACTED}"
+              "notes": "$REDACTION_MASKING_TEXT"
             }
           ]
         """.removeWhitespaceAndNewlines(),
+          )
+
+          // Verify a telemetry event has been written
+          // 2 masks on the notes fields
+          verify(telemetryService, times(1)).trackEvent(
+            "RedactionEvent",
+            mapOf("policyName" to "lao-redactions", "clientId" to "automated-test-client", "masks" to "2", "removes" to "0", "rejects" to "0"),
           )
         }
 
