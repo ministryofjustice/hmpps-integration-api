@@ -75,8 +75,9 @@ repositories {
 }
 
 tasks {
-  // Define the generated classes to be excluded from coverage reports
-  val generatedClassesToBeExcluded =
+  // Define the classes to be excluded from coverage reports.
+  // ***APPROVAL** Please obtain approval from Service Technical Architect prior updating this list
+  val classesToBeExcluded =
     arrayOf(
       "uk.gov.justice.digital.hmpps.hmppsintegrationapi.HmppsIntegrationApiKt",
     )
@@ -98,7 +99,7 @@ tasks {
       reports {
         filters {
           excludes {
-            classes(*generatedClassesToBeExcluded)
+            classes(*classesToBeExcluded)
           }
         }
       }
@@ -126,7 +127,7 @@ tasks {
         "--classfiles=build/classes/kotlin/main",
         "--html=coverage",
         "--xml=coverage/report.xml",
-      ) + generatedClassesToBeExcluded.map { "--exclude=$it" }
+      ) + classesToBeExcluded.map { "--exclude=$it" }
   }
 
   val koverCli by registering(Copy::class) {
