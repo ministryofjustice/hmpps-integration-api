@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.prisonerEscortCust
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.privatePrison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.referenceDataOnly
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.serco
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.statusOnly
 
 data class Role(
   val name: String? = null,
@@ -113,4 +114,5 @@ val roles =
     mojPrisonerEducation,
     mojPrisonerFacing,
     serco,
+    statusOnly,
   ).associateBy { it.name }

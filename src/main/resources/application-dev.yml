@@ -159,6 +159,10 @@ authorisation:
     zkhan:
       roles:
         - "full-access"
+    socrates:
+      notes: "See client list in Confluence"
+      roles:
+        - "status-only"
 
 redaction:
   client-names:
