@@ -2,10 +2,12 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
 
-val referenceDataOnly =
-  role("reference-data-only") {
+val hmppsSystem =
+  role("hmpps-system") {
     permissions {
-      -"/v1/hmpps/reference-data"
+      -"/health/liveness"
+      -"/health/readiness"
       -"/v1/status"
+      -"/v2/config/authorisation"
     }
   }

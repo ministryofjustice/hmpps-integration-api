@@ -21,7 +21,7 @@ class AuthorisationConfig {
   fun hasAccess(
     consumerName: String,
     endpoint: String,
-  ): Boolean = anyMatch(allIncludes(consumerName), endpoint)
+  ): Boolean = anyMatch(allPermissions(consumerName), endpoint)
 
   /**
    * Returns a list of consumers with access to a particular endpoint.
@@ -36,11 +36,11 @@ class AuthorisationConfig {
   /**
    * Returns a list of all endpoint permissions for a consumer, whether direct or from roles.
    */
-  fun allIncludes(consumerName: String): List<String> {
+  fun allPermissions(consumerName: String): List<String> {
     val merged = mutableSetOf<String>()
-    merged.addAll(consumers[consumerName]?.include.orEmpty())
+    merged.addAll(consumers[consumerName]?.permissions().orEmpty())
     for (roleName in consumers[consumerName]?.roles ?: emptyList()) {
-      merged.addAll(roles[roleName]?.include.orEmpty())
+      merged.addAll(roles[roleName]?.permissions.orEmpty())
     }
     return merged.toList().sorted()
   }
@@ -62,7 +62,7 @@ class AuthorisationConfig {
       consumerConfig?.roles?.mapNotNull {
         uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles[it]
       }
-    val consumerPseudoRole = Role(include = null, filters = consumerConfig?.filters)
+    val consumerPseudoRole = Role(permissions = null, filters = consumerConfig?.filters)
     val allRoles: List<Role> = listOf(consumerPseudoRole) + (roles ?: emptyList())
 
     if (allRoles.all { it.filters?.hasFilters() == false }) {

@@ -4,19 +4,23 @@ import com.jayway.jsonpath.Configuration
 import com.jayway.jsonpath.Option
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.core.MethodParameter
+import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatus.Series.SUCCESSFUL
 import org.springframework.http.MediaType
 import org.springframework.http.converter.HttpMessageConverter
 import org.springframework.http.server.ServerHttpRequest
 import org.springframework.http.server.ServerHttpResponse
 import org.springframework.http.server.ServletServerHttpRequest
+import org.springframework.http.server.ServletServerHttpResponse
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.servlet.HandlerMapping
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionContext
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
 @ControllerAdvice
 @ConditionalOnProperty(
@@ -27,7 +31,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 )
 class RedactionResponseBodyAdvice(
   val authorisationConfig: AuthorisationConfig,
-  val globalRedactions: Map<String, RedactionPolicy>,
+  val accessFor: GetCaseAccess,
+  val telemetryService: TelemetryService,
 ) : ResponseBodyAdvice<Any> {
   val config: Configuration =
     Configuration
@@ -54,6 +59,10 @@ class RedactionResponseBodyAdvice(
     if (body == null) return null
     if (!selectedContentType.includes(MediaType.APPLICATION_JSON)) return body
 
+    if (HttpStatus.Series.valueOf((response as ServletServerHttpResponse).servletResponse.status) != SUCCESSFUL) {
+      return body
+    }
+
     val servletRequest =
       (request as ServletServerHttpRequest).servletRequest.apply {
         (getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE) as? Map<String, String>)
@@ -63,23 +72,20 @@ class RedactionResponseBodyAdvice(
     val requestUri = servletRequest.requestURI
     val subjectDistinguishedName = servletRequest.getAttribute("clientName") as? String
     val redactionPolicies = getRedactionPoliciesFromRoles(subjectDistinguishedName)
-
-    return when (body) {
-      is DataResponse<*> -> applyPolicies(requestUri, body, redactionPolicies)
-      is PaginatedResponse<*> -> applyPolicies(requestUri, body, redactionPolicies)
-      else -> body
-    }
+    val hmppsId = servletRequest.getAttribute("hmppsId") as? String
+    val redactionContext = RedactionContext(requestUri, accessFor, telemetryService, hmppsId, subjectDistinguishedName)
+    return applyPolicies(redactionContext, body, redactionPolicies)
   }
 
   fun applyPolicies(
-    requestUri: String,
+    redactionContext: RedactionContext,
     responseBody: Any,
     policies: List<RedactionPolicy>?,
   ): Any? {
     var redactedBody = responseBody
     for (policy in policies.orEmpty()) {
       policy.responseRedactions?.forEach { redaction ->
-        redactedBody = redaction.apply(requestUri, redactedBody)
+        redactedBody = redaction.apply(policy.name, redactionContext, redactedBody)
       }
     }
     return redactedBody
@@ -87,7 +93,6 @@ class RedactionResponseBodyAdvice(
 
   private fun getRedactionPoliciesFromRoles(subjectDistinguishedName: String?): List<RedactionPolicy> =
     buildList {
-      addAll(globalRedactions.values)
       val consumerRoles = authorisationConfig.consumers[subjectDistinguishedName]?.roles.orEmpty()
       consumerRoles.forEach { role ->
         addAll(roles[role]?.redactionPolicies.orEmpty())

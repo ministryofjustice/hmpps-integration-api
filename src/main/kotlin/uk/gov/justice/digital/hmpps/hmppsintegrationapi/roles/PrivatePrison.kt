@@ -4,7 +4,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
 
 val privatePrison =
   role("private-prison") {
-    include {
+    permissions {
       -"/v1/hmpps/id/by-nomis-number/[^/]*$"
       -"/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
       -"/v1/persons/.*/addresses"

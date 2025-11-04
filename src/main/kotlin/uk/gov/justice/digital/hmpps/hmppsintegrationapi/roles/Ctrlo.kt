@@ -4,7 +4,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
 
 val ctrlo =
   role("ctrlo") {
-    include {
+    permissions {
       -"/v1/epf/person-details/.*/[^/]*$"
       -"/v1/status"
       -"/v1/persons/.*/access-limitations"

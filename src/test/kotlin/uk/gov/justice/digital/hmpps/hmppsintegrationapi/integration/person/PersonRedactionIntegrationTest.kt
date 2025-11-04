@@ -6,18 +6,25 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.writeAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import java.io.File
 
 @ActiveProfiles("integration-test-redaction-enabled")
 @TestPropertySource(properties = ["services.ndelius.base-url=http://localhost:4201"])
 class PersonRedactionIntegrationTest : IntegrationTestBase() {
+  @MockitoBean
+  lateinit var telemetryService: TelemetryService
+
   @AfterEach
   fun resetValidators() {
     prisonerOffenderSearchMockServer.resetValidator()
@@ -81,6 +88,16 @@ class PersonRedactionIntegrationTest : IntegrationTestBase() {
           .andExpect(jsonPath("$.data.prisonerOffenderSearch.pncId").value("**REDACTED**"))
           .andExpect(jsonPath("$.data.probationOffenderSearch").doesNotExist())
 
+        verify(telemetryService, times(1)).trackEvent(
+          "RedactionEvent",
+          mapOf(
+            "policyName" to "prison-education",
+            "clientId" to "role-based-redacted-client",
+            "masks" to "0",
+            "removes" to "1",
+            "rejects" to "0",
+          ),
+        )
         prisonerOffenderSearchMockServer.assertValidationPassed()
       }
     }
