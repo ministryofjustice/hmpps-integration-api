@@ -18,27 +18,11 @@ on:
 permissions:
   contents: read
   packages: write
-concurrency:
-  # Only cancel in progress when on a branch - use SHA on main to ensure uniqueness.
-  # This will allow multiple pipelines to run at the same time on main.
-  # Note that two pipelines running within a few minutes of each other will cause issues with helm deploying to
-  # a namespace, as the second one will not be able to get a lock as a deploy will be in progress.
-  group: ${{ github.workflow }}-${{ github.ref == 'refs/heads/main' && github.sha || github.ref }}
-  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 jobs:
   test:
     name: Test
     uses: ./.github/workflows/test.yml
     secrets: inherit
-  helm_lint:
-    strategy:
-      matrix:
-        environments: ['dev', 'preprod', 'prod']
-    name: helm lint
-    uses: ministryofjustice/hmpps-github-actions/.github/workflows/test_helm_lint.yml@v2 # WORKFLOW_VERSION
-    secrets: inherit
-    with:
-      environment: ${{ matrix.environments }}
   build:
     name: Build docker image from hmpps-github-actions
     if: github.ref == 'refs/heads/main'
@@ -51,18 +35,65 @@ jobs:
       additional_docker_tag: ${{ inputs.additional_docker_tag }}
       push: ${{ inputs.push || true }}
       docker_multiplatform: false
+  deploy_dev:
+    concurrency:
+      # Only 1 job can deploy to dev at a time
+      group: hmpps-external-api-dev
+      cancel-in-progress: false
+    name: Deploy to the development environment
+    needs:
+      - build
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
+    secrets: inherit
+    with:
+      environment: 'dev'
+      app_version: '${{ needs.build.outputs.app_version }}'
+      slack_notification: 'true' # if 'true', it needs a valid NONPROD_RELEASES_SLACK_CHANNEL variable to be set
   dev-smoke-tests:
     uses: ./.github/workflows/smoke-test-dev.yml
     secrets: inherit
     needs:
       - build
+      - deploy_dev
+  deploy_preprod:
+    concurrency:
+      # Only 1 job can deploy to preprod at a time
+      group: hmpps-external-api-preprod
+      cancel-in-progress: false
+    name: Deploy to pre-production environment
+    needs:
+      - build
+      - dev-smoke-tests
+      - deploy_dev
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
+    secrets: inherit
+    with:
+      environment: 'preprod'
+      app_version: '${{ needs.build.outputs.app_version }}'
+      slack_notification: 'true' # if 'true', it needs a valid NONPROD_RELEASES_SLACK_CHANNEL variable to be set
   preprod-smoke-tests:
     uses: ./.github/workflows/smoke-test-preprod.yml
     secrets: inherit
     needs:
-      - dev-smoke-tests
+      - deploy_preprod
+  deploy_prod:
+    concurrency:
+      # Only 1 job can deploy to prod at a time
+      group: hmpps-external-api-prod
+      cancel-in-progress: false
+    name: Deploy to production environment
+    needs:
+      - build
+      - preprod-smoke-tests
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
+    secrets: inherit
+    with:
+      environment: 'prod'
+      app_version: '${{ needs.build.outputs.app_version }}'
+      slack_notification: 'true' # if 'true', it needs a valid PROD_RELEASES_SLACK_CHANNEL variable to be set
   prod-smoke-tests:
     uses: ./.github/workflows/smoke-test-prod.yml
     secrets: inherit
     needs:
-      - preprod-smoke-tests
+      - build
+      - deploy_prod

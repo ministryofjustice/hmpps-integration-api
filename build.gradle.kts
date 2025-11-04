@@ -19,12 +19,12 @@ dependencies {
   runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.13.0")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
-  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.24.0")
-  implementation("io.sentry:sentry-logback:8.24.0")
+  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.25.0")
+  implementation("io.sentry:sentry-logback:8.25.0")
   implementation("org.springframework.data:spring-data-commons")
   implementation("org.springframework:spring-aop")
   implementation("org.aspectj:aspectjweaver")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.6.0") {
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.6.1") {
     exclude("org.springframework.security", "spring-security-config")
     exclude("org.springframework.security", "spring-security-core")
     exclude("org.springframework.security", "spring-security-crypto")
@@ -34,7 +34,7 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
   implementation("io.jsonwebtoken:jjwt-api:0.13.0")
-  implementation("com.jayway.jsonpath:json-path:2.9.0")
+  implementation("com.jayway.jsonpath:json-path:2.10.0")
 
   testImplementation("io.kotest:kotest-assertions-json-jvm:6.0.4")
   testImplementation("io.kotest:kotest-runner-junit5-jvm:6.0.4")
@@ -43,7 +43,7 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kover-cli:0.9.3")
   testImplementation("org.wiremock:wiremock-standalone:3.13.1")
   testImplementation("org.mockito:mockito-core:5.20.0")
-  testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.20.0")
+  testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.20.1")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
   testImplementation("com.atlassian.oai:swagger-request-validator-wiremock:2.46.0") {
     // Exclude WireMock artifacts
