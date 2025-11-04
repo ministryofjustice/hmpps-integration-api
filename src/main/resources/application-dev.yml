@@ -62,8 +62,6 @@ feature-flag:
   use-contact-events-endpoint: true
   epf-endpoint-includes-lao: true
   epf-gateway-disabled: true
-  use-roles-dsl: true
-  redaction-policy-enabled: true
   cpr-enabled: true
 
 authorisation:
@@ -158,3 +156,11 @@ authorisation:
     zkhan:
       roles:
         - "full-access"
+    socrates:
+      notes: "See client list in Confluence"
+      roles:
+        - "status-only"
+    unify:
+      notes: "See client list in Confluence"
+      roles:
+        - "status-only"

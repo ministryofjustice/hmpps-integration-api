@@ -92,8 +92,6 @@ feature-flag:
   use-waiting-list-endpoint: true
   use-contact-events-endpoint: true
   use-stubbed-contact-events-data: false
-  use-roles-dsl: true
-  redaction-policy-enabled: true
 
 authorisation:
   consumers:

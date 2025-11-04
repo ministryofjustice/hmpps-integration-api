@@ -18,7 +18,15 @@ jobs:
         uses: gradle/actions/setup-gradle@v5
       - name: Run ktlintCheck
         run: make lint
-
+  helm_lint:
+    strategy:
+      matrix:
+        environments: ['dev', 'preprod', 'prod']
+    name: helm lint
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/test_helm_lint.yml@v2 # WORKFLOW_VERSION
+    secrets: inherit
+    with:
+      environment: ${{ matrix.environments }}
   detekt:
     name: Static Code Analysis
     runs-on: ubuntu-latest
@@ -36,7 +44,7 @@ jobs:
         run: ./gradlew detekt
       - name: Upload raw test reports on failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: detekt results
           path: |
@@ -58,7 +66,7 @@ jobs:
         run: TEST_TYPE="UNIT" ./gradlew koverBinaryReport
       - name: Upload raw test reports on failure
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: unit_test_results
           path: |
@@ -67,7 +75,7 @@ jobs:
             build/kover
             build/reports/tests
       - name: Publish Test Report
-        uses: ctrf-io/github-test-reporter@9bd31188517cfb3ff683f135041cc3bfbb0c78b3
+        uses: ctrf-io/github-test-reporter@024bc4b64d997ca9da86833c6b9548c55c620e40
         with:
           report-path: './build/test-results/unitTest/*.xml'
           use-suite-name: true
@@ -107,7 +115,7 @@ jobs:
         run: TEST_TYPE="INT" ./gradlew koverXmlReport
       - name: Upload raw test reports on failure
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: integration_test_results
           path: |
@@ -116,7 +124,7 @@ jobs:
             build/reports/tests
             build/kover
       - name: Publish Test Report
-        uses: ctrf-io/github-test-reporter@9bd31188517cfb3ff683f135041cc3bfbb0c78b3
+        uses: ctrf-io/github-test-reporter@024bc4b64d997ca9da86833c6b9548c55c620e40
         with:
           report-path: './build/test-results/integrationTest/*.xml'
           use-suite-name: true
@@ -150,13 +158,13 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v5
       - name: download the unit_test coverage
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: unit_test_results
           path: |
             unit_test_results/
       - name: download the integration_test coverage
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: integration_test_results
           path: |
@@ -184,7 +192,7 @@ jobs:
           coverage-counter-type: LINE
         if: github.event_name == 'pull_request'
       - name: Upload coverage report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: coverage
           path: |

@@ -60,8 +60,6 @@ feature-flag:
   use-contact-events-endpoint: false
   epf-endpoint-includes-lao: false
   epf-gateway-disabled: true
-  use-roles-dsl: true
-  redaction-policy-enabled: true
   cpr-enabled: false
 
 authorisation:
@@ -72,13 +70,8 @@ authorisation:
         - "ctrlo"
     moj-pes:
       notes: "See client list in Confluence"
-      include:
-        - "/v1/persons/.*/name"
-        - "/v1/hmpps/id/nomis-number/[^/]*$"
-        - "/v1/hmpps/id/by-nomis-number/[^/]*$"
-        - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
-        - "/v1/persons/.*/cell-location"
-        - "/v1/status"
+      roles:
+        - "moj-prisoner-education"
     kubernetes-health-check-client:
       notes: "Kubernetes cluster automated healthchecks"
       roles:
