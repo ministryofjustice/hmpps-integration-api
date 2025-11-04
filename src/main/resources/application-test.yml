@@ -104,17 +104,16 @@ authorisation:
       roles:
         - "full-access"
     config-v2-test:
-      include:
-        - "/v2/config/authorisation"
+      roles:
+        - "hmpps-system"
       filters:
         prisons:
           - XYZ
     no-include-or-roles:
     empty-include:
       notes: "A test consumer with no permissions"
-      include:
     empty-roles:
-      roles:
+      notes: "Consumer with no roles"
     limited-prisons:
       roles:
         - "all-endpoints"
@@ -129,7 +128,6 @@ authorisation:
     private-prison-only:
       roles:
         - "private-prison"
-      include:
       filters:
     limited-case-notes:
       roles:
