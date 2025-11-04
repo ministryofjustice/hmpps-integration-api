@@ -12,5 +12,4 @@ class HmppsIntegrationApi
 
 fun main(args: Array<String>) {
   runApplication<HmppsIntegrationApi>(*args)
-  // some dummy change
 }
