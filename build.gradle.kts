@@ -75,6 +75,12 @@ repositories {
 }
 
 tasks {
+  // Define the generated classes to be excluded from coverage reports
+  val generatedClassesToBeExcluded =
+    arrayOf(
+      "uk.gov.justice.digital.hmpps.hmppsintegrationapi.HmppsIntegrationApiKt",
+    )
+
   // Enables the coverage report to be created for only unit tests or integration tests
   // This is so the unit and integration tests can be run in parallel
   // Could have just called
@@ -82,10 +88,6 @@ tasks {
     val environment = System.getenv()
     val testType = environment["TEST_TYPE"] ?: "UNIT"
     val excluded = if (testType == "UNIT") "integrationTest" else "unitTest"
-    val generatedClassesToBeExcluded =
-      arrayOf(
-        "uk.gov.justice.digital.hmpps.hmppsintegrationapi.HmppsIntegrationApiKt",
-      )
     kover {
       currentProject {
         instrumentation {
@@ -124,7 +126,7 @@ tasks {
         "--classfiles=build/classes/kotlin/main",
         "--html=coverage",
         "--xml=coverage/report.xml",
-      )
+      ) + generatedClassesToBeExcluded.map { "--exclude=$it" }
   }
 
   val koverCli by registering(Copy::class) {
