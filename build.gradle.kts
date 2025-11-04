@@ -82,16 +82,22 @@ tasks {
     val environment = System.getenv()
     val testType = environment["TEST_TYPE"] ?: "UNIT"
     val excluded = if (testType == "UNIT") "integrationTest" else "unitTest"
-    val excludingClasses =
+    val generatedClassesToBeExcluded =
       arrayOf(
-        "uk.gov.justice.digital.hmpps.hmppsintegrationapi.HmppsIntegrationApi",
+        "uk.gov.justice.digital.hmpps.hmppsintegrationapi.HmppsIntegrationApiKt",
       )
     kover {
       currentProject {
         instrumentation {
           disabledForTestTasks.add(excluded)
           disabledForTestTasks.add("test")
-          excludedClasses.addAll(*excludingClasses)
+        }
+      }
+      reports {
+        filters {
+          excludes {
+            classes(*generatedClassesToBeExcluded)
+          }
         }
       }
     }
