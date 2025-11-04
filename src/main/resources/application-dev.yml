@@ -167,6 +167,7 @@ authorisation:
       notes: "See client list in Confluence"
       roles:
         - "status-only"
+
 redaction:
   client-names:
     - meganexus
