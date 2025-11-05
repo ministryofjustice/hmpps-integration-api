@@ -1,13 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.config
 
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.junit.jupiter.api.Test
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.core.io.ClassPathResource
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -15,44 +10,35 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
-class AuthorisationConfigTest {
+class AuthorisationConfigTest : ConfigTest() {
   companion object {
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
   }
 
-  fun getConfig(environment: String): AuthorisationConfig {
-    val mapper = ObjectMapper(YAMLFactory()).registerKotlinModule()
-    val authConfig =
-      mapper
-        .readTree(ClassPathResource("application-$environment.yml").file)
-        .path("authorisation")
-    return mapper.convertValue(authConfig, object : TypeReference<AuthorisationConfig>() {})
-  }
-
   @Test
   fun `has permission`() {
-    assertTrue(getConfig("dev").hasAccess("smoke-test-full-access", "/v1/status"))
+    assertTrue(getAuthConfig("dev").hasAccess("smoke-test-full-access", "/v1/status"))
   }
 
   @Test
   fun `has permission to generic path`() {
-    assertTrue(getConfig("dev").hasAccess("smoke-test-full-access", "/v1/persons/{hmppsId}"))
+    assertTrue(getAuthConfig("dev").hasAccess("smoke-test-full-access", "/v1/persons/{hmppsId}"))
   }
 
   @Test
   fun `has permission to specific path`() {
-    assertTrue(getConfig("dev").hasAccess("smoke-test-full-access", "/v1/persons/ABC123"))
+    assertTrue(getAuthConfig("dev").hasAccess("smoke-test-full-access", "/v1/persons/ABC123"))
   }
 
   @Test
   fun `does not have permission`() {
-    assertFalse(getConfig("dev").hasAccess("smoke-test-limited-access", "/v9/status"))
+    assertFalse(getAuthConfig("dev").hasAccess("smoke-test-limited-access", "/v9/status"))
   }
 
   @Test
   fun `multiple matching consumers`() {
     for (env in listOf("dev", "preprod", "prod")) {
-      val matches = getConfig(env).consumersWithAccess("/v1/status")
+      val matches = getAuthConfig(env).consumersWithAccess("/v1/status")
       assertNotEquals(0, matches.size)
       assertContains(matches, "event-service")
       assertContains(matches, "kubernetes-health-check-client")
@@ -63,7 +49,7 @@ class AuthorisationConfigTest {
     environment: String,
     endpoint: String,
   ): List<String> {
-    val matches = getConfig(environment).consumersWithAccess(endpoint)
+    val matches = getAuthConfig(environment).consumersWithAccess(endpoint)
     logger.info("Consumers with access to {} in {} : {}", endpoint, environment, matches)
     return matches
   }
@@ -99,27 +85,27 @@ class AuthorisationConfigTest {
 
   @Test
   fun `compare missing and empty lists in ConsumerConfig`() {
-    val missing =
-      """
-      consumers:
-        tester:
-          roles:
-            - full-access
-      """.trimIndent()
+    val missingConfig =
+      parseConfig<AuthorisationConfig>(
+        """
+        consumers:
+          tester:
+            roles:
+              - full-access
+        """.trimIndent(),
+      )
 
-    val empty =
-      """
-      consumers:
-        tester:
-          include:
-          filters:
-          roles:
-            - full-access
-      """.trimIndent()
-
-    val mapper = ObjectMapper(YAMLFactory())
-    val missingConfig = mapper.readValue(missing, AuthorisationConfig::class.java)
-    val emptyConfig = mapper.readValue(empty, AuthorisationConfig::class.java)
+    val emptyConfig =
+      parseConfig<AuthorisationConfig>(
+        """
+        consumers:
+          tester:
+            include:
+            filters:
+            roles:
+              - full-access
+        """.trimIndent(),
+      )
 
     assertEquals(missingConfig.consumers["tester"]?.permissions(), emptyConfig.consumers["tester"]?.permissions())
     assertEquals(missingConfig.consumers["tester"]?.filters, emptyConfig.consumers["tester"]?.filters)
