@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v2.prison
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldContainOnly
 import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.maps.shouldHaveKeys
@@ -40,7 +41,7 @@ class ConfigControllerTests(
 
     actualConfig.shouldHaveKeys("config-v2-test")
     actualConfig["config-v2-test"].shouldNotBeNull()
-    actualConfig["config-v2-test"]!!.endpoints.shouldContainOnly("/v2/config/authorisation")
+    actualConfig["config-v2-test"]!!.endpoints.shouldContain("/v2/config/authorisation")
     actualConfig["config-v2-test"]!!.filters.shouldNotBeNull()
     actualConfig["config-v2-test"]!!.filters!!.prisons.shouldContainOnly("XYZ")
     actualConfig["config-v2-test"]!!.filters!!.caseNotes.shouldBeNull()

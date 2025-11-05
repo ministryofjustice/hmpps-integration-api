@@ -73,12 +73,11 @@ authorisation:
         - "full-access"
       filters:
     config-v2-test:
-      include:
-        - "/v2/config/authorisation"
+      roles:
+        - "hmpps-system"
       filters:
         prisons:
           - XYZ
     all-access:
-      include:
-        - "/.*"
-      filters:
+      roles:
+        - "full-access"
