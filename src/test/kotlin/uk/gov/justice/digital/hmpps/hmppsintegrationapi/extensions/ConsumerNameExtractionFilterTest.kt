@@ -33,6 +33,7 @@ class ConsumerNameExtractionFilterTest {
     // Arrange
     val mockRequest = mock(HttpServletRequest::class.java)
     whenever(mockRequest.getHeader("subject-distinguished-name")).thenReturn(",CN=consumer-name")
+    whenever(mockRequest.getHeader("cert-serial-number")).thenReturn("TEST_SERIAL_NUMBER")
 
     val mockResponse = mock(HttpServletResponse::class.java)
     val mockChain = mock(FilterChain::class.java)
@@ -41,6 +42,7 @@ class ConsumerNameExtractionFilterTest {
 
     // Assert
     verify(mockRequest, times(1)).setAttribute("clientName", "consumer-name")
+    verify(mockRequest, times(1)).setAttribute("certificateSerialNumber", "TEST_SERIAL_NUMBER")
   }
 
   @Test

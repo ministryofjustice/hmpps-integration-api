@@ -35,7 +35,8 @@ class ClientTrackingInterceptor : HandlerInterceptor {
     }
 
     // Set the certificate serial number in app insights
-    request.getHeader("cert-serial-number")?.let {
+    val certificateSerialNumber = request.getAttribute("certificateSerialNumber") as String?
+    certificateSerialNumber?.let {
       runCatching { Span.current().setAttribute("certSerialNumber", it) }
     }
 

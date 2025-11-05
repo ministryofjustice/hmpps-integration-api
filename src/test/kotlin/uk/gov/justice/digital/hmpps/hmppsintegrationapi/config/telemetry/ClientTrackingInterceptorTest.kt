@@ -21,14 +21,14 @@ class ClientTrackingInterceptorTest {
 
   @Test
   fun `handles a certificate serial number header`() {
-    whenever(request.getHeader("cert-serial-number")).thenReturn("TEST_SERIAL")
+    whenever(request.getAttribute("certificateSerialNumber")).thenReturn("TEST_SERIAL")
     val result = interceptor.preHandle(request, response, "")
     assertTrue(result)
   }
 
   @Test
   fun `handles a NULL certificate serial number header`() {
-    whenever(request.getHeader("cert-serial-number")).thenReturn(null)
+    whenever(request.getHeader("certificateSerialNumber")).thenReturn(null)
     val result = interceptor.preHandle(request, response, "")
     assertTrue(result)
   }
