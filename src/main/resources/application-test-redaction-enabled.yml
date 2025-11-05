@@ -99,8 +99,8 @@ authorisation:
       roles:
         - "full-access"
     config-v2-test:
-      include:
-        - "/v2/config/authorisation"
+      roles:
+        - "hmpps-system"
       filters:
         prisons:
           - XYZ
@@ -123,7 +123,6 @@ authorisation:
     private-prison-only:
       roles:
         - "private-prison"
-      include:
       filters:
     limited-case-notes:
       roles:

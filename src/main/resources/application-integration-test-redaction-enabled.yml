@@ -121,14 +121,14 @@ authorisation:
       roles:
         - "full-access"
     config-v2-test:
-      include:
-        - "/v2/config/authorisation"
+      roles:
+        - "hmpps-system"
       filters:
         prisons:
           - XYZ
     all-access:
-      include:
-        - "/.*"
+      roles:
+        - "full-access"
       filters:
     specific-prison:
       roles:
@@ -150,7 +150,6 @@ authorisation:
     private-prison-only:
       roles:
         - "private-prison"
-      include:
       filters:
     limited-case-notes:
       roles:
@@ -161,10 +160,8 @@ authorisation:
     reference-data-only-user:
       roles:
         - "reference-data-only"
-      include:
       filters:
     role-based-redacted-client:
       roles:
         - curious
-      include:
       filters:

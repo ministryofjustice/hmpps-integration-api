@@ -87,7 +87,7 @@ authorisation:
     pnd:
       notes: "See client list in Confluence"
       roles:
-        - "police"
+        - "status-only"
     smoke-test:
       notes: "Post-deployment smoke tests"
       roles:
