@@ -75,6 +75,13 @@ repositories {
 }
 
 tasks {
+  // Define the classes to be excluded from coverage reports.
+  // ***APPROVAL** Please obtain approval from Service Technical Architect prior updating this list
+  val classesToBeExcluded =
+    arrayOf(
+      "uk.gov.justice.digital.hmpps.hmppsintegrationapi.HmppsIntegrationApiKt",
+    )
+
   // Enables the coverage report to be created for only unit tests or integration tests
   // This is so the unit and integration tests can be run in parallel
   // Could have just called
@@ -87,6 +94,13 @@ tasks {
         instrumentation {
           disabledForTestTasks.add(excluded)
           disabledForTestTasks.add("test")
+        }
+      }
+      reports {
+        filters {
+          excludes {
+            classes(*classesToBeExcluded)
+          }
         }
       }
     }
@@ -113,7 +127,7 @@ tasks {
         "--classfiles=build/classes/kotlin/main",
         "--html=coverage",
         "--xml=coverage/report.xml",
-      )
+      ) + classesToBeExcluded.map { "--exclude=$it" }
   }
 
   val koverCli by registering(Copy::class) {

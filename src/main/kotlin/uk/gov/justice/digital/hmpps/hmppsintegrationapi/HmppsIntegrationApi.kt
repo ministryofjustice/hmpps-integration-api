@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.RedactionConfig
 
 @SpringBootApplication
-@EnableConfigurationProperties(FeatureFlagConfig::class, RedactionConfig::class)
+@EnableConfigurationProperties(RedactionConfig::class, FeatureFlagConfig::class)
 class HmppsIntegrationApi
 
 fun main(args: Array<String>) {
