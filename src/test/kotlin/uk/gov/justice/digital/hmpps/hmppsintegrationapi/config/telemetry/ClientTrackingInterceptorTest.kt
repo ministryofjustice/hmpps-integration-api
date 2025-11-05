@@ -19,7 +19,6 @@ class ClientTrackingInterceptorTest {
     assertTrue(result)
   }
 
-
   @Test
   fun `handles a certificate serial number header`() {
     whenever(request.getHeader("cert-serial-number")).thenReturn("TEST_SERIAL")
