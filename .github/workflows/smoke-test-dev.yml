@@ -9,27 +9,44 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup K6
         uses: grafana/setup-k6-action@v1
-      - name: Run Main profile
-        uses: grafana/run-k6-action@v1
-        with:
-          inspect-flags: '--env HMPPSID=X688624 --env PROFILE=MAIN --env DOMAIN=dev.integration-api.hmpps.service.justice.gov.uk --env FULL_ACCESS_CERT=${{ secrets.DEV_SMOKE_TEST_FULL_ACCESS_CERT }} --env FULL_ACCESS_KEY=${{ secrets.DEV_SMOKE_TEST_FULL_ACCESS_KEY }} --env FULL_ACCESS_API_KEY=${{ secrets.DEV_SMOKE_TEST_FULL_ACCESS_API_KEY }}'
-          flags: '--env HMPPSID=X688624 --env PROFILE=MAIN --env DOMAIN=dev.integration-api.hmpps.service.justice.gov.uk --env FULL_ACCESS_CERT=${{ secrets.DEV_SMOKE_TEST_FULL_ACCESS_CERT }} --env FULL_ACCESS_KEY=${{ secrets.DEV_SMOKE_TEST_FULL_ACCESS_KEY }} --env FULL_ACCESS_API_KEY=${{ secrets.DEV_SMOKE_TEST_FULL_ACCESS_API_KEY }}'
-          path: ./scripts/K6/smoke-tests.js
-      - name: Run No access
-        uses: grafana/run-k6-action@v1
-        with:
-          inspect-flags: '--env HMPPSID=X688624 --env PROFILE=NOPERMS --env DOMAIN=dev.integration-api.hmpps.service.justice.gov.uk --env NO_ACCESS_CERT=${{ secrets.DEV_SMOKE_TEST_NO_ACCESS_CERT }} --env NO_ACCESS_KEY=${{ secrets.DEV_SMOKE_TEST_NO_ACCESS_KEY }} --env NO_ACCESS_API_KEY=${{ secrets.DEV_SMOKE_TEST_NO_ACCESS_API_KEY }}'
-          flags: '--env HMPPSID=X688624 --env PROFILE=NOPERMS --env DOMAIN=dev.integration-api.hmpps.service.justice.gov.uk --env NO_ACCESS_CERT=${{ secrets.DEV_SMOKE_TEST_NO_ACCESS_CERT }} --env NO_ACCESS_KEY=${{ secrets.DEV_SMOKE_TEST_NO_ACCESS_KEY }} --env NO_ACCESS_API_KEY=${{ secrets.DEV_SMOKE_TEST_NO_ACCESS_API_KEY }}'
-          path: ./scripts/K6/smoke-tests.js
-      - name: Run No Certificate
-        uses: grafana/run-k6-action@v1
-        with:
-          inspect-flags: '--env HMPPSID=X688624 --env PROFILE=NOCERT --env DOMAIN=dev.integration-api.hmpps.service.justice.gov.uk --env NO_ACCESS_API_KEY=${{ secrets.DEV_SMOKE_TEST_NO_ACCESS_API_KEY }}'
-          flags: '--env HMPPSID=X688624 --env PROFILE=NOCERT --env DOMAIN=dev.integration-api.hmpps.service.justice.gov.uk --env NO_ACCESS_API_KEY=${{ secrets.DEV_SMOKE_TEST_NO_ACCESS_API_KEY }}'
-          path: ./scripts/K6/smoke-tests.js
-      - name: Run Limited access
-        uses: grafana/run-k6-action@v1
-        with:
-          inspect-flags: '--env HMPPSID=X688624 --env PROFILE=LIMITED --env DOMAIN=dev.integration-api.hmpps.service.justice.gov.uk --env LIMITED_ACCESS_CERT=${{ secrets.DEV_SMOKE_TEST_LIMITED_ACCESS_CERT }} --env LIMITED_ACCESS_KEY=${{ secrets.DEV_SMOKE_TEST_LIMITED_ACCESS_KEY }} --env NO_ACCESS_API_KEY=${{ secrets.DEV_SMOKE_TEST_LIMITED_ACCESS_API_KEY }}'
-          flags: '--env HMPPSID=X688624 --env PROFILE=LIMITED --env DOMAIN=dev.integration-api.hmpps.service.justice.gov.uk --env LIMITED_ACCESS_CERT=${{ secrets.DEV_SMOKE_TEST_LIMITED_ACCESS_CERT }} --env LIMITED_ACCESS_KEY=${{ secrets.DEV_SMOKE_TEST_LIMITED_ACCESS_KEY }} --env NO_ACCESS_API_KEY=${{ secrets.DEV_SMOKE_TEST_LIMITED_ACCESS_API_KEY }}'
-          path: ./scripts/K6/smoke-tests.js
+      - name: Run main Smoke Test script
+        shell: bash
+        env:
+          PROFILE: MAIN
+          HMPPSID: X688624
+          DOMAIN: dev.integration-api.hmpps.service.justice.gov.uk
+          CERT: "${{ secrets.DEV_SMOKE_TEST_FULL_ACCESS_CERT }}"
+          PRIVATE_KEY: "${{ secrets.DEV_SMOKE_TEST_FULL_ACCESS_KEY }}"
+          API_KEY: "${{ secrets.DEV_SMOKE_TEST_FULL_ACCESS_API_KEY }}"
+        run: |
+          k6 run --summary-mode=full --quiet ./scripts/K6/smoke-tests.js
+      - name: Run no access test
+        shell: bash
+        env:
+          PROFILE: NOPERMS
+          HMPPSID: X688624
+          DOMAIN: dev.integration-api.hmpps.service.justice.gov.uk
+          CERT: "${{ secrets.DEV_SMOKE_TEST_NO_ACCESS_CERT }}"
+          PRIVATE_KEY: "${{ secrets.DEV_SMOKE_TEST_NO_ACCESS_KEY }}"
+          API_KEY: "${{ secrets.DEV_SMOKE_TEST_NO_ACCESS_API_KEY }}"
+        run: |
+          k6 run --summary-mode=full --quiet ./scripts/K6/smoke-tests.js
+      - name: Run partial access test
+        shell: bash
+        env:
+          PROFILE: PARTIAL
+          HMPPSID: X688624
+          DOMAIN: dev.integration-api.hmpps.service.justice.gov.uk
+          CERT: "${{ secrets.DEV_SMOKE_TEST_LIMITED_ACCESS_CERT }}"
+          PRIVATE_KEY: "${{ secrets.DEV_SMOKE_TEST_LIMITED_ACCESS_KEY }}"
+          API_KEY: "${{ secrets.DEV_SMOKE_TEST_LIMITED_ACCESS_API_KEY }}"
+        run: |
+          k6 run --summary-mode=full --quiet ./scripts/K6/smoke-tests.js
+      - name: Run no cert test
+        shell: bash
+        env:
+          PROFILE: NOPERMS
+          HMPPSID: X688624
+          DOMAIN: dev.integration-api.hmpps.service.justice.gov.uk
+        run: |
+          k6 run --summary-mode=full --quiet ./scripts/K6/smoke-tests.js
