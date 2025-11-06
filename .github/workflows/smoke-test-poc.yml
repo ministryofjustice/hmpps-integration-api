@@ -39,5 +39,5 @@ jobs:
           PRIVATE_KEY: "${{ secrets.PREPROD_SMOKE_TEST_KEY }}"
           API_KEY: "${{ secrets.PREPROD_SMOKE_TEST_API_KEY }}"
         run: |
-          k6 run ./scripts/K6/smoke-tests.js
+          k6 run --summary-mode=full --quiet ./scripts/K6/smoke-tests.js
 
