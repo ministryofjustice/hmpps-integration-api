@@ -26,6 +26,8 @@ const profile = __ENV.PROFILE;
 const [cert, key, api_key] = read_certificate(profile);
 
 export const options = (cert === "") ? {} : {
+  vus: 1,
+  iterations: 1,
   tlsAuth: [
     {
       cert,
