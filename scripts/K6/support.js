@@ -21,11 +21,6 @@ export function read_certificate(profile) {
       key_val = __ENV.FULL_ACCESS_KEY;
       api_key_val = __ENV.FULL_ACCESS_API_KEY;
       break
-    case "PROD":
-      cert_val = __ENV.SMOKE_TEST_CERT;
-      key_val = __ENV.SMOKE_TEST_KEY;
-      api_key_val = __ENV.SMOKE_TEST_API_KEY;
-      break
     case "LIMITED":
       cert_val = __ENV.LIMITED_ACCESS_CERT;
       key_val = __ENV.LIMITED_ACCESS_KEY;
@@ -40,6 +35,13 @@ export function read_certificate(profile) {
       cert_val = "";
       key_val = "";
       api_key_val = __ENV.NO_ACCESS_API_KEY;
+      break
+    case "REVOKED":
+    case "PROD":
+    case "MINIMAL":
+      cert_val = __ENV.SMOKE_TEST_CERT;
+      key_val = __ENV.SMOKE_TEST_KEY;
+      api_key_val = __ENV.SMOKE_TEST_API_KEY;
       break
     default:
       console.log("Unknown profile: " + profile);
