@@ -1,4 +1,3 @@
-import http from "k6/http";
 import encoding from 'k6/encoding';
 
 function read_or_decode(value, suffix) {
@@ -18,36 +17,10 @@ function safer(value) {
   return value.trimEnd()
 }
 
-export function read_certificate(profile) {
+export function read_certificate() {
   let cert_val = safer(__ENV.CERT)
   let key_val = safer(__ENV.PRIVATE_KEY)
   let api_key_val = safer(__ENV.API_KEY)
-
-  // switch (profile) {
-  //   case "NOCERT":
-  //     cert_val = "";
-  //     key_val = "";
-  //     api_key_val = __ENV.NO_ACCESS_API_KEY;
-  //     break
-  //   case "PROD":
-  //     cert_val = __ENV.SMOKE_TEST_CERT;
-  //     key_val = __ENV.SMOKE_TEST_KEY;
-  //     api_key_val = __ENV.SMOKE_TEST_API_KEY;
-  //     break
-  //   case "MAIN":
-  //   case "MINIMAL":
-  //   case "NOPERMS":
-  //   case "LIMITED":
-  //   case "PARTIAL":
-  //   case "REVOKED":
-  //     let api_key = __ENV.API_KEY.trimEnd()
-  //     cert_val = ;
-  //     key_val = ;
-  //     api_key_val = api_key;
-  //     break
-  //   default:
-  //     console.log("Unknown profile: " + profile);
-  // }
 
   return [
     read_or_decode(cert_val, ".pem"),

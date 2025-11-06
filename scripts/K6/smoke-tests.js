@@ -23,7 +23,7 @@ import { read_certificate } from "./support.js"
 const domain = __ENV.DOMAIN;
 const profile = __ENV.PROFILE;
 
-const [cert, key, api_key] = read_certificate(profile);
+const [cert, key, api_key] = read_certificate();
 
 export const options = (cert === "") ? {} : {
   vus: 1,
