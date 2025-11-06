@@ -16,7 +16,7 @@ jobs:
         env:
           PROFILE: MINIMAL
           DOMAIN: preprod.integration-api.hmpps.service.justice.gov.uk
-          SMOKE_TEST_API_KEY: "${{ secrets.PREPROD_SMOKE_TEST_API_KEY }}"
+          SMOKE_TEST_API_KEY: "ABC ${{ secrets.PREPROD_SMOKE_TEST_API_KEY }}"
         run: |
           echo "Profile = $PROFILE"
           export API_KEY="${{ secrets.PREPROD_SMOKE_TEST_API_KEY }}"
