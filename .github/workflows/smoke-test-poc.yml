@@ -24,7 +24,7 @@ jobs:
           echo "API Key = $API_KEY"
           echo "Cert = $CERT"
           echo "Private key = $PRIVATE_KEY"
-          k6 run -e API_KEY=$API_KEY ./scripts/K6/smoke-tests.js
+          k6 run ./scripts/K6/smoke-tests.js
 #      - name: Run preprod smoke tests
 #        uses: grafana/run-k6-action@v1
 #        env:

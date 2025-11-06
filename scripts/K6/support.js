@@ -12,7 +12,6 @@ function read_or_decode(value, suffix) {
 }
 
 export function read_certificate(profile) {
-  console.log("API key: " + __ENV.SMOKE_TEST_API_KEY);
   let cert_val = ""
   let key_val = ""
   let api_key_val = ""
@@ -44,6 +43,7 @@ export function read_certificate(profile) {
       api_key_val = __ENV.SMOKE_TEST_API_KEY;
       break
     case "MINIMAL":
+      console.log("API key: " + __ENV.API_KEY);
       cert_val = __ENV.CERT;
       key_val = __ENV.PRIVATE_KEY;
       api_key_val = __ENV.API_KEY;
