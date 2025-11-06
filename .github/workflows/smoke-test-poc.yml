@@ -5,6 +5,7 @@ on:
       - 'HIA-1061_GHA_Smoke_test_POC'
 jobs:
   preprod-smoke-tests:
+    environment: preprod
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
