@@ -12,34 +12,39 @@ function read_or_decode(value, suffix) {
 }
 
 export function read_certificate(profile) {
-  let cert_val = ""
-  let key_val = ""
-  let api_key_val = ""
-  switch (profile) {
-    case "NOCERT":
-      cert_val = "";
-      key_val = "";
-      api_key_val = __ENV.NO_ACCESS_API_KEY;
-      break
-    case "PROD":
-      cert_val = __ENV.SMOKE_TEST_CERT;
-      key_val = __ENV.SMOKE_TEST_KEY;
-      api_key_val = __ENV.SMOKE_TEST_API_KEY;
-      break
-    case "MAIN":
-    case "MINIMAL":
-    case "NOPERMS":
-    case "LIMITED":
-    case "PARTIAL":
-    case "REVOKED":
-      let api_key = __ENV.API_KEY.trimEnd()
-      cert_val = __ENV.CERT;
-      key_val = __ENV.PRIVATE_KEY;
-      api_key_val = api_key;
-      break
-    default:
-      console.log("Unknown profile: " + profile);
+  let cert_val = __ENV.CERT
+  let key_val = __ENV.PRIVATE_KEY
+  let api_key_val = __ENV.API_KEY
+
+  if (api_key_val != null) {
+    api_key_val = api_key_val.trimEnd()
   }
+
+  // switch (profile) {
+  //   case "NOCERT":
+  //     cert_val = "";
+  //     key_val = "";
+  //     api_key_val = __ENV.NO_ACCESS_API_KEY;
+  //     break
+  //   case "PROD":
+  //     cert_val = __ENV.SMOKE_TEST_CERT;
+  //     key_val = __ENV.SMOKE_TEST_KEY;
+  //     api_key_val = __ENV.SMOKE_TEST_API_KEY;
+  //     break
+  //   case "MAIN":
+  //   case "MINIMAL":
+  //   case "NOPERMS":
+  //   case "LIMITED":
+  //   case "PARTIAL":
+  //   case "REVOKED":
+  //     let api_key = __ENV.API_KEY.trimEnd()
+  //     cert_val = ;
+  //     key_val = ;
+  //     api_key_val = api_key;
+  //     break
+  //   default:
+  //     console.log("Unknown profile: " + profile);
+  // }
 
   return [
     read_or_decode(cert_val, ".pem"),
