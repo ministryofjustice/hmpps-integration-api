@@ -14,7 +14,11 @@ jobs:
         env:
           PROFILE: MINIMAL
           DOMAIN: preprod.integration-api.hmpps.service.justice.gov.uk
+          CERT: "${{ secrets.PREPROD_SMOKE_TEST_CERT }}"
+          PRIVATE_KEY: "${{ secrets.PREPROD_SMOKE_TEST_KEY }}"
           API_KEY: "${{ secrets.PREPROD_SMOKE_TEST_API_KEY }}"
         run: |
           echo "Profile = $PROFILE"
           echo "API Key = $API_KEY"
+          echo "Cert = $CERT"
+          echo "Private key = $PRIVATE_KEY"
