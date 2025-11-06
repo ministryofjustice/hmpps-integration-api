@@ -19,6 +19,7 @@ jobs:
           SMOKE_TEST_API_KEY: ${{ secrets.PREPROD_SMOKE_TEST_API_KEY }}
         run: |
           echo "Profile = $PROFILE"
+          export API_KEY="${{ secrets.PREPROD_SMOKE_TEST_API_KEY }}"
           echo "API Key = $PREPROD_SMOKE_TEST_API_KEY"
           echo "XXX ${{ secrets.PREPROD_SMOKE_TEST_API_KEY }}"
 #      - name: Run preprod smoke tests
