@@ -13,7 +13,9 @@ jobs:
         uses: grafana/setup-k6-action@v1
       - name: Run preprod smoke tests
         uses: grafana/run-k6-action@v1
+        env:
+          PROFILE: MINIMAL
         with:
-          inspect-flags: '--env PROFILE=MINIMAL --env DOMAIN=preprod.integration-api.hmpps.service.justice.gov.uk --env SMOKE_TEST_CERT=${{ secrets.PREPROD_SMOKE_TEST_CERT }} --env SMOKE_TEST_KEY=${{ secrets.PREPROD_SMOKE_TEST_KEY }} --env SMOKE_TEST_API_KEY=${{ secrets.PREPROD_SMOKE_TEST_API_KEY }}'
-          flags: '--env PROFILE=MINIMAL --env DOMAIN=preprod.integration-api.hmpps.service.justice.gov.uk --env SMOKE_TEST_CERT=${{ secrets.PREPROD_SMOKE_TEST_CERT }} --env SMOKE_TEST_KEY=${{ secrets.PREPROD_SMOKE_TEST_KEY }} --env SMOKE_TEST_API_KEY=${{ secrets.PREPROD_SMOKE_TEST_API_KEY }}'
+          inspect-flags: '--env DOMAIN=preprod.integration-api.hmpps.service.justice.gov.uk --env SMOKE_TEST_CERT=${{ secrets.PREPROD_SMOKE_TEST_CERT }} --env SMOKE_TEST_KEY=${{ secrets.PREPROD_SMOKE_TEST_KEY }} --env SMOKE_TEST_API_KEY=${{ secrets.PREPROD_SMOKE_TEST_API_KEY }}'
+          flags: '--env DOMAIN=preprod.integration-api.hmpps.service.justice.gov.uk --env SMOKE_TEST_CERT=${{ secrets.PREPROD_SMOKE_TEST_CERT }} --env SMOKE_TEST_KEY=${{ secrets.PREPROD_SMOKE_TEST_KEY }} --env SMOKE_TEST_API_KEY=${{ secrets.PREPROD_SMOKE_TEST_API_KEY }}'
           path: ./scripts/K6/smoke-tests.js
