@@ -26,5 +26,11 @@ jobs:
         uses: grafana/setup-k6-action@v1
       - name: Run preprod smoke tests
         uses: grafana/run-k6-action@v1
+        env:
+          PROFILE: MINIMAL
+          DOMAIN: preprod.integration-api.hmpps.service.justice.gov.uk
+          CERT: "${{ secrets.PREPROD_SMOKE_TEST_CERT }}"
+          PRIVATE_KEY: "${{ secrets.PREPROD_SMOKE_TEST_KEY }}"
+          API_KEY: "${{ secrets.PREPROD_SMOKE_TEST_API_KEY }}"
         with:
           path: ./scripts/K6/smoke-tests.js
