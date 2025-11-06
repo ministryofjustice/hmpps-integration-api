@@ -11,14 +11,17 @@ function read_or_decode(value, suffix) {
   return encoding.b64decode(value, 'std', 's');
 }
 
-export function read_certificate(profile) {
-  let cert_val = __ENV.CERT
-  let key_val = __ENV.PRIVATE_KEY
-  let api_key_val = __ENV.API_KEY
-
-  if (api_key_val != null) {
-    api_key_val = api_key_val.trimEnd()
+function safer(value) {
+  if (value == null) {
+    return ""
   }
+  return value.trimEnd()
+}
+
+export function read_certificate(profile) {
+  let cert_val = safer(__ENV.CERT)
+  let key_val = safer(__ENV.PRIVATE_KEY)
+  let api_key_val = safer(__ENV.API_KEY)
 
   // switch (profile) {
   //   case "NOCERT":
