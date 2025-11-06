@@ -11,6 +11,11 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup K6
         uses: grafana/setup-k6-action@v1
+      - name: Show env vars
+        shell: bash
+        env:
+          SMOKE_TEST_API_KEY: ${{ secrets.PREPROD_SMOKE_TEST_API_KEY }}
+        run: echo "$PREPROD_SMOKE_TEST_API_KEY"
       - name: Run preprod smoke tests
         uses: grafana/run-k6-action@v1
         env:
