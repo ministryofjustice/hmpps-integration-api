@@ -1,0 +1,19 @@
+name: Smoke Test POC
+on:
+  push:
+    branches:
+      - 'HIA-1061_GHA_Smoke_test_POC'
+jobs:
+  preprod-smoke-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup K6
+        uses: grafana/setup-k6-action@v1
+      - name: Run preprod smoke tests
+        uses: grafana/run-k6-action@v1
+        with:
+          inspect-flags: '--env PROFILE=MINIMAL --env DOMAIN=preprod.integration-api.hmpps.service.justice.gov.uk --env SMOKE_TEST_CERT=${{ secrets.PREPROD_SMOKE_TEST_CERT }} --env SMOKE_TEST_KEY=${{ secrets.PREPROD_SMOKE_TEST_KEY }} --env SMOKE_TEST_API_KEY=${{ secrets.PREPROD_SMOKE_TEST_API_KEY }}'
+          flags: '--env PROFILE=MINIMAL --env DOMAIN=preprod.integration-api.hmpps.service.justice.gov.uk --env SMOKE_TEST_CERT=${{ secrets.PREPROD_SMOKE_TEST_CERT }} --env SMOKE_TEST_KEY=${{ secrets.PREPROD_SMOKE_TEST_KEY }} --env SMOKE_TEST_API_KEY=${{ secrets.PREPROD_SMOKE_TEST_API_KEY }}'
+          path: ./scripts/K6/smoke-tests.js
