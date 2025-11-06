@@ -93,6 +93,7 @@ feature-flag:
   simple-redaction: false
   use-contact-events-endpoint: true
   use-stubbed-contact-events-data: false
+  cert-revocation-enabled: true
 
 authorisation:
   consumers:

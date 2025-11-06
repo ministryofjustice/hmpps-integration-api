@@ -25,7 +25,7 @@ class ConsumerNameExtractionFilter : Filter {
     val req = request as HttpServletRequest
     response as HttpServletResponse
     val subjectDistinguishedName = req.getHeader("subject-distinguished-name")
-    val certificateSerialNumber = req.getHeader("cert-serial-number")
+    val certificateSerialNumber = extractCertificateSerialNumber(req.getHeader("cert-serial-number"))
     val extractedConsumerName = extractConsumerName(subjectDistinguishedName)
     req.setAttribute("clientName", extractedConsumerName)
     req.setAttribute("certificateSerialNumber", certificateSerialNumber)
@@ -45,6 +45,24 @@ class ConsumerNameExtractionFilter : Filter {
 
     return match.groupValues[1]
   }
+
+  /**
+   * Converts the certificate serial number sent in the header into hex format
+   * e.g 9572494320151578633330348943480876283449388176
+   * becomes 01:7B:EB:77:06:DB:11:F5:2E:B6:F7:37:7B:A9:E0:E4:84:C5:2C:A3
+   */
+  fun extractCertificateSerialNumber(serialNumber: String?): String? =
+    serialNumber?.let {
+      runCatching {
+        serialNumber.toBigInteger().toByteArray().toHexString(
+          format =
+            HexFormat {
+              upperCase = true
+              bytes.byteSeparator = ":"
+            },
+        )
+      }.getOrNull()
+    }
 }
 
 @Component
