@@ -11,10 +11,11 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup K6
         uses: grafana/setup-k6-action@v1
-      - name: poc
+      - name: Run Smoke Test script
         shell: bash
         env:
           PROFILE: MINIMAL
+          HMPPSID:
           DOMAIN: preprod.integration-api.hmpps.service.justice.gov.uk
           CERT: "${{ secrets.PREPROD_SMOKE_TEST_CERT }}"
           PRIVATE_KEY: "${{ secrets.PREPROD_SMOKE_TEST_KEY }}"
