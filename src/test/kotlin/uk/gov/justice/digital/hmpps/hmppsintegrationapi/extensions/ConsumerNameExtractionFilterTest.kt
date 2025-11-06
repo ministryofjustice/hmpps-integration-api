@@ -11,6 +11,8 @@ import org.mockito.kotlin.whenever
 
 class ConsumerNameExtractionFilterTest {
   private var consumerNameExtractionFilter: ConsumerNameExtractionFilter = ConsumerNameExtractionFilter()
+  val testSerialNumber = "8472494320151578633330348943480876283449388195"
+  val testSerialHexFormat = "01:7B:EB:77:06:DB:11:F5:2E:B6:F7:37:7B:A9:E0:E4:84:C5:2C:A3"
 
   @Test
   fun `calls the onward chain`() {
@@ -33,7 +35,7 @@ class ConsumerNameExtractionFilterTest {
     // Arrange
     val mockRequest = mock(HttpServletRequest::class.java)
     whenever(mockRequest.getHeader("subject-distinguished-name")).thenReturn(",CN=consumer-name")
-    whenever(mockRequest.getHeader("cert-serial-number")).thenReturn("TEST_SERIAL_NUMBER")
+    whenever(mockRequest.getHeader("cert-serial-number")).thenReturn(testSerialNumber)
 
     val mockResponse = mock(HttpServletResponse::class.java)
     val mockChain = mock(FilterChain::class.java)
@@ -42,7 +44,7 @@ class ConsumerNameExtractionFilterTest {
 
     // Assert
     verify(mockRequest, times(1)).setAttribute("clientName", "consumer-name")
-    verify(mockRequest, times(1)).setAttribute("certificateSerialNumber", "TEST_SERIAL_NUMBER")
+    verify(mockRequest, times(1)).setAttribute("certificateSerialNumber", testSerialHexFormat)
   }
 
   @Test

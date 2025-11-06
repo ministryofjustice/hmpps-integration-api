@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory
 @ConfigurationProperties(prefix = "authorisation")
 class AuthorisationConfig {
   var consumers: Map<String, ConsumerConfig?> = emptyMap()
+  var certificateRevocationList: List<String> = emptyList()
 
   /**
    * Returns true if the consumer has access to the endpoint.
