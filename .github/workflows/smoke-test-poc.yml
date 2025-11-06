@@ -14,8 +14,7 @@ jobs:
         env:
           PROFILE: MINIMAL
           DOMAIN: preprod.integration-api.hmpps.service.justice.gov.uk
-          XYZ: "ABC ${{ secrets.PREPROD_SMOKE_TEST_API_KEY }}"
+          API_KEY: "${{ secrets.PREPROD_SMOKE_TEST_API_KEY }}"
         run: |
           echo "Profile = $PROFILE"
-          echo "API Key = $XYZ"
-          echo "XXX ${{ secrets.PREPROD_SMOKE_TEST_API_KEY }}"
+          echo "API Key = $API_KEY"
