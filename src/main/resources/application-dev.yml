@@ -169,6 +169,7 @@ authorisation:
       notes: "Automated post-deployment smoke tests (certificate revocation path)"
       roles:
         - "status-only"
+
 redaction:
   client-names:
     - meganexus
