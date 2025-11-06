@@ -14,9 +14,11 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 class IntegrationAPIMockMvc(
   @Autowired var mockMvc: MockMvc,
 ) {
+  val certSerialNumber = "TEST_SERIAL_NUMBER"
+
   fun performAuthorised(path: String): MvcResult {
     val subjectDistinguishedName = "C=GB,ST=London,L=London,O=Home Office,CN=automated-test-client"
-    return mockMvc.perform(MockMvcRequestBuilders.get(path).header("subject-distinguished-name", subjectDistinguishedName)).andReturn()
+    return mockMvc.perform(MockMvcRequestBuilders.get(path).header("subject-distinguished-name", subjectDistinguishedName).header("cert-serial-number", certSerialNumber)).andReturn()
   }
 
   fun performAuthorisedPut(
@@ -24,7 +26,7 @@ class IntegrationAPIMockMvc(
     requestBody: Any? = null,
   ): MvcResult {
     val subjectDistinguishedName = "C=GB,ST=London,L=London,O=Home Office,CN=automated-test-client"
-    var requestBuilder = MockMvcRequestBuilders.put(path).header("subject-distinguished-name", subjectDistinguishedName)
+    var requestBuilder = MockMvcRequestBuilders.put(path).header("subject-distinguished-name", subjectDistinguishedName).header("cert-serial-number", certSerialNumber)
     if (requestBody != null) {
       requestBuilder =
         requestBuilder
@@ -39,7 +41,7 @@ class IntegrationAPIMockMvc(
     cn: String,
   ): MvcResult {
     val subjectDistinguishedName = "C=GB,ST=London,L=London,O=Home Office,CN=$cn"
-    return mockMvc.perform(MockMvcRequestBuilders.get(path).header("subject-distinguished-name", subjectDistinguishedName)).andReturn()
+    return mockMvc.perform(MockMvcRequestBuilders.get(path).header("subject-distinguished-name", subjectDistinguishedName).header("cert-serial-number", certSerialNumber)).andReturn()
   }
 
   fun <T : Any> performAuthorisedPost(
@@ -51,6 +53,7 @@ class IntegrationAPIMockMvc(
       MockMvcRequestBuilders
         .post(path)
         .header("subject-distinguished-name", subjectDistinguishedName)
+        .header("cert-serial-number", certSerialNumber)
         .content(asJsonString(requestBody))
         .contentType(MediaType.APPLICATION_JSON)
     return mockMvc.perform(requestBuilder).andReturn()
@@ -66,6 +69,7 @@ class IntegrationAPIMockMvc(
       MockMvcRequestBuilders
         .post(path)
         .header("subject-distinguished-name", subjectDistinguishedName)
+        .header("cert-serial-number", certSerialNumber)
         .content(asJsonString(requestBody))
         .contentType(MediaType.APPLICATION_JSON)
     return mockMvc.perform(requestBuilder).andReturn()

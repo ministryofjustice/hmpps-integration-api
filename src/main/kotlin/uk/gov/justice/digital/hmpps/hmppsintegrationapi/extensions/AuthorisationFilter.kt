@@ -12,6 +12,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
@@ -23,6 +24,7 @@ import java.io.IOException
 @EnableConfigurationProperties(AuthorisationConfig::class)
 class AuthorisationFilter(
   @Autowired val authorisationConfig: AuthorisationConfig,
+  @Autowired val featureFlagConfig: FeatureFlagConfig,
 ) : Filter {
   @Throws(IOException::class, ServletException::class)
   override fun doFilter(
@@ -37,6 +39,19 @@ class AuthorisationFilter(
     if (subjectDistinguishedName == null) {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "No subject-distinguished-name header provided for authorisation")
       return
+    }
+
+    if (featureFlagConfig.isEnabled(FeatureFlagConfig.CERT_REVOCATION_ENABLED)) {
+      val certificateSerialNumber = req.getAttribute("certificateSerialNumber") as String?
+      if (certificateSerialNumber != null) {
+        if (certificateRevoked(authorisationConfig, certificateSerialNumber, subjectDistinguishedName)) {
+          res.sendError(HttpServletResponse.SC_FORBIDDEN, "Certificate with serial number $certificateSerialNumber has been revoked")
+          return
+        }
+      } else {
+        res.sendError(HttpServletResponse.SC_FORBIDDEN, "No cert-serial-number provided for authorisation")
+        return
+      }
     }
 
     val authoriseConsumerService = AuthoriseConsumerService()
@@ -59,6 +74,32 @@ class AuthorisationFilter(
     } else {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Unable to authorise $requestedPath for $subjectDistinguishedName")
     }
+  }
+
+  /**
+   * Checks whether the certificate serial number exists in the certificate revocation list in application.yaml
+   * If the entry contains a "/" then the entry only applies to the consumer name that follows the "/"
+   */
+  fun certificateRevoked(
+    authorisationConfig: AuthorisationConfig,
+    certificateSerialNumber: String,
+    consumerName: String,
+  ): Boolean {
+    authorisationConfig.certificateRevocationList.forEach {
+      val entry = it.split("/")
+      val serialNumber = entry[0]
+      val thisConsumerOnly = if (entry.size > 1) entry[1] else null
+      if (thisConsumerOnly != null) {
+        if (serialNumber.equals(certificateSerialNumber, ignoreCase = true) && thisConsumerOnly == consumerName) {
+          return true
+        }
+      } else {
+        if (serialNumber.equals(certificateSerialNumber, ignoreCase = true)) {
+          return true
+        }
+      }
+    }
+    return false
   }
 
   private fun authorisedThroughRole(

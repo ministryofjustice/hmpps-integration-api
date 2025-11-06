@@ -50,6 +50,9 @@ abstract class IntegrationTestBase {
     private val nomsIdFromProbation = "G5555TT"
     private val crn = "AB123123"
 
+    val certSerialNumber = "9572494320151578633330348943480876283449388176"
+    val revokedSerialNumber = "8472494320151578633330348943480876283449388195"
+
     val gatewaysFolder = "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways"
     private val hmppsAuthMockServer = HmppsAuthMockServer()
     val prisonerOffenderSearchMockServer = ApiMockServer.create(UpstreamApi.PRISONER_OFFENDER_SEARCH)
@@ -122,9 +125,13 @@ abstract class IntegrationTestBase {
     }
   }
 
-  fun getAuthHeader(cn: String = defaultCn): HttpHeaders {
+  fun getAuthHeader(
+    cn: String = defaultCn,
+    serialNumber: String? = certSerialNumber,
+  ): HttpHeaders {
     val headers = HttpHeaders()
     headers.set("subject-distinguished-name", "C=GB,ST=London,L=London,O=Home Office,CN=$cn")
+    headers.set("cert-serial-number", serialNumber)
     return headers
   }
 
@@ -135,7 +142,8 @@ abstract class IntegrationTestBase {
   fun callApiWithCN(
     path: String,
     cn: String,
-  ): ResultActions = mockMvc.perform(get(path).headers(getAuthHeader(cn)))
+    serialNumber: String? = null,
+  ): ResultActions = mockMvc.perform(get(path).headers(getAuthHeader(cn, serialNumber)))
 
   fun postToApi(
     path: String,
