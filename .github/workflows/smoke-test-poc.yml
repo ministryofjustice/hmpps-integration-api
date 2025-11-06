@@ -1,0 +1,17 @@
+name: Smoke Test POC
+on:
+  push:
+    branches:
+      - 'HIA-1061_GHA_Smoke_test_POC'
+jobs:
+  dev-smoke-tests:
+    uses: ./.github/workflows/smoke-test-dev.yml
+    secrets: inherit
+  preprod-smoke-tests:
+    uses: ./.github/workflows/smoke-test-preprod.yml
+    secrets: inherit
+  prod-smoke-tests:
+    uses: ./.github/workflows/smoke-test-prod.yml
+    secrets: inherit
+
+
