@@ -21,7 +21,7 @@ jobs:
         env:
           PROFILE: MINIMAL
           DOMAIN: preprod.integration-api.hmpps.service.justice.gov.uk
-          SMOKE_TEST_API_KEY: ${{ secrets.PREPROD_SMOKE_TEST_API_KEY }}
+          SMOKE_TEST_API_KEY: 1234
         with:
           inspect-flags: '--env SMOKE_TEST_CERT=${{ secrets.PREPROD_SMOKE_TEST_CERT }} --env SMOKE_TEST_KEY=${{ secrets.PREPROD_SMOKE_TEST_KEY }}'
           flags: '--env SMOKE_TEST_CERT=${{ secrets.PREPROD_SMOKE_TEST_CERT }} --env SMOKE_TEST_KEY=${{ secrets.PREPROD_SMOKE_TEST_KEY }}'
