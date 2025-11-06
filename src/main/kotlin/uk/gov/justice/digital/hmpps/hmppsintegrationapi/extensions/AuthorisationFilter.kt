@@ -43,13 +43,8 @@ class AuthorisationFilter(
 
     if (featureFlagConfig.isEnabled(FeatureFlagConfig.CERT_REVOCATION_ENABLED)) {
       val certificateSerialNumber = req.getAttribute("certificateSerialNumber") as String?
-      if (certificateSerialNumber != null) {
-        if (certificateRevoked(authorisationConfig, certificateSerialNumber, subjectDistinguishedName)) {
-          res.sendError(HttpServletResponse.SC_FORBIDDEN, "Certificate with serial number $certificateSerialNumber has been revoked")
-          return
-        }
-      } else {
-        res.sendError(HttpServletResponse.SC_FORBIDDEN, "No cert-serial-number provided for authorisation")
+      if (certificateSerialNumber != null && certificateRevoked(authorisationConfig, certificateSerialNumber, subjectDistinguishedName)) {
+        res.sendError(HttpServletResponse.SC_FORBIDDEN, "Certificate with serial number $certificateSerialNumber has been revoked")
         return
       }
     }

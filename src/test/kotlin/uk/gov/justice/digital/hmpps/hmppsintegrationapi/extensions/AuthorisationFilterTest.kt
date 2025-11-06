@@ -145,14 +145,4 @@ class AuthorisationFilterTest {
     authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
     verify(mockResponse, times(0)).sendError(403, "Certificate with serial number TEST_SERIAL_NUMBER has been revoked")
   }
-
-  @Test
-  fun `Forbidden if certificate serial number is not found in the request and feature flag is enabled`() {
-    whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.CERT_REVOCATION_ENABLED)).thenReturn(true)
-    whenever(mockRequest.getAttribute("certificateSerialNumber")).thenReturn(null)
-    whenever(authorisationConfig.certificateRevocationList).thenReturn(listOf("TEST_SERIAL_NUMBER", "TEST_SERIAL_NUMBER_2"))
-    val authorisationFilter = AuthorisationFilter(authorisationConfig, featureFlagConfig)
-    authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
-    verify(mockResponse, times(1)).sendError(403, "No cert-serial-number provided for authorisation")
-  }
 }
