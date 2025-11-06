@@ -127,11 +127,11 @@ abstract class IntegrationTestBase {
 
   fun getAuthHeader(
     cn: String = defaultCn,
-    serialNumber: String? = certSerialNumber,
+    serialNumber: String? = null,
   ): HttpHeaders {
     val headers = HttpHeaders()
     headers.set("subject-distinguished-name", "C=GB,ST=London,L=London,O=Home Office,CN=$cn")
-    headers.set("cert-serial-number", serialNumber)
+    headers.set("cert-serial-number", serialNumber ?: certSerialNumber)
     return headers
   }
 
