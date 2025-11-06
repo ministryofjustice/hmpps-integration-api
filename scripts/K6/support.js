@@ -16,11 +16,6 @@ export function read_certificate(profile) {
   let key_val = ""
   let api_key_val = ""
   switch (profile) {
-    case "MAIN":
-      cert_val = __ENV.FULL_ACCESS_CERT;
-      key_val = __ENV.FULL_ACCESS_KEY;
-      api_key_val = __ENV.FULL_ACCESS_API_KEY;
-      break
     case "LIMITED":
       cert_val = __ENV.LIMITED_ACCESS_CERT;
       key_val = __ENV.LIMITED_ACCESS_KEY;
@@ -42,6 +37,7 @@ export function read_certificate(profile) {
       key_val = __ENV.SMOKE_TEST_KEY;
       api_key_val = __ENV.SMOKE_TEST_API_KEY;
       break
+    case "MAIN":
     case "MINIMAL":
       let api_key = __ENV.API_KEY.trimEnd()
       console.log("API key: " + api_key);
