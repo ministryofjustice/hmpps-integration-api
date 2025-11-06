@@ -53,23 +53,8 @@ jobs:
         run: |
           k6 run --summary-mode=full --quiet ./scripts/K6/smoke-tests.js
   preprod-smoke-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup K6
-        uses: grafana/setup-k6-action@v1
-      - name: Run Smoke Test script
-        shell: bash
-        env:
-          PROFILE: MINIMAL
-          HMPPSID:
-          DOMAIN: preprod.integration-api.hmpps.service.justice.gov.uk
-          CERT: "${{ secrets.PREPROD_SMOKE_TEST_CERT }}"
-          PRIVATE_KEY: "${{ secrets.PREPROD_SMOKE_TEST_KEY }}"
-          API_KEY: "${{ secrets.PREPROD_SMOKE_TEST_API_KEY }}"
-        run: |
-          k6 run --summary-mode=full --quiet ./scripts/K6/smoke-tests.js
+    uses: ./.github/workflows/smoke-test-preprod.yml
+    secrets: inherit
   prod-smoke-tests:
     uses: ./.github/workflows/smoke-test-prod.yml
     secrets: inherit
