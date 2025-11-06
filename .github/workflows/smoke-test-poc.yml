@@ -20,6 +20,7 @@ jobs:
         run: |
           echo "Profile = $PROFILE"
           echo "API Key = $PREPROD_SMOKE_TEST_API_KEY"
+          echo "XXX ${{ secrets.PREPROD_SMOKE_TEST_API_KEY }}"
 #      - name: Run preprod smoke tests
 #        uses: grafana/run-k6-action@v1
 #        env:
