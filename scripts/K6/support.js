@@ -21,17 +21,11 @@ export function read_certificate(profile) {
       key_val = __ENV.LIMITED_ACCESS_KEY;
       api_key_val = __ENV.LIMITED_ACCESS_API_KEY;
       break
-    case "NOPERMS":
-      cert_val = __ENV.NO_ACCESS_CERT;
-      key_val = __ENV.NO_ACCESS_KEY;
-      api_key_val = __ENV.NO_ACCESS_API_KEY;
-      break
     case "NOCERT":
       cert_val = "";
       key_val = "";
       api_key_val = __ENV.NO_ACCESS_API_KEY;
       break
-    case "REVOKED":
     case "PROD":
       cert_val = __ENV.SMOKE_TEST_CERT;
       key_val = __ENV.SMOKE_TEST_KEY;
@@ -39,6 +33,8 @@ export function read_certificate(profile) {
       break
     case "MAIN":
     case "MINIMAL":
+    case "NOPERMS":
+    case "REVOKED":
       let api_key = __ENV.API_KEY.trimEnd()
       console.log("API key: " + api_key);
       cert_val = __ENV.CERT;
