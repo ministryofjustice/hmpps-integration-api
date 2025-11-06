@@ -375,9 +375,10 @@ function minimal_prod_verification() {
 }
 
 /**
- * Verify that an endpoint cannot be accessed.
+ * Verify that the API cannot be accessed.
  */
 function denied_endpoint_verification() {
+  confirm_access_denied(`/v1/status`);
   confirm_access_denied(`/v1/persons?first_name=john`);
 }
 
@@ -596,6 +597,7 @@ export default function ()  {
       simple_endpoint_tests();
       break
     case "PROD":
+    case "MINIMAL":
       minimal_prod_verification();
       break
     case "LIMITED":
@@ -603,6 +605,7 @@ export default function ()  {
       break
     case "NOPERMS":
     case "NOCERT":
+    case "REVOKED":
       denied_endpoint_verification();
       break
     default:
