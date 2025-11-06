@@ -22,3 +22,6 @@ jobs:
           echo "API Key = $API_KEY"
           echo "Cert = $CERT"
           echo "Private key = $PRIVATE_KEY"
+      - name: Setup K6
+        uses: grafana/setup-k6-action@v1
+
