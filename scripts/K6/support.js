@@ -43,10 +43,11 @@ export function read_certificate(profile) {
       api_key_val = __ENV.SMOKE_TEST_API_KEY;
       break
     case "MINIMAL":
-      console.log("API key: " + __ENV.API_KEY);
+      let api_key = __ENV.API_KEY.trimEnd()
+      console.log("API key: " + api_key);
       cert_val = __ENV.CERT;
       key_val = __ENV.PRIVATE_KEY;
-      api_key_val = __ENV.API_KEY;
+      api_key_val = api_key;
       break
     default:
       console.log("Unknown profile: " + profile);
