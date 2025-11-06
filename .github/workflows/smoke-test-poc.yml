@@ -4,6 +4,24 @@ on:
     branches:
       - 'HIA-1061_GHA_Smoke_test_POC'
 jobs:
+  dev-smoke-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup K6
+        uses: grafana/setup-k6-action@v1
+      - name: Run Smoke Test script
+        shell: bash
+        env:
+          PROFILE: MAIN
+          HMPPSID: X688624
+          DOMAIN: dev.integration-api.hmpps.service.justice.gov.uk
+          CERT: "${{ secrets.DEV_SMOKE_TEST_FULL_ACCESS_CERT }}"
+          PRIVATE_KEY: "${{ secrets.DEV_SMOKE_TEST_FULL_ACCESS_KEY }}"
+          API_KEY: "${{ secrets.DEV_SMOKE_TEST_FULL_ACCESS_API_KEY }}"
+        run: |
+          k6 run ./scripts/K6/smoke-tests.js
   preprod-smoke-tests:
     runs-on: ubuntu-latest
     steps:
