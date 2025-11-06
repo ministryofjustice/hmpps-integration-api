@@ -14,7 +14,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 class IntegrationAPIMockMvc(
   @Autowired var mockMvc: MockMvc,
 ) {
-  val certSerialNumber = "TEST_SERIAL_NUMBER"
+  val certSerialNumber = "9572494320151578633330348943480876283449388176"
 
   fun performAuthorised(path: String): MvcResult {
     val subjectDistinguishedName = "C=GB,ST=London,L=London,O=Home Office,CN=automated-test-client"
