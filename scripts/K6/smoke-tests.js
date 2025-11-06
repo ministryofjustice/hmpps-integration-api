@@ -9,9 +9,9 @@ import { read_certificate } from "./support.js"
  - DOMAIN = the fully qualified DNS name of the API server
  - HMPPSID = the primary hmppsId to use for testing
  - PROFILE = which testing profile to use (MAIN | LAO | NOPERMS | NOCERT)
- - FULL_ACCESS_API_KEY = API key that has full access to the API
- - FULL_ACCESS_CERT = certificate (either base 64 encoded or name of a file)
- - FULL_ACCESS_KEY = private key for certificate (either base 64 encoded or name of a file)
+ - API_KEY = API key that has full access to the API
+ - CERT = certificate (either base 64 encoded or name of a file)
+ - PRIVATE_KEY = private key for certificate (either base 64 encoded or name of a file)
 
 
  The script is run using the k6 utility from https://k6.io/

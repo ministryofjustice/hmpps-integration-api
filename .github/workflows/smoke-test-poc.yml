@@ -21,7 +21,7 @@ jobs:
           PRIVATE_KEY: "${{ secrets.DEV_SMOKE_TEST_FULL_ACCESS_KEY }}"
           API_KEY: "${{ secrets.DEV_SMOKE_TEST_FULL_ACCESS_API_KEY }}"
         run: |
-          k6 run ./scripts/K6/smoke-tests.js
+          k6 run -i=1 ./scripts/K6/smoke-tests.js
   preprod-smoke-tests:
     runs-on: ubuntu-latest
     steps:
