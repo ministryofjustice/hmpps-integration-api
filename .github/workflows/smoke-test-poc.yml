@@ -9,8 +9,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Setup K6
-        uses: grafana/setup-k6-action@v1
+#      - name: Setup K6
+#        uses: grafana/setup-k6-action@v1
       - name: poc
         shell: bash
         env:
