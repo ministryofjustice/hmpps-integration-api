@@ -39,10 +39,14 @@ export function read_certificate(profile) {
       break
     case "REVOKED":
     case "PROD":
-    case "MINIMAL":
       cert_val = __ENV.SMOKE_TEST_CERT;
       key_val = __ENV.SMOKE_TEST_KEY;
       api_key_val = __ENV.SMOKE_TEST_API_KEY;
+      break
+    case "MINIMAL":
+      cert_val = __ENV.CERT;
+      key_val = __ENV.PRIVATE_KEY;
+      api_key_val = __ENV.API_KEY;
       break
     default:
       console.log("Unknown profile: " + profile);
