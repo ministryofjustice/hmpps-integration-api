@@ -12,6 +12,7 @@ function read_or_decode(value, suffix) {
 }
 
 export function read_certificate(profile) {
+  console.log("API key: " + __ENV.SMOKE_TEST_API_KEY);
   let cert_val = ""
   let key_val = ""
   let api_key_val = ""
