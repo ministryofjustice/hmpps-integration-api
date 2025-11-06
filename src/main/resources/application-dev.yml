@@ -165,6 +165,10 @@ authorisation:
       notes: "See client list in Confluence"
       roles:
         - "status-only"
+    smoke-test-revoke:
+      notes: "Automated post-deployment smoke tests (certificate revocation path)"
+      roles:
+        - "status-only"
 
 redaction:
   client-names:
