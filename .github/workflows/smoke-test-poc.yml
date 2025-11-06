@@ -33,6 +33,25 @@ jobs:
           API_KEY: "${{ secrets.DEV_SMOKE_TEST_NO_ACCESS_API_KEY }}"
         run: |
           k6 run --summary-mode=full --quiet ./scripts/K6/smoke-tests.js
+      - name: Run partial access test
+        shell: bash
+        env:
+          PROFILE: PARTIAL
+          HMPPSID: X688624
+          DOMAIN: dev.integration-api.hmpps.service.justice.gov.uk
+          CERT: "${{ secrets.DEV_SMOKE_TEST_LIMITED_ACCESS_CERT }}"
+          PRIVATE_KEY: "${{ secrets.DEV_SMOKE_TEST_LIMITED_ACCESS_KEY }}"
+          API_KEY: "${{ secrets.DEV_SMOKE_TEST_LIMITED_ACCESS_API_KEY }}"
+        run: |
+          k6 run --summary-mode=full --quiet ./scripts/K6/smoke-tests.js
+      - name: Run no cert test
+        shell: bash
+        env:
+          PROFILE: NOPERMS
+          HMPPSID: X688624
+          DOMAIN: dev.integration-api.hmpps.service.justice.gov.uk
+        run: |
+          k6 run --summary-mode=full --quiet ./scripts/K6/smoke-tests.js
   preprod-smoke-tests:
     runs-on: ubuntu-latest
     steps:

@@ -30,6 +30,7 @@ export function read_certificate(profile) {
     case "MINIMAL":
     case "NOPERMS":
     case "LIMITED":
+    case "PARTIAL":
     case "REVOKED":
       let api_key = __ENV.API_KEY.trimEnd()
       cert_val = __ENV.CERT;

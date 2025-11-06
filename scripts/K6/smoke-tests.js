@@ -603,6 +603,7 @@ export default function ()  {
       minimal_prod_verification();
       break
     case "LIMITED":
+    case "PARTIAL":
       partial_access_tests();
       break
     case "NOPERMS":
