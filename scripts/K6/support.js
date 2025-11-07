@@ -1,7 +1,7 @@
 import encoding from 'k6/encoding';
 
 function read_or_decode(value) {
-  if (value === "") {
+  if ((value == null) || (value === "")) {
     // Empty values are legitimate for the "no cert" test
     return "";
   }
