@@ -19,7 +19,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.RedactionConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
@@ -84,7 +83,6 @@ internal class PersonControllerTest(
   @MockitoBean val getLanguagesForPersonService: GetLanguagesForPersonService,
   @MockitoBean val getPrisonerEducationService: GetPrisonerEducationService,
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
-  @MockitoBean val redactionConfig: RedactionConfig,
 ) : DescribeSpec(
     {
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
@@ -364,112 +362,6 @@ internal class PersonControllerTest(
             }
             """.removeWhitespaceAndNewlines(),
           )
-        }
-
-        describe("with Redaction") {
-          val clientWithRedaction = "redacted-client"
-
-          fun String.asResponseTrimmed() = removeWhitespaceAndNewlines().trimIndent()
-
-          val normalResponse =
-            """
-            {
-                "data": {
-                    "prisonerOffenderSearch": {
-                        "firstName": "John",
-                        "lastName": "Doe",
-                        "middleName": null,
-                        "dateOfBirth": null,
-                        "gender": null,
-                        "ethnicity": null,
-                        "aliases": [],
-                        "identifiers": {
-                            "nomisNumber": "G2996UX",
-                            "croNumber": null,
-                            "deliusCrn": null
-                        },
-                        "pncId": null,
-                        "hmppsId": null,
-                        "contactDetails": null,
-                        "currentRestriction": null,
-                        "restrictionMessage": null,
-                        "currentExclusion": null,
-                        "exclusionMessage": null
-                    },
-                    "probationOffenderSearch": {
-                        "underActiveSupervision": true,
-                        "firstName": "John",
-                        "lastName": "Doe",
-                        "middleName": null,
-                        "dateOfBirth": null,
-                        "gender": null,
-                        "ethnicity": null,
-                        "aliases": [],
-                        "identifiers": {
-                            "nomisNumber": "G2996UX",
-                            "croNumber": null,
-                            "deliusCrn": "CD123123"
-                        },
-                        "pncId": null,
-                        "hmppsId": null,
-                        "contactDetails": null,
-                        "currentRestriction": false,
-                        "restrictionMessage": null,
-                        "currentExclusion": true,
-                        "exclusionMessage": "An exclusion exists"
-                    }
-                }
-            }
-            """.asResponseTrimmed()
-
-          val redactedResponse =
-            """
-            {
-                "data": {
-                    "prisonerOffenderSearch": {
-                        "firstName": "John",
-                        "lastName": "Doe",
-                        "middleName": "**REDACTED**",
-                        "dateOfBirth": null,
-                        "gender": null,
-                        "ethnicity": null,
-                        "aliases": [],
-                        "identifiers": {
-                            "nomisNumber": "G2996UX",
-                            "croNumber": "**REDACTED**",
-                            "deliusCrn": "**REDACTED**"
-                        },
-                        "pncId": "**REDACTED**",
-                        "hmppsId": null,
-                        "contactDetails": null,
-                        "currentRestriction": null,
-                        "restrictionMessage": "**REDACTED**",
-                        "currentExclusion": null,
-                        "exclusionMessage": "**REDACTED**"
-                    },
-                    "probationOffenderSearch": null
-                }
-            }
-            """.asResponseTrimmed()
-
-          beforeTest {
-            whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.SIMPLE_REDACTION)).thenReturn(true)
-            whenever(redactionConfig.clientNames).thenReturn(setOf(clientWithRedaction))
-          }
-
-          it("return redacted data for specific client") {
-            val clientName = clientWithRedaction
-
-            val result = mockMvc.performAuthorisedWithCN("$basePath/$hmppsId", cn = clientName)
-            result.response.status shouldBe HttpStatus.OK.value()
-            result.response.contentAsString shouldBe redactedResponse
-          }
-
-          it("return data for other client") {
-            val result = mockMvc.performAuthorised("$basePath/$hmppsId")
-            result.response.status shouldBe HttpStatus.OK.value()
-            result.response.contentAsString shouldBe normalResponse
-          }
         }
       }
 

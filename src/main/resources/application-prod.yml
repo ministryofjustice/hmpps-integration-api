@@ -57,7 +57,6 @@ feature-flag:
   use-historical-attendances-endpoint: true
   use-suitability-endpoint: true
   use-waiting-list-endpoint: true
-  simple-redaction: false
   use-contact-events-endpoint: false
   epf-endpoint-includes-lao: false
   epf-gateway-disabled: true
@@ -94,7 +93,3 @@ authorisation:
       notes: "Post-deployment smoke tests"
       roles:
         - "hmpps-system"
-
-redaction:
-  client-names:
-    - meganexus

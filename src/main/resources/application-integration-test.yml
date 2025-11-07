@@ -93,7 +93,6 @@ feature-flag:
   use-historical-attendances-endpoint: true
   use-suitability-endpoint: true
   use-waiting-list-endpoint: true
-  simple-redaction: false
   use-contact-events-endpoint: true
   epf-endpoint-includes-lao: false
   cpr-enabled: true
@@ -166,9 +165,6 @@ authorisation:
         - "reference-data-only"
       include:
       filters:
-    redacted-client:
-      include:
-        - "/v1/persons/[^/]*$"
     person-search-no-access-client:
       include:
         - "/v1/persons/[^/]*$"
@@ -176,7 +172,3 @@ authorisation:
   certificate-revocation-list:
     - 01:7b:eb:77:06:db:11:f5:2e:b6:f7:37:7b:a9:e0:e4:84:c5:2c:a3
     - 01/automated-test-client
-
-redaction:
-  client-names:
-    - redacted-client
