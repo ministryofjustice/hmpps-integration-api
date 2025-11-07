@@ -50,3 +50,14 @@ jobs:
           DOMAIN: dev.integration-api.hmpps.service.justice.gov.uk
         run: |
           k6 run --summary-mode=full --quiet ./scripts/K6/smoke-tests.js
+      - name: Run revoked cert test
+        shell: bash
+        env:
+          PROFILE: NOPERMS
+          HMPPSID: X688624
+          DOMAIN: dev.integration-api.hmpps.service.justice.gov.uk
+          CERT: "${{ secrets.DEV_SMOKE_TEST_REVOKED_CERT }}"
+          PRIVATE_KEY: "${{ secrets.DEV_SMOKE_TEST_REVOKED_KEY }}"
+          API_KEY: "${{ secrets.DEV_SMOKE_TEST_REVOKED_API_KEY }}"
+        run: |
+          k6 run --summary-mode=full --quiet ./scripts/K6/smoke-tests.js

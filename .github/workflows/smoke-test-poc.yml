@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - 'HIA-1061_GHA_Smoke_test_POC'
+      - 'HIA-1063_revoked_cert_smoke_test'
 jobs:
   dev-smoke-tests:
     uses: ./.github/workflows/smoke-test-dev.yml
