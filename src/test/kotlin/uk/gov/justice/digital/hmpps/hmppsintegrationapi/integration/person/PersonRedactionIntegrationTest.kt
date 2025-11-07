@@ -137,8 +137,10 @@ class PersonRedactionIntegrationTest : IntegrationTestBase() {
         ),
       )
 
+    // Handy local function (extensions) for verifying redacted strings.
     private fun JsonPathResultMatchers.isRedacted() = value("**REDACTED**")
 
+    // Handy local function (extensions) for verifying strings not redacted
     private fun JsonPathResultMatchers.isNotRedacted() = value(IsNot(IsEqual("**REDACTED**")))
   }
 }
