@@ -1,12 +1,22 @@
 import encoding from 'k6/encoding';
 
-function read_or_decode(value, suffix) {
+function read_or_decode(value) {
   if (value === "") {
+    // Empty values are legitimate for the "no cert" test
     return "";
   }
-  if (value.includes(suffix)) {
-    return open(value);
+
+  if (value.endsWith(".pem") || value.endsWith(".key")) {
+    // Value might be the name of a file, so read the file
+    value = open(value);
   }
+
+  if (value.startsWith("-----BEGIN ")) {
+    // Value might be a unencoded PEM content
+    return value
+  }
+
+  // Otherwise, assume base64 encoded content
   return encoding.b64decode(value, 'std', 's');
 }
 
@@ -18,14 +28,10 @@ function safer(value) {
 }
 
 export function read_certificate() {
-  let cert_val = safer(__ENV.CERT)
-  let key_val = safer(__ENV.PRIVATE_KEY)
-  let api_key_val = safer(__ENV.API_KEY)
-
   return [
-    read_or_decode(cert_val, ".pem"),
-    read_or_decode(key_val, ".key"),
-    api_key_val
+    read_or_decode(__ENV.CERT),
+    read_or_decode(__ENV.PRIVATE_KEY),
+    safer(__ENV.API_KEY)
   ]
 }
 
