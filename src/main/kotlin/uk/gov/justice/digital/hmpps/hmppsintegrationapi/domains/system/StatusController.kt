@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.domains.system
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -16,7 +16,7 @@ class StatusController {
   @Operation(
     summary = "Get service status.",
     responses = [
-      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Service is running."),
+        ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Service is running."),
     ],
   )
   @GetMapping

@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v2
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.domains.system
 
 import io.swagger.v3.oas.annotations.Hidden
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -13,14 +13,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ConfigAutho
 @EnableConfigurationProperties(AuthorisationConfig::class)
 @RequestMapping("/v2/config")
 class ConfigController(
-  var authorisationConfig: AuthorisationConfig,
+    var authorisationConfig: AuthorisationConfig,
 ) {
   @GetMapping("authorisation")
   fun getAuthorisation(): Map<String, ConfigAuthorisation> = authorisationConfig.consumers.entries.associate { it.key to mapConsumerToIncludesAndFilters(it.key) }
 
   private fun mapConsumerToIncludesAndFilters(consumerName: String): ConfigAuthorisation =
-    ConfigAuthorisation(
-      endpoints = authorisationConfig.allPermissions(consumerName),
-      filters = authorisationConfig.allFilters(consumerName),
-    )
+      ConfigAuthorisation(
+          endpoints = authorisationConfig.allPermissions(consumerName),
+          filters = authorisationConfig.allFilters(consumerName),
+      )
 }

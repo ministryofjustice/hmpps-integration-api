@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNe
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.domains.risk.ArnRisk
 
 class RiskTest :
   DescribeSpec(
@@ -9,13 +10,13 @@ class RiskTest :
       describe("#toRisk") {
         it("maps one-to-one attributes to Integration API attributes") {
           val arnRisk =
-            ArnRisk(
-              risk = "risk",
-              previous = "previous",
-              previousConcernsText = "previousConcernsText",
-              current = "current",
-              currentConcernsText = "currentConcernsText",
-            )
+              ArnRisk(
+                  risk = "risk",
+                  previous = "previous",
+                  previousConcernsText = "previousConcernsText",
+                  current = "current",
+                  currentConcernsText = "currentConcernsText",
+              )
 
           val integrationApiRisk = arnRisk.toRisk()
 

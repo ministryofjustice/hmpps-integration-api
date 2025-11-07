@@ -8,9 +8,10 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.RiskManagementGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.CrnRiskManagementPlan
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.CrnRiskManagementPlans
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.domains.risk.GetRiskManagementPlansForCrnService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.domains.risk.RiskManagementGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.domains.risk.CrnRiskManagementPlan
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.domains.risk.CrnRiskManagementPlans
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -20,8 +21,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
   classes = [GetRiskManagementPlansForCrnService::class],
 )
 class GetRiskManagementPlansForCrnServiceTest(
-  @MockitoBean val riskManagementGateway: RiskManagementGateway,
-  private val serviceUnderTest: GetRiskManagementPlansForCrnService,
+    @MockitoBean val riskManagementGateway: RiskManagementGateway,
+    private val serviceUnderTest: GetRiskManagementPlansForCrnService,
 ) : DescribeSpec({
 
     val crn = "D1974X"

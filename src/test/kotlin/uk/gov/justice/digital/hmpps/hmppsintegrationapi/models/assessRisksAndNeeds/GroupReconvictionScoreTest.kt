@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNe
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.domains.risk.ArnGroupReconvictionScore
 
 class GroupReconvictionScoreTest :
   DescribeSpec(
@@ -10,9 +11,9 @@ class GroupReconvictionScoreTest :
         it("maps one-to-one attributes to integration API attributes") {
 
           val arnGroupReconvictionScore =
-            ArnGroupReconvictionScore(
-              scoreLevel = "VERY_HIGH",
-            )
+              ArnGroupReconvictionScore(
+                  scoreLevel = "VERY_HIGH",
+              )
 
           val integrationApiGroupReconviction = arnGroupReconvictionScore.toGroupReconviction()
 

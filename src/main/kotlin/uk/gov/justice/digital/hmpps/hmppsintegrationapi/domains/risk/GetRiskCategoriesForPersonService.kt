@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.domains.risk
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -6,11 +6,12 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGatewa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskCategory
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 
 @Service
 class GetRiskCategoriesForPersonService(
-  @Autowired val prisonApiGateway: PrisonApiGateway,
-  @Autowired val getPersonService: GetPersonService,
+    @Autowired val prisonApiGateway: PrisonApiGateway,
+    @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(
     hmppsId: String,

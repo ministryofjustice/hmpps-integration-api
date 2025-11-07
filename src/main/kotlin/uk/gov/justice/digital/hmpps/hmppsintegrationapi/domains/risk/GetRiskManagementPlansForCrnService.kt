@@ -1,8 +1,8 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.domains.risk
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.RiskManagementGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.domains.risk.RiskManagementGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskManagementPlan
 

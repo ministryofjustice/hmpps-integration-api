@@ -9,6 +9,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.domains.risk.GetRiskSeriousHarmForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.AssessRisksAndNeedsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -24,9 +25,9 @@ import java.time.LocalDateTime
 )
 internal class
 GetRiskSeriousHarmForPersonServiceTest(
-  @MockitoBean val assessRisksAndNeedsGateway: AssessRisksAndNeedsGateway,
-  @MockitoBean val getPersonService: GetPersonService,
-  private val getRiskSeriousHarmForPersonService: GetRiskSeriousHarmForPersonService,
+    @MockitoBean val assessRisksAndNeedsGateway: AssessRisksAndNeedsGateway,
+    @MockitoBean val getPersonService: GetPersonService,
+    private val getRiskSeriousHarmForPersonService: GetRiskSeriousHarmForPersonService,
 ) : DescribeSpec(
     {
       val personFromProbationOffenderSearch =

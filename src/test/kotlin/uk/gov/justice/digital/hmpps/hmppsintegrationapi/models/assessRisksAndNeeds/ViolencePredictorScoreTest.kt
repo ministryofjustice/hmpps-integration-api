@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNe
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.domains.risk.ArnViolencePredictorScore
 
 class ViolencePredictorScoreTest :
   DescribeSpec(
@@ -9,9 +10,9 @@ class ViolencePredictorScoreTest :
       describe("#toViolencePredictor") {
         it("maps one-to-one attributes to integration API attributes") {
           val arnViolencePredictorScore =
-            ArnViolencePredictorScore(
-              ovpRisk = "VERY_HIGH",
-            )
+              ArnViolencePredictorScore(
+                  ovpRisk = "VERY_HIGH",
+              )
 
           val integrationApiViolencePredictor = arnViolencePredictorScore.toViolencePredictor()
 

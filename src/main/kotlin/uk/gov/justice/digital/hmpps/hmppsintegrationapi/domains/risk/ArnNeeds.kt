@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.domains.risk
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Needs
 import java.time.LocalDateTime

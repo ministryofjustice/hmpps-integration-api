@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNe
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.domains.risk.ArnRiskOfSeriousRecidivismScore
 
 class RiskOfSeriousRecidivismScoreTest :
   DescribeSpec(
@@ -10,9 +11,9 @@ class RiskOfSeriousRecidivismScoreTest :
         it("maps one-to-one attributes to integration API attributes") {
 
           val arnRiskOfSeriousRecidivismScore =
-            ArnRiskOfSeriousRecidivismScore(
-              scoreLevel = "HIGH",
-            )
+              ArnRiskOfSeriousRecidivismScore(
+                  scoreLevel = "HIGH",
+              )
 
           val integrationApiRiskOfSeriousRecidivism = arnRiskOfSeriousRecidivismScore.toRiskOfSeriousRecidivism()
 

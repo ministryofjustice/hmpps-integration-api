@@ -1,6 +1,7 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.domains.risk
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskSummary
+import kotlin.collections.iterator
 
 data class ArnRiskSummary(
   val whoIsAtRisk: String? = null,

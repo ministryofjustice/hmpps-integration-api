@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNe
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.domains.risk.ArnSexualPredictorScore
 
 class SexualPredictorScoreTest :
   DescribeSpec(
@@ -9,10 +10,10 @@ class SexualPredictorScoreTest :
       describe("#toSexualPredictor") {
         it("maps one-to-one attributes to integration API attributes") {
           val arnSexualPredictorScore =
-            ArnSexualPredictorScore(
-              ospIndecentScoreLevel = "HIGH",
-              ospContactScoreLevel = "VERY_HIGH",
-            )
+              ArnSexualPredictorScore(
+                  ospIndecentScoreLevel = "HIGH",
+                  ospContactScoreLevel = "VERY_HIGH",
+              )
 
           val integrationApiSexualPredictor = arnSexualPredictorScore.toSexualPredictor()
 
