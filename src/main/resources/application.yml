@@ -104,6 +104,7 @@ services:
 authorisation:
   certificate-revocation-list:
     - 01:7b:eb:77:06:db:11:f5:2e:b6:f7:37:7b:a9:e0:e4:84:c5:2c:a3
+    - 25:13:0d:d4:02:ae:7a:30:17:36:02:2e:a9:e9:b8:48:f4:4b:f6:70
 
 sentry:
   traces-sample-rate: "0.05"
