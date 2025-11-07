@@ -1,17 +1,17 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.domains.risk
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.CrnRiskManagementPlans
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 
 @Component
 class RiskManagementGateway(
-  @Value("\${services.assess-risks-and-needs.base-url}") baseUrl: String,
+    @Value("\${services.assess-risks-and-needs.base-url}") baseUrl: String,
 ) {
   private val webClient = WebClientWrapper(baseUrl)
 
@@ -29,14 +29,14 @@ class RiskManagementGateway(
       )
     return when (result) {
       is WebClientWrapper.WebClientWrapperResponse.Success -> {
-        Response(data = result.data, errors = emptyList())
+          Response(data = result.data, errors = emptyList())
       }
 
       is WebClientWrapper.WebClientWrapperResponse.Error -> {
-        Response(
-          data = null,
-          errors = result.errors,
-        )
+          Response(
+              data = null,
+              errors = result.errors,
+          )
       }
     }
   }

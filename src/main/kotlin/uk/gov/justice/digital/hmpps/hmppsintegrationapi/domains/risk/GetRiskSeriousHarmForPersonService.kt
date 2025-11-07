@@ -1,15 +1,16 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.domains.risk
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.AssessRisksAndNeedsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Risks
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 
 @Service
 class GetRiskSeriousHarmForPersonService(
-  @Autowired val assessRisksAndNeedsGateway: AssessRisksAndNeedsGateway,
-  @Autowired val getPersonService: GetPersonService,
+    @Autowired val assessRisksAndNeedsGateway: AssessRisksAndNeedsGateway,
+    @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(hmppsId: String): Response<Risks?> {
     val personResponse = getPersonService.execute(hmppsId = hmppsId)

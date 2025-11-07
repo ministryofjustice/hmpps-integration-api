@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.domains.risk
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -18,7 +18,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUps
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskManagementPlan
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetRiskManagementPlansForCrnService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
@@ -27,24 +26,37 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
 @EnableConfigurationProperties(AuthorisationConfig::class)
 @Tag(name = "Risks")
 class RiskManagementController(
-  @Autowired val getRiskManagementPlansForCrnService: GetRiskManagementPlansForCrnService,
-  @Autowired val auditService: AuditService,
+    @Autowired val getRiskManagementPlansForCrnService: GetRiskManagementPlansForCrnService,
+    @Autowired val auditService: AuditService,
 ) {
   @GetMapping("/v1/persons/{hmppsId}/risk-management-plan")
   @Tag(name = "Persons")
   @Operation(
     summary = "Returns a list of Risk Management Plans created for the person with the provided HMPPS ID.",
     responses = [
-      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found risk management plans for a person with the provided HMPPS ID."),
-      ApiResponse(responseCode = "403", content = [Content(schema = Schema(ref = "#/components/schemas/ForbiddenResponse"))]),
-      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
-      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+        ApiResponse(
+            responseCode = "200",
+            useReturnTypeSchema = true,
+            description = "Successfully found risk management plans for a person with the provided HMPPS ID."
+        ),
+        ApiResponse(
+            responseCode = "403",
+            content = [Content(schema = Schema(ref = "#/components/schemas/ForbiddenResponse"))]
+        ),
+        ApiResponse(
+            responseCode = "404",
+            content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]
+        ),
+        ApiResponse(
+            responseCode = "500",
+            content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]
+        ),
     ],
   )
   fun getRiskManagementPlans(
-    @Parameter(description = "HMPPS identifier", example = "A1234AA") @PathVariable hmppsId: String,
-    @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
-    @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
+      @Parameter(description = "HMPPS identifier", example = "A1234AA") @PathVariable hmppsId: String,
+      @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
+      @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
   ): PaginatedResponse<RiskManagementPlan> {
     val response = getRiskManagementPlansForCrnService.execute(hmppsId)
 

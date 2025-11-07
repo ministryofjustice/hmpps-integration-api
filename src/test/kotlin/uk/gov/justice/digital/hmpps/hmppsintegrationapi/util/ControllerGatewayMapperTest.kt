@@ -21,12 +21,12 @@ internal class ControllerGatewayMapperTest(
 
   @Test
   fun `status endpoint uses no upstreams`() {
-    assertEquals(0, mappings["controllers.v1.StatusController"]?.size)
+    assertEquals(0, mappings["domains.system.StatusController"]?.size)
   }
 
   @Test
   fun `config endpoint uses no upstreams`() {
-    assertEquals(0, mappings["controllers.v2.ConfigController"]?.size)
+    assertEquals(0, mappings["domains.system.ConfigController"]?.size)
   }
 
   @Test

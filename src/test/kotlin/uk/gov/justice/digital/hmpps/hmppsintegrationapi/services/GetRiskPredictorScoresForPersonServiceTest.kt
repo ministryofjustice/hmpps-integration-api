@@ -9,6 +9,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.domains.risk.GetRiskPredictorScoresForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.AssessRisksAndNeedsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.GeneralPredictor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.GroupReconviction
@@ -28,9 +29,9 @@ import java.time.LocalDateTime
   classes = [GetRiskPredictorScoresForPersonService::class],
 )
 internal class GetRiskPredictorScoresForPersonServiceTest(
-  @MockitoBean val assessRisksAndNeedsGateway: AssessRisksAndNeedsGateway,
-  @MockitoBean val getPersonService: GetPersonService,
-  private val getRiskPredictorScoresForPersonService: GetRiskPredictorScoresForPersonService,
+    @MockitoBean val assessRisksAndNeedsGateway: AssessRisksAndNeedsGateway,
+    @MockitoBean val getPersonService: GetPersonService,
+    private val getRiskPredictorScoresForPersonService: GetRiskPredictorScoresForPersonService,
 ) : DescribeSpec(
     {
       val personFromProbationOffenderSearch =

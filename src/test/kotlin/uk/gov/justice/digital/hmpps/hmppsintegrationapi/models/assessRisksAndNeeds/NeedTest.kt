@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNe
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.domains.risk.ArnNeed
 
 class NeedTest :
   DescribeSpec(
@@ -9,9 +10,9 @@ class NeedTest :
       describe("#toNeed") {
         it("maps one-to-one attributes to Integration API attributes") {
           val arnNeed =
-            ArnNeed(
-              section = "ACCOMMODATION",
-            )
+              ArnNeed(
+                  section = "ACCOMMODATION",
+              )
 
           val integrationApiNeed = arnNeed.toNeed()
 

@@ -9,6 +9,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.domains.risk.GetRiskCategoriesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
@@ -25,9 +26,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInNomisOn
   classes = [GetRiskCategoriesForPersonService::class],
 )
 internal class GetRiskCategoriesForPersonServiceTest(
-  @MockitoBean val prisonApiGateway: PrisonApiGateway,
-  @MockitoBean val getPersonService: GetPersonService,
-  private val getRiskCategoriesForPersonService: GetRiskCategoriesForPersonService,
+    @MockitoBean val prisonApiGateway: PrisonApiGateway,
+    @MockitoBean val getPersonService: GetPersonService,
+    private val getRiskCategoriesForPersonService: GetRiskCategoriesForPersonService,
 ) : DescribeSpec(
     {
       val person =

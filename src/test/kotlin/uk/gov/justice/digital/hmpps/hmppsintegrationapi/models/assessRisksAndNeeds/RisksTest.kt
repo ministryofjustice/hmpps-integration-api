@@ -2,6 +2,11 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNe
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.domains.risk.ArnOtherRisks
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.domains.risk.ArnRisk
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.domains.risk.ArnRiskSummary
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.domains.risk.ArnRiskToSelf
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.domains.risk.ArnRisks
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OtherRisks
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Risk
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskSummary
@@ -15,22 +20,22 @@ class RisksTest :
       describe("#toRisks") {
         it("maps one-to-one attributes to Integration API attributes") {
           val arnRisks =
-            ArnRisks(
-              assessedOn = LocalDateTime.now(),
-              riskToSelf =
-                ArnRiskToSelf(
-                  suicide = ArnRisk(risk = "NO"),
-                  selfHarm = ArnRisk(risk = "NO"),
-                  custody = ArnRisk(risk = "NO"),
-                  hostelSetting = ArnRisk(risk = "NO"),
-                  vulnerability = ArnRisk(risk = "NO"),
-                ),
-              otherRisks = ArnOtherRisks(breachOfTrust = "YES"),
-              summary =
-                ArnRiskSummary(
-                  whoIsAtRisk = "X, Y and Z are at risk",
-                ),
-            )
+              ArnRisks(
+                  assessedOn = LocalDateTime.now(),
+                  riskToSelf =
+                      ArnRiskToSelf(
+                          suicide = ArnRisk(risk = "NO"),
+                          selfHarm = ArnRisk(risk = "NO"),
+                          custody = ArnRisk(risk = "NO"),
+                          hostelSetting = ArnRisk(risk = "NO"),
+                          vulnerability = ArnRisk(risk = "NO"),
+                      ),
+                  otherRisks = ArnOtherRisks(breachOfTrust = "YES"),
+                  summary =
+                      ArnRiskSummary(
+                          whoIsAtRisk = "X, Y and Z are at risk",
+                      ),
+              )
 
           val integrationApiRisks = arnRisks.toRisks()
 
@@ -51,24 +56,24 @@ class RisksTest :
 
         it("maps Risk in Community and Risk in Custody to Integration API attributes") {
           val arnRisks =
-            ArnRisks(
-              summary =
-                ArnRiskSummary(
-                  riskInCommunity =
-                    mapOf(
-                      "HIGH" to listOf("Children", "Public", "Known adult"),
-                      "MEDIUM" to listOf("Staff"),
-                      "LOW" to listOf("Prisoners"),
-                    ),
-                  riskInCustody =
-                    mapOf(
-                      "VERY_HIGH" to listOf("Known adult"),
-                      "HIGH" to listOf("Children"),
-                      "MEDIUM" to listOf("Staff", "Public"),
-                      "LOW" to listOf("Prisoners"),
-                    ),
-                ),
-            )
+              ArnRisks(
+                  summary =
+                      ArnRiskSummary(
+                          riskInCommunity =
+                              mapOf(
+                                  "HIGH" to listOf("Children", "Public", "Known adult"),
+                                  "MEDIUM" to listOf("Staff"),
+                                  "LOW" to listOf("Prisoners"),
+                              ),
+                          riskInCustody =
+                              mapOf(
+                                  "VERY_HIGH" to listOf("Known adult"),
+                                  "HIGH" to listOf("Children"),
+                                  "MEDIUM" to listOf("Staff", "Public"),
+                                  "LOW" to listOf("Prisoners"),
+                              ),
+                      ),
+              )
 
           val integrationApiRisks = arnRisks.toRisks()
 

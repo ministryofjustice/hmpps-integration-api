@@ -2,6 +2,12 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNe
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.domains.risk.ArnGeneralPredictorScore
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.domains.risk.ArnGroupReconvictionScore
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.domains.risk.ArnRiskOfSeriousRecidivismScore
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.domains.risk.ArnRiskPredictorScore
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.domains.risk.ArnSexualPredictorScore
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.domains.risk.ArnViolencePredictorScore
 import java.time.LocalDateTime
 
 class RiskPredictorScoreTest :
@@ -10,15 +16,18 @@ class RiskPredictorScoreTest :
       describe("#toRiskPredictorScore") {
         it("maps ARN Risk Predictor Score to integration API Risk Predictor Score") {
           val arnRiskPredictorScore =
-            ArnRiskPredictorScore(
-              completedDate = "2023-09-05T10:15:41",
-              assessmentStatus = "COMPLETE",
-              generalPredictorScore = ArnGeneralPredictorScore(ogpRisk = "MEDIUM"),
-              violencePredictorScore = ArnViolencePredictorScore(ovpRisk = "LOW"),
-              groupReconvictionScore = ArnGroupReconvictionScore(scoreLevel = "VERY_HIGH"),
-              riskOfSeriousRecidivismScore = ArnRiskOfSeriousRecidivismScore(scoreLevel = "HIGH"),
-              sexualPredictorScore = ArnSexualPredictorScore(ospIndecentScoreLevel = "HIGH", ospContactScoreLevel = "VERY_HIGH"),
-            )
+              ArnRiskPredictorScore(
+                  completedDate = "2023-09-05T10:15:41",
+                  assessmentStatus = "COMPLETE",
+                  generalPredictorScore = ArnGeneralPredictorScore(ogpRisk = "MEDIUM"),
+                  violencePredictorScore = ArnViolencePredictorScore(ovpRisk = "LOW"),
+                  groupReconvictionScore = ArnGroupReconvictionScore(scoreLevel = "VERY_HIGH"),
+                  riskOfSeriousRecidivismScore = ArnRiskOfSeriousRecidivismScore(scoreLevel = "HIGH"),
+                  sexualPredictorScore = ArnSexualPredictorScore(
+                      ospIndecentScoreLevel = "HIGH",
+                      ospContactScoreLevel = "VERY_HIGH"
+                  ),
+              )
 
           val integrationApiRiskPredictorScore = arnRiskPredictorScore.toRiskPredictorScore()
 
