@@ -12,8 +12,6 @@ import io.kotest.inspectors.shouldForAll
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.assertThrows
-import org.mockito.kotlin.spy
-import org.mockito.kotlin.whenever
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.web.reactive.function.client.WebClientResponseException
@@ -63,12 +61,14 @@ class WebClientWrapperTest :
       webClient =
         WebClientWrapper(
           baseUrl = mockServer.baseUrl(),
-          connectTimeoutMillis = 500,
+          connectTimeoutMillis = 100,
           responseTimeoutSeconds = 1,
+          maxRetries = 0,
+          minBackoff = Duration.ofMillis(1),
         )
-      wrapper = spy(webClient)
-      whenever(wrapper.MIN_BACKOFF_DURATION).thenReturn(Duration.ofSeconds(0L))
-      whenever(wrapper.MAX_RETRY_ATTEMPTS).thenReturn(1L)
+//      wrapper = spy(webClient)
+//      whenever(wrapper.MIN_BACKOFF_DURATION).thenReturn(Duration.ofSeconds(0L))
+//      whenever(wrapper.MAX_RETRY_ATTEMPTS).thenReturn(1L)
     }
 
     afterTest {
@@ -79,11 +79,12 @@ class WebClientWrapperTest :
       it("calls requestWithRetry for a GET request") {
         listOf(502, 503, 504, 522, 599, 499, 408).forEach {
           mockServer.resetAll()
-          mockServer.stubForRetry(it.toString(), getPath, 2, it, 200, """{"sourceName" : "Harold"}""".removeWhitespaceAndNewlines())
-          val result = wrapper.request<TestModel>(HttpMethod.GET, getPath, headers, UpstreamApi.TEST)
+          mockServer.stubForRetry(it.toString(), getPath, 3, it, 200, """{"sourceName" : "Harold"}""".removeWhitespaceAndNewlines())
+          val result = WebClientWrapper(mockServer.baseUrl(), maxRetries = 3, minBackoff = Duration.ofMillis(1))
+            .request<TestModel>(HttpMethod.GET, getPath, headers, UpstreamApi.TEST)
           result.shouldBeInstanceOf<WebClientWrapperResponse.Success<TestModel>>()
           val testDomainModel = result.data.toDomain()
-          mockServer.verify(exactly(2), getRequestedFor(urlEqualTo(getPath)))
+          mockServer.verify(exactly(3), getRequestedFor(urlEqualTo(getPath)))
           testDomainModel.firstName.shouldBe("Harold")
         }
       }
@@ -117,7 +118,8 @@ class WebClientWrapperTest :
 
       it("calls requestWithRetry for a GET requestList") {
         mockServer.stubForRetry("2", getPath, 2, 502, 200, """[{"sourceName" : "Harold"}]""".removeWhitespaceAndNewlines())
-        val result = wrapper.requestList<TestModel>(HttpMethod.GET, getPath, headers, UpstreamApi.TEST)
+        val result = WebClientWrapper(mockServer.baseUrl(), maxRetries = 2, minBackoff = Duration.ofMillis(1))
+          .requestList<TestModel>(HttpMethod.GET, getPath, headers, UpstreamApi.TEST)
         result.shouldBeInstanceOf<WebClientWrapperResponse.Success<List<TestModel>>>()
         val testDomainModel = result.data[0].toDomain()
         mockServer.verify(exactly(2), getRequestedFor(urlEqualTo(getPath)))
@@ -390,7 +392,16 @@ class WebClientWrapperTest :
       }
 
       it("throws a timeout error if response is too slow") {
-        mockServer.stubGetTest(getPath, """{"result": "timeout"}""", delayMillis = 2000)
+        mockServer.stubGetTest(getPath, """{"result": "timeout"}""", delayMillis = 1200)
+
+        val webClient =
+          WebClientWrapper(
+            baseUrl = mockServer.baseUrl(),
+            connectTimeoutMillis = 500,
+            responseTimeoutSeconds = 1,
+            maxRetries = 1,
+            minBackoff = Duration.ofMillis(1),
+          )
 
         val exception =
           shouldThrow<ResponseException> {
@@ -403,8 +414,10 @@ class WebClientWrapperTest :
         val timeoutWebClient =
           WebClientWrapper(
             "http://10.255.255.1:81",
-            connectTimeoutMillis = 300,
-            responseTimeoutSeconds = 2,
+            connectTimeoutMillis = 50,
+            responseTimeoutSeconds = 1,
+            maxRetries = 0,
+            minBackoff = Duration.ofMillis(1),
           )
 
         val exception =
