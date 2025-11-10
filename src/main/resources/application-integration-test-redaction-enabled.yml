@@ -166,3 +166,12 @@ authorisation:
       roles:
         - curious
       filters:
+    lao-role-based-redacted-client:
+      roles:
+        - "test-role"
+      include:
+      filters:
+
+redaction:
+  client-names:
+    - redacted-client

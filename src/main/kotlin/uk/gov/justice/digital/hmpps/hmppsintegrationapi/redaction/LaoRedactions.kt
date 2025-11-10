@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionType.MASK
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionType.REMOVE
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.redactionPolicy
 
 val laoRedactionPolicy =
@@ -33,6 +34,24 @@ val laoRedactionPolicy =
         }
         includes {
           path("$..notes", MASK)
+        }
+      }
+      jsonPath {
+        laoOnly(true)
+        paths {
+          -"/v1/persons/[^/]*$"
+        }
+        includes {
+          path("$..middleName", MASK)
+          path("$..gender", MASK)
+          path("$..ethnicity", MASK)
+          path("$..contactDetails", REMOVE)
+          path("$..aliases", REMOVE)
+        }
+      }
+      laoRejection {
+        paths {
+          -"/v1/persons/.*/addresses"
         }
       }
     }
