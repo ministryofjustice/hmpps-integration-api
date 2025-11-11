@@ -17,11 +17,12 @@ class MetaDataTest(
   val deliusGateway: NDeliusGateway,
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
-) : DescribeSpec({
-    describe("MetaData") {
+) : DescribeSpec(
+    {
+      describe("MetaData") {
         it("should return valid metadata") {
           assertNotNull(deliusGateway.metaData())
         }
-    }
-}
-)
+      }
+    },
+  )
