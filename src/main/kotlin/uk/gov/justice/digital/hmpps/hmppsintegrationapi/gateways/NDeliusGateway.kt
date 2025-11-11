@@ -42,7 +42,7 @@ class NDeliusGateway(
       developerPortalId = "national-delius",
       developerPortalUrl = "https://developer-portal.hmpps.service.justice.gov.uk/products/national-delius",
       apiDocUrl = "https://external-api-and-delius-dev.hmpps.service.justice.gov.uk/swagger-ui/index.html",
-      apiSpecUrl = "https://api-and-delius-dev.hmpps.service.justice.gov.uk/v3/api-docs",
+      apiSpecUrl = "https://external-api-and-delius-dev.hmpps.service.justice.gov.uk/v3/api-docs",
       gitHubRepoUrl = "https://github.com/ministryofjustice/hmpps-probation-integration-services/tree/main/projects/external-api-and-delius",
       slackChannel = "#topic-hmpps-external-api-and-delius",
     )
