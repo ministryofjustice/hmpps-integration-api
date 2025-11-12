@@ -130,6 +130,12 @@ tasks {
       ) + classesToBeExcluded.map { "--exclude=$it" }
   }
 
+  val codeDoc by registering(JavaExec::class) {
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.CodeDocTask")
+    dependsOn("compileKotlin")
+  }
+
   val koverCli by registering(Copy::class) {
     from(configurations.runtimeClasspath).include("kover-cli*.jar")
     into("lib")
