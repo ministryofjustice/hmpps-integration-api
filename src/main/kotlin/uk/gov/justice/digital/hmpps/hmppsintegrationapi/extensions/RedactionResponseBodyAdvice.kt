@@ -70,7 +70,8 @@ class RedactionResponseBodyAdvice(
     val redactionPolicies = getRedactionPoliciesFromRoles(subjectDistinguishedName)
     val hmppsId = servletRequest.getAttribute("hmppsId") as? String
     val redactionContext = RedactionContext(requestUri, accessFor, telemetryService, hmppsId, subjectDistinguishedName)
-    return if (body is PaginatedResponse<*>) {
+    return if (body is PaginatedResponse<*> && hmppsId == null) {
+      // If the response is paginated and there is no hmpps id for which to apply an LAO check
       applyPoliciesPaginated(redactionContext, body, redactionPolicies)
     } else {
       applyPolicies(redactionContext, body, redactionPolicies)
@@ -92,7 +93,7 @@ class RedactionResponseBodyAdvice(
   }
 
   /**
-   * Apply the redaction for each entry with the data of a Paginated response.
+   * Apply the redaction for each entry within the data of a Paginated response.
    * The LAO override will be set here if it is possible to get the LAO status from each entry
    *
    */
