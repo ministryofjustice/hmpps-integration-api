@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.prisonerEscortCust
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.privatePrison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.referenceDataOnly
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.serco
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.smartinbox
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.statusOnly
 
 data class Role(
@@ -115,4 +116,5 @@ val roles =
     mojPrisonerFacing,
     serco,
     statusOnly,
+    smartinbox,
   ).associateBy { it.name }
