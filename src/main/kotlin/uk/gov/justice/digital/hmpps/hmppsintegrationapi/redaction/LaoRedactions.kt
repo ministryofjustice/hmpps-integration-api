@@ -46,7 +46,6 @@ val laoRedactionPolicy =
           path("$..gender", MASK)
           path("$..ethnicity", MASK)
           path("$..contactDetails", REMOVE)
-          path("$..aliases", REMOVE)
         }
       }
       laoRejection {
