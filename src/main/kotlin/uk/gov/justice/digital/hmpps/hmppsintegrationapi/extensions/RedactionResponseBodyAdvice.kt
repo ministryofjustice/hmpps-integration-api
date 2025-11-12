@@ -22,7 +22,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
 
 @ControllerAdvice
 class RedactionResponseBodyAdvice(
@@ -110,7 +109,7 @@ class RedactionResponseBodyAdvice(
           entry
         }
       }
-    return redacted.paginateWith(responseBody.pagination.page, responseBody.pagination.perPage)
+    return PaginatedResponse(data = redacted, pagination = responseBody.pagination)
   }
 
   private fun getRedactionPoliciesFromRoles(subjectDistinguishedName: String?): List<RedactionPolicy> =
