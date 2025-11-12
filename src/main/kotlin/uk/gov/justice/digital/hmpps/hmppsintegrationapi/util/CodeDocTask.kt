@@ -43,6 +43,14 @@ class CodeDocTask {
     allSameFlags.forEach {
       println("-  ${it.key} in all ${allConfigs.size} configs")
     }
+
+    val stepSummaryFile = System.getenv("GITHUB_STEP_SUMMARY")
+    println("GITHUB_STEP_SUMMARY = ${stepSummaryFile}")
+    if (stepSummaryFile != null) {
+      val summaryFile = File(stepSummaryFile)
+      summaryFile.writeText("Feature flags that can be removed from code: ${allSameFlags.size}\n\n")
+    }
+
   }
 
   fun listConfigs(): Set<String> =
