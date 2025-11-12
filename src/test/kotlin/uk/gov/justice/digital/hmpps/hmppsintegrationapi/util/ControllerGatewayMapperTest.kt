@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.ApplicationContext
+import kotlin.test.assertContains
 
 @SpringBootTest
 internal class ControllerGatewayMapperTest(
@@ -43,5 +44,16 @@ internal class ControllerGatewayMapperTest(
     mappings.forEach { (controller, gateways) ->
       println("  $controller -> $gateways")
     }
+  }
+
+  @Test
+  fun `Upstream gateway metadata is present`() {
+    val summaries =
+      ControllerGatewayMapper()
+        .extApiUpstreamGateways(context)
+        .map { it.metaData().summary }
+        .toSet()
+
+    assertContains(summaries, "Probation Integration API for NDelius access")
   }
 }
