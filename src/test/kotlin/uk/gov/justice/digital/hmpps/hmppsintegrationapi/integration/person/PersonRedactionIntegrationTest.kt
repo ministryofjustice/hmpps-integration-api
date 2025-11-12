@@ -187,21 +187,20 @@ class PersonRedactionIntegrationTest : IntegrationTestBase() {
           .andExpect(jsonPath("$.data.prisonerOffenderSearch.ethnicity").isRedacted())
           .andExpect(jsonPath("$.data.probationOffenderSearch.contactDetails").doesNotExist())
           .andExpect(jsonPath("$.data.prisonerOffenderSearch.contactDetails").doesNotExist())
-          .andExpect(jsonPath("$.data.probationOffenderSearch.aliases").doesNotExist())
-          .andExpect(jsonPath("$.data.prisonerOffenderSearch.aliases").doesNotExist())
+          .andExpect(jsonPath("$.data.probationOffenderSearch.aliases[*].middleName").isRedacted())
+          .andExpect(jsonPath("$.data.prisonerOffenderSearch.aliases[*].middleName").isRedacted())
 
         // Expect 4 masks on middle name
         // Expect 4 masks on gender
         // Expect 4 masks on ethnicity
         verifyRedactionEvent("lao-redactions", "lao-role-based-redacted-client", times(3), masks = 4)
         // Expect 2 removes on contact details name
-        // Expect 2 removes on aliases
-        verifyRedactionEvent("lao-redactions", "lao-role-based-redacted-client", times(2), removes = 2)
+        verifyRedactionEvent("lao-redactions", "lao-role-based-redacted-client", times(1), removes = 2)
         prisonerOffenderSearchMockServer.assertValidationPassed()
       }
 
       @Test
-      fun `return rejects person address`() {
+      fun `rejects person address`() {
         callApiWithCN("$basePath/$crn/addresses", clientNameWithRoleBaseRedaction)
           .andExpect(status().isForbidden)
       }
