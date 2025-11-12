@@ -1,8 +1,9 @@
 name: Generate code documentation
 
 on:
-  pull_request:
-    types: [opened, edited, reopened, synchronize]
+  push:
+    branches:
+      - 'HIA-1079_code_doc_poc'
 
 jobs:
   generate-docs:
