@@ -4,14 +4,16 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessF
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
-class RedactionContext(
+data class RedactionContext(
   val requestUri: String,
   val hasAccess: GetCaseAccess,
   val telemetryService: TelemetryService,
   val hmppsId: String? = null,
   val clientId: String? = null,
+  val laoOverride: Boolean? = null, // If set then the LAO isLimitedAccessOffender() function will return this value
 ) {
   fun isLimitedAccessOffender(): Boolean {
+    laoOverride?.let { return it }
     val hmppsId = hmppsId ?: throw LimitedAccessFailedException("No hmppsId available for LAO check")
     return hasAccess.getAccessFor(hmppsId)?.let { it.userRestricted || it.userExcluded } ?: throw LimitedAccessFailedException()
   }

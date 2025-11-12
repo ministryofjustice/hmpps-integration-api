@@ -16,10 +16,13 @@ import org.springframework.web.servlet.HandlerMapping
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.LaoIdentifiable
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
 
 @ControllerAdvice
 class RedactionResponseBodyAdvice(
@@ -67,7 +70,11 @@ class RedactionResponseBodyAdvice(
     val redactionPolicies = getRedactionPoliciesFromRoles(subjectDistinguishedName)
     val hmppsId = servletRequest.getAttribute("hmppsId") as? String
     val redactionContext = RedactionContext(requestUri, accessFor, telemetryService, hmppsId, subjectDistinguishedName)
-    return applyPolicies(redactionContext, body, redactionPolicies)
+    return if (body is PaginatedResponse<*>) {
+      applyPoliciesPaginated(redactionContext, body, redactionPolicies)
+    } else {
+      applyPolicies(redactionContext, body, redactionPolicies)
+    }
   }
 
   fun applyPolicies(
@@ -82,6 +89,27 @@ class RedactionResponseBodyAdvice(
       }
     }
     return redactedBody
+  }
+
+  /**
+   * Apply the redaction for each entry with the data of a Paginated response.
+   * The LAO override will be set here if it is possible to get the LAO status from each entry
+   *
+   */
+  fun applyPoliciesPaginated(
+    redactionContext: RedactionContext,
+    responseBody: PaginatedResponse<*>,
+    policies: List<RedactionPolicy>?,
+  ): Any? {
+    val redacted =
+      responseBody.data.map { entry ->
+        if (entry is LaoIdentifiable) {
+          applyPolicies(redactionContext.copy(laoOverride = entry.isLao()), entry, policies)
+        } else {
+          entry
+        }
+      }
+    return redacted.paginateWith(responseBody.pagination.page, responseBody.pagination.perPage)
   }
 
   private fun getRedactionPoliciesFromRoles(subjectDistinguishedName: String?): List<RedactionPolicy> =

@@ -40,6 +40,7 @@ val laoRedactionPolicy =
         laoOnly(true)
         paths {
           -"/v1/persons/[^/]*$"
+          -"/v1/persons"
         }
         includes {
           path("$..middleName", MASK)

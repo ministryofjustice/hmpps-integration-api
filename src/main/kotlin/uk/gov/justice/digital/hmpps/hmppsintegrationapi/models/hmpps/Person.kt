@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
 import com.fasterxml.jackson.annotation.JsonAlias
+import com.fasterxml.jackson.annotation.JsonIgnore
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
 
@@ -31,7 +32,7 @@ open class Person(
   val restrictionMessage: String? = null,
   val currentExclusion: Boolean? = null,
   val exclusionMessage: String? = null,
-) {
+) : LaoIdentifiable {
   fun copy(
     firstName: String = this.firstName,
     lastName: String = this.lastName,
@@ -65,4 +66,15 @@ open class Person(
     currentExclusion = currentExclusion,
     exclusionMessage = exclusionMessage,
   )
+
+  @JsonIgnore
+  override fun isLao(): Boolean =
+    this.currentExclusion == true ||
+      this.currentRestriction == true ||
+      this.currentExclusion == null ||
+      this.currentRestriction == null
+}
+
+fun interface LaoIdentifiable {
+  fun isLao(): Boolean
 }
