@@ -149,7 +149,7 @@ authorisation:
         - "full-access"
     pmcphee:
       roles:
-        - "full-access"
+        - "full-access-lao-redactions"
     geoamey:
       notes: "See client list in Confluence"
       roles:

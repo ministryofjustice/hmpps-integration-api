@@ -6,6 +6,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.ctrlo
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.curious
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.constants
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.fullAccess
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.fullAccessLaoRedactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.hmppsSystem
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mappa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mappaCat4
@@ -117,4 +118,5 @@ val roles =
     serco,
     statusOnly,
     smartinbox,
+    fullAccessLaoRedactions,
   ).associateBy { it.name }
