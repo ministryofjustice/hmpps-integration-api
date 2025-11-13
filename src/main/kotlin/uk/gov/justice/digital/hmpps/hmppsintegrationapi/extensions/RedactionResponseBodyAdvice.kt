@@ -71,7 +71,8 @@ class RedactionResponseBodyAdvice(
     val redactionContext = RedactionContext(requestUri, accessFor, telemetryService, hmppsId, subjectDistinguishedName)
     return if (body is PaginatedResponse<*> && hmppsId == null) {
       // If the response is paginated and there is no hmpps id for which to apply an LAO check
-      applyPoliciesPaginated(redactionContext, body, redactionPolicies)
+      val list = applyPoliciesToList(redactionContext, body.data, redactionPolicies)
+      PaginatedResponse(list, body.pagination)
     } else {
       applyPolicies(redactionContext, body, redactionPolicies)
     }
@@ -96,20 +97,18 @@ class RedactionResponseBodyAdvice(
    * The LAO override will be set here if it is possible to get the LAO status from each entry
    *
    */
-  fun applyPoliciesPaginated(
+  fun applyPoliciesToList(
     redactionContext: RedactionContext,
-    responseBody: PaginatedResponse<*>,
+    list: List<Any?>,
     policies: List<RedactionPolicy>?,
-  ): Any? {
-    val redacted =
-      responseBody.data.map { entry ->
+  ): List<Any?> {
+    return list.map { entry ->
         if (entry is LaoIdentifiable) {
-          applyPolicies(redactionContext.copy(laoOverride = entry.isLao()), entry, policies)
+          applyPolicies(redactionContext.copy(laoOverride = !entry.hasNoAccessRestrictions()), entry, policies)
         } else {
           entry
         }
       }
-    return PaginatedResponse(data = redacted, pagination = responseBody.pagination)
   }
 
   private fun getRedactionPoliciesFromRoles(subjectDistinguishedName: String?): List<RedactionPolicy> =

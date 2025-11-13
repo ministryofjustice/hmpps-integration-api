@@ -68,13 +68,9 @@ open class Person(
   )
 
   @JsonIgnore
-  override fun isLao(): Boolean =
-    this.currentExclusion == true ||
-      this.currentRestriction == true ||
-      this.currentExclusion == null ||
-      this.currentRestriction == null
+  override fun hasNoAccessRestrictions(): Boolean = this.currentExclusion == false && this.currentRestriction == false
 }
 
 fun interface LaoIdentifiable {
-  fun isLao(): Boolean
+  fun hasNoAccessRestrictions(): Boolean
 }
