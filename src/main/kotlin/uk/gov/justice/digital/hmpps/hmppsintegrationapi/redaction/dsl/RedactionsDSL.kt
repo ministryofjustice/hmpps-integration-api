@@ -56,22 +56,19 @@ class ResponseRedactionsBuilder {
   fun build(): List<ResponseRedaction> = redactions
 }
 
-class IncludesBuilder {
+class RedactionsBuilder {
   var entries = mutableListOf<Pair<String, RedactionType>>()
 
-  fun path(
-    path: String,
-    type: RedactionType,
-  ) {
-    entries += path to type
+  operator fun Pair<String, RedactionType>.unaryMinus() {
+    entries += this
   }
 
-  fun paths(paths: List<Pair<String, RedactionType>>) {
-    entries = paths.toMutableList()
+  operator fun List<Pair<String, RedactionType>>.unaryMinus() {
+    entries += this
   }
 }
 
-class PathsBuilder {
+class EndpointsBuilder {
   val content = mutableListOf<String>()
 
   operator fun String.unaryMinus() {
@@ -80,63 +77,63 @@ class PathsBuilder {
 }
 
 class JsonPathResponseRedactionBuilder {
-  private val includeEntries = mutableListOf<Pair<String, RedactionType>>()
-  private var paths: MutableList<String>? = null
+  private val redactions = mutableListOf<Pair<String, RedactionType>>()
+  private var endpoints: MutableList<String>? = null
   private var laoOnly: Boolean = false
 
   fun laoOnly(laoOnly: Boolean) {
     this.laoOnly = laoOnly
   }
 
-  fun paths(init: PathsBuilder.() -> Unit) {
-    val pathsBuilder = PathsBuilder().apply(init)
-    if (paths == null) paths = mutableListOf()
-    paths!!.addAll(pathsBuilder.content)
+  fun endpoints(init: EndpointsBuilder.() -> Unit) {
+    val endpointsBuilder = EndpointsBuilder().apply(init)
+    if (endpoints == null) endpoints = mutableListOf()
+    endpoints!!.addAll(endpointsBuilder.content)
   }
 
-  fun includes(init: IncludesBuilder.() -> Unit) {
-    val includesBuilder = IncludesBuilder().apply(init)
-    includeEntries += includesBuilder.entries
+  fun redactions(init: RedactionsBuilder.() -> Unit) {
+    val redactionsBuilder = RedactionsBuilder().apply(init)
+    redactions += redactionsBuilder.entries
   }
 
   fun build(): List<JsonPathResponseRedaction> =
-    includeEntries.map { (path, type) ->
+    redactions.map { (path, type) ->
       JsonPathResponseRedaction(
         objectMapper = objectMapper,
         type = type,
-        paths = paths,
-        includes = listOf(path),
+        endpoints = endpoints,
+        redactions = listOf(path),
         laoOnly = laoOnly,
       )
     }
 }
 
 class LaoRejectRedactionBuilder {
-  private var paths: MutableList<String>? = null
+  private var endpoints: MutableList<String>? = null
 
-  fun paths(init: PathsBuilder.() -> Unit) {
-    val pathsBuilder = PathsBuilder().apply(init)
-    if (paths == null) paths = mutableListOf()
-    paths!!.addAll(pathsBuilder.content)
+  fun endpoints(init: EndpointsBuilder.() -> Unit) {
+    val endpointsBuilder = EndpointsBuilder().apply(init)
+    if (endpoints == null) endpoints = mutableListOf()
+    endpoints!!.addAll(endpointsBuilder.content)
   }
 
-  fun build(): LaoRejectRedaction = LaoRejectRedaction(paths = paths)
+  fun build(): LaoRejectRedaction = LaoRejectRedaction(paths = endpoints)
 }
 
 class PersonSearchLaoRedactionBuilder {
-  private val includeEntries = mutableListOf<Pair<String, RedactionType>>()
+  private val redactions = mutableListOf<Pair<String, RedactionType>>()
 
-  fun includes(init: IncludesBuilder.() -> Unit) {
-    val includesBuilder = IncludesBuilder().apply(init)
-    includeEntries += includesBuilder.entries
+  fun redactions(init: RedactionsBuilder.() -> Unit) {
+    val redactionsBuilder = RedactionsBuilder().apply(init)
+    redactions += redactionsBuilder.entries
   }
 
   fun build(): List<PersonSearchResponseLaoRedaction> =
-    includeEntries.map { (path, type) ->
+    redactions.map { (path, type) ->
       PersonSearchResponseLaoRedaction(
         objectMapper = objectMapper,
         type = type,
-        includes = listOf(path),
+        redactions = listOf(path),
       )
     }
 }
