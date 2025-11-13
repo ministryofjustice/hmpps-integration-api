@@ -170,6 +170,20 @@ class PersonRedactionIntegrationTest : IntegrationTestBase() {
           }
           """.trimIndent(),
         )
+        nDeliusMockServer.stubForPost(
+          "/search/probation-cases",
+          """
+            {
+              "firstName": "Robert",
+              "surname": "Larsen",
+              "includeAliases": false
+            }
+            """.removeWhitespaceAndNewlines(),
+          File(
+            "$gatewaysFolder/ndelius/fixtures/GetOffenderResponseLao.json",
+          ).readText(),
+        )
+
         mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
         every { roles["test-role"] } returns testRoleWithLaoRedactions
       }
@@ -203,6 +217,53 @@ class PersonRedactionIntegrationTest : IntegrationTestBase() {
       fun `rejects person address`() {
         callApiWithCN("$basePath/$crn/addresses", clientNameWithRoleBaseRedaction)
           .andExpect(status().isForbidden)
+      }
+
+      @Test
+      fun `redacts person search`() {
+        prisonerOffenderSearchMockServer.stubForPost(
+          "/global-search?size=9999",
+          """
+            {
+              "firstName": "Robert",
+              "lastName": "Larsen",
+              "includeAliases": false
+            }
+          """.removeWhitespaceAndNewlines(),
+          File(
+            "$gatewaysFolder/prisoneroffendersearch/fixtures/GetPerson.json",
+          ).readText(),
+        )
+
+        val firstName = "Robert"
+        val lastName = "Larsen"
+        val queryParams = "first_name=$firstName&last_name=$lastName"
+        callApiWithCN("$basePath?$queryParams", clientNameWithRoleBaseRedaction)
+          .andExpect(status().isOk)
+          // Entry 0 is a prison response - therefore null restriction or exclusion - REDACT
+          .andExpect(jsonPath("$.data[0].middleName").isRedacted())
+          .andExpect(jsonPath("$.data[0].gender").isRedacted())
+          .andExpect(jsonPath("$.data[0].ethnicity").isRedacted())
+          .andExpect(jsonPath("$.data[0].ethnicity").isRedacted())
+          .andExpect(jsonPath("$.data[0].contactDetails").doesNotExist())
+          .andExpect(jsonPath("$.data[0].contactDetails").doesNotExist())
+          .andExpect(jsonPath("$.data[0].aliases[*].middleName").isRedacted())
+          // Entry 1 is probation response with false restriction and false exclusion - DO NOT REDACT
+          .andExpect(jsonPath("$.data[1].middleName").isNotRedacted())
+          .andExpect(jsonPath("$.data[1].gender").isNotRedacted())
+          .andExpect(jsonPath("$.data[1].ethnicity").isNotRedacted())
+          .andExpect(jsonPath("$.data[1].ethnicity").isNotRedacted())
+          .andExpect(jsonPath("$.data[1].contactDetails").exists())
+          .andExpect(jsonPath("$.data[1].contactDetails").exists())
+          .andExpect(jsonPath("$.data[1].aliases[*].middleName").isNotRedacted())
+          // Entry 2 is probation response with true restriction and false exclusion - REDACT
+          .andExpect(jsonPath("$.data[2].middleName").isRedacted())
+          .andExpect(jsonPath("$.data[2].gender").isRedacted())
+          .andExpect(jsonPath("$.data[2].ethnicity").isRedacted())
+          .andExpect(jsonPath("$.data[2].ethnicity").isRedacted())
+          .andExpect(jsonPath("$.data[2].contactDetails").doesNotExist())
+          .andExpect(jsonPath("$.data[2].contactDetails").doesNotExist())
+          .andExpect(jsonPath("$.data[2].aliases[*].middleName").isRedacted())
       }
     }
 

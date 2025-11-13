@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
 import com.fasterxml.jackson.annotation.JsonAlias
+import com.fasterxml.jackson.annotation.JsonIgnore
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
 
@@ -65,4 +66,7 @@ open class Person(
     currentExclusion = currentExclusion,
     exclusionMessage = exclusionMessage,
   )
+
+  @JsonIgnore
+  fun hasNoAccessRestrictions(): Boolean = this.currentExclusion == false && this.currentRestriction == false
 }

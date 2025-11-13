@@ -6,12 +6,12 @@ import com.jayway.jsonpath.JsonPath
 import com.jayway.jsonpath.Option
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionContext
 
-class JsonPathResponseRedaction(
-  val objectMapper: ObjectMapper,
-  val type: RedactionType,
-  val paths: List<String>? = null,
-  val includes: List<String>? = emptyList(),
-  val laoOnly: Boolean = false,
+open class JsonPathResponseRedaction(
+  open val objectMapper: ObjectMapper,
+  open val type: RedactionType,
+  open val paths: List<String>? = null,
+  open val includes: List<String>? = emptyList(),
+  open val laoOnly: Boolean = false,
 ) : ResponseRedaction {
   private val pathPatterns: List<Regex>? = paths?.map(::Regex)
 
