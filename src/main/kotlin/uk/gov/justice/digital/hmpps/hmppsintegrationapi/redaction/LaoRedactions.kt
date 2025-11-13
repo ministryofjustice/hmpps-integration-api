@@ -4,7 +4,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.R
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionType.REMOVE
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.redactionPolicy
 
-val personRedactions =
+val personLaoRedactions =
   listOf(
     Pair("$..middleName", MASK),
     Pair("$..gender", MASK),
@@ -50,12 +50,12 @@ val laoRedactionPolicy =
           -"/v1/persons/[^/]*$"
         }
         includes {
-          paths(personRedactions)
+          paths(personLaoRedactions)
         }
       }
       personSearchLao {
         includes {
-          paths(personRedactions)
+          paths(personLaoRedactions)
         }
       }
       laoRejection {
