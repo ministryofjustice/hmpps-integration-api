@@ -4,6 +4,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.R
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionType.REMOVE
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.redactionPolicy
 
+val personRedactions =
+  listOf(
+    Pair("$..middleName", MASK),
+    Pair("$..gender", MASK),
+    Pair("$..ethnicity", MASK),
+    Pair("$..contactDetails", REMOVE),
+  )
+
 val laoRedactionPolicy =
   redactionPolicy(
     "lao-redactions",
@@ -40,13 +48,14 @@ val laoRedactionPolicy =
         laoOnly(true)
         paths {
           -"/v1/persons/[^/]*$"
-          -"/v1/persons"
         }
         includes {
-          path("$..middleName", MASK)
-          path("$..gender", MASK)
-          path("$..ethnicity", MASK)
-          path("$..contactDetails", REMOVE)
+          paths(personRedactions)
+        }
+      }
+      personSearchLao {
+        includes {
+          paths(personRedactions)
         }
       }
       laoRejection {

@@ -32,7 +32,7 @@ open class Person(
   val restrictionMessage: String? = null,
   val currentExclusion: Boolean? = null,
   val exclusionMessage: String? = null,
-) : LaoIdentifiable {
+) {
   fun copy(
     firstName: String = this.firstName,
     lastName: String = this.lastName,
@@ -68,9 +68,5 @@ open class Person(
   )
 
   @JsonIgnore
-  override fun hasNoAccessRestrictions(): Boolean = this.currentExclusion == false && this.currentRestriction == false
-}
-
-fun interface LaoIdentifiable {
-  fun hasNoAccessRestrictions(): Boolean
+  fun hasNoAccessRestrictions(): Boolean = this.currentExclusion == false && this.currentRestriction == false
 }

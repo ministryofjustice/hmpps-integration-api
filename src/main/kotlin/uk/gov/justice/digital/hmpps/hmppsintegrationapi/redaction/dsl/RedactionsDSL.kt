@@ -8,6 +8,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.JsonPathResponseRedaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.LaoRejectRedaction
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.PersonSearchResponseLaoRedaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.ResponseRedaction
@@ -48,17 +49,25 @@ class ResponseRedactionsBuilder {
     redactions += LaoRejectRedactionBuilder().apply(init).build()
   }
 
+  fun personSearchLao(init: PersonSearchLaoRedactionBuilder.() -> Unit) {
+    redactions += PersonSearchLaoRedactionBuilder().apply(init).build()
+  }
+
   fun build(): List<ResponseRedaction> = redactions
 }
 
 class IncludesBuilder {
-  val entries = mutableListOf<Pair<String, RedactionType>>()
+  var entries = mutableListOf<Pair<String, RedactionType>>()
 
   fun path(
     path: String,
     type: RedactionType,
   ) {
     entries += path to type
+  }
+
+  fun paths(paths: List<Pair<String, RedactionType>>) {
+    entries = paths.toMutableList()
   }
 }
 
@@ -112,4 +121,22 @@ class LaoRejectRedactionBuilder {
   }
 
   fun build(): LaoRejectRedaction = LaoRejectRedaction(paths = paths)
+}
+
+class PersonSearchLaoRedactionBuilder {
+  private val includeEntries = mutableListOf<Pair<String, RedactionType>>()
+
+  fun includes(init: IncludesBuilder.() -> Unit) {
+    val includesBuilder = IncludesBuilder().apply(init)
+    includeEntries += includesBuilder.entries
+  }
+
+  fun build(): List<PersonSearchResponseLaoRedaction> =
+    includeEntries.map { (path, type) ->
+      PersonSearchResponseLaoRedaction(
+        objectMapper = objectMapper,
+        type = type,
+        includes = listOf(path),
+      )
+    }
 }

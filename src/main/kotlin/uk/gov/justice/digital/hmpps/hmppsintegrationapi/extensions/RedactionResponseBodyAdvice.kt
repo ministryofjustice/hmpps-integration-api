@@ -16,12 +16,10 @@ import org.springframework.web.servlet.HandlerMapping
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.LaoIdentifiable
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 
 @ControllerAdvice
 class RedactionResponseBodyAdvice(
@@ -69,13 +67,7 @@ class RedactionResponseBodyAdvice(
     val redactionPolicies = getRedactionPoliciesFromRoles(subjectDistinguishedName)
     val hmppsId = servletRequest.getAttribute("hmppsId") as? String
     val redactionContext = RedactionContext(requestUri, accessFor, telemetryService, hmppsId, subjectDistinguishedName)
-    return if (body is PaginatedResponse<*> && hmppsId == null) {
-      // If the response is paginated and there is no hmpps id for which to apply an LAO check
-      val list = applyPoliciesToList(redactionContext, body.data, redactionPolicies)
-      PaginatedResponse(list, body.pagination)
-    } else {
-      applyPolicies(redactionContext, body, redactionPolicies)
-    }
+    return applyPolicies(redactionContext, body, redactionPolicies)
   }
 
   fun applyPolicies(
@@ -90,25 +82,6 @@ class RedactionResponseBodyAdvice(
       }
     }
     return redactedBody
-  }
-
-  /**
-   * Apply the redaction for each entry within the data of a Paginated response.
-   * The LAO override will be set here if it is possible to get the LAO status from each entry
-   *
-   */
-  fun applyPoliciesToList(
-    redactionContext: RedactionContext,
-    list: List<Any?>,
-    policies: List<RedactionPolicy>?,
-  ): List<Any?> {
-    return list.map { entry ->
-        if (entry is LaoIdentifiable) {
-          applyPolicies(redactionContext.copy(laoOverride = !entry.hasNoAccessRestrictions()), entry, policies)
-        } else {
-          entry
-        }
-      }
   }
 
   private fun getRedactionPoliciesFromRoles(subjectDistinguishedName: String?): List<RedactionPolicy> =
