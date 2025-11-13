@@ -171,5 +171,8 @@ authorisation:
         - "status-only"
     smartinbox:
       notes: "See client list in Confluence"
+      filters:
+        prisons:
+          - WWI
       roles:
         - "smartinbox"
