@@ -45,12 +45,11 @@ class CodeDocTask {
     }
 
     val stepSummaryFile = System.getenv("GITHUB_STEP_SUMMARY")
-    println("GITHUB_STEP_SUMMARY = ${stepSummaryFile}")
+    println("GITHUB_STEP_SUMMARY = $stepSummaryFile")
     if (stepSummaryFile != null) {
       val summaryFile = File(stepSummaryFile)
       summaryFile.writeText("Feature flags that can be removed from code: ${allSameFlags.size}\n\n")
     }
-
   }
 
   fun listConfigs(): Set<String> =
