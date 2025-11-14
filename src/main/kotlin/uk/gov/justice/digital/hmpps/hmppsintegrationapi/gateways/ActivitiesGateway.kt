@@ -33,7 +33,7 @@ class ActivitiesGateway(
     GatewayMetadata(
       summary = "Manage Activities and Appointments",
       developerPortalId = "DPS028",
-      developerPortalUrl = "https://developer-portal.hmpps.service.justice.gov.uk/products/manage-activities-1",
+      developerPortalUrl = "https://developer-portal.hmpps.service.justice.gov.uk/components/hmpps-activities-management-api",
       apiDocUrl = "https://activities-api-dev.prison.service.justice.gov.uk/swagger-ui/index.html#/",
       apiSpecUrl = "https://activities-api-dev.prison.service.justice.gov.uk/v3/api-docs",
       gitHubRepoUrl = "https://github.com/ministryofjustice/hmpps-activities-management-api",
