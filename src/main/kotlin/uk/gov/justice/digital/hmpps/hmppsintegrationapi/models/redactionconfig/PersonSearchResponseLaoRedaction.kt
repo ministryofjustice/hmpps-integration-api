@@ -7,10 +7,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 class PersonSearchResponseLaoRedaction(
   override val objectMapper: ObjectMapper,
   override val type: RedactionType,
-  override val paths: List<String>? = null,
-  override val includes: List<String>? = emptyList(),
+  override val endpoints: List<String>? = null,
+  override val redactions: List<String>? = emptyList(),
   override val laoOnly: Boolean = false,
-) : JsonPathResponseRedaction(objectMapper, type, paths, includes, laoOnly) {
+) : JsonPathResponseRedaction(objectMapper, type, endpoints, redactions, laoOnly) {
   private val pathPattern: Regex = Regex("/v1/persons")
 
   override fun apply(
@@ -23,7 +23,7 @@ class PersonSearchResponseLaoRedaction(
         responseBody.data.map {
           if (it is Person && !it.hasNoAccessRestrictions()) {
             val doc = parseForSearch(objectMapper.writeValueAsString(it))
-            includes.orEmpty().forEach { jsonPath ->
+            redactions.orEmpty().forEach { jsonPath ->
               redactValues(jsonPath, doc, redactionContext, policyName)
             }
             objectMapper.readValue(doc.jsonString(), Person::class.java)

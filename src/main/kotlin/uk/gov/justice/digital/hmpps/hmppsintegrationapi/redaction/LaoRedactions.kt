@@ -18,7 +18,7 @@ val laoRedactionPolicy =
   ) {
     responseRedactions {
       laoRejection {
-        paths {
+        endpoints {
           -"/v1/persons/.*/risk-management-plan"
           -"/v1/persons/.*/risks/scores"
           -"/v1/persons/.*/risks/serious-harm"
@@ -26,40 +26,40 @@ val laoRedactionPolicy =
       }
       jsonPath {
         laoOnly(true)
-        paths {
+        endpoints {
           -"/v1/persons/.*/licences/conditions"
         }
-        includes {
-          path("$..condition", MASK)
+        redactions {
+          -("$..condition" to MASK)
         }
       }
       jsonPath {
         laoOnly(true)
-        paths {
+        endpoints {
           -"/v1/persons/.*/risks/mappadetail"
           -"/v1/persons/.*/risks/dynamic"
           -"/v1/persons/.*/status-information"
         }
-        includes {
-          path("$..notes", MASK)
+        redactions {
+          -("$..notes" to MASK)
         }
       }
       jsonPath {
         laoOnly(true)
-        paths {
+        endpoints {
           -"/v1/persons/[^/]*$"
         }
-        includes {
-          paths(personLaoRedactions)
+        redactions {
+          -personLaoRedactions
         }
       }
       personSearchLao {
-        includes {
-          paths(personLaoRedactions)
+        redactions {
+          -personLaoRedactions
         }
       }
       laoRejection {
-        paths {
+        endpoints {
           -"/v1/persons/.*/addresses"
         }
       }

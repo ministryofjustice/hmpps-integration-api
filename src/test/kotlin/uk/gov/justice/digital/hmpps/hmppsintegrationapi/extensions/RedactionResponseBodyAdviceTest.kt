@@ -274,11 +274,11 @@ class RedactionResponseBodyAdviceTest {
                   responseRedactions {
                     jsonPath {
                       laoOnly(policyIsLao)
-                      paths {
+                      endpoints {
                         -examplePath
                       }
-                      includes {
-                        path("$..test", MASK)
+                      redactions {
+                        -("$..test" to MASK)
                       }
                     }
                   }
