@@ -63,6 +63,20 @@ internal class GetCellLocationForPersonServiceTest(
         response.data.shouldBe(CellLocation(cell = cellLocation, prisonCode = prisonId, prisonName = prisonName))
       }
 
+      it("returns a person cell location when inOutStatus not set to IN") {
+        whenever(prisonerOffenderSearchGateway.getPrisonOffender(hmppsId)).thenReturn(Response(data = prisoner.copy(inOutStatus = "OUT")))
+        val response = getCellLocationForPersonService.execute(hmppsId, filters)
+        response.data.shouldBe(CellLocation(cell = cellLocation, prisonCode = prisonId, prisonName = prisonName))
+      }
+
+      it("returns a person cell location when inOutStatus set to NULL") {
+        whenever(prisonerOffenderSearchGateway.getPrisonOffender(hmppsId)).thenReturn(
+          Response(data = prisoner.copy(inOutStatus = null, cellLocation = null, prisonId = null, prisonName = null)),
+        )
+        val response = getCellLocationForPersonService.execute(hmppsId, filters)
+        response.data.shouldBe(CellLocation())
+      }
+
       it("returns the upstream error when an error occurs") {
         val errors =
           listOf(
