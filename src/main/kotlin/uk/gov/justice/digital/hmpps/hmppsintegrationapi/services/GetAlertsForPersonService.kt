@@ -19,7 +19,6 @@ class GetAlertsForPersonService(
     filters: ConsumerFilters?,
     page: Int,
     perPage: Int,
-    alertCodes: List<String> = emptyList(),
   ): Response<PaginatedAlerts?> {
     val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)
 
@@ -33,7 +32,7 @@ class GetAlertsForPersonService(
         errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND)),
       )
 
-    val alertsResponse = prisonerAlertsGateway.getPrisonerAlertsForCodes(nomisNumber, page, size = perPage, alertCodes)
+    val alertsResponse = prisonerAlertsGateway.getPrisonerAlertsForCodes(nomisNumber, page, size = perPage, ConsumerFilters.alertCodes(filters))
     if (alertsResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = alertsResponse.errors)
     }

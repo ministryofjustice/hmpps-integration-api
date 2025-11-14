@@ -91,7 +91,14 @@ class AuthorisationConfig {
           .mapNotNull { it.filters?.mappaCategories },
       )
 
-    return if (caseNotes == null && prisons == null && mappaCategories == null) null else ConsumerFilters(prisons, caseNotes, mappaCategories)
+    val alertCodes =
+      getDistinctValuesIfNotWildcarded(
+        allRoles
+          .filter { it.filters?.hasAlertCodes() == true }
+          .mapNotNull { it.filters?.alertCodes },
+      )
+
+    return if (caseNotes == null && prisons == null && mappaCategories == null && alertCodes == null) null else ConsumerFilters(prisons, caseNotes, mappaCategories, alertCodes)
   }
 
   /**
