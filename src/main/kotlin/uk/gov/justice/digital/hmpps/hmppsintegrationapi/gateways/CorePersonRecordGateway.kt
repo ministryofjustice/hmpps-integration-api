@@ -21,9 +21,9 @@ class CorePersonRecordGateway(
     GatewayMetadata(
       summary = "Core Person Record",
       developerPortalId = "HMPPS517",
-      developerPortalUrl = "https://developer-portal.hmpps.service.justice.gov.uk/products/core-person-record",
-      apiDocUrl = "https://person-integration-api.hmpps.service.justice.gov.uk/swagger-ui/index.html",
-      gitHubRepoUrl = "https://github.com/ministryofjustice/hmpps-person-integration-api",
+      developerPortalUrl = "https://developer-portal.hmpps.service.justice.gov.uk/components/hmpps-person-record",
+      apiDocUrl = "https://hmpps-person-record.hmpps.service.justice.gov.uk/swagger-ui/index.html#/",
+      gitHubRepoUrl = "https://github.com/ministryofjustice/hmpps-person-record",
       slackChannel = "#hmpps-person-record",
     )
 
