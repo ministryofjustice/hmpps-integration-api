@@ -65,8 +65,6 @@ const year = today.getFullYear();
 const month = (today.getMonth() + 1).toString().padStart(2, '0');
 const day = today.getDate().toString().padStart(2, '0');
 const todayFormatted = `${year}-${month}-${day}`
-const startDate = "2022-01-01"
-const endDate = "2022-02-01"
 const attendancesStartDate = "2025-07-04"
 const attendancesEndDate = "2025-07-11"
 
@@ -87,7 +85,6 @@ const get_endpoints = [
   `/v1/persons/${plpHmppsId}/education`,
   `/v1/activities/${activityId}/schedules`,
   `/v1/activities/schedule/${scheduleId}`,
-  `/v1/prison/${prisonId}/prisoners/${hmppsId}/scheduled-instances?startDate=${startDate}&endDate=${endDate}`,
   `/v1/prison/prisoners/${attendancesHmppsId}/activities/attendances?startDate=${attendancesStartDate}&endDate=${attendancesEndDate}`,
   `/v1/activities/schedule/${scheduleId}/waiting-list-applications`,
   `/v1/activities/schedule/${scheduleId}/suitability-criteria`,
@@ -436,6 +433,18 @@ function verify_prisoner_endpoints(prisonId, nomisNumber) {
   validate_get_request(`${prisonerPrefix}/non-associations`);
 }
 
+function verify_activities_search(prisonId, prisonerId) {
+  const path = `/v1/prison/${prisonId}/prisoners/${hmppsId}/scheduled-instances?startDate=2022-01-01&endDate=2025-02-01`
+  const res = http.get(`${baseUrl}${path}`, httpParams);
+  if (!check(res, {
+    // TODO: add activities so that this returns 200, not a 404
+    [`GET ${path} successful`]: (r) => (r.status == 200) || (r.status == 404),
+  })) {
+    exec.test.fail(`GET ${path} failed, http status = ${res.status}`);
+  }
+  return res;
+}
+
 function verify_prisons_endpoints(nomisNumber) {
   group('prisons', () => {
     let res = validate_get_request(`/v1/prison/prisoners/${nomisNumber}`)
@@ -467,6 +476,7 @@ function verify_prisons_endpoints(nomisNumber) {
 
     verify_prison_endpoints(prisonId);
     verify_prisoner_endpoints(prisonId, nomisNumber);
+    verify_activities_search(prisonId, nomisNumber);
   })
 }
 
