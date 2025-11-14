@@ -13,7 +13,17 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 @Component
 class AdjudicationsGateway(
   @Value("\${services.adjudications.base-url}") baseUrl: String,
-) {
+) : UpstreamGateway {
+  override fun metaData() =
+    GatewayMetadata(
+      summary = "Enables adjudication charge creation, hearing scheduling and awards on DPS.",
+      developerPortalId = "DPS001",
+      developerPortalUrl = "https://developer-portal.hmpps.service.justice.gov.uk/components/hmpps-manage-adjudications-api",
+      apiDocUrl = "https://manage-adjudications-api-dev.hmpps.service.justice.gov.uk/swagger-ui/index.html",
+      apiSpecUrl = "https://manage-adjudications-api-dev.hmpps.service.justice.gov.uk/v3/api-docs",
+      gitHubRepoUrl = "https://github.com/ministryofjustice/hmpps-manage-adjudications-api",
+    )
+
   private val webClient = WebClientWrapper(baseUrl)
 
   @Autowired

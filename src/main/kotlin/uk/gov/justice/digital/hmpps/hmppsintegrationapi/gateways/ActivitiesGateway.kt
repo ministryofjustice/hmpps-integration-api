@@ -28,7 +28,17 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 @Component
 class ActivitiesGateway(
   @Value("\${services.activities.base-url}") baseUrl: String,
-) {
+) : UpstreamGateway {
+  override fun metaData() =
+    GatewayMetadata(
+      summary = "Manage Activities and Appointments",
+      developerPortalId = "DPS028",
+      developerPortalUrl = "https://developer-portal.hmpps.service.justice.gov.uk/components/hmpps-activities-management-api",
+      apiDocUrl = "https://activities-api-dev.prison.service.justice.gov.uk/swagger-ui/index.html#/",
+      apiSpecUrl = "https://activities-api-dev.prison.service.justice.gov.uk/v3/api-docs",
+      gitHubRepoUrl = "https://github.com/ministryofjustice/hmpps-activities-management-api",
+    )
+
   private val webClient = WebClientWrapper(baseUrl)
 
   @Autowired
