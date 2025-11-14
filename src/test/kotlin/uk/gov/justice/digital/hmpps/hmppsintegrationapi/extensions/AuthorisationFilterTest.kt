@@ -44,7 +44,6 @@ class AuthorisationFilterTest {
     whenever(mockRequest.requestURI).thenReturn(examplePath)
     whenever(mockRequest.getAttribute("clientName")).thenReturn(exampleConsumer)
     whenever(mockRequest.getAttribute("certificateSerialNumber")).thenReturn("TEST_SERIAL_NUMBER")
-    whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.CERT_REVOCATION_ENABLED)).thenReturn(false)
 
     mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
     every { roles } returns mapOf(roleName to Role(name = "test", permissions = mutableListOf(examplePath), filters = null))
@@ -130,7 +129,6 @@ class AuthorisationFilterTest {
 
   @Test
   fun `Forbidden if certificate serial number is in the certificate revocation list and feature flag is enabled`() {
-    whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.CERT_REVOCATION_ENABLED)).thenReturn(true)
     whenever(authorisationConfig.certificateRevocationList).thenReturn(listOf("TEST_SERIAL_NUMBER", "TEST_SERIAL_NUMBER_2"))
     val authorisationFilter = AuthorisationFilter(authorisationConfig, featureFlagConfig)
     authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
@@ -139,7 +137,6 @@ class AuthorisationFilterTest {
 
   @Test
   fun `NOT Forbidden if certificate serial number is in the certificate revocation list and feature flag is enabled`() {
-    whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.CERT_REVOCATION_ENABLED)).thenReturn(true)
     whenever(authorisationConfig.certificateRevocationList).thenReturn(listOf("TEST_SERIAL_NUMBER_3", "TEST_SERIAL_NUMBER_4"))
     val authorisationFilter = AuthorisationFilter(authorisationConfig, featureFlagConfig)
     authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)

@@ -30,12 +30,7 @@ class GetCellLocationForPersonService(
       )
 
     val prisonResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = nomisNumber)
-    val cellLocation =
-      if (prisonResponse.data?.inOutStatus == "IN") {
-        CellLocation(prisonCode = prisonResponse.data.prisonId, prisonName = prisonResponse.data.prisonName, cell = prisonResponse.data.cellLocation)
-      } else {
-        CellLocation()
-      }
+    val cellLocation = CellLocation(prisonCode = prisonResponse.data?.prisonId, prisonName = prisonResponse.data?.prisonName, cell = prisonResponse.data?.cellLocation)
 
     return Response(
       data = cellLocation,

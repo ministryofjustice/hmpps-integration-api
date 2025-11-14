@@ -96,7 +96,6 @@ feature-flag:
   use-contact-events-endpoint: true
   epf-endpoint-includes-lao: false
   cpr-enabled: true
-  cert-revocation-enabled: true
 
 authorisation:
   consumers:
