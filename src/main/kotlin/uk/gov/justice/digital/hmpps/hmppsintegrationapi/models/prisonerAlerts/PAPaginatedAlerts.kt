@@ -25,40 +25,4 @@ data class PAPaginatedAlerts(
       page = this.number + 1, // Alerts API pagination is 0 based
       perPage = this.size,
     )
-
-  companion object {
-    val PND_ALERT_CODES =
-      listOf(
-        "BECTER",
-        "HA",
-        "XA",
-        "XCA",
-        "XEL",
-        "XELH",
-        "XER",
-        "XHT",
-        "XILLENT",
-        "XIS",
-        "XR",
-        "XRF",
-        "XSA",
-        "HA2",
-        "RCS",
-        "RDV",
-        "RKC",
-        "RPB",
-        "RPC",
-        "RSS",
-        "RST",
-        "RDP",
-        "REG",
-        "RLG",
-        "ROP",
-        "RRV",
-        "RTP",
-        "RYP",
-        "HS",
-        "SC",
-      )
-  }
 }

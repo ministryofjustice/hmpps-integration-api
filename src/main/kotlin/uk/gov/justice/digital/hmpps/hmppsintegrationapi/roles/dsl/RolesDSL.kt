@@ -98,6 +98,24 @@ class CaseNotesBuilder {
   }
 }
 
+class AlertCodesBuilder {
+  var content: MutableList<String>? = null
+
+  operator fun String.unaryMinus() {
+    if (content == null) {
+      content = mutableListOf()
+    }
+    content?.add(this)
+  }
+
+  operator fun List<String>.unaryMinus() {
+    if (content == null) {
+      content = mutableListOf()
+    }
+    content?.addAll(this)
+  }
+}
+
 class MappaCategoriesBuilder {
   var content: MutableList<Any>? = null
 
@@ -124,8 +142,9 @@ class FiltersBuilder {
   private var prisons: MutableList<String>? = null
   private var caseNotes: MutableList<String>? = null
   private var mappaCategories: MutableList<Any>? = null
+  private var alertCodes: MutableList<String>? = null
 
-  fun build(): ConsumerFilters = ConsumerFilters(prisons, caseNotes, mappaCategories)
+  fun build(): ConsumerFilters = ConsumerFilters(prisons, caseNotes, mappaCategories, alertCodes)
 
   fun prisons(init: PrisonsBuilder.() -> Unit) {
     PrisonsBuilder().apply(init).content?.let {
@@ -151,6 +170,15 @@ class FiltersBuilder {
         mappaCategories = mutableListOf()
       }
       mappaCategories?.addAll(it)
+    }
+  }
+
+  fun alertCodes(init: AlertCodesBuilder.() -> Unit) {
+    AlertCodesBuilder().apply(init).content?.let {
+      if (alertCodes == null) {
+        alertCodes = mutableListOf()
+      }
+      alertCodes?.addAll(it)
     }
   }
 }

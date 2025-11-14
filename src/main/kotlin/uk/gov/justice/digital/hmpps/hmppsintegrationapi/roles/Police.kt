@@ -25,4 +25,44 @@ val police =
         laoRedactionPolicy,
       ),
     )
+    filters {
+      alertCodes {
+        -"HA"
+        -"HA2"
+        -"HS"
+        -"RCC"
+        -"RCS"
+        -"RDP"
+        -"RDV"
+        -"REG"
+        -"RKC"
+        -"RLG"
+        -"ROP"
+        -"RPB"
+        -"RPC"
+        -"RRV"
+        -"RSS"
+        -"RST"
+        -"RTP"
+        -"RYP"
+        -"SC"
+        -"XA"
+        -"XC"
+        -"XCA"
+        -"XCI"
+        -"XCO"
+        -"XCOL"
+        -"XCOP"
+        -"XCOR"
+        -"XEL"
+        -"XELH"
+        -"XER"
+        -"XHT"
+        -"XILLENT"
+        -"XIS"
+        -"XR"
+        -"XRF"
+        -"XSA"
+      }
+    }
   }

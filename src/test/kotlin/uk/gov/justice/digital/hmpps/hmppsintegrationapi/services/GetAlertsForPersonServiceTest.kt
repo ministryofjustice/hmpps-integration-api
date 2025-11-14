@@ -2,6 +2,9 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import io.mockk.every
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import org.mockito.Mockito
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -20,6 +23,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonerAlerts.PA
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonerAlerts.PAPaginatedAlerts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonerAlerts.PASort
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithPndAlerts
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
@@ -109,6 +114,10 @@ internal class GetAlertsForPersonServiceTest(
       val paginatedAlerts = getPaginatedAlerts(listOf(alert, nonMatchingAlert))
 
       beforeEach {
+
+        mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
+        every { roles["full-access"] } returns testRoleWithPndAlerts
+
         Mockito.reset(prisonerAlertsGateway)
         Mockito.reset(personService)
 
@@ -123,6 +132,10 @@ internal class GetAlertsForPersonServiceTest(
             data = paginatedAlerts,
           ),
         )
+      }
+
+      afterEach {
+        unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
       }
 
       it("gets a nomis number from getPersonService") {
@@ -230,19 +243,22 @@ internal class GetAlertsForPersonServiceTest(
       }
 
       describe("getAlertsForPnd") {
-        it("returns PND filtered data with out codes in query string") {
-          val response = getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)
-          response.data?.content.shouldBe(listOf(alert.toAlert(), nonMatchingAlert.toAlert()))
-        }
 
-        it("returns PND unfiltered data with codes in query string") {
-          whenever(prisonerAlertsGateway.getPrisonerAlertsForCodes(hmppsId, page, perPage, PAPaginatedAlerts.PND_ALERT_CODES)).thenReturn(
+        it("calls the gateway with a list of alertCodes") {
+          val filters = ConsumerFilters(alertCodes = testRoleWithPndAlerts.filters?.alertCodes)
+          whenever(prisonerAlertsGateway.getPrisonerAlertsForCodes(hmppsId, page, perPage, filters.alertCodes!!)).thenReturn(
             Response(
               data = paginatedAlerts,
             ),
           )
-          val response = getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage, PAPaginatedAlerts.PND_ALERT_CODES)
-          response.data?.content.shouldBe(listOf(alert.toAlert(), nonMatchingAlert.toAlert()))
+          whenever(personService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(data = NomisNumber(hmppsId)))
+          getAlertsForPersonService.getAlerts(hmppsId, ConsumerFilters(alertCodes = testRoleWithPndAlerts.filters?.alertCodes), page, perPage)
+          verify(prisonerAlertsGateway, times(1)).getPrisonerAlertsForCodes(hmppsId, page, perPage, testRoleWithPndAlerts.filters?.alertCodes!!)
+        }
+
+        it("calls the gateway without a list of alertCodes") {
+          getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)
+          verify(prisonerAlertsGateway, times(1)).getPrisonerAlertsForCodes(hmppsId, page, perPage, emptyList())
         }
       }
     },

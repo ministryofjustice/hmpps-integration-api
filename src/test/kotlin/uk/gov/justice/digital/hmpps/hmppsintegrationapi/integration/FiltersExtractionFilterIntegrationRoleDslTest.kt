@@ -30,6 +30,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.police
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("integration-test")
@@ -57,7 +58,7 @@ class FiltersExtractionFilterIntegrationRoleDslTest {
       listOf(
         Arguments.of("full-access", null),
         Arguments.of("private-prison", null),
-        Arguments.of("police", null),
+        Arguments.of("police", ConsumerFilters(alertCodes = police.filters?.alertCodes!!)),
         Arguments.of("curious", null),
         Arguments.of("reference-data-only", null),
         Arguments.of("prisoner-escort-custody-service", ConsumerFilters(caseNotes = listOf("CAB", "NEG", "CVM", "INTERVENTION", "POS"), prisons = null)),
