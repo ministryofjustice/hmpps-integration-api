@@ -16,7 +16,17 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonServic
 @Component
 class CorePersonRecordGateway(
   @Value("\${services.core-person-record.base-url}") baseUrl: String,
-) {
+) : UpstreamGateway {
+  override fun metaData() =
+    GatewayMetadata(
+      summary = "Core Person Record",
+      developerPortalId = "HMPPS517",
+      developerPortalUrl = "https://developer-portal.hmpps.service.justice.gov.uk/products/core-person-record",
+      apiDocUrl = "https://person-integration-api.hmpps.service.justice.gov.uk/swagger-ui/index.html",
+      gitHubRepoUrl = "https://github.com/ministryofjustice/hmpps-person-integration-api",
+      slackChannel = "#hmpps-person-record",
+    )
+
   private val webClient = WebClientWrapper(baseUrl)
 
   @Autowired

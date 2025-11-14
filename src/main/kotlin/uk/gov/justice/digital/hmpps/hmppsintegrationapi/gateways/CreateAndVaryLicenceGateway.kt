@@ -16,7 +16,17 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 @Component
 class CreateAndVaryLicenceGateway(
   @Value("\${services.create-and-vary-licence.base-url}") baseUrl: String,
-) {
+) : UpstreamGateway {
+  override fun metaData() =
+    GatewayMetadata(
+      summary = "A service to allow Probation Practitioners and Prison staff to create and vary licences in an efficient way.",
+      developerPortalId = "DPS011",
+      developerPortalUrl = "https://developer-portal.hmpps.service.justice.gov.uk/components/create-and-vary-a-licence-api",
+      apiDocUrl = "https://create-and-vary-a-licence-api-test2.hmpps.service.justice.gov.uk/swagger-ui/index.html",
+      apiSpecUrl = "https://create-and-vary-a-licence-api-test2.hmpps.service.justice.gov.uk/v3/api-docs/public",
+      gitHubRepoUrl = "https://github.com/ministryofjustice/create-and-vary-a-licence",
+    )
+
   private val webClient = WebClientWrapper(baseUrl)
 
   @Autowired

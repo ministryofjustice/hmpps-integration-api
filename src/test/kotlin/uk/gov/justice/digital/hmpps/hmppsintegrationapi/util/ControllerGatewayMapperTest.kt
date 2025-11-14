@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.ApplicationContext
-import kotlin.test.assertContains
+import org.springframework.stereotype.Component
 
 @SpringBootTest
 internal class ControllerGatewayMapperTest(
@@ -54,6 +54,16 @@ internal class ControllerGatewayMapperTest(
         .map { it.metaData().summary }
         .toSet()
 
-    assertContains(summaries, "Probation Integration API for NDelius access")
+    assertTrue(summaries.contains("Probation Integration API for NDelius access"))
+
+    val gatewayComponentCount =
+      context
+        .getBeansWithAnnotation(Component::class.java)
+        .filter { it.key.endsWith("Gateway") }
+        .size
+
+    val gatewaysWithoutSummary = gatewayComponentCount - summaries.size
+    val threshold = 16 // Continually decrease this threshold over time until it is zero
+    assertTrue(gatewaysWithoutSummary <= threshold, "More than $threshold gateways without metadata: $gatewaysWithoutSummary")
   }
 }
