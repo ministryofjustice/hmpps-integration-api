@@ -434,7 +434,7 @@ function verify_prisoner_endpoints(prisonId, nomisNumber) {
 }
 
 function verify_activities_search(prisonId, prisonerId) {
-  const path = `/v1/prison/${prisonId}/prisoners/${hmppsId}/scheduled-instances?startDate=2022-01-01&endDate=2025-02-01`
+  const path = `/v1/prison/${prisonId}/prisoners/${prisonerId}/scheduled-instances?startDate=2022-01-01&endDate=2025-02-01`
   const res = http.get(`${baseUrl}${path}`, httpParams);
   if (!check(res, {
     // TODO: add activities so that this returns 200, not a 404
