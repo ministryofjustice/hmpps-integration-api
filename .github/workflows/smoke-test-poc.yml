@@ -7,7 +7,6 @@ on:
       - 'HIA-1085_activities_smoke_test_broken'
       - 'HIA-1085_use_self_consistent_ids'
       - 'HIA-1085_re-enable_activities_test'
-      - 'dev/SAA-3814-activities-scheduled-instances-endpoint-moved'
 jobs:
   dev-smoke-tests:
     uses: ./.github/workflows/smoke-test-dev.yml
