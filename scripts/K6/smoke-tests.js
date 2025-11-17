@@ -433,12 +433,16 @@ function verify_prisoner_endpoints(prisonId, nomisNumber) {
   validate_get_request(`${prisonerPrefix}/non-associations`);
 }
 
-function verify_activities_search(prisonId, prisonerId) {
-  const path = `/v1/prison/${prisonId}/prisoners/${prisonerId}/scheduled-instances?startDate=2022-01-01&endDate=2025-02-01`
+function verify_activities_search(prisonId, prisonerId, startDate, days = 60) {
+  let date = new Date(startDate)
+  date.setDate(date.getDate() + days);
+  let endDate = date.toISOString().split('T')[0];
+
+  const path = `/v1/prison/${prisonId}/prisoners/${prisonerId}/scheduled-instances?startDate=${startDate}&endDate=${endDate}`
   const res = http.get(`${baseUrl}${path}`, httpParams);
   if (!check(res, {
     // TODO: add activities so that this returns 200, not a 404
-    [`GET ${path} successful`]: (r) => (r.status == 200) || (r.status == 404),
+    [`GET ${path} successful`]: (r) => r.status == 200,
   })) {
     exec.test.fail(`GET ${path} failed, http status = ${res.status}`);
   }
@@ -476,7 +480,8 @@ function verify_prisons_endpoints(nomisNumber) {
 
     verify_prison_endpoints(prisonId);
     verify_prisoner_endpoints(prisonId, nomisNumber);
-    verify_activities_search(prisonId, nomisNumber);
+    // verify_activities_search(prisonId, nomisNumber);
+    verify_activities_search("MKI", "A8451DY", "2022-01-01")
   })
 }
 
