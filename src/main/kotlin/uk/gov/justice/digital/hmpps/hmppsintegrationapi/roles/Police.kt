@@ -65,19 +65,6 @@ val police =
         -"XSA"
       }
       statusCodes {
-        -"AMHL"
-        -"ASFO"
-        -"AVIS"
-        -"MAPP"
-        -"RCCO"
-        -"RCPR"
-        -"RHRH"
-        -"RLRH"
-        -"RMRH"
-        -"RVAD"
-        -"RVRH"
-        -"STRG"
-        -"WEAP"
         -"WRSM"
       }
     }
