@@ -38,6 +38,7 @@ class MappaDetailController(
   fun getMappaDetail(
     @Parameter(description = "HMPPS identifier", example = "A1234AA") @PathVariable hmppsId: String,
   ): DataResponse<MappaDetail?> {
+
     val response = getMappaDetailForPersonService.execute(hmppsId)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {

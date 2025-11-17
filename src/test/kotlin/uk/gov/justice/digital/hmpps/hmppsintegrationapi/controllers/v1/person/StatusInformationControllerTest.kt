@@ -7,6 +7,7 @@ import io.kotest.matchers.string.shouldContain
 import io.mockk.every
 import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
+import org.assertj.core.api.Assertions.assertThat
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.any
@@ -21,8 +22,10 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ErrorResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
@@ -62,7 +65,7 @@ internal class StatusInformationControllerTest(
           Mockito.reset(auditService)
           whenever(getCaseAccess.getAccessFor(any())).thenReturn(CaseAccess(laoOkCrn, false, false, "", ""))
           whenever(getCaseAccess.getAccessFor("R754321")).thenReturn(null)
-          whenever(getStatusInformationForPersonService.execute(hmppsId, testRoleWithPndAlerts.filters)).thenReturn(
+          whenever(getStatusInformationForPersonService.execute(hmppsId)).thenReturn(
             Response(
               data =
                 listOf(
@@ -100,7 +103,7 @@ internal class StatusInformationControllerTest(
         it("gets the status information for a person with the matching ID") {
           mockMvc.performAuthorised(path)
 
-          verify(getStatusInformationForPersonService, VerificationModeFactory.times(1)).execute(hmppsId, testRoleWithPndAlerts.filters)
+          verify(getStatusInformationForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
         }
 
         it("returns the status information for a person with the matching ID") {
@@ -125,7 +128,7 @@ internal class StatusInformationControllerTest(
           val laoNoms = "S1234RE"
           val laoCrn = "S123456"
           whenever(getCaseAccess.getAccessFor(laoNoms)).thenReturn(CaseAccess(laoCrn, false, true, null, "Restriction Message"))
-          whenever(getStatusInformationForPersonService.execute(laoNoms, testRoleWithPndAlerts.filters)).thenReturn(
+          whenever(getStatusInformationForPersonService.execute(laoNoms)).thenReturn(
             Response(
               data =
                 listOf(
@@ -161,7 +164,7 @@ internal class StatusInformationControllerTest(
           val hmppsIdForPersonWithNoStatusInformation = "A1234AA"
           val statusInformationPath = "/v1/persons/$hmppsIdForPersonWithNoStatusInformation/status-information"
 
-          whenever(getStatusInformationForPersonService.execute(hmppsIdForPersonWithNoStatusInformation, testRoleWithPndAlerts.filters)).thenReturn(
+          whenever(getStatusInformationForPersonService.execute(hmppsIdForPersonWithNoStatusInformation)).thenReturn(
             Response(
               data = emptyList(),
             ),
@@ -173,7 +176,7 @@ internal class StatusInformationControllerTest(
         }
 
         it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
-          whenever(getStatusInformationForPersonService.execute(hmppsId, testRoleWithPndAlerts.filters)).thenReturn(
+          whenever(getStatusInformationForPersonService.execute(hmppsId)).thenReturn(
             Response(
               data = emptyList(),
               errors =
@@ -192,7 +195,7 @@ internal class StatusInformationControllerTest(
         }
 
         it("returns paginated results") {
-          whenever(getStatusInformationForPersonService.execute(hmppsId, testRoleWithPndAlerts.filters)).thenReturn(
+          whenever(getStatusInformationForPersonService.execute(hmppsId)).thenReturn(
             Response(
               data =
                 List(20) {
@@ -214,7 +217,7 @@ internal class StatusInformationControllerTest(
         }
 
         it("fails with the appropriate error when an upstream service is down") {
-          whenever(getStatusInformationForPersonService.execute(hmppsId, testRoleWithPndAlerts.filters)).doThrow(
+          whenever(getStatusInformationForPersonService.execute(hmppsId)).doThrow(
             WebClientResponseException(500, "MockError", null, null, null, null),
           )
 
@@ -229,7 +232,7 @@ internal class StatusInformationControllerTest(
         }
 
         it("fails with the appropriate error when LAO context has failed to be retrieved") {
-          whenever(getStatusInformationForPersonService.execute(laoFailureCrn, testRoleWithPndAlerts.filters)).thenReturn(
+          whenever(getStatusInformationForPersonService.execute(laoFailureCrn)).thenReturn(
             Response(
               data =
                 listOf(
@@ -252,6 +255,14 @@ internal class StatusInformationControllerTest(
               "{\"status\":500,\"errorCode\":null,\"userMessage\":\"LAO Check failed\",\"developerMessage\":\"LAO Check failed\",\"moreInfo\":null}",
             ),
           )
+        }
+
+        it("fails with the appropriate error when role does not contain a WRSM status") {
+          unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
+          val response = mockMvc.performAuthorised("$path?page=1&perPage=10")
+          val error = response.response.contentAsJson<ErrorResponse>()
+          assertThat(error.status).isEqualTo(HttpStatus.FORBIDDEN.value())
+          assertThat(error.developerMessage).contains("Consumer does not have status code WRSM configured")
         }
       }
     },

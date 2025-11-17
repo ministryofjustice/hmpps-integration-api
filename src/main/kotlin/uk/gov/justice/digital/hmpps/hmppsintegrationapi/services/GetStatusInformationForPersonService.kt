@@ -12,10 +12,7 @@ class GetStatusInformationForPersonService(
   @Autowired val nDeliusGateway: NDeliusGateway,
   @Autowired val getPersonService: GetPersonService,
 ) {
-  fun execute(
-    hmppsId: String,
-    filters: ConsumerFilters?,
-  ): Response<List<StatusInformation>> {
+  fun execute(hmppsId: String): Response<List<StatusInformation>> {
     val personResponse = getPersonService.execute(hmppsId = hmppsId)
     val deliusCrn = personResponse.data?.identifiers?.deliusCrn
 
@@ -24,12 +21,11 @@ class GetStatusInformationForPersonService(
     if (deliusCrn != null) {
       val allNDeliusPersonStatus = nDeliusGateway.getStatusInformationForPerson(deliusCrn)
       val filteredNDeliusPersonStatus =
-        if (filters?.hasStatusCodes() == true) {
-          allNDeliusPersonStatus.data.filter {
-            it.code in ConsumerFilters.statusCodes(filters)
-          }
-        } else {
-          allNDeliusPersonStatus.data
+        allNDeliusPersonStatus.data.filter {
+          it.code in
+            listOf(
+              "WRSM",
+            )
         }
       nDeliusPersonStatus = Response(data = filteredNDeliusPersonStatus, errors = allNDeliusPersonStatus.errors)
     }
