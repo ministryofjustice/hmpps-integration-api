@@ -433,7 +433,8 @@ function verify_prisoner_endpoints(prisonId, nomisNumber) {
   validate_get_request(`${prisonerPrefix}/non-associations`);
 }
 
-function verify_activities_search(prisonId, prisonerId, startDate, days = 60) {
+function verify_activities_search(prisonId, prisonerId, startDate, days = 90) {
+  // Note that the upstream API will return an error if more than 90 days of data is requested
   let date = new Date(startDate)
   date.setDate(date.getDate() + days);
   let endDate = date.toISOString().split('T')[0];
@@ -480,7 +481,6 @@ function verify_prisons_endpoints(nomisNumber) {
 
     verify_prison_endpoints(prisonId);
     verify_prisoner_endpoints(prisonId, nomisNumber);
-    // verify_activities_search(prisonId, nomisNumber);
     verify_activities_search("MKI", "A8451DY", "2022-01-01")
   })
 }
