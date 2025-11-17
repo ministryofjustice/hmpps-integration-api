@@ -46,8 +46,7 @@ class StatusInformationController(
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
     @RequestAttribute filters: ConsumerFilters?,
   ): PaginatedResponse<StatusInformation> {
-
-    //Only allow access to this endpoint if the consumer has access to WRSM
+    // Only allow access to this endpoint if the consumer has access to WRSM
     if (!ConsumerFilters.hasStatusCode(filters, "WRSM")) {
       throw ForbiddenByUpstreamServiceException("Consumer does not have status code WRSM configured")
     }

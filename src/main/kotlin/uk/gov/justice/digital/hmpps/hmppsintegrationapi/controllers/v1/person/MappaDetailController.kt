@@ -10,12 +10,15 @@ import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.MappaDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetMappaDetailForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
@@ -37,7 +40,12 @@ class MappaDetailController(
   )
   fun getMappaDetail(
     @Parameter(description = "HMPPS identifier", example = "A1234AA") @PathVariable hmppsId: String,
+    @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<MappaDetail?> {
+    // Only allow access to this endpoint if the consumer has access to MAPP
+    if (!ConsumerFilters.hasStatusCode(filters, "MAPP")) {
+      throw ForbiddenByUpstreamServiceException("Consumer does not have status code MAPP configured")
+    }
 
     val response = getMappaDetailForPersonService.execute(hmppsId)
 

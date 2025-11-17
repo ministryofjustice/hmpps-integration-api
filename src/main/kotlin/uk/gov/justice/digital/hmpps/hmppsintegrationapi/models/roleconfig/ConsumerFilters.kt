@@ -25,7 +25,10 @@ data class ConsumerFilters(
 
     fun statusCodes(filters: ConsumerFilters?) = filters?.statusCodes ?: emptyList()
 
-    fun hasStatusCode(filters: ConsumerFilters?, code: String) = filters?.statusCodes?.contains(code) == true
+    fun hasStatusCode(
+      filters: ConsumerFilters?,
+      code: String,
+    ) = filters?.statusCodes?.contains(code) == true
   }
 
   fun matchesPrison(prisonId: String?): Boolean = matchesFilterList(prisons, prisonId)

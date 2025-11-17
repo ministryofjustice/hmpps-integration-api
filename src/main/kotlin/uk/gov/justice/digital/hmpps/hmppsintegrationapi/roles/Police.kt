@@ -66,6 +66,7 @@ val police =
       }
       statusCodes {
         -"WRSM"
+        -"MAPP"
       }
     }
   }

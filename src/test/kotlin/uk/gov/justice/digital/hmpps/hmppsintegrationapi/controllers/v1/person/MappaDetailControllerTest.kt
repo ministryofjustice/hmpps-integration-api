@@ -6,6 +6,7 @@ import io.kotest.matchers.string.shouldContain
 import io.mockk.every
 import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
+import org.assertj.core.api.Assertions.assertThat
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.any
@@ -18,8 +19,10 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ErrorResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
@@ -231,6 +234,14 @@ internal class MappaDetailControllerTest(
               "{\"status\":500,\"errorCode\":null,\"userMessage\":\"LAO Check failed\",\"developerMessage\":\"LAO Check failed\",\"moreInfo\":null}",
             ),
           )
+        }
+
+        it("fails with the appropriate error when role does not contain a MAPPA status") {
+          unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
+          val response = mockMvc.performAuthorised("$path?page=1&perPage=10")
+          val error = response.response.contentAsJson<ErrorResponse>()
+          assertThat(error.status).isEqualTo(HttpStatus.FORBIDDEN.value())
+          assertThat(error.developerMessage).contains("Consumer does not have status code MAPP configured")
         }
       }
     },

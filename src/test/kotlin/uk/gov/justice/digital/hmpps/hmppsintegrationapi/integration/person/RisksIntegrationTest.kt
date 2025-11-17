@@ -1,12 +1,30 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
+import io.mockk.every
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithPndAlerts
 
 class RisksIntegrationTest : IntegrationTestBase() {
+  @BeforeEach
+  fun setUp() {
+    mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
+    every { roles[any()] } returns testRoleWithPndAlerts
+  }
+
+  @AfterEach
+  fun tearDown() {
+    unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
+  }
+
   @ParameterizedTest
   @ValueSource(strings = ["scores", "categories", "mappadetail", "dynamic", "serious-harm"])
   fun `returns protected characteristics for a person`(path: String) {
