@@ -5,13 +5,17 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.StatusInformation
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetStatusInformationForPersonService(
   @Autowired val nDeliusGateway: NDeliusGateway,
   @Autowired val getPersonService: GetPersonService,
 ) {
-  fun execute(hmppsId: String): Response<List<StatusInformation>> {
+  fun execute(
+    hmppsId: String,
+    filters: ConsumerFilters?,
+  ): Response<List<StatusInformation>> {
     val personResponse = getPersonService.execute(hmppsId = hmppsId)
     val deliusCrn = personResponse.data?.identifiers?.deliusCrn
 
@@ -20,11 +24,12 @@ class GetStatusInformationForPersonService(
     if (deliusCrn != null) {
       val allNDeliusPersonStatus = nDeliusGateway.getStatusInformationForPerson(deliusCrn)
       val filteredNDeliusPersonStatus =
-        allNDeliusPersonStatus.data.filter {
-          it.code in
-            listOf(
-              "WRSM",
-            )
+        if (filters?.hasStatusCodes() == true) {
+          allNDeliusPersonStatus.data.filter {
+            it.code in ConsumerFilters.statusCodes(filters)
+          }
+        } else {
+          allNDeliusPersonStatus.data
         }
       nDeliusPersonStatus = Response(data = filteredNDeliusPersonStatus, errors = allNDeliusPersonStatus.errors)
     }

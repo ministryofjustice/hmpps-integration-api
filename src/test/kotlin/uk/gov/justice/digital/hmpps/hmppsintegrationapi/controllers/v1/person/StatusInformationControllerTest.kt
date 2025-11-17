@@ -33,7 +33,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.REDACTION_MASKING_TEXT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithLaoRedactions
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithPndAlerts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetStatusInformationForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
@@ -57,12 +57,12 @@ internal class StatusInformationControllerTest(
       describe("GET $path") {
         beforeTest {
           mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-          every { roles["full-access"] } returns testRoleWithLaoRedactions
+          every { roles["full-access"] } returns testRoleWithPndAlerts
           Mockito.reset(getStatusInformationForPersonService)
           Mockito.reset(auditService)
           whenever(getCaseAccess.getAccessFor(any())).thenReturn(CaseAccess(laoOkCrn, false, false, "", ""))
           whenever(getCaseAccess.getAccessFor("R754321")).thenReturn(null)
-          whenever(getStatusInformationForPersonService.execute(hmppsId)).thenReturn(
+          whenever(getStatusInformationForPersonService.execute(hmppsId, testRoleWithPndAlerts.filters)).thenReturn(
             Response(
               data =
                 listOf(
@@ -100,7 +100,7 @@ internal class StatusInformationControllerTest(
         it("gets the status information for a person with the matching ID") {
           mockMvc.performAuthorised(path)
 
-          verify(getStatusInformationForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
+          verify(getStatusInformationForPersonService, VerificationModeFactory.times(1)).execute(hmppsId, testRoleWithPndAlerts.filters)
         }
 
         it("returns the status information for a person with the matching ID") {
@@ -125,7 +125,7 @@ internal class StatusInformationControllerTest(
           val laoNoms = "S1234RE"
           val laoCrn = "S123456"
           whenever(getCaseAccess.getAccessFor(laoNoms)).thenReturn(CaseAccess(laoCrn, false, true, null, "Restriction Message"))
-          whenever(getStatusInformationForPersonService.execute(laoNoms)).thenReturn(
+          whenever(getStatusInformationForPersonService.execute(laoNoms, testRoleWithPndAlerts.filters)).thenReturn(
             Response(
               data =
                 listOf(
@@ -161,7 +161,7 @@ internal class StatusInformationControllerTest(
           val hmppsIdForPersonWithNoStatusInformation = "A1234AA"
           val statusInformationPath = "/v1/persons/$hmppsIdForPersonWithNoStatusInformation/status-information"
 
-          whenever(getStatusInformationForPersonService.execute(hmppsIdForPersonWithNoStatusInformation)).thenReturn(
+          whenever(getStatusInformationForPersonService.execute(hmppsIdForPersonWithNoStatusInformation, testRoleWithPndAlerts.filters)).thenReturn(
             Response(
               data = emptyList(),
             ),
@@ -173,7 +173,7 @@ internal class StatusInformationControllerTest(
         }
 
         it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
-          whenever(getStatusInformationForPersonService.execute(hmppsId)).thenReturn(
+          whenever(getStatusInformationForPersonService.execute(hmppsId, testRoleWithPndAlerts.filters)).thenReturn(
             Response(
               data = emptyList(),
               errors =
@@ -192,7 +192,7 @@ internal class StatusInformationControllerTest(
         }
 
         it("returns paginated results") {
-          whenever(getStatusInformationForPersonService.execute(hmppsId)).thenReturn(
+          whenever(getStatusInformationForPersonService.execute(hmppsId, testRoleWithPndAlerts.filters)).thenReturn(
             Response(
               data =
                 List(20) {
@@ -214,7 +214,7 @@ internal class StatusInformationControllerTest(
         }
 
         it("fails with the appropriate error when an upstream service is down") {
-          whenever(getStatusInformationForPersonService.execute(hmppsId)).doThrow(
+          whenever(getStatusInformationForPersonService.execute(hmppsId, testRoleWithPndAlerts.filters)).doThrow(
             WebClientResponseException(500, "MockError", null, null, null, null),
           )
 
@@ -229,7 +229,7 @@ internal class StatusInformationControllerTest(
         }
 
         it("fails with the appropriate error when LAO context has failed to be retrieved") {
-          whenever(getStatusInformationForPersonService.execute(laoFailureCrn)).thenReturn(
+          whenever(getStatusInformationForPersonService.execute(laoFailureCrn, testRoleWithPndAlerts.filters)).thenReturn(
             Response(
               data =
                 listOf(

@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.StatusInformation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 
 @ContextConfiguration(
@@ -53,12 +54,12 @@ internal class GetStatusInformationForPersonServiceTest(
       }
 
       it("gets a person from getPersonService") {
-        getStatusInformationForPersonService.execute(nomisNumber)
+        getStatusInformationForPersonService.execute(nomisNumber, ConsumerFilters(statusCodes = listOf("WRSM")))
         verify(personService, times(1)).execute(hmppsId = nomisNumber)
       }
 
       it("gets person status from NDelius using a Delius crn number") {
-        getStatusInformationForPersonService.execute(deliusCrn)
+        getStatusInformationForPersonService.execute(deliusCrn, ConsumerFilters(statusCodes = listOf("WRSM")))
         verify(nDeliusGateway, times(1)).getStatusInformationForPerson(deliusCrn)
       }
 
@@ -81,12 +82,12 @@ internal class GetStatusInformationForPersonServiceTest(
         }
 
         it("records upstream API errors") {
-          val response = getStatusInformationForPersonService.execute(nomisNumber)
+          val response = getStatusInformationForPersonService.execute(nomisNumber, ConsumerFilters(statusCodes = listOf("WRSM")))
           response.errors.shouldBe(errors)
         }
 
         it("does not get person status data from NDelius") {
-          getStatusInformationForPersonService.execute(nomisNumber)
+          getStatusInformationForPersonService.execute(nomisNumber, ConsumerFilters(statusCodes = listOf("WRSM")))
           verify(nDeliusGateway, times(0)).getStatusInformationForPerson(id = deliusCrn)
         }
       }
@@ -106,13 +107,18 @@ internal class GetStatusInformationForPersonServiceTest(
           ),
         )
 
-        val response = getStatusInformationForPersonService.execute(nomisNumber)
+        val response = getStatusInformationForPersonService.execute(nomisNumber, ConsumerFilters(statusCodes = listOf("WRSM")))
         response.errors.shouldBe(errors)
       }
 
       it("returns person status filtered data") {
-        val response = getStatusInformationForPersonService.execute(nomisNumber)
+        val response = getStatusInformationForPersonService.execute(nomisNumber, ConsumerFilters(statusCodes = listOf("WRSM")))
         response.data.shouldBe(listOf(statusInformation))
+      }
+
+      it("returns all status codes when no status filter") {
+        val response = getStatusInformationForPersonService.execute(nomisNumber, ConsumerFilters(statusCodes = null))
+        response.data.shouldBe(listOf(statusInformation, nonMatchingStatusInformation))
       }
 
       it("returns an error when the person status code is not in the allowed list") {
@@ -122,7 +128,7 @@ internal class GetStatusInformationForPersonServiceTest(
           ),
         )
 
-        val response = getStatusInformationForPersonService.execute(nomisNumber)
+        val response = getStatusInformationForPersonService.execute(nomisNumber, ConsumerFilters(statusCodes = listOf("WRSM")))
         response.data.shouldHaveSize(0)
         response.errors.shouldHaveSize(0)
       }
