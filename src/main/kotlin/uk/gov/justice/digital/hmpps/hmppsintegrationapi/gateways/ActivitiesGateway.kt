@@ -287,7 +287,7 @@ class ActivitiesGateway(
     val result =
       webClient.requestList<ActivitiesActivityScheduledInstanceForPrisoner>(
         method = HttpMethod.GET,
-        uri = "/integration-api/prisons/$prisonCode/$prisonerNumber/scheduled-instances?$queryParams",
+        uri = "/integration-api/prisons/$prisonCode/prisoner/$prisonerNumber/scheduled-instances?$queryParams",
         headers = authenticationHeader(),
         upstreamApi = UpstreamApi.ACTIVITIES,
         badRequestAsError = true,
