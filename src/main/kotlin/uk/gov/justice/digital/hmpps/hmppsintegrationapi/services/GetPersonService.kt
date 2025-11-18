@@ -24,6 +24,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffenders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSIdentifierWithPrisonerNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationintegrationepf.LimitedAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.SupervisionStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
 @Service
@@ -233,6 +234,13 @@ class GetPersonService(
         }
 
       val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<NomisNumber>(prisonId, filters)
+      if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
+        return consumerPrisonFilterCheck
+      }
+    }
+    if(filters?.supervisionStatus != SupervisionStatus.NONE) {
+        val prisoner = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
+        val consumerPrisonFilterCheck = consumerPrisonAccessService.checkPrisonerHasSupervisionStatus<NomisNumber>(prisoner.data, filters)
       if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
         return consumerPrisonFilterCheck
       }

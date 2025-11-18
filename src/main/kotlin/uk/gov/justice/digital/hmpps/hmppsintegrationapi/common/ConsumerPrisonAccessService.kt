@@ -4,10 +4,23 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class ConsumerPrisonAccessService {
+
+
+  fun <T> checkPrisonerHasSupervisionStatus(
+    prisoner: POSPrisoner?,
+    filters: ConsumerFilters?,
+  ): Response<T?> {
+    val response = Response<T?>(data = null, errors = emptyList<UpstreamApiError>())
+  /*  if (filters != null && !filters.matchesSupervisionStatus(supervisionStatus)) {
+      response.errors = listOf(UpstreamApiError(upstreamServiceType, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))
+    }*/
+    return response
+  }
   fun <T> checkConsumerHasPrisonAccess(
     prisonId: String?,
     filters: ConsumerFilters?,
@@ -19,4 +32,5 @@ class ConsumerPrisonAccessService {
     }
     return response
   }
+
 }
