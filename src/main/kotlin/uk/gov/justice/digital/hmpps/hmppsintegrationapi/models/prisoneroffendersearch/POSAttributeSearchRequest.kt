@@ -15,12 +15,42 @@ data class POSAttributeSearchRequest(
 
 data class POSAttributeSearchQuery(
   val joinType: String = "AND",
-  val matchers: List<POSAttributeSearchMatcher>,
+  val matchers: List<POSAttributeMatcher> = emptyList(),
+  val subQueries: List<POSAttributeSearchQuery> = emptyList(),
 ) {
   fun toMap(): Map<String, Any> =
     mapOf(
       "joinType" to this.joinType,
       "matchers" to this.matchers.map { it.toMap() },
+      "subQueries" to this.subQueries.map { it.toMap() },
+    )
+}
+
+fun interface POSAttributeMatcher {
+  fun toMap(): Map<String, String>
+}
+
+data class POSAttributeSearchPncMatcher(
+  val pncNumber: String,
+) : POSAttributeMatcher {
+  override fun toMap(): Map<String, String> =
+    mapOf(
+      "type" to "PNC",
+      "pncNumber" to pncNumber,
+    )
+}
+
+data class POSAttributeSearchDateMatcher(
+  val attribute: String,
+  val date: String,
+) : POSAttributeMatcher {
+  override fun toMap(): Map<String, String> =
+    mapOf(
+      "type" to "Date",
+      "attribute" to attribute,
+      "condition" to "IS",
+      "maxValue" to date,
+      "minValue" to date,
     )
 }
 
@@ -29,8 +59,8 @@ data class POSAttributeSearchMatcher(
   val attribute: String,
   val condition: String,
   val searchTerm: String,
-) {
-  fun toMap(): Map<String, String> =
+) : POSAttributeMatcher {
+  override fun toMap(): Map<String, String> =
     mapOf(
       "type" to this.type,
       "attribute" to this.attribute,
