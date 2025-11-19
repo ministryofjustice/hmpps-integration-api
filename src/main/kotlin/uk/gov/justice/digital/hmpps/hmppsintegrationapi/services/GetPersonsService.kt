@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffenders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchPncMatcher
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchQuery
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetPersonsService(
@@ -45,7 +46,7 @@ class GetPersonsService(
   }
 
   /**
-   * Builds a POSAttributeSearchRequest for the given firstName, lastName, pncNumber, dateOfBirth
+   * Builds a POSAttributeSearchRequest for the given firstName, lastName, pncNumber, dateOfBirth and prison filters
    * If searchWithinAliases is set then the request will ALSO perform a search on aliases for firstName, lastName and dateOfBirth
    * (in addition to searching the firstName, lastName and dateOfBirth on the main record)
    */
@@ -55,6 +56,7 @@ class GetPersonsService(
     pncNumber: String? = null,
     dateOfBirth: String? = null,
     searchWithinAliases: Boolean = false,
+    consumerFilters: ConsumerFilters? = null,
   ): POSAttributeSearchRequest =
     POSAttributeSearchRequest(
       joinType = "AND",
@@ -64,6 +66,21 @@ class GetPersonsService(
             POSAttributeSearchQuery(
               joinType = "AND",
               matchers = listOfNotNull(POSAttributeSearchPncMatcher(pncNumber = it)),
+            )
+          },
+          consumerFilters?.hasPrisonFilter().takeIf { it == true }?.let {
+            POSAttributeSearchQuery(
+              joinType = "AND",
+              matchers =
+                listOfNotNull(
+                  POSAttributeSearchMatcher(
+                    type = "String",
+                    attribute = "prisonId",
+                    condition = "IN",
+                    // If there is an empty prisons list then set the search criteria to X to force no search results
+                    searchTerm = consumerFilters?.prisons?.takeIf { it.isNotEmpty() }?.joinToString(separator = ",") ?: "X",
+                  ),
+                ),
             )
           },
           POSAttributeSearchQuery(
