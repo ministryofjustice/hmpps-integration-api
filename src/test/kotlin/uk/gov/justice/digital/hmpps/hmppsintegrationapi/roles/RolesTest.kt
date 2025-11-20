@@ -47,4 +47,10 @@ class RolesTest {
   fun `private-prison role does not have any mappa category filters `() {
     assertThat(roles["private-prison"]?.filters?.mappaCategories).isNull()
   }
+
+  @Test
+  fun `prisoner-finance role has an empty prison filter`() {
+    assertThat(roles["prisoner-finance"]?.filters?.hasPrisonFilter()).isEqualTo(true)
+    assertThat(roles["prisoner-finance"]?.filters?.prisons).isEmpty()
+  }
 }
