@@ -1,10 +1,13 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
+import jdk.internal.net.http.common.Log.errors
 import org.assertj.core.api.Assertions.assertThat
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory.times
+import org.mockito.kotlin.any
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
@@ -15,12 +18,17 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchDateMatcher
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchMatcher
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchPncMatcher
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchQuery
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPageable
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPaginatedPrisoners
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSSort
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 
@@ -103,7 +111,7 @@ internal class GetPersonsServiceTest(
         }
     }
 
-    it("returns only probation person(s) if searched with a PNC") {
+    it("returns only probation person(s) if searched with a PNC with feature flag disabled") {
       val responseFromProbationOffenderSearch = Response(data = listOf(Person(firstName, lastName, middleName = "John")))
       val responseFromPrisonerOffenderSearch = Response(data = listOf(POSPrisoner(firstName = firstName, lastName = lastName, middleNames = "Gary", youthOffender = false)))
 
@@ -116,6 +124,68 @@ internal class GetPersonsServiceTest(
 
       response.data.shouldBe(responseFromProbationOffenderSearch.data)
       verify(prisonerOffenderSearchGateway, times(0)).getPersons(firstName, lastName, dateOfBirth, true)
+    }
+
+    it("returns prisoner attribute search if searched with a PNC with feature flag ENABLED") {
+      whenever(featureFlag.isEnabled(FeatureFlagConfig.PNC_SEARCH_ENABLED)).thenReturn(true)
+      val prisoners = listOf(POSPrisoner(firstName = firstName, lastName = lastName, middleNames = "Gary", youthOffender = false))
+      val paginatedResponse =
+        Response<POSPaginatedPrisoners?>(
+          data =
+            POSPaginatedPrisoners(
+              content = prisoners,
+              totalElements = 1,
+              totalPages = 1,
+              first = true,
+              last = true,
+              size = 10,
+              number = 0,
+              sort =
+                POSSort(
+                  empty = false,
+                  sorted = false,
+                  unsorted = false,
+                ),
+              numberOfElements = 1,
+              pageable =
+                POSPageable(
+                  offset = 0,
+                  sort =
+                    POSSort(
+                      empty = false,
+                      sorted = false,
+                      unsorted = false,
+                    ),
+                  pageSize = 10,
+                  pageNumber = 1,
+                  paged = true,
+                  unpaged = false,
+                ),
+              empty = false,
+            ),
+        )
+      val responseFromProbationOffenderSearch = Response(data = listOf(Person(firstName, lastName, middleName = "John")))
+      whenever(prisonerOffenderSearchGateway.attributeSearch(any())).thenReturn(paginatedResponse)
+      whenever(
+        deliusGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth),
+      ).thenReturn(responseFromProbationOffenderSearch)
+      val response = getPersonsService.execute(firstName, lastName, pncNumber, dateOfBirth)
+      response.data.size.shouldBe(2)
+      verify(prisonerOffenderSearchGateway, times(1)).attributeSearch(any())
+    }
+
+    it("returns an error if searched with a PNC with feature flag ENABLED and attribute search fails") {
+      whenever(featureFlag.isEnabled(FeatureFlagConfig.PNC_SEARCH_ENABLED)).thenReturn(true)
+      val error = UpstreamApiError(type = UpstreamApiError.Type.BAD_REQUEST, causedBy = UpstreamApi.TEST)
+      val paginatedResponse = Response<POSPaginatedPrisoners?>(errors = listOf(error), data = null)
+      val responseFromProbationOffenderSearch = Response(data = listOf(Person(firstName, lastName, middleName = "John")))
+      whenever(prisonerOffenderSearchGateway.attributeSearch(any())).thenReturn(paginatedResponse)
+      whenever(
+        deliusGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth),
+      ).thenReturn(responseFromProbationOffenderSearch)
+      val response = getPersonsService.execute(firstName, lastName, pncNumber, dateOfBirth)
+      response.data.shouldBeEmpty()
+      response.errors.shouldBe(listOf(error))
     }
 
     it("returns an empty list when no person(s) are found") {

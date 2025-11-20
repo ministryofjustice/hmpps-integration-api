@@ -2,6 +2,8 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.PNC_SEARCH_ENABLED
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
@@ -17,6 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 class GetPersonsService(
   @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
   private val deliusGateway: NDeliusGateway,
+  @Autowired val featureFlag: FeatureFlagConfig,
 ) {
   fun execute(
     firstName: String?,
@@ -24,10 +27,10 @@ class GetPersonsService(
     pncNumber: String?,
     dateOfBirth: String?,
     searchWithinAliases: Boolean = false,
+    consumerFilters: ConsumerFilters? = null,
   ): Response<List<Person>> {
     val responseFromProbationOffenderSearch =
       deliusGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases)
-
     if (responseFromProbationOffenderSearch.errors.isNotEmpty()) {
       return Response(emptyList(), responseFromProbationOffenderSearch.errors)
     }
@@ -41,6 +44,17 @@ class GetPersonsService(
           searchWithinAliases,
         )
       return Response(data = responseFromPrisonerOffenderSearch.data.map { it.toPerson() } + responseFromProbationOffenderSearch.data)
+    } else {
+      // PNC number is supplied and feature flag is ON
+      if (featureFlag.isEnabled(PNC_SEARCH_ENABLED)) {
+        val attributeSearchRequest = attributeSearchRequest(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases, consumerFilters)
+        val attributeSearchResponse = prisonerOffenderSearchGateway.attributeSearch(attributeSearchRequest)
+        if (attributeSearchResponse.errors.isNotEmpty()) {
+          return Response(emptyList(), attributeSearchResponse.errors)
+        }
+        val attributeSearchResponseResults = attributeSearchResponse.data?.content?.map { it.toPerson() } ?: emptyList()
+        return Response(data = attributeSearchResponseResults + responseFromProbationOffenderSearch.data)
+      }
     }
     return Response(data = responseFromProbationOffenderSearch.data)
   }
