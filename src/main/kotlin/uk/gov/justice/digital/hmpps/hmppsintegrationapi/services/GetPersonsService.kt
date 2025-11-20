@@ -31,6 +31,7 @@ class GetPersonsService(
   ): Response<List<Person>> {
     val responseFromProbationOffenderSearch =
       deliusGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases)
+
     if (responseFromProbationOffenderSearch.errors.isNotEmpty()) {
       return Response(emptyList(), responseFromProbationOffenderSearch.errors)
     }
