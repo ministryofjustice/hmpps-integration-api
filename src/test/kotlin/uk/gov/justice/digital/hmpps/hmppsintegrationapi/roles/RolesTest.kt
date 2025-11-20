@@ -53,4 +53,10 @@ class RolesTest {
     assertThat(roles["prisoner-finance"]?.filters?.hasPrisonFilter()).isEqualTo(true)
     assertThat(roles["prisoner-finance"]?.filters?.prisons).isEmpty()
   }
+
+  @Test
+  fun `prisoner-escort-custody-service has an empty prison filter`() {
+    assertThat(roles["prisoner-escort-custody-service"]?.filters?.hasPrisonFilter()).isNotEqualTo(true)
+    assertThat(roles["prisoner-escort-custody-service"]?.filters?.prisons).isNull()
+  }
 }
