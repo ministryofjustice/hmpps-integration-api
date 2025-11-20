@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mojPrisonerEducati
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mojPrisonerFacing
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.police
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.prisonerEscortCustodyService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.prisonerFinance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.privatePrison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.referenceDataOnly
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.serco
@@ -119,4 +120,5 @@ val roles =
     statusOnly,
     smartinbox,
     fullAccessLaoRedactions,
+    prisonerFinance,
   ).associateBy { it.name }

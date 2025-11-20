@@ -159,11 +159,17 @@ authorisation:
     socrates:
       notes: "See client list in Confluence"
       roles:
-        - "status-only"
+        - "prisoner-finance"
+      filters:
+        prisons:
+          - MKI
     unify:
       notes: "See client list in Confluence"
       roles:
-        - "status-only"
+        - "prisoner-finance"
+      filters:
+        prisons:
+          - MKI
     smoke-test-revoke:
       notes: "Automated post-deployment smoke tests (certificate revocation path)"
       roles:
