@@ -55,7 +55,7 @@ class RolesTest {
   }
 
   @Test
-  fun `prisoner-escort-custody-service has an empty prison filter`() {
+  fun `prisoner-escort-custody-service has a null prison filter`() {
     assertThat(roles["prisoner-escort-custody-service"]?.filters?.hasPrisonFilter()).isNotEqualTo(true)
     assertThat(roles["prisoner-escort-custody-service"]?.filters?.prisons).isNull()
   }
