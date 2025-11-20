@@ -1,10 +1,14 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.post
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching
+import io.mockk.every
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -17,6 +21,12 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchMatcher
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchPncMatcher
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchQuery
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithPrisonFilters
 import java.io.File
 
 @ActiveProfiles("integration-test-redaction-enabled")
@@ -24,6 +34,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
   @AfterEach
   fun resetValidators() {
     prisonerOffenderSearchMockServer.resetValidator()
+    unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
   }
 
   @BeforeEach
@@ -62,6 +73,56 @@ class PersonIntegrationTest : IntegrationTestBase() {
       val firstName = "Robert"
       val lastName = "Larsen"
       val queryParams = "first_name=$firstName&last_name=$lastName"
+
+      callApi("$basePath?$queryParams")
+        .andExpect(status().isOk)
+        .andExpect(content().json(getExpectedResponse("person-name-search-response")))
+
+      prisonerOffenderSearchMockServer.assertValidationPassed()
+    }
+
+    @Test
+    fun `returns a list of persons using pnc number search with consumer filters where feature flag enabled`() {
+      mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
+      every { roles[any()] } returns testRoleWithPrisonFilters
+
+      val firstName = "Robert"
+      val lastName = "Larsen"
+      val pncNumber = "2003/13116M"
+
+      val expectedRequest =
+        POSAttributeSearchRequest(
+          joinType = "AND",
+          queries =
+            listOf(
+              POSAttributeSearchQuery(joinType = "AND", matchers = listOf(POSAttributeSearchPncMatcher(pncNumber))), // THE PNC matcher
+              POSAttributeSearchQuery(joinType = "AND", matchers = listOf(POSAttributeSearchMatcher(type = "String", attribute = "prisonId", condition = "IN", searchTerm = "MDI,HEI"))), // Empty prisons filter
+              POSAttributeSearchQuery(
+                joinType = "OR",
+                subQueries =
+                  listOf(
+                    POSAttributeSearchQuery(
+                      joinType = "AND",
+                      matchers =
+                        listOfNotNull(
+                          POSAttributeSearchMatcher(type = "String", attribute = "firstName", condition = "IS", searchTerm = firstName),
+                          POSAttributeSearchMatcher(type = "String", attribute = "lastName", condition = "IS", searchTerm = lastName),
+                        ),
+                    ),
+                  ),
+              ),
+            ),
+        )
+
+      prisonerOffenderSearchMockServer.stubForPost(
+        "/attribute-search",
+        jacksonObjectMapper().writeValueAsString(expectedRequest.toMap()),
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/AttributeSearch.json",
+        ).readText(),
+      )
+
+      val queryParams = "first_name=$firstName&last_name=$lastName&pnc_number=$pncNumber"
 
       callApi("$basePath?$queryParams")
         .andExpect(status().isOk)
