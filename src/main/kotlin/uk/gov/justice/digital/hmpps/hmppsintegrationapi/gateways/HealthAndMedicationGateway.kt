@@ -12,7 +12,17 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 @Component
 class HealthAndMedicationGateway(
   @Value("\${services.health-and-medication.base-url}") baseUrl: String,
-) {
+) : UpstreamGateway {
+  override fun metaData() =
+    GatewayMetadata(
+      summary = "An API providing access to HMPPS health and medication data.",
+      developerPortalId = "DPS013",
+      developerPortalUrl = "https://developer-portal.hmpps.service.justice.gov.uk/components/hmpps-health-and-medication-api",
+      apiDocUrl = "https://health-and-medication-api-dev.hmpps.service.justice.gov.uk/swagger-ui/index.html",
+      apiSpecUrl = "https://health-and-medication-api-dev.hmpps.service.justice.gov.uk/v3/api-docs",
+      gitHubRepoUrl = "https://github.com/ministryofjustice/hmpps-health-and-medication-api",
+    )
+
   private val webClient = WebClientWrapper(baseUrl)
 
   @Autowired

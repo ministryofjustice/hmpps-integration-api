@@ -19,7 +19,16 @@ import java.util.Base64
 @Component
 class HmppsAuthGateway(
   @Value("\${services.hmpps-auth.base-url}") hmppsAuthUrl: String,
-) : IAuthGateway {
+) : IAuthGateway,
+  UpstreamGateway {
+  override fun metaData() =
+    GatewayMetadata(
+      summary = "Our purpose is to identify staff and external users, and provide them with the access to digital prison and probation services they need to do their job, and no more.",
+      developerPortalId = "DPS017",
+      developerPortalUrl = "https://developer-portal.hmpps.service.justice.gov.uk/components/hmpps-authorization-api",
+      gitHubRepoUrl = "https://github.com/ministryofjustice/hmpps-auth",
+    )
+
   private val webClient: WebClient = WebClient.builder().baseUrl(hmppsAuthUrl).build()
 
   @Value("\${services.hmpps-auth.username}")

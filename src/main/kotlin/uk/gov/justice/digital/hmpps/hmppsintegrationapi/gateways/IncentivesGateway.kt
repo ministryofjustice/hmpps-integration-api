@@ -12,7 +12,16 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.incentives.IncIEP
 @Component
 class IncentivesGateway(
   @Value("\${services.incentives.base-url}") baseUrl: String,
-) {
+) : UpstreamGateway {
+  override fun metaData() =
+    GatewayMetadata(
+      summary = "Manage and review the incentives levels of prisons.",
+      developerPortalId = "DPS020",
+      developerPortalUrl = "https://developer-portal.hmpps.service.justice.gov.uk/components/hmpps-incentives-api",
+      apiSpecUrl = "https://incentives-api-dev.hmpps.service.justice.gov.uk/swagger-ui/index.html",
+      gitHubRepoUrl = "https://github.com/ministryofjustice/hmpps-incentives-api",
+    )
+
   private val webClient = WebClientWrapper(baseUrl)
 
   @Autowired

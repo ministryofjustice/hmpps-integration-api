@@ -12,7 +12,16 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nonAssociation.No
 @Component
 class NonAssociationsGateway(
   @Value("\${services.non-associations.base-url}") baseUrl: String,
-) {
+) : UpstreamGateway {
+  override fun metaData() =
+    GatewayMetadata(
+      summary = "Management and creation of non-associations that displays which prisoners can’t associate with one another for safety reasons.",
+      developerPortalId = "DPS032",
+      developerPortalUrl = "https://developer-portal.hmpps.service.justice.gov.uk/components/hmpps-non-associations-api",
+      apiSpecUrl = "https://non-associations-api-dev.hmpps.service.justice.gov.uk/v3/api-docs",
+      gitHubRepoUrl = "https://github.com/ministryofjustice/hmpps-personal-relationships-api",
+    )
+
   private val webClient = WebClientWrapper(baseUrl)
 
   @Autowired
