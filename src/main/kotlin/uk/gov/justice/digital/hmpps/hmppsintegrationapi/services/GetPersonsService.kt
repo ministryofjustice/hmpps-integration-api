@@ -45,8 +45,8 @@ class GetPersonsService(
         )
       return Response(data = responseFromPrisonerOffenderSearch.data.map { it.toPerson() } + responseFromProbationOffenderSearch.data)
     } else {
-      // PNC number is supplied and feature flag is ON
-      if (featureFlag.isEnabled(PNC_SEARCH_ENABLED)) {
+      // PNC number is supplied and feature flag is ON and Prisons Filter is supplied
+      if (featureFlag.isEnabled(PNC_SEARCH_ENABLED) && consumerFilters?.hasPrisonFilter() == true) {
         val attributeSearchRequest = attributeSearchRequest(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases, consumerFilters)
         val attributeSearchResponse = prisonerOffenderSearchGateway.attributeSearch(attributeSearchRequest)
         if (attributeSearchResponse.errors.isNotEmpty()) {
