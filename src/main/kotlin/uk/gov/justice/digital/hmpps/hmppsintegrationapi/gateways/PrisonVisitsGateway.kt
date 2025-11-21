@@ -16,7 +16,17 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.Visi
 @Component
 class PrisonVisitsGateway(
   @Value("\${services.manage-prison-visits.base-url}") baseUrl: String,
-) {
+) : UpstreamGateway {
+  override fun metaData() =
+    GatewayMetadata(
+      summary = "Facade API to make external API calls and collate results for visit-scheduler and book-a-prison-visit-staff-ui",
+      developerPortalId = "DPS035",
+      developerPortalUrl = "https://developer-portal.hmpps.service.justice.gov.uk/components/hmpps-manage-prison-visits-orchestration",
+      apiDocUrl = "https://hmpps-manage-prison-visits-orchestration-dev.prison.service.justice.gov.uk/swagger-ui/index.html#/",
+      apiSpecUrl = "https://hmpps-manage-prison-visits-orchestration-dev.prison.service.justice.gov.uk/v3/api-docs",
+      gitHubRepoUrl = "https://github.com/ministryofjustice/hmpps-manage-prison-visits-orchestration",
+    )
+
   private val webClient = WebClientWrapper(baseUrl)
   private val mapper: ObjectMapper = ObjectMapper()
 

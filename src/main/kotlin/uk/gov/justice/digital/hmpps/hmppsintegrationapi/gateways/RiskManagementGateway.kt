@@ -12,7 +12,17 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 @Component
 class RiskManagementGateway(
   @Value("\${services.assess-risks-and-needs.base-url}") baseUrl: String,
-) {
+) : UpstreamGateway {
+  override fun metaData() =
+    GatewayMetadata(
+      summary = "API for Risks and OASys integration (ARNS)",
+      developerPortalId = "HMPPS511",
+      developerPortalUrl = "https://developer-portal.hmpps.service.justice.gov.uk/components/hmpps-assess-risks-and-needs",
+      apiDocUrl = "https://assess-risks-and-needs-dev.hmpps.service.justice.gov.uk/swagger-ui/index.html",
+      apiSpecUrl = "https://assess-risks-and-needs-dev.hmpps.service.justice.gov.uk/v3/api-docs",
+      gitHubRepoUrl = "https://github.com/ministryofjustice/hmpps-assess-risks-and-needs",
+    )
+
   private val webClient = WebClientWrapper(baseUrl)
 
   @Autowired

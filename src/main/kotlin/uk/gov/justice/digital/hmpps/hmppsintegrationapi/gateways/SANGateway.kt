@@ -14,7 +14,18 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 @Component
 class SANGateway(
   @Value("\${services.san.base-url}") baseUrl: String,
-) {
+) : UpstreamGateway {
+  override fun metaData() =
+    GatewayMetadata(
+      summary = "Support for Additional Needs",
+      developerPortalId = "DPS124",
+      developerPortalUrl = "https://developer-portal.hmpps.service.justice.gov.uk/components/hmpps-support-additional-needs-api",
+      apiDocUrl = "https://support-for-additional-needs-api.hmpps.service.justice.gov.uk/swagger-ui/index.html",
+      apiSpecUrl = "https://support-for-additional-needs-api.hmpps.service.justice.gov.uk/openapi/SupportAdditionalNeedsAPI.yml",
+      gitHubRepoUrl = "https://github.com/ministryofjustice/hmpps-support-additional-needs-api",
+      slackChannel = "#education-skills-work-employment-dev",
+    )
+
   private val webClient = WebClientWrapper(baseUrl)
 
   @Autowired
