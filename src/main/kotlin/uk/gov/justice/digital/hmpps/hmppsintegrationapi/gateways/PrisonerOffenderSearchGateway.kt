@@ -15,7 +15,17 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffenders
 @Component
 class PrisonerOffenderSearchGateway(
   @Value("\${services.prisoner-offender-search.base-url}") baseUrl: String,
-) {
+) : UpstreamGateway {
+  override fun metaData() =
+    GatewayMetadata(
+      summary = "A service for searching for prisoners in NOMIS, augmented by data from other prison services",
+      developerPortalId = "DPS072",
+      developerPortalUrl = "https://developer-portal.hmpps.service.justice.gov.uk/components/hmpps-prisoner-search",
+      apiDocUrl = "https://prisoner-search-dev.prison.service.justice.gov.uk/swagger-ui/index.html",
+      apiSpecUrl = "https://prisoner-search-dev.prison.service.justice.gov.uk/v3/api-docs",
+      gitHubRepoUrl = "https://github.com/ministryofjustice/hmpps-prisoner-search",
+    )
+
   private val webClient = WebClientWrapper(baseUrl)
 
   @Autowired
