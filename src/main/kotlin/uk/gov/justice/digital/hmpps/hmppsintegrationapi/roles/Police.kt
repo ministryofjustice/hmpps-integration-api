@@ -64,5 +64,9 @@ val police =
         -"XRF"
         -"XSA"
       }
+      statusCodes {
+        -"WRSM"
+        -"MAPP"
+      }
     }
   }

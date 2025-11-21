@@ -13,4 +13,9 @@ val testRoleWithLaoRedactions =
         laoRedactionPolicy,
       ),
     )
+    filters {
+      statusCodes {
+        -testRoleWithPndAlerts.filters?.statusCodes!!
+      }
+    }
   }

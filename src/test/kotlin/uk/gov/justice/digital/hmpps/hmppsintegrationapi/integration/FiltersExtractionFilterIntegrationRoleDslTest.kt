@@ -58,7 +58,7 @@ class FiltersExtractionFilterIntegrationRoleDslTest {
       listOf(
         Arguments.of("full-access", null),
         Arguments.of("private-prison", null),
-        Arguments.of("police", ConsumerFilters(alertCodes = police.filters?.alertCodes!!)),
+        Arguments.of("police", police.filters),
         Arguments.of("curious", null),
         Arguments.of("reference-data-only", null),
         Arguments.of("prisoner-escort-custody-service", ConsumerFilters(caseNotes = listOf("CAB", "NEG", "CVM", "INTERVENTION", "POS"), prisons = null)),

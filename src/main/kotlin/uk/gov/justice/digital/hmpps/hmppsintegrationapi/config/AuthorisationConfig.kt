@@ -61,7 +61,7 @@ class AuthorisationConfig {
     val consumerConfig: ConsumerConfig? = consumers[consumerName]
     val roles: List<Role>? =
       consumerConfig?.roles?.mapNotNull {
-        uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles[it]
+        roles[it]
       }
     val consumerPseudoRole = Role(permissions = null, filters = consumerConfig?.filters)
     val allRoles: List<Role> = listOf(consumerPseudoRole) + (roles ?: emptyList())
@@ -98,7 +98,18 @@ class AuthorisationConfig {
           .mapNotNull { it.filters?.alertCodes },
       )
 
-    return if (caseNotes == null && prisons == null && mappaCategories == null && alertCodes == null) null else ConsumerFilters(prisons, caseNotes, mappaCategories, alertCodes)
+    val statusCodes =
+      getDistinctValuesIfNotWildcarded(
+        allRoles
+          .filter { it.filters?.hasStatusCodes() == true }
+          .mapNotNull { it.filters?.statusCodes },
+      )
+
+    return if (caseNotes == null && prisons == null && mappaCategories == null && alertCodes == null && statusCodes == null) {
+      null
+    } else {
+      ConsumerFilters(prisons, caseNotes, mappaCategories, alertCodes, statusCodes)
+    }
   }
 
   /**
