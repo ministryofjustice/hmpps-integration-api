@@ -67,25 +67,31 @@ class GetPersonService(
     if (featureFlagConfig.isEnabled(CPR_ENABLED)) {
       runCatching {
         val cpr = corePersonRecordGateway.corePersonRecordFor(hmppsIdType, hmppsId)
-        cpr.getIdentifier(requiredType) ?: throw CprResultException(requiredType, hmppsId, cpr.hasMultipleIdentifiersForType(requiredType))
-      }.onFailure { exception ->
-        val event =
-          when (exception) {
-            is CprResultException -> if (exception.hasMultiple) "CPRNomsMultipleMatches" else "CPRNomsNoMatches"
-            is EntityNotFoundException -> "CPRNomsNotFound"
-            else -> "CPRNomsFailure"
-          }
-        telemetryService.trackEvent(event, mapOf("message" to "Failed to use CPR to convert $hmppsId", "error" to exception.message))
-      }.onSuccess {
-        telemetryService.trackEvent("CPRNomsSuccess", mapOf("message" to "Successfully used CPR to convert $hmppsId to $it", "fromId" to hmppsId, "toId" to it))
-        return Response(it)
-      }
+        cpr.getIdentifier(requiredType, hmppsId)
+      }.onFailure { ex -> trackCPRFailureEvent(ex, hmppsId) }
+        .onSuccess {
+          telemetryService.trackEvent("CPRNomsSuccess", mapOf("message" to "Successfully used CPR to convert $hmppsId to $it", "fromId" to hmppsId, "toId" to it))
+          return Response(it)
+        }
     }
     // Fall back to using the prison API or probation API to get the person id
     return when (hmppsIdType) {
       IdentifierType.NOMS -> prisonAPIPersonId(hmppsId, requiredType)
       else -> probationAPIPersonId(hmppsId, requiredType)
     }
+  }
+
+  fun trackCPRFailureEvent(
+    exception: Throwable,
+    hmppsId: String,
+  ) {
+    val event =
+      when (exception) {
+        is CprResultException -> if (exception.hasMultiple) "CPRNomsMultipleMatches" else "CPRNomsNoMatches"
+        is EntityNotFoundException -> "CPRNomsNotFound"
+        else -> "CPRNomsFailure"
+      }
+    telemetryService.trackEvent(event, mapOf("message" to "Failed to use CPR to convert $hmppsId", "error" to exception.message))
   }
 
   /**
