@@ -65,14 +65,14 @@ class GetPersonService(
     }
     // If the CPR feature flag is enabled then call CPR.
     if (featureFlagConfig.isEnabled(CPR_ENABLED)) {
-      runCatching {
+      try {
         val cpr = corePersonRecordGateway.corePersonRecordFor(hmppsIdType, hmppsId)
-        cpr.getIdentifier(requiredType, hmppsId)
-      }.onFailure { ex -> trackCPRFailureEvent(ex, hmppsId) }
-        .onSuccess {
-          telemetryService.trackEvent("CPRNomsSuccess", mapOf("message" to "Successfully used CPR to convert $hmppsId to $it", "fromId" to hmppsId, "toId" to it))
-          return Response(it)
-        }
+        val id = cpr.getIdentifier(requiredType, hmppsId)
+        telemetryService.trackEvent("CPRNomsSuccess", mapOf("message" to "Successfully used CPR to convert $hmppsId to $id", "fromId" to hmppsId, "toId" to id))
+        return Response(id)
+      } catch (ex: Exception) {
+        trackCPRFailureEvent(ex, hmppsId)
+      }
     }
     // Fall back to using the prison API or probation API to get the person id
     return when (hmppsIdType) {
