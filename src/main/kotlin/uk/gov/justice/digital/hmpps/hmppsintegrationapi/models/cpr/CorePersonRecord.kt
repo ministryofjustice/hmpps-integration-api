@@ -30,7 +30,7 @@ data class CorePersonRecord(
   fun getIdentifier(
     identifierType: IdentifierType,
     hmppsId: String,
-  ) = getIdentifier(identifierType) ?: throw CprResultException(identifierType, hmppsId)
+  ) = getIdentifier(identifierType) ?: throw CprResultException(identifierType, hmppsId, hasMultipleIdentifiersForType(identifierType))
 
   fun hasMultipleIdentifiersForType(identifierType: IdentifierType) =
     when (identifierType) {
