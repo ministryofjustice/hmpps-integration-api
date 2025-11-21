@@ -24,6 +24,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.CPR_ENABLED
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CorePersonRecordGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
@@ -54,6 +55,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbati
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationOnlyPersona
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService.IdentifierType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
+import java.lang.RuntimeException
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -749,8 +751,35 @@ internal class GetPersonServiceTest(
           whenever(corePersonRecordGateway.corePersonRecordFor(IdentifierType.CRN, crnNumber)).thenReturn(CorePersonRecord(identifiers = Identifiers(prisonNumbers = listOf(nomsNumber, "A1234AA"))))
           getPersonService.getNomisNumberWithPrisonFilter(crnNumber, filters = null)
           verify(telemetryService).trackEvent(
+            "CPRNomsMultipleMatches",
+            mapOf("message" to "Failed to use CPR to convert $crnNumber", "error" to "Multiple NOMS found for $crnNumber in core person record"),
+          )
+        }
+
+        it("CPR returns No nomis number, track event and continue to existing processing") {
+          whenever(corePersonRecordGateway.corePersonRecordFor(IdentifierType.CRN, crnNumber)).thenReturn(CorePersonRecord(identifiers = Identifiers()))
+          getPersonService.getNomisNumberWithPrisonFilter(crnNumber, filters = null)
+          verify(telemetryService).trackEvent(
+            "CPRNomsNoMatches",
+            mapOf("message" to "Failed to use CPR to convert $crnNumber", "error" to "No NOMS found for $crnNumber in core person record"),
+          )
+        }
+
+        it("CPR record not found, track event and continue to existing processing") {
+          whenever(corePersonRecordGateway.corePersonRecordFor(IdentifierType.CRN, crnNumber)).thenThrow(EntityNotFoundException("Could not find core person record"))
+          getPersonService.getNomisNumberWithPrisonFilter(crnNumber, filters = null)
+          verify(telemetryService).trackEvent(
+            "CPRNomsNotFound",
+            mapOf("message" to "Failed to use CPR to convert $crnNumber", "error" to "Could not find core person record"),
+          )
+        }
+
+        it("CPR failure, track event and continue to existing processing") {
+          whenever(corePersonRecordGateway.corePersonRecordFor(IdentifierType.CRN, crnNumber)).thenThrow(RuntimeException("Some error"))
+          getPersonService.getNomisNumberWithPrisonFilter(crnNumber, filters = null)
+          verify(telemetryService).trackEvent(
             "CPRNomsFailure",
-            mapOf("message" to "Failed to use CPR to convert $crnNumber", "error" to "No single NOMS found for $crnNumber in core person record"),
+            mapOf("message" to "Failed to use CPR to convert $crnNumber", "error" to "Some error"),
           )
         }
 
