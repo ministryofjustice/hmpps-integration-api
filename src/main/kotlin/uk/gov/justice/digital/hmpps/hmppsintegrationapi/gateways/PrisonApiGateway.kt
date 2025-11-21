@@ -40,7 +40,17 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.visits.
 @Component
 class PrisonApiGateway(
   @Value("\${services.prison-api.base-url}") baseUrl: String,
-) {
+) : UpstreamGateway {
+  override fun metaData() =
+    GatewayMetadata(
+      summary = "API for Nomis DB used by DPS applications and other apis and services",
+      developerPortalId = "DPS060",
+      developerPortalUrl = "https://developer-portal.hmpps.service.justice.gov.uk/components/prison-api",
+      apiDocUrl = "https://prison-api-dev.prison.service.justice.gov.uk/swagger-ui/index.html ",
+      apiSpecUrl = "https://prison-api-dev.prison.service.justice.gov.uk/v3/api-docs",
+      gitHubRepoUrl = "https://github.com/ministryofjustice/prison-api",
+    )
+
   private val webClient = WebClientWrapper(baseUrl)
 
   @Autowired
