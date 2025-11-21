@@ -18,7 +18,16 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.plp.PLPPrisonerEd
 @Component
 class PLPGateway(
   @Value("\${services.plp.base-url}") baseUrl: String,
-) {
+) : UpstreamGateway {
+  override fun metaData() =
+    GatewayMetadata(
+      summary = "An API to help prisoners create a personal development plan for their time in prison and after release",
+      developerPortalId = "DPS027",
+      developerPortalUrl = "https://developer-portal.hmpps.service.justice.gov.uk/components/hmpps-education-and-work-plan-api",
+      apiDocUrl = "https://learningandworkprogress-api-dev.hmpps.service.justice.gov.uk/v3/api-docs",
+      gitHubRepoUrl = "https://github.com/ministryofjustice/hmpps-education-and-work-plan-api",
+    )
+
   private val webClient = WebClientWrapper(baseUrl)
 
   @Autowired
