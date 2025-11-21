@@ -25,6 +25,13 @@ data class CorePersonRecord(
       IdentifierType.CRN -> identifiers?.crns?.takeIf { it.size == 1 }?.firstOrNull()
       else -> null
     }
+
+  fun hasMultipleIdentifiersForType(identifierType: IdentifierType) =
+    when (identifierType) {
+      IdentifierType.NOMS -> identifiers?.prisonNumbers?.let { it.size > 1 } == true
+      IdentifierType.CRN -> identifiers?.crns?.let { it.size > 1 } == true
+      else -> false
+    }
 }
 
 data class Title(
