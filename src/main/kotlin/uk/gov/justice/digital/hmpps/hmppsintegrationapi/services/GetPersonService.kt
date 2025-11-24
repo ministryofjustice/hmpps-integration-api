@@ -238,9 +238,9 @@ class GetPersonService(
         return consumerPrisonFilterCheck
       }
     }
-    if(filters?.supervisionStatus != SupervisionStatus.NONE) {
-        val prisoner = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
-        val consumerPrisonFilterCheck = consumerPrisonAccessService.checkPrisonerHasSupervisionStatus<NomisNumber>(prisoner.data, filters)
+    if (filters?.supervisionStatus != null && filters?.supervisionStatus != SupervisionStatus.NONE) {
+      val prisoner = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
+      val consumerPrisonFilterCheck = consumerPrisonAccessService.checkPrisonerHasSupervisionStatus<NomisNumber>(prisoner.data, filters)
       if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
         return consumerPrisonFilterCheck
       }

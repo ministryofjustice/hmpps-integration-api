@@ -49,7 +49,8 @@ data class ConsumerFilters(
 
   fun hasFilters(): Boolean = hasPrisonFilter() || hasCaseNotesFilter() || hasMappaCategoriesFilter() || hasAlertCodes()
 }
-enum class SupervisionStatus{
+
+enum class SupervisionStatus {
   PRISON,
   PROBATION,
   NONE,
