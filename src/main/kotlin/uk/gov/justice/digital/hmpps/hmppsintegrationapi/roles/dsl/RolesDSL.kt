@@ -77,7 +77,7 @@ class PermissionBuilder {
 }
 
 class PrisonsBuilder {
-  var content: MutableList<String>? = null
+  var content: MutableList<String>? = mutableListOf()
 
   operator fun String.unaryMinus() {
     if (content == null) {

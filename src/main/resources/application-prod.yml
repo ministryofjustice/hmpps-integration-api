@@ -60,7 +60,7 @@ feature-flag:
   use-contact-events-endpoint: false
   epf-endpoint-includes-lao: false
   epf-gateway-disabled: true
-  cpr-enabled: false
+  cpr-enabled: true
 
 authorisation:
   consumers:

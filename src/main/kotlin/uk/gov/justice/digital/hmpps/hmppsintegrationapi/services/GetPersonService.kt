@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.CPR_ENABLED
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.CprResultException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CorePersonRecordGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
@@ -65,20 +66,33 @@ class GetPersonService(
     }
     // If the CPR feature flag is enabled then call CPR.
     if (featureFlagConfig.isEnabled(CPR_ENABLED)) {
-      runCatching {
+      try {
         val cpr = corePersonRecordGateway.corePersonRecordFor(hmppsIdType, hmppsId)
-        cpr.getIdentifier(requiredType) ?: throw EntityNotFoundException("No single $requiredType found for $hmppsId in core person record")
-      }.onFailure { telemetryService.trackEvent("CPRNomsFailure", mapOf("message" to "Failed to use CPR to convert $hmppsId", "error" to it.message)) }
-        .onSuccess {
-          telemetryService.trackEvent("CPRNomsSuccess", mapOf("message" to "Successfully used CPR to convert $hmppsId to $it", "fromId" to hmppsId, "toId" to it))
-          return Response(it)
-        }
+        val id = cpr.getIdentifier(requiredType, hmppsId)
+        telemetryService.trackEvent("CPRNomsSuccess", mapOf("message" to "Successfully used CPR to convert $hmppsId to $id", "fromId" to hmppsId, "toId" to id))
+        return Response(id)
+      } catch (ex: Exception) {
+        trackCPRFailureEvent(ex, hmppsId)
+      }
     }
     // Fall back to using the prison API or probation API to get the person id
     return when (hmppsIdType) {
       IdentifierType.NOMS -> prisonAPIPersonId(hmppsId, requiredType)
       else -> probationAPIPersonId(hmppsId, requiredType)
     }
+  }
+
+  fun trackCPRFailureEvent(
+    exception: Throwable,
+    hmppsId: String,
+  ) {
+    val event =
+      when (exception) {
+        is CprResultException -> if (exception.hasMultiple) "CPRNomsMultipleMatches" else "CPRNomsNoMatches"
+        is EntityNotFoundException -> "CPRNomsNotFound"
+        else -> "CPRNomsFailure"
+      }
+    telemetryService.trackEvent(event, mapOf("message" to "Failed to use CPR to convert $hmppsId", "error" to exception.message))
   }
 
   /**
