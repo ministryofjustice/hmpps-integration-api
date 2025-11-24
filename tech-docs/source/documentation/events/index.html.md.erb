@@ -524,4 +524,11 @@ It details the endpoints the events relate to, and information about what trigge
     * **OR** `PrisonOffenderEvents.Prisoner.RECEIVED` (when reason is changed to `ADMISSION` or `TRANSFERRED`)
     * **OR** `PrisonOffenderEvents.Prisoner.RELEASED` (when reason is `RELEASED`)
 
+### Prisoner Merged
+
+* **Endpoint:** `/v1/persons/{hmppsId}`
+* **Event ID:** `PRISONER_MERGED`
+* **Triggered By:**
+  * `PrisonOffenderEvents.Prisoner.MERGED`
+
 ---
