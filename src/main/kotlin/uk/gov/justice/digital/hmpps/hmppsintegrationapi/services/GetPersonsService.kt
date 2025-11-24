@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.PNC_SEARCH_ENABLED
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
@@ -27,7 +26,6 @@ class GetPersonsService(
     pncNumber: String?,
     dateOfBirth: String?,
     searchWithinAliases: Boolean = false,
-    consumerFilters: ConsumerFilters? = null,
   ): Response<List<Person>> {
     val responseFromProbationOffenderSearch =
       deliusGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases)
@@ -45,19 +43,28 @@ class GetPersonsService(
           searchWithinAliases,
         )
       return Response(data = responseFromPrisonerOffenderSearch.data.map { it.toPerson() } + responseFromProbationOffenderSearch.data)
-    } else {
-      // PNC number is supplied and feature flag is ON and Prisons Filter is supplied
-      if (featureFlag.isEnabled(PNC_SEARCH_ENABLED) && consumerFilters?.hasPrisonFilter() == true) {
-        val attributeSearchRequest = attributeSearchRequest(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases, consumerFilters)
-        val attributeSearchResponse = prisonerOffenderSearchGateway.attributeSearch(attributeSearchRequest)
-        if (attributeSearchResponse.errors.isNotEmpty()) {
-          return Response(emptyList(), attributeSearchResponse.errors)
-        }
-        val attributeSearchResponseResults = attributeSearchResponse.data?.content?.map { it.toPerson() } ?: emptyList()
-        return Response(data = attributeSearchResponseResults + responseFromProbationOffenderSearch.data)
-      }
     }
     return Response(data = responseFromProbationOffenderSearch.data)
+  }
+
+  /**
+   * Enhanced person search using prisonerOffenderSearchGateway.attributeSearch
+   */
+  fun personAttributeSearch(
+    firstName: String?,
+    lastName: String?,
+    pncNumber: String?,
+    dateOfBirth: String?,
+    searchWithinAliases: Boolean = false,
+    consumerFilters: ConsumerFilters? = null,
+  ): Response<List<Person>> {
+    val attributeSearchRequest = attributeSearchRequest(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases, consumerFilters)
+    val attributeSearchResponse = prisonerOffenderSearchGateway.attributeSearch(attributeSearchRequest)
+    if (attributeSearchResponse.errors.isNotEmpty()) {
+      return Response(emptyList(), attributeSearchResponse.errors)
+    }
+    val attributeSearchResponseResults = attributeSearchResponse.data?.content?.map { it.toPerson() } ?: emptyList()
+    return Response(data = attributeSearchResponseResults)
   }
 
   /**

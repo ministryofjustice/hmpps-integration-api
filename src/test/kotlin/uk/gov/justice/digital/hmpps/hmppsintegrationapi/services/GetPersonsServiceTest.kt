@@ -110,7 +110,7 @@ internal class GetPersonsServiceTest(
         }
     }
 
-    it("returns only probation person(s) if searched with a PNC with feature flag disabled") {
+    it("returns only probation person(s) if searched with a PNC") {
       val responseFromProbationOffenderSearch = Response(data = listOf(Person(firstName, lastName, middleName = "John")))
       val responseFromPrisonerOffenderSearch = Response(data = listOf(POSPrisoner(firstName = firstName, lastName = lastName, middleNames = "Gary", youthOffender = false)))
 
@@ -125,8 +125,7 @@ internal class GetPersonsServiceTest(
       verify(prisonerOffenderSearchGateway, times(0)).getPersons(firstName, lastName, dateOfBirth, true)
     }
 
-    it("returns prisoner attribute search if searched with a PNC and Prison Filters with feature flag ENABLED") {
-      whenever(featureFlag.isEnabled(FeatureFlagConfig.PNC_SEARCH_ENABLED)).thenReturn(true)
+    it("returns prisoner attribute search if searched using attribute search") {
       val prisoners = listOf(POSPrisoner(firstName = firstName, lastName = lastName, middleNames = "Gary", youthOffender = false))
       val paginatedResponse =
         Response<POSPaginatedPrisoners?>(
@@ -168,24 +167,12 @@ internal class GetPersonsServiceTest(
       whenever(
         deliusGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth),
       ).thenReturn(responseFromProbationOffenderSearch)
-      val response = getPersonsService.execute(firstName, lastName, pncNumber, dateOfBirth, false, ConsumerFilters(prisons = listOf("MDI")))
-      response.data.size.shouldBe(2)
+      val response = getPersonsService.personAttributeSearch(firstName, lastName, pncNumber, dateOfBirth, false, ConsumerFilters(prisons = listOf("MDI")))
+      response.data.size.shouldBe(1)
       verify(prisonerOffenderSearchGateway, times(1)).attributeSearch(any())
     }
 
-    it("does not call attribute search if searched with a PNC and NO Prison Filters with feature flag ENABLED") {
-      whenever(featureFlag.isEnabled(FeatureFlagConfig.PNC_SEARCH_ENABLED)).thenReturn(true)
-      val responseFromProbationOffenderSearch = Response(data = listOf(Person(firstName, lastName, middleName = "John")))
-      whenever(
-        deliusGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth),
-      ).thenReturn(responseFromProbationOffenderSearch)
-      val response = getPersonsService.execute(firstName, lastName, pncNumber, dateOfBirth, false, ConsumerFilters(prisons = null))
-      response.data.size.shouldBe(1)
-      verify(prisonerOffenderSearchGateway, times(0)).attributeSearch(any())
-    }
-
-    it("returns an error if searched with a PNC and Prison Filters with feature flag ENABLED and attribute search fails") {
-      whenever(featureFlag.isEnabled(FeatureFlagConfig.PNC_SEARCH_ENABLED)).thenReturn(true)
+    it("returns an error if searched using attribute search") {
       val error = UpstreamApiError(type = UpstreamApiError.Type.BAD_REQUEST, causedBy = UpstreamApi.TEST)
       val paginatedResponse = Response<POSPaginatedPrisoners?>(errors = listOf(error), data = null)
       val responseFromProbationOffenderSearch = Response(data = listOf(Person(firstName, lastName, middleName = "John")))
@@ -193,7 +180,7 @@ internal class GetPersonsServiceTest(
       whenever(
         deliusGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth),
       ).thenReturn(responseFromProbationOffenderSearch)
-      val response = getPersonsService.execute(firstName, lastName, pncNumber, dateOfBirth, false, ConsumerFilters(prisons = listOf("MDI")))
+      val response = getPersonsService.personAttributeSearch(firstName, lastName, pncNumber, dateOfBirth, false, ConsumerFilters(prisons = listOf("MDI")))
       response.data.shouldBeEmpty()
       response.errors.shouldBe(listOf(error))
     }

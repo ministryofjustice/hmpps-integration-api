@@ -126,7 +126,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
 
       callApi("$basePath?$queryParams")
         .andExpect(status().isOk)
-        .andExpect(content().json(getExpectedResponse("person-name-search-response")))
+        .andExpect(content().json(getExpectedResponse("person-name-pnc-search-response.json")))
 
       prisonerOffenderSearchMockServer.assertValidationPassed()
     }
