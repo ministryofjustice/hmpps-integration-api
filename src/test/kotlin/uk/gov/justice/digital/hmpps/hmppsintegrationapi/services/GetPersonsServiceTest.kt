@@ -431,4 +431,24 @@ internal class GetPersonsServiceTest(
         )
       assertThat(actual).isEqualTo(expectedRequest)
     }
+
+    it("creates an attribute search request for PNC and prison only") {
+      val actual =
+        getPersonsService.attributeSearchRequest(
+          pncNumber = "1994/5850111W",
+          searchWithinAliases = false,
+          consumerFilters = ConsumerFilters(prisons = listOf("WWI")),
+        )
+
+      val expectedRequest =
+        POSAttributeSearchRequest(
+          joinType = "AND",
+          queries =
+            listOf(
+              POSAttributeSearchQuery(joinType = "AND", matchers = listOf(POSAttributeSearchPncMatcher("1994/5850111W"))), // THE PNC matcher
+              POSAttributeSearchQuery(joinType = "AND", matchers = listOf(POSAttributeSearchMatcher(type = "String", attribute = "prisonId", condition = "IN", searchTerm = "WWI"))), // Empty prisons filter
+            ),
+        )
+      assertThat(actual).isEqualTo(expectedRequest)
+    }
   })

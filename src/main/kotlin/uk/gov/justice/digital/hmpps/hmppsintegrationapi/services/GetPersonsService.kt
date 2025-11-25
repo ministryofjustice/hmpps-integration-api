@@ -114,11 +114,41 @@ class GetPersonsService(
                 ),
             )
           },
-          POSAttributeSearchQuery(
-            joinType = "OR",
-            subQueries =
-              listOfNotNull(
-                searchWithinAliases.takeIf { it == true }?.let {
+          takeIf { firstName != null || lastName != null || dateOfBirth != null }?.let {
+            POSAttributeSearchQuery(
+              joinType = "OR",
+              subQueries =
+                listOfNotNull(
+                  searchWithinAliases.takeIf { it == true }?.let {
+                    POSAttributeSearchQuery(
+                      joinType = "AND",
+                      matchers =
+                        listOfNotNull(
+                          firstName?.let {
+                            POSAttributeSearchMatcher(
+                              type = "String",
+                              attribute = "aliases.firstName",
+                              condition = "IS",
+                              searchTerm = it,
+                            )
+                          },
+                          lastName?.let {
+                            POSAttributeSearchMatcher(
+                              type = "String",
+                              attribute = "aliases.lastName",
+                              condition = "IS",
+                              searchTerm = it,
+                            )
+                          },
+                          dateOfBirth?.let {
+                            POSAttributeSearchDateMatcher(
+                              attribute = "aliases.dateOfBirth",
+                              date = it,
+                            )
+                          },
+                        ),
+                    )
+                  },
                   POSAttributeSearchQuery(
                     joinType = "AND",
                     matchers =
@@ -126,7 +156,7 @@ class GetPersonsService(
                         firstName?.let {
                           POSAttributeSearchMatcher(
                             type = "String",
-                            attribute = "aliases.firstName",
+                            attribute = "firstName",
                             condition = "IS",
                             searchTerm = it,
                           )
@@ -134,50 +164,22 @@ class GetPersonsService(
                         lastName?.let {
                           POSAttributeSearchMatcher(
                             type = "String",
-                            attribute = "aliases.lastName",
+                            attribute = "lastName",
                             condition = "IS",
                             searchTerm = it,
                           )
                         },
                         dateOfBirth?.let {
                           POSAttributeSearchDateMatcher(
-                            attribute = "aliases.dateOfBirth",
+                            attribute = "dateOfBirth",
                             date = it,
                           )
                         },
                       ),
-                  )
-                },
-                POSAttributeSearchQuery(
-                  joinType = "AND",
-                  matchers =
-                    listOfNotNull(
-                      firstName?.let {
-                        POSAttributeSearchMatcher(
-                          type = "String",
-                          attribute = "firstName",
-                          condition = "IS",
-                          searchTerm = it,
-                        )
-                      },
-                      lastName?.let {
-                        POSAttributeSearchMatcher(
-                          type = "String",
-                          attribute = "lastName",
-                          condition = "IS",
-                          searchTerm = it,
-                        )
-                      },
-                      dateOfBirth?.let {
-                        POSAttributeSearchDateMatcher(
-                          attribute = "dateOfBirth",
-                          date = it,
-                        )
-                      },
-                    ),
+                  ),
                 ),
-              ),
-          ),
+            )
+          },
         ),
     )
 }
