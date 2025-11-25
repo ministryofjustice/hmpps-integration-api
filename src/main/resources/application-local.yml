@@ -64,6 +64,7 @@ feature-flag:
   use-contact-events-endpoint: true
   epf-endpoint-includes-lao: false
   cpr-enabled: true
+  enhanced-search-enabled: true
 
 authorisation:
   consumers:
