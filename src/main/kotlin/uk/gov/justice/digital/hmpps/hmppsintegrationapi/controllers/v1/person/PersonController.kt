@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.ENHANCED_SEARCH_ENABLED
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
@@ -128,6 +129,7 @@ class PersonController(
     @Parameter(description = "Whether to return results that match the search criteria within the aliases of a person.") @RequestParam(required = false, defaultValue = "false", name = "search_within_aliases") searchWithinAliases: Boolean,
     @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
+    @RequestAttribute filters: ConsumerFilters?,
   ): PaginatedResponse<Person?> {
     if (firstName == null && lastName == null && pncNumber == null && dateOfBirth == null) {
       throw ValidationException("No query parameters specified.")
@@ -137,8 +139,12 @@ class PersonController(
       throw ValidationException("Invalid date format. Please use yyyy-MM-dd.")
     }
 
-    val response = getPersonsService.execute(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases)
-
+    val response =
+      if (featureFlag.isEnabled(ENHANCED_SEARCH_ENABLED)) {
+        getPersonsService.personAttributeSearch(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases, filters)
+      } else {
+        getPersonsService.execute(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases)
+      }
     auditService.createEvent(
       "SEARCH_PERSON",
       mapOf("firstName" to firstName, "lastName" to lastName, "aliases" to searchWithinAliases.toString(), "pncNumber" to pncNumber, "dateOfBirth" to dateOfBirth),
