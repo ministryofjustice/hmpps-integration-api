@@ -45,6 +45,42 @@ internal class GetPersonsServiceTest(
     val lastName = personInProbationAndNomisPersona.lastName
     val pncNumber = "2003/13116M"
     val dateOfBirth = personInProbationAndNomisPersona.dateOfBirth.toString()
+    val prisoners = listOf(POSPrisoner(firstName = firstName, lastName = lastName, middleNames = "Gary", youthOffender = false))
+    val prisonAttributeSearchResponse =
+      Response<POSPaginatedPrisoners?>(
+        data =
+          POSPaginatedPrisoners(
+            content = prisoners,
+            totalElements = 1,
+            totalPages = 1,
+            first = true,
+            last = true,
+            size = 10,
+            number = 0,
+            sort =
+              POSSort(
+                empty = false,
+                sorted = false,
+                unsorted = false,
+              ),
+            numberOfElements = 1,
+            pageable =
+              POSPageable(
+                offset = 0,
+                sort =
+                  POSSort(
+                    empty = false,
+                    sorted = false,
+                    unsorted = false,
+                  ),
+                pageSize = 10,
+                pageNumber = 1,
+                paged = true,
+                unpaged = false,
+              ),
+            empty = false,
+          ),
+      )
 
     beforeEach {
       Mockito.reset(prisonerOffenderSearchGateway)
@@ -125,45 +161,9 @@ internal class GetPersonsServiceTest(
       verify(prisonerOffenderSearchGateway, times(0)).getPersons(firstName, lastName, dateOfBirth, true)
     }
 
-    it("returns prisoner attribute search if searched using attribute search") {
-      val prisoners = listOf(POSPrisoner(firstName = firstName, lastName = lastName, middleNames = "Gary", youthOffender = false))
-      val paginatedResponse =
-        Response<POSPaginatedPrisoners?>(
-          data =
-            POSPaginatedPrisoners(
-              content = prisoners,
-              totalElements = 1,
-              totalPages = 1,
-              first = true,
-              last = true,
-              size = 10,
-              number = 0,
-              sort =
-                POSSort(
-                  empty = false,
-                  sorted = false,
-                  unsorted = false,
-                ),
-              numberOfElements = 1,
-              pageable =
-                POSPageable(
-                  offset = 0,
-                  sort =
-                    POSSort(
-                      empty = false,
-                      sorted = false,
-                      unsorted = false,
-                    ),
-                  pageSize = 10,
-                  pageNumber = 1,
-                  paged = true,
-                  unpaged = false,
-                ),
-              empty = false,
-            ),
-        )
+    it("enhanced search returns prisoner") {
       val responseFromProbationOffenderSearch = Response(data = listOf(Person(firstName, lastName, middleName = "John")))
-      whenever(prisonerOffenderSearchGateway.attributeSearch(any())).thenReturn(paginatedResponse)
+      whenever(prisonerOffenderSearchGateway.attributeSearch(any())).thenReturn(prisonAttributeSearchResponse)
       whenever(
         deliusGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth),
       ).thenReturn(responseFromProbationOffenderSearch)
@@ -172,7 +172,7 @@ internal class GetPersonsServiceTest(
       verify(prisonerOffenderSearchGateway, times(1)).attributeSearch(any())
     }
 
-    it("returns an error if searched using attribute search") {
+    it("enhanced search with prisons filter (no probation search) returns an error") {
       val error = UpstreamApiError(type = UpstreamApiError.Type.BAD_REQUEST, causedBy = UpstreamApi.TEST)
       val paginatedResponse = Response<POSPaginatedPrisoners?>(errors = listOf(error), data = null)
       val responseFromProbationOffenderSearch = Response(data = listOf(Person(firstName, lastName, middleName = "John")))
@@ -183,6 +183,31 @@ internal class GetPersonsServiceTest(
       val response = getPersonsService.personAttributeSearch(firstName, lastName, pncNumber, dateOfBirth, false, ConsumerFilters(prisons = listOf("MDI")))
       response.data.shouldBeEmpty()
       response.errors.shouldBe(listOf(error))
+    }
+
+    it("enhanced search without prisons filter continues to call prison search (success) if probation search fails") {
+      val error = UpstreamApiError(type = UpstreamApiError.Type.BAD_REQUEST, causedBy = UpstreamApi.TEST)
+      val responseFromProbationOffenderSearch = Response(errors = listOf(error), data = emptyList<Person>())
+      whenever(prisonerOffenderSearchGateway.attributeSearch(any())).thenReturn(prisonAttributeSearchResponse)
+      whenever(
+        deliusGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth),
+      ).thenReturn(responseFromProbationOffenderSearch)
+      val response = getPersonsService.personAttributeSearch(firstName, lastName, pncNumber, dateOfBirth, false, ConsumerFilters())
+      response.data.size.shouldBe(1)
+      response.errors.shouldBe(listOf(error))
+    }
+
+    it("enhanced search without prisons filter continues to call prison search (failure) if probation search fails") {
+      val error = UpstreamApiError(type = UpstreamApiError.Type.BAD_REQUEST, causedBy = UpstreamApi.TEST)
+      val paginatedResponse = Response<POSPaginatedPrisoners?>(errors = listOf(error), data = null)
+      val responseFromProbationOffenderSearch = Response(errors = listOf(error), data = emptyList<Person>())
+      whenever(prisonerOffenderSearchGateway.attributeSearch(any())).thenReturn(paginatedResponse)
+      whenever(
+        deliusGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth),
+      ).thenReturn(responseFromProbationOffenderSearch)
+      val response = getPersonsService.personAttributeSearch(firstName, lastName, pncNumber, dateOfBirth, false, ConsumerFilters())
+      response.data.shouldBeEmpty()
+      response.errors.shouldBe(listOf(error, error))
     }
 
     it("returns an empty list when no person(s) are found") {

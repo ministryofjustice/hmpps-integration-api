@@ -173,7 +173,7 @@ internal class PersonControllerTest(
         it("calls attribute search when feature flag enabled, prisons filter is present and pnc number in search") {
           mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
           every { roles[any()] } returns testRoleWithPrisonFilters
-          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.PNC_SEARCH_ENABLED)).thenReturn(true)
+          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(true)
           mockMvc.performAuthorised("$basePath?first_name=$firstName&pnc_number=$pncNumber")
           verify(getPersonsService, times(1)).personAttributeSearch(firstName, null, pncNumber, null, consumerFilters = testRoleWithPrisonFilters.filters)
         }
@@ -181,7 +181,7 @@ internal class PersonControllerTest(
         it("calls attribute search when feature flag enabled, prisons filter is present and pnc number in search") {
           mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
           every { roles[any()] } returns testRoleWithPrisonFilters
-          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.PNC_SEARCH_ENABLED)).thenReturn(true)
+          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(true)
           mockMvc.performAuthorised("$basePath?first_name=$firstName&pnc_number=$pncNumber")
           verify(getPersonsService, times(1)).personAttributeSearch(firstName, null, pncNumber, null, consumerFilters = testRoleWithPrisonFilters.filters)
         }
@@ -189,7 +189,7 @@ internal class PersonControllerTest(
         it("does not call attribute search when feature flag disabled, prisons filter is present and pnc number in search") {
           mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
           every { roles[any()] } returns testRoleWithPrisonFilters
-          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.PNC_SEARCH_ENABLED)).thenReturn(false)
+          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(false)
           mockMvc.performAuthorised("$basePath?first_name=$firstName&pnc_number=$pncNumber")
           verify(getPersonsService, times(0)).personAttributeSearch(firstName, null, pncNumber, null, consumerFilters = testRoleWithPrisonFilters.filters)
         }

@@ -95,7 +95,7 @@ feature-flag:
   use-waiting-list-endpoint: true
   use-contact-events-endpoint: true
   use-stubbed-contact-events-data: false
-  pnc-search-enabled: true
+  enhanced-search-enabled: false
 
 authorisation:
   consumers:

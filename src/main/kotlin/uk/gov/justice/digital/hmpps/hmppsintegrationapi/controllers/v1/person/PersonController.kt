@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.PNC_SEARCH_ENABLED
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.ENHANCED_SEARCH_ENABLED
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
@@ -140,7 +140,7 @@ class PersonController(
     }
 
     val response =
-      if (!pncNumber.isNullOrEmpty() && featureFlag.isEnabled(PNC_SEARCH_ENABLED) && filters?.hasPrisonFilter() == true) {
+      if (featureFlag.isEnabled(ENHANCED_SEARCH_ENABLED)) {
         getPersonsService.personAttributeSearch(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases, filters)
       } else {
         getPersonsService.execute(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases)

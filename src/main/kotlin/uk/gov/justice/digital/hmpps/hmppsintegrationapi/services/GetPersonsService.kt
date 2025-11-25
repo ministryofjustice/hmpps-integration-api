@@ -56,13 +56,24 @@ class GetPersonsService(
     searchWithinAliases: Boolean = false,
     consumerFilters: ConsumerFilters? = null,
   ): Response<List<Person>> {
+    // Perform probation search
+    val probationSearchResponse =
+      if (consumerFilters?.hasPrisonFilter() != true) {
+        deliusGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases)
+      } else {
+        Response(emptyList(), emptyList())
+      }
+
+    // Perform prison search
     val attributeSearchRequest = attributeSearchRequest(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases, consumerFilters)
     val attributeSearchResponse = prisonerOffenderSearchGateway.attributeSearch(attributeSearchRequest)
-    if (attributeSearchResponse.errors.isNotEmpty()) {
-      return Response(emptyList(), attributeSearchResponse.errors)
-    }
-    val attributeSearchResponseResults = attributeSearchResponse.data?.content?.map { it.toPerson() } ?: emptyList()
-    return Response(data = attributeSearchResponseResults)
+    val attributeSearchResponseData = attributeSearchResponse.data?.content?.map { it.toPerson() } ?: emptyList()
+
+    // Combine and return results
+    val errors = attributeSearchResponse.errors + probationSearchResponse.errors
+    val data = attributeSearchResponseData + probationSearchResponse.data
+
+    return Response(data, errors)
   }
 
   /**

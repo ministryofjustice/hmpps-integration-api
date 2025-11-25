@@ -15,10 +15,13 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.whenever
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchMatcher
@@ -31,6 +34,9 @@ import java.io.File
 
 @ActiveProfiles("integration-test-redaction-enabled")
 class PersonIntegrationTest : IntegrationTestBase() {
+  @MockitoBean
+  private lateinit var featureFlagConfig: FeatureFlagConfig
+
   @AfterEach
   fun resetValidators() {
     prisonerOffenderSearchMockServer.resetValidator()
@@ -39,6 +45,8 @@ class PersonIntegrationTest : IntegrationTestBase() {
 
   @BeforeEach
   fun resetMocks() {
+    whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(false)
+    whenever(featureFlagConfig.getConfigFlagValue(FeatureFlagConfig.USE_EDUCATION_ENDPOINT)).thenReturn(true)
     prisonerOffenderSearchMockServer.stubForGet(
       "/prisoner/$nomsId",
       File(
@@ -83,6 +91,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
 
     @Test
     fun `returns a list of persons using pnc number search with consumer filters where feature flag enabled`() {
+      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(true)
       mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
       every { roles[any()] } returns testRoleWithPrisonFilters
 
