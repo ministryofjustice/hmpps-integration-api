@@ -97,3 +97,7 @@ authorisation:
       notes: "Post-deployment smoke tests"
       roles:
         - "hmpps-system"
+    smartinbox:
+      notes: "See client list in Confluence"
+      roles:
+        - "status-only"
