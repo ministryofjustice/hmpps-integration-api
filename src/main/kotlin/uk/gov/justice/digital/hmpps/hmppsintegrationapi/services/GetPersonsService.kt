@@ -46,6 +46,37 @@ class GetPersonsService(
   }
 
   /**
+   * Enhanced person search using prisonerOffenderSearchGateway.attributeSearch
+   */
+  fun personAttributeSearch(
+    firstName: String?,
+    lastName: String?,
+    pncNumber: String?,
+    dateOfBirth: String?,
+    searchWithinAliases: Boolean = false,
+    consumerFilters: ConsumerFilters? = null,
+  ): Response<List<Person>> {
+    // Perform probation search
+    val probationSearchResponse =
+      if (consumerFilters?.hasPrisonFilter() != true) {
+        deliusGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases)
+      } else {
+        Response(emptyList(), emptyList())
+      }
+
+    // Perform prison search
+    val attributeSearchRequest = attributeSearchRequest(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases, consumerFilters)
+    val attributeSearchResponse = prisonerOffenderSearchGateway.attributeSearch(attributeSearchRequest)
+    val attributeSearchResponseData = attributeSearchResponse.data?.content?.map { it.toPerson() } ?: emptyList()
+
+    // Combine and return results
+    val errors = attributeSearchResponse.errors + probationSearchResponse.errors
+    val data = attributeSearchResponseData + probationSearchResponse.data
+
+    return Response(data, errors)
+  }
+
+  /**
    * Builds a POSAttributeSearchRequest for the given firstName, lastName, pncNumber, dateOfBirth and prison filters
    * If searchWithinAliases is set then the request will ALSO perform a search on aliases for firstName, lastName and dateOfBirth
    * (in addition to searching the firstName, lastName and dateOfBirth on the main record)
@@ -83,11 +114,41 @@ class GetPersonsService(
                 ),
             )
           },
-          POSAttributeSearchQuery(
-            joinType = "OR",
-            subQueries =
-              listOfNotNull(
-                searchWithinAliases.takeIf { it == true }?.let {
+          takeIf { firstName != null || lastName != null || dateOfBirth != null }?.let {
+            POSAttributeSearchQuery(
+              joinType = "OR",
+              subQueries =
+                listOfNotNull(
+                  searchWithinAliases.takeIf { it == true }?.let {
+                    POSAttributeSearchQuery(
+                      joinType = "AND",
+                      matchers =
+                        listOfNotNull(
+                          firstName?.let {
+                            POSAttributeSearchMatcher(
+                              type = "String",
+                              attribute = "aliases.firstName",
+                              condition = "IS",
+                              searchTerm = it,
+                            )
+                          },
+                          lastName?.let {
+                            POSAttributeSearchMatcher(
+                              type = "String",
+                              attribute = "aliases.lastName",
+                              condition = "IS",
+                              searchTerm = it,
+                            )
+                          },
+                          dateOfBirth?.let {
+                            POSAttributeSearchDateMatcher(
+                              attribute = "aliases.dateOfBirth",
+                              date = it,
+                            )
+                          },
+                        ),
+                    )
+                  },
                   POSAttributeSearchQuery(
                     joinType = "AND",
                     matchers =
@@ -95,7 +156,7 @@ class GetPersonsService(
                         firstName?.let {
                           POSAttributeSearchMatcher(
                             type = "String",
-                            attribute = "aliases.firstName",
+                            attribute = "firstName",
                             condition = "IS",
                             searchTerm = it,
                           )
@@ -103,50 +164,22 @@ class GetPersonsService(
                         lastName?.let {
                           POSAttributeSearchMatcher(
                             type = "String",
-                            attribute = "aliases.lastName",
+                            attribute = "lastName",
                             condition = "IS",
                             searchTerm = it,
                           )
                         },
                         dateOfBirth?.let {
                           POSAttributeSearchDateMatcher(
-                            attribute = "aliases.dateOfBirth",
+                            attribute = "dateOfBirth",
                             date = it,
                           )
                         },
                       ),
-                  )
-                },
-                POSAttributeSearchQuery(
-                  joinType = "AND",
-                  matchers =
-                    listOfNotNull(
-                      firstName?.let {
-                        POSAttributeSearchMatcher(
-                          type = "String",
-                          attribute = "firstName",
-                          condition = "IS",
-                          searchTerm = it,
-                        )
-                      },
-                      lastName?.let {
-                        POSAttributeSearchMatcher(
-                          type = "String",
-                          attribute = "lastName",
-                          condition = "IS",
-                          searchTerm = it,
-                        )
-                      },
-                      dateOfBirth?.let {
-                        POSAttributeSearchDateMatcher(
-                          attribute = "dateOfBirth",
-                          date = it,
-                        )
-                      },
-                    ),
+                  ),
                 ),
-              ),
-          ),
+            )
+          },
         ),
     )
 }

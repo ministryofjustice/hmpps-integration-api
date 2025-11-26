@@ -400,7 +400,13 @@ function partial_access_tests() {
 }
 
 function verify_reference_data() {
-  validate_get_request(`/v1/hmpps/reference-data`);
+  let res = validate_get_request(`/v1/hmpps/reference-data`);
+  if (res.status === 500) {
+    // Most likely cause of reference data endpoint to return a 500 is Delius is down
+    // in which case there is no point continuing.
+    exec.test.abort(`Reference data endpoint failed with 500 response code, aborting tests`)
+    return
+  }
   validate_get_request(`/v1/activities/attendance-reasons`);
   validate_get_request(`/v1/activities/deallocation-reasons`);
 }

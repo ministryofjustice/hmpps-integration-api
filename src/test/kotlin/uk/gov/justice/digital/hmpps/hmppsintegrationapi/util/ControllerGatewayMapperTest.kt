@@ -62,8 +62,6 @@ internal class ControllerGatewayMapperTest(
         .filter { it.key.endsWith("Gateway") }
         .size
 
-    val gatewaysWithoutSummary = gatewayComponentCount - summaries.size
-    val threshold = 5 // Continually decrease this threshold over time until it is zero
-    assertTrue(gatewaysWithoutSummary <= threshold, "More than $threshold gateways without metadata: $gatewaysWithoutSummary")
+    assertEquals(gatewayComponentCount, summaries.size)
   }
 }
