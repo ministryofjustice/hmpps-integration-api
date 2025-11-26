@@ -26,6 +26,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtens
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithIdOnlyRedaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithLaoRedactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import java.io.File
@@ -264,6 +265,74 @@ class PersonRedactionIntegrationTest : IntegrationTestBase() {
           .andExpect(jsonPath("$.data[2].contactDetails").doesNotExist())
           .andExpect(jsonPath("$.data[2].contactDetails").doesNotExist())
           .andExpect(jsonPath("$.data[2].aliases[*].middleName").isRedacted())
+      }
+    }
+
+    @Nested
+    @DisplayName("And Role based Person Search ID only Redaction is required")
+    inner class AndPersonSearchIdOnlyRedactionIsRequired {
+      private val clientNameWithRoleBaseRedaction = "lao-role-based-redacted-client"
+
+      @BeforeEach
+      fun setUp() {
+        nDeliusMockServer.stubForPost(
+          "/search/probation-cases",
+          """
+            {
+              "firstName": "Robert",
+              "surname": "Larsen",
+              "includeAliases": false
+            }
+            """.removeWhitespaceAndNewlines(),
+          File(
+            "$gatewaysFolder/ndelius/fixtures/GetOffenderResponseLao.json",
+          ).readText(),
+        )
+
+        mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
+        every { roles[any()] } returns testRoleWithIdOnlyRedaction
+      }
+
+      @Test
+      fun `person search redacts all except ids`() {
+        prisonerOffenderSearchMockServer.stubForPost(
+          "/global-search?size=9999",
+          """
+            {
+              "firstName": "Robert",
+              "lastName": "Larsen",
+              "includeAliases": false
+            }
+          """.removeWhitespaceAndNewlines(),
+          File(
+            "$gatewaysFolder/prisoneroffendersearch/fixtures/GetPerson.json",
+          ).readText(),
+        )
+
+        val firstName = "Robert"
+        val lastName = "Larsen"
+        val queryParams = "first_name=$firstName&last_name=$lastName"
+        callApiWithCN("$basePath?$queryParams", clientNameWithRoleBaseRedaction)
+          .andExpect(status().isOk)
+          // Removed
+          .andExpect(jsonPath("$.data[2].firstName").doesNotExist())
+          .andExpect(jsonPath("$.data[2].lastName").doesNotExist())
+          .andExpect(jsonPath("$.data[2].middleName").doesNotExist())
+          .andExpect(jsonPath("$.data[2].dateOfBirth").doesNotExist())
+          .andExpect(jsonPath("$.data[2].gender").doesNotExist())
+          .andExpect(jsonPath("$.data[2].ethnicity").doesNotExist())
+          .andExpect(jsonPath("$.data[2].aliases").doesNotExist())
+          .andExpect(jsonPath("$.data[2].contactDetails").doesNotExist())
+          .andExpect(jsonPath("$.data[2].currentRestriction").doesNotExist())
+          .andExpect(jsonPath("$.data[2].restrictionMessage").doesNotExist())
+          .andExpect(jsonPath("$.data[2].currentExclusion").doesNotExist())
+          .andExpect(jsonPath("$.data[2].exclusionMessage").doesNotExist())
+          // Remaining
+          .andExpect(jsonPath("$.data[2].identifiers.nomisNumber").exists())
+          .andExpect(jsonPath("$.data[2].identifiers.croNumber").exists())
+          .andExpect(jsonPath("$.data[2].identifiers.deliusCrn").exists())
+          .andExpect(jsonPath("$.data[2].pncId").exists())
+          .andExpect(jsonPath("$.data[2].hmppsId").exists())
       }
     }
 
