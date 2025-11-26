@@ -7,7 +7,7 @@ data class ConsumerFilters(
   val caseNotes: List<String>? = null,
   val mappaCategories: List<Any>? = null,
   val alertCodes: List<String>? = null,
-  val supervisionStatus: SupervisionStatus = SupervisionStatus.NONE,
+  val supervisionStatus: List<String>? = null,
 ) {
   companion object {
     fun mappaCategories(filters: ConsumerFilters?): List<Number> =
@@ -50,8 +50,3 @@ data class ConsumerFilters(
   fun hasFilters(): Boolean = hasPrisonFilter() || hasCaseNotesFilter() || hasMappaCategoriesFilter() || hasAlertCodes()
 }
 
-enum class SupervisionStatus {
-  PRISON,
-  PROBATION,
-  NONE,
-}
