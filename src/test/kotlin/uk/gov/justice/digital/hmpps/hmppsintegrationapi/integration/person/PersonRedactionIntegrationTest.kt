@@ -315,6 +315,26 @@ class PersonRedactionIntegrationTest : IntegrationTestBase() {
         callApiWithCN("$basePath?$queryParams", clientNameWithRoleBaseRedaction)
           .andExpect(status().isOk)
           // Removed
+          .andExpect(jsonPath("$.data[0].firstName").doesNotExist())
+          .andExpect(jsonPath("$.data[0].lastName").doesNotExist())
+          .andExpect(jsonPath("$.data[0].middleName").doesNotExist())
+          .andExpect(jsonPath("$.data[0].dateOfBirth").doesNotExist())
+          .andExpect(jsonPath("$.data[0].gender").doesNotExist())
+          .andExpect(jsonPath("$.data[0].ethnicity").doesNotExist())
+          .andExpect(jsonPath("$.data[0].aliases").doesNotExist())
+          .andExpect(jsonPath("$.data[0].contactDetails").doesNotExist())
+          .andExpect(jsonPath("$.data[0].currentRestriction").doesNotExist())
+          .andExpect(jsonPath("$.data[0].restrictionMessage").doesNotExist())
+          .andExpect(jsonPath("$.data[0].currentExclusion").doesNotExist())
+          .andExpect(jsonPath("$.data[0].exclusionMessage").doesNotExist())
+          // Remaining
+          .andExpect(jsonPath("$.data[0].identifiers.nomisNumber").exists())
+          .andExpect(jsonPath("$.data[0].identifiers.croNumber").exists())
+          .andExpect(jsonPath("$.data[0].identifiers.deliusCrn").doesNotExist())
+          .andExpect(jsonPath("$.data[0].pncId").exists())
+          .andExpect(jsonPath("$.data[0].hmppsId").exists())
+          .andExpect(jsonPath("$.data[0].hmppsId").value("A1234AA"))
+          // Removed
           .andExpect(jsonPath("$.data[2].firstName").doesNotExist())
           .andExpect(jsonPath("$.data[2].lastName").doesNotExist())
           .andExpect(jsonPath("$.data[2].middleName").doesNotExist())
@@ -333,6 +353,7 @@ class PersonRedactionIntegrationTest : IntegrationTestBase() {
           .andExpect(jsonPath("$.data[2].identifiers.deliusCrn").exists())
           .andExpect(jsonPath("$.data[2].pncId").exists())
           .andExpect(jsonPath("$.data[2].hmppsId").exists())
+          .andExpect(jsonPath("$.data[2].hmppsId").value("A123456"))
       }
     }
 
