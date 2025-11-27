@@ -14,6 +14,7 @@ val police =
       -"/v1/persons/.*/risks/scores"
       -"/v1/persons/.*/risks/serious-harm"
       -"/v1/persons/.*/risks/dynamic"
+      -"/v1/persons/.*/risks/mappadetail"
       -"/v1/persons/.*/licences/conditions"
       -"/v1/persons/.*/person-responsible-officer"
       -"/v1/persons/.*/status-information"
