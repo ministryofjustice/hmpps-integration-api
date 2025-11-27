@@ -100,4 +100,4 @@ authorisation:
     smartinbox:
       notes: "See client list in Confluence"
       roles:
-        - "status-only"
+        - "smartinbox"
