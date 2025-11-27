@@ -2,34 +2,42 @@
 title: Get started
 weight: 2
 owner_slack: "#hmpps-integration-api-alerts"
-last_reviewed_on: 2025-09-30
+last_reviewed_on: 2025-11-27
 review_in: 6 months
 ---
 # Get started
 
 ## Request access
 
-Email [hmpps-external-api@justice.gov.uk](mailto:hmpps-external-api@justice.gov.uk) to request access to this API and Events.
+Email [hmpps-external-api@justice.gov.uk](mailto:hmpps-external-api@justice.gov.uk) to request access to this API.
 
-All requests will be manually approved.
+Once access has been agreed you will need a client certificate for mTLS authentication. To start this process you will
+send a Certificate Signing Request (CSR), generated with the following command
+(replacing placeholders with agreed values):-
+
+```
+openssl req -new -newkey rsa:3072 -noenc -keyout {consumername}_{env}_private_key.pem -subj=/O={consumerorg}/CN={consumerame} -out {consumername}_{env}.csr
+```
+
+You will send the CSR (but NOT the private key) to us at the email address above, and we will send back your
+client certificate and API key.
+
+For information on how to use these credentials, see our [Authentication](/authentication.html) section.
 
 **If approved you will be granted a specific role that defines which API endpoints you have access to, and what data is included in the responses**.
 
 All roles provide access to a `/status` endpoint that can be used to verify connectivity and authentication.
 
-You may also request access to our non-live environment for testing purposes.
-
-You will receive access credentials including:
-
-1. API Key
-2. Client Certificate
-
-For information on how to use these credentials, see our [Authentication](/authentication.html) section.
-
 ## Explore Available Endpoints
 
 Please review the available [endpoints](../api/index.html), and let us know what data you require when you get in contact.
-We provide API access on an endpoint by endpoint basis. **You might not receive access to all the endpoints you request**.
+We provide API access on an endpoint by endpoint basis, and may also filter or redact parts of the responses.authentication
+
+Different endpoints provide data controlled by different owners within MoJ, and access to each endpoint is at the discretion
+of the relevant data owner. In most cases a Data Sharing Agreement and/or Data Protection Impact Assessment will be required.
+
+Be sure to allow sufficient time for the approvals process to complete. The wider the scope of the access request, the
+longer this process may take.
 
 Please contact us at [hmpps-external-api@justice.gov.uk](mailto:hmpps-external-api@justice.gov.uk)
-to get a better understanding of what access we are likely to provide.
+for futher details.
