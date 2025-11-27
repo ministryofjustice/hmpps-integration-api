@@ -61,7 +61,7 @@ feature-flag:
   epf-endpoint-includes-lao: false
   epf-gateway-disabled: true
   cpr-enabled: true
-  enhanced-search-enabled: false
+  enhanced-search-enabled: true
 
 authorisation:
   consumers:
