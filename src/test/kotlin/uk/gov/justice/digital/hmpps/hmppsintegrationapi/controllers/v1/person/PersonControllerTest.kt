@@ -362,7 +362,7 @@ internal class PersonControllerTest(
                         "deliusCrn": null
                      },
                      "pncId": null,
-                     "hmppsId": null,
+                     "hmppsId": "${person.identifiers.nomisNumber}",
                      "contactDetails": null,
                      "currentRestriction": null,
                      "restrictionMessage": null,
