@@ -39,10 +39,8 @@ read_certificate_arguments() {
   then
     echo "Client organisation: e.g. Home Office"
     read organisation
-
     echo "Client region: e.g. London"
     read region
-
   else
     echo "Does the CSR exist in the following location?"
     echo "./csrs/$environment/$client/$environment-$client-client.csr"
