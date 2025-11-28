@@ -30,6 +30,7 @@ Run the [generate-client-certificate.sh](/scripts/client_certificates/generate.s
 ```bash
 make generate-client-certificate
 ```
+
 This script will ask whether the client has provided a CSR from which to generate the pem file.
 This CSR must be placed in the folder specified by the script e.g `./csrs/dev/nhs/dev-nhs-client.csr`
 
@@ -41,6 +42,7 @@ If the answer is No, then this will output three files in the ./scripts/client_c
 - a client certificate (public key) e.g. `dev-nhs-client.pem`
 
 If the answer is Yes, then this will output two files in the ./scripts/client_certificates directory (The private key will held on the client side):
+
 - a private key e.g. `dev-nhs-client.key`
 - the certificate signing request (CSR) e.g. `dev-nhs-client.csr`
 
