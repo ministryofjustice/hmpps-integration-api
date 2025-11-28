@@ -24,7 +24,7 @@ services:
   non-associations:
     base-url: https://non-associations-api.hmpps.service.justice.gov.uk
   manage-prison-visits:
-    base-url: https://hmpps-manage-prison-visits-orchestration-dev.prison.service.justice.gov.uk
+    base-url: https://hmpps-manage-prison-visits-orchestration.prison.service.justice.gov.uk
   incentives:
     base-url: https://incentives-api.hmpps.service.justice.gov.uk
   alerts:
