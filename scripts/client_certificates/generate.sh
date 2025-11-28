@@ -8,12 +8,61 @@ clean() {
 read_certificate_arguments() {
   echo "Environment: (dev, preprod or prod)"
   read environment
-  echo "Client organisation: e.g. Home Office"
-  read organisation
-  echo "Client region: e.g. London"
-  read region
+
   echo "Client identifier (no spaces, lowercase) that will be used for authorisation: e.g. mapps"
   read client
+
+  echo "Do you wish to use a CSR that has been supplied by the client?"
+  echo "Selecting No will generate a CSR and private key"
+  echo "(y)es, (n)o, or (c)ancel:"
+  read user_input
+
+  case $user_input in
+    [yY])
+      echo "User selected 'Yes'."
+      csr_required=1
+      ;;
+    [nN])
+      echo "User selected 'No'."
+      csr_required=0
+      ;;
+    [cC])
+      echo "User selected 'Cancel'."
+      exit 1
+      ;;
+    *)
+      echo "Invalid choice."
+      exit 1
+  esac
+
+  if [[ "$csr_required" == 0 ]]
+  then
+    echo "Client organisation: e.g. Home Office"
+    read organisation
+    echo "Client region: e.g. London"
+    read region
+  else
+    echo "Does the CSR exist in the following location?"
+    echo "./csrs/$environment/$client/$environment-$client-client.csr"
+    echo "(y)es, (n)o, or (c)ancel:"
+    read does_csr_exist
+    case $does_csr_exist in
+      [yY])
+        ;;
+      [nN])
+        echo "Please place the CSR at the following location."
+        echo "./csrs/$environment/$client/$environment-$client-client.csr"
+        exit 1
+        ;;
+      [cC])
+        echo "User selected 'Cancel'."
+        exit 1
+        ;;
+      *)
+        echo "Invalid choice."
+        exit 1
+    esac
+  fi
 }
 
 get_ca() {
@@ -24,8 +73,14 @@ get_ca() {
 }
 
 generate_client() {
-  openssl genrsa -out $environment-$client-client.key 2048
-  openssl req -new -key $environment-$client-client.key -out $environment-$client-client.csr -subj "/C=GB/ST=$region/L=$region/O=$organisation/CN=$client"
+
+  if [[ "$csr_required" == 0 ]]
+  then
+    openssl genrsa -out $environment-$client-client.key 2048
+    openssl req -new -key $environment-$client-client.key -out $environment-$client-client.csr -subj "/C=GB/ST=$region/L=$region/O=$organisation/CN=$client"
+  else
+    cp ./csrs/$environment/$client/$environment-$client-client.csr .
+  fi
   openssl x509 -req -in $environment-$client-client.csr -CA truststore.pem -CAkey truststore.key -out $environment-$client-client.pem -days 365 -sha256 -CAcreateserial
 }
 
@@ -52,7 +107,11 @@ upload_backup() {
   aws s3 cp "$file_path" "s3://$path/client.pem"
   aws s3 cp ./"$environment"-"$client"-client.pem "s3://$path/client.pem"
   aws s3 cp ./"$environment"-"$client"-client.csr "s3://$path/client.csr"
-  aws s3 cp ./"$environment"-"$client"-client.key "s3://$path/client.key"
+
+  if [[ "$csr_required" == 0 ]]
+  then
+    aws s3 cp ./"$environment"-"$client"-client.key "s3://$path/client.key"
+  fi
 
   aws configure set aws_access_key_id ""
   aws configure set aws_secret_access_key ""
