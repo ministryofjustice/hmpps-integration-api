@@ -1,11 +1,10 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.config
 
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertNotNull
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.SupervisionStatus
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters.Companion.NO_FILTERS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -115,26 +114,54 @@ class AuthorisationConfigTest : ConfigTest() {
   }
 
   @Test
-  fun `supervision status filters from role`() {
-    val consumer =
-      ConsumerConfig(
-        roles = listOf("supervision-status-test"),
-      )
+  fun `no supervision status filters in role`() {
+    val consumer = ConsumerConfig(roles = listOf("testing"))
+    val role = role("testing") {}
 
-    val supervisionStatusTestRole =
-      role("supervision-status-test") {
+    val filters = AuthorisationConfig().allFilters(consumer, listOf(role))
+
+    assertTrue(filters == NO_FILTERS)
+  }
+
+  @Test
+  fun `prison supervision status filter in role`() {
+    val consumer = ConsumerConfig(roles = listOf("testing"))
+
+    val role =
+      role("testing") {
         filters {
           supervisionStatuses {
-            -SupervisionStatus.PRISONS.name
+            -"PRISONS"
           }
         }
       }
 
-    val filters = AuthorisationConfig().allFilters(consumer, listOf(supervisionStatusTestRole))
+    val filters = AuthorisationConfig().allFilters(consumer, listOf(role))
 
-    assertNotNull(filters)
+    assertFalse(filters == NO_FILTERS)
     assertTrue(filters.hasSupervisionStatusesFilter())
     assertTrue(filters.isPrisonsOnly())
     assertFalse(filters.isProbationOnly())
+  }
+
+  @Test
+  fun `probation supervision status filter in role`() {
+    val consumer = ConsumerConfig(roles = listOf("testing"))
+
+    val role =
+      role("testing") {
+        filters {
+          supervisionStatuses {
+            -"PROBATION"
+          }
+        }
+      }
+
+    val filters = AuthorisationConfig().allFilters(consumer, listOf(role))
+
+    assertFalse(filters == NO_FILTERS)
+    assertTrue(filters.hasSupervisionStatusesFilter())
+    assertTrue(filters.isProbationOnly())
+    assertFalse(filters.isPrisonsOnly())
   }
 }
