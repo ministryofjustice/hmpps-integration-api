@@ -22,12 +22,12 @@ import java.time.Duration
 @Suppress("ktlint:standard:property-naming")
 class WebClientWrapper(
   val baseUrl: String,
-  connectTimeoutMillis: Int = 10_000,
-  responseTimeoutSeconds: Long = 15,
+  val connectTimeoutMillis: Int = 10_000,
+  val responseTimeoutSeconds: Long = 15,
+  val retryAttempts: Long = 3L,
+  val backOffDuration: Duration = Duration.ofSeconds(3),
 ) {
   val CREATE_TRANSACTION_RETRY_HTTP_CODES = listOf(502, 503, 504, 522, 599, 499, 408)
-  val MAX_RETRY_ATTEMPTS = 3L
-  val MIN_BACKOFF_DURATION = Duration.ofSeconds(3)
 
   val httpClient =
     HttpClient
@@ -107,7 +107,7 @@ class WebClientWrapper(
           }.bodyToMono(T::class.java)
           .retryWhen(
             Retry
-              .backoff(MAX_RETRY_ATTEMPTS, MIN_BACKOFF_DURATION)
+              .backoff(retryAttempts, backOffDuration)
               .filter { throwable -> isSafeToRetry(throwable) }
               .onRetryExhaustedThrow { _, retrySignal -> throw ResponseException("External Service failed to process after ${retrySignal.totalRetries()} retries with ${retrySignal.failure().message}", HttpStatus.SERVICE_UNAVAILABLE.value(), retrySignal.failure().cause) },
           ).block()!!
@@ -116,6 +116,8 @@ class WebClientWrapper(
     } catch (exception: WebClientResponseException) {
       getErrorType(exception, upstreamApi, forbiddenAsError, badRequestAsError)
     }
+
+  fun sausages() = "sausages"
 
   fun isSafeToRetry(throwable: Throwable) = throwable is ResponseException || throwable is WebClientRequestException
 
@@ -163,7 +165,7 @@ class WebClientWrapper(
           }.bodyToFlux(T::class.java)
           .retryWhen(
             Retry
-              .backoff(MAX_RETRY_ATTEMPTS, MIN_BACKOFF_DURATION)
+              .backoff(retryAttempts, backOffDuration)
               .filter { throwable -> isSafeToRetry(throwable) }
               .onRetryExhaustedThrow { _, retrySignal -> throw ResponseException("External Service failed to process after ${retrySignal.totalRetries()} retries with ${retrySignal.failure().message}", HttpStatus.SERVICE_UNAVAILABLE.value(), retrySignal.failure().cause) },
           ).collectList()
