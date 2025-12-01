@@ -93,7 +93,7 @@ class HmppsIntegrationApiExceptionHandler {
 
   @ExceptionHandler(EntityNotFoundException::class)
   fun handle(e: EntityNotFoundException): ResponseEntity<ErrorResponse> {
-    logInfo("Not found (404) returned with message {}", e)
+    logInfo("Not found (404) returned with message {}", e, false)
     return ResponseEntity
       .status(NOT_FOUND)
       .body(
@@ -245,9 +245,12 @@ class HmppsIntegrationApiExceptionHandler {
   private fun logInfo(
     message: String,
     e: Exception,
+    sendToSentry: Boolean = true,
   ) {
     log.info(message, e)
-    Sentry.captureMessage("$message : ${e.message}", SentryLevel.INFO)
+    if (sendToSentry) {
+      Sentry.captureMessage("$message : ${e.message}", SentryLevel.INFO)
+    }
   }
 
   companion object {
