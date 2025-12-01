@@ -251,6 +251,13 @@ class GetPersonService(
         return consumerPrisonFilterCheck
       }
     }
+    if (filters?.supervisionStatus != null) {
+      val prisoner = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
+      val consumerPrisonFilterCheck = consumerPrisonAccessService.checkPrisonerHasSupervisionStatus<NomisNumber>(prisoner.data, filters)
+      if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
+        return consumerPrisonFilterCheck
+      }
+    }
     return Response(
       data = NomisNumber(nomisNumber),
     )

@@ -220,6 +220,7 @@ internal class GetPersonServiceTest(
         )
 
         whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Person>(prisonId, null)).thenReturn(Response(data = null))
+        whenever(consumerPrisonAccessService.checkPrisonerHasSupervisionStatus<NomisNumber>(any(), any())).thenReturn(Response(data = null))
         givenPrisonerNumberMergedAttributeSearchReturnsEmpty()
       }
 
