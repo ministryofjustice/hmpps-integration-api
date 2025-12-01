@@ -11,6 +11,8 @@ data class ConsumerFilters(
   val supervisionStatuses: List<String>? = null,
 ) {
   companion object {
+    val NO_FILTERS = null
+
     fun mappaCategories(filters: ConsumerFilters?): List<Number> =
       if (filters?.hasMappaCategoriesFilter() == true) {
         // Filters are applied even if empty list

@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters.Companion.NO_FILTERS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory
@@ -112,7 +113,7 @@ class AuthorisationConfig {
           .mapNotNull { it.filters?.alertCodes },
       )
 
-    return if (allNull(caseNotes, prisons, mappaCategories, alertCodes, supervisionStatuses)) null else ConsumerFilters(prisons, caseNotes, mappaCategories, alertCodes, supervisionStatuses)
+    return if (allNull(caseNotes, prisons, mappaCategories, alertCodes, supervisionStatuses)) NO_FILTERS else ConsumerFilters(prisons, caseNotes, mappaCategories, alertCodes, supervisionStatuses)
   }
 
   fun allNull(vararg values: List<Any>?) = values.all { it == null }
