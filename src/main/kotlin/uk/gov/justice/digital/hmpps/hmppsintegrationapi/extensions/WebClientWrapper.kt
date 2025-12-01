@@ -117,8 +117,6 @@ class WebClientWrapper(
       getErrorType(exception, upstreamApi, forbiddenAsError, badRequestAsError)
     }
 
-  fun sausages() = "sausages"
-
   fun isSafeToRetry(throwable: Throwable) = throwable is ResponseException || throwable is WebClientRequestException
 
   inline fun <reified T> requestList(
