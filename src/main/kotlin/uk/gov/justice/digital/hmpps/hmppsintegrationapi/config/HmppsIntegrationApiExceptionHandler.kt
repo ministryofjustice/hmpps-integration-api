@@ -245,10 +245,10 @@ class HmppsIntegrationApiExceptionHandler {
   private fun logInfo(
     message: String,
     e: Exception,
-    sendToSentry: Boolean = true
+    sendToSentry: Boolean = true,
   ) {
     log.info(message, e)
-    if(sendToSentry){
+    if (sendToSentry) {
       Sentry.captureMessage("$message : ${e.message}", SentryLevel.INFO)
     }
   }
