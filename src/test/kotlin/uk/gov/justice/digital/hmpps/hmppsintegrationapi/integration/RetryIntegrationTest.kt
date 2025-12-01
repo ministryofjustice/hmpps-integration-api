@@ -44,7 +44,7 @@ class RetryIntegrationTest : IntegrationTestBase() {
         baseUrl,
         connectTimeoutMillis = 500,
         responseTimeoutSeconds = 1,
-        backOffDuration = Duration.ofSeconds(0),
+        initialBackOffDuration = Duration.ofSeconds(0),
       )
     wrapper = spy(client)
     ReflectionTestUtils.setField(activitiesGateway, "webClient", wrapper)
@@ -223,7 +223,7 @@ class RetryIntegrationTest : IntegrationTestBase() {
         WebClientWrapper(
           deliusBaseUrl,
           connectTimeoutMillis = 500,
-          backOffDuration = Duration.ofSeconds(0),
+          initialBackOffDuration = Duration.ofSeconds(0),
         )
       deliusWrapper = spy(deliusClient)
       ReflectionTestUtils.setField(deliusGateway, "webClient", deliusWrapper)

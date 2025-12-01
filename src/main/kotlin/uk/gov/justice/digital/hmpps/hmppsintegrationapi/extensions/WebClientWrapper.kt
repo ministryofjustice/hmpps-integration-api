@@ -25,7 +25,7 @@ class WebClientWrapper(
   val connectTimeoutMillis: Int = 10_000,
   val responseTimeoutSeconds: Long = 15,
   val retryAttempts: Long = 3L,
-  val backOffDuration: Duration = Duration.ofSeconds(3),
+  val initialBackOffDuration: Duration = Duration.ofSeconds(3),
 ) {
   val CREATE_TRANSACTION_RETRY_HTTP_CODES = listOf(502, 503, 504, 522, 599, 499, 408)
 
@@ -107,7 +107,7 @@ class WebClientWrapper(
           }.bodyToMono(T::class.java)
           .retryWhen(
             Retry
-              .backoff(retryAttempts, backOffDuration)
+              .backoff(retryAttempts, initialBackOffDuration)
               .filter { throwable -> isSafeToRetry(throwable) }
               .onRetryExhaustedThrow { _, retrySignal -> throw ResponseException("External Service failed to process after ${retrySignal.totalRetries()} retries with ${retrySignal.failure().message}", HttpStatus.SERVICE_UNAVAILABLE.value(), retrySignal.failure().cause) },
           ).block()!!
@@ -163,7 +163,7 @@ class WebClientWrapper(
           }.bodyToFlux(T::class.java)
           .retryWhen(
             Retry
-              .backoff(retryAttempts, backOffDuration)
+              .backoff(retryAttempts, initialBackOffDuration)
               .filter { throwable -> isSafeToRetry(throwable) }
               .onRetryExhaustedThrow { _, retrySignal -> throw ResponseException("External Service failed to process after ${retrySignal.totalRetries()} retries with ${retrySignal.failure().message}", HttpStatus.SERVICE_UNAVAILABLE.value(), retrySignal.failure().cause) },
           ).collectList()

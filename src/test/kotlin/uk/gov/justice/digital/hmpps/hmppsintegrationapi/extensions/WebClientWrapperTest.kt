@@ -64,7 +64,7 @@ class WebClientWrapperTest :
           connectTimeoutMillis = 500,
           responseTimeoutSeconds = 1,
           retryAttempts = 0L,
-          backOffDuration = Duration.ofSeconds(0L),
+          initialBackOffDuration = Duration.ofSeconds(0L),
         )
 
       retryWebClient =
@@ -73,7 +73,7 @@ class WebClientWrapperTest :
           connectTimeoutMillis = 500,
           responseTimeoutSeconds = 1,
           retryAttempts = 1L,
-          backOffDuration = Duration.ofSeconds(0L),
+          initialBackOffDuration = Duration.ofSeconds(0L),
         )
     }
 
