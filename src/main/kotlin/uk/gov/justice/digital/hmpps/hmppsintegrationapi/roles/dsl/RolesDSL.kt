@@ -76,6 +76,17 @@ class PermissionBuilder {
   }
 }
 
+class SupervisionStatusBuilder {
+  var content: MutableList<String>? = mutableListOf()
+
+  operator fun String.unaryMinus() {
+    if (content == null) {
+      content = mutableListOf()
+    }
+    content?.add(this)
+  }
+}
+
 class PrisonsBuilder {
   var content: MutableList<String>? = mutableListOf()
 
@@ -143,8 +154,18 @@ class FiltersBuilder {
   private var caseNotes: MutableList<String>? = null
   private var mappaCategories: MutableList<Any>? = null
   private var alertCodes: MutableList<String>? = null
+  private var supervisionStatus: MutableList<String>? = null
 
-  fun build(): ConsumerFilters = ConsumerFilters(prisons, caseNotes, mappaCategories, alertCodes)
+  fun build(): ConsumerFilters = ConsumerFilters(prisons, caseNotes, mappaCategories, alertCodes, supervisionStatus)
+
+  fun supervisionStatuses(init: SupervisionStatusBuilder.() -> Unit) {
+    SupervisionStatusBuilder().apply(init).content?.let {
+      if (supervisionStatus == null) {
+        supervisionStatus = mutableListOf()
+      }
+      supervisionStatus?.addAll(it)
+    }
+  }
 
   fun prisons(init: PrisonsBuilder.() -> Unit) {
     PrisonsBuilder().apply(init).content?.let {
@@ -198,4 +219,11 @@ enum class MappaCategory(
 
     fun all() = entries.filter { it.category != null }
   }
+}
+
+enum class SupervisionStatus {
+  PRISONS,
+  PROBATION,
+  NONE,
+  UNKNOWN,
 }
