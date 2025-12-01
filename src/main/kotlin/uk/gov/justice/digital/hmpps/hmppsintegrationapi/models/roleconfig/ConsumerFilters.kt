@@ -1,12 +1,14 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.SupervisionStatus
 
 data class ConsumerFilters(
   val prisons: List<String>? = null,
   val caseNotes: List<String>? = null,
   val mappaCategories: List<Any>? = null,
   val alertCodes: List<String>? = null,
+  val supervisionStatuses: List<String>? = null,
 ) {
   companion object {
     fun mappaCategories(filters: ConsumerFilters?): List<Number> =
@@ -47,4 +49,10 @@ data class ConsumerFilters(
   fun hasAlertCodes(): Boolean = this.alertCodes != null
 
   fun hasFilters(): Boolean = hasPrisonFilter() || hasCaseNotesFilter() || hasMappaCategoriesFilter() || hasAlertCodes()
+
+  fun hasSupervisionStatusesFilter(): Boolean = this.supervisionStatuses != null
+
+  fun isPrisonsOnly(): Boolean = hasPrisonFilter() || supervisionStatuses?.contains(SupervisionStatus.PRISONS.name) ?: false
+
+  fun isProbationOnly(): Boolean = supervisionStatuses?.contains(SupervisionStatus.PROBATION.name) ?: false
 }

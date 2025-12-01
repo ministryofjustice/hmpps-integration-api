@@ -63,12 +63,26 @@ class AuthorisationConfig {
       consumerConfig?.roles?.mapNotNull {
         uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles[it]
       }
+    return allFilters(consumerConfig, roles)
+  }
+
+  fun allFilters(
+    consumerConfig: ConsumerConfig?,
+    roles: List<Role>?,
+  ): ConsumerFilters? {
     val consumerPseudoRole = Role(permissions = null, filters = consumerConfig?.filters)
     val allRoles: List<Role> = listOf(consumerPseudoRole) + (roles ?: emptyList())
 
     if (allRoles.all { it.filters?.hasFilters() == false }) {
       return null
     }
+
+    val supervisionStatuses =
+      getDistinctValuesIfNotWildcarded(
+        allRoles
+          .filter { it.filters?.hasSupervisionStatusesFilter() == true }
+          .mapNotNull { it.filters?.supervisionStatuses },
+      )
 
     val prisons =
       getDistinctValuesIfNotWildcarded(
@@ -98,8 +112,10 @@ class AuthorisationConfig {
           .mapNotNull { it.filters?.alertCodes },
       )
 
-    return if (caseNotes == null && prisons == null && mappaCategories == null && alertCodes == null) null else ConsumerFilters(prisons, caseNotes, mappaCategories, alertCodes)
+    return if (allNull(caseNotes, prisons, mappaCategories, alertCodes, supervisionStatuses)) null else ConsumerFilters(prisons, caseNotes, mappaCategories, alertCodes, supervisionStatuses)
   }
+
+  fun allNull(vararg values: List<Any>?) = values.all { it == null }
 
   /**
    * Reduces a list of list<Any> (mixed) type to a flattened list of specified Enum type

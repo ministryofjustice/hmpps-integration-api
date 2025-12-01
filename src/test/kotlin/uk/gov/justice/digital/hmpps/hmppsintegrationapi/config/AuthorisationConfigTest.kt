@@ -1,9 +1,12 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.config
 
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertNotNull
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.SupervisionStatus
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -109,5 +112,29 @@ class AuthorisationConfigTest : ConfigTest() {
 
     assertEquals(missingConfig.consumers["tester"]?.permissions(), emptyConfig.consumers["tester"]?.permissions())
     assertEquals(missingConfig.consumers["tester"]?.filters, emptyConfig.consumers["tester"]?.filters)
+  }
+
+  @Test
+  fun `supervision status filters from role`() {
+    val consumer =
+      ConsumerConfig(
+        roles = listOf("supervision-status-test"),
+      )
+
+    val supervisionStatusTestRole =
+      role("supervision-status-test") {
+        filters {
+          supervisionStatuses {
+            -SupervisionStatus.PRISONS.name
+          }
+        }
+      }
+
+    val filters = AuthorisationConfig().allFilters(consumer, listOf(supervisionStatusTestRole))
+
+    assertNotNull(filters)
+    assertTrue(filters.hasSupervisionStatusesFilter())
+    assertTrue(filters.isPrisonsOnly())
+    assertFalse(filters.isProbationOnly())
   }
 }
