@@ -43,8 +43,7 @@ internal class GetPersonsServiceTest(
   @MockitoBean val deliusGateway: NDeliusGateway,
   @MockitoBean val featureFlag: FeatureFlagConfig,
   private val getPersonsService: GetPersonsService,
-) : DescribeSpec(
-  {
+) : DescribeSpec({
     val firstName = personInProbationAndNomisPersona.firstName
     val lastName = personInProbationAndNomisPersona.lastName
     val pncNumber = "2003/13116M"
