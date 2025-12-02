@@ -12,6 +12,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CertificateRevocationList
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
@@ -25,6 +26,7 @@ import java.io.IOException
 class AuthorisationFilter(
   @Autowired val authorisationConfig: AuthorisationConfig,
   @Autowired val featureFlagConfig: FeatureFlagConfig,
+  @Autowired val certificateRevocationList: CertificateRevocationList,
 ) : Filter {
   @Throws(IOException::class, ServletException::class)
   override fun doFilter(
@@ -42,7 +44,7 @@ class AuthorisationFilter(
     }
 
     val certificateSerialNumber = req.getAttribute("certificateSerialNumber") as String?
-    if (certificateSerialNumber != null && certificateRevoked(authorisationConfig, certificateSerialNumber, subjectDistinguishedName)) {
+    if (certificateSerialNumber != null && certificateRevocationList.isRevoked(certificateSerialNumber, subjectDistinguishedName)) {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Certificate with serial number $certificateSerialNumber has been revoked")
       return
     }

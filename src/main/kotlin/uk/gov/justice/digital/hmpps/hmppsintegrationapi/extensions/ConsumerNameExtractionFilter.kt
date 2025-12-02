@@ -7,15 +7,19 @@ import jakarta.servlet.ServletRequest
 import jakarta.servlet.ServletResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CertificateRevocationList
 import java.io.IOException
 
 @Component
 @Order(0)
 @Profile("!local")
-class ConsumerNameExtractionFilter : Filter {
+class ConsumerNameExtractionFilter(
+  @Autowired val certificateRevocationList: CertificateRevocationList,
+): Filter {
   @Throws(IOException::class, ServletException::class)
   override fun doFilter(
     request: ServletRequest,
@@ -25,7 +29,7 @@ class ConsumerNameExtractionFilter : Filter {
     val req = request as HttpServletRequest
     response as HttpServletResponse
     val subjectDistinguishedName = req.getHeader("subject-distinguished-name")
-    val certificateSerialNumber = extractCertificateSerialNumber(req.getHeader("cert-serial-number"))
+    val certificateSerialNumber = certificateRevocationList.normaliseCertificateSerialNumber(req.getHeader("cert-serial-number"))
     val extractedConsumerName = extractConsumerName(subjectDistinguishedName)
     req.setAttribute("clientName", extractedConsumerName)
     req.setAttribute("certificateSerialNumber", certificateSerialNumber)
