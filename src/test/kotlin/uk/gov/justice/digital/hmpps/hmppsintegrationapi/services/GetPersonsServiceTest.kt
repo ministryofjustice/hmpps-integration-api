@@ -8,11 +8,13 @@ import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory.times
 import org.mockito.kotlin.any
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.ENHANCED_SEARCH_ENABLED
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
@@ -30,6 +32,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffenders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSSort
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.SupervisionStatus
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -450,5 +453,17 @@ internal class GetPersonsServiceTest(
             ),
         )
       assertThat(actual).isEqualTo(expectedRequest)
+    }
+
+    it("does not do probation search for supervisionStatus == PRISON") {
+      whenever(featureFlag.isEnabled(ENHANCED_SEARCH_ENABLED)).thenReturn(true)
+      whenever(prisonerOffenderSearchGateway.attributeSearch(any())).thenReturn(prisonAttributeSearchResponse)
+
+      val filters = ConsumerFilters(supervisionStatuses = listOf(SupervisionStatus.PRISONS.name))
+
+      getPersonsService.personAttributeSearch(firstName, lastName, null, dateOfBirth, true, filters)
+
+      verifyNoInteractions(deliusGateway)
+      verify(prisonerOffenderSearchGateway, times(1)).attributeSearch(any())
     }
   })
