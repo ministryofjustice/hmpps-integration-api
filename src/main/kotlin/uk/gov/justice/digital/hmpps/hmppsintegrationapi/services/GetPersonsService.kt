@@ -58,7 +58,7 @@ class GetPersonsService(
   ): Response<List<Person>> {
     // Perform probation search
     val probationSearchResponse =
-      if (consumerFilters?.hasPrisonFilter() != true) {
+      if (consumerFilters?.isPrisonsOnly() != true) {
         deliusGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases)
       } else {
         Response(emptyList(), emptyList())
