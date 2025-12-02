@@ -14,6 +14,7 @@ import jdk.internal.net.http.common.Log.errors
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.any
+import org.mockito.kotlin.description
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -752,7 +753,12 @@ internal class GetPersonServiceTest(
           getPersonService.getNomisNumberWithPrisonFilter(crnNumber, filters = null)
           verify(telemetryService).trackEvent(
             "CPRNomsMultipleMatches",
-            mapOf("message" to "Failed to use CPR to convert $crnNumber", "error" to "Multiple NOMS found for $crnNumber in core person record"),
+            mapOf(
+              "fallbackSuccess" to "true",
+              "fallbackId" to "G2996UX",
+              "message" to "Failed to use CPR to convert $crnNumber",
+              "error" to "Multiple NOMS found for $crnNumber in core person record. G2996UX, A1234AA",
+            ),
           )
         }
 
@@ -761,7 +767,12 @@ internal class GetPersonServiceTest(
           getPersonService.getNomisNumberWithPrisonFilter(crnNumber, filters = null)
           verify(telemetryService).trackEvent(
             "CPRNomsNoMatches",
-            mapOf("message" to "Failed to use CPR to convert $crnNumber", "error" to "No NOMS found for $crnNumber in core person record"),
+            mapOf(
+              "fallbackSuccess" to "true",
+              "fallbackId" to "G2996UX",
+              "message" to "Failed to use CPR to convert $crnNumber",
+              "error" to "No NOMS found for $crnNumber in core person record.",
+            ),
           )
         }
 
@@ -770,7 +781,12 @@ internal class GetPersonServiceTest(
           getPersonService.getNomisNumberWithPrisonFilter(crnNumber, filters = null)
           verify(telemetryService).trackEvent(
             "CPRNomsNotFound",
-            mapOf("message" to "Failed to use CPR to convert $crnNumber", "error" to "Could not find core person record"),
+            mapOf(
+              "fallbackSuccess" to "true",
+              "fallbackId" to "G2996UX",
+              "message" to "Failed to use CPR to convert $crnNumber",
+              "error" to "Could not find core person record",
+            ),
           )
         }
 
@@ -779,7 +795,30 @@ internal class GetPersonServiceTest(
           getPersonService.getNomisNumberWithPrisonFilter(crnNumber, filters = null)
           verify(telemetryService).trackEvent(
             "CPRNomsFailure",
-            mapOf("message" to "Failed to use CPR to convert $crnNumber", "error" to "Some error"),
+            mapOf(
+              "fallbackSuccess" to "true",
+              "fallbackId" to "G2996UX",
+              "message" to "Failed to use CPR to convert $crnNumber",
+              "error" to "Some error",
+            ),
+          )
+        }
+
+        it("CPR failure, track event and continue to existing processing which also fails") {
+          val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NDELIUS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "Not found in delius"))
+          whenever(corePersonRecordGateway.corePersonRecordFor(IdentifierType.CRN, crnNumber)).thenThrow(RuntimeException("Some error"))
+          whenever(deliusGateway.getPerson(crnNumber)).thenReturn(Response(data = null, errors = errors))
+          whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = null, errors = errors))
+
+          getPersonService.getNomisNumberWithPrisonFilter(crnNumber, filters = null)
+          verify(telemetryService).trackEvent(
+            "CPRNomsFailure",
+            mapOf(
+              "fallbackSuccess" to "false",
+              "fallbackErrors" to "Not found in delius",
+              "message" to "Failed to use CPR to convert $crnNumber",
+              "error" to "Some error",
+            ),
           )
         }
 

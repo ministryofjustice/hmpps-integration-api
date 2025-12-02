@@ -30,13 +30,13 @@ data class CorePersonRecord(
   fun getIdentifier(
     identifierType: IdentifierType,
     hmppsId: String,
-  ) = getIdentifier(identifierType) ?: throw CprResultException(identifierType, hmppsId, hasMultipleIdentifiersForType(identifierType))
+  ) = getIdentifier(identifierType) ?: throw CprResultException(identifierType, hmppsId, multipleIdentifiersForType(identifierType))
 
-  fun hasMultipleIdentifiersForType(identifierType: IdentifierType) =
+  fun multipleIdentifiersForType(identifierType: IdentifierType): List<String> =
     when (identifierType) {
-      IdentifierType.NOMS -> identifiers?.prisonNumbers?.let { it.size > 1 } == true
-      IdentifierType.CRN -> identifiers?.crns?.let { it.size > 1 } == true
-      else -> false
+      IdentifierType.NOMS -> identifiers?.prisonNumbers?.takeIf { it.size > 1 } ?: emptyList()
+      IdentifierType.CRN -> identifiers?.crns?.takeIf { it.size > 1 } ?: emptyList()
+      else -> emptyList()
     }
 }
 
