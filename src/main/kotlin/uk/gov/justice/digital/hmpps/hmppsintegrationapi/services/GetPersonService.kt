@@ -64,6 +64,7 @@ class GetPersonService(
       )
     }
     // If the CPR feature flag is enabled then call CPR.
+    var cprFailureException: Exception? = null
     if (featureFlagConfig.isEnabled(CPR_ENABLED)) {
       try {
         val cpr = corePersonRecordGateway.corePersonRecordFor(hmppsIdType, hmppsId)
@@ -71,27 +72,45 @@ class GetPersonService(
         telemetryService.trackEvent("CPRNomsSuccess", mapOf("message" to "Successfully used CPR to convert $hmppsId to $id", "fromId" to hmppsId, "toId" to id))
         return Response(id)
       } catch (ex: Exception) {
-        trackCPRFailureEvent(ex, hmppsId)
+        cprFailureException = ex
       }
     }
     // Fall back to using the prison API or probation API to get the person id
-    return when (hmppsIdType) {
-      IdentifierType.NOMS -> prisonAPIPersonId(hmppsId, requiredType)
-      else -> probationAPIPersonId(hmppsId, requiredType)
+    val response =
+      when (hmppsIdType) {
+        IdentifierType.NOMS -> prisonAPIPersonId(hmppsId, requiredType)
+        else -> probationAPIPersonId(hmppsId, requiredType)
+      }
+    // Track the CPR exception using the fallback response
+    cprFailureException?.let {
+      trackCPRFailureEvent(it, hmppsId, response.data, response.errors)
     }
+
+    return response
   }
 
   fun trackCPRFailureEvent(
     exception: Throwable,
     hmppsId: String,
+    fallbackId: String? = null,
+    fallbackErrors: List<UpstreamApiError> = emptyList(),
   ) {
     val event =
       when (exception) {
-        is CprResultException -> if (exception.hasMultiple) "CPRNomsMultipleMatches" else "CPRNomsNoMatches"
+        is CprResultException -> if (exception.multipleIds.isNotEmpty()) "CPRNomsMultipleMatches" else "CPRNomsNoMatches"
         is EntityNotFoundException -> "CPRNomsNotFound"
         else -> "CPRNomsFailure"
       }
-    telemetryService.trackEvent(event, mapOf("message" to "Failed to use CPR to convert $hmppsId", "error" to exception.message))
+    val properties =
+      listOfNotNull(
+        "fallbackSuccess" to (fallbackId != null).toString(),
+        if (fallbackId != null) "fallbackId" to fallbackId else null,
+        if (fallbackErrors.isNotEmpty()) "fallbackErrors" to fallbackErrors.mapNotNull { it.description }.joinToString(",") else null,
+        "message" to "Failed to use CPR to convert $hmppsId",
+        "error" to exception.message,
+      ).toMap()
+
+    telemetryService.trackEvent(event, properties)
   }
 
   /**
