@@ -24,12 +24,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchMatcher
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchPncMatcher
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchQuery
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithPrisonFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.SearchUtils
 import java.io.File
 
 @ActiveProfiles("integration-test-redaction-enabled")
@@ -99,29 +96,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
       val lastName = "Larsen"
       val pncNumber = "2003/13116M"
 
-      val expectedRequest =
-        POSAttributeSearchRequest(
-          joinType = "AND",
-          queries =
-            listOf(
-              POSAttributeSearchQuery(joinType = "AND", matchers = listOf(POSAttributeSearchPncMatcher(pncNumber))), // THE PNC matcher
-              POSAttributeSearchQuery(joinType = "AND", matchers = listOf(POSAttributeSearchMatcher(type = "String", attribute = "prisonId", condition = "IN", searchTerm = "MDI,HEI"))), // Empty prisons filter
-              POSAttributeSearchQuery(
-                joinType = "OR",
-                subQueries =
-                  listOf(
-                    POSAttributeSearchQuery(
-                      joinType = "AND",
-                      matchers =
-                        listOfNotNull(
-                          POSAttributeSearchMatcher(type = "String", attribute = "firstName", condition = "IS", searchTerm = firstName),
-                          POSAttributeSearchMatcher(type = "String", attribute = "lastName", condition = "IS", searchTerm = lastName),
-                        ),
-                    ),
-                  ),
-              ),
-            ),
-        )
+      val expectedRequest = SearchUtils.attributeSearchRequest(firstName, lastName, pncNumber)
 
       prisonerOffenderSearchMockServer.stubForPost(
         "/attribute-search",
