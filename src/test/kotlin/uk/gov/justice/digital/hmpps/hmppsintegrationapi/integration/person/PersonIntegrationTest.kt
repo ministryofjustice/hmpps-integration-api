@@ -96,7 +96,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
       val lastName = "Larsen"
       val pncNumber = "2003/13116M"
 
-      val expectedRequest = SearchUtils.attributeSearchRequest(firstName, lastName, pncNumber)
+      val expectedRequest = SearchUtils.attributeSearchRequest(firstName, lastName, pncNumber, consumerFilters = testRoleWithPrisonFilters.filters!!)
 
       prisonerOffenderSearchMockServer.stubForPost(
         "/attribute-search",
