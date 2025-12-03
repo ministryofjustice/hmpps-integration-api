@@ -10,6 +10,7 @@ import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory.times
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -260,16 +261,16 @@ internal class PersonControllerTest(
           result.response.contentAsString.shouldContain("Invalid date format. Please use yyyy-MM-dd.")
         }
 
-        it("performs supervision status filtering correctly") {
+        it("passes supervision status filters from consumer config to service") {
           mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
           every { roles[any()] } returns role("test-role") { permissions { -fullAccess.permissions!! } }
           whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(true)
           val expectedFilters = ConsumerFilters(supervisionStatuses = listOf("PRISONS"))
+          whenever(getPersonsService.personAttributeSearch(firstName, null, pncNumber, null, false, expectedFilters)).thenReturn(Response(data = emptyList()))
 
-          val result = mockMvc.performAuthorisedWithCN("$basePath?first_name=$firstName&pnc_number=$pncNumber", "supervision-status-test")
+          mockMvc.performAuthorisedWithCN("$basePath?first_name=$firstName&pnc_number=$pncNumber", "supervision-status-test")
 
           verify(getPersonsService, times(1)).personAttributeSearch(firstName, null, pncNumber, null, false, expectedFilters)
-//          result.response.status.shouldBe(HttpStatus.OK.value())
         }
       }
 
