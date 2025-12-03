@@ -34,10 +34,10 @@ class AlertsController(
   @GetMapping("/persons/{hmppsId}/alerts")
   @Tags(value = [Tag("Reception"), Tag("Activities")])
   @Operation(
-    summary = "Returns alerts associated with a person, sorted by dateCreated (newest first).",
+    summary = "Returns alerts associated with a prisoner, sorted by dateCreated (newest first).",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
-      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found alerts for a person with the provided HMPPS ID."),
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found alerts for a prisoner with the provided HMPPS ID."),
       ApiResponse(responseCode = "400", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
@@ -65,7 +65,6 @@ class AlertsController(
   }
 
   @GetMapping("/pnd/persons/{hmppsId}/alerts")
-  @Tag(name = "PND")
   @Operation(
     deprecated = true,
     summary = "Returns alerts associated with a person, sorted by dateCreated (newest first).",
