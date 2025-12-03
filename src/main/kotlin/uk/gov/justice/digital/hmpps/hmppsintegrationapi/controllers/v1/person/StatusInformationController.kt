@@ -23,7 +23,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
 
 @RestController
 @RequestMapping("/v1/persons")
-@Tags(Tag(name = "Persons"), Tag(name = "Alerts"))
+@Tags(Tag(name = "Persons"))
 class StatusInformationController(
   @Autowired val getStatusInformationForPersonService: GetStatusInformationForPersonService,
   @Autowired val auditService: AuditService,
