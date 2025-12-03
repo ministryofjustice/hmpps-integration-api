@@ -52,6 +52,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationintegrat
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.fullAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithPrisonFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCareNeedsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetIEPLevelService
@@ -256,6 +258,18 @@ internal class PersonControllerTest(
           val result = mockMvc.performAuthorised("$basePath?date_of_birth=12323423234")
           result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
           result.response.contentAsString.shouldContain("Invalid date format. Please use yyyy-MM-dd.")
+        }
+
+        it("performs supervision status filtering correctly") {
+          mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
+          every { roles[any()] } returns role("test-role") { permissions { -fullAccess.permissions!! } }
+          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(true)
+          val expectedFilters = ConsumerFilters(supervisionStatuses = listOf("PRISONS"))
+
+          val result = mockMvc.performAuthorisedWithCN("$basePath?first_name=$firstName&pnc_number=$pncNumber", "supervision-status-test")
+
+          verify(getPersonsService, times(1)).personAttributeSearch(firstName, null, pncNumber, null, false, expectedFilters)
+//          result.response.status.shouldBe(HttpStatus.OK.value())
         }
       }
 
