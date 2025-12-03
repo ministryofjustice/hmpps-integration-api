@@ -26,7 +26,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitesp
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithPrisonFilters
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.SearchUtils
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService.Companion.attributeSearchRequest
 import java.io.File
 
 @ActiveProfiles("integration-test-redaction-enabled")
@@ -96,7 +96,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
       val lastName = "Larsen"
       val pncNumber = "2003/13116M"
 
-      val expectedRequest = SearchUtils.attributeSearchRequest(firstName, lastName, pncNumber, consumerFilters = testRoleWithPrisonFilters.filters!!)
+      val expectedRequest = attributeSearchRequest(firstName, lastName, pncNumber, consumerFilters = testRoleWithPrisonFilters.filters!!)
 
       prisonerOffenderSearchMockServer.stubForPost(
         "/attribute-search",

@@ -29,8 +29,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithIdOnlyRedaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithLaoRedactions
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService.Companion.attributeSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.SearchUtils
 import java.io.File
 
 @ActiveProfiles("integration-test-redaction-enabled")
@@ -226,7 +226,7 @@ class PersonRedactionIntegrationTest : IntegrationTestBase() {
       fun `redacts person search`() {
         val firstName = "Robert"
         val lastName = "Larsen"
-        val expectedRequest = SearchUtils.attributeSearchRequest(firstName, lastName)
+        val expectedRequest = attributeSearchRequest(firstName, lastName)
 
         prisonerOffenderSearchMockServer.stubForPost(
           "/attribute-search",
@@ -296,7 +296,7 @@ class PersonRedactionIntegrationTest : IntegrationTestBase() {
         val firstName = "Robert"
         val lastName = "Larsen"
 
-        val expectedRequest = SearchUtils.attributeSearchRequest(firstName, lastName)
+        val expectedRequest = attributeSearchRequest(firstName, lastName)
 
         prisonerOffenderSearchMockServer.stubForPost(
           "/attribute-search",
