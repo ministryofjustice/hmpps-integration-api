@@ -10,6 +10,11 @@ val smartinbox =
       -"/v1/persons"
       -"/v1/persons/[^/]+/prisoner-base-location"
     }
+    filters {
+      supervisionStatuses {
+        -"PRISONS"
+      }
+    }
     redactionPolicies(
       listOf(
         personSearchIdOnly,
