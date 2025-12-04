@@ -7,6 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.CPR_ENABLED
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.CprResultException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CorePersonRecordGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
@@ -275,7 +276,10 @@ class GetPersonService(
     )
   }
 
-  fun getCombinedDataForPerson(hmppsId: String): Response<OffenderSearchResponse?> {
+  fun getCombinedDataForPerson(
+    hmppsId: String,
+    filters: ConsumerFilters? = null,
+  ): Response<OffenderSearchResponse?> {
     val probationResponse = getProbationResponse(hmppsId)
 
     val prisonResponse =
@@ -300,9 +304,21 @@ class GetPersonService(
         )
       }
     }
-
     val probationData = probationResponse.data
-    val prisonData = prisonResponse?.data?.toPerson()
+
+    // If supervisionStatus filter is Probation Only and probation record is NOT under active supervision
+    if (filters?.isProbationOnly() == true && probationData?.underActiveSupervision == false) {
+      throw ForbiddenByUpstreamServiceException("Not under active supervision. Access denied.")
+    }
+
+    // If supervisions filter is NOT empty but does NOT include PRISONS. Then do not return prisons data
+    val prisonData =
+      if (filters?.hasSupervisionStatusesFilter() == true && filters.hasPrisons() == false) {
+        null
+      } else {
+        prisonResponse?.data?.toPerson()
+      }
+
     val data: OffenderSearchResponse? =
       if (probationData == null && prisonData == null) null else OffenderSearchResult(prisonData, probationData)
     return Response(data = data, errors = combinedErrors)

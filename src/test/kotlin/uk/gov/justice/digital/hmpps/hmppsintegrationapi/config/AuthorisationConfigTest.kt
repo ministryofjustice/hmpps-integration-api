@@ -124,7 +124,7 @@ class AuthorisationConfigTest : ConfigTest() {
   }
 
   @Test
-  fun `prison supervision status filter in role`() {
+  fun `prison supervision status filter ONLY in role`() {
     val consumer = ConsumerConfig(roles = listOf("testing"))
 
     val role =
@@ -145,7 +145,7 @@ class AuthorisationConfigTest : ConfigTest() {
   }
 
   @Test
-  fun `probation supervision status filter in role`() {
+  fun `probation supervision status filter ONLY in role`() {
     val consumer = ConsumerConfig(roles = listOf("testing"))
 
     val role =
@@ -163,5 +163,29 @@ class AuthorisationConfigTest : ConfigTest() {
     assertTrue(filters.hasSupervisionStatusesFilter())
     assertTrue(filters.isProbationOnly())
     assertFalse(filters.isPrisonsOnly())
+  }
+
+  @Test
+  fun `probation and prisons supervision statuses filter exists in role`() {
+    val consumer = ConsumerConfig(roles = listOf("testing"))
+
+    val role =
+      role("testing") {
+        filters {
+          supervisionStatuses {
+            -"PROBATION"
+            -"PRISONS"
+          }
+        }
+      }
+
+    val filters = AuthorisationConfig().allFilters(consumer, listOf(role))
+
+    assertFalse(filters == NO_FILTERS)
+    assertTrue(filters.hasSupervisionStatusesFilter())
+    assertFalse(filters.isProbationOnly())
+    assertFalse(filters.isPrisonsOnly())
+    assertTrue(filters.hasPrisons())
+    assertTrue(filters.hasProbation())
   }
 }
