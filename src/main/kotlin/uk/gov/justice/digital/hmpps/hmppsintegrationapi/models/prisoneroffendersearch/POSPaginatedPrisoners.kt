@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch
 
-class POSPaginatedPrisoners(
+data class POSPaginatedPrisoners(
   val content: List<POSPrisoner>,
   val totalElements: Long,
   val totalPages: Int,

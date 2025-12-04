@@ -33,6 +33,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffenders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.SupervisionStatus
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService.Companion.attributeSearchRequest
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -49,40 +50,41 @@ internal class GetPersonsServiceTest(
     val pncNumber = "2003/13116M"
     val dateOfBirth = personInProbationAndNomisPersona.dateOfBirth.toString()
     val prisoners = listOf(POSPrisoner(firstName = firstName, lastName = lastName, middleNames = "Gary", youthOffender = false))
-    val prisonAttributeSearchResponse =
-      Response<POSPaginatedPrisoners?>(
-        data =
-          POSPaginatedPrisoners(
-            content = prisoners,
-            totalElements = 1,
-            totalPages = 1,
-            first = true,
-            last = true,
-            size = 10,
-            number = 0,
+    val paginatedPrisoners =
+      POSPaginatedPrisoners(
+        content = prisoners,
+        totalElements = 1,
+        totalPages = 1,
+        first = true,
+        last = true,
+        size = 10,
+        number = 0,
+        sort =
+          POSSort(
+            empty = false,
+            sorted = false,
+            unsorted = false,
+          ),
+        numberOfElements = 1,
+        pageable =
+          POSPageable(
+            offset = 0,
             sort =
               POSSort(
                 empty = false,
                 sorted = false,
                 unsorted = false,
               ),
-            numberOfElements = 1,
-            pageable =
-              POSPageable(
-                offset = 0,
-                sort =
-                  POSSort(
-                    empty = false,
-                    sorted = false,
-                    unsorted = false,
-                  ),
-                pageSize = 10,
-                pageNumber = 1,
-                paged = true,
-                unpaged = false,
-              ),
-            empty = false,
+            pageSize = 10,
+            pageNumber = 1,
+            paged = true,
+            unpaged = false,
           ),
+        empty = false,
+      )
+    val prisonAttributeSearchResponse =
+      Response<POSPaginatedPrisoners?>(
+        data = paginatedPrisoners,
       )
 
     beforeEach {
@@ -93,6 +95,8 @@ internal class GetPersonsServiceTest(
       whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName, dateOfBirth)).thenReturn(Response(data = emptyList()))
       whenever(deliusGateway.getPersons(firstName, lastName, null, dateOfBirth)).thenReturn(Response(data = emptyList()))
     }
+
+    // Legacy search
 
     it("gets person(s) from Prisoner Offender Search") {
       getPersonsService.execute(firstName, lastName, null, dateOfBirth)
@@ -164,6 +168,18 @@ internal class GetPersonsServiceTest(
       verify(prisonerOffenderSearchGateway, times(0)).getPersons(firstName, lastName, dateOfBirth, true)
     }
 
+    it("returns an empty list when no person(s) are found") {
+      whenever(deliusGateway.getPersons(firstName, lastName, null, dateOfBirth)).thenReturn(Response(emptyList()))
+      whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName, dateOfBirth)).thenReturn(Response(emptyList()))
+
+      val response = getPersonsService.execute(firstName, lastName, null, dateOfBirth)
+      response.data.shouldBe(emptyList())
+    }
+
+    // End legacy search
+
+    // Enhanced search
+
     it("enhanced search returns prisoner") {
       val responseFromProbationOffenderSearch = Response(data = listOf(Person(firstName, lastName, middleName = "John")))
       whenever(prisonerOffenderSearchGateway.attributeSearch(any())).thenReturn(prisonAttributeSearchResponse)
@@ -213,16 +229,32 @@ internal class GetPersonsServiceTest(
       response.errors.shouldBe(listOf(error, error))
     }
 
-    it("returns an empty list when no person(s) are found") {
-      whenever(deliusGateway.getPersons(firstName, lastName, null, dateOfBirth)).thenReturn(Response(emptyList()))
-      whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName, dateOfBirth)).thenReturn(Response(emptyList()))
+    it("does not do probation search for supervisionStatus == PRISON") {
+      whenever(featureFlag.isEnabled(ENHANCED_SEARCH_ENABLED)).thenReturn(true)
+      whenever(prisonerOffenderSearchGateway.attributeSearch(any())).thenReturn(prisonAttributeSearchResponse)
 
+      val filters = ConsumerFilters(supervisionStatuses = listOf(SupervisionStatus.PRISONS.name))
+
+      getPersonsService.personAttributeSearch(firstName, lastName, null, dateOfBirth, true, filters)
+
+      verifyNoInteractions(deliusGateway)
+      verify(prisonerOffenderSearchGateway, times(1)).attributeSearch(any())
+    }
+
+    it("enhanced search returns an empty list when no person(s) are found") {
+      whenever(featureFlag.isEnabled(ENHANCED_SEARCH_ENABLED)).thenReturn(true)
+      whenever(deliusGateway.getPersons(firstName, lastName, null, dateOfBirth)).thenReturn(Response(emptyList()))
+      whenever(prisonerOffenderSearchGateway.attributeSearch(any())).thenReturn(
+        Response<POSPaginatedPrisoners?>(
+          data = paginatedPrisoners,
+        ),
+      )
       val response = getPersonsService.execute(firstName, lastName, null, dateOfBirth)
       response.data.shouldBe(emptyList())
     }
 
     it("creates an attribute search request with PNC when alias search is NOT required") {
-      val actual = getPersonsService.attributeSearchRequest(pncNumber = "1994/5850111W", lastName = "SMITH", searchWithinAliases = false)
+      val actual = attributeSearchRequest(pncNumber = "1994/5850111W", lastName = "SMITH", searchWithinAliases = false)
       val expectedRequest =
         POSAttributeSearchRequest(
           joinType = "AND",
@@ -248,7 +280,7 @@ internal class GetPersonsServiceTest(
     }
 
     it("creates an attribute search request with PNC when alias search IS required") {
-      val actual = getPersonsService.attributeSearchRequest(pncNumber = "1994/5850111W", lastName = "SMITH", searchWithinAliases = true)
+      val actual = attributeSearchRequest(pncNumber = "1994/5850111W", lastName = "SMITH", searchWithinAliases = true)
       val expectedRequest =
         POSAttributeSearchRequest(
           joinType = "AND",
@@ -281,7 +313,7 @@ internal class GetPersonsServiceTest(
     }
 
     it("creates an attribute search request without PNC when alias search is NOT required") {
-      val actual = getPersonsService.attributeSearchRequest(firstName = "JOHN", lastName = "SMITH", dateOfBirth = "1974-02-02", searchWithinAliases = false)
+      val actual = attributeSearchRequest(firstName = "JOHN", lastName = "SMITH", dateOfBirth = "1974-02-02", searchWithinAliases = false)
       val expectedRequest =
         POSAttributeSearchRequest(
           joinType = "AND",
@@ -308,7 +340,7 @@ internal class GetPersonsServiceTest(
     }
 
     it("creates an attribute search request without PNC when alias search IS required") {
-      val actual = getPersonsService.attributeSearchRequest(firstName = "JOHN", lastName = "SMITH", dateOfBirth = "1974-02-02", searchWithinAliases = true)
+      val actual = attributeSearchRequest(firstName = "JOHN", lastName = "SMITH", dateOfBirth = "1974-02-02", searchWithinAliases = true)
       val expectedRequest =
         POSAttributeSearchRequest(
           joinType = "AND",
@@ -345,7 +377,7 @@ internal class GetPersonsServiceTest(
 
     it("creates an attribute search request with prison filters, PNC where alias search IS required") {
       val actual =
-        getPersonsService.attributeSearchRequest(
+        attributeSearchRequest(
           pncNumber = "1994/5850111W",
           firstName = "JOHN",
           lastName = "SMITH",
@@ -391,7 +423,7 @@ internal class GetPersonsServiceTest(
 
     it("creates an attribute search request with X for prison filters when prison filters are an empty list to force no results") {
       val actual =
-        getPersonsService.attributeSearchRequest(
+        attributeSearchRequest(
           pncNumber = "1994/5850111W",
           firstName = "JOHN",
           lastName = "SMITH",
@@ -437,7 +469,7 @@ internal class GetPersonsServiceTest(
 
     it("creates an attribute search request for PNC and prison only") {
       val actual =
-        getPersonsService.attributeSearchRequest(
+        attributeSearchRequest(
           pncNumber = "1994/5850111W",
           searchWithinAliases = false,
           consumerFilters = ConsumerFilters(prisons = listOf("WWI")),
@@ -453,17 +485,5 @@ internal class GetPersonsServiceTest(
             ),
         )
       assertThat(actual).isEqualTo(expectedRequest)
-    }
-
-    it("does not do probation search for supervisionStatus == PRISON") {
-      whenever(featureFlag.isEnabled(ENHANCED_SEARCH_ENABLED)).thenReturn(true)
-      whenever(prisonerOffenderSearchGateway.attributeSearch(any())).thenReturn(prisonAttributeSearchResponse)
-
-      val filters = ConsumerFilters(supervisionStatuses = listOf(SupervisionStatus.PRISONS.name))
-
-      getPersonsService.personAttributeSearch(firstName, lastName, null, dateOfBirth, true, filters)
-
-      verifyNoInteractions(deliusGateway)
-      verify(prisonerOffenderSearchGateway, times(1)).attributeSearch(any())
     }
   })

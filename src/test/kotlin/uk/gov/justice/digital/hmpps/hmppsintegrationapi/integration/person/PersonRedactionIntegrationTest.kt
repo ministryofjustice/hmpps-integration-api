@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.mockk.every
 import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
@@ -28,6 +29,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithIdOnlyRedaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithLaoRedactions
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService.Companion.attributeSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import java.io.File
 
@@ -222,22 +224,18 @@ class PersonRedactionIntegrationTest : IntegrationTestBase() {
 
       @Test
       fun `redacts person search`() {
+        val firstName = "Robert"
+        val lastName = "Larsen"
+        val expectedRequest = attributeSearchRequest(firstName, lastName)
+
         prisonerOffenderSearchMockServer.stubForPost(
-          "/global-search?size=9999",
-          """
-            {
-              "firstName": "Robert",
-              "lastName": "Larsen",
-              "includeAliases": false
-            }
-          """.removeWhitespaceAndNewlines(),
+          "/attribute-search",
+          jacksonObjectMapper().writeValueAsString(expectedRequest.toMap()),
           File(
-            "$gatewaysFolder/prisoneroffendersearch/fixtures/GetPerson.json",
+            "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/AttributeSearch.json",
           ).readText(),
         )
 
-        val firstName = "Robert"
-        val lastName = "Larsen"
         val queryParams = "first_name=$firstName&last_name=$lastName"
         callApiWithCN("$basePath?$queryParams", clientNameWithRoleBaseRedaction)
           .andExpect(status().isOk)
@@ -295,22 +293,19 @@ class PersonRedactionIntegrationTest : IntegrationTestBase() {
 
       @Test
       fun `person search redacts all except ids`() {
+        val firstName = "Robert"
+        val lastName = "Larsen"
+
+        val expectedRequest = attributeSearchRequest(firstName, lastName)
+
         prisonerOffenderSearchMockServer.stubForPost(
-          "/global-search?size=9999",
-          """
-            {
-              "firstName": "Robert",
-              "lastName": "Larsen",
-              "includeAliases": false
-            }
-          """.removeWhitespaceAndNewlines(),
+          "/attribute-search",
+          jacksonObjectMapper().writeValueAsString(expectedRequest.toMap()),
           File(
-            "$gatewaysFolder/prisoneroffendersearch/fixtures/GetPerson.json",
+            "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/AttributeSearch.json",
           ).readText(),
         )
 
-        val firstName = "Robert"
-        val lastName = "Larsen"
         val queryParams = "first_name=$firstName&last_name=$lastName"
         callApiWithCN("$basePath?$queryParams", clientNameWithRoleBaseRedaction)
           .andExpect(status().isOk)
