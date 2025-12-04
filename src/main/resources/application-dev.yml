@@ -178,3 +178,6 @@ authorisation:
       notes: "See client list in Confluence"
       roles:
         - "smartinbox"
+      filters:
+        supervisionStatuses:
+          - PRISONS
