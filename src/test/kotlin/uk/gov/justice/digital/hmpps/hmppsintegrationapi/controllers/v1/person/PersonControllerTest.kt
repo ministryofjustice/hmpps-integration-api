@@ -119,20 +119,6 @@ internal class PersonControllerTest(
           Mockito.reset(getPersonsService)
           Mockito.reset(auditService)
 
-          whenever(getPersonsService.execute(firstName, lastName, null, dateOfBirth.toString())).thenReturn(
-            Response(
-              data =
-                listOf(
-                  Person(
-                    firstName = firstName,
-                    lastName = lastName,
-                    dateOfBirth = dateOfBirth,
-                    contactDetails = contactDetails,
-                  ),
-                ),
-            ),
-          )
-
           whenever(getPersonsService.personAttributeSearch(firstName, lastName, null, dateOfBirth.toString())).thenReturn(
             Response(
               data =
@@ -152,179 +138,58 @@ internal class PersonControllerTest(
           unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
         }
 
-        // Legacy search tests - To be removed
-
         it("gets a person with matching search criteria") {
-          mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName&pnc_number=$pncNumber&date_of_birth=$dateOfBirth")
-          verify(getPersonsService, times(1)).execute(firstName, lastName, pncNumber, dateOfBirth.toString())
-        }
-
-        it("gets a person with matching first name") {
-          mockMvc.performAuthorised("$basePath?first_name=$firstName")
-          verify(getPersonsService, times(1)).execute(firstName, null, null, null)
-        }
-
-        it("gets a person with matching last name") {
-          mockMvc.performAuthorised("$basePath?last_name=$lastName")
-          verify(getPersonsService, times(1)).execute(null, lastName, null, null)
-        }
-
-        it("gets a person with matching alias") {
-          mockMvc.performAuthorised("$basePath?first_name=$firstName&search_within_aliases=true")
-          verify(getPersonsService, times(1)).execute(firstName, null, null, null, searchWithinAliases = true)
-        }
-
-        it("gets a person with matching pncNumber") {
-          mockMvc.performAuthorised("$basePath?pnc_number=$pncNumber")
-          verify(getPersonsService, times(1)).execute(null, null, pncNumber, null)
-        }
-
-        it("gets a person with matching date of birth") {
-          mockMvc.performAuthorised("$basePath?date_of_birth=$dateOfBirth")
-          verify(getPersonsService, times(1)).execute(null, null, null, dateOfBirth.toString())
-        }
-
-        it("defaults to not searching within aliases") {
-          mockMvc.performAuthorised("$basePath?first_name=$firstName")
-          verify(getPersonsService, times(1)).execute(firstName, null, null, null)
-        }
-
-        it("logs audit") {
-          mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName&pnc_number=$pncNumber&date_of_birth=$dateOfBirth")
-          verify(
-            auditService,
-            times(1),
-          ).createEvent(
-            "SEARCH_PERSON",
-            mapOf("firstName" to firstName, "lastName" to lastName, "aliases" to false.toString(), "pncNumber" to pncNumber, "dateOfBirth" to dateOfBirth.toString()),
-          )
-        }
-
-        it("returns paginated results") {
-          whenever(getPersonsService.execute(firstName, lastName, null, dateOfBirth.toString())).thenReturn(
-            Response(
-              data =
-                List(20) { i ->
-                  Person(
-                    firstName = "${person.firstName} $i",
-                    lastName = "${person.firstName} $i",
-                    dateOfBirth = dateOfBirth,
-                  )
-                },
-            ),
-          )
-
-          val result =
-            mockMvc.performAuthorised(
-              "$basePath?first_name=$firstName&last_name=$lastName&date_of_birth=$dateOfBirth&page=3&perPage=5",
-            )
-          result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.page", 3)
-          result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.totalPages", 4)
-        }
-
-        it("returns an empty list embedded in a JSON object when no matching people") {
-          val firstNameThatDoesNotExist = "Bob21345"
-          val lastNameThatDoesNotExist = "Gun36773"
-
-          whenever(getPersonsService.execute(firstNameThatDoesNotExist, lastNameThatDoesNotExist, null, null)).thenReturn(
-            Response(
-              data = emptyList(),
-            ),
-          )
-
-          val result = mockMvc.performAuthorised("$basePath?first_name=$firstNameThatDoesNotExist&last_name=$lastNameThatDoesNotExist")
-          result.response.contentAsString.shouldContain("\"data\":[]".removeWhitespaceAndNewlines())
-        }
-
-        it("returns a 200 OK status code") {
-          val result = mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName&date_of_birth=$dateOfBirth")
-          result.response.status.shouldBe(HttpStatus.OK.value())
-        }
-
-        it("returns a 400 BAD REQUEST status code when no search criteria provided") {
-          val result = mockMvc.performAuthorised(basePath)
-          result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
-          result.response.contentAsString.shouldContain("No query parameters specified.")
-        }
-
-        it("returns a 400 BAD REQUEST status code when no search criteria provided") {
-          val result = mockMvc.performAuthorised("$basePath?date_of_birth=12323423234")
-          result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
-          result.response.contentAsString.shouldContain("Invalid date format. Please use yyyy-MM-dd.")
-        }
-        // End legacy tests
-
-        // Enhanced search tests
-        it("gets a person with matching search criteria") {
-          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(true)
           mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName&pnc_number=$pncNumber&date_of_birth=$dateOfBirth")
           verify(getPersonsService, times(1)).personAttributeSearch(firstName, lastName, pncNumber, dateOfBirth.toString())
         }
 
         it("gets a person with matching first name") {
-          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(true)
           mockMvc.performAuthorised("$basePath?first_name=$firstName")
           verify(getPersonsService, times(1)).personAttributeSearch(firstName, null, null, null)
         }
 
         it("gets a person with matching last name") {
-          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(true)
           mockMvc.performAuthorised("$basePath?last_name=$lastName")
           verify(getPersonsService, times(1)).personAttributeSearch(null, lastName, null, null)
         }
 
         it("gets a person with matching alias") {
-          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(true)
           mockMvc.performAuthorised("$basePath?first_name=$firstName&search_within_aliases=true")
           verify(getPersonsService, times(1)).personAttributeSearch(firstName, null, null, null, searchWithinAliases = true)
         }
 
         it("gets a person with matching pncNumber") {
-          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(true)
           mockMvc.performAuthorised("$basePath?pnc_number=$pncNumber")
           verify(getPersonsService, times(1)).personAttributeSearch(null, null, pncNumber, null)
         }
 
         it("gets a person with matching date of birth") {
-          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(true)
           mockMvc.performAuthorised("$basePath?date_of_birth=$dateOfBirth")
           verify(getPersonsService, times(1)).personAttributeSearch(null, null, null, dateOfBirth.toString())
         }
 
         it("defaults to not searching within aliases") {
-          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(true)
           mockMvc.performAuthorised("$basePath?first_name=$firstName")
           verify(getPersonsService, times(1)).personAttributeSearch(firstName, null, null, null)
         }
 
-        it("calls attribute search when feature flag enabled, prisons filter is present and pnc number in search") {
+        it("calls attribute search when prisons filter is present and pnc number in search") {
           mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
           every { roles[any()] } returns testRoleWithPrisonFilters
-          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(true)
           mockMvc.performAuthorised("$basePath?first_name=$firstName&pnc_number=$pncNumber")
           verify(getPersonsService, times(1)).personAttributeSearch(firstName, null, pncNumber, null, consumerFilters = testRoleWithPrisonFilters.filters)
         }
 
-        it("calls attribute search when feature flag enabled, prisons filter is present and pnc number in search") {
+        it("calls attribute search when prisons filter is present and pnc number in search") {
           mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
           every { roles[any()] } returns testRoleWithPrisonFilters
-          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(true)
           mockMvc.performAuthorised("$basePath?first_name=$firstName&pnc_number=$pncNumber")
           verify(getPersonsService, times(1)).personAttributeSearch(firstName, null, pncNumber, null, consumerFilters = testRoleWithPrisonFilters.filters)
-        }
-
-        it("does not call attribute search when feature flag disabled, prisons filter is present and pnc number in search") {
-          mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-          every { roles[any()] } returns testRoleWithPrisonFilters
-          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(false)
-          mockMvc.performAuthorised("$basePath?first_name=$firstName&pnc_number=$pncNumber")
-          verify(getPersonsService, times(0)).personAttributeSearch(firstName, null, pncNumber, null, consumerFilters = testRoleWithPrisonFilters.filters)
         }
 
         it("passes supervision status filters from consumer config to service") {
           mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
           every { roles[any()] } returns role("test-role") { permissions { -fullAccess.permissions!! } }
-          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(true)
           val expectedFilters = ConsumerFilters(supervisionStatuses = listOf("PRISONS"))
           whenever(getPersonsService.personAttributeSearch(firstName, null, pncNumber, null, false, expectedFilters)).thenReturn(Response(data = emptyList()))
 
@@ -334,49 +199,41 @@ internal class PersonControllerTest(
         }
 
         it("gets a person with matching search criteria") {
-          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(true)
           mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName&pnc_number=$pncNumber&date_of_birth=$dateOfBirth")
           verify(getPersonsService, times(1)).personAttributeSearch(firstName, lastName, pncNumber, dateOfBirth.toString())
         }
 
         it("gets a person with matching first name") {
-          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(true)
           mockMvc.performAuthorised("$basePath?first_name=$firstName")
           verify(getPersonsService, times(1)).personAttributeSearch(firstName, null, null, null)
         }
 
         it("gets a person with matching last name") {
-          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(true)
           mockMvc.performAuthorised("$basePath?last_name=$lastName")
           verify(getPersonsService, times(1)).personAttributeSearch(null, lastName, null, null)
         }
 
         it("gets a person with matching alias") {
-          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(true)
           mockMvc.performAuthorised("$basePath?first_name=$firstName&search_within_aliases=true")
           verify(getPersonsService, times(1)).personAttributeSearch(firstName, null, null, null, searchWithinAliases = true)
         }
 
         it("gets a person with matching pncNumber") {
-          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(true)
           mockMvc.performAuthorised("$basePath?pnc_number=$pncNumber")
           verify(getPersonsService, times(1)).personAttributeSearch(null, null, pncNumber, null)
         }
 
         it("gets a person with matching date of birth") {
-          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(true)
           mockMvc.performAuthorised("$basePath?date_of_birth=$dateOfBirth")
           verify(getPersonsService, times(1)).personAttributeSearch(null, null, null, dateOfBirth.toString())
         }
 
         it("defaults to not searching within aliases") {
-          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(true)
           mockMvc.performAuthorised("$basePath?first_name=$firstName")
           verify(getPersonsService, times(1)).personAttributeSearch(firstName, null, null, null)
         }
 
         it("logs audit") {
-          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(true)
           mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName&pnc_number=$pncNumber&date_of_birth=$dateOfBirth")
           verify(
             auditService,
@@ -388,7 +245,6 @@ internal class PersonControllerTest(
         }
 
         it("returns paginated results") {
-          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(true)
           whenever(getPersonsService.personAttributeSearch(firstName, lastName, null, dateOfBirth.toString())).thenReturn(
             Response(
               data =
@@ -411,7 +267,6 @@ internal class PersonControllerTest(
         }
 
         it("returns an empty list embedded in a JSON object when no matching people") {
-          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(true)
           val firstNameThatDoesNotExist = "Bob21345"
           val lastNameThatDoesNotExist = "Gun36773"
 
@@ -426,25 +281,21 @@ internal class PersonControllerTest(
         }
 
         it("returns a 200 OK status code") {
-          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(true)
           val result = mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName&date_of_birth=$dateOfBirth")
           result.response.status.shouldBe(HttpStatus.OK.value())
         }
 
         it("returns a 400 BAD REQUEST status code when no search criteria provided") {
-          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(true)
           val result = mockMvc.performAuthorised(basePath)
           result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
           result.response.contentAsString.shouldContain("No query parameters specified.")
         }
 
         it("returns a 400 BAD REQUEST status code when no search criteria provided") {
-          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(true)
           val result = mockMvc.performAuthorised("$basePath?date_of_birth=12323423234")
           result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
           result.response.contentAsString.shouldContain("Invalid date format. Please use yyyy-MM-dd.")
         }
-        // End Enhanced search tests
       }
 
       describe("GET $basePath return Internal Server Error when Upstream api throw unexpected error") {
@@ -454,7 +305,7 @@ internal class PersonControllerTest(
         }
 
         it("fails with the appropriate error when an upstream service is down") {
-          whenever(getPersonsService.execute(firstName, lastName, pncNumber, dateOfBirth.toString(), false)).doThrow(
+          whenever(getPersonsService.personAttributeSearch(firstName, lastName, pncNumber, dateOfBirth.toString(), false)).doThrow(
             WebClientResponseException(500, "MockError", null, null, null, null),
           )
 
