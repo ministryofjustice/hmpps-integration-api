@@ -180,5 +180,5 @@ authorisation:
       roles:
         - "smartinbox"
       filters:
-        supervision-statuses:
+        supervisionStatuses:
           - PRISONS
