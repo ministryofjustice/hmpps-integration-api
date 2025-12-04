@@ -65,5 +65,8 @@ val police =
         -"XRF"
         -"XSA"
       }
+      supervisionStatuses {
+        -"PROBATION"
+      }
     }
   }

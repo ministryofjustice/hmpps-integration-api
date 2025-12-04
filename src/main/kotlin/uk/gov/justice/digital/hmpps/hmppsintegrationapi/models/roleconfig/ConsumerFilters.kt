@@ -50,11 +50,15 @@ data class ConsumerFilters(
 
   fun hasAlertCodes(): Boolean = this.alertCodes != null
 
-  fun hasFilters(): Boolean = hasPrisonFilter() || hasCaseNotesFilter() || hasMappaCategoriesFilter() || hasAlertCodes()
-
   fun hasSupervisionStatusesFilter(): Boolean = this.supervisionStatuses != null
 
-  fun isPrisonsOnly(): Boolean = hasPrisonFilter() || supervisionStatuses?.contains(SupervisionStatus.PRISONS.name) ?: false
+  fun hasFilters(): Boolean = hasPrisonFilter() || hasCaseNotesFilter() || hasMappaCategoriesFilter() || hasAlertCodes() || hasSupervisionStatusesFilter()
 
-  fun isProbationOnly(): Boolean = supervisionStatuses?.contains(SupervisionStatus.PROBATION.name) ?: false
+  fun isPrisonsOnly(): Boolean = hasPrisonFilter() || supervisionStatuses == listOf(SupervisionStatus.PRISONS.name)
+
+  fun isProbationOnly(): Boolean = supervisionStatuses == listOf(SupervisionStatus.PROBATION.name)
+
+  fun hasPrisons(): Boolean = hasPrisonFilter() || supervisionStatuses?.contains(SupervisionStatus.PRISONS.name) == true
+
+  fun hasProbation(): Boolean = supervisionStatuses?.contains(SupervisionStatus.PROBATION.name) == true
 }
