@@ -16,6 +16,7 @@ import io.swagger.v3.parser.core.models.SwaggerParseResult
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import kotlin.test.Test
+import kotlin.test.assertContains
 
 /**
  * Republishes parts of multiple API specs.
@@ -199,10 +200,21 @@ class ApiSpecRepublishTest {
     val repub = ApiSpecRepublisher()
     repub.init()
 
-    repub.republish("activities.json", "/integration-api/", "/v2/activities/", "Activities")
-    repub.republish("plp.json", "/inductions/", "/v2/plp/inductions/", "Inductions")
-    repub.republish("plp.json", "/action-plans/", "/v2/plp/action-plans/", "Action Plans")
+    repub.republish("activities.json", "/integration-api/", "/v2/activities/", tag = "Activities")
+    repub.republish("plp.json", "/inductions/", "/v2/plp/inductions/", tag = "Inductions")
+    repub.republish("plp.json", "/action-plans/", "/v2/plp/action-plans/", tag = "Action Plans")
 
-    println(repub.asJson())
+    val specJson = repub.asJson()
+
+    println(specJson)
+
+    // Does it have the downstream spec metadata?
+    assertContains(specJson, "The HMPPS External API is an external API for HMPPS.")
+    // Does it contain endpoints from the Activities upstream spec?
+    assertContains(specJson, "/v2/activities/scheduled-events/prison/{prisonCode}")
+    // Does it contain endpoints from the PLP upstream spec?
+    assertContains(specJson, "/v2/plp/action-plans/{prisonNumber}/reviews/schedule-status")
+    // Does it contain data type schemas?
+    assertContains(specJson, "captureIncentiveLevelWarning")
   }
 }
