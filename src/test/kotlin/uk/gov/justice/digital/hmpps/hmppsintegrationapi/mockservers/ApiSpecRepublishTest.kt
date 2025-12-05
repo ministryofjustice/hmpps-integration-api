@@ -13,6 +13,7 @@ import io.swagger.v3.oas.models.info.Info
 import io.swagger.v3.oas.models.media.MediaType
 import io.swagger.v3.oas.models.media.Schema
 import io.swagger.v3.oas.models.responses.ApiResponse
+import io.swagger.v3.parser.core.models.AuthorizationValue
 import io.swagger.v3.parser.core.models.ParseOptions
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -38,6 +39,9 @@ import kotlin.test.assertEquals
 class ApiSpecRepublisher {
   val specRoot = "src/test/resources/openapi-specs"
   val externalSpec = OpenAPI()
+  val parser = OpenAPIParser()
+  val authOptions = emptyList<AuthorizationValue>()
+  val parseOptions = ParseOptions()
 
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
@@ -62,7 +66,7 @@ class ApiSpecRepublisher {
     externalPrefix: String,
     tag: String,
   ) {
-    val parseResult = OpenAPIParser().readLocation("$specRoot/$upstreamSpecName", emptyList(), ParseOptions())!!
+    val parseResult = parser.readLocation("$specRoot/$upstreamSpecName", authOptions, parseOptions)!!
     val upstreamSpec = parseResult.openAPI
 
     for (path in upstreamSpec.paths.keys) {
