@@ -6,6 +6,7 @@ import io.swagger.parser.OpenAPIParser
 import io.swagger.v3.core.util.ObjectMapperFactory
 import io.swagger.v3.oas.models.Components
 import io.swagger.v3.oas.models.OpenAPI
+import io.swagger.v3.oas.models.Operation
 import io.swagger.v3.oas.models.PathItem
 import io.swagger.v3.oas.models.SpecVersion
 import io.swagger.v3.oas.models.info.Info
@@ -48,7 +49,6 @@ class ApiSpecRepublisher {
     externalSpec.info.title = "HMPPS External API"
     externalSpec.info.version = "2.0"
     externalSpec.info.description = "The HMPPS External API is an external API for HMPPS."
-    externalSpec.info.summary = "External API Spec summary"
     externalSpec.components = Components()
     externalSpec.components.schemas = mutableMapOf()
   }
@@ -112,22 +112,17 @@ class ApiSpecRepublisher {
     pathSpec: PathItem,
     spec: OpenAPI,
   ) {
-    addSchemaRefs(
-      pathSpec.post
-        ?.requestBody
-        ?.content
-        ?.values,
-      spec,
-    )
-    addSchemaRefs(
-      pathSpec.put
-        ?.requestBody
-        ?.content
-        ?.values,
-      spec,
-    )
+    addRequestSchemaRefs(pathSpec.post, spec)
+    addRequestSchemaRefs(pathSpec.put, spec)
     addResponseSchemaRefs(pathSpec.get?.responses, spec)
     addResponseSchemaRefs(pathSpec.post?.responses, spec)
+  }
+
+  private fun addRequestSchemaRefs(
+    op: Operation?,
+    spec: OpenAPI,
+  ) {
+    addSchemaRefs(op?.requestBody?.content?.values, spec)
   }
 
   private fun addResponseSchemaRefs(
@@ -156,11 +151,10 @@ class ApiSpecRepublisher {
     type: MediaType?,
     spec: OpenAPI,
   ) {
-    val ref = type?.schema?.`$ref`
-    if (ref == null) {
-      return
+    val ref = type?.schema?.`$ref` ?: type?.schema?.items?.`$ref`
+    if (ref != null) {
+      addNamedRef(referenceSimpleName(ref), spec)
     }
-    addNamedRef(referenceSimpleName(ref), spec)
   }
 
   private fun referenceSimpleName(ref: String): String = ref.substring(ref.lastIndexOf("/") + 1)
@@ -190,24 +184,21 @@ class ApiSpecRepublisher {
   ) {
     for (prop in schema?.properties?.keys ?: emptyList()) {
       val propVal = schema?.properties[prop]
-      val refName =
-        if (isArrayType(propVal)) {
-          propVal?.items?.`$ref`
-        } else {
-          propVal?.`$ref`
-        }
+      val refName = propVal?.`$ref` ?: propVal?.items?.`$ref`
       if (refName == null) {
         continue
       }
       val simpleName = referenceSimpleName(refName)
-      log.debug("  $prop -> array of $simpleName")
+      log.debug("  $prop -> $simpleName")
       addNamedRef(simpleName, spec)
     }
   }
 
-  private fun isArrayType(propVal: Schema<*>?): Boolean = propVal?.types?.first() == "array"
-
   fun asJson() = ObjectMapperFactory.createJson31().writeValueAsString(externalSpec)
+
+  fun pathCount() = externalSpec.paths.size
+
+  fun schemaCount() = externalSpec.components.schemas.size
 }
 
 /**
@@ -227,26 +218,29 @@ class ApiSpecRepublishTest {
   fun `POC for api spec republishing`() {
     setLogLevel(ApiSpecRepublisher::class.java, "INFO")
 
-    val repub = ApiSpecRepublisher()
-    repub.init()
+    val apiSpec = ApiSpecRepublisher()
+    apiSpec.init()
 
-    repub.republish("activities.json", "/integration-api/", "/v2/activities/", tag = "Activities")
-    repub.republish("plp.json", "/inductions/", "/v2/plp/inductions/", tag = "Inductions")
-    repub.republish("plp.json", "/action-plans/", "/v2/plp/action-plans/", tag = "Action Plans")
+    apiSpec.republish("activities.json", "/integration-api/", "/v2/activities/", tag = "Activities")
+    apiSpec.republish("plp.json", "/inductions/", "/v2/plp/inductions/", tag = "Inductions")
+    apiSpec.republish("plp.json", "/action-plans/", "/v2/plp/action-plans/", tag = "Action Plans")
 
-    val specJson = repub.asJson()
+    val specJson = apiSpec.asJson()
 
     println(specJson)
 
-    assertEquals(27, repub.externalSpec.paths.size)
-    assertEquals(85, repub.externalSpec.components.schemas.size)
+    assertEquals(27, apiSpec.pathCount())
+    assertEquals(95, apiSpec.schemaCount())
 
     // Does it have the downstream spec metadata?
     assertContains(specJson, "The HMPPS External API is an external API for HMPPS.")
+
     // Does it contain endpoints from the Activities upstream spec?
     assertContains(specJson, "/v2/activities/scheduled-events/prison/{prisonCode}")
+
     // Does it contain endpoints from the PLP upstream spec?
     assertContains(specJson, "/v2/plp/action-plans/{prisonNumber}/reviews/schedule-status")
+
     // Does it contain data type schemas?
     assertContains(specJson, "captureIncentiveLevelWarning")
   }
