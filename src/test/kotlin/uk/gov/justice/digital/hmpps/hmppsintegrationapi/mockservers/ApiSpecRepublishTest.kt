@@ -11,12 +11,13 @@ import io.swagger.v3.oas.models.SpecVersion
 import io.swagger.v3.oas.models.info.Info
 import io.swagger.v3.oas.models.media.MediaType
 import io.swagger.v3.oas.models.media.Schema
+import io.swagger.v3.oas.models.responses.ApiResponse
 import io.swagger.v3.parser.core.models.ParseOptions
-import io.swagger.v3.parser.core.models.SwaggerParseResult
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import kotlin.test.Test
 import kotlin.test.assertContains
+import kotlin.test.assertEquals
 
 /**
  * Republishes parts of multiple API specs.
@@ -56,24 +57,27 @@ class ApiSpecRepublisher {
    * Republish part of an upstream API spec.
    */
   fun republish(
-    upstreamSpec: String,
+    upstreamSpecName: String,
     upstreamPrefix: String,
     externalPrefix: String,
     tag: String,
   ) {
-    val spec = OpenAPIParser().readLocation("$specRoot/$upstreamSpec", emptyList(), ParseOptions())!!
+    val parseResult = OpenAPIParser().readLocation("$specRoot/$upstreamSpecName", emptyList(), ParseOptions())!!
+    val upstreamSpec = parseResult.openAPI
 
-    for (path in spec.openAPI.paths.keys) {
-      if (path.startsWith(upstreamPrefix)) {
-        val externalPath = path.replace(upstreamPrefix, externalPrefix)
-        val pathSpec = spec.openAPI.paths[path]!!
-
-        replaceTags(pathSpec, tag)
-
-        addSchemaRefs(pathSpec, spec)
-
-        addPathToOutputSpec(externalPath, pathSpec)
+    for (path in upstreamSpec.paths.keys) {
+      if (!path.startsWith(upstreamPrefix)) {
+        continue
       }
+
+      val externalPath = path.replace(upstreamPrefix, externalPrefix)
+      val pathSpec = upstreamSpec.paths[path]!!
+
+      replaceTags(pathSpec, tag)
+
+      addSchemaRefs(pathSpec, upstreamSpec)
+
+      addPathToOutputSpec(externalPath, pathSpec)
     }
   }
 
@@ -91,11 +95,14 @@ class ApiSpecRepublisher {
     pathSpec: PathItem,
     tag: String,
   ) {
-    pathSpec.get?.tags = listOf(tag)
-    pathSpec.post?.tags = listOf(tag)
-    pathSpec.put?.tags = listOf(tag)
-    pathSpec.delete?.tags = listOf(tag)
-    pathSpec.patch?.tags = listOf(tag)
+    val externalTags = listOf(tag)
+    pathSpec.get?.tags = externalTags
+    pathSpec.post?.tags = externalTags
+    pathSpec.put?.tags = externalTags
+    pathSpec.delete?.tags = externalTags
+    pathSpec.patch?.tags = externalTags
+    pathSpec.options?.tags = externalTags
+    pathSpec.head?.tags = externalTags
   }
 
   /**
@@ -103,41 +110,64 @@ class ApiSpecRepublisher {
    */
   private fun addSchemaRefs(
     pathSpec: PathItem,
-    spec: SwaggerParseResult,
+    spec: OpenAPI,
   ) {
-    pathSpec.get?.responses?.forEach {
-      it.value.content.values.forEach {
-        addSchemaRef(it, spec)
-      }
+    addSchemaRefs(
+      pathSpec.post
+        ?.requestBody
+        ?.content
+        ?.values,
+      spec,
+    )
+    addSchemaRefs(
+      pathSpec.put
+        ?.requestBody
+        ?.content
+        ?.values,
+      spec,
+    )
+    addResponseSchemaRefs(pathSpec.get?.responses, spec)
+    addResponseSchemaRefs(pathSpec.post?.responses, spec)
+  }
+
+  private fun addResponseSchemaRefs(
+    responses: Map<String, ApiResponse>?,
+    spec: OpenAPI,
+  ) {
+    if (responses == null) return
+
+    for (response in responses) {
+      addSchemaRefs(response.value.content?.values, spec)
     }
-    pathSpec.post?.responses?.forEach {
-      it.value.content?.values?.forEach {
-        addSchemaRef(it, spec)
-      }
-    }
-    pathSpec.post?.requestBody?.content?.values?.forEach {
-      addSchemaRef(it, spec)
-    }
-    pathSpec.put?.requestBody?.content?.values?.forEach {
-      addSchemaRef(it, spec)
+  }
+
+  private fun addSchemaRefs(
+    contentTypes: MutableCollection<MediaType>?,
+    spec: OpenAPI,
+  ) {
+    if (contentTypes == null) return
+
+    for (content in contentTypes) {
+      addSchemaRef(content, spec)
     }
   }
 
   private fun addSchemaRef(
     type: MediaType?,
-    spec: SwaggerParseResult,
+    spec: OpenAPI,
   ) {
     val ref = type?.schema?.`$ref`
     if (ref == null) {
       return
     }
-    val refName = ref.substring(ref.lastIndexOf("/") + 1)
-    addRef(refName, spec)
+    addNamedRef(referenceSimpleName(ref), spec)
   }
 
-  private fun addRef(
+  private fun referenceSimpleName(ref: String): String = ref.substring(ref.lastIndexOf("/") + 1)
+
+  private fun addNamedRef(
     refName: String,
-    spec: SwaggerParseResult,
+    spec: OpenAPI,
   ) {
     if (refName in externalSpec.components.schemas) {
       return // Already in the external spec, no need to add again
@@ -145,37 +175,37 @@ class ApiSpecRepublisher {
 
     log.debug("Adding ref $refName")
 
-    val schema = spec.openAPI.components.schemas[refName]
+    val schema = spec.components.schemas[refName]
     externalSpec.components.schemas[refName] = schema
 
-    addChildSchemas(schema, spec)
+    addPropertySchemas(schema, spec)
   }
 
-  private fun addChildSchemas(
+  /**
+   * Add schemas referenced by properties of the specified schema.
+   */
+  private fun addPropertySchemas(
     schema: Schema<*>?,
-    spec: SwaggerParseResult,
+    spec: OpenAPI,
   ) {
     for (prop in schema?.properties?.keys ?: emptyList()) {
       val propVal = schema?.properties[prop]
-
-      val propType = propVal?.types
-      if (propType?.first() == "array") {
-        if (propVal.items?.`$ref` != null) {
-          val refType = propVal.items?.`$ref`
-          val refName = refType!!.substring(refType.lastIndexOf("/") + 1)
-          log.debug("  $prop -> array of $refName")
-          addRef(refName, spec)
+      val refName =
+        if (isArrayType(propVal)) {
+          propVal?.items?.`$ref`
+        } else {
+          propVal?.`$ref`
         }
-      } else {
-        if (propVal?.`$ref` != null) {
-          val refType = propVal.`$ref`
-          val refName = refType!!.substring(refType.lastIndexOf("/") + 1)
-          log.debug("  $prop -> $refName")
-          addRef(refName, spec)
-        }
+      if (refName == null) {
+        continue
       }
+      val simpleName = referenceSimpleName(refName)
+      log.debug("  $prop -> array of $simpleName")
+      addNamedRef(simpleName, spec)
     }
   }
+
+  private fun isArrayType(propVal: Schema<*>?): Boolean = propVal?.types?.first() == "array"
 
   fun asJson() = ObjectMapperFactory.createJson31().writeValueAsString(externalSpec)
 }
@@ -207,6 +237,9 @@ class ApiSpecRepublishTest {
     val specJson = repub.asJson()
 
     println(specJson)
+
+    assertEquals(27, repub.externalSpec.paths.size)
+    assertEquals(85, repub.externalSpec.components.schemas.size)
 
     // Does it have the downstream spec metadata?
     assertContains(specJson, "The HMPPS External API is an external API for HMPPS.")
