@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers
 
+import ch.qos.logback.classic.Level
+import ch.qos.logback.classic.LoggerContext
 import io.swagger.parser.OpenAPIParser
 import io.swagger.v3.core.util.ObjectMapperFactory
 import io.swagger.v3.oas.models.Components
@@ -11,6 +13,8 @@ import io.swagger.v3.oas.models.media.MediaType
 import io.swagger.v3.oas.models.media.Schema
 import io.swagger.v3.parser.core.models.ParseOptions
 import io.swagger.v3.parser.core.models.SwaggerParseResult
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import kotlin.test.Test
 
 /**
@@ -32,6 +36,10 @@ class ApiSpecRepublisher {
   val specRoot = "src/test/resources/openapi-specs"
   val externalSpec = OpenAPI()
 
+  companion object {
+    val log: Logger = LoggerFactory.getLogger(this::class.java)
+  }
+
   fun init() {
     externalSpec.specVersion = SpecVersion.V31
     externalSpec.info = Info()
@@ -46,9 +54,13 @@ class ApiSpecRepublisher {
   /**
    * Republish part of an upstream API spec.
    */
-  fun republish(upstreamSpec: String, upstreamPrefix: String, externalPrefix: String, tag: String) {
-
-    val spec = OpenAPIParser().readLocation("${specRoot}/$upstreamSpec", emptyList(), ParseOptions())!!
+  fun republish(
+    upstreamSpec: String,
+    upstreamPrefix: String,
+    externalPrefix: String,
+    tag: String,
+  ) {
+    val spec = OpenAPIParser().readLocation("$specRoot/$upstreamSpec", emptyList(), ParseOptions())!!
 
     for (path in spec.openAPI.paths.keys) {
       if (path.startsWith(upstreamPrefix)) {
@@ -64,14 +76,20 @@ class ApiSpecRepublisher {
     }
   }
 
-  private fun addPathToOutputSpec(externalPath: String, pathSpec: PathItem) {
+  private fun addPathToOutputSpec(
+    externalPath: String,
+    pathSpec: PathItem,
+  ) {
     externalSpec.path(externalPath, pathSpec)
   }
 
   /**
    * Replace the tags in the republished spec.
    */
-  private fun replaceTags(pathSpec: PathItem, tag: String) {
+  private fun replaceTags(
+    pathSpec: PathItem,
+    tag: String,
+  ) {
     pathSpec.get?.tags = listOf(tag)
     pathSpec.post?.tags = listOf(tag)
     pathSpec.put?.tags = listOf(tag)
@@ -88,6 +106,11 @@ class ApiSpecRepublisher {
   ) {
     pathSpec.get?.responses?.forEach {
       it.value.content.values.forEach {
+        addSchemaRef(it, spec)
+      }
+    }
+    pathSpec.post?.responses?.forEach {
+      it.value.content?.values?.forEach {
         addSchemaRef(it, spec)
       }
     }
@@ -111,12 +134,15 @@ class ApiSpecRepublisher {
     addRef(refName, spec)
   }
 
-  private fun addRef(refName: String, spec: SwaggerParseResult) {
+  private fun addRef(
+    refName: String,
+    spec: SwaggerParseResult,
+  ) {
     if (refName in externalSpec.components.schemas) {
       return // Already in the external spec, no need to add again
     }
 
-    log("Adding ref $refName")
+    log.debug("Adding ref $refName")
 
     val schema = spec.openAPI.components.schemas[refName]
     externalSpec.components.schemas[refName] = schema
@@ -136,32 +162,40 @@ class ApiSpecRepublisher {
         if (propVal.items?.`$ref` != null) {
           val refType = propVal.items?.`$ref`
           val refName = refType!!.substring(refType.lastIndexOf("/") + 1)
-          log("  ${prop} -> array of ${refName}")
+          log.debug("  $prop -> array of $refName")
           addRef(refName, spec)
         }
       } else {
         if (propVal?.`$ref` != null) {
           val refType = propVal.`$ref`
           val refName = refType!!.substring(refType.lastIndexOf("/") + 1)
-          log("  ${prop} -> ${refName}")
+          log.debug("  $prop -> $refName")
           addRef(refName, spec)
         }
       }
-
     }
-  }
-
-  fun log(text: String) {
-//    println(text)
   }
 
   fun asJson() = ObjectMapperFactory.createJson31().writeValueAsString(externalSpec)
 }
 
-class ApiSpecRepublishTest {
+/**
+ * Programatically overrides the level of the specified logger.
+ */
+private fun setLogLevel(
+  targetClass: Class<ApiSpecRepublisher>,
+  logLevel: String,
+) {
+  val loggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
+  val logs = loggerContext.getLogger(targetClass)
+  logs.level = Level.valueOf(logLevel)
+}
 
+class ApiSpecRepublishTest {
   @Test
   fun `POC for api spec republishing`() {
+    setLogLevel(ApiSpecRepublisher::class.java, "INFO")
+
     val repub = ApiSpecRepublisher()
     repub.init()
 
