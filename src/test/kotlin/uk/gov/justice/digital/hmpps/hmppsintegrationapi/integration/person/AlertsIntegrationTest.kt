@@ -9,15 +9,21 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerAlertsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.fullAccess
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithLaoRedactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithPndAlerts
+import java.io.File
 
+@TestPropertySource(properties = ["services.ndelius.base-url=http://localhost:4201"])
 class AlertsIntegrationTest : IntegrationTestBase() {
   @MockitoSpyBean
   private lateinit var alertsGateway: PrisonerAlertsGateway
@@ -102,6 +108,54 @@ class AlertsIntegrationTest : IntegrationTestBase() {
     fun `return a 404 when no prisons in filter`() {
       callApiWithCN(path, noPrisonsCn)
         .andExpect(status().isNotFound)
+    }
+  }
+
+  @Nested
+  inner class AlertsLaoRedactions {
+    val crn = "A123456"
+    val path = "/v1/persons/$crn/alerts"
+
+    @Test
+    fun `returns Redacted alerts for an LAO`() {
+      corePersonRecordGateway.stubForGet(
+        "/person/probation/$crn",
+        File(
+          "$gatewaysFolder/cpr/fixtures/core-person-record-response.json",
+        ).readText(),
+      )
+      nDeliusMockServer.stubForPost(
+        "/probation-cases/access",
+        """
+          {
+            "crns": ["$crn"]
+          }
+          """.removeWhitespaceAndNewlines(),
+        """
+        {
+          "access": [{
+            "crn": "$crn",
+            "userExcluded": true,
+            "userRestricted": false
+          }]
+        }
+        """.trimIndent(),
+      )
+
+      mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
+      every { roles[any()] } returns testRoleWithLaoRedactions
+      callApi(path)
+        .andExpect(status().isOk)
+        .andExpect(jsonPath("$.data[*].offenderNo").exists())
+        .andExpect(jsonPath("$.data[*].type").doesNotExist())
+        .andExpect(jsonPath("$.data[*].typeDescription").doesNotExist())
+        .andExpect(jsonPath("$.data[*].code").exists())
+        .andExpect(jsonPath("$.data[*].codeDescription").exists())
+        .andExpect(jsonPath("$.data[*].comment").exists())
+        .andExpect(jsonPath("$.data[*].dateCreated").exists())
+        .andExpect(jsonPath("$.data[*].dateExpired").doesNotExist())
+        .andExpect(jsonPath("$.data[*].expired").doesNotExist())
+        .andExpect(jsonPath("$.data[*].active").doesNotExist())
     }
   }
 }
