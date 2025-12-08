@@ -11,7 +11,6 @@ val police =
       -"/v1/pnd/persons/.*/alerts"
       -"/v1/persons/.*/sentences"
       -"/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
-      -"/v1/persons/.*/risks/scores"
       -"/v1/persons/.*/risks/serious-harm"
       -"/v1/persons/.*/risks/dynamic"
       -"/v1/persons/.*/risks/mappadetail"
