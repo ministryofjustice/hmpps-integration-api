@@ -53,6 +53,19 @@ val laoRedactionPolicy =
           -personLaoRedactions
         }
       }
+      jsonPath {
+        laoOnly(true)
+        endpoints {
+          -"/v1/persons/.*/alerts"
+        }
+        redactions {
+          -("$..type" to REMOVE)
+          -("$..typeDescription" to REMOVE)
+          -("$..dateExpired" to REMOVE)
+          -("$..expired" to REMOVE)
+          -("$..active" to REMOVE)
+        }
+      }
       personSearchLao {
         redactions {
           -personLaoRedactions
