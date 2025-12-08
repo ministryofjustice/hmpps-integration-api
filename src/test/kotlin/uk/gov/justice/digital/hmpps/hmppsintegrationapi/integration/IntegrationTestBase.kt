@@ -20,6 +20,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitesp
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.TestConstants.DEFAULT_CRN
 import java.io.File
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -47,7 +48,7 @@ abstract class IntegrationTestBase {
   companion object {
     private val nomsId = "G2996UX"
     private val nomsIdFromProbation = "G5555TT"
-    private val crn = "A123123"
+    private val crn = DEFAULT_CRN
 
     val certSerialNumber = "9572494320151578633330348943480876283449388176"
     val revokedSerialNumber = "8472494320151578633330348943480876283449388195"
