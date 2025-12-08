@@ -36,7 +36,6 @@ abstract class IntegrationTestBase {
   final val pnc = URLEncoder.encode("2004/13116M", StandardCharsets.UTF_8)
   final val nomsId = "G2996UX"
   final val invalidNomsId = "G2996UXX"
-  final val crn = "A123123"
   final val specificPrisonCn = "specific-prison"
   final val limitedPrisonsCn = "limited-prisons"
   final val limitedCaseNotesCn = "limited-case-notes"
