@@ -160,13 +160,13 @@ class PersonRedactionIntegrationTest : IntegrationTestBase() {
           "/probation-cases/access",
           """
           {
-            "crns": ["A123456"]
+            "crns": ["$crn"]
           }
           """.removeWhitespaceAndNewlines(),
           """
           {
             "access": [{
-              "crn": "A123456",
+              "crn": "$crn",
               "userExcluded": true,
               "userRestricted": false
             }]

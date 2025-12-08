@@ -103,6 +103,25 @@ abstract class IntegrationTestBase {
         ).readText(),
       )
       nDeliusMockServer.start()
+
+      nDeliusMockServer.stubForPost(
+        "/probation-cases/access",
+        """
+          {
+            "crns": ["$crn"]
+          }
+          """.removeWhitespaceAndNewlines(),
+        """
+        {
+          "access": [{
+            "crn": "$crn",
+            "userExcluded": false,
+            "userRestricted": false
+          }]
+        }
+        """.trimIndent(),
+      )
+
       managePomCaseMockServer.start()
       plpMockServer.start()
       sanMockServer.start()
