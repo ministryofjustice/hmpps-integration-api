@@ -24,6 +24,6 @@ val personInProbationOnlyPersona =
       ),
     identifiers =
       Identifiers(
-        deliusCrn = "AB123123",
+        deliusCrn = "A123123",
       ),
   )

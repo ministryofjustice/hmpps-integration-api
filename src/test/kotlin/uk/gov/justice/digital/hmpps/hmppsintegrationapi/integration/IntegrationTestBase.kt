@@ -36,7 +36,7 @@ abstract class IntegrationTestBase {
   final val pnc = URLEncoder.encode("2004/13116M", StandardCharsets.UTF_8)
   final val nomsId = "G2996UX"
   final val invalidNomsId = "G2996UXX"
-  final val crn = "AB123123"
+  final val crn = "A123123"
   final val specificPrisonCn = "specific-prison"
   final val limitedPrisonsCn = "limited-prisons"
   final val limitedCaseNotesCn = "limited-case-notes"
@@ -48,7 +48,7 @@ abstract class IntegrationTestBase {
   companion object {
     private val nomsId = "G2996UX"
     private val nomsIdFromProbation = "G5555TT"
-    private val crn = "AB123123"
+    private val crn = "A123123"
 
     val certSerialNumber = "9572494320151578633330348943480876283449388176"
     val revokedSerialNumber = "8472494320151578633330348943480876283449388195"

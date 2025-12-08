@@ -42,7 +42,7 @@ class CorePersonRecordGatewayTest(
     {
       val cprMockServer = ApiMockServer.Companion.create(UpstreamApi.CORE_PERSON_RECORD)
       val objectMapper = jacksonObjectMapper()
-      val crn = "AB123123"
+      val crn = "A123123"
       val nomsId = "G2996UX"
 
       beforeEach {
