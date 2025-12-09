@@ -196,22 +196,21 @@ class PersonRedactionIntegrationTest : IntegrationTestBase() {
         callApiWithCN("$basePath/$crn", clientNameWithRoleBaseRedaction)
           .andExpect(status().isOk)
           .andExpect(jsonPath("$.data", aMapWithSize<Any, Any>(2)))
-          .andExpect(jsonPath("$.data.probationOffenderSearch.middleName").isRedacted())
-          .andExpect(jsonPath("$.data.prisonerOffenderSearch.middleName").isRedacted())
-          .andExpect(jsonPath("$.data.probationOffenderSearch.gender").isRedacted())
-          .andExpect(jsonPath("$.data.prisonerOffenderSearch.gender").isRedacted())
-          .andExpect(jsonPath("$.data.probationOffenderSearch.ethnicity").isRedacted())
-          .andExpect(jsonPath("$.data.prisonerOffenderSearch.ethnicity").isRedacted())
+          .andExpect(jsonPath("$.data.probationOffenderSearch.middleName").isNotRedacted())
+          .andExpect(jsonPath("$.data.prisonerOffenderSearch.middleName").isNotRedacted())
+          .andExpect(jsonPath("$.data.probationOffenderSearch.gender").doesNotExist())
+          .andExpect(jsonPath("$.data.prisonerOffenderSearch.gender").doesNotExist())
+          .andExpect(jsonPath("$.data.probationOffenderSearch.ethnicity").doesNotExist())
+          .andExpect(jsonPath("$.data.prisonerOffenderSearch.ethnicity").doesNotExist())
           .andExpect(jsonPath("$.data.probationOffenderSearch.contactDetails").doesNotExist())
           .andExpect(jsonPath("$.data.prisonerOffenderSearch.contactDetails").doesNotExist())
-          .andExpect(jsonPath("$.data.probationOffenderSearch.aliases[*].middleName").isRedacted())
-          .andExpect(jsonPath("$.data.prisonerOffenderSearch.aliases[*].middleName").isRedacted())
+          .andExpect(jsonPath("$.data.probationOffenderSearch.aliases[*].middleName").isNotRedacted())
+          .andExpect(jsonPath("$.data.prisonerOffenderSearch.aliases[*].middleName").isNotRedacted())
 
-        // Expect 4 masks on middle name
-        // Expect 4 masks on gender
-        // Expect 4 masks on ethnicity
-        verifyRedactionEvent("lao-redactions", "lao-role-based-redacted-client", times(3), masks = 4)
-        // Expect 2 removes on contact details name
+        // Expect 4 removes on gender
+        // Expect 4 removes on ethnicity
+        verifyRedactionEvent("lao-redactions", "lao-role-based-redacted-client", times(2), removes = 4)
+        // Expect 2 removes on contact details
         verifyRedactionEvent("lao-redactions", "lao-role-based-redacted-client", times(1), removes = 2)
         prisonerOffenderSearchMockServer.assertValidationPassed()
       }
@@ -240,29 +239,26 @@ class PersonRedactionIntegrationTest : IntegrationTestBase() {
         callApiWithCN("$basePath?$queryParams", clientNameWithRoleBaseRedaction)
           .andExpect(status().isOk)
           // Entry 0 is a prison response - therefore null restriction or exclusion - REDACT
-          .andExpect(jsonPath("$.data[0].middleName").isRedacted())
-          .andExpect(jsonPath("$.data[0].gender").isRedacted())
-          .andExpect(jsonPath("$.data[0].ethnicity").isRedacted())
-          .andExpect(jsonPath("$.data[0].ethnicity").isRedacted())
+          .andExpect(jsonPath("$.data[0].middleName").isNotRedacted())
+          .andExpect(jsonPath("$.data[0].gender").doesNotExist())
+          .andExpect(jsonPath("$.data[0].ethnicity").doesNotExist())
           .andExpect(jsonPath("$.data[0].contactDetails").doesNotExist())
           .andExpect(jsonPath("$.data[0].contactDetails").doesNotExist())
-          .andExpect(jsonPath("$.data[0].aliases[*].middleName").isRedacted())
+          .andExpect(jsonPath("$.data[0].aliases[*].middleName").isNotRedacted())
           // Entry 1 is probation response with false restriction and false exclusion - DO NOT REDACT
           .andExpect(jsonPath("$.data[1].middleName").isNotRedacted())
           .andExpect(jsonPath("$.data[1].gender").isNotRedacted())
-          .andExpect(jsonPath("$.data[1].ethnicity").isNotRedacted())
           .andExpect(jsonPath("$.data[1].ethnicity").isNotRedacted())
           .andExpect(jsonPath("$.data[1].contactDetails").exists())
           .andExpect(jsonPath("$.data[1].contactDetails").exists())
           .andExpect(jsonPath("$.data[1].aliases[*].middleName").isNotRedacted())
           // Entry 2 is probation response with true restriction and false exclusion - REDACT
-          .andExpect(jsonPath("$.data[2].middleName").isRedacted())
-          .andExpect(jsonPath("$.data[2].gender").isRedacted())
-          .andExpect(jsonPath("$.data[2].ethnicity").isRedacted())
-          .andExpect(jsonPath("$.data[2].ethnicity").isRedacted())
+          .andExpect(jsonPath("$.data[2].middleName").isNotRedacted())
+          .andExpect(jsonPath("$.data[2].gender").doesNotExist())
+          .andExpect(jsonPath("$.data[2].ethnicity").doesNotExist())
           .andExpect(jsonPath("$.data[2].contactDetails").doesNotExist())
           .andExpect(jsonPath("$.data[2].contactDetails").doesNotExist())
-          .andExpect(jsonPath("$.data[2].aliases[*].middleName").isRedacted())
+          .andExpect(jsonPath("$.data[2].aliases[*].middleName").isNotRedacted())
       }
     }
 

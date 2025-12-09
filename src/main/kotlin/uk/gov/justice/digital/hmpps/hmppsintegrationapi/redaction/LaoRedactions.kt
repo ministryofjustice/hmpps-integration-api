@@ -6,9 +6,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.redactionP
 
 val personLaoRedactions =
   listOf(
-    Pair("$..middleName", MASK),
-    Pair("$..gender", MASK),
-    Pair("$..ethnicity", MASK),
+    Pair("$..gender", REMOVE),
+    Pair("$..ethnicity", REMOVE),
     Pair("$..contactDetails", REMOVE),
   )
 
