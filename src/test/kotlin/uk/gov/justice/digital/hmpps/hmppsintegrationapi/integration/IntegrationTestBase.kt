@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.writeAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
@@ -123,6 +124,13 @@ abstract class IntegrationTestBase {
         """.trimIndent(),
       )
 
+      nDeliusMockServer.stubForPost(
+        "/search/probation-cases",
+        writeAsJson(mapOf("crn" to crn)),
+        File(
+          "$gatewaysFolder/ndelius/fixtures/GetOffenderResponse.json",
+        ).readText(),
+      )
       managePomCaseMockServer.start()
       plpMockServer.start()
       sanMockServer.start()
@@ -143,6 +151,29 @@ abstract class IntegrationTestBase {
       prisonerBaseLocationMockServer.stop()
       corePersonRecordGateway.stop()
     }
+  }
+
+  fun setToLao(
+    userExcluded: Boolean = true,
+    userRestricted: Boolean = true,
+  ) {
+    nDeliusMockServer.stubForPost(
+      "/probation-cases/access",
+      """
+          {
+            "crns": ["${Companion.crn}"]
+          }
+          """.removeWhitespaceAndNewlines(),
+      """
+      {
+        "access": [{
+          "crn": "${Companion.crn}",
+          "userExcluded": $userExcluded,
+          "userRestricted": $userRestricted
+        }]
+      }
+      """.trimIndent(),
+    )
   }
 
   fun getAuthHeader(

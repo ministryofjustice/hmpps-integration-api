@@ -74,6 +74,7 @@ val laoRedactionPolicy =
       laoRejection {
         endpoints {
           -"/v1/persons/.*/addresses"
+          -"/v1/persons/.*/sentences"
         }
       }
     }
