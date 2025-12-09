@@ -26,24 +26,38 @@
       {
         "serviceSource": "NDELIUS",
         "systemSource": "PROBATION_SYSTEMS",
-        "dateOfSentencing": "2019-08-24",
-        "description": "string",
+        "dateOfSentencing": "2009-07-07",
+        "description": "CJA - Community Order",
+        "isActive": false,
+        "isCustodial": false,
+        "fineAmount": null,
+        "length": {
+          "duration": 12,
+          "units": "Months",
+          "terms": []
+        }
+      },
+      {
+        "serviceSource": "NDELIUS",
+        "systemSource": "PROBATION_SYSTEMS",
+        "dateOfSentencing": "2009-09-01",
+        "description": "CJA - Suspended Sentence Order",
         "isActive": true,
         "isCustodial": false,
         "fineAmount": null,
         "length": {
-          "duration": -2147483648,
-          "units": "Hours",
+          "duration": 12,
+          "units": "Years",
           "terms": []
         }
       }
     ],
   "pagination": {
     "isLastPage": true,
-    "count": 2,
+    "count": 3,
     "page": 1,
     "perPage": 10,
-    "totalCount": 2,
+    "totalCount": 3,
     "totalPages": 1
   }
 }
