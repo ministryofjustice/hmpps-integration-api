@@ -31,6 +31,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithIdOnly
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithLaoRedactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService.Companion.attributeSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.TestConstants.DEFAULT_CRN
 import java.io.File
 
 @ActiveProfiles("integration-test-redaction-enabled")
@@ -344,7 +345,7 @@ class PersonRedactionIntegrationTest : IntegrationTestBase() {
           .andExpect(jsonPath("$.data[2].identifiers.deliusCrn").exists())
           .andExpect(jsonPath("$.data[2].pncId").exists())
           .andExpect(jsonPath("$.data[2].hmppsId").exists())
-          .andExpect(jsonPath("$.data[2].hmppsId").value("A123456"))
+          .andExpect(jsonPath("$.data[2].hmppsId").value(DEFAULT_CRN))
       }
     }
 
