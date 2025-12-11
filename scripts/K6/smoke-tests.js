@@ -279,6 +279,12 @@ function validate_get_request(path) {
   return res;
 }
 
+function validate_response_list_not_empty(response, message) {
+  let data = response.json() ? response.json()["data"] : null;
+  check(data, {
+    [message]: () => data != null && data.length > 0,
+  })
+}
 
 function confirm_access_denied(path) {
   const res = http.get(`${baseUrl}${path}`, httpParams);
@@ -497,8 +503,9 @@ function verify_pnd_alerts(hmppsId) {
 
 function verify_risk_endpoints(hmppsId) {
   group('risk', () => {
+    let res = validate_get_request(`/v1/persons/${hmppsId}/status-information`);
+    validate_response_list_not_empty(res, "Status Information found");
     validate_get_request(`/v1/persons/${hmppsId}/licences/conditions`);
-    validate_get_request(`/v1/persons/${hmppsId}/status-information`);
     validate_get_request(`/v1/persons/${hmppsId}/risks/mappadetail`);
     validate_get_request(`/v1/persons/${hmppsId}/risks/serious-harm`);
     validate_get_request(`/v1/persons/${hmppsId}/risks/scores`);
