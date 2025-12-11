@@ -16,7 +16,6 @@ val police =
       -"/v1/persons/.*/risks/mappadetail"
       -"/v1/persons/.*/licences/conditions"
       -"/v1/persons/.*/person-responsible-officer"
-      -"/v1/persons/.*/status-information"
       -"/v1/hmpps/reference-data"
       -"/v1/status"
     }
