@@ -13,12 +13,12 @@ import java.time.Duration
 @Configuration
 class CacheConfig {
   companion object {
-    const val PRISON_OFFENDER_CACHE = "PRISON_OFFENDER_CACHE"
+    const val GATEWAY_CACHE = "GATEWAY_CACHE"
   }
 
-  fun prisonerCache(): CaffeineCache =
+  fun gatewayCache(): CaffeineCache =
     CaffeineCache(
-      PRISON_OFFENDER_CACHE,
+      GATEWAY_CACHE,
       Caffeine
         .newBuilder()
         .maximumSize(100)
@@ -29,7 +29,7 @@ class CacheConfig {
   @Bean
   fun caffeineCacheManager(): CacheManager {
     val cacheManager = SimpleCacheManager()
-    val caches = listOf(prisonerCache())
+    val caches = listOf(gatewayCache())
     cacheManager.setCaches(caches)
     return cacheManager
   }

@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Companion.PRISON_OFFENDER_CACHE
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Companion.GATEWAY_CACHE
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -113,7 +113,7 @@ class PrisonerOffenderSearchGateway(
     }
   }
 
-  @Cacheable(PRISON_OFFENDER_CACHE)
+  @Cacheable(GATEWAY_CACHE)
   fun getPrisonOffender(nomsNumber: String): Response<POSPrisoner?> {
     val result =
       webClient.request<POSPrisoner>(
