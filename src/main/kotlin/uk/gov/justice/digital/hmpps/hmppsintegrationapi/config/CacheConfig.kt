@@ -16,6 +16,7 @@ class CacheConfig {
     const val GATEWAY_CACHE = "GATEWAY_CACHE"
   }
 
+  @Bean
   fun gatewayCache(): CaffeineCache =
     CaffeineCache(
       GATEWAY_CACHE,
@@ -23,6 +24,7 @@ class CacheConfig {
         .newBuilder()
         .maximumSize(100)
         .expireAfterWrite(Duration.ofSeconds(2))
+        .recordStats()
         .build(),
     )
 
