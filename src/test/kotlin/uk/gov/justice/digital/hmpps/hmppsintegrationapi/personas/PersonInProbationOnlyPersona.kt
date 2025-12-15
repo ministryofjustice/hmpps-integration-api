@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactDetailsWithEmailAndPhone
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PhoneNumber
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.TestConstants.DEFAULT_CRN
 import java.time.LocalDate
 
 val personInProbationOnlyPersona =
@@ -24,6 +25,6 @@ val personInProbationOnlyPersona =
       ),
     identifiers =
       Identifiers(
-        deliusCrn = "AB123123",
+        deliusCrn = DEFAULT_CRN,
       ),
   )

@@ -6,9 +6,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.redactionP
 
 val personLaoRedactions =
   listOf(
-    Pair("$..middleName", MASK),
-    Pair("$..gender", MASK),
-    Pair("$..ethnicity", MASK),
+    Pair("$..gender", REMOVE),
+    Pair("$..ethnicity", REMOVE),
     Pair("$..contactDetails", REMOVE),
   )
 
@@ -53,6 +52,19 @@ val laoRedactionPolicy =
           -personLaoRedactions
         }
       }
+      jsonPath {
+        laoOnly(true)
+        endpoints {
+          -"/v1/persons/.*/alerts"
+        }
+        redactions {
+          -("$..type" to REMOVE)
+          -("$..typeDescription" to REMOVE)
+          -("$..dateExpired" to REMOVE)
+          -("$..expired" to REMOVE)
+          -("$..active" to REMOVE)
+        }
+      }
       personSearchLao {
         redactions {
           -personLaoRedactions
@@ -61,6 +73,7 @@ val laoRedactionPolicy =
       laoRejection {
         endpoints {
           -"/v1/persons/.*/addresses"
+          -"/v1/persons/.*/sentences"
         }
       }
     }

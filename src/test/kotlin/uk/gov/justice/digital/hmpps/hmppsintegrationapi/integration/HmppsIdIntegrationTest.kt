@@ -77,7 +77,7 @@ class HmppsIdIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `gets the nomis Id for a HMPPSID where the id is a NOMIS id AND is not in delius`() {
-    callApi("/v1/hmpps/id/nomis-number/by-hmpps-id/AB123123")
+    callApi("/v1/hmpps/id/nomis-number/by-hmpps-id/$crn")
       .andExpect(status().isOk)
       .andExpect(
         content().json(

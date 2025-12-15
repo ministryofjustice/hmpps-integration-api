@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.ENHANCED_SEARCH_ENABLED
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
@@ -139,12 +138,8 @@ class PersonController(
       throw ValidationException("Invalid date format. Please use yyyy-MM-dd.")
     }
 
-    val response =
-      if (featureFlag.isEnabled(ENHANCED_SEARCH_ENABLED)) {
-        getPersonsService.personAttributeSearch(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases, filters)
-      } else {
-        getPersonsService.execute(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases)
-      }
+    val response = getPersonsService.personAttributeSearch(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases, filters)
+
     auditService.createEvent(
       "SEARCH_PERSON",
       mapOf("firstName" to firstName, "lastName" to lastName, "aliases" to searchWithinAliases.toString(), "pncNumber" to pncNumber, "dateOfBirth" to dateOfBirth),
@@ -159,13 +154,20 @@ class PersonController(
       ApiResponse(responseCode = "200", content = [Content(schema = Schema(implementation = OffenderSearchDataResponse::class))], description = "Successfully found a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
-      ApiResponse(responseCode = "303", headers = [Header(name = "Location", description = "Redirect URL to the new person resource")], content = [Content()], description = "Redirect response due to person with the provided HMPPS ID being merged."),
+      ApiResponse(
+        responseCode = "303",
+        headers = [Header(name = "Location", description = "Redirect URL to the new person resource", schema = Schema(type = "string", example = "/v1/persons/A1234AA"))],
+        content = [Content()],
+        description = "Redirect response due to person with the provided HMPPS ID being merged.",
+      ),
     ],
   )
   fun getPerson(
-    @Parameter(description = "A HMPPS identifier", example = "X00001") @PathVariable("hmppsId") hmppsId: String,
+    @Parameter(description = "A HMPPS identifier", example = "X00001")
+    @PathVariable("hmppsId") hmppsId: String,
+    @RequestAttribute filters: ConsumerFilters?,
   ): ResponseEntity<DataResponse<OffenderSearchResponse>> {
-    val response = getPersonService.getCombinedDataForPerson(hmppsId)
+    val response = getPersonService.getCombinedDataForPerson(hmppsId, filters)
 
     if (response.data == null && response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")

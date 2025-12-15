@@ -126,10 +126,15 @@ authorisation:
     private-prison-only:
       roles:
         - "private-prison"
-      filters:
     limited-case-notes:
       roles:
         - "all-endpoints"
       filters:
         case-notes:
           - "CAB"
+    supervision-status-test:
+      roles:
+        - "all-endpoints"
+      filters:
+        supervisionStatuses:
+          - PRISONS

@@ -10,7 +10,7 @@ import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeTypeOf
-import jdk.internal.net.http.common.Log.errors
+import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.any
@@ -25,6 +25,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAcc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.CPR_ENABLED
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CorePersonRecordGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
@@ -53,9 +54,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInNomisOnlyPersona
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationOnlyPersona
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.SupervisionStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService.IdentifierType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
-import java.lang.RuntimeException
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -85,6 +86,7 @@ internal class GetPersonServiceTest(
       val prisonerWithWrongPrisonId = POSPrisoner(firstName = prisoner.firstName, lastName = prisoner.lastName, prisonId = wrongPrisonId, youthOffender = false)
 
       val personOnProbationOnly = personInProbationOnlyPersona.run { PersonOnProbation(Person(firstName = firstName, lastName = lastName, identifiers = identifiers), underActiveSupervision = true) }
+      val personOnProbationNotUnderActiveSupervision = personInProbationOnlyPersona.run { PersonOnProbation(Person(firstName = firstName, lastName = lastName, identifiers = identifiers), underActiveSupervision = false) }
       val personInPrisonOnly = personInNomisOnlyPersona.run { Person(firstName = firstName, lastName = lastName, identifiers = identifiers) }
       val prisonerInPrisonOnly = personInPrisonOnly.run { POSPrisoner(firstName = firstName, lastName = lastName, dateOfBirth = dateOfBirth, prisonerNumber = identifiers.nomisNumber, youthOffender = false) }
 
@@ -101,6 +103,11 @@ internal class GetPersonServiceTest(
         person: PersonOnProbation? = personOnProbation,
         errors: List<UpstreamApiError> = emptyList(),
       ) = whenever(deliusGateway.getPerson(id)).thenReturn(Response(data = person, errors = errors))
+
+      fun givenPersonWithNoActiveSupervisionFoundInProbation(
+        id: String = crnNumber,
+        errors: List<UpstreamApiError> = emptyList(),
+      ) = whenever(deliusGateway.getPerson(id)).thenReturn(Response(data = personOnProbationNotUnderActiveSupervision, errors = errors))
 
       fun givenPersonNotFoundInProbation(
         id: String = unknownCrnNumber,
@@ -422,6 +429,33 @@ internal class GetPersonServiceTest(
 
             result.data.shouldBeNull()
             result.errors shouldBe notFoundErrors(UpstreamApi.NDELIUS, UpstreamApi.PRISONER_OFFENDER_SEARCH)
+          }
+        }
+
+        describe("supervision status filter") {
+          it("throws a 403 if supervision status filter is probation and probation record is under active supervision") {
+            givenPersonWithNoActiveSupervisionFoundInProbation()
+            val exception =
+              assertThrows<ForbiddenByUpstreamServiceException> {
+                getPersonService.getCombinedDataForPerson(crnNumber, ConsumerFilters(supervisionStatuses = listOf(SupervisionStatus.PROBATION.name)))
+              }
+            exception.message.shouldBe("Not under active supervision. Access denied.")
+          }
+
+          it("only probation record and no prisons data is returned if prison record found and supervision status filter is probation and not prison") {
+            givenPersonFoundInProbation()
+            givenPrisonerFound()
+            val result: OffenderSearchResult? = getPersonService.getCombinedDataForPerson(crnNumber, ConsumerFilters(supervisionStatuses = listOf(SupervisionStatus.PROBATION.name))).data as OffenderSearchResult?
+            result?.prisonerOffenderSearch.shouldBeNull()
+            result?.probationOffenderSearch.shouldNotBeNull()
+          }
+
+          it("prison and probation records are returned when supervision status filter is prison") {
+            givenPersonFoundInProbation()
+            givenPrisonerFound()
+            val result: OffenderSearchResult? = getPersonService.getCombinedDataForPerson(crnNumber, ConsumerFilters(supervisionStatuses = listOf(SupervisionStatus.PRISONS.name))).data as OffenderSearchResult?
+            result?.prisonerOffenderSearch.shouldNotBeNull()
+            result.probationOffenderSearch.shouldNotBeNull()
           }
         }
       }
@@ -753,7 +787,12 @@ internal class GetPersonServiceTest(
           getPersonService.getNomisNumberWithPrisonFilter(crnNumber, filters = null)
           verify(telemetryService).trackEvent(
             "CPRNomsMultipleMatches",
-            mapOf("message" to "Failed to use CPR to convert $crnNumber", "error" to "Multiple NOMS found for $crnNumber in core person record"),
+            mapOf(
+              "fallbackSuccess" to "true",
+              "fallbackId" to "G2996UX",
+              "message" to "Failed to use CPR to convert $crnNumber",
+              "error" to "Multiple NOMS found for $crnNumber in core person record. G2996UX, A1234AA",
+            ),
           )
         }
 
@@ -762,7 +801,12 @@ internal class GetPersonServiceTest(
           getPersonService.getNomisNumberWithPrisonFilter(crnNumber, filters = null)
           verify(telemetryService).trackEvent(
             "CPRNomsNoMatches",
-            mapOf("message" to "Failed to use CPR to convert $crnNumber", "error" to "No NOMS found for $crnNumber in core person record"),
+            mapOf(
+              "fallbackSuccess" to "true",
+              "fallbackId" to "G2996UX",
+              "message" to "Failed to use CPR to convert $crnNumber",
+              "error" to "No NOMS found for $crnNumber in core person record.",
+            ),
           )
         }
 
@@ -771,7 +815,12 @@ internal class GetPersonServiceTest(
           getPersonService.getNomisNumberWithPrisonFilter(crnNumber, filters = null)
           verify(telemetryService).trackEvent(
             "CPRNomsNotFound",
-            mapOf("message" to "Failed to use CPR to convert $crnNumber", "error" to "Could not find core person record"),
+            mapOf(
+              "fallbackSuccess" to "true",
+              "fallbackId" to "G2996UX",
+              "message" to "Failed to use CPR to convert $crnNumber",
+              "error" to "Could not find core person record",
+            ),
           )
         }
 
@@ -780,7 +829,30 @@ internal class GetPersonServiceTest(
           getPersonService.getNomisNumberWithPrisonFilter(crnNumber, filters = null)
           verify(telemetryService).trackEvent(
             "CPRNomsFailure",
-            mapOf("message" to "Failed to use CPR to convert $crnNumber", "error" to "Some error"),
+            mapOf(
+              "fallbackSuccess" to "true",
+              "fallbackId" to "G2996UX",
+              "message" to "Failed to use CPR to convert $crnNumber",
+              "error" to "Some error",
+            ),
+          )
+        }
+
+        it("CPR failure, track event and continue to existing processing which also fails") {
+          val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NDELIUS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "Not found in delius"))
+          whenever(corePersonRecordGateway.corePersonRecordFor(IdentifierType.CRN, crnNumber)).thenThrow(RuntimeException("Some error"))
+          whenever(deliusGateway.getPerson(crnNumber)).thenReturn(Response(data = null, errors = errors))
+          whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = null, errors = errors))
+
+          getPersonService.getNomisNumberWithPrisonFilter(crnNumber, filters = null)
+          verify(telemetryService).trackEvent(
+            "CPRNomsFailure",
+            mapOf(
+              "fallbackSuccess" to "false",
+              "fallbackErrors" to "Not found in delius",
+              "message" to "Failed to use CPR to convert $crnNumber",
+              "error" to "Some error",
+            ),
           )
         }
 

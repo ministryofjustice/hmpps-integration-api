@@ -22,14 +22,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchMatcher
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchPncMatcher
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchQuery
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithPrisonFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService.Companion.attributeSearchRequest
 import java.io.File
 
 @ActiveProfiles("integration-test-redaction-enabled")
@@ -45,7 +41,6 @@ class PersonIntegrationTest : IntegrationTestBase() {
 
   @BeforeEach
   fun resetMocks() {
-    whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(false)
     whenever(featureFlagConfig.getConfigFlagValue(FeatureFlagConfig.USE_EDUCATION_ENDPOINT)).thenReturn(true)
     prisonerOffenderSearchMockServer.stubForGet(
       "/prisoner/$nomsId",
@@ -65,21 +60,18 @@ class PersonIntegrationTest : IntegrationTestBase() {
   inner class GetPerson {
     @Test
     fun `returns a list of persons using first name and last name as search parameters`() {
-      prisonerOffenderSearchMockServer.stubForPost(
-        "/global-search?size=9999",
-        """
-            {
-              "firstName": "Robert",
-              "lastName": "Larsen",
-              "includeAliases": false
-            }
-          """.removeWhitespaceAndNewlines(),
-        File(
-          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/GetPerson.json",
-        ).readText(),
-      )
       val firstName = "Robert"
       val lastName = "Larsen"
+      val expectedRequest = attributeSearchRequest(firstName, lastName)
+
+      prisonerOffenderSearchMockServer.stubForPost(
+        "/attribute-search",
+        jacksonObjectMapper().writeValueAsString(expectedRequest.toMap()),
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/AttributeSearch.json",
+        ).readText(),
+      )
+
       val queryParams = "first_name=$firstName&last_name=$lastName"
 
       callApi("$basePath?$queryParams")
@@ -90,8 +82,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
     }
 
     @Test
-    fun `returns a list of persons using pnc number search with consumer filters where feature flag enabled`() {
-      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(true)
+    fun `returns a list of persons using pnc number search with consumer filters`() {
       mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
       every { roles[any()] } returns testRoleWithPrisonFilters
 
@@ -99,29 +90,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
       val lastName = "Larsen"
       val pncNumber = "2003/13116M"
 
-      val expectedRequest =
-        POSAttributeSearchRequest(
-          joinType = "AND",
-          queries =
-            listOf(
-              POSAttributeSearchQuery(joinType = "AND", matchers = listOf(POSAttributeSearchPncMatcher(pncNumber))), // THE PNC matcher
-              POSAttributeSearchQuery(joinType = "AND", matchers = listOf(POSAttributeSearchMatcher(type = "String", attribute = "prisonId", condition = "IN", searchTerm = "MDI,HEI"))), // Empty prisons filter
-              POSAttributeSearchQuery(
-                joinType = "OR",
-                subQueries =
-                  listOf(
-                    POSAttributeSearchQuery(
-                      joinType = "AND",
-                      matchers =
-                        listOfNotNull(
-                          POSAttributeSearchMatcher(type = "String", attribute = "firstName", condition = "IS", searchTerm = firstName),
-                          POSAttributeSearchMatcher(type = "String", attribute = "lastName", condition = "IS", searchTerm = lastName),
-                        ),
-                    ),
-                  ),
-              ),
-            ),
-        )
+      val expectedRequest = attributeSearchRequest(firstName, lastName, pncNumber, consumerFilters = testRoleWithPrisonFilters.filters!!)
 
       prisonerOffenderSearchMockServer.stubForPost(
         "/attribute-search",

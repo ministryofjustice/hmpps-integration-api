@@ -10,6 +10,7 @@ import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory.times
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -52,6 +53,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationintegrat
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.fullAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithPrisonFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCareNeedsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetIEPLevelService
@@ -116,7 +119,7 @@ internal class PersonControllerTest(
           Mockito.reset(getPersonsService)
           Mockito.reset(auditService)
 
-          whenever(getPersonsService.execute(firstName, lastName, null, dateOfBirth.toString())).thenReturn(
+          whenever(getPersonsService.personAttributeSearch(firstName, lastName, null, dateOfBirth.toString())).thenReturn(
             Response(
               data =
                 listOf(
@@ -137,61 +140,97 @@ internal class PersonControllerTest(
 
         it("gets a person with matching search criteria") {
           mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName&pnc_number=$pncNumber&date_of_birth=$dateOfBirth")
-          verify(getPersonsService, times(1)).execute(firstName, lastName, pncNumber, dateOfBirth.toString())
+          verify(getPersonsService, times(1)).personAttributeSearch(firstName, lastName, pncNumber, dateOfBirth.toString())
         }
 
         it("gets a person with matching first name") {
           mockMvc.performAuthorised("$basePath?first_name=$firstName")
-          verify(getPersonsService, times(1)).execute(firstName, null, null, null)
+          verify(getPersonsService, times(1)).personAttributeSearch(firstName, null, null, null)
         }
 
         it("gets a person with matching last name") {
           mockMvc.performAuthorised("$basePath?last_name=$lastName")
-          verify(getPersonsService, times(1)).execute(null, lastName, null, null)
+          verify(getPersonsService, times(1)).personAttributeSearch(null, lastName, null, null)
         }
 
         it("gets a person with matching alias") {
           mockMvc.performAuthorised("$basePath?first_name=$firstName&search_within_aliases=true")
-          verify(getPersonsService, times(1)).execute(firstName, null, null, null, searchWithinAliases = true)
+          verify(getPersonsService, times(1)).personAttributeSearch(firstName, null, null, null, searchWithinAliases = true)
         }
 
         it("gets a person with matching pncNumber") {
           mockMvc.performAuthorised("$basePath?pnc_number=$pncNumber")
-          verify(getPersonsService, times(1)).execute(null, null, pncNumber, null)
+          verify(getPersonsService, times(1)).personAttributeSearch(null, null, pncNumber, null)
         }
 
         it("gets a person with matching date of birth") {
           mockMvc.performAuthorised("$basePath?date_of_birth=$dateOfBirth")
-          verify(getPersonsService, times(1)).execute(null, null, null, dateOfBirth.toString())
+          verify(getPersonsService, times(1)).personAttributeSearch(null, null, null, dateOfBirth.toString())
         }
 
         it("defaults to not searching within aliases") {
           mockMvc.performAuthorised("$basePath?first_name=$firstName")
-          verify(getPersonsService, times(1)).execute(firstName, null, null, null)
+          verify(getPersonsService, times(1)).personAttributeSearch(firstName, null, null, null)
         }
 
-        it("calls attribute search when feature flag enabled, prisons filter is present and pnc number in search") {
+        it("calls attribute search when prisons filter is present and pnc number in search") {
           mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
           every { roles[any()] } returns testRoleWithPrisonFilters
-          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(true)
           mockMvc.performAuthorised("$basePath?first_name=$firstName&pnc_number=$pncNumber")
           verify(getPersonsService, times(1)).personAttributeSearch(firstName, null, pncNumber, null, consumerFilters = testRoleWithPrisonFilters.filters)
         }
 
-        it("calls attribute search when feature flag enabled, prisons filter is present and pnc number in search") {
+        it("calls attribute search when prisons filter is present and pnc number in search") {
           mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
           every { roles[any()] } returns testRoleWithPrisonFilters
-          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(true)
           mockMvc.performAuthorised("$basePath?first_name=$firstName&pnc_number=$pncNumber")
           verify(getPersonsService, times(1)).personAttributeSearch(firstName, null, pncNumber, null, consumerFilters = testRoleWithPrisonFilters.filters)
         }
 
-        it("does not call attribute search when feature flag disabled, prisons filter is present and pnc number in search") {
+        it("passes supervision status filters from consumer config to service") {
           mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-          every { roles[any()] } returns testRoleWithPrisonFilters
-          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.ENHANCED_SEARCH_ENABLED)).thenReturn(false)
-          mockMvc.performAuthorised("$basePath?first_name=$firstName&pnc_number=$pncNumber")
-          verify(getPersonsService, times(0)).personAttributeSearch(firstName, null, pncNumber, null, consumerFilters = testRoleWithPrisonFilters.filters)
+          every { roles[any()] } returns role("test-role") { permissions { -fullAccess.permissions!! } }
+          val expectedFilters = ConsumerFilters(supervisionStatuses = listOf("PRISONS"))
+          whenever(getPersonsService.personAttributeSearch(firstName, null, pncNumber, null, false, expectedFilters)).thenReturn(Response(data = emptyList()))
+
+          mockMvc.performAuthorisedWithCN("$basePath?first_name=$firstName&pnc_number=$pncNumber", "supervision-status-test")
+
+          verify(getPersonsService, times(1)).personAttributeSearch(firstName, null, pncNumber, null, false, expectedFilters)
+        }
+
+        it("gets a person with matching search criteria") {
+          mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName&pnc_number=$pncNumber&date_of_birth=$dateOfBirth")
+          verify(getPersonsService, times(1)).personAttributeSearch(firstName, lastName, pncNumber, dateOfBirth.toString())
+        }
+
+        it("gets a person with matching first name") {
+          mockMvc.performAuthorised("$basePath?first_name=$firstName")
+          verify(getPersonsService, times(1)).personAttributeSearch(firstName, null, null, null)
+        }
+
+        it("gets a person with matching last name") {
+          mockMvc.performAuthorised("$basePath?last_name=$lastName")
+          verify(getPersonsService, times(1)).personAttributeSearch(null, lastName, null, null)
+        }
+
+        it("gets a person with matching alias") {
+          mockMvc.performAuthorised("$basePath?first_name=$firstName&search_within_aliases=true")
+          verify(getPersonsService, times(1)).personAttributeSearch(firstName, null, null, null, searchWithinAliases = true)
+        }
+
+        it("gets a person with matching pncNumber") {
+          mockMvc.performAuthorised("$basePath?pnc_number=$pncNumber")
+          verify(getPersonsService, times(1)).personAttributeSearch(null, null, pncNumber, null)
+        }
+
+        it("gets a person with matching date of birth") {
+          mockMvc.performAuthorised("$basePath?date_of_birth=$dateOfBirth")
+          verify(getPersonsService, times(1)).personAttributeSearch(null, null, null, dateOfBirth.toString())
+        }
+
+        it("defaults to not searching within aliases") {
+          mockMvc.performAuthorised("$basePath?first_name=$firstName")
+          verify(getPersonsService, times(1)).personAttributeSearch(firstName, null, null, null)
         }
 
         it("logs audit") {
@@ -206,7 +245,7 @@ internal class PersonControllerTest(
         }
 
         it("returns paginated results") {
-          whenever(getPersonsService.execute(firstName, lastName, null, dateOfBirth.toString())).thenReturn(
+          whenever(getPersonsService.personAttributeSearch(firstName, lastName, null, dateOfBirth.toString())).thenReturn(
             Response(
               data =
                 List(20) { i ->
@@ -231,7 +270,7 @@ internal class PersonControllerTest(
           val firstNameThatDoesNotExist = "Bob21345"
           val lastNameThatDoesNotExist = "Gun36773"
 
-          whenever(getPersonsService.execute(firstNameThatDoesNotExist, lastNameThatDoesNotExist, null, null)).thenReturn(
+          whenever(getPersonsService.personAttributeSearch(firstNameThatDoesNotExist, lastNameThatDoesNotExist, null, null)).thenReturn(
             Response(
               data = emptyList(),
             ),
@@ -266,7 +305,7 @@ internal class PersonControllerTest(
         }
 
         it("fails with the appropriate error when an upstream service is down") {
-          whenever(getPersonsService.execute(firstName, lastName, pncNumber, dateOfBirth.toString(), false)).doThrow(
+          whenever(getPersonsService.personAttributeSearch(firstName, lastName, pncNumber, dateOfBirth.toString(), false)).doThrow(
             WebClientResponseException(500, "MockError", null, null, null, null),
           )
 
@@ -362,7 +401,7 @@ internal class PersonControllerTest(
                         "deliusCrn": null
                      },
                      "pncId": null,
-                     "hmppsId": null,
+                     "hmppsId": "${person.identifiers.nomisNumber}",
                      "contactDetails": null,
                      "currentRestriction": null,
                      "restrictionMessage": null,
@@ -1528,6 +1567,7 @@ internal class PersonControllerTest(
             ),
           )
           val result = mockMvc.performAuthorised(path)
+
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
         }
       }

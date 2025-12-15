@@ -63,7 +63,6 @@ feature-flag:
   epf-endpoint-includes-lao: true
   epf-gateway-disabled: true
   cpr-enabled: true
-  enhanced-search-enabled: true
 
 authorisation:
   consumers:
@@ -177,8 +176,5 @@ authorisation:
         - "status-only"
     smartinbox:
       notes: "See client list in Confluence"
-      filters:
-        prisons:
-          - WWI
       roles:
         - "smartinbox"

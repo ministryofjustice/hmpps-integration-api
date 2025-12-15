@@ -279,6 +279,19 @@ function validate_get_request(path) {
   return res;
 }
 
+function validate_response_list_not_empty(response, message) {
+  let data = response.json() ? response.json()["data"] : null;
+  check(data, {
+    [message]: () => data != null && data.length > 0,
+  })
+}
+
+function validate_response_attribute_not_empty(response, attributeName, message) {
+  let data = response.json() ? response.json()["data"] : null;
+  check(data, {
+    [message]: () => data != null && data[attributeName] != null,
+  })
+}
 
 function confirm_access_denied(path) {
   const res = http.get(`${baseUrl}${path}`, httpParams);
@@ -353,6 +366,9 @@ function verify_get_person(hmppsId) {
   check(lastName, {
     [`Last name identified`]: (name) => name != null,
   })
+
+  let isLao = probationData["currentRestriction"] === "true" || probationData["currentExclusion"] === "true";
+  console.log(`Person ${hmppsId} is LAO? : ${isLao}`);
 
   validate_person_search(lastName, dob, crn);
 
@@ -485,8 +501,12 @@ function verify_prisons_endpoints(nomisNumber) {
       [`Prison ID found`]: () => prisonId != null,
     })
 
-    verify_prison_endpoints(prisonId);
-    verify_prisoner_endpoints(prisonId, nomisNumber);
+    if (prisonId === "OUT") {
+      console.log(`Skipping prison checks for ${nomisNumber} - OUT`);
+    } else {
+      verify_prison_endpoints(prisonId);
+      verify_prisoner_endpoints(prisonId, nomisNumber);
+    }
     verify_activities_search("MKI", "A8451DY", "2022-01-01")
   })
 }
@@ -497,13 +517,20 @@ function verify_pnd_alerts(hmppsId) {
 
 function verify_risk_endpoints(hmppsId) {
   group('risk', () => {
+    let res = validate_get_request(`/v1/persons/${hmppsId}/status-information`);
+    validate_response_list_not_empty(res, "Status Information found");
     validate_get_request(`/v1/persons/${hmppsId}/licences/conditions`);
-    validate_get_request(`/v1/persons/${hmppsId}/status-information`);
-    validate_get_request(`/v1/persons/${hmppsId}/risks/mappadetail`);
     validate_get_request(`/v1/persons/${hmppsId}/risks/serious-harm`);
     validate_get_request(`/v1/persons/${hmppsId}/risks/scores`);
     validate_get_request(`/v1/persons/${hmppsId}/risks/dynamic`);
     validate_get_request(`/v1/persons/${hmppsId}/risks/categories`);
+
+    res = validate_get_request(`/v1/persons/${hmppsId}/risks/mappadetail`);
+    if ((res.status === 200) && (res.json()["data"] !== null)) {
+      console.log(`MAPPA category for ${hmppsId} is ${res.json()["data"]["category"]}`);
+    } else {
+      console.log(`No MAPPA data for ${hmppsId}`);
+    }
   })
 }
 
@@ -519,13 +546,15 @@ function verify_get_basic_details(hmppsId) {
     validate_get_request(`/v1/persons/${hmppsId}/physical-characteristics`);
     validate_get_request(`/v1/persons/${hmppsId}/protected-characteristics`);
     validate_get_request(`/v1/persons/${hmppsId}/care-needs`);
-    validate_get_request(`/v1/persons/${hmppsId}/needs`);
     validate_get_request(`/v1/persons/${hmppsId}/person-responsible-officer`);
     validate_get_request(`/v1/persons/${hmppsId}/case-notes`);
     validate_get_request(`/v1/persons/${hmppsId}/health-and-diet`);
     validate_get_request(`/v1/persons/${hmppsId}/languages`);
     validate_get_request(`/v1/persons/${hmppsId}/iep-level`);
     validate_get_request(`/v1/persons/${hmppsId}/sentences/latest-key-dates-and-adjustments`);
+
+    let res = validate_get_request(`/v1/persons/${hmppsId}/needs`);
+    validate_response_attribute_not_empty(res, "assessedOn", "Needs assessment found");
   })
 }
 
@@ -618,6 +647,9 @@ export default function ()  {
     case "MAIN":
       structured_verification_test(primaryHmppsId);
       simple_endpoint_tests();
+      break
+    case "STRUCTURED":
+      structured_verification_test(primaryHmppsId);
       break
     case "PROD":
     case "MINIMAL":

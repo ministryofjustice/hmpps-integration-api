@@ -53,7 +53,7 @@ feature-flag:
   use-deallocation-reasons-endpoint: true
   use-allocation-endpoint: true
   use-education-endpoint: true
-  use-prisoner-base-location-api: false
+  use-prisoner-base-location-api: true
   use-historical-attendances-endpoint: true
   use-suitability-endpoint: true
   use-waiting-list-endpoint: true
@@ -61,7 +61,6 @@ feature-flag:
   epf-endpoint-includes-lao: false
   epf-gateway-disabled: true
   cpr-enabled: true
-  enhanced-search-enabled: false
 
 authorisation:
   consumers:
@@ -97,3 +96,7 @@ authorisation:
       notes: "Post-deployment smoke tests"
       roles:
         - "hmpps-system"
+    smartinbox:
+      notes: "See client list in Confluence"
+      roles:
+        - "smartinbox"
