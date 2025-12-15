@@ -158,13 +158,13 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v5
       - name: download the unit_test coverage
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: unit_test_results
           path: |
             unit_test_results/
       - name: download the integration_test coverage
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: integration_test_results
           path: |
