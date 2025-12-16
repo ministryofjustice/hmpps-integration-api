@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerSupervisionStatusAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.CPR_ENABLED
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.CprResultException
@@ -24,6 +25,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffenders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchQuery
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSIdentifierWithPrisonerNumber
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationintegrationepf.LimitedAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
@@ -32,6 +34,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryServi
 class GetPersonService(
   @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
+  @Autowired val consumerSupervisionStatusAccessService: ConsumerSupervisionStatusAccessService,
   @Autowired val corePersonRecordGateway: CorePersonRecordGateway,
   @Autowired val featureFlagConfig: FeatureFlagConfig,
   @Autowired val telemetryService: TelemetryService,
@@ -244,44 +247,52 @@ class GetPersonService(
   /**
    * Returns a Nomis number from a HMPPS ID
    */
-  fun getNomisNumber(hmppsId: String): Response<NomisNumber?> = getNomisNumberWithPrisonFilter(hmppsId, filters = null)
+  fun getNomisNumber(hmppsId: String): Response<NomisNumber?> = getNomisNumberWithFiltering(hmppsId, filters = null)
 
   /**
-   * Returns a Nomis number from a HMPPS ID, taking into account prison filters
+   * Returns a Nomis number from a HMPPS ID, taking into account prison and supervision status filters
    */
-  fun getNomisNumberWithPrisonFilter(
+  fun getNomisNumberWithFiltering(
     hmppsId: String,
     filters: ConsumerFilters?,
   ): Response<NomisNumber?> {
     val id = convert(hmppsId, IdentifierType.NOMS)
     val nomisNumber = id.data ?: return Response(data = null, errors = id.errors)
 
-    if (filters?.prisons != null) {
-      val prisoner = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
+    if (filters?.hasPrisonFilter() == true || filters?.hasSupervisionStatusesFilter() == true) {
 
-      val prisonId =
-        if (prisoner.data?.prisonId != null) {
-          prisoner.data.prisonId
-        } else {
-          return Response(data = null, errors = prisoner.errors)
-        }
+      val prisoner = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber).data
 
-      val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<NomisNumber>(prisonId, filters)
-      if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
-        return consumerPrisonFilterCheck
+      if (violatesPrisonFilter(prisoner, filters) || violatesSupervisionStatusFilter(prisoner, filters) ){
+        return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
       }
-    }
-    if (filters?.supervisionStatus != null) {
-      val prisoner = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
-      val consumerPrisonFilterCheck = consumerPrisonAccessService.checkPrisonerHasSupervisionStatus<NomisNumber>(prisoner.data, filters)
-      if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
-        return consumerPrisonFilterCheck
-      }
+
     }
     return Response(
-      data = NomisNumber(nomisNumber),
-    )
+     data = NomisNumber(nomisNumber),
+   )
   }
+
+
+private fun violatesSupervisionStatusFilter(
+  prisoner: POSPrisoner?,
+  filters: ConsumerFilters?,
+): Boolean {
+   if (filters?.hasSupervisionStatusesFilter() == true) {
+     return consumerSupervisionStatusAccessService.checkConsumerHasSupervisionStatusAccess(prisoner, filters)
+   }
+  return false
+}
+
+private fun violatesPrisonFilter(
+  prisoner: POSPrisoner?,
+  filters: ConsumerFilters?,
+): Boolean {
+  if (filters?.hasSupervisionStatusesFilter() == true) {
+    return consumerPrisonAccessService.checkConsumerHasPrisonAccess<NomisNumber>(prisoner?.prisonId, filters).errors.isNotEmpty()
+  }
+  return false
+}
 
   fun getCombinedDataForPerson(
     hmppsId: String,
