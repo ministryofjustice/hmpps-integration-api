@@ -22,6 +22,7 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerSupervisionStatusAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.CPR_ENABLED
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
@@ -65,6 +66,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryServi
 internal class GetPersonServiceTest(
   @MockitoBean val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
   @MockitoBean val consumerPrisonAccessService: ConsumerPrisonAccessService,
+  @MockitoBean val consumerSupervisionStatusAccessService: ConsumerSupervisionStatusAccessService,
   @MockitoBean val deliusGateway: NDeliusGateway,
   @MockitoBean val corePersonRecordGateway: CorePersonRecordGateway,
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
@@ -227,7 +229,7 @@ internal class GetPersonServiceTest(
         )
 
         whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Person>(prisonId, null)).thenReturn(Response(data = null))
-        whenever(consumerPrisonAccessService.checkPrisonerHasSupervisionStatus<NomisNumber>(any(), any())).thenReturn(Response(data = null))
+        whenever(consumerSupervisionStatusAccessService.checkConsumerHasSupervisionStatusAccess(any(), any())).thenReturn(true)
         givenPrisonerNumberMergedAttributeSearchReturnsEmpty()
       }
 
