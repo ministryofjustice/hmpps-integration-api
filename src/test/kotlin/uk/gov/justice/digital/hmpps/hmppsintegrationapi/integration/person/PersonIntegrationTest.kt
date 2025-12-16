@@ -150,6 +150,36 @@ class PersonIntegrationTest : IntegrationTestBase() {
         // prisonerOffenderSearchApiMockServer.assertValidationPassed()
       }
     }
+
+    @Test
+    fun `calls prisoner search with the redirected prisoner number when CRN is used and data returned`() {
+      prisonerOffenderSearchMockServer.stubFor(
+        get(urlPathMatching("/prisoner/$nomsIdFromProbation"))
+          .willReturn(
+            aResponse()
+              .withStatus(404)
+              .withHeader("Content-Type", "application/json")
+              .withBody("""{ "status": 404, "error": "Not Found", "message": "Prisoner not found" }"""),
+          ),
+      )
+
+      prisonerOffenderSearchMockServer.stubForGet(
+        "/prisoner/A1234AA",
+        File(
+          "$gatewaysFolder/prisoneroffendersearch/fixtures/PrisonerByIdResponse.json",
+        ).readText(),
+      )
+
+      val file = File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/AttributeSearchPrisonerNumberMergedFromCrn.json")
+      val body = file.readText()
+      prisonerOffenderSearchMockServer.stubFor(
+        post(urlPathEqualTo("/attribute-search"))
+          .willReturn(aResponse().withHeader("Content-Type", "application/json").withBody(body)),
+      )
+
+      callApi("$basePath/$crn")
+        .andExpect(status().isOk)
+    }
   }
 
   @Nested
