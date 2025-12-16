@@ -260,39 +260,36 @@ class GetPersonService(
     val nomisNumber = id.data ?: return Response(data = null, errors = id.errors)
 
     if (filters?.hasPrisonFilter() == true || filters?.hasSupervisionStatusesFilter() == true) {
-
       val prisoner = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber).data
 
-      if (violatesPrisonFilter(prisoner, filters) || violatesSupervisionStatusFilter(prisoner, filters) ){
+      if (violatesPrisonFilter(prisoner, filters) || violatesSupervisionStatusFilter(prisoner, filters)) {
         return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
       }
-
     }
     return Response(
-     data = NomisNumber(nomisNumber),
-   )
+      data = NomisNumber(nomisNumber),
+    )
   }
 
-
-private fun violatesSupervisionStatusFilter(
-  prisoner: POSPrisoner?,
-  filters: ConsumerFilters?,
-): Boolean {
-   if (filters?.hasSupervisionStatusesFilter() == true) {
-     return consumerSupervisionStatusAccessService.checkConsumerHasSupervisionStatusAccess(prisoner, filters)
-   }
-  return false
-}
-
-private fun violatesPrisonFilter(
-  prisoner: POSPrisoner?,
-  filters: ConsumerFilters?,
-): Boolean {
-  if (filters?.hasSupervisionStatusesFilter() == true) {
-    return consumerPrisonAccessService.checkConsumerHasPrisonAccess<NomisNumber>(prisoner?.prisonId, filters).errors.isNotEmpty()
+  private fun violatesSupervisionStatusFilter(
+    prisoner: POSPrisoner?,
+    filters: ConsumerFilters?,
+  ): Boolean {
+    if (filters?.hasSupervisionStatusesFilter() == true) {
+      return consumerSupervisionStatusAccessService.checkConsumerHasSupervisionStatusAccess(prisoner, filters)
+    }
+    return false
   }
-  return false
-}
+
+  private fun violatesPrisonFilter(
+    prisoner: POSPrisoner?,
+    filters: ConsumerFilters?,
+  ): Boolean {
+    if (filters?.hasSupervisionStatusesFilter() == true) {
+      return consumerPrisonAccessService.checkConsumerHasPrisonAccess<NomisNumber>(prisoner?.prisonId, filters).errors.isNotEmpty()
+    }
+    return false
+  }
 
   fun getCombinedDataForPerson(
     hmppsId: String,

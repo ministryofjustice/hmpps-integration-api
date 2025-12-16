@@ -10,7 +10,6 @@ class ConsumerSupervisionStatusAccessService {
     prisoner: POSPrisoner?,
     filters: ConsumerFilters,
   ): Boolean {
-
     if (!filters.hasSupervisionStatusesFilter()) return true
 
     val containsPrison = filters.supervisionStatuses!!.contains("PRISON")
@@ -20,7 +19,7 @@ class ConsumerSupervisionStatusAccessService {
 
     val inOutStatus = prisoner?.inOutStatus
 
-    if (containsProbation && inOutStatus == "OUT" ) {
+    if (containsProbation && inOutStatus == "OUT") {
       return true
     }
 
@@ -30,5 +29,4 @@ class ConsumerSupervisionStatusAccessService {
 
     return false
   }
-
 }

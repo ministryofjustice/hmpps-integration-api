@@ -8,7 +8,6 @@ import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @ContextConfiguration(
@@ -47,74 +46,6 @@ internal class ConsumerPrisonAccessServiceTest(
       it("Should return no errors when prison id nor the filters are supplied") {
         val result =
           consumerPrisonAccessService.checkConsumerHasPrisonAccess<Nothing>(null, ConsumerFilters(null))
-        result.errors.shouldBeEmpty()
-      }
-
-      it("returns no errors when supervisionStatus is empty") {
-        val prisoner = POSPrisoner(
-          firstName = "John",
-          lastName = "Doe",
-          youthOffender = false,
-          prisonId = "MDI",
-          inOutStatus = "IN",
-        )
-        val filters = ConsumerFilters(supervisionStatus = emptyList())
-
-        val result = consumerPrisonAccessService.checkPrisonerHasSupervisionStatus<Nothing>(prisoner, filters)
-
-        result.errors.shouldBeEmpty()
-      }
-
-      it("returns error when filters contain PRISON and prisoner is OUT with prisonId (i.e. probation)") {
-        val prisoner = POSPrisoner(
-          firstName = "John",
-          lastName = "Doe",
-          youthOffender = false,
-          prisonId = "MDI",
-          inOutStatus = "OUT",
-        )
-        val filters = ConsumerFilters(supervisionStatus = listOf("PRISON"))
-
-        val result = consumerPrisonAccessService.checkPrisonerHasSupervisionStatus<Nothing>(prisoner, filters)
-
-        result.errors.shouldBe(
-          listOf(
-            UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"),
-          ),
-        )
-      }
-
-      it("returns error when filters contain PROBATION and prisoner is IN with prisonId (i.e. prison)") {
-        val prisoner = POSPrisoner(
-          firstName = "John",
-          lastName = "Doe",
-          youthOffender = false,
-          prisonId = "MDI",
-          inOutStatus = "IN",
-        )
-        val filters = ConsumerFilters(supervisionStatus = listOf("PROBATION"))
-
-        val result = consumerPrisonAccessService.checkPrisonerHasSupervisionStatus<Nothing>(prisoner, filters)
-
-        result.errors.shouldBe(
-          listOf(
-            UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"),
-          ),
-        )
-      }
-
-      it("returns no errors when filters contain both PRISON and PROBATION") {
-        val prisoner = POSPrisoner(
-          firstName = "John",
-          lastName = "Doe",
-          youthOffender = false,
-          prisonId = "MDI",
-          inOutStatus = "IN",
-        )
-        val filters = ConsumerFilters(supervisionStatus = listOf("PRISON", "PROBATION"))
-
-        val result = consumerPrisonAccessService.checkPrisonerHasSupervisionStatus<Nothing>(prisoner, filters)
-
         result.errors.shouldBeEmpty()
       }
     },
