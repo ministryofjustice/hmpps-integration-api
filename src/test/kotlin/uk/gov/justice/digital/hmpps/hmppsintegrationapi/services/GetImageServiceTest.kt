@@ -63,7 +63,7 @@ internal class GetImageServiceTest(
           Mockito.reset(prisonApiGateway)
           Mockito.reset(getPersonService)
 
-          whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId = prisonerNumber, filters = filters)).thenReturn(Response(NomisNumber(prisonerNumber)))
+          whenever(getPersonService.getNomisNumberWithFiltering(hmppsId = prisonerNumber, filters = filters)).thenReturn(Response(NomisNumber(prisonerNumber)))
           whenever(prisonApiGateway.getImageMetadataForPerson(prisonerNumber)).thenReturn(Response(data = imageMetadata))
 
           whenever(prisonApiGateway.getImageData(id)).thenReturn(Response(data = image))
@@ -75,7 +75,7 @@ internal class GetImageServiceTest(
         }
 
         it("should return a list of errors if person not found") {
-          whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId = "notfound", filters = filters)).thenReturn(
+          whenever(getPersonService.getNomisNumberWithFiltering(hmppsId = "notfound", filters = filters)).thenReturn(
             Response(
               data = null,
               errors =

@@ -61,7 +61,7 @@ internal class GetIEPLevelServiceTest(
 
     beforeEach {
       Mockito.reset(incentivesGateway)
-      whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(data = NomisNumber(hmppsId)))
+      whenever(getPersonService.getNomisNumberWithFiltering(hmppsId, filters)).thenReturn(Response(data = NomisNumber(hmppsId)))
     }
 
     it("returns IEP level review history") {
@@ -82,14 +82,14 @@ internal class GetIEPLevelServiceTest(
 
     it("failed prison check call") {
       val err = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "NOMIS number not found"))
-      whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(data = null, errors = err))
+      whenever(getPersonService.getNomisNumberWithFiltering(hmppsId, filters)).thenReturn(Response(data = null, errors = err))
       val result = getIEPLevelService.execute(hmppsId, filters)
       result.errors.shouldBe(err)
     }
 
     it("failed to get prisoners nomis number") {
       val err = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND))
-      whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(data = NomisNumber(), errors = emptyList()))
+      whenever(getPersonService.getNomisNumberWithFiltering(hmppsId, filters)).thenReturn(Response(data = NomisNumber(), errors = emptyList()))
       val result = getIEPLevelService.execute(hmppsId, filters)
       result.errors.shouldBe(err)
     }

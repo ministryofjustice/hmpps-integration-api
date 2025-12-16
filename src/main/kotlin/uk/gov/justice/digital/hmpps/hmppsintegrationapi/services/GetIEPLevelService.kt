@@ -18,7 +18,7 @@ class GetIEPLevelService(
     prisonerId: String,
     filter: ConsumerFilters?,
   ): Response<IEPLevel?> {
-    val personResponse = getPersonService.getNomisNumberWithPrisonFilter(prisonerId, filter)
+    val personResponse = getPersonService.getNomisNumberWithFiltering(prisonerId, filter)
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = personResponse.errors)
     }
