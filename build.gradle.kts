@@ -6,7 +6,7 @@ plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.2.0"
   kotlin("plugin.spring") version "2.2.21"
   id("io.gitlab.arturbosch.detekt") version "1.23.8"
-  id("org.jetbrains.kotlinx.kover") version "0.9.3"
+  id("org.jetbrains.kotlinx.kover") version "0.9.4"
 }
 
 configurations {
@@ -42,9 +42,9 @@ dependencies {
   testImplementation("io.kotest:kotest-runner-junit5-jvm:6.0.7")
   testImplementation("io.kotest:kotest-assertions-core-jvm:6.0.7")
   testImplementation("io.kotest:kotest-extensions-spring:6.0.7")
-  developmentOnly("org.jetbrains.kotlinx:kover-cli:0.9.3")
+  developmentOnly("org.jetbrains.kotlinx:kover-cli:0.9.4")
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
-  testImplementation("org.mockito:mockito-core:5.20.0")
+  testImplementation("org.mockito:mockito-core:5.21.0")
   testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.20.1")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
   testImplementation("com.atlassian.oai:swagger-request-validator-wiremock:2.46.0") {
