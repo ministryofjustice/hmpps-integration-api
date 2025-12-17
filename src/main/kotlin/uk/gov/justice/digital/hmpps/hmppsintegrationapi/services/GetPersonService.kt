@@ -292,7 +292,7 @@ class GetPersonService(
     prisonId: String?,
     filters: ConsumerFilters?,
   ): Boolean {
-    if (filters?.hasSupervisionStatusesFilter() == true) {
+    if (filters?.hasPrisonFilter() == true) {
       return consumerPrisonAccessService.checkConsumerHasPrisonAccess<NomisNumber>(prisonId, filters).errors.isNotEmpty()
     }
     return false
