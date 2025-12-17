@@ -84,7 +84,7 @@ abstract class IntegrationTestBase {
       prisonerOffenderSearchMockServer.stubForGet(
         "/prisoner/$nomsIdFromProbation",
         File(
-          "$gatewaysFolder/prisoneroffendersearch/fixtures/PrisonerByIdResponse.json",
+          "$gatewaysFolder/prisoneroffendersearch/fixtures/PrisonerByIdProbationResponse.json",
         ).readText(),
       )
       prisonerBaseLocationMockServer.stubForGet(
