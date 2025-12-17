@@ -270,7 +270,7 @@ class GetPersonService(
         }
 
       if (violatesPrisonFilter(prisonId, filters) || violatesSupervisionStatusFilter(searchResponse.data, filters)) {
-        return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
+        return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
       }
     }
     return Response(
