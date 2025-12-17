@@ -297,11 +297,8 @@ class GetPersonService(
       !combinedErrors.any { it.type == UpstreamApiError.Type.BAD_REQUEST }
     ) {
       findPrisonerIdMerged(prisonerId)?.let { posIdentifier ->
-        // If called with a CRN, perform the prisoner search again with the merged prisoner number
-        if (identifyHmppsId(hmppsId) == IdentifierType.CRN) {
-          prisonResponse = prisonerOffenderSearchGateway.getPrisonOffender(posIdentifier.prisonerNumber)
-          combinedErrors = probationResponse.errors + prisonResponse.errors
-        } else {
+        // If called with a NOMS, return a redirect to the merged prisoner number
+        if (identifyHmppsId(hmppsId) == IdentifierType.NOMS) {
           return Response(
             data =
               OffenderSearchRedirectionResult(
@@ -311,6 +308,10 @@ class GetPersonService(
               ),
             errors = combinedErrors,
           )
+        } else {
+          // Otherwise call the prisoner search again with the merged prisoner number
+          prisonResponse = prisonerOffenderSearchGateway.getPrisonOffender(posIdentifier.prisonerNumber)
+          combinedErrors = probationResponse.errors + prisonResponse.errors
         }
       }
     }
