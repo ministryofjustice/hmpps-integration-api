@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.ApplicationContext
 import org.springframework.stereotype.Component
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.UpstreamGateway
 
 @SpringBootTest
 internal class ControllerGatewayMapperTest(
@@ -60,10 +59,7 @@ internal class ControllerGatewayMapperTest(
     val gatewayComponentCount =
       context
         .getBeansWithAnnotation(Component::class.java)
-        .values
-        .filter { it.javaClass.interfaces.contains(UpstreamGateway::class.java) }
-        .map { it as UpstreamGateway }
-        .toList()
+        .filter { it.key.endsWith("Gateway") }
         .size
 
     assertEquals(gatewayComponentCount, summaries.size)

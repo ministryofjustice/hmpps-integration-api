@@ -63,7 +63,6 @@ feature-flag:
   epf-endpoint-includes-lao: true
   epf-gateway-disabled: true
   cpr-enabled: true
-  gateway-cache-enabled: true
 
 authorisation:
   consumers:
