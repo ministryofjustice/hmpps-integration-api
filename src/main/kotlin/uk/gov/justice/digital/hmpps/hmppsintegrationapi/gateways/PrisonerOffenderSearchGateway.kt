@@ -6,7 +6,6 @@ import org.springframework.cache.annotation.Cacheable
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Companion.GATEWAY_CACHE
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -33,9 +32,6 @@ class PrisonerOffenderSearchGateway(
 
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
-
-  @Autowired
-  lateinit var featureFlagConfig: FeatureFlagConfig
 
   fun getPersons(
     firstName: String?,
