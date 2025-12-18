@@ -17,47 +17,47 @@ import java.time.Duration
 @EnableCaching
 @Configuration
 class CacheConfig {
-    companion object {
-        const val GATEWAY_CACHE = "GATEWAY_CACHE"
+  companion object {
+    const val GATEWAY_CACHE = "GATEWAY_CACHE"
+  }
+
+  @Bean
+  fun gatewayCache(): CaffeineCache =
+    CaffeineCache(
+      GATEWAY_CACHE,
+      Caffeine
+        .newBuilder()
+        .maximumSize(100)
+        .expireAfterWrite(Duration.ofSeconds(2))
+        .recordStats()
+        .build(),
+    )
+
+  @Bean
+  fun gatewayCacheEnabled(featureFlagConfig: FeatureFlagConfig): Boolean = featureFlagConfig.isEnabled(GATEWAY_CACHE_ENABLED)
+
+  @Bean
+  fun caffeineCacheManager(gatewayCacheEnabled: Boolean): CacheManager {
+    if (!gatewayCacheEnabled) {
+      return NoOpCacheManager()
     }
+    val cacheManager = SimpleCacheManager()
+    val caches = listOf(gatewayCache())
+    cacheManager.setCaches(caches)
+    return cacheManager
+  }
 
-    @Bean
-    fun gatewayCache(): CaffeineCache =
-        CaffeineCache(
-            GATEWAY_CACHE,
-            Caffeine
-                .newBuilder()
-                .maximumSize(100)
-                .expireAfterWrite(Duration.ofSeconds(2))
-                .recordStats()
-                .build(),
-        )
-
-    @Bean
-    fun gatewayCacheEnabled(featureFlagConfig: FeatureFlagConfig): Boolean = featureFlagConfig.isEnabled(GATEWAY_CACHE_ENABLED)
-
-    @Bean
-    fun caffeineCacheManager(gatewayCacheEnabled: Boolean): CacheManager {
-        if (!gatewayCacheEnabled) {
-            return NoOpCacheManager()
-        }
-        val cacheManager = SimpleCacheManager()
-        val caches = listOf(gatewayCache())
-        cacheManager.setCaches(caches)
-        return cacheManager
-    }
-
-    @Bean("gatewayKeyGenerator")
-    fun keyGenerator(): KeyGenerator = GatewayKeyGenerator()
+  @Bean("gatewayKeyGenerator")
+  fun keyGenerator(): KeyGenerator = GatewayKeyGenerator()
 }
 
 /**
  * Generates a unique key for the cache so this can be used on all gateway methods
  */
 class GatewayKeyGenerator : KeyGenerator {
-    override fun generate(
-        target: Any,
-        method: Method,
-        vararg params: Any?,
-    ): Any = target.javaClass.name + "_" + method.name + "_" + StringUtils.arrayToDelimitedString(params, "_")
+  override fun generate(
+    target: Any,
+    method: Method,
+    vararg params: Any?,
+  ): Any = target.javaClass.name + "_" + method.name + "_" + StringUtils.arrayToDelimitedString(params, "_")
 }
