@@ -88,13 +88,13 @@ internal class GetPhysicalCharacteristicsForPersonServiceTest(
         Mockito.reset(getPersonService)
         Mockito.reset(prisonerOffenderSearchGateway)
 
-        whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId = hmppsId, filters = filters)).thenReturn(Response(nomisNumber))
+        whenever(getPersonService.getNomisNumberWithFiltering(hmppsId = hmppsId, filters = filters)).thenReturn(Response(nomisNumber))
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(hmppsId)).thenReturn(Response(posPrisoner))
       }
 
       it("performs a search according to hmpps Id") {
         getPhysicalCharacteristicsForPersonService.execute(hmppsId, filters)
-        verify(getPersonService, times(1)).getNomisNumberWithPrisonFilter(hmppsId = hmppsId, filters = filters)
+        verify(getPersonService, times(1)).getNomisNumberWithFiltering(hmppsId = hmppsId, filters = filters)
       }
 
       it("should return physical charactertistics from gateway") {
@@ -111,7 +111,7 @@ internal class GetPhysicalCharacteristicsForPersonServiceTest(
               type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
             ),
           )
-        whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId = "notfound", filters = filters)).thenReturn(
+        whenever(getPersonService.getNomisNumberWithFiltering(hmppsId = "notfound", filters = filters)).thenReturn(
           Response(
             data = null,
             errors = errors,
@@ -131,7 +131,7 @@ internal class GetPhysicalCharacteristicsForPersonServiceTest(
               type = UpstreamApiError.Type.BAD_REQUEST,
             ),
           )
-        whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId = "badRequest", filters = filters)).thenReturn(
+        whenever(getPersonService.getNomisNumberWithFiltering(hmppsId = "badRequest", filters = filters)).thenReturn(
           Response(
             data = null,
             errors = errors,

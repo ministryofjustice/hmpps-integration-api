@@ -11,6 +11,7 @@ class CaseNotesIntegrationTest : IntegrationTestBase() {
   private final val endDate: LocalDateTime = LocalDateTime.now()
   private final val cnMatchedPrisonerId = nomsId
   private final val path = "$basePath/$cnMatchedPrisonerId/case-notes"
+  private final val probationPath = "$basePath/$nomsIdFromProbation/case-notes"
 
   @Test
   fun `returns case notes for a person`() {
@@ -41,6 +42,12 @@ class CaseNotesIntegrationTest : IntegrationTestBase() {
   @Test
   fun `returns a 404 for prisoner in wrong prison`() {
     callApiWithCN(path, limitedPrisonsCn)
+      .andExpect(status().isNotFound)
+  }
+
+  @Test
+  fun `returns a 404 for prisoner on probation`() {
+    callApiWithCN(probationPath, noProbationAccessCn)
       .andExpect(status().isNotFound)
   }
 

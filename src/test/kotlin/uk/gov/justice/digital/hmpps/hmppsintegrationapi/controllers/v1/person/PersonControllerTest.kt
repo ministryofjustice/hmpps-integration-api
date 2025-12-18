@@ -10,7 +10,6 @@ import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory.times
-import org.mockito.kotlin.any
 import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -193,7 +192,7 @@ internal class PersonControllerTest(
           val expectedFilters = ConsumerFilters(supervisionStatuses = listOf("PRISONS"))
           whenever(getPersonsService.personAttributeSearch(firstName, null, pncNumber, null, false, expectedFilters)).thenReturn(Response(data = emptyList()))
 
-          mockMvc.performAuthorisedWithCN("$basePath?first_name=$firstName&pnc_number=$pncNumber", "supervision-status-test")
+          mockMvc.performAuthorisedWithCN("$basePath?first_name=$firstName&pnc_number=$pncNumber", "supervision-status-prison-only")
 
           verify(getPersonsService, times(1)).personAttributeSearch(firstName, null, pncNumber, null, false, expectedFilters)
         }
@@ -1060,7 +1059,7 @@ internal class PersonControllerTest(
           Mockito.reset(auditService)
 
           val filters = ConsumerFilters(prisons = emptyList())
-          whenever(getPersonService.getNomisNumberWithPrisonFilter(sanitisedHmppsId, filters)).thenReturn(Response(NomisNumber("A1234AA")))
+          whenever(getPersonService.getNomisNumberWithFiltering(sanitisedHmppsId, filters)).thenReturn(Response(NomisNumber("A1234AA")))
         }
 
         it("returns a prisoners visit orders") {
@@ -1283,7 +1282,7 @@ internal class PersonControllerTest(
           Mockito.reset(auditService)
 
           val filters = ConsumerFilters(prisons = emptyList())
-          whenever(getPersonService.getNomisNumberWithPrisonFilter(sanitisedHmppsId, filters)).thenReturn(Response(NomisNumber("A1234AA")))
+          whenever(getPersonService.getNomisNumberWithFiltering(sanitisedHmppsId, filters)).thenReturn(Response(NomisNumber("A1234AA")))
         }
 
         it("returns a prisoners visit orders") {

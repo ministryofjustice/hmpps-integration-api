@@ -33,7 +33,7 @@ internal class GetImageMetadataForPersonServiceTest(
 
     beforeEach {
       Mockito.reset(prisonApiGateway)
-      whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(
+      whenever(getPersonService.getNomisNumberWithFiltering(hmppsId, filters)).thenReturn(
         Response(
           data = NomisNumber(prisonerNumber),
         ),
@@ -44,7 +44,7 @@ internal class GetImageMetadataForPersonServiceTest(
     it("gets prisoner ID from Person service") {
       getImageMetadataForPersonService.execute(hmppsId, filters)
 
-      verify(getPersonService, VerificationModeFactory.times(1)).getNomisNumberWithPrisonFilter(hmppsId, filters)
+      verify(getPersonService, VerificationModeFactory.times(1)).getNomisNumberWithFiltering(hmppsId, filters)
     }
 
     it("gets images details from NOMIS") {
@@ -73,7 +73,7 @@ internal class GetImageMetadataForPersonServiceTest(
     }
 
     it("returns a not found error when person cannot be found in Person service") {
-      whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(
+      whenever(getPersonService.getNomisNumberWithFiltering(hmppsId, filters)).thenReturn(
         Response(
           data = null,
           errors =

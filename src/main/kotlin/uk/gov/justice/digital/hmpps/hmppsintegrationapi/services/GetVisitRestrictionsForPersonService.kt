@@ -18,7 +18,7 @@ class GetVisitRestrictionsForPersonService(
     hmppsId: String,
     filters: ConsumerFilters? = null,
   ): Response<List<PersonVisitRestriction>?> {
-    val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)
+    val personResponse = getPersonService.getNomisNumberWithFiltering(hmppsId, filters)
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = personResponse.errors)
     }
