@@ -94,6 +94,7 @@ feature-flag:
   epf-endpoint-includes-lao: false
   cpr-enabled: true
   enhanced-search-enabled: false
+  gateway-cache-enabled: true
 
 authorisation:
   consumers:
