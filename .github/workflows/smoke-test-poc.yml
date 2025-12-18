@@ -8,7 +8,6 @@ on:
       - 'HIA-1085_use_self_consistent_ids'
       - 'HIA-1085_re-enable_activities_test'
       - 'HIA-1105_abort_smoke_test_if_delius_down'
-      - 'HIA-1155-add-an-upstream-call-to-the-production-smoke-tests'
 jobs:
   dev-smoke-tests:
     uses: ./.github/workflows/smoke-test-dev.yml
