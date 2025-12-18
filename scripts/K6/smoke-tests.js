@@ -387,6 +387,7 @@ function verify_get_person(hmppsId) {
  */
 function minimal_prod_verification() {
   verify_system_endpoints();
+  validate_get_request(`/v1/hmpps/reference-data`);
 }
 
 /**
