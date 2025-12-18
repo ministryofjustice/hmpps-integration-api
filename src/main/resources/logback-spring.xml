@@ -7,7 +7,11 @@
     <springProperty scope="context" name="app" source="spring.application.name"/>
 
     <springProfile name="dev || stdout">
-        <appender name="consoleAppender" class="ch.qos.logback.core.helpers.NOPAppender"/>
+      <appender name="consoleAppender" class="ch.qos.logback.core.helpers.NOPAppender">
+        <filter class="uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheLogFilter">
+          <className>org.springframework.cache.interceptor</className>
+        </filter>
+      </appender>
         <appender name="logAppender" class="ch.qos.logback.core.ConsoleAppender">
             <layout class="ch.qos.logback.classic.PatternLayout">
                 <Pattern>${LOG_PATTERN}</Pattern>
@@ -17,6 +21,9 @@
 
     <springProfile name="!(stdout)">
         <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+            <filter class="uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheLogFilter">
+              <className>org.springframework.cache.interceptor</className>
+            </filter>
             <layout class="ch.qos.logback.classic.PatternLayout">
                 <Pattern>${LOG_PATTERN}</Pattern>
             </layout>
@@ -50,6 +57,10 @@
 
     <logger name="org.springframework.boot" additivity="false" level="INFO">
         <appender-ref ref="consoleAppender"/>
+    </logger>
+
+    <logger name="org.springframework.cache.interceptor" level="trace">
+        <appender-ref ref="consoleAppender" />
     </logger>
 
     <root level="INFO">

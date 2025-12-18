@@ -1,5 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.config
 
+import ch.qos.logback.classic.spi.ILoggingEvent
+import ch.qos.logback.core.filter.Filter
+import ch.qos.logback.core.spi.FilterReply
 import com.github.benmanes.caffeine.cache.Caffeine
 import org.springframework.cache.CacheManager
 import org.springframework.cache.annotation.EnableCaching
@@ -60,4 +63,16 @@ class GatewayKeyGenerator : KeyGenerator {
     method: Method,
     vararg params: Any?,
   ): Any = target.javaClass.name + "_" + method.name + "_" + StringUtils.arrayToDelimitedString(params, "_")
+}
+
+/**
+ * Suppresses Log messages when the cache condition has failed
+ */
+class CacheLogFilter : Filter<ILoggingEvent>() {
+  override fun decide(event: ILoggingEvent): FilterReply {
+    if (event.message.contains("Cache condition failed")) {
+      return FilterReply.DENY
+    }
+    return FilterReply.ACCEPT
+  }
 }
