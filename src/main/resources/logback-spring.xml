@@ -1,14 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration debug="false">
+    <filter class="uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheLogFilter">
+      <className>org.springframework.cache.interceptor</className>
+    </filter>
+
+
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <property name="LOG_PATTERN"
               value="%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m | %mdc %n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
 
     <springProperty scope="context" name="app" source="spring.application.name"/>
 
+    <springProperty scope="context" name="CACHE_ENABLED" source="feature-flag.gateway-cache-enabled"/>
+
     <springProfile name="dev || stdout">
-        <appender name="consoleAppender" class="ch.qos.logback.core.helpers.NOPAppender"/>
+        <appender name="consoleAppender" class="ch.qos.logback.core.helpers.NOPAppender">
+          <filter class="uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheLogFilter">
+            <className>org.springframework.cache.interceptor</className>
+          </filter>
+        </appender>
         <appender name="logAppender" class="ch.qos.logback.core.ConsoleAppender">
+            <filter class="uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheLogFilter" />
             <layout class="ch.qos.logback.classic.PatternLayout">
                 <Pattern>${LOG_PATTERN}</Pattern>
             </layout>
@@ -17,6 +29,9 @@
 
     <springProfile name="!(stdout)">
         <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+            <filter class="uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheLogFilter">
+              <className>org.springframework.cache.interceptor</className>
+            </filter>
             <layout class="ch.qos.logback.classic.PatternLayout">
                 <Pattern>${LOG_PATTERN}</Pattern>
             </layout>
@@ -52,7 +67,7 @@
         <appender-ref ref="consoleAppender"/>
     </logger>
 
-    <logger name="org.springframework.cache" level="trace">
+    <logger name="org.springframework.cache.interceptor" level="trace">
       <appender-ref ref="consoleAppender" />
     </logger>
 
