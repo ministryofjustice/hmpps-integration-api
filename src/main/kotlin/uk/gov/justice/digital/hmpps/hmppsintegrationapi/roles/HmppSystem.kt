@@ -9,5 +9,6 @@ val hmppsSystem =
       -"/health/readiness"
       -"/v1/status"
       -"/v2/config/authorisation"
+      -"/v1/hmpps/reference-data"
     }
   }
