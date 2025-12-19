@@ -3,8 +3,10 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Companion.GATEWAY_CACHE
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
@@ -44,6 +46,7 @@ class CorePersonRecordGateway(
    * Any exceptions should be thrown at this point and caught at the HmppsIntegrationApiExceptionHandler
    * There is no point passing these exceptions all the way up to a controller just to be thrown and caught by the HmppsIntegrationApiExceptionHandler
    */
+  @Cacheable(GATEWAY_CACHE, keyGenerator = "gatewayKeyGenerator", condition = "@gatewayCacheEnabled")
   fun corePersonRecordFor(
     cprType: IdentifierType, // prison or probation
     hmppsId: String,
