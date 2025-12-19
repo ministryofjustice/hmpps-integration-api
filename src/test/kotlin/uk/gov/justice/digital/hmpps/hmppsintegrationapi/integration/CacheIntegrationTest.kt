@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyMap
+import org.mockito.kotlin.any
 import org.mockito.kotlin.atLeast
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.never
@@ -14,6 +15,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.GATEWAY_CACHE_METRICS
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CorePersonRecordGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import kotlin.test.assertEquals
@@ -32,8 +34,11 @@ class CacheIntegrationTest : IntegrationTestBase() {
   @MockitoSpyBean
   private lateinit var prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway
 
+  @MockitoSpyBean
+  private lateinit var corePersonRecordGateway: CorePersonRecordGateway
+
   @Test
-  fun `caches prisoner data when addresses endpoint called twice and feature enabled`() {
+  fun `caches prisoner and cpr data when addresses endpoint called twice and feature enabled`() {
     // Request 1
     callApiWithCN(path, specificPrisonCn)
       .andExpect(status().isOk)
@@ -45,11 +50,14 @@ class CacheIntegrationTest : IntegrationTestBase() {
     // Calls the cached method only once
     verify(prisonerOffenderSearchGateway, times(1)).getPrisonOffender(hmppsId)
 
-    // 1 cache miss for the first request
-    assertEquals(cache.nativeCache.stats().missCount(), 1L)
+    // Calls the cached CPR method only once
+    verify(corePersonRecordGateway, times(1)).corePersonRecordFor(any(), eq(hmppsId))
 
-    // 1 cache hit for the second request
-    assertEquals(cache.nativeCache.stats().hitCount(), 1L)
+    // 2 cache misses for the first request
+    assertEquals(2L, cache.nativeCache.stats().missCount())
+
+    // 2 cache hit for the second request
+    assertEquals(2L, cache.nativeCache.stats().hitCount())
 
     verify(telemetryService, atLeast(1)).trackEvent(eq(GATEWAY_CACHE_METRICS), anyMap(), anyMap())
   }
@@ -66,6 +74,9 @@ class CacheDisabledIntegrationTest : IntegrationTestBase() {
   @MockitoSpyBean
   private lateinit var prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway
 
+  @MockitoSpyBean
+  private lateinit var corePersonRecordGateway: CorePersonRecordGateway
+
   @Test
   fun `does not cache prisoner data when addresses endpoint called twice and feature disabled`() {
     // Request 1
@@ -78,6 +89,9 @@ class CacheDisabledIntegrationTest : IntegrationTestBase() {
 
     // Calls the cacheable method twice (does not cache)
     verify(prisonerOffenderSearchGateway, times(2)).getPrisonOffender(hmppsId)
+
+    // Calls the cached CPR method only once
+    verify(corePersonRecordGateway, times(2)).corePersonRecordFor(any(), eq(hmppsId))
 
     verify(telemetryService, never()).trackEvent(eq(GATEWAY_CACHE_METRICS), anyMap(), anyMap())
   }
