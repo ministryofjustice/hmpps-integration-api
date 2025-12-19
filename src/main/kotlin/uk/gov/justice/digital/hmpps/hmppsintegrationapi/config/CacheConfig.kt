@@ -102,7 +102,7 @@ class CacheMetricsListener {
     telemetryService.trackEvent(
       GATEWAY_CACHE_METRICS,
       mapOf(
-        "hitRate" to "$hitRate%",
+        "hitRate" to hitRate.toString(),
         "hitCount" to metrics.hitCount().toString(),
         "missCount" to metrics.missCount().toString(),
         "loadSuccessCount" to metrics.loadSuccessCount().toString(),
