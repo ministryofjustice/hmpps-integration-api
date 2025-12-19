@@ -4,6 +4,9 @@ import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.filter.Filter
 import ch.qos.logback.core.spi.FilterReply
 import com.github.benmanes.caffeine.cache.Caffeine
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.cache.CacheManager
 import org.springframework.cache.annotation.EnableCaching
 import org.springframework.cache.caffeine.CaffeineCache
@@ -12,12 +15,17 @@ import org.springframework.cache.support.NoOpCacheManager
 import org.springframework.cache.support.SimpleCacheManager
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.scheduling.annotation.EnableScheduling
+import org.springframework.scheduling.annotation.Scheduled
+import org.springframework.stereotype.Component
 import org.springframework.util.StringUtils
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.GATEWAY_CACHE_ENABLED
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import java.lang.reflect.Method
 import java.time.Duration
 
 @EnableCaching
+@EnableScheduling
 @Configuration
 class CacheConfig {
   companion object {
@@ -74,5 +82,33 @@ class CacheLogFilter : Filter<ILoggingEvent>() {
       return FilterReply.DENY
     }
     return FilterReply.ACCEPT
+  }
+}
+
+const val GATEWAY_CACHE_METRICS = "GatewayCacheMetrics"
+
+@Component
+@ConditionalOnProperty("feature-flag.gateway-cache-enabled", havingValue = "true")
+@ConditionalOnBean(CaffeineCache::class)
+class CacheMetricsListener {
+  @Autowired private lateinit var caffeineCache: CaffeineCache
+
+  @Autowired private lateinit var telemetryService: TelemetryService
+
+  @Scheduled(fixedDelay = 60000)
+  fun logCacheMetrics() {
+    val metrics = caffeineCache.nativeCache.stats()
+    telemetryService.trackEvent(
+      GATEWAY_CACHE_METRICS,
+      mapOf(
+        "hitCount" to metrics.hitCount().toString(),
+        "missCount" to metrics.missCount().toString(),
+        "loadSuccessCount" to metrics.loadSuccessCount().toString(),
+        "loadFailureCount" to metrics.loadFailureCount().toString(),
+        "totalLoadTime" to metrics.totalLoadTime().toString(),
+        "evictionCount" to metrics.evictionCount().toString(),
+        "evictionWeight" to metrics.evictionWeight().toString(),
+      ),
+    )
   }
 }
