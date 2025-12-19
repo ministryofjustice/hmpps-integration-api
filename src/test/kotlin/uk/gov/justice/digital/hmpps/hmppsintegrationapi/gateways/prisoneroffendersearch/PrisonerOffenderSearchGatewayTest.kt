@@ -45,6 +45,8 @@ class PrisonerOffenderSearchGatewayTest(
       val nomsNumber = "mockNomsNumber"
       val postPath = "/global-search?size=9999"
       val getPath = "/prisoner/$nomsNumber"
+      val prisonerDetailsPath = "/prisoner-detail"
+
       val prisonerOffenderSearchApiMockServer = ApiMockServer.create(UpstreamApi.PRISONER_OFFENDER_SEARCH)
 
       beforeEach {
@@ -269,6 +271,57 @@ class PrisonerOffenderSearchGatewayTest(
 
           val response = prisonerOffenderSearchGateway.getPersons(firstNameThatDoesNotExist, lastNameThatDoesNotExist, null)
           response.data.shouldBeEmpty()
+        }
+
+        it("returns an error when 404 NOT FOUND is returned") {
+          val response = prisonerOffenderSearchGateway.getPersons("Not", "Found", null)
+          response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
+        }
+      }
+
+      describe("#getPrisonerDetails") {
+        val firstName = "Robert"
+        val lastName = "Larsen"
+        val dateOfBirth = "1975-04-02"
+        val prisonIds = listOf("MDI")
+
+        beforeEach {
+          prisonerOffenderSearchApiMockServer.stubForPost(
+            prisonerDetailsPath,
+            """
+            {
+              "firstName" : "Robert",
+              "lastName" : "Larsen",
+              "dateOfBirth" : "1975-04-02",
+              "includeAliases" : true,
+              "prisonIds" : [ "MDI" ],
+              "pagination" : {
+                "page" : 0,
+                "size" : 9999
+              }
+            }
+            """.removeWhitespaceAndNewlines(),
+            File(
+              "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/GetPerson.json",
+            ).readText(),
+          )
+        }
+
+        it("returns prisoner Details") {
+          val response = prisonerOffenderSearchGateway.getPrisonerDetails(firstName, lastName, dateOfBirth, true, prisonIds)
+          response.data[0].prisonerNumber.shouldBe("A1234AA")
+          response.data[0].bookingId.shouldBe("0001200924")
+          response.data[0].firstName.shouldBe(firstName)
+          response.data[0].middleNames.shouldBe("John James")
+          response.data[0].lastName.shouldBe(lastName)
+          response.data[0].maritalStatus.shouldBe("Widowed")
+
+          prisonerOffenderSearchApiMockServer.assertValidationPassed()
+        }
+
+        it("returns an error when 404 NOT FOUND is returned") {
+          val response = prisonerOffenderSearchGateway.getPrisonerDetails(firstName, lastName, dateOfBirth, true, emptyList())
+          response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
         }
       }
 

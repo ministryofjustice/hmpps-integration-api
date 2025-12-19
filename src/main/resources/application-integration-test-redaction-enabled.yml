@@ -93,10 +93,9 @@ feature-flag:
   use-historical-attendances-endpoint: true
   use-suitability-endpoint: true
   use-waiting-list-endpoint: true
-  simple-redaction: false
   use-contact-events-endpoint: true
   use-stubbed-contact-events-data: false
-  cert-revocation-enabled: true
+  gateway-cache-enabled: true
 
 authorisation:
   consumers:
@@ -163,12 +162,14 @@ authorisation:
       roles:
         - "reference-data-only"
       filters:
-    redacted-client:
-      include:
-        - "/v1/persons/[^/]*$"
     role-based-redacted-client:
       roles:
         - curious
+      filters:
+    lao-role-based-redacted-client:
+      roles:
+        - "test-role"
+      include:
       filters:
 
 redaction:

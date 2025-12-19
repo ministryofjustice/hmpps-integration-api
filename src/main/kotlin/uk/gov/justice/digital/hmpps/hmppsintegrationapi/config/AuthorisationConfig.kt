@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters.Companion.NO_FILTERS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory
@@ -63,12 +64,26 @@ class AuthorisationConfig {
       consumerConfig?.roles?.mapNotNull {
         uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles[it]
       }
+    return allFilters(consumerConfig, roles)
+  }
+
+  fun allFilters(
+    consumerConfig: ConsumerConfig?,
+    roles: List<Role>?,
+  ): ConsumerFilters? {
     val consumerPseudoRole = Role(permissions = null, filters = consumerConfig?.filters)
     val allRoles: List<Role> = listOf(consumerPseudoRole) + (roles ?: emptyList())
 
     if (allRoles.all { it.filters?.hasFilters() == false }) {
       return null
     }
+
+    val supervisionStatuses =
+      getDistinctValuesIfNotWildcarded(
+        allRoles
+          .filter { it.filters?.hasSupervisionStatusesFilter() == true }
+          .mapNotNull { it.filters?.supervisionStatuses },
+      )
 
     val prisons =
       getDistinctValuesIfNotWildcarded(
@@ -91,8 +106,17 @@ class AuthorisationConfig {
           .mapNotNull { it.filters?.mappaCategories },
       )
 
-    return if (caseNotes == null && prisons == null && mappaCategories == null) null else ConsumerFilters(prisons, caseNotes, mappaCategories)
+    val alertCodes =
+      getDistinctValuesIfNotWildcarded(
+        allRoles
+          .filter { it.filters?.hasAlertCodes() == true }
+          .mapNotNull { it.filters?.alertCodes },
+      )
+
+    return if (allNull(caseNotes, prisons, mappaCategories, alertCodes, supervisionStatuses)) NO_FILTERS else ConsumerFilters(prisons, caseNotes, mappaCategories, alertCodes, supervisionStatuses)
   }
+
+  fun allNull(vararg values: List<Any>?) = values.all { it == null }
 
   /**
    * Reduces a list of list<Any> (mixed) type to a flattened list of specified Enum type

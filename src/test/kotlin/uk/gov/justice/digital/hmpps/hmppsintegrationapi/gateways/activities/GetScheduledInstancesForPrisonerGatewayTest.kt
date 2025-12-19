@@ -81,7 +81,7 @@ class GetScheduledInstancesForPrisonerGatewayTest(
 
       it("Returns scheduled instances for prisoner") {
         mockServer.stubForGet(
-          "/integration-api/prisons/$prisonCode/$prisonerNumber/scheduled-instances?startDate=2022-09-10&endDate=2023-09-10",
+          "/integration-api/prisons/$prisonCode/prisoner/$prisonerNumber/scheduled-instances?startDate=2022-09-10&endDate=2023-09-10",
           File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/activities/fixtures/GetActivitiesScheduledInstanceForPrisoner.json").readText(),
         )
 
@@ -95,7 +95,7 @@ class GetScheduledInstancesForPrisonerGatewayTest(
 
       it("Returns a bad request error") {
         mockServer.stubForGet(
-          "/integration-api/prisons/$prisonCode/$prisonerNumber/scheduled-instances?startDate=2022-09-10&endDate=2023-09-10",
+          "/integration-api/prisons/$prisonCode/prisoner/$prisonerNumber/scheduled-instances?startDate=2022-09-10&endDate=2023-09-10",
           "{}",
           HttpStatus.BAD_REQUEST,
         )

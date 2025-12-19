@@ -19,7 +19,7 @@ class ScheduledInstancesIntegrationTest : IntegrationTestBase() {
   @Test
   fun `return the scheduled instances`() {
     activitiesMockServer.stubForGet(
-      "/integration-api/prisons/$prisonId/$nomsId/scheduled-instances?startDate=2022-09-10&endDate=2023-09-10",
+      "/integration-api/prisons/$prisonId/prisoner/$nomsId/scheduled-instances?startDate=2022-09-10&endDate=2023-09-10",
       File("$gatewaysFolder/activities/fixtures/GetActivitiesScheduledInstanceForPrisoner.json").readText(),
     )
     callApi(path)

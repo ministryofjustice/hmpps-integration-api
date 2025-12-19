@@ -22,7 +22,7 @@
         "croNumber": "**REDACTED**"
       },
       "pncId": "**REDACTED**",
-      "hmppsId": null,
+      "hmppsId": "A1234AA",
       "contactDetails": null
     }
   }

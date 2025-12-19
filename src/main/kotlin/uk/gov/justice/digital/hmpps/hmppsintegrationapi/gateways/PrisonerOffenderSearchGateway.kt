@@ -2,8 +2,10 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Companion.GATEWAY_CACHE
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -15,7 +17,17 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffenders
 @Component
 class PrisonerOffenderSearchGateway(
   @Value("\${services.prisoner-offender-search.base-url}") baseUrl: String,
-) {
+) : UpstreamGateway {
+  override fun metaData() =
+    GatewayMetadata(
+      summary = "A service for searching for prisoners in NOMIS, augmented by data from other prison services",
+      developerPortalId = "DPS072",
+      developerPortalUrl = "https://developer-portal.hmpps.service.justice.gov.uk/components/hmpps-prisoner-search",
+      apiDocUrl = "https://prisoner-search-dev.prison.service.justice.gov.uk/swagger-ui/index.html",
+      apiSpecUrl = "https://prisoner-search-dev.prison.service.justice.gov.uk/v3/api-docs",
+      gitHubRepoUrl = "https://github.com/ministryofjustice/hmpps-prisoner-search",
+    )
+
   private val webClient = WebClientWrapper(baseUrl)
 
   @Autowired
@@ -101,6 +113,7 @@ class PrisonerOffenderSearchGateway(
     }
   }
 
+  @Cacheable(GATEWAY_CACHE, keyGenerator = "gatewayKeyGenerator", condition = "@gatewayCacheEnabled")
   fun getPrisonOffender(nomsNumber: String): Response<POSPrisoner?> {
     val result =
       webClient.request<POSPrisoner>(

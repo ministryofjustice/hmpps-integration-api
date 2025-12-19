@@ -19,7 +19,17 @@ class PrisonerBaseLocationGateway(
   private val featureFlag: FeatureFlagConfig,
   @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
   @Value("\${services.prisoner-base-location.base-url}") baseUrl: String,
-) {
+) : UpstreamGateway {
+  override fun metaData() =
+    GatewayMetadata(
+      summary = "Prisoner Locations is used to manage the residential and internal locations of the prison estate.",
+      developerPortalId = "DPS037",
+      developerPortalUrl = "https://developer-portal.hmpps.service.justice.gov.uk/components/hmpps-prisoner-base-location-api",
+      apiDocUrl = "https://prisoner-base-location-api.hmpps.service.justice.gov.uk/swagger-ui/index.html",
+      apiSpecUrl = "https://prisoner-base-location-api.hmpps.service.justice.gov.uk/v3/api-docs",
+      gitHubRepoUrl = "https://github.com/ministryofjustice/hmpps-prisoner-base-location-api",
+    )
+
   private val webClient = WebClientWrapper(baseUrl)
 
   @Autowired

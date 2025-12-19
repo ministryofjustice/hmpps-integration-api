@@ -18,7 +18,17 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelations
 @Component
 class PersonalRelationshipsGateway(
   @Value("\${services.personal-relationships.base-url}") baseUrl: String,
-) {
+) : UpstreamGateway {
+  override fun metaData() =
+    GatewayMetadata(
+      summary = "Provides next-of-kin and other social/professional contact information",
+      developerPortalId = "DPS096",
+      developerPortalUrl = "https://developer-portal.hmpps.service.justice.gov.uk/components/hmpps-personal-relationships-api",
+      apiDocUrl = "https://personal-relationships-api-dev.hmpps.service.justice.gov.uk/swagger-ui/index.html",
+      apiSpecUrl = "https://personal-relationships-api-dev.hmpps.service.justice.gov.uk/v3/api-docs",
+      gitHubRepoUrl = "https://github.com/ministryofjustice/hmpps-personal-relationships-api",
+    )
+
   private val webClient = WebClientWrapper(baseUrl)
   private val mapper: ObjectMapper = ObjectMapper()
 

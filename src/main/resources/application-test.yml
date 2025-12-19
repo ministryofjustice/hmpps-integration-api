@@ -90,11 +90,11 @@ feature-flag:
   use-historical-attendances-endpoint: true
   use-suitability-endpoint: true
   use-waiting-list-endpoint: true
-  simple-redaction: false
   use-contact-events-endpoint: true
   epf-endpoint-includes-lao: false
   cpr-enabled: true
-  cert-revocation-enabled: true
+  enhanced-search-enabled: false
+  gateway-cache-enabled: true
 
 authorisation:
   consumers:
@@ -127,13 +127,15 @@ authorisation:
     private-prison-only:
       roles:
         - "private-prison"
-      filters:
     limited-case-notes:
       roles:
         - "all-endpoints"
       filters:
         case-notes:
           - "CAB"
-    redacted-client:
-      include:
-        - "/v1/persons/[^/]*$"
+    supervision-status-test:
+      roles:
+        - "all-endpoints"
+      filters:
+        supervisionStatuses:
+          - PRISONS

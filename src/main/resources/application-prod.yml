@@ -24,7 +24,7 @@ services:
   non-associations:
     base-url: https://non-associations-api.hmpps.service.justice.gov.uk
   manage-prison-visits:
-    base-url: https://hmpps-manage-prison-visits-orchestration-dev.prison.service.justice.gov.uk
+    base-url: https://hmpps-manage-prison-visits-orchestration.prison.service.justice.gov.uk
   incentives:
     base-url: https://incentives-api.hmpps.service.justice.gov.uk
   alerts:
@@ -53,16 +53,15 @@ feature-flag:
   use-deallocation-reasons-endpoint: true
   use-allocation-endpoint: true
   use-education-endpoint: true
-  use-prisoner-base-location-api: false
+  use-prisoner-base-location-api: true
   use-historical-attendances-endpoint: true
   use-suitability-endpoint: true
   use-waiting-list-endpoint: true
-  simple-redaction: false
   use-contact-events-endpoint: false
   epf-endpoint-includes-lao: false
   epf-gateway-disabled: true
-  cpr-enabled: false
-  cert-revocation-enabled: true
+  cpr-enabled: true
+  gateway-cache-enabled: false
 
 authorisation:
   consumers:
@@ -94,7 +93,7 @@ authorisation:
       notes: "Post-deployment smoke tests"
       roles:
         - "hmpps-system"
-
-redaction:
-  client-names:
-    - meganexus
+    smartinbox:
+      notes: "See client list in Confluence"
+      roles:
+        - "smartinbox"

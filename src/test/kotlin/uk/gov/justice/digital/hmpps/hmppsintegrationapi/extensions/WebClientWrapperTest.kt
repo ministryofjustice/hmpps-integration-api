@@ -12,8 +12,6 @@ import io.kotest.inspectors.shouldForAll
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.assertThrows
-import org.mockito.kotlin.spy
-import org.mockito.kotlin.whenever
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.web.reactive.function.client.WebClientResponseException
@@ -50,7 +48,7 @@ class WebClientWrapperTest :
   DescribeSpec({
     val mockServer = TestApiMockServer()
     lateinit var webClient: WebClientWrapper
-    lateinit var wrapper: WebClientWrapper
+    lateinit var retryWebClient: WebClientWrapper
 
     val id = "ABC1234"
     val getPath = "/test/$id"
@@ -65,10 +63,18 @@ class WebClientWrapperTest :
           baseUrl = mockServer.baseUrl(),
           connectTimeoutMillis = 500,
           responseTimeoutSeconds = 1,
+          retryAttempts = 0L,
+          initialBackOffDuration = Duration.ofSeconds(0L),
         )
-      wrapper = spy(webClient)
-      whenever(wrapper.MIN_BACKOFF_DURATION).thenReturn(Duration.ofSeconds(0L))
-      whenever(wrapper.MAX_RETRY_ATTEMPTS).thenReturn(1L)
+
+      retryWebClient =
+        WebClientWrapper(
+          baseUrl = mockServer.baseUrl(),
+          connectTimeoutMillis = 500,
+          responseTimeoutSeconds = 1,
+          retryAttempts = 1L,
+          initialBackOffDuration = Duration.ofSeconds(0L),
+        )
     }
 
     afterTest {
@@ -80,7 +86,7 @@ class WebClientWrapperTest :
         listOf(502, 503, 504, 522, 599, 499, 408).forEach {
           mockServer.resetAll()
           mockServer.stubForRetry(it.toString(), getPath, 2, it, 200, """{"sourceName" : "Harold"}""".removeWhitespaceAndNewlines())
-          val result = wrapper.request<TestModel>(HttpMethod.GET, getPath, headers, UpstreamApi.TEST)
+          val result = retryWebClient.request<TestModel>(HttpMethod.GET, getPath, headers, UpstreamApi.TEST)
           result.shouldBeInstanceOf<WebClientWrapperResponse.Success<TestModel>>()
           val testDomainModel = result.data.toDomain()
           mockServer.verify(exactly(2), getRequestedFor(urlEqualTo(getPath)))
@@ -116,8 +122,9 @@ class WebClientWrapperTest :
       }
 
       it("calls requestWithRetry for a GET requestList") {
+        // Set to retry once (2 requests in total)
         mockServer.stubForRetry("2", getPath, 2, 502, 200, """[{"sourceName" : "Harold"}]""".removeWhitespaceAndNewlines())
-        val result = wrapper.requestList<TestModel>(HttpMethod.GET, getPath, headers, UpstreamApi.TEST)
+        val result = retryWebClient.requestList<TestModel>(HttpMethod.GET, getPath, headers, UpstreamApi.TEST)
         result.shouldBeInstanceOf<WebClientWrapperResponse.Success<List<TestModel>>>()
         val testDomainModel = result.data[0].toDomain()
         mockServer.verify(exactly(2), getRequestedFor(urlEqualTo(getPath)))
@@ -405,6 +412,7 @@ class WebClientWrapperTest :
             "http://10.255.255.1:81",
             connectTimeoutMillis = 300,
             responseTimeoutSeconds = 2,
+            retryAttempts = 0L,
           )
 
         val exception =

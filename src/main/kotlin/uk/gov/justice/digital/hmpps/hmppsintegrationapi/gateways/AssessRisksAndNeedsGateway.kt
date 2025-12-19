@@ -20,7 +20,17 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 class AssessRisksAndNeedsGateway(
   @Value("\${services.assess-risks-and-needs.base-url}") baseUrl: String,
   private val featureConfig: FeatureFlagConfig,
-) {
+) : UpstreamGateway {
+  override fun metaData() =
+    GatewayMetadata(
+      summary = "Assess Risks and Needs",
+      developerPortalId = "SP01",
+      developerPortalUrl = "https://developer-portal.hmpps.service.justice.gov.uk/components/hmpps-assess-risks-and-needs-coordinator-api",
+      apiDocUrl = "https://assess-risks-and-needs-dev.hmpps.service.justice.gov.uk/swagger-ui/index.html",
+      apiSpecUrl = "https://assess-risks-and-needs-dev.hmpps.service.justice.gov.uk/v3/api-docs",
+      gitHubRepoUrl = "https://github.com/ministryofjustice/hmpps-assess-risks-and-needs-coordinator-api",
+    )
+
   private val webClient = WebClientWrapper(baseUrl)
 
   @Autowired

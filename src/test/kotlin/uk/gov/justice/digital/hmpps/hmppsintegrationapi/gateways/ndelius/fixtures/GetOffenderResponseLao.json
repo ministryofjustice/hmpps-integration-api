@@ -1,0 +1,118 @@
+[
+  {
+    "firstName": "string",
+    "surname": "string",
+    "middleNames": ["string"],
+    "dateOfBirth": "2019-08-24",
+    "gender": "string",
+    "offenderProfile": {
+      "ethnicity": "string",
+      "nationality": "string",
+      "religion": "string",
+      "sexualOrientation": "string",
+      "disabilities": [
+        {
+          "disabilityType": {
+            "code": "string",
+            "description": "string"
+          },
+          "condition": {
+            "code": "string",
+            "description": "string"
+          },
+          "startDate": "2019-08-24",
+          "endDate": "2019-08-24",
+          "notes": "string"
+        }
+      ]
+    },
+    "offenderAliases": [
+      {
+        "firstName": "string",
+        "surname": "string",
+        "middleNames": ["string"],
+        "dateOfBirth": "2019-08-24",
+        "gender": "string"
+      }
+    ],
+    "contactDetails": {
+      "phoneNumbers": [
+        {
+          "number": "string",
+          "type": "TELEPHONE"
+        }
+      ],
+      "emailAddresses": ["string"]
+    },
+    "otherIds": {
+      "pncNumber": "2004/13116M",
+      "nomsNumber": "G2996UX",
+      "croNumber": "123456/24A",
+      "crn": "A123456"
+    },
+    "age": -2147483648,
+    "activeProbationManagedSentence": true,
+    "currentRestriction": false,
+    "restrictionMessage": "SOME RESTRICTION MESSAGE",
+    "currentExclusion": false,
+    "exclusionMessage": null
+  },
+  {
+    "firstName": "string",
+    "surname": "string",
+    "middleNames": ["string"],
+    "dateOfBirth": "2019-08-24",
+    "gender": "string",
+    "offenderProfile": {
+      "ethnicity": "string",
+      "nationality": "string",
+      "religion": "string",
+      "sexualOrientation": "string",
+      "disabilities": [
+        {
+          "disabilityType": {
+            "code": "string",
+            "description": "string"
+          },
+          "condition": {
+            "code": "string",
+            "description": "string"
+          },
+          "startDate": "2019-08-24",
+          "endDate": "2019-08-24",
+          "notes": "string"
+        }
+      ]
+    },
+    "offenderAliases": [
+      {
+        "firstName": "string",
+        "surname": "string",
+        "middleNames": ["string"],
+        "dateOfBirth": "2019-08-24",
+        "gender": "string"
+      }
+    ],
+    "contactDetails": {
+      "phoneNumbers": [
+        {
+          "number": "string",
+          "type": "TELEPHONE"
+        }
+      ],
+      "emailAddresses": ["string"]
+    },
+    "otherIds": {
+      "pncNumber": "2004/13116M",
+      "nomsNumber": "G2996UX",
+      "croNumber": "123456/24A",
+      "crn": "A123123"
+    },
+    "age": -2147483648,
+    "activeProbationManagedSentence": true,
+    "currentRestriction": true,
+    "restrictionMessage": "SOME RESTRICTION MESSAGE",
+    "currentExclusion": false,
+    "exclusionMessage": null
+  }
+]

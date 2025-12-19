@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr
 
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.CprResultException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService.IdentifierType
 import java.time.LocalDate
 
@@ -24,6 +25,18 @@ data class CorePersonRecord(
       IdentifierType.NOMS -> identifiers?.prisonNumbers?.takeIf { it.size == 1 }?.firstOrNull()
       IdentifierType.CRN -> identifiers?.crns?.takeIf { it.size == 1 }?.firstOrNull()
       else -> null
+    }
+
+  fun getIdentifier(
+    identifierType: IdentifierType,
+    hmppsId: String,
+  ) = getIdentifier(identifierType) ?: throw CprResultException(identifierType, hmppsId, multipleIdentifiersForType(identifierType))
+
+  fun multipleIdentifiersForType(identifierType: IdentifierType): List<String> =
+    when (identifierType) {
+      IdentifierType.NOMS -> identifiers?.prisonNumbers?.takeIf { it.size > 1 } ?: emptyList()
+      IdentifierType.CRN -> identifiers?.crns?.takeIf { it.size > 1 } ?: emptyList()
+      else -> emptyList()
     }
 }
 

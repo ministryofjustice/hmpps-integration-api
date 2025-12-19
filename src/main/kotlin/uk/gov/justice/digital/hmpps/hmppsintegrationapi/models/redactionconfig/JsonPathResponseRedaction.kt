@@ -6,21 +6,21 @@ import com.jayway.jsonpath.JsonPath
 import com.jayway.jsonpath.Option
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionContext
 
-class JsonPathResponseRedaction(
-  val objectMapper: ObjectMapper,
-  val type: RedactionType,
-  val paths: List<String>? = null,
-  val includes: List<String>? = emptyList(),
-  val laoOnly: Boolean = false,
+open class JsonPathResponseRedaction(
+  open val objectMapper: ObjectMapper,
+  open val type: RedactionType,
+  open val endpoints: List<String>? = null,
+  open val redactions: List<String>? = emptyList(),
+  open val laoOnly: Boolean = false,
 ) : ResponseRedaction {
-  private val pathPatterns: List<Regex>? = paths?.map(::Regex)
+  private val endpointPatterns: List<Regex>? = endpoints?.map(::Regex)
 
   override fun apply(
     policyName: String,
     redactionContext: RedactionContext,
     responseBody: Any,
   ): Any {
-    var shouldRun = pathPatterns?.any { it.matches(redactionContext.requestUri) } ?: true
+    var shouldRun = endpointPatterns?.any { it.matches(redactionContext.requestUri) } ?: true
     if (!shouldRun) return responseBody
 
     if (laoOnly && !redactionContext.isLimitedAccessOffender()) return responseBody
@@ -32,7 +32,7 @@ class JsonPathResponseRedaction(
       }
 
     val doc = parseForSearch(jsonString)
-    includes.orEmpty().forEach { jsonPath ->
+    redactions.orEmpty().forEach { jsonPath ->
       redactValues(jsonPath, doc, redactionContext, policyName)
     }
     return objectMapper.readValue(doc.jsonString(), responseBody::class.java)

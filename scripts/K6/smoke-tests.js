@@ -65,8 +65,6 @@ const year = today.getFullYear();
 const month = (today.getMonth() + 1).toString().padStart(2, '0');
 const day = today.getDate().toString().padStart(2, '0');
 const todayFormatted = `${year}-${month}-${day}`
-const startDate = "2022-01-01"
-const endDate = "2022-02-01"
 const attendancesStartDate = "2025-07-04"
 const attendancesEndDate = "2025-07-11"
 
@@ -87,7 +85,6 @@ const get_endpoints = [
   `/v1/persons/${plpHmppsId}/education`,
   `/v1/activities/${activityId}/schedules`,
   `/v1/activities/schedule/${scheduleId}`,
-  `/v1/prison/${prisonId}/prisoners/${hmppsId}/scheduled-instances?startDate=${startDate}&endDate=${endDate}`,
   `/v1/prison/prisoners/${attendancesHmppsId}/activities/attendances?startDate=${attendancesStartDate}&endDate=${attendancesEndDate}`,
   `/v1/activities/schedule/${scheduleId}/waiting-list-applications`,
   `/v1/activities/schedule/${scheduleId}/suitability-criteria`,
@@ -282,6 +279,19 @@ function validate_get_request(path) {
   return res;
 }
 
+function validate_response_list_not_empty(response, message) {
+  let data = response.json() ? response.json()["data"] : null;
+  check(data, {
+    [message]: () => data != null && data.length > 0,
+  })
+}
+
+function validate_response_attribute_not_empty(response, attributeName, message) {
+  let data = response.json() ? response.json()["data"] : null;
+  check(data, {
+    [message]: () => data != null && data[attributeName] != null,
+  })
+}
 
 function confirm_access_denied(path) {
   const res = http.get(`${baseUrl}${path}`, httpParams);
@@ -357,6 +367,9 @@ function verify_get_person(hmppsId) {
     [`Last name identified`]: (name) => name != null,
   })
 
+  let isLao = probationData["currentRestriction"] === "true" || probationData["currentExclusion"] === "true";
+  console.log(`Person ${hmppsId} is LAO? : ${isLao}`);
+
   validate_person_search(lastName, dob, crn);
 
   let nomisNumber = res.json()["data"]["prisonerOffenderSearch"]["identifiers"]["nomisNumber"];
@@ -374,6 +387,7 @@ function verify_get_person(hmppsId) {
  */
 function minimal_prod_verification() {
   verify_system_endpoints();
+  validate_get_request(`/v1/hmpps/reference-data`);
 }
 
 /**
@@ -403,7 +417,13 @@ function partial_access_tests() {
 }
 
 function verify_reference_data() {
-  validate_get_request(`/v1/hmpps/reference-data`);
+  let res = validate_get_request(`/v1/hmpps/reference-data`);
+  if (res.status === 500) {
+    // Most likely cause of reference data endpoint to return a 500 is Delius is down
+    // in which case there is no point continuing.
+    exec.test.abort(`Reference data endpoint failed with 500 response code, aborting tests`)
+    return
+  }
   validate_get_request(`/v1/activities/attendance-reasons`);
   validate_get_request(`/v1/activities/deallocation-reasons`);
 }
@@ -436,6 +456,23 @@ function verify_prisoner_endpoints(prisonId, nomisNumber) {
   validate_get_request(`${prisonerPrefix}/non-associations`);
 }
 
+function verify_activities_search(prisonId, prisonerId, startDate, days = 90) {
+  // Note that the upstream API will return an error if more than 90 days of data is requested
+  let date = new Date(startDate)
+  date.setDate(date.getDate() + days);
+  let endDate = date.toISOString().split('T')[0];
+
+  const path = `/v1/prison/${prisonId}/prisoners/${prisonerId}/scheduled-instances?startDate=${startDate}&endDate=${endDate}`
+  const res = http.get(`${baseUrl}${path}`, httpParams);
+  if (!check(res, {
+    // TODO: add activities so that this returns 200, not a 404
+    [`GET ${path} successful`]: (r) => r.status == 200,
+  })) {
+    exec.test.fail(`GET ${path} failed, http status = ${res.status}`);
+  }
+  return res;
+}
+
 function verify_prisons_endpoints(nomisNumber) {
   group('prisons', () => {
     let res = validate_get_request(`/v1/prison/prisoners/${nomisNumber}`)
@@ -465,8 +502,13 @@ function verify_prisons_endpoints(nomisNumber) {
       [`Prison ID found`]: () => prisonId != null,
     })
 
-    verify_prison_endpoints(prisonId);
-    verify_prisoner_endpoints(prisonId, nomisNumber);
+    if (prisonId === "OUT") {
+      console.log(`Skipping prison checks for ${nomisNumber} - OUT`);
+    } else {
+      verify_prison_endpoints(prisonId);
+      verify_prisoner_endpoints(prisonId, nomisNumber);
+    }
+    verify_activities_search("MKI", "A8451DY", "2022-01-01")
   })
 }
 
@@ -476,13 +518,20 @@ function verify_pnd_alerts(hmppsId) {
 
 function verify_risk_endpoints(hmppsId) {
   group('risk', () => {
+    let res = validate_get_request(`/v1/persons/${hmppsId}/status-information`);
+    validate_response_list_not_empty(res, "Status Information found");
     validate_get_request(`/v1/persons/${hmppsId}/licences/conditions`);
-    validate_get_request(`/v1/persons/${hmppsId}/status-information`);
-    validate_get_request(`/v1/persons/${hmppsId}/risks/mappadetail`);
     validate_get_request(`/v1/persons/${hmppsId}/risks/serious-harm`);
     validate_get_request(`/v1/persons/${hmppsId}/risks/scores`);
     validate_get_request(`/v1/persons/${hmppsId}/risks/dynamic`);
     validate_get_request(`/v1/persons/${hmppsId}/risks/categories`);
+
+    res = validate_get_request(`/v1/persons/${hmppsId}/risks/mappadetail`);
+    if ((res.status === 200) && (res.json()["data"] !== null)) {
+      console.log(`MAPPA category for ${hmppsId} is ${res.json()["data"]["category"]}`);
+    } else {
+      console.log(`No MAPPA data for ${hmppsId}`);
+    }
   })
 }
 
@@ -498,13 +547,15 @@ function verify_get_basic_details(hmppsId) {
     validate_get_request(`/v1/persons/${hmppsId}/physical-characteristics`);
     validate_get_request(`/v1/persons/${hmppsId}/protected-characteristics`);
     validate_get_request(`/v1/persons/${hmppsId}/care-needs`);
-    validate_get_request(`/v1/persons/${hmppsId}/needs`);
     validate_get_request(`/v1/persons/${hmppsId}/person-responsible-officer`);
     validate_get_request(`/v1/persons/${hmppsId}/case-notes`);
     validate_get_request(`/v1/persons/${hmppsId}/health-and-diet`);
     validate_get_request(`/v1/persons/${hmppsId}/languages`);
     validate_get_request(`/v1/persons/${hmppsId}/iep-level`);
     validate_get_request(`/v1/persons/${hmppsId}/sentences/latest-key-dates-and-adjustments`);
+
+    let res = validate_get_request(`/v1/persons/${hmppsId}/needs`);
+    validate_response_attribute_not_empty(res, "assessedOn", "Needs assessment found");
   })
 }
 
@@ -597,6 +648,9 @@ export default function ()  {
     case "MAIN":
       structured_verification_test(primaryHmppsId);
       simple_endpoint_tests();
+      break
+    case "STRUCTURED":
+      structured_verification_test(primaryHmppsId);
       break
     case "PROD":
     case "MINIMAL":

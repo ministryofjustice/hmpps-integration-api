@@ -1,8 +1,10 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.util
 
 import org.springframework.context.ApplicationContext
+import org.springframework.stereotype.Component
 import org.springframework.util.ClassUtils
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.UpstreamGateway
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 
@@ -48,6 +50,14 @@ class ControllerGatewayMapper {
       .values
       .map { kClass(it) }
       .filter { isInPackage(it, BASE_PACKAGE_NAME) }
+
+  fun extApiUpstreamGateways(context: ApplicationContext): List<UpstreamGateway> =
+    context
+      .getBeansWithAnnotation(Component::class.java)
+      .values
+      .filter { it.javaClass.interfaces.contains(UpstreamGateway::class.java) }
+      .map { it as UpstreamGateway }
+      .toList()
 
   fun getControllerGatewayMapping(context: ApplicationContext): Map<String, Set<String>> =
     extApiRestControllers(context)

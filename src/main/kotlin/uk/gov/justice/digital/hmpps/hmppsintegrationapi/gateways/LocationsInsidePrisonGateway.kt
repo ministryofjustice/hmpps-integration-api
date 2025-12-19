@@ -15,7 +15,17 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.locationsInsidePr
 @Component
 class LocationsInsidePrisonGateway(
   @Value("\${services.locations-inside-prison.base-url}") baseUrl: String,
-) {
+) : UpstreamGateway {
+  override fun metaData() =
+    GatewayMetadata(
+      summary = "Residential Locations is used to manage the residential and internal locations of the prison estate.",
+      developerPortalId = "DPS038",
+      developerPortalUrl = "https://developer-portal.hmpps.service.justice.gov.uk/components/hmpps-locations-inside-prison-api",
+      apiDocUrl = "https://locations-inside-prison-api-dev.hmpps.service.justice.gov.uk/swagger-ui/index.html#/",
+      apiSpecUrl = "https://locations-inside-prison-api-dev.hmpps.service.justice.gov.uk/v3/api-docs",
+      gitHubRepoUrl = "https://github.com/ministryofjustice/hmpps-locations-inside-prison-api",
+    )
+
   private val webClient = WebClientWrapper(baseUrl)
 
   @Autowired

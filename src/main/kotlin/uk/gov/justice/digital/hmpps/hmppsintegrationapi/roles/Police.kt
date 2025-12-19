@@ -11,12 +11,11 @@ val police =
       -"/v1/pnd/persons/.*/alerts"
       -"/v1/persons/.*/sentences"
       -"/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
-      -"/v1/persons/.*/risks/scores"
       -"/v1/persons/.*/risks/serious-harm"
       -"/v1/persons/.*/risks/dynamic"
+      -"/v1/persons/.*/risks/mappadetail"
       -"/v1/persons/.*/licences/conditions"
       -"/v1/persons/.*/person-responsible-officer"
-      -"/v1/persons/.*/status-information"
       -"/v1/hmpps/reference-data"
       -"/v1/status"
     }
@@ -25,4 +24,28 @@ val police =
         laoRedactionPolicy,
       ),
     )
+    filters {
+      alertCodes {
+        -"HA"
+        -"HA2"
+        -"XA"
+        -"XC"
+        -"XCA"
+        -"XCI"
+        -"XCO"
+        -"XCOL"
+        -"XCOP"
+        -"XCOR"
+        -"XEL"
+        -"XELH"
+        -"XER"
+        -"XHT"
+        -"XILLENT"
+        -"XIS"
+        -"XRF"
+      }
+      supervisionStatuses {
+        -"PROBATION"
+      }
+    }
   }

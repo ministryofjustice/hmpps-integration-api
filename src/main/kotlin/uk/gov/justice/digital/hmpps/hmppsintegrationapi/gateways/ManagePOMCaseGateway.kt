@@ -13,7 +13,16 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.managePOMCase.All
 @Component
 class ManagePOMCaseGateway(
   @Value("\${services.manage-pom-case-api.base-url}") baseUrl: String,
-) {
+) : UpstreamGateway {
+  override fun metaData() =
+    GatewayMetadata(
+      summary = "Enables the efficient allocation of cases to responsible staff during an individual's time in custody and transition into the community.",
+      developerPortalId = "DPS030",
+      developerPortalUrl = "https://developer-portal.hmpps.service.justice.gov.uk/components/hmpps-manage-pom-cases-api",
+      apiSpecUrl = "https://dev.moic.service.justice.gov.uk/v3/api-docs.json",
+      gitHubRepoUrl = "https://github.com/ministryofjustice/hmpps-manage-pom-cases-api",
+    )
+
   private val webClient = WebClientWrapper(baseUrl)
 
   @Autowired

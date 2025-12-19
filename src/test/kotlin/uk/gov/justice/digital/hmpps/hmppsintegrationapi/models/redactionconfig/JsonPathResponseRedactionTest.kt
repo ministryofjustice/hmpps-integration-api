@@ -33,8 +33,8 @@ class JsonPathResponseRedactionTest :
             JsonPathResponseRedaction(
               objectMapper = mapper,
               type = RedactionType.MASK,
-              paths = null, // always applies
-              includes = listOf("$.data.middleNames"),
+              endpoints = null, // always applies
+              redactions = listOf("$.data.middleNames"),
             )
 
           val result = redaction.apply("policyName", RedactionContext("/any/uri", accessFor, telemetryService), response)
@@ -49,8 +49,8 @@ class JsonPathResponseRedactionTest :
             JsonPathResponseRedaction(
               objectMapper = mapper,
               type = RedactionType.REMOVE,
-              paths = listOf("/v1/persons/.*/licences/conditions"),
-              includes = listOf("$.data.middleNames"),
+              endpoints = listOf("/v1/persons/.*/licences/conditions"),
+              redactions = listOf("$.data.middleNames"),
             )
 
           val result = redaction.apply("policyName", RedactionContext("/v1/persons/123/licences/conditions", accessFor, telemetryService, "crn"), response)
@@ -65,8 +65,8 @@ class JsonPathResponseRedactionTest :
             JsonPathResponseRedaction(
               objectMapper = mapper,
               type = RedactionType.MASK,
-              paths = listOf("/v1/other/endpoint"),
-              includes = listOf("$.data.middleNames"),
+              endpoints = listOf("/v1/other/endpoint"),
+              redactions = listOf("$.data.middleNames"),
             )
 
           val result = redaction.apply("policyName", RedactionContext("/v1/persons/123/licences/conditions", accessFor, telemetryService), response)
@@ -81,7 +81,7 @@ class JsonPathResponseRedactionTest :
             JsonPathResponseRedaction(
               objectMapper = mapper,
               type = RedactionType.MASK,
-              includes = listOf("$.nonexistent"),
+              redactions = listOf("$.nonexistent"),
             )
 
           // Should not throw

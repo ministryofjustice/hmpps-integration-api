@@ -26,7 +26,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedAl
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonerAlerts.PAPaginatedAlerts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAlertsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
@@ -81,7 +80,7 @@ internal class AlertsControllerTest(
           Mockito.reset(auditService)
           Mockito.reset(featureFlagConfig)
 
-          whenever(getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage, emptyList())).thenReturn(
+          whenever(getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)).thenReturn(
             Response(
               data = toPaginatedAlerts(listOf(alert)),
             ),
@@ -106,7 +105,7 @@ internal class AlertsControllerTest(
         it("gets the alerts for a person with the matching ID") {
           mockMvc.performAuthorised(path)
 
-          verify(getAlertsForPersonService, VerificationModeFactory.times(1)).getAlerts(hmppsId, filters, page, perPage, emptyList())
+          verify(getAlertsForPersonService, VerificationModeFactory.times(1)).getAlerts(hmppsId, filters, page, perPage)
         }
 
         it("returns the alerts for a person with the matching ID") {
@@ -133,7 +132,7 @@ internal class AlertsControllerTest(
         }
 
         it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
-          whenever(getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage, emptyList())).thenReturn(
+          whenever(getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)).thenReturn(
             Response(
               data = null,
               errors =
@@ -151,7 +150,7 @@ internal class AlertsControllerTest(
         }
 
         it("returns a 400 Bad request status code when nomis id is invalid in the upstream API") {
-          whenever(getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage, emptyList())).thenReturn(
+          whenever(getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)).thenReturn(
             Response(
               data = null,
               errors =
@@ -169,7 +168,7 @@ internal class AlertsControllerTest(
         }
 
         it("fails with the appropriate error when an upstream service is down") {
-          whenever(getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage, emptyList())).doThrow(
+          whenever(getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)).doThrow(
             WebClientResponseException(500, "MockError", null, null, null, null),
           )
 
@@ -185,11 +184,12 @@ internal class AlertsControllerTest(
 
       describe("GET $pndPath") {
         beforeTest {
+
           Mockito.reset(getAlertsForPersonService)
           Mockito.reset(auditService)
           Mockito.reset(featureFlagConfig)
 
-          whenever(getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage, PAPaginatedAlerts.PND_ALERT_CODES)).thenReturn(
+          whenever(getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)).thenReturn(
             Response(
               data = toPaginatedAlerts(listOf(alert)),
             ),
@@ -207,13 +207,12 @@ internal class AlertsControllerTest(
           verify(
             auditService,
             VerificationModeFactory.times(1),
-          ).createEvent("GET_PERSON_ALERTS_PND", mapOf("hmppsId" to hmppsId))
+          ).createEvent("GET_PERSON_ALERTS", mapOf("hmppsId" to hmppsId))
         }
 
         it("gets the alerts for PND for a person with the matching ID") {
           mockMvc.performAuthorised(pndPath)
-
-          verify(getAlertsForPersonService, times(1)).getAlerts(hmppsId, filters, page, perPage, PAPaginatedAlerts.PND_ALERT_CODES)
+          verify(getAlertsForPersonService, times(1)).getAlerts(hmppsId, filters, page, perPage)
         }
       }
       describe("GET with alert codes $pndPath") {
@@ -222,7 +221,7 @@ internal class AlertsControllerTest(
           Mockito.reset(auditService)
           Mockito.reset(featureFlagConfig)
 
-          whenever(getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage, PAPaginatedAlerts.PND_ALERT_CODES)).thenReturn(
+          whenever(getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)).thenReturn(
             Response(
               data = toPaginatedAlerts(listOf(alert)),
             ),
@@ -231,7 +230,7 @@ internal class AlertsControllerTest(
         it("gets the alerts for PND with code filter for a person with the matching ID") {
           mockMvc.performAuthorised(pndPath)
 
-          verify(getAlertsForPersonService, times(1)).getAlerts(hmppsId, filters, page, perPage, PAPaginatedAlerts.PND_ALERT_CODES)
+          verify(getAlertsForPersonService, times(1)).getAlerts(hmppsId, filters, page, perPage)
         }
       }
     },

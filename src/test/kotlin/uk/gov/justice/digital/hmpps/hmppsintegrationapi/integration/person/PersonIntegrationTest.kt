@@ -1,33 +1,47 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.post
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching
+import io.mockk.every
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.whenever
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithPrisonFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService.Companion.attributeSearchRequest
 import java.io.File
 
 @ActiveProfiles("integration-test-redaction-enabled")
 class PersonIntegrationTest : IntegrationTestBase() {
+  @MockitoBean
+  private lateinit var featureFlagConfig: FeatureFlagConfig
+
   @AfterEach
   fun resetValidators() {
     prisonerOffenderSearchMockServer.resetValidator()
+    unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
   }
 
   @BeforeEach
   fun resetMocks() {
+    whenever(featureFlagConfig.getConfigFlagValue(FeatureFlagConfig.USE_EDUCATION_ENDPOINT)).thenReturn(true)
     prisonerOffenderSearchMockServer.stubForGet(
       "/prisoner/$nomsId",
       File(
@@ -46,26 +60,51 @@ class PersonIntegrationTest : IntegrationTestBase() {
   inner class GetPerson {
     @Test
     fun `returns a list of persons using first name and last name as search parameters`() {
-      prisonerOffenderSearchMockServer.stubForPost(
-        "/global-search?size=9999",
-        """
-            {
-              "firstName": "Robert",
-              "lastName": "Larsen",
-              "includeAliases": false
-            }
-          """.removeWhitespaceAndNewlines(),
-        File(
-          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/GetPerson.json",
-        ).readText(),
-      )
       val firstName = "Robert"
       val lastName = "Larsen"
+      val expectedRequest = attributeSearchRequest(firstName, lastName)
+
+      prisonerOffenderSearchMockServer.stubForPost(
+        "/attribute-search",
+        jacksonObjectMapper().writeValueAsString(expectedRequest.toMap()),
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/AttributeSearch.json",
+        ).readText(),
+      )
+
       val queryParams = "first_name=$firstName&last_name=$lastName"
 
       callApi("$basePath?$queryParams")
         .andExpect(status().isOk)
         .andExpect(content().json(getExpectedResponse("person-name-search-response")))
+
+      prisonerOffenderSearchMockServer.assertValidationPassed()
+    }
+
+    @Test
+    fun `returns a list of persons using pnc number search with consumer filters`() {
+      mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
+      every { roles[any()] } returns testRoleWithPrisonFilters
+
+      val firstName = "Robert"
+      val lastName = "Larsen"
+      val pncNumber = "2003/13116M"
+
+      val expectedRequest = attributeSearchRequest(firstName, lastName, pncNumber, consumerFilters = testRoleWithPrisonFilters.filters!!)
+
+      prisonerOffenderSearchMockServer.stubForPost(
+        "/attribute-search",
+        jacksonObjectMapper().writeValueAsString(expectedRequest.toMap()),
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/AttributeSearch.json",
+        ).readText(),
+      )
+
+      val queryParams = "first_name=$firstName&last_name=$lastName&pnc_number=$pncNumber"
+
+      callApi("$basePath?$queryParams")
+        .andExpect(status().isOk)
+        .andExpect(content().json(getExpectedResponse("person-name-pnc-search-response.json")))
 
       prisonerOffenderSearchMockServer.assertValidationPassed()
     }
@@ -110,6 +149,36 @@ class PersonIntegrationTest : IntegrationTestBase() {
         // Need to look into the validation.request.body.schema.processingError causing issues on this test and associated DeactivateLocationIntegrationTest
         // prisonerOffenderSearchApiMockServer.assertValidationPassed()
       }
+    }
+
+    @Test
+    fun `calls prisoner search with the redirected prisoner number when CRN is used and data returned`() {
+      prisonerOffenderSearchMockServer.stubFor(
+        get(urlPathMatching("/prisoner/$nomsIdFromProbation"))
+          .willReturn(
+            aResponse()
+              .withStatus(404)
+              .withHeader("Content-Type", "application/json")
+              .withBody("""{ "status": 404, "error": "Not Found", "message": "Prisoner not found" }"""),
+          ),
+      )
+
+      prisonerOffenderSearchMockServer.stubForGet(
+        "/prisoner/A1234AA",
+        File(
+          "$gatewaysFolder/prisoneroffendersearch/fixtures/PrisonerByIdResponse.json",
+        ).readText(),
+      )
+
+      val file = File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/AttributeSearchPrisonerNumberMergedFromCrn.json")
+      val body = file.readText()
+      prisonerOffenderSearchMockServer.stubFor(
+        post(urlPathEqualTo("/attribute-search"))
+          .willReturn(aResponse().withHeader("Content-Type", "application/json").withBody(body)),
+      )
+
+      callApi("$basePath/$crn")
+        .andExpect(status().isOk)
     }
   }
 

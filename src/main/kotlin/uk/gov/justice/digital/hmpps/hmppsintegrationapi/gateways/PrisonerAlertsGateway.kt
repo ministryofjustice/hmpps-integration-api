@@ -13,7 +13,17 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonerAlerts.PA
 @Component
 class PrisonerAlertsGateway(
   @Value("\${services.alerts.base-url}") baseUrl: String,
-) {
+) : UpstreamGateway {
+  override fun metaData() =
+    GatewayMetadata(
+      summary = "Move prisoner alerts data out of NOMIS",
+      developerPortalId = "DPS090",
+      developerPortalUrl = "https://developer-portal.hmpps.service.justice.gov.uk/components/hmpps-alerts-api",
+      apiDocUrl = "https://alerts-api-dev.hmpps.service.justice.gov.uk/swagger-ui/index.html",
+      apiSpecUrl = "https://alerts-api-dev.hmpps.service.justice.gov.uk/v3/api-docs",
+      gitHubRepoUrl = "https://github.com/ministryofjustice/hmpps-alerts-api",
+    )
+
   private val webClient = WebClientWrapper(baseUrl)
 
   @Autowired

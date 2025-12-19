@@ -31,12 +31,11 @@ data class FeatureFlagConfig(
     const val USE_SUITABILITY_ENDPOINT = "use-suitability-endpoint"
     const val USE_HISTORICAL_ATTENDANCES_ENDPOINT = "use-historical-attendances-endpoint"
     const val USE_WAITING_LIST_ENDPOINT = "use-waiting-list-endpoint"
-    const val SIMPLE_REDACTION = "simple-redaction"
     const val USE_CONTACT_EVENTS_ENDPOINT = "use-contact-events-endpoint"
     const val EPF_ENDPOINT_INCLUDES_LAO = "epf-endpoint-includes-lao"
     const val EPF_GATEWAY_DISABLED = "epf-gateway-disabled"
     const val CPR_ENABLED = "cpr-enabled"
-    const val CERT_REVOCATION_ENABLED = "cert-revocation-enabled"
+    const val GATEWAY_CACHE_ENABLED = "gateway-cache-enabled"
   }
 
   /**

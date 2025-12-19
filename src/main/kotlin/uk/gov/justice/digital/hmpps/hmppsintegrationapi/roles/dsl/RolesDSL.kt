@@ -76,8 +76,19 @@ class PermissionBuilder {
   }
 }
 
+class SupervisionStatusBuilder {
+  var content: MutableList<String>? = mutableListOf()
+
+  operator fun String.unaryMinus() {
+    if (content == null) {
+      content = mutableListOf()
+    }
+    content?.add(this)
+  }
+}
+
 class PrisonsBuilder {
-  var content: MutableList<String>? = null
+  var content: MutableList<String>? = mutableListOf()
 
   operator fun String.unaryMinus() {
     if (content == null) {
@@ -95,6 +106,24 @@ class CaseNotesBuilder {
       content = mutableListOf()
     }
     content?.add(this)
+  }
+}
+
+class AlertCodesBuilder {
+  var content: MutableList<String>? = null
+
+  operator fun String.unaryMinus() {
+    if (content == null) {
+      content = mutableListOf()
+    }
+    content?.add(this)
+  }
+
+  operator fun List<String>.unaryMinus() {
+    if (content == null) {
+      content = mutableListOf()
+    }
+    content?.addAll(this)
   }
 }
 
@@ -124,8 +153,19 @@ class FiltersBuilder {
   private var prisons: MutableList<String>? = null
   private var caseNotes: MutableList<String>? = null
   private var mappaCategories: MutableList<Any>? = null
+  private var alertCodes: MutableList<String>? = null
+  private var supervisionStatus: MutableList<String>? = null
 
-  fun build(): ConsumerFilters = ConsumerFilters(prisons, caseNotes, mappaCategories)
+  fun build(): ConsumerFilters = ConsumerFilters(prisons, caseNotes, mappaCategories, alertCodes, supervisionStatus)
+
+  fun supervisionStatuses(init: SupervisionStatusBuilder.() -> Unit) {
+    SupervisionStatusBuilder().apply(init).content?.let {
+      if (supervisionStatus == null) {
+        supervisionStatus = mutableListOf()
+      }
+      supervisionStatus?.addAll(it)
+    }
+  }
 
   fun prisons(init: PrisonsBuilder.() -> Unit) {
     PrisonsBuilder().apply(init).content?.let {
@@ -153,6 +193,15 @@ class FiltersBuilder {
       mappaCategories?.addAll(it)
     }
   }
+
+  fun alertCodes(init: AlertCodesBuilder.() -> Unit) {
+    AlertCodesBuilder().apply(init).content?.let {
+      if (alertCodes == null) {
+        alertCodes = mutableListOf()
+      }
+      alertCodes?.addAll(it)
+    }
+  }
 }
 
 enum class MappaCategory(
@@ -170,4 +219,11 @@ enum class MappaCategory(
 
     fun all() = entries.filter { it.category != null }
   }
+}
+
+enum class SupervisionStatus {
+  PRISONS,
+  PROBATION,
+  NONE,
+  UNKNOWN,
 }

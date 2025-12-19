@@ -5,7 +5,9 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.CPR_ENABLED
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.CprResultException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CorePersonRecordGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
@@ -63,21 +65,53 @@ class GetPersonService(
       )
     }
     // If the CPR feature flag is enabled then call CPR.
+    var cprFailureException: Exception? = null
     if (featureFlagConfig.isEnabled(CPR_ENABLED)) {
-      runCatching {
+      try {
         val cpr = corePersonRecordGateway.corePersonRecordFor(hmppsIdType, hmppsId)
-        cpr.getIdentifier(requiredType) ?: throw EntityNotFoundException("No single $requiredType found for $hmppsId in core person record")
-      }.onFailure { telemetryService.trackEvent("CPRNomsFailure", mapOf("message" to "Failed to use CPR to convert $hmppsId", "error" to it.message)) }
-        .onSuccess {
-          telemetryService.trackEvent("CPRNomsSuccess", mapOf("message" to "Successfully used CPR to convert $hmppsId to $it", "fromId" to hmppsId, "toId" to it))
-          return Response(it)
-        }
+        val id = cpr.getIdentifier(requiredType, hmppsId)
+        telemetryService.trackEvent("CPRNomsSuccess", mapOf("message" to "Successfully used CPR to convert $hmppsId to $id", "fromId" to hmppsId, "toId" to id))
+        return Response(id)
+      } catch (ex: Exception) {
+        cprFailureException = ex
+      }
     }
     // Fall back to using the prison API or probation API to get the person id
-    return when (hmppsIdType) {
-      IdentifierType.NOMS -> prisonAPIPersonId(hmppsId, requiredType)
-      else -> probationAPIPersonId(hmppsId, requiredType)
+    val response =
+      when (hmppsIdType) {
+        IdentifierType.NOMS -> prisonAPIPersonId(hmppsId, requiredType)
+        else -> probationAPIPersonId(hmppsId, requiredType)
+      }
+    // Track the CPR exception using the fallback response
+    cprFailureException?.let {
+      trackCPRFailureEvent(it, hmppsId, response.data, response.errors)
     }
+
+    return response
+  }
+
+  fun trackCPRFailureEvent(
+    exception: Throwable,
+    hmppsId: String,
+    fallbackId: String? = null,
+    fallbackErrors: List<UpstreamApiError> = emptyList(),
+  ) {
+    val event =
+      when (exception) {
+        is CprResultException -> if (exception.multipleIds.isNotEmpty()) "CPRNomsMultipleMatches" else "CPRNomsNoMatches"
+        is EntityNotFoundException -> "CPRNomsNotFound"
+        else -> "CPRNomsFailure"
+      }
+    val properties =
+      listOfNotNull(
+        "fallbackSuccess" to (fallbackId != null).toString(),
+        if (fallbackId != null) "fallbackId" to fallbackId else null,
+        if (fallbackErrors.isNotEmpty()) "fallbackErrors" to fallbackErrors.mapNotNull { it.description }.joinToString(",") else null,
+        "message" to "Failed to use CPR to convert $hmppsId",
+        "error" to exception.message,
+      ).toMap()
+
+    telemetryService.trackEvent(event, properties)
   }
 
   /**
@@ -242,40 +276,66 @@ class GetPersonService(
     )
   }
 
-  fun getCombinedDataForPerson(hmppsId: String): Response<OffenderSearchResponse?> {
+  fun getCombinedDataForPerson(
+    hmppsId: String,
+    filters: ConsumerFilters? = null,
+  ): Response<OffenderSearchResponse?> {
     val probationResponse = getProbationResponse(hmppsId)
 
-    val prisonResponse =
-      (probationResponse.data?.identifiers?.nomisNumber ?: hmppsId.takeIf { identifyHmppsId(it) == IdentifierType.NOMS })
-        ?.let { nomsNumber -> prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber) }
+    val prisonerId = hmppsId.takeIf { identifyHmppsId(it) == IdentifierType.NOMS } ?: probationResponse.data?.identifiers?.nomisNumber
 
-    val combinedErrors: List<UpstreamApiError> = probationResponse.errors + (prisonResponse?.errors ?: emptyList())
+    var prisonResponse =
+      prisonerId?.let { nomsNumber ->
+        prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)
+      }
+
+    var combinedErrors: List<UpstreamApiError> = probationResponse.errors + (prisonResponse?.errors ?: emptyList())
 
     if (
-      combinedErrors.any { it.type == UpstreamApiError.Type.ENTITY_NOT_FOUND } &&
+      prisonerId != null &&
+      combinedErrors.any { it.type == UpstreamApiError.Type.ENTITY_NOT_FOUND && it.causedBy == UpstreamApi.PRISONER_OFFENDER_SEARCH } &&
       !combinedErrors.any { it.type == UpstreamApiError.Type.BAD_REQUEST }
     ) {
-      findPrisonerIdMerged(hmppsId)?.let { posIdentifier ->
-        return Response(
-          data =
-            OffenderSearchRedirectionResult(
-              prisonerNumber = posIdentifier.prisonerNumber,
-              redirectUrl = "/v1/persons/${posIdentifier.prisonerNumber}",
-              removedPrisonerNumber = posIdentifier.identifier.value,
-            ),
-          errors = combinedErrors,
-        )
+      findPrisonerIdMerged(prisonerId)?.let { posIdentifier ->
+        // If called with a NOMS, return a redirect to the merged prisoner number
+        if (identifyHmppsId(hmppsId) == IdentifierType.NOMS) {
+          return Response(
+            data =
+              OffenderSearchRedirectionResult(
+                prisonerNumber = posIdentifier.prisonerNumber,
+                redirectUrl = "/v1/persons/${posIdentifier.prisonerNumber}",
+                removedPrisonerNumber = posIdentifier.identifier.value,
+              ),
+            errors = combinedErrors,
+          )
+        } else {
+          // Otherwise call the prisoner search again with the merged prisoner number
+          prisonResponse = prisonerOffenderSearchGateway.getPrisonOffender(posIdentifier.prisonerNumber)
+          combinedErrors = probationResponse.errors + prisonResponse.errors
+        }
       }
     }
-
     val probationData = probationResponse.data
-    val prisonData = prisonResponse?.data?.toPerson()
+
+    // If supervisionStatus filter is Probation Only and probation record is NOT under active supervision
+    if (filters?.isProbationOnly() == true && probationData?.underActiveSupervision == false) {
+      throw ForbiddenByUpstreamServiceException("Not under active supervision. Access denied.")
+    }
+
+    // If supervisions filter is NOT empty but does NOT include PRISONS. Then do not return prisons data
+    val prisonData =
+      if (filters?.hasSupervisionStatusesFilter() == true && filters.hasPrisons() == false) {
+        null
+      } else {
+        prisonResponse?.data?.toPerson()
+      }
+
     val data: OffenderSearchResponse? =
       if (probationData == null && prisonData == null) null else OffenderSearchResult(prisonData, probationData)
     return Response(data = data, errors = combinedErrors)
   }
 
-  private fun findPrisonerIdMerged(hmppsId: String): POSIdentifierWithPrisonerNumber? {
+  private fun findPrisonerIdMerged(prisonerId: String): POSIdentifierWithPrisonerNumber? {
     val attributeSearchRequest =
       POSAttributeSearchRequest(
         joinType = "AND",
@@ -295,7 +355,7 @@ class GetPersonService(
                     type = "String",
                     attribute = "identifiers.value",
                     condition = "IS",
-                    searchTerm = hmppsId,
+                    searchTerm = prisonerId,
                   ),
                 ),
             ),
@@ -309,7 +369,7 @@ class GetPersonService(
       ?.content
       ?.firstOrNull()
       ?.identifiers
-      ?.firstOrNull { it.type == "MERGED" && it.value == hmppsId }
+      ?.firstOrNull { it.type == "MERGED" && it.value == prisonerId }
       ?.let { identifier ->
         response.data.content
           .firstOrNull()

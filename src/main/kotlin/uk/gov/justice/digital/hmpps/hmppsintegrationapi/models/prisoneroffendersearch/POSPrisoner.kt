@@ -64,6 +64,7 @@ data class POSPrisoner(
           croNumber = this.croNumber,
         ),
       pncId = this.pncNumber,
+      hmppsId = this.prisonerNumber,
     )
 
   fun toPersonInPrison(): PersonInPrison =

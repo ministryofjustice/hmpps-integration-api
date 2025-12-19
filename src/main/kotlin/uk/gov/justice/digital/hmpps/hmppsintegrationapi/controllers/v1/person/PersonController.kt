@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.RedactionConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
@@ -78,7 +77,6 @@ class PersonController(
   @Autowired val getPrisonerEducationService: GetPrisonerEducationService,
   @Autowired val auditService: AuditService,
   @Autowired val featureFlag: FeatureFlagConfig,
-  @Autowired val redactionConfig: RedactionConfig,
 ) {
   @FeatureFlag(name = FeatureFlagConfig.EPF_ENDPOINT_INCLUDES_LAO)
   @GetMapping("/{hmppsId}/access-limitations")
@@ -130,6 +128,7 @@ class PersonController(
     @Parameter(description = "Whether to return results that match the search criteria within the aliases of a person.") @RequestParam(required = false, defaultValue = "false", name = "search_within_aliases") searchWithinAliases: Boolean,
     @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
+    @RequestAttribute filters: ConsumerFilters?,
   ): PaginatedResponse<Person?> {
     if (firstName == null && lastName == null && pncNumber == null && dateOfBirth == null) {
       throw ValidationException("No query parameters specified.")
@@ -139,7 +138,7 @@ class PersonController(
       throw ValidationException("Invalid date format. Please use yyyy-MM-dd.")
     }
 
-    val response = getPersonsService.execute(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases)
+    val response = getPersonsService.personAttributeSearch(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases, filters)
 
     auditService.createEvent(
       "SEARCH_PERSON",
@@ -155,14 +154,20 @@ class PersonController(
       ApiResponse(responseCode = "200", content = [Content(schema = Schema(implementation = OffenderSearchDataResponse::class))], description = "Successfully found a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
-      ApiResponse(responseCode = "303", headers = [Header(name = "Location", description = "Redirect URL to the new person resource")], content = [Content()], description = "Redirect response due to person with the provided HMPPS ID being merged."),
+      ApiResponse(
+        responseCode = "303",
+        headers = [Header(name = "Location", description = "Redirect URL to the new person resource", schema = Schema(type = "string", example = "/v1/persons/A1234AA"))],
+        content = [Content()],
+        description = "Redirect response due to person with the provided HMPPS ID being merged.",
+      ),
     ],
   )
   fun getPerson(
-    @Parameter(description = "A HMPPS identifier", example = "X00001") @PathVariable("hmppsId") hmppsId: String,
-    @RequestAttribute clientName: String?,
+    @Parameter(description = "A HMPPS identifier", example = "X00001")
+    @PathVariable("hmppsId") hmppsId: String,
+    @RequestAttribute filters: ConsumerFilters?,
   ): ResponseEntity<DataResponse<OffenderSearchResponse>> {
-    val response = getPersonService.getCombinedDataForPerson(hmppsId)
+    val response = getPersonService.getCombinedDataForPerson(hmppsId, filters)
 
     if (response.data == null && response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
@@ -180,15 +185,8 @@ class PersonController(
           .header("Location", response.data.redirectUrl)
           .build()
       }
-      is OffenderSearchResult -> {
-        val redactedData =
-          if (featureFlag.isEnabled(FeatureFlagConfig.SIMPLE_REDACTION)) { // simple redaction: to be refactored in later releases
-            redactPersonData(response.data, clientName)
-          } else {
-            response.data
-          }
-        return ResponseEntity.ok(DataResponse(redactedData))
-      }
+
+      is OffenderSearchResult -> ResponseEntity.ok(DataResponse(response.data))
     }
   }
 
@@ -499,44 +497,7 @@ class PersonController(
     } catch (e: Exception) {
       false
     }
-
-  /***
-   * This simple redaction method is to be replaced by "flexible redaction" in coming releases
-   */
-  private fun redactPersonData(
-    offenderData: OffenderSearchResult,
-    clientName: String? = null,
-  ) = offenderData.let { data ->
-    val targetConsumers = redactionConfig.clientNames
-    when {
-      !targetConsumers.contains(clientName) -> data
-
-      else -> {
-        val prisonerOffenderSearch =
-          data.prisonerOffenderSearch?.run {
-            copy(
-              middleName = REDACTED,
-              aliases = aliases.map { it.copy(middleName = REDACTED) }.toList(),
-              identifiers = identifiers.copy(croNumber = REDACTED, deliusCrn = REDACTED),
-              pncId = REDACTED,
-              contactDetails = null,
-              currentRestriction = null,
-              restrictionMessage = REDACTED,
-              currentExclusion = null,
-              exclusionMessage = REDACTED,
-            )
-          }
-
-        data.copy(
-          prisonerOffenderSearch = prisonerOffenderSearch,
-          probationOffenderSearch = null,
-        )
-      }
-    }
-  }
 }
-
-private const val REDACTED = "**REDACTED**"
 
 // Workaround for Swagger with generic around `@Schema` (`useReturnTypeSchema` is not applicable here)
 private data class OffenderSearchDataResponse(

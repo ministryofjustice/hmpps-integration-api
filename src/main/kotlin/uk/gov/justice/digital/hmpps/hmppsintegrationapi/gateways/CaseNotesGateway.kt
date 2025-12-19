@@ -15,7 +15,17 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.OCNCase
 @Component
 class CaseNotesGateway(
   @Value("\${services.case-notes.base-url}") baseUrl: String,
-) {
+) : UpstreamGateway {
+  override fun metaData() =
+    GatewayMetadata(
+      summary = "Offender Case Notes Service",
+      developerPortalId = "DPS095",
+      developerPortalUrl = "https://developer-portal.hmpps.service.justice.gov.uk/components/offender-case-notes",
+      apiDocUrl = "https://dev.offender-case-notes.service.justice.gov.uk/swagger-ui/index.html",
+      apiSpecUrl = "https://dev.offender-case-notes.service.justice.gov.uk/v3/api-docs",
+      gitHubRepoUrl = "https://github.com/ministryofjustice/offender-case-notes",
+    )
+
   private val webClient = WebClientWrapper(baseUrl)
 
   @Autowired

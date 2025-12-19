@@ -6323,7 +6323,7 @@
         }
       }
     },
-    "/integration-api/prisons/{prisonCode}/{prisonerNumber}/scheduled-instances": {
+    "/integration-api/prisons/{prisonCode}/prisoner/{prisonerNumber}/scheduled-instances": {
       "get": {
         "tags": ["integration-api-controller"],
         "summary": "Get a list of scheduled instances for a prisoner, prison, date range (max 3 months) and time slot (AM, PM or ED - optional)",
