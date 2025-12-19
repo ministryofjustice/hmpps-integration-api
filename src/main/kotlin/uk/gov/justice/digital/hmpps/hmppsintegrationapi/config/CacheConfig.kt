@@ -91,16 +91,18 @@ const val GATEWAY_CACHE_METRICS = "GatewayCacheMetrics"
 @ConditionalOnProperty("feature-flag.gateway-cache-enabled", havingValue = "true")
 @ConditionalOnBean(CaffeineCache::class)
 class CacheMetricsListener {
-  @Autowired private lateinit var caffeineCache: CaffeineCache
+  @Autowired private lateinit var gatewayCache: CaffeineCache
 
   @Autowired private lateinit var telemetryService: TelemetryService
 
   @Scheduled(fixedDelay = 60000)
   fun logCacheMetrics() {
-    val metrics = caffeineCache.nativeCache.stats()
+    val metrics = gatewayCache.nativeCache.stats()
+    val hitRate = metrics.hitRate() * 100
     telemetryService.trackEvent(
       GATEWAY_CACHE_METRICS,
       mapOf(
+        "hitRate" to "$hitRate%",
         "hitCount" to metrics.hitCount().toString(),
         "missCount" to metrics.missCount().toString(),
         "loadSuccessCount" to metrics.loadSuccessCount().toString(),
