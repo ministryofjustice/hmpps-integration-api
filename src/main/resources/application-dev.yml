@@ -179,3 +179,7 @@ authorisation:
       notes: "See client list in Confluence"
       roles:
         - "smartinbox"
+    cats:
+      notes: "See client list in Confluence"
+      roles:
+        - "status-only"
