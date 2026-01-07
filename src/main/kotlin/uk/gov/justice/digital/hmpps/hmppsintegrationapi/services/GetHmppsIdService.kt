@@ -50,7 +50,7 @@ class GetHmppsIdService(
     if (hmppsId.matches(CRN_REGEX)) {
       hmppsId
     } else {
-      deliusGateway
+      getPersonService
         .getPerson(hmppsId)
         .data
         ?.identifiers
