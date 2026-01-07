@@ -3,8 +3,8 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.2.0"
-  kotlin("plugin.spring") version "2.2.21"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.3.0"
+  kotlin("plugin.spring") version "2.3.0"
   id("io.gitlab.arturbosch.detekt") version "1.23.8"
   id("org.jetbrains.kotlinx.kover") version "0.9.4"
 }
@@ -18,9 +18,10 @@ dependencies {
   runtimeOnly("io.jsonwebtoken:jjwt-impl:0.13.0")
   runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.13.0")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
+  implementation("org.springframework.boot:spring-boot-starter-cache")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
-  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.28.0")
-  implementation("io.sentry:sentry-logback:8.28.0")
+  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.29.0")
+  implementation("io.sentry:sentry-logback:8.29.0")
   implementation("org.springframework.data:spring-data-commons")
   implementation("org.springframework:spring-aop")
   implementation("org.aspectj:aspectjweaver")
@@ -35,6 +36,7 @@ dependencies {
   implementation("io.github.microutils:kotlin-logging:3.0.5")
   implementation("io.jsonwebtoken:jjwt-api:0.13.0")
   implementation("com.jayway.jsonpath:json-path:2.10.0")
+  implementation("com.github.ben-manes.caffeine:caffeine:3.2.3")
 
   testImplementation("io.kotest:kotest-assertions-json-jvm:6.0.7")
   testImplementation("io.kotest:kotest-runner-junit5-jvm:6.0.7")

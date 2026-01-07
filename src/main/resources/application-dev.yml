@@ -63,6 +63,7 @@ feature-flag:
   epf-endpoint-includes-lao: true
   epf-gateway-disabled: true
   cpr-enabled: true
+  gateway-cache-enabled: true
 
 authorisation:
   consumers:
@@ -178,3 +179,7 @@ authorisation:
       notes: "See client list in Confluence"
       roles:
         - "smartinbox"
+    cats:
+      notes: "See client list in Confluence"
+      roles:
+        - "status-only"

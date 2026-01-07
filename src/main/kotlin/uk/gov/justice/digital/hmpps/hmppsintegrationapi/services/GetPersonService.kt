@@ -304,26 +304,37 @@ class GetPersonService(
   ): Response<OffenderSearchResponse?> {
     val probationResponse = getProbationResponse(hmppsId)
 
-    val prisonResponse =
-      (probationResponse.data?.identifiers?.nomisNumber ?: hmppsId.takeIf { identifyHmppsId(it) == IdentifierType.NOMS })
-        ?.let { nomsNumber -> prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber) }
+    val prisonerId = hmppsId.takeIf { identifyHmppsId(it) == IdentifierType.NOMS } ?: probationResponse.data?.identifiers?.nomisNumber
 
-    val combinedErrors: List<UpstreamApiError> = probationResponse.errors + (prisonResponse?.errors ?: emptyList())
+    var prisonResponse =
+      prisonerId?.let { nomsNumber ->
+        prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)
+      }
+
+    var combinedErrors: List<UpstreamApiError> = probationResponse.errors + (prisonResponse?.errors ?: emptyList())
 
     if (
-      combinedErrors.any { it.type == UpstreamApiError.Type.ENTITY_NOT_FOUND } &&
+      prisonerId != null &&
+      combinedErrors.any { it.type == UpstreamApiError.Type.ENTITY_NOT_FOUND && it.causedBy == UpstreamApi.PRISONER_OFFENDER_SEARCH } &&
       !combinedErrors.any { it.type == UpstreamApiError.Type.BAD_REQUEST }
     ) {
-      findPrisonerIdMerged(hmppsId)?.let { posIdentifier ->
-        return Response(
-          data =
-            OffenderSearchRedirectionResult(
-              prisonerNumber = posIdentifier.prisonerNumber,
-              redirectUrl = "/v1/persons/${posIdentifier.prisonerNumber}",
-              removedPrisonerNumber = posIdentifier.identifier.value,
-            ),
-          errors = combinedErrors,
-        )
+      findPrisonerIdMerged(prisonerId)?.let { posIdentifier ->
+        // If called with a NOMS, return a redirect to the merged prisoner number
+        if (identifyHmppsId(hmppsId) == IdentifierType.NOMS) {
+          return Response(
+            data =
+              OffenderSearchRedirectionResult(
+                prisonerNumber = posIdentifier.prisonerNumber,
+                redirectUrl = "/v1/persons/${posIdentifier.prisonerNumber}",
+                removedPrisonerNumber = posIdentifier.identifier.value,
+              ),
+            errors = combinedErrors,
+          )
+        } else {
+          // Otherwise call the prisoner search again with the merged prisoner number
+          prisonResponse = prisonerOffenderSearchGateway.getPrisonOffender(posIdentifier.prisonerNumber)
+          combinedErrors = probationResponse.errors + prisonResponse.errors
+        }
       }
     }
     val probationData = probationResponse.data
@@ -346,7 +357,7 @@ class GetPersonService(
     return Response(data = data, errors = combinedErrors)
   }
 
-  private fun findPrisonerIdMerged(hmppsId: String): POSIdentifierWithPrisonerNumber? {
+  private fun findPrisonerIdMerged(prisonerId: String): POSIdentifierWithPrisonerNumber? {
     val attributeSearchRequest =
       POSAttributeSearchRequest(
         joinType = "AND",
@@ -366,7 +377,7 @@ class GetPersonService(
                     type = "String",
                     attribute = "identifiers.value",
                     condition = "IS",
-                    searchTerm = hmppsId,
+                    searchTerm = prisonerId,
                   ),
                 ),
             ),
@@ -380,7 +391,7 @@ class GetPersonService(
       ?.content
       ?.firstOrNull()
       ?.identifiers
-      ?.firstOrNull { it.type == "MERGED" && it.value == hmppsId }
+      ?.firstOrNull { it.type == "MERGED" && it.value == prisonerId }
       ?.let { identifier ->
         response.data.content
           .firstOrNull()
