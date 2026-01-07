@@ -283,7 +283,7 @@ class GetPersonService(
     filters: ConsumerFilters?,
   ): Boolean {
     if (filters?.hasSupervisionStatusesFilter() == true) {
-      return consumerSupervisionStatusAccessService.checkConsumerHasSupervisionStatusAccess(prisoner, filters)
+      return !consumerSupervisionStatusAccessService.checkConsumerHasSupervisionStatusAccess(prisoner, filters)
     }
     return false
   }

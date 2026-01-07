@@ -15,7 +15,7 @@ class ConsumerSupervisionStatusAccessService {
   ): Boolean {
     if (!filters.hasSupervisionStatusesFilter()) return true
 
-    val containsPrison = filters.supervisionStatuses!!.contains("PRISON")
+    val containsPrison = filters.supervisionStatuses!!.contains("PRISONS")
     val containsProbation = filters.supervisionStatuses.contains("PROBATION")
 
     if (containsPrison && containsProbation) return true
