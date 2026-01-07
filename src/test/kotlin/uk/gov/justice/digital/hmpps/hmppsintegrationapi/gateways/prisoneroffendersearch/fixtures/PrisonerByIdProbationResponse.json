@@ -39,7 +39,7 @@
       "interpreterRequested": true
     }
   ],
-  "status": "ACTIVE OUT",
+  "status": "INACTIVE_OUT",
   "lastMovementTypeCode": "CRT",
   "lastMovementReasonCode": "CA",
   "inOutStatus": "OUT",
