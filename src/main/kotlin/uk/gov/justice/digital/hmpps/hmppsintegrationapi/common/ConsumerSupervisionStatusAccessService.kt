@@ -4,6 +4,9 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
+val IN_PRISON_STATUSES = listOf("ACTIVE_IN", "ACTIVE_OUT")
+val RELEASED_STATUSES = listOf("INACTIVE_OUT")
+
 @Service
 class ConsumerSupervisionStatusAccessService {
   fun checkConsumerHasSupervisionStatusAccess(
@@ -17,16 +20,14 @@ class ConsumerSupervisionStatusAccessService {
 
     if (containsPrison && containsProbation) return true
 
-    val inOutStatus = prisoner?.inOutStatus
+    val status = prisoner?.status
 
-    if (containsProbation && inOutStatus == "OUT") {
+    if (containsPrison && IN_PRISON_STATUSES.contains(status)) {
       return true
     }
-
-    if (containsPrison && inOutStatus == "IN") {
+    if (containsProbation && RELEASED_STATUSES.contains(status)) {
       return true
     }
-
     return false
   }
 }

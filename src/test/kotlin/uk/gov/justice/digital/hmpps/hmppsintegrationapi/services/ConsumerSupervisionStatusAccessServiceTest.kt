@@ -23,6 +23,17 @@ internal class ConsumerSupervisionStatusAccessServiceTest(
           youthOffender = false,
           prisonId = "MDI",
           inOutStatus = "IN",
+          status = "ACTIVE_IN",
+        )
+
+      val atCourtPerson =
+        POSPrisoner(
+          firstName = "John",
+          lastName = "Doe",
+          youthOffender = false,
+          prisonId = "MDI",
+          inOutStatus = "IN",
+          status = "ACTIVE_OUT",
         )
 
       val personOnProbation =
@@ -32,6 +43,7 @@ internal class ConsumerSupervisionStatusAccessServiceTest(
           youthOffender = false,
           prisonId = "MDI",
           inOutStatus = "OUT",
+          status = "INACTIVE_OUT",
         )
 
       val nullSupervisionStatuses = ConsumerFilters(supervisionStatuses = null)
@@ -61,6 +73,10 @@ internal class ConsumerSupervisionStatusAccessServiceTest(
       }
 
       it("Should return true for inPrison when supervision filters are in prison only") {
+        val result = service.checkConsumerHasSupervisionStatusAccess(inPrisonPerson, prisonOnly)
+        result.shouldBe(true)
+      }
+      it("Should return true for atCourt when supervision filters are in prison only") {
         val result = service.checkConsumerHasSupervisionStatusAccess(inPrisonPerson, prisonOnly)
         result.shouldBe(true)
       }
