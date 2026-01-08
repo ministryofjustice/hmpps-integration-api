@@ -10,9 +10,9 @@ services:
   probation-integration-epf:
     base-url: https://external-api-and-delius.hmpps.service.justice.gov.uk
   adjudications:
-    base-url: https://manage-adjudications-api-prod.hmpps.service.justice.gov.uk
+    base-url: https://manage-adjudications-api.hmpps.service.justice.gov.uk
   create-and-vary-licence:
-    base-url: https://create-and-vary-a-licence-api-prod.hmpps.service.justice.gov.uk
+    base-url: https://create-and-vary-a-licence-api.hmpps.service.justice.gov.uk
   case-notes:
     base-url: https://prod.offender-case-notes.service.justice.gov.uk
   manage-pom-case-api:
