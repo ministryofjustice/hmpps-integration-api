@@ -14,7 +14,7 @@ services:
   create-and-vary-licence:
     base-url: https://create-and-vary-a-licence-api.hmpps.service.justice.gov.uk
   case-notes:
-    base-url: https://prod.offender-case-notes.service.justice.gov.uk
+    base-url: https://offender-case-notes.service.justice.gov.uk
   manage-pom-case-api:
     base-url: https://moic.service.justice.gov.uk
   plp:
