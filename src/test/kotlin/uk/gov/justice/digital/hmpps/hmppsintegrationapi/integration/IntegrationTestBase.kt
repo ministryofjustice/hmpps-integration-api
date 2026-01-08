@@ -56,6 +56,7 @@ abstract class IntegrationTestBase {
   final val limitedCaseNotesCn = "limited-case-notes"
   final val noPrisonsCn = "no-prisons"
   final val emptyPrisonsCn = "empty-prisons"
+  final val noProbationAccessCn = "supervision-status-prison-only"
   final val contactId = 123456L
   final val nomsIdFromProbation = "G5555TT"
 
@@ -95,7 +96,7 @@ abstract class IntegrationTestBase {
       prisonerOffenderSearchMockServer.stubForGet(
         "/prisoner/$nomsIdFromProbation",
         File(
-          "$gatewaysFolder/prisoneroffendersearch/fixtures/PrisonerByIdResponse.json",
+          "$gatewaysFolder/prisoneroffendersearch/fixtures/PrisonerByIdProbationResponse.json",
         ).readText(),
       )
       prisonerBaseLocationMockServer.stubForGet(

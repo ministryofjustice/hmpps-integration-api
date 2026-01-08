@@ -22,7 +22,7 @@ class GetHealthAndDietService(
     hmppsId: String,
     filters: ConsumerFilters?,
   ): Response<HealthAndDiet?> {
-    val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId = hmppsId, filters)
+    val personResponse = getPersonService.getNomisNumberWithFiltering(hmppsId = hmppsId, filters)
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = personResponse.errors)
     }

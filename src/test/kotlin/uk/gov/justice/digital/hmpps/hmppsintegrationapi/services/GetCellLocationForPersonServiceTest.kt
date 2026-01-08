@@ -49,13 +49,13 @@ internal class GetCellLocationForPersonServiceTest(
       beforeEach {
         Mockito.reset(getPersonService)
 
-        whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(data = NomisNumber(hmppsId)))
+        whenever(getPersonService.getNomisNumberWithFiltering(hmppsId, filters)).thenReturn(Response(data = NomisNumber(hmppsId)))
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(hmppsId)).thenReturn(Response(data = prisoner))
       }
 
-      it("calls getNomisNumberWithPrisonFilter") {
+      it("calls getNomisNumberWithFiltering") {
         getCellLocationForPersonService.execute(hmppsId, filters)
-        verify(getPersonService, VerificationModeFactory.times(1)).getNomisNumberWithPrisonFilter(hmppsId, filters)
+        verify(getPersonService, VerificationModeFactory.times(1)).getNomisNumberWithFiltering(hmppsId, filters)
       }
 
       it("returns a person cell location") {
@@ -85,7 +85,7 @@ internal class GetCellLocationForPersonServiceTest(
               type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
             ),
           )
-        whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getNomisNumberWithFiltering(hmppsId, filters)).thenReturn(
           Response(
             data = null,
             errors,
@@ -116,7 +116,7 @@ internal class GetCellLocationForPersonServiceTest(
       }
 
       it("failed to get prisoners nomis number") {
-        whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(data = NomisNumber()))
+        whenever(getPersonService.getNomisNumberWithFiltering(hmppsId, filters)).thenReturn(Response(data = NomisNumber()))
 
         val response = getCellLocationForPersonService.execute(hmppsId, filters)
         response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
