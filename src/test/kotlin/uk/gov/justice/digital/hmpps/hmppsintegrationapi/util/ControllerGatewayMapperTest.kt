@@ -61,8 +61,11 @@ internal class ControllerGatewayMapperTest(
       context
         .getBeansWithAnnotation(Component::class.java)
         .values
-        .filter { it.javaClass.interfaces.contains(UpstreamGateway::class.java) }
-        .map { it as UpstreamGateway }
+        .filter {
+          it.javaClass.interfaces.contains(UpstreamGateway::class.java) ||
+            it.javaClass.superclass.interfaces
+              .contains(UpstreamGateway::class.java)
+        }.map { it as UpstreamGateway }
         .toList()
         .size
 
