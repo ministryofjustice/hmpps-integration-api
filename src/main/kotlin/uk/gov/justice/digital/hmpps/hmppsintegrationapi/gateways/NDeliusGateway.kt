@@ -15,7 +15,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DynamicRisk
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.MappaDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Offence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonOnProbation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.StatusInformation
@@ -309,11 +308,6 @@ class NDeliusGateway(
         )
       }
     }
-  }
-
-  fun getPerson(id: String? = null): Response<PersonOnProbation?> {
-    val offender = getOffender(id)
-    return Response(data = offender.data?.toPersonOnProbation(), errors = offender.errors)
   }
 
   fun getPersons(
