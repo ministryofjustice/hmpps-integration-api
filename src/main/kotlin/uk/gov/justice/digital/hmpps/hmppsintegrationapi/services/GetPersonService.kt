@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSea
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResult
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonOnProbation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -465,5 +466,10 @@ class GetPersonService(
       )
     }
 
-  private fun getProbationResponse(hmppsId: String) = deliusGateway.getPerson(hmppsId)
+  private fun getProbationResponse(hmppsId: String) = getPerson(hmppsId)
+
+  fun getPerson(id: String? = null): Response<PersonOnProbation?> {
+    val offender = deliusGateway.getOffender(id)
+    return Response(data = offender.data?.toPersonOnProbation(), errors = offender.errors)
+  }
 }

@@ -2,8 +2,10 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Companion.GATEWAY_CACHE
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.EPF_ENDPOINT_INCLUDES_LAO
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
@@ -15,7 +17,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DynamicRisk
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.MappaDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Offence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonOnProbation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.StatusInformation
@@ -264,6 +265,7 @@ class NDeliusGateway(
     )
   }
 
+  @Cacheable(GATEWAY_CACHE, keyGenerator = "gatewayKeyGenerator", condition = "@gatewayCacheEnabled")
   fun getOffender(id: String? = null): Response<Offender?> {
     val queryField =
       if (isNomsNumber(id)) {
@@ -309,11 +311,6 @@ class NDeliusGateway(
         )
       }
     }
-  }
-
-  fun getPerson(id: String? = null): Response<PersonOnProbation?> {
-    val offender = getOffender(id)
-    return Response(data = offender.data?.toPersonOnProbation(), errors = offender.errors)
   }
 
   fun getPersons(
