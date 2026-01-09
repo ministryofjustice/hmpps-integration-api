@@ -143,7 +143,7 @@ class RiskManagementControllerTest(
       }
 
       it("Gets a 404 error if provided ID has no risk management plan") {
-        val badHmppsId = "Not a real CRN"
+        val badHmppsId = "Not-a-real-CRN"
         whenever(getRiskManagementService.execute(badHmppsId)).thenReturn(
           Response(
             null,
