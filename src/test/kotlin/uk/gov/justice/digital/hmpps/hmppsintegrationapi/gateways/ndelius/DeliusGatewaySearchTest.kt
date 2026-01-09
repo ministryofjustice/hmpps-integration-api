@@ -375,7 +375,7 @@ class DeliusGatewaySearchTest(
         """,
           )
 
-          nDeliusGateway.getPerson(hmppsId)
+          nDeliusGateway.getOffender(hmppsId)
         }
       }
 
@@ -398,10 +398,10 @@ class DeliusGatewaySearchTest(
         """,
           )
 
-          val response = nDeliusGateway.getPerson(hmppsId)
+          val response = nDeliusGateway.getOffender(hmppsId)
 
           response.data?.firstName.shouldBe("Jonathan")
-          response.data?.lastName.shouldBe("Bravo")
+          response.data?.surname.shouldBe("Bravo")
         }
       }
     }
