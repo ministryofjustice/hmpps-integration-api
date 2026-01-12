@@ -13,11 +13,34 @@ class UriMatchingTest {
   }
 
   @Test
-  fun `test uri matching`() {
+  fun `all path parameter placeholders normalise to the same value`() {
     assertAllEqual(
       "/v1/persons/${DEFAULT_PATH_PLACEHOLDER}",
+      normalisePath("/v1/persons/${DEFAULT_PATH_PLACEHOLDER}"),
       normalisePath("/v1/persons/{hmppsId}"),
+      normalisePath("/v1/persons/{id}"),
       normalisePath("/v1/persons/.*"),
+      normalisePath("/v1/persons/.*$"),
+      normalisePath("v1/persons/.*$"),
+      normalisePath("/v1/persons/[^/]*$"),
     )
+  }
+
+  @Test
+  fun `multi parameter paths normalise to the same value`() {
+    assertAllEqual(
+      "/v1/persons/${DEFAULT_PATH_PLACEHOLDER}/images/${DEFAULT_PATH_PLACEHOLDER}",
+      normalisePath("/v1/persons/.*/images/.*"),
+      normalisePath("/v1/persons/{hmppsId}/images/{imageId}"),
+      normalisePath("/v1/persons/.*/images/{imageId}"),
+      normalisePath("/v1/persons/{hmppsId}/images/.*"),
+      normalisePath("^/v1/persons/.*/images/.*$"),
+      normalisePath("v1/persons/{hmppsId}/images/{imageId}"),
+    )
+  }
+
+  @Test
+  fun `full wildcard path is not modified during normalisation`() {
+    normalisePath("/.*").shouldBe("/.*")
   }
 }

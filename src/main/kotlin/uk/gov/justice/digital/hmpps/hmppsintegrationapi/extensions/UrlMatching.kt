@@ -4,9 +4,26 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 
 const val DEFAULT_PATH_PLACEHOLDER = "[a-zA-Z0-9_-]+"
 
-fun String.ensurePrefix(prefix: String) = if (startsWith(prefix)) this else "$prefix$this"
-
-fun String.normalisePathPlaceholder(placeholder: String) = replace(placeholder, DEFAULT_PATH_PLACEHOLDER)
+private val pathPlaceholders =
+  arrayOf(
+    "{hmppsId}",
+    "{prisonId}",
+    "{contactId}",
+    "{visitReference}",
+    "{scheduleId}",
+    "{key}",
+    "{locationKey}",
+    "{id}",
+    "{imageId}",
+    "{accountCode}",
+    "{clientReference}",
+    "{clientVisitReference}",
+    "{activityId}",
+    "{clientUniqueRef}",
+    "[^/]*",
+    "[^/]+",
+    ".*",
+  )
 
 /**
  * Normalise a path pattern into a standard regular expression format.
@@ -20,28 +37,23 @@ fun String.normalisePathPlaceholder(placeholder: String) = replace(placeholder, 
  * trigger an analysis of the impact of introducing new placeholder
  * names, including in the integration events codebase.
  */
-fun normalisePath(pathPattern: String): String =
+fun normalisePath(pathPattern: String): String {
   if (pathPattern == "/.*") {
-    pathPattern // Wildcard at start of path is not a parameter placeholder
+    return pathPattern // Wildcard at start of path is not a parameter placeholder
   } else {
-    pathPattern
-      .normalisePathPlaceholder("{hmppsId}")
-      .normalisePathPlaceholder("{prisonId}")
-      .normalisePathPlaceholder("{contactId}")
-      .normalisePathPlaceholder("{visitReference}")
-      .normalisePathPlaceholder("{scheduleId}")
-      .normalisePathPlaceholder("{accountCode}")
-      .normalisePathPlaceholder("{clientVisitReference}")
-      .normalisePathPlaceholder("{imageId}")
-      .normalisePathPlaceholder("{key}")
-      .normalisePathPlaceholder("{id}")
-      .normalisePathPlaceholder("{clientUniqueRef}")
-      .normalisePathPlaceholder("{activityId}")
-      .normalisePathPlaceholder("{scheduleId}")
-      .normalisePathPlaceholder("[^/]*")
-      .normalisePathPlaceholder("[^/]+")
-      .normalisePathPlaceholder(".*")
+    return pathPattern
+      .normalisePathPlaceholders()
       .removePrefix("^")
       .removeSuffix("$")
       .ensurePrefix("/")
   }
+}
+
+private fun String.normalisePathPlaceholders() =
+  pathPlaceholders.fold(this) { path, placeholder ->
+    path.normalisePathPlaceholder(placeholder)
+  }
+
+fun String.ensurePrefix(prefix: String) = if (startsWith(prefix)) this else "$prefix$this"
+
+fun String.normalisePathPlaceholder(placeholder: String) = replace(placeholder, DEFAULT_PATH_PLACEHOLDER)
