@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal
 
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
@@ -10,7 +9,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 @Component
 @Service
 class AuthoriseConsumerService(
-  @Autowired var featureFlagConfig: FeatureFlagConfig,
+  var featureFlagConfig: FeatureFlagConfig,
 ) {
   fun matches(
     path: String,
