@@ -10,10 +10,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerBaseLocationGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.LastMovementType
@@ -27,11 +25,10 @@ internal const val FIXTURES_DIR = "src/test/kotlin/uk/gov/justice/digital/hmpps/
 @ActiveProfiles("test")
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [PrisonerBaseLocationGateway::class, PrisonerOffenderSearchGateway::class, FeatureFlagConfig::class],
+  classes = [PrisonerBaseLocationGateway::class],
 )
 class PrisonerBaseLocationGatewayTest(
   @MockitoBean private val hmppsAuthGateway: HmppsAuthGateway,
-  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
   private val prisonerBaseLocationGateway: PrisonerBaseLocationGateway,
 ) : DescribeSpec(
     {

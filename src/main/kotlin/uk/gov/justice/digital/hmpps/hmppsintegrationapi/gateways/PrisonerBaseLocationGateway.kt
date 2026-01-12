@@ -12,7 +12,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 
 @Component
 class PrisonerBaseLocationGateway(
-  @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
   @Value("\${services.prisoner-base-location.base-url}") baseUrl: String,
 ) : UpstreamGateway {
   override fun metaData() =
