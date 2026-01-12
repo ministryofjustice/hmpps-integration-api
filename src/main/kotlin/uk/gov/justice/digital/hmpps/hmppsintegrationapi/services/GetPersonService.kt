@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerSupervisionStatusAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.CPR_ENABLED
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.CprResultException
@@ -35,7 +34,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryServi
 class GetPersonService(
   @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
-  @Autowired val consumerSupervisionStatusAccessService: ConsumerSupervisionStatusAccessService,
   @Autowired val corePersonRecordGateway: CorePersonRecordGateway,
   @Autowired val featureFlagConfig: FeatureFlagConfig,
   @Autowired val telemetryService: TelemetryService,
@@ -252,6 +250,8 @@ class GetPersonService(
 
   /**
    * Returns a Nomis number from a HMPPS ID, taking into account prison and supervision status filters
+   * If the prisoner isn't found or their current location or supervision status doesn't match the consumer's
+   * filters, a NOT_FOUND error response is returned
    */
   fun getNomisNumberWithFiltering(
     hmppsId: String,
@@ -284,9 +284,26 @@ class GetPersonService(
     filters: ConsumerFilters?,
   ): Boolean {
     if (filters?.hasSupervisionStatusesFilter() == true) {
-      return !consumerSupervisionStatusAccessService.checkConsumerHasSupervisionStatusAccess(prisoner, filters)
+      if (filters.supervisionStatuses!!.containsAll(setOf("PRISONS", "PROBATION", "NONE"))) return false
+
+      val prisonerStatus = getPrisonerSupervisionStatus(prisoner)
+      return !filters.supervisionStatuses.contains(prisonerStatus)
     }
     return false
+  }
+
+  private fun getPrisonerSupervisionStatus(prisoner: POSPrisoner?): String {
+    val inPrisonStatuses = listOf("ACTIVE_IN", "ACTIVE_OUT")
+
+    if (prisoner?.status != null && inPrisonStatuses.contains(prisoner.status)) {
+      return "PRISONS"
+    }
+    val probationData = getPerson(prisoner?.prisonerNumber)
+
+    if (probationData.data?.underActiveSupervision == true) {
+      return "PROBATION"
+    }
+    return "NONE"
   }
 
   private fun violatesPrisonFilter(
