@@ -16,8 +16,8 @@ class UriMatchingTest {
   fun `test uri matching`() {
     assertAllEqual(
       "/v1/persons/${DEFAULT_PATH_PLACEHOLDER}",
-      normalisePathFull("/v1/persons/{hmppsId}"),
-      normalisePathFull("/v1/persons/.*"),
+      normalisePath("/v1/persons/{hmppsId}"),
+      normalisePath("/v1/persons/.*"),
     )
   }
 }

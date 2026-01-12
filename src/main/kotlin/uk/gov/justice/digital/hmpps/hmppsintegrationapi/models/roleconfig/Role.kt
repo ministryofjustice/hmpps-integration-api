@@ -108,6 +108,10 @@ val roleConstants =
       -"/v1/prison/{prisonId}/prisoners/{hmppsId}/accounts/{accountCode}/transactions"
       -"/v1/prison/{prisonId}/prisoners/{hmppsId}/transactions"
       -"/v1/prison/{prisonId}/prisoners/{hmppsId}/transactions/{clientUniqueRef}"
+      -"/v1/prison/{prisonId}/prisoners/{hmppsId}/transactions/{clientUniqueRef}"
+      -"/v1/activities/{activityId}/schedules"
+      -"/v1/activities/schedule/{scheduleId}"
+      -"/v1/activities/schedule/{scheduleId}/suitability-criteria"
     }
   }
 
