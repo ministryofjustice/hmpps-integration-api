@@ -9,7 +9,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 @Component
 @Service
 class AuthoriseConsumerService(
-  var featureFlagConfig: FeatureFlagConfig,
+  private val featureFlagConfig: FeatureFlagConfig,
 ) {
   fun matches(
     path: String,
