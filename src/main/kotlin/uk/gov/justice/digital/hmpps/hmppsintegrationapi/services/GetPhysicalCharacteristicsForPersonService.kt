@@ -18,7 +18,7 @@ class GetPhysicalCharacteristicsForPersonService(
     hmppsId: String,
     filters: ConsumerFilters? = null,
   ): Response<PhysicalCharacteristics?> {
-    val personResponse = getPersonService.getNomisNumberWithFiltering(hmppsId = hmppsId, filters = filters)
+    val personResponse = getPersonService.getNomisNumber(hmppsId = hmppsId, filters = filters)
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = personResponse.errors)
     }

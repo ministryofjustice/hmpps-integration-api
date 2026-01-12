@@ -68,13 +68,13 @@ internal class GetPrisonerEducationServiceTest(
         Mockito.reset(getPersonService)
         Mockito.reset(plpGateway)
 
-        whenever(getPersonService.getNomisNumberWithFiltering(hmppsId = hmppsId, filters = filters)).thenReturn(Response(nomisNumber))
+        whenever(getPersonService.getNomisNumber(hmppsId = hmppsId, filters = filters)).thenReturn(Response(nomisNumber))
         whenever(plpGateway.getPrisonerEducation(hmppsId)).thenReturn(Response(plpPrisonerEducation))
       }
 
       it("performs a search according to hmpps Id") {
         getPrisonerEducationService.execute(hmppsId, filters)
-        verify(getPersonService, times(1)).getNomisNumberWithFiltering(hmppsId = hmppsId, filters = filters)
+        verify(getPersonService, times(1)).getNomisNumber(hmppsId = hmppsId, filters = filters)
       }
 
       it("should return prisoner education") {
@@ -91,7 +91,7 @@ internal class GetPrisonerEducationServiceTest(
               type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
             ),
           )
-        whenever(getPersonService.getNomisNumberWithFiltering(hmppsId = "notfound", filters = filters)).thenReturn(
+        whenever(getPersonService.getNomisNumber(hmppsId = "notfound", filters = filters)).thenReturn(
           Response(
             data = null,
             errors = errors,
@@ -111,7 +111,7 @@ internal class GetPrisonerEducationServiceTest(
               type = UpstreamApiError.Type.BAD_REQUEST,
             ),
           )
-        whenever(getPersonService.getNomisNumberWithFiltering(hmppsId = "badRequest", filters = filters)).thenReturn(
+        whenever(getPersonService.getNomisNumber(hmppsId = "badRequest", filters = filters)).thenReturn(
           Response(
             data = null,
             errors = errors,

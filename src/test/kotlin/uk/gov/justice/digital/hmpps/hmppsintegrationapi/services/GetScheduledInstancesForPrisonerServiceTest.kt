@@ -64,7 +64,7 @@ class GetScheduledInstancesForPrisonerServiceTest(
         Mockito.reset(consumerPrisonAccessService, activitiesGateway)
 
         whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Any>(prisonCode, filters, upstreamServiceType = UpstreamApi.ACTIVITIES)).thenReturn(Response(data = null, errors = emptyList()))
-        whenever(getPersonService.getNomisNumberWithFiltering(prisonerId, filters)).thenReturn(Response(data = NomisNumber(prisonerId)))
+        whenever(getPersonService.getNomisNumber(prisonerId, filters)).thenReturn(Response(data = NomisNumber(prisonerId)))
       }
 
       it("should return scheduled instances for a prisoner") {
@@ -101,7 +101,7 @@ class GetScheduledInstancesForPrisonerServiceTest(
               description = "Error from getPersonService",
             ),
           )
-        whenever(getPersonService.getNomisNumberWithFiltering(prisonerId, filters)).thenReturn(Response(data = null, errors = errors))
+        whenever(getPersonService.getNomisNumber(prisonerId, filters)).thenReturn(Response(data = null, errors = errors))
 
         val result = getScheduledInstancesForPrisonerService.execute(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null, filters)
         result.data.shouldBeNull()

@@ -71,7 +71,7 @@ class HmppsIdController(
     @PathVariable hmppsId: String,
     @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<NomisNumber?> {
-    val response = getPersonService.getNomisNumberWithFiltering(hmppsId, filters)
+    val response = getPersonService.getNomisNumber(hmppsId, filters)
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find nomis number for HMPPS ID: $hmppsId")
     }

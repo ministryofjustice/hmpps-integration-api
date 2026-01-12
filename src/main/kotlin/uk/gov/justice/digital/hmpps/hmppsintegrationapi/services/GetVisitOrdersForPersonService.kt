@@ -18,7 +18,7 @@ class GetVisitOrdersForPersonService(
     hmppsId: String,
     filters: ConsumerFilters? = null,
   ): Response<VisitOrders?> {
-    val personResponse = getPersonService.getNomisNumberWithFiltering(hmppsId, filters)
+    val personResponse = getPersonService.getNomisNumber(hmppsId, filters)
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = personResponse.errors)
     }

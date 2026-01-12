@@ -121,7 +121,7 @@ internal class GetAlertsForPersonServiceTest(
         Mockito.reset(prisonerAlertsGateway)
         Mockito.reset(personService)
 
-        whenever(personService.getNomisNumberWithFiltering(hmppsId, filters)).thenReturn(Response(data = NomisNumber(hmppsId)))
+        whenever(personService.getNomisNumber(hmppsId, filters)).thenReturn(Response(data = NomisNumber(hmppsId)))
         whenever(prisonerAlertsGateway.getPrisonerAlertsForCodes(hmppsId, page, perPage)).thenReturn(
           Response(
             data = paginatedAlerts,
@@ -141,7 +141,7 @@ internal class GetAlertsForPersonServiceTest(
       it("gets a nomis number from getPersonService") {
         getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)
 
-        verify(personService, times(1)).getNomisNumberWithFiltering(hmppsId = hmppsId, filters)
+        verify(personService, times(1)).getNomisNumber(hmppsId = hmppsId, filters)
       }
 
       it("gets alerts using a prisoner number") {
@@ -153,7 +153,7 @@ internal class GetAlertsForPersonServiceTest(
       it("gets a nomis number from getPersonService - getAlerts") {
         getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)
 
-        verify(personService, times(1)).getNomisNumberWithFiltering(hmppsId = hmppsId, filters)
+        verify(personService, times(1)).getNomisNumber(hmppsId = hmppsId, filters)
       }
 
       it("gets alerts using a prisoner number - getAlerts") {
@@ -165,7 +165,7 @@ internal class GetAlertsForPersonServiceTest(
       describe("when an upstream API returns an error when looking up nomis number by a Hmmps Id") {
         it("records upstream API errors when failed prison check call") {
           val errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "NOMIS number not found"))
-          whenever(personService.getNomisNumberWithFiltering(hmppsId = hmppsId, filters = filters)).thenReturn(
+          whenever(personService.getNomisNumber(hmppsId = hmppsId, filters = filters)).thenReturn(
             Response(
               data = null,
               errors = errors,
@@ -178,14 +178,14 @@ internal class GetAlertsForPersonServiceTest(
 
         it("failed to get prisoners nomis number") {
           val errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND))
-          whenever(personService.getNomisNumberWithFiltering(hmppsId, filters)).thenReturn(Response(data = NomisNumber(), errors = emptyList()))
+          whenever(personService.getNomisNumber(hmppsId, filters)).thenReturn(Response(data = NomisNumber(), errors = emptyList()))
 
           val response = getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)
           response.errors.shouldBe(errors)
         }
 
         it("does not get alerts from prison alerts gateway") {
-          whenever(personService.getNomisNumberWithFiltering(hmppsId, filters)).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "NOMIS number not found"))))
+          whenever(personService.getNomisNumber(hmppsId, filters)).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "NOMIS number not found"))))
 
           getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)
           verify(prisonerAlertsGateway, times(0)).getPrisonerAlertsForCodes(hmppsId, page, perPage)
@@ -195,7 +195,7 @@ internal class GetAlertsForPersonServiceTest(
       describe("when an upstream API returns an error when looking up nomis number by a Hmmps Id - getAlerts") {
         it("records upstream API errors when failed prison check call") {
           val errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "NOMIS number not found"))
-          whenever(personService.getNomisNumberWithFiltering(hmppsId = hmppsId, filters = filters)).thenReturn(
+          whenever(personService.getNomisNumber(hmppsId = hmppsId, filters = filters)).thenReturn(
             Response(
               data = null,
               errors = errors,
@@ -208,14 +208,14 @@ internal class GetAlertsForPersonServiceTest(
 
         it("failed to get prisoners nomis number") {
           val errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND))
-          whenever(personService.getNomisNumberWithFiltering(hmppsId, filters)).thenReturn(Response(data = NomisNumber(), errors = emptyList()))
+          whenever(personService.getNomisNumber(hmppsId, filters)).thenReturn(Response(data = NomisNumber(), errors = emptyList()))
 
           val response = getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)
           response.errors.shouldBe(errors)
         }
 
         it("does not get alerts from prison alerts gateway") {
-          whenever(personService.getNomisNumberWithFiltering(hmppsId, filters)).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "NOMIS number not found"))))
+          whenever(personService.getNomisNumber(hmppsId, filters)).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "NOMIS number not found"))))
 
           getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)
           verify(prisonerAlertsGateway, times(0)).getPrisonerAlertsForCodes(hmppsId, page, perPage)
@@ -251,7 +251,7 @@ internal class GetAlertsForPersonServiceTest(
               data = paginatedAlerts,
             ),
           )
-          whenever(personService.getNomisNumberWithFiltering(hmppsId, filters)).thenReturn(Response(data = NomisNumber(hmppsId)))
+          whenever(personService.getNomisNumber(hmppsId, filters)).thenReturn(Response(data = NomisNumber(hmppsId)))
           getAlertsForPersonService.getAlerts(hmppsId, ConsumerFilters(alertCodes = testRoleWithPndAlerts.filters?.alertCodes), page, perPage)
           verify(prisonerAlertsGateway, times(1)).getPrisonerAlertsForCodes(hmppsId, page, perPage, testRoleWithPndAlerts.filters?.alertCodes!!)
         }

@@ -20,7 +20,7 @@ class GetAlertsForPersonService(
     page: Int,
     perPage: Int,
   ): Response<PaginatedAlerts?> {
-    val personResponse = getPersonService.getNomisNumberWithFiltering(hmppsId, filters)
+    val personResponse = getPersonService.getNomisNumber(hmppsId, filters)
 
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = personResponse.errors)

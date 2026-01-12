@@ -244,18 +244,13 @@ class GetPersonService(
   }
 
   /**
-   * Returns a Nomis number from a HMPPS ID
-   */
-  fun getNomisNumber(hmppsId: String): Response<NomisNumber?> = getNomisNumberWithFiltering(hmppsId, filters = null)
-
-  /**
    * Returns a Nomis number from a HMPPS ID, taking into account prison and supervision status filters
    * If the prisoner isn't found or their current location or supervision status doesn't match the consumer's
    * filters, a NOT_FOUND error response is returned
    */
-  fun getNomisNumberWithFiltering(
+  fun getNomisNumber(
     hmppsId: String,
-    filters: ConsumerFilters?,
+    filters: ConsumerFilters? = null,
   ): Response<NomisNumber?> {
     val id = convert(hmppsId, IdentifierType.NOMS)
     val nomisNumber = id.data ?: return Response(data = null, errors = id.errors)

@@ -28,7 +28,7 @@ class GetScheduledInstancesForPrisonerService(
       return consumerPrisonFilterCheck
     }
 
-    val personResponse = getPersonService.getNomisNumberWithFiltering(hmppsId = hmppsId, filters)
+    val personResponse = getPersonService.getNomisNumber(hmppsId = hmppsId, filters)
     val nomisNumber = personResponse.data?.nomisNumber
     if (nomisNumber == null) {
       return Response(

@@ -1059,7 +1059,7 @@ internal class PersonControllerTest(
           Mockito.reset(auditService)
 
           val filters = ConsumerFilters(prisons = emptyList())
-          whenever(getPersonService.getNomisNumberWithFiltering(sanitisedHmppsId, filters)).thenReturn(Response(NomisNumber("A1234AA")))
+          whenever(getPersonService.getNomisNumber(sanitisedHmppsId, filters)).thenReturn(Response(NomisNumber("A1234AA")))
         }
 
         it("returns a prisoners visit orders") {
@@ -1282,7 +1282,7 @@ internal class PersonControllerTest(
           Mockito.reset(auditService)
 
           val filters = ConsumerFilters(prisons = emptyList())
-          whenever(getPersonService.getNomisNumberWithFiltering(sanitisedHmppsId, filters)).thenReturn(Response(NomisNumber("A1234AA")))
+          whenever(getPersonService.getNomisNumber(sanitisedHmppsId, filters)).thenReturn(Response(NomisNumber("A1234AA")))
         }
 
         it("returns a prisoners visit orders") {

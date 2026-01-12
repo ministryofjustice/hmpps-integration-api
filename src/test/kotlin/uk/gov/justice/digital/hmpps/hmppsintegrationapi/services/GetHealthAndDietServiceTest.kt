@@ -121,7 +121,7 @@ internal class GetHealthAndDietServiceTest(
         Mockito.reset(prisonerOffenderSearchGateway)
         Mockito.reset(healthAndMedicationGateway)
 
-        whenever(getPersonService.getNomisNumberWithFiltering(hmppsId = hmppsId, filters = filters)).thenReturn(
+        whenever(getPersonService.getNomisNumber(hmppsId = hmppsId, filters = filters)).thenReturn(
           Response(
             data = NomisNumber(nomsId),
           ),
@@ -133,7 +133,7 @@ internal class GetHealthAndDietServiceTest(
 
       it("gets a person from getPersonService") {
         getHealthAndDietService.execute(hmppsId, filters)
-        verify(getPersonService, VerificationModeFactory.times(1)).getNomisNumberWithFiltering(hmppsId, filters)
+        verify(getPersonService, VerificationModeFactory.times(1)).getNomisNumber(hmppsId, filters)
       }
 
       it("calls health and medication gateway") {

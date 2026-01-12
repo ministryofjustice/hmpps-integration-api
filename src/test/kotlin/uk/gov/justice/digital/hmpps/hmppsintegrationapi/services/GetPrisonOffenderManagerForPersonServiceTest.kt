@@ -38,13 +38,13 @@ class GetPrisonOffenderManagerForPersonServiceTest(
         Mockito.reset(getPersonService)
         Mockito.reset(managePOMCaseGateway)
 
-        whenever(getPersonService.getNomisNumberWithFiltering(hmppsId = hmppsId, filters)).thenReturn(Response(NomisNumber(nomisNumber)))
+        whenever(getPersonService.getNomisNumber(hmppsId = hmppsId, filters)).thenReturn(Response(NomisNumber(nomisNumber)))
         whenever(managePOMCaseGateway.getPrimaryPOMForNomisNumber(nomsNumber = nomisNumber)).thenReturn(Response(prisonOffenderManager))
       }
 
       it("performs a search according to hmpps Id") {
         getPrisonOffenderManagerForPersonService.execute(hmppsId, filters)
-        verify(getPersonService, times(1)).getNomisNumberWithFiltering(hmppsId = hmppsId, filters)
+        verify(getPersonService, times(1)).getNomisNumber(hmppsId = hmppsId, filters)
       }
 
       it("Returns a prison offender manager for person given a hmppsId") {
@@ -60,7 +60,7 @@ class GetPrisonOffenderManagerForPersonServiceTest(
               type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
             ),
           )
-        whenever(getPersonService.getNomisNumberWithFiltering(hmppsId = "NOT_FOUND", filters)).thenReturn(
+        whenever(getPersonService.getNomisNumber(hmppsId = "NOT_FOUND", filters)).thenReturn(
           Response(
             data = null,
             errors = errors,

@@ -19,7 +19,7 @@ class GetCaseNotesForPersonService(
     filter: CaseNoteFilter,
     filters: ConsumerFilters?,
   ): Response<PaginatedCaseNotes?> {
-    val personResponse = getPersonService.getNomisNumberWithFiltering(filter.hmppsId, filters)
+    val personResponse = getPersonService.getNomisNumber(filter.hmppsId, filters)
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = personResponse.errors)
     }
