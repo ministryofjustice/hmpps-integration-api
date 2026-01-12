@@ -37,17 +37,16 @@ private val pathPlaceholders =
  * trigger an analysis of the impact of introducing new placeholder
  * names, including in the integration events codebase.
  */
-fun normalisePath(pathPattern: String): String {
-  if (pathPattern == "/.*") {
-    return pathPattern // Wildcard at start of path is not a parameter placeholder
-  } else {
-    return pathPattern
-      .normalisePathPlaceholders()
-      .removePrefix("^")
-      .removeSuffix("$")
-      .ensurePrefix("/")
+fun normalisePath(pathPattern: String): String =
+  when (pathPattern) {
+    "/.*" -> pathPattern // Wildcard at start of path is not a parameter placeholder
+    else ->
+      pathPattern
+        .normalisePathPlaceholders()
+        .removePrefix("^")
+        .removeSuffix("$")
+        .ensurePrefix("/")
   }
-}
 
 private fun String.normalisePathPlaceholders() =
   pathPlaceholders.fold(this) { path, placeholder ->
