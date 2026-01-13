@@ -1,17 +1,15 @@
 name: Format code
-
 on:
   pull_request:
     types: [opened, edited, reopened, synchronize]
-
 jobs:
   format-code:
-    if: github.actor != 'dependabot[bot]'
+    if: github.actor != 'dependabot[bot]' && !startsWith(github.head_ref, 'dependabot')
     name: 🧹 Format code
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Format code
         uses: ministryofjustice/github-actions/code-formatter@v14
         env:
