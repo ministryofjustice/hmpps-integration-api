@@ -16,7 +16,7 @@ class GetRiskCategoriesForPersonService(
     hmppsId: String,
     filters: ConsumerFilters?,
   ): Response<RiskCategory?> {
-    val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)
+    val personResponse = getPersonService.getNomisNumber(hmppsId, filters)
 
     var personRiskCategories: Response<RiskCategory?> = Response(data = RiskCategory())
 

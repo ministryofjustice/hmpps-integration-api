@@ -10,7 +10,6 @@ import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory.times
-import org.mockito.kotlin.any
 import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -1060,7 +1059,7 @@ internal class PersonControllerTest(
           Mockito.reset(auditService)
 
           val filters = ConsumerFilters(prisons = emptyList())
-          whenever(getPersonService.getNomisNumberWithPrisonFilter(sanitisedHmppsId, filters)).thenReturn(Response(NomisNumber("A1234AA")))
+          whenever(getPersonService.getNomisNumber(sanitisedHmppsId, filters)).thenReturn(Response(NomisNumber("A1234AA")))
         }
 
         it("returns a prisoners visit orders") {
@@ -1283,7 +1282,7 @@ internal class PersonControllerTest(
           Mockito.reset(auditService)
 
           val filters = ConsumerFilters(prisons = emptyList())
-          whenever(getPersonService.getNomisNumberWithPrisonFilter(sanitisedHmppsId, filters)).thenReturn(Response(NomisNumber("A1234AA")))
+          whenever(getPersonService.getNomisNumber(sanitisedHmppsId, filters)).thenReturn(Response(NomisNumber("A1234AA")))
         }
 
         it("returns a prisoners visit orders") {
