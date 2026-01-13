@@ -35,12 +35,12 @@ val roleConstants =
       -"/.*"
       // Provides access to all events on queue
       -"/v1/activities/attendance-reasons"
+      -"/v1/contacts/{contactId}"
       -"/v1/persons/{hmppsId}/addresses"
       -"/v1/persons/{hmppsId}/alerts"
       -"/v1/persons/{hmppsId}/care-needs"
       -"/v1/persons/{hmppsId}/case-notes"
       -"/v1/persons/{hmppsId}/cell-location"
-      -"/v1/contacts/{contactId}"
       -"/v1/persons/{hmppsId}/health-and-diet"
       -"/v1/persons/{hmppsId}/iep-level"
       -"/v1/persons/{hmppsId}/images"
