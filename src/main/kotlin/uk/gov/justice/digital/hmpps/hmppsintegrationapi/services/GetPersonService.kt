@@ -288,7 +288,10 @@ class GetPersonService(
     return false
   }
 
-  private fun getPrisonerSupervisionStatus(hmppsId: String, prisoner: POSPrisoner?): String {
+  private fun getPrisonerSupervisionStatus(
+    hmppsId: String,
+    prisoner: POSPrisoner?,
+  ): String {
     val inPrisonStatuses = listOf("ACTIVE_IN", "ACTIVE_OUT")
 
     if (prisoner?.status != null && inPrisonStatuses.contains(prisoner.status)) {

@@ -816,7 +816,6 @@ internal class GetPersonServiceTest(
           result.errors.shouldBe(notFoundError)
         }
 
-
         it("Only PROBATION allowed, prisoner is ACTIVE_IN, should return 404") {
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerWithPrisonId, errors = emptyList()))
 
@@ -829,7 +828,6 @@ internal class GetPersonServiceTest(
 
           val result = getPersonService.getNomisNumber(nomsNumber, probationOnlyConsumerFilter)
           result.errors.shouldBe(notFoundError)
-
         }
 
         it("Only PROBATION allowed, prisoner is INACTIVE_OUT, NDelius has active sentence - return nomis number") {
@@ -877,9 +875,7 @@ internal class GetPersonServiceTest(
           val result = getPersonService.getNomisNumber(nomsNumber, noneOnlyConsumerFilter)
           result.data.shouldBe(NomisNumber(nomsNumber))
         }
-
       }
-
 
       describe("Use CPR to retrieve Nomis number") {
         beforeEach {
