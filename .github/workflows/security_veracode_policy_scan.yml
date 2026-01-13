@@ -1,8 +1,5 @@
 name: Security veracode policy scan
 on:
-  push:
-    branches:
-      - 'HIA-1144-GHA-security-scanning'
   workflow_dispatch:
   schedule:
     - cron: "10 5 * * 1" # Every Monday at 05:10 UTC
