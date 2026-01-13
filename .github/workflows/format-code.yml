@@ -1,15 +1,10 @@
 name: Format code
 on:
-  push:
-    branches-ignore:
-      - dependabot/**
   pull_request:
-    branches-ignore:
-      - dependabot/**
     types: [opened, edited, reopened, synchronize]
 jobs:
   format-code:
-    if: github.actor != 'dependabot[bot]'
+    if: github.actor != 'dependabot[bot]' && !startsWith(github.ref, 'dependabot')
     name: 🧹 Format code
     runs-on: ubuntu-latest
     steps:
