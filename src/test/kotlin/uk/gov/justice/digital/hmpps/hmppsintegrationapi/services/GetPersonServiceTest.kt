@@ -26,6 +26,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAcc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.CPR_ENABLED
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FilterViolationException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CorePersonRecordGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
@@ -713,13 +714,16 @@ internal class GetPersonServiceTest(
           result.data.shouldBe(NomisNumber(nomsNumber))
         }
 
+
         it("Nomis number passed in, filters present, filter check failed - return 404") {
-          val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))
+          val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR))
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerWithWrongPrisonId, errors = emptyList()))
           whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Person>(wrongPrisonId, filters)).thenReturn(Response(data = null, errors = errors))
-
-          val result = getPersonService.getNomisNumber(nomsNumber, filters)
-          result.errors.shouldBe(errors)
+          val exception =
+            assertThrows<FilterViolationException> {
+              getPersonService.getNomisNumber(nomsNumber, filters)
+            }
+          exception.message.shouldBe("PrisonFilter restricts access to the requested prisoner's location")
         }
 
         it("Crn number passed in, filters null - return nomis number from probation") {
@@ -768,9 +772,11 @@ internal class GetPersonServiceTest(
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerWithPrisonId, errors = emptyList()))
           whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Nothing>(prisonId, filters)).thenReturn(Response(data = null, errors = errors))
 
-          val result = getPersonService.getNomisNumber(crnNumber, filters)
-          result.errors.shouldBe(errors)
-        }
+          val exception =
+            assertThrows<FilterViolationException> {
+              getPersonService.getNomisNumber(crnNumber, filters)
+            }
+          exception.message.shouldBe("PrisonFilter restricts access to the requested prisoner's location")        }
       }
 
       describe("getNomisNumber() with SupervisionStatus filters arg") {
@@ -804,30 +810,42 @@ internal class GetPersonServiceTest(
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerWithWrongPrisonId, errors = emptyList()))
           whenever(deliusGateway.getOffender(nomsNumber)).thenReturn(Response(data = personOnProbation, errors = emptyList()))
 
-          val result = getPersonService.getNomisNumber(nomsNumber, prisonsOnlyConsumerFilter)
-          result.errors.shouldBe(notFoundError)
+          val exception =
+            assertThrows<FilterViolationException> {
+              getPersonService.getNomisNumber(nomsNumber, prisonsOnlyConsumerFilter)
+            }
+          exception.message.shouldBe("SupervisionStatus filter restricts access to the requested prisoner's supervision status")
         }
 
         it("Only PRISONS allowed, prisoner is INACTIVE_OUT, NDelius has no active sentence - return 404") {
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerInactiveOut, errors = emptyList()))
           whenever(deliusGateway.getOffender(nomsNumber)).thenReturn(Response(data = personOnProbation, errors = emptyList()))
 
-          val result = getPersonService.getNomisNumber(nomsNumber, prisonsOnlyConsumerFilter)
-          result.errors.shouldBe(notFoundError)
+          val exception =
+            assertThrows<FilterViolationException> {
+              getPersonService.getNomisNumber(nomsNumber, prisonsOnlyConsumerFilter)
+            }
+          exception.message.shouldBe("SupervisionStatus filter restricts access to the requested prisoner's supervision status")
         }
 
         it("Only PROBATION allowed, prisoner is ACTIVE_IN, should return 404") {
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerWithPrisonId, errors = emptyList()))
 
-          val result = getPersonService.getNomisNumber(nomsNumber, probationOnlyConsumerFilter)
-          result.errors.shouldBe(notFoundError)
+          val exception =
+            assertThrows<FilterViolationException> {
+              getPersonService.getNomisNumber(nomsNumber, probationOnlyConsumerFilter)
+            }
+          exception.message.shouldBe("SupervisionStatus filter restricts access to the requested prisoner's supervision status")
         }
 
         it("Only PROBATION allowed, prisoner is ACTIVE_OUT, should return 404") {
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerActiveOut, errors = emptyList()))
 
-          val result = getPersonService.getNomisNumber(nomsNumber, probationOnlyConsumerFilter)
-          result.errors.shouldBe(notFoundError)
+          val exception =
+            assertThrows<FilterViolationException> {
+              getPersonService.getNomisNumber(nomsNumber, probationOnlyConsumerFilter)
+            }
+          exception.message.shouldBe("SupervisionStatus filter restricts access to the requested prisoner's supervision status")
         }
 
         it("Only PROBATION allowed, prisoner is INACTIVE_OUT, NDelius has active sentence - return nomis number") {
@@ -842,30 +860,42 @@ internal class GetPersonServiceTest(
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerInactiveOut, errors = emptyList()))
           whenever(deliusGateway.getOffender(nomsNumber)).thenReturn(Response(data = personOnProbationNotUnderActiveSupervision, errors = emptyList()))
 
-          val result = getPersonService.getNomisNumber(nomsNumber, probationOnlyConsumerFilter)
-          result.errors.shouldBe(notFoundError)
+          val exception =
+            assertThrows<FilterViolationException> {
+              getPersonService.getNomisNumber(nomsNumber, probationOnlyConsumerFilter)
+            }
+          exception.message.shouldBe("SupervisionStatus filter restricts access to the requested prisoner's supervision status")
         }
 
         it("Only NONE allowed, prisoner is ACTIVE_IN, should return 404") {
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerWithPrisonId, errors = emptyList()))
 
-          val result = getPersonService.getNomisNumber(nomsNumber, noneOnlyConsumerFilter)
-          result.errors.shouldBe(notFoundError)
+          val exception =
+            assertThrows<FilterViolationException> {
+              getPersonService.getNomisNumber(nomsNumber, noneOnlyConsumerFilter)
+            }
+          exception.message.shouldBe("SupervisionStatus filter restricts access to the requested prisoner's supervision status")
         }
 
         it("Only NONE allowed, prisoner is ACTIVE_OUT, should return 404") {
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerActiveOut, errors = emptyList()))
 
-          val result = getPersonService.getNomisNumber(nomsNumber, noneOnlyConsumerFilter)
-          result.errors.shouldBe(notFoundError)
+          val exception =
+            assertThrows<FilterViolationException> {
+              getPersonService.getNomisNumber(nomsNumber, noneOnlyConsumerFilter)
+            }
+          exception.message.shouldBe("SupervisionStatus filter restricts access to the requested prisoner's supervision status")
         }
 
         it("Only NONE allowed, prisoner is INACTIVE_OUT, NDelius has active sentence - return 404") {
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerInactiveOut, errors = emptyList()))
           whenever(deliusGateway.getOffender(nomsNumber)).thenReturn(Response(data = personOnProbation, errors = emptyList()))
 
-          val result = getPersonService.getNomisNumber(nomsNumber, noneOnlyConsumerFilter)
-          result.errors.shouldBe(notFoundError)
+          val exception =
+            assertThrows<FilterViolationException> {
+              getPersonService.getNomisNumber(nomsNumber, noneOnlyConsumerFilter)
+            }
+          exception.message.shouldBe("SupervisionStatus filter restricts access to the requested prisoner's supervision status")
         }
 
         it("Only NONE allowed, prisoner is INACTIVE_OUT, NDelius has no active sentence - return nomis number") {

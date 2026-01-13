@@ -24,6 +24,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ConflictFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FilterViolationException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.HmppsAuthFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
@@ -129,6 +130,20 @@ class HmppsIntegrationApiExceptionHandler {
           status = FORBIDDEN,
           developerMessage = "Forbidden to complete action by upstream service: ${e.message}",
           userMessage = e.message,
+        ),
+      )
+  }
+
+  @ExceptionHandler(FilterViolationException::class)
+  fun handleFilterViolationException(e: FilterViolationException): ResponseEntity<ErrorResponse?>? {
+    logAndCapture("Access to requested resource restricted by consumer filter: {}", e)
+    return ResponseEntity
+      .status(NOT_FOUND)
+      .body(
+        ErrorResponse(
+          status = NOT_FOUND,
+          developerMessage = "Access to requested resource restricted by consumer filter: ${e.message}",
+          userMessage = "The requested resource could not be found",
         ),
       )
   }

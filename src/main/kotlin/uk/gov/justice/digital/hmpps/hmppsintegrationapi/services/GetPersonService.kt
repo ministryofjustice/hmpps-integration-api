@@ -7,6 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.CPR_ENABLED
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.CprResultException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FilterViolationException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CorePersonRecordGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
@@ -256,13 +257,11 @@ class GetPersonService(
 
     if (filters != null) {
       val searchResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
-
       if (searchResponse.errors.isNotEmpty()) {
         return Response(data = null, errors = searchResponse.errors)
       }
-      if (violatesPrisonFilter(nomisNumber, filters) || violatesSupervisionStatusFilter(nomisNumber, filters)) {
-        return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
-      }
+      ensurePermittedPrisonerLocation(nomisNumber, filters)
+      ensurePermittedSupervisionStatus(nomisNumber, filters)
     }
 
     return Response(
@@ -270,17 +269,18 @@ class GetPersonService(
     )
   }
 
-  private fun violatesSupervisionStatusFilter(
+  private fun ensurePermittedSupervisionStatus(
     nomisId: String,
     filters: ConsumerFilters?,
-  ): Boolean {
+  ) {
     if (filters?.hasSupervisionStatusesFilter() == true) {
-      if (filters.supervisionStatuses!!.containsAll(setOf("PRISONS", "PROBATION", "NONE"))) return false
+      if (filters.supervisionStatuses!!.containsAll(setOf("PRISONS", "PROBATION", "NONE"))) return
 
       val personStatus = getPersonSupervisionStatus(nomisId)
-      return !filters.supervisionStatuses.contains(personStatus)
+      if (!filters.supervisionStatuses.contains(personStatus)) {
+        throw FilterViolationException("SupervisionStatus filter restricts access to the requested prisoner's supervision status")
+      }
     }
-    return false
   }
 
   private fun getPersonSupervisionStatus(nomisId: String): String {
@@ -299,18 +299,19 @@ class GetPersonService(
     return "NONE"
   }
 
-  private fun violatesPrisonFilter(
+  private fun ensurePermittedPrisonerLocation(
     nomisId: String,
     filters: ConsumerFilters?,
-  ): Boolean {
+  ) {
     if (filters?.hasPrisonFilter() == true) {
       val searchResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomisId)
 
       val prisonId = searchResponse.data?.prisonId
 
-      return prisonId == null || consumerPrisonAccessService.checkConsumerHasPrisonAccess<NomisNumber>(prisonId, filters).errors.isNotEmpty()
+      if (prisonId == null || consumerPrisonAccessService.checkConsumerHasPrisonAccess<NomisNumber>(prisonId, filters).errors.isNotEmpty()) {
+        throw FilterViolationException("PrisonFilter restricts access to the requested prisoner's location")
+      }
     }
-    return false
   }
 
   fun getCombinedDataForPerson(
