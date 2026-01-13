@@ -30,7 +30,7 @@ jobs:
           mkdir openapi
           curl -sf localhost:8080/v3/api-docs -o openapi/api-docs.json
         working-directory: .
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: openapi
           path: openapi/
@@ -57,7 +57,7 @@ jobs:
           gem install middleman
           bundle exec middleman build --verbose
         working-directory: tech-docs
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: documentation
           path: tech-docs/build/
