@@ -69,11 +69,11 @@ jobs:
       - build-docs
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v7
         with:
           name: documentation
           path: tech-docs-build
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v7
         with:
           name: openapi
           path: tech-docs-build/openapi/
