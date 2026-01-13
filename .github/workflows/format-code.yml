@@ -2,11 +2,11 @@ name: Format code
 on:
   push:
     branches-ignore:
-      - 'dependabot/**'
+      - dependabot/**
   pull_request:
-    types: [opened, edited, reopened, synchronize]
     branches-ignore:
-      - "dependabot/**"
+      - dependabot/**
+    types: [opened, edited, reopened, synchronize]
 jobs:
   format-code:
     if: github.actor != 'dependabot[bot]'
