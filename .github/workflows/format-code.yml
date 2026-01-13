@@ -3,7 +3,8 @@ name: Format code
 on:
   pull_request:
     types: [opened, edited, reopened, synchronize]
-
+    branches-ignore:
+      - "dependabot/**"
 jobs:
   format-code:
     if: github.actor != 'dependabot[bot]'
