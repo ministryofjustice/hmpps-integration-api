@@ -1,6 +1,8 @@
 name: Format code
-
 on:
+  push:
+    branches-ignore:
+      - 'dependabot/**'
   pull_request:
     types: [opened, edited, reopened, synchronize]
     branches-ignore:
