@@ -265,7 +265,7 @@ class GetPersonService(
           return Response(data = null, errors = searchResponse.errors)
         }
 
-      if (violatesPrisonFilter(prisonId, filters) || violatesSupervisionStatusFilter(searchResponse.data, filters)) {
+      if (violatesPrisonFilter(prisonId, filters) || violatesSupervisionStatusFilter(hmppsId, searchResponse.data, filters)) {
         return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
       }
     }
@@ -275,25 +275,26 @@ class GetPersonService(
   }
 
   private fun violatesSupervisionStatusFilter(
+    hmppsId: String,
     prisoner: POSPrisoner?,
     filters: ConsumerFilters?,
   ): Boolean {
     if (filters?.hasSupervisionStatusesFilter() == true) {
       if (filters.supervisionStatuses!!.containsAll(setOf("PRISONS", "PROBATION", "NONE"))) return false
 
-      val prisonerStatus = getPrisonerSupervisionStatus(prisoner)
+      val prisonerStatus = getPrisonerSupervisionStatus(hmppsId, prisoner)
       return !filters.supervisionStatuses.contains(prisonerStatus)
     }
     return false
   }
 
-  private fun getPrisonerSupervisionStatus(prisoner: POSPrisoner?): String {
+  private fun getPrisonerSupervisionStatus(hmppsId: String, prisoner: POSPrisoner?): String {
     val inPrisonStatuses = listOf("ACTIVE_IN", "ACTIVE_OUT")
 
     if (prisoner?.status != null && inPrisonStatuses.contains(prisoner.status)) {
       return "PRISONS"
     }
-    val probationData = getPerson(prisoner?.prisonerNumber)
+    val probationData = getPerson(hmppsId)
 
     if (probationData.data?.underActiveSupervision == true) {
       return "PROBATION"
