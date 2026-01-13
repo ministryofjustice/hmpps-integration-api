@@ -244,7 +244,7 @@ class GetPersonService(
   }
 
   /**
-   * Returns a Nomis number from a HMPPS ID, taking into account prison and supervision status filters
+   * Returns a Nomis number from a HMPPS ID, taking into account optionally provided prison and supervision status filters
    * If the prisoner isn't found or their current location or supervision status doesn't match the consumer's
    * filters, a NOT_FOUND error response is returned
    */
