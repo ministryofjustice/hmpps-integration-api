@@ -25,7 +25,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffenders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchQuery
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSIdentifierWithPrisonerNumber
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationintegrationepf.LimitedAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
@@ -255,49 +254,44 @@ class GetPersonService(
     val id = convert(hmppsId, IdentifierType.NOMS)
     val nomisNumber = id.data ?: return Response(data = null, errors = id.errors)
 
-    if (filters?.hasPrisonFilter() == true || filters?.hasSupervisionStatusesFilter() == true) {
+    if (filters != null) {
       val searchResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
 
-      val prisonId =
-        if (searchResponse.data?.prisonId != null) {
-          searchResponse.data.prisonId
-        } else {
-          return Response(data = null, errors = searchResponse.errors)
-        }
-
-      if (violatesPrisonFilter(prisonId, filters) || violatesSupervisionStatusFilter(hmppsId, searchResponse.data, filters)) {
+      if (searchResponse.errors.isNotEmpty()) {
+        return Response(data = null, errors = searchResponse.errors)
+      }
+      if (violatesPrisonFilter(nomisNumber, filters) || violatesSupervisionStatusFilter(nomisNumber, filters)) {
         return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
       }
     }
+
     return Response(
       data = NomisNumber(nomisNumber),
     )
   }
 
   private fun violatesSupervisionStatusFilter(
-    hmppsId: String,
-    prisoner: POSPrisoner?,
+    nomisId: String,
     filters: ConsumerFilters?,
   ): Boolean {
     if (filters?.hasSupervisionStatusesFilter() == true) {
       if (filters.supervisionStatuses!!.containsAll(setOf("PRISONS", "PROBATION", "NONE"))) return false
 
-      val prisonerStatus = getPrisonerSupervisionStatus(hmppsId, prisoner)
-      return !filters.supervisionStatuses.contains(prisonerStatus)
+      val personStatus = getPersonSupervisionStatus(nomisId)
+      return !filters.supervisionStatuses.contains(personStatus)
     }
     return false
   }
 
-  private fun getPrisonerSupervisionStatus(
-    hmppsId: String,
-    prisoner: POSPrisoner?,
-  ): String {
+  private fun getPersonSupervisionStatus(nomisId: String): String {
     val inPrisonStatuses = listOf("ACTIVE_IN", "ACTIVE_OUT")
+    val searchResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomisId)
+    val status = searchResponse.data?.status
 
-    if (prisoner?.status != null && inPrisonStatuses.contains(prisoner.status)) {
+    if (status != null && inPrisonStatuses.contains(status)) {
       return "PRISONS"
     }
-    val probationData = getPerson(hmppsId)
+    val probationData = getPerson(nomisId)
 
     if (probationData.data?.underActiveSupervision == true) {
       return "PROBATION"
@@ -306,11 +300,15 @@ class GetPersonService(
   }
 
   private fun violatesPrisonFilter(
-    prisonId: String?,
+    nomisId: String,
     filters: ConsumerFilters?,
   ): Boolean {
     if (filters?.hasPrisonFilter() == true) {
-      return consumerPrisonAccessService.checkConsumerHasPrisonAccess<NomisNumber>(prisonId, filters).errors.isNotEmpty()
+      val searchResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomisId)
+
+      val prisonId = searchResponse.data?.prisonId
+
+      return prisonId == null || consumerPrisonAccessService.checkConsumerHasPrisonAccess<NomisNumber>(prisonId, filters).errors.isNotEmpty()
     }
     return false
   }
