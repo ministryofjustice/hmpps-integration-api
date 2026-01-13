@@ -190,7 +190,7 @@ jobs:
           min-coverage-overall: 80
           min-coverage-changed-files: 80
           coverage-counter-type: LINE
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && github.actor != 'dependabot[bot]'
       - name: Upload coverage report
         uses: actions/upload-artifact@v5
         with:
