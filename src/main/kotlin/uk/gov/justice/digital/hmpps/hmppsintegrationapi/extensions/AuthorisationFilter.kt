@@ -47,7 +47,7 @@ class AuthorisationFilter(
       return
     }
 
-    val authoriseConsumerService = AuthoriseConsumerService()
+    val authoriseConsumerService = AuthoriseConsumerService(featureFlagConfig)
     val requestedPath = req.requestURI
 
     if (authorisedThroughIncludes(authoriseConsumerService, subjectDistinguishedName, requestedPath) ||
