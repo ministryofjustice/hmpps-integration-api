@@ -4,7 +4,7 @@ on:
     types: [opened, edited, reopened, synchronize]
 jobs:
   format-code:
-    if: github.actor != 'dependabot[bot]' && !startsWith(github.ref, 'dependabot')
+    if: github.actor != 'dependabot[bot]' && !startsWith(github.head_ref, 'dependabot')
     name: 🧹 Format code
     runs-on: ubuntu-latest
     steps:
