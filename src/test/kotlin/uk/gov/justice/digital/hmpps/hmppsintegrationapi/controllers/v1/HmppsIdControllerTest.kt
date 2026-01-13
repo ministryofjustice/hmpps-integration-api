@@ -120,7 +120,7 @@ internal class HmppsIdControllerTest(
         Mockito.reset(getPersonService)
         Mockito.reset(auditService)
 
-        whenever(getPersonService.getNomisNumberWithPrisonFilter(nomisNumber, consumerFilters)).thenReturn(
+        whenever(getPersonService.getNomisNumber(nomisNumber, consumerFilters)).thenReturn(
           Response(
             data = NomisNumber(nomisNumber),
           ),
@@ -135,7 +135,7 @@ internal class HmppsIdControllerTest(
       }
 
       it("returns a 400 Bad request status code when invalid Hmpps ID provided") {
-        whenever(getPersonService.getNomisNumberWithPrisonFilter(nomisNumber, consumerFilters)).thenReturn(
+        whenever(getPersonService.getNomisNumber(nomisNumber, consumerFilters)).thenReturn(
           Response(
             data = null,
             errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.BAD_REQUEST)),
@@ -146,7 +146,7 @@ internal class HmppsIdControllerTest(
       }
 
       it("returns a 404 Not found status code when no nomis number found") {
-        whenever(getPersonService.getNomisNumberWithPrisonFilter(nomisNumber, consumerFilters)).thenReturn(
+        whenever(getPersonService.getNomisNumber(nomisNumber, consumerFilters)).thenReturn(
           Response(
             data = null,
             errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
@@ -168,7 +168,7 @@ internal class HmppsIdControllerTest(
       }
 
       it("returns a 500 INTERNAL SERVER ERROR status code when upstream api return expected error") {
-        whenever(getPersonService.getNomisNumberWithPrisonFilter(nomisNumber, consumerFilters)).doThrow(
+        whenever(getPersonService.getNomisNumber(nomisNumber, consumerFilters)).doThrow(
           WebClientResponseException(500, "MockError", null, null, null, null),
         )
 

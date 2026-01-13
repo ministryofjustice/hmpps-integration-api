@@ -164,7 +164,7 @@ internal class VisitQueueServiceTest(
       reset(mockSqsClient, objectMapper)
 
       whenever(hmppsQueueService.findByQueueId("visits")).thenReturn(visitQueue)
-      whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId = eq(hmppsId), filters = any<ConsumerFilters>())).thenReturn(Response(NomisNumber(hmppsId)))
+      whenever(getPersonService.getNomisNumber(hmppsId = eq(hmppsId), filters = any<ConsumerFilters>())).thenReturn(Response(NomisNumber(hmppsId)))
       whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessage>(prisonId, filters)).thenReturn(Response(data = null))
       whenever(getVisitInformationByReferenceService.execute(eq(visitReference), any<ConsumerFilters>())).thenReturn(Response(data = visitResponse))
       whenever(personalRelationshipsGateway.getContacts(hmppsId, page = 1, size = 10)).thenReturn(
@@ -223,7 +223,7 @@ internal class VisitQueueServiceTest(
 
       it("return error if getPersonService returns an error") {
         val errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.INTERNAL_SERVER_ERROR, description = "getPersonService returns an error"))
-        whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId = hmppsId, filters = filters)).thenReturn(Response(data = null, errors))
+        whenever(getPersonService.getNomisNumber(hmppsId = hmppsId, filters = filters)).thenReturn(Response(data = null, errors))
 
         val response = visitQueueService.sendCreateVisit(createVisitRequest, who, filters)
         response.data.shouldBeNull()

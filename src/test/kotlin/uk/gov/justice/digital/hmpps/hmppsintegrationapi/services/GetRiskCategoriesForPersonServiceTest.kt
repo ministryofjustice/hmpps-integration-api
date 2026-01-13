@@ -45,13 +45,13 @@ internal class GetRiskCategoriesForPersonServiceTest(
         Mockito.reset(getPersonService)
         Mockito.reset(prisonApiGateway)
 
-        whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(data = NomisNumber(nomisNumber)))
+        whenever(getPersonService.getNomisNumber(hmppsId, filters)).thenReturn(Response(data = NomisNumber(nomisNumber)))
         whenever(prisonApiGateway.getRiskCategoriesForPerson(nomisNumber)).thenReturn(Response(data = RiskCategory()))
       }
 
       it("gets a person from getPersonService") {
         getRiskCategoriesForPersonService.execute(hmppsId, filters)
-        verify(getPersonService, times(1)).getNomisNumberWithPrisonFilter(hmppsId, filters)
+        verify(getPersonService, times(1)).getNomisNumber(hmppsId, filters)
       }
 
       it("gets a risk category for a person from ARN API using Nomis") {

@@ -81,7 +81,7 @@ internal class GetAddressesForPersonServiceTest(
               description = "Mock error from person service",
             ),
           )
-        whenever(personService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(
+        whenever(personService.getNomisNumber(hmppsId, filters)).thenReturn(
           Response(
             data = null,
             errors = errors,
@@ -93,7 +93,7 @@ internal class GetAddressesForPersonServiceTest(
       }
 
       it("Nomis number, Delius success, Nomis success → Merge responses ") {
-        whenever(personService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(NomisNumber(nomisNumber)))
+        whenever(personService.getNomisNumber(hmppsId, filters)).thenReturn(Response(NomisNumber(nomisNumber)))
         whenever(deliusGateway.getAddressesForPerson(hmppsId)).thenReturn(Response(data = listOf(deliusAddress)))
         whenever(prisonApiGateway.getAddressesForPerson(nomisNumber)).thenReturn(Response(data = listOf(nomisAddress)))
 
@@ -103,7 +103,7 @@ internal class GetAddressesForPersonServiceTest(
       }
 
       it("Nomis number, Delius success, Nomis 404 → Ideally return just Delius response") {
-        whenever(personService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(NomisNumber(nomisNumber)))
+        whenever(personService.getNomisNumber(hmppsId, filters)).thenReturn(Response(NomisNumber(nomisNumber)))
         whenever(deliusGateway.getAddressesForPerson(hmppsId)).thenReturn(Response(data = listOf(deliusAddress)))
         whenever(prisonApiGateway.getAddressesForPerson(nomisNumber)).thenReturn(
           Response(
@@ -124,7 +124,7 @@ internal class GetAddressesForPersonServiceTest(
       }
 
       it("Nomis number, Delius 404, nomis success → Return just NOMIS") {
-        whenever(personService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(NomisNumber(nomisNumber)))
+        whenever(personService.getNomisNumber(hmppsId, filters)).thenReturn(Response(NomisNumber(nomisNumber)))
         whenever(deliusGateway.getAddressesForPerson(hmppsId)).thenReturn(
           Response(
             data = emptyList(),
@@ -145,7 +145,7 @@ internal class GetAddressesForPersonServiceTest(
       }
 
       it("Nomis number, Delius success, nomis non-404 error → Return NOMIS error") {
-        whenever(personService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(NomisNumber(nomisNumber)))
+        whenever(personService.getNomisNumber(hmppsId, filters)).thenReturn(Response(NomisNumber(nomisNumber)))
         whenever(deliusGateway.getAddressesForPerson(hmppsId)).thenReturn(Response(listOf(deliusAddress)))
         whenever(prisonApiGateway.getAddressesForPerson(nomisNumber)).thenReturn(
           Response(
@@ -165,7 +165,7 @@ internal class GetAddressesForPersonServiceTest(
       }
 
       it("Nomis number, Delius 404, nomis any error (incl. 404) → Return just NOMIS") {
-        whenever(personService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(NomisNumber(nomisNumber)))
+        whenever(personService.getNomisNumber(hmppsId, filters)).thenReturn(Response(NomisNumber(nomisNumber)))
         whenever(deliusGateway.getAddressesForPerson(hmppsId)).thenReturn(
           Response(
             data = emptyList(),
@@ -196,7 +196,7 @@ internal class GetAddressesForPersonServiceTest(
       }
 
       it("Nomis number, Delius non-404 error → Return Delius response") {
-        whenever(personService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(NomisNumber(nomisNumber)))
+        whenever(personService.getNomisNumber(hmppsId, filters)).thenReturn(Response(NomisNumber(nomisNumber)))
         whenever(deliusGateway.getAddressesForPerson(hmppsId)).thenReturn(
           Response(
             data = emptyList(),
@@ -215,7 +215,7 @@ internal class GetAddressesForPersonServiceTest(
       }
 
       it("No nomis number, delius success → return Delius") {
-        whenever(personService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(NomisNumber(null)))
+        whenever(personService.getNomisNumber(hmppsId, filters)).thenReturn(Response(NomisNumber(null)))
         whenever(deliusGateway.getAddressesForPerson(hmppsId)).thenReturn(Response(listOf(deliusAddress)))
 
         val result = getAddressesForPersonService.execute(hmppsId, filters)
@@ -224,7 +224,7 @@ internal class GetAddressesForPersonServiceTest(
       }
 
       it("No nomis number, delius any error → return Delius") {
-        whenever(personService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(NomisNumber(null)))
+        whenever(personService.getNomisNumber(hmppsId, filters)).thenReturn(Response(NomisNumber(null)))
         whenever(deliusGateway.getAddressesForPerson(hmppsId)).thenReturn(
           Response(
             data = emptyList(),
