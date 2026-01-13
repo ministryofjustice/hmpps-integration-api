@@ -20,7 +20,7 @@ class GetPrisonerContactsService(
     size: Int,
     filter: ConsumerFilters?,
   ): Response<PaginatedPrisonerContacts?> {
-    val personResponse = getPersonService.getNomisNumberWithPrisonFilter(prisonerId, filter)
+    val personResponse = getPersonService.getNomisNumber(prisonerId, filter)
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = personResponse.errors)
     }
