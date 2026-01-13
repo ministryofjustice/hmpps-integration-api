@@ -72,7 +72,7 @@ class TransactionsControllerTest(
           amount = 100,
           date = "2016-10-21",
           description = "Spends desc",
-          clientUniqueRef = "client ref",
+          clientUniqueRef = "client-ref",
         )
       val transactionWithoutClientRef =
         Transaction(
@@ -122,7 +122,7 @@ class TransactionsControllerTest(
                     "description":"Spends desc",
                     "amount":100,
                     "date":"2016-10-21",
-                    "clientUniqueRef":"client ref"
+                    "clientUniqueRef":"client-ref"
                   },
                   {
                     "id":"124",

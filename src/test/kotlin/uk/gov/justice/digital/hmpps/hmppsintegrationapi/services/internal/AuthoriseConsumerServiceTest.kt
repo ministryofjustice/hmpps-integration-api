@@ -3,14 +3,16 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.shouldBe
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [AuthoriseConsumerService::class],
+  classes = [AuthoriseConsumerService::class, FeatureFlagConfig::class],
 )
 internal class AuthoriseConsumerServiceTest(
   private val authoriseConsumerService: AuthoriseConsumerService,
@@ -63,6 +65,13 @@ internal class AuthoriseConsumerServiceTest(
           val invalidPath = "/some-other-path/123"
           val result = authoriseConsumerService.doesConsumerHaveRoleAccess(consumerRolesInclude, invalidPath)
           result.shouldBeFalse()
+        }
+      }
+
+      describe("verifyNormalisedPathParameters") {
+        it("works with normalised path parameters") {
+          val features = FeatureFlagConfig(mapOf(FeatureFlagConfig.NORMALISED_PATH_MATCHING to true))
+          AuthoriseConsumerService(features).matches("/v1/persons/123", "/v1/persons/{hmppsId}") shouldBe true
         }
       }
     },
