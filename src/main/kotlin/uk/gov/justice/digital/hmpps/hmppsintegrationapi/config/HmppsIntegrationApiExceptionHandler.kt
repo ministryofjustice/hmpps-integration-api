@@ -153,10 +153,10 @@ class HmppsIntegrationApiExceptionHandler {
   @ExceptionHandler(UpstreamApiException::class)
   fun handleUpstreamApiException(e: UpstreamApiException): ResponseEntity<ErrorResponse?>? =
     ResponseEntity
-      .status(NOT_FOUND)
+      .status(INTERNAL_SERVER_ERROR)
       .body(
         ErrorResponse(
-          status = NOT_FOUND,
+          status = INTERNAL_SERVER_ERROR,
           developerMessage = "Error occurred in upstream API: ${e.errors}",
           userMessage = "The requested resource could not be found",
           moreInfo = "${Sentry.getSpan()?.traceContext()?.traceId}",
