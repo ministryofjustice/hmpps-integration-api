@@ -13,6 +13,15 @@ configurations {
   testImplementation { exclude(group = "org.junit.vintage") }
 }
 
+configurations.all {
+  resolutionStrategy.eachDependency {
+    if (requested.group == "org.apache.logging.log4j" && requested.version == "2.24.3") {
+      useVersion("2.25.3")
+      because("Fix CVE-2025-68161")
+    }
+  }
+}
+
 dependencies {
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
   runtimeOnly("io.jsonwebtoken:jjwt-impl:0.13.0")
@@ -37,7 +46,6 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt-api:0.13.0")
   implementation("com.jayway.jsonpath:json-path:2.10.0")
   implementation("com.github.ben-manes.caffeine:caffeine:3.2.3")
-
   testImplementation("io.kotest:kotest-assertions-json-jvm:6.0.7")
   testImplementation("io.kotest:kotest-runner-junit5-jvm:6.0.7")
   testImplementation("io.kotest:kotest-assertions-core-jvm:6.0.7")
