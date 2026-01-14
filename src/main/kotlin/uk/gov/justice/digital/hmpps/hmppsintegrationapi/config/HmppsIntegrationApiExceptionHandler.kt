@@ -137,31 +137,31 @@ class HmppsIntegrationApiExceptionHandler {
 
   @ExceptionHandler(FilterViolationException::class)
   fun handleFilterViolationException(e: FilterViolationException): ResponseEntity<ErrorResponse?>? {
-    logAndCapture("Access to requested resource restricted by consumer filter: {}", e)
+    logAndCapture("Access to requested resource restricted by consumer filter: ${e.message}", e)
     return ResponseEntity
       .status(NOT_FOUND)
       .body(
         ErrorResponse(
           status = NOT_FOUND,
-          developerMessage = "Access to requested resource restricted by consumer filter: ${e.message}",
           userMessage = "The requested resource could not be found",
-          moreInfo = "${Sentry.getSpan()?.traceContext()?.traceId}",
+          moreInfo = traceId,
         ),
       )
   }
 
   @ExceptionHandler(UpstreamApiException::class)
-  fun handleUpstreamApiException(e: UpstreamApiException): ResponseEntity<ErrorResponse?>? =
-    ResponseEntity
+  fun handleUpstreamApiException(e: UpstreamApiException): ResponseEntity<ErrorResponse?>? {
+    logAndCapture("[${e.errorType}] error occurred in upstream API: [${e.upstreamApi}] while requesting [${e.resourceType}] with id [${e.resourceId}]", e)
+    return ResponseEntity
       .status(INTERNAL_SERVER_ERROR)
       .body(
         ErrorResponse(
           status = INTERNAL_SERVER_ERROR,
-          developerMessage = "Error occurred in upstream API: ${e.errors}",
-          userMessage = "The requested resource could not be found",
-          moreInfo = "${Sentry.getSpan()?.traceContext()?.traceId}",
+          userMessage = "The requested ${e.resourceType} could not be found: ${e.resourceId}",
+          moreInfo = traceId,
         ),
       )
+  }
 
   @ExceptionHandler(java.lang.Exception::class)
   fun handleException(e: java.lang.Exception): ResponseEntity<ErrorResponse?>? {
@@ -285,6 +285,7 @@ class HmppsIntegrationApiExceptionHandler {
 
   companion object {
     private val log = LoggerFactory.getLogger(this::class.java)
+    private val traceId = "${Sentry.getSpan()?.traceContext()?.traceId}"
   }
 }
 

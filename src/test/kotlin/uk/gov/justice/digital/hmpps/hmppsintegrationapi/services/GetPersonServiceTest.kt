@@ -28,7 +28,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FilterViolationException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.PrisonerOffenderSearchException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.UpstreamApiException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CorePersonRecordGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
@@ -763,9 +763,10 @@ internal class GetPersonServiceTest(
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = null, errors = errors))
 
           val exception =
-            assertThrows<PrisonerOffenderSearchException> {
+            assertThrows<UpstreamApiException> {
               getPersonService.getNomisNumber(crnNumber, filters)
             }
+          exception.upstreamApi.shouldBe(UpstreamApi.PRISONER_OFFENDER_SEARCH)
           exception.errors.shouldBe(errors)
         }
 

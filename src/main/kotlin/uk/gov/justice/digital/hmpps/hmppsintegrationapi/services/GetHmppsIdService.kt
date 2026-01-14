@@ -51,7 +51,7 @@ class GetHmppsIdService(
       hmppsId
     } else {
       getPersonService
-        .getPerson(hmppsId)
+        .getPersonFromDelius(hmppsId)
         .data
         ?.identifiers
         ?.deliusCrn
