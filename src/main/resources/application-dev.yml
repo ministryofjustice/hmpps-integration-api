@@ -183,4 +183,4 @@ authorisation:
     cats:
       notes: "See client list in Confluence"
       roles:
-        - "status-only"
+        - "cats"
