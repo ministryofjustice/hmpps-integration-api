@@ -30,6 +30,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.HmppsAuthFaile
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.UpstreamApiException
 
 @RestControllerAdvice
 class HmppsIntegrationApiExceptionHandler {
@@ -144,9 +145,23 @@ class HmppsIntegrationApiExceptionHandler {
           status = NOT_FOUND,
           developerMessage = "Access to requested resource restricted by consumer filter: ${e.message}",
           userMessage = "The requested resource could not be found",
+          moreInfo = "${Sentry.getSpan()?.traceContext()?.traceId}",
         ),
       )
   }
+
+  @ExceptionHandler(UpstreamApiException::class)
+  fun handleUpstreamApiException(e: UpstreamApiException): ResponseEntity<ErrorResponse?>? =
+    ResponseEntity
+      .status(NOT_FOUND)
+      .body(
+        ErrorResponse(
+          status = NOT_FOUND,
+          developerMessage = "Error occurred in upstream API: ${e.errors}",
+          userMessage = "The requested resource could not be found",
+          moreInfo = "${Sentry.getSpan()?.traceContext()?.traceId}",
+        ),
+      )
 
   @ExceptionHandler(java.lang.Exception::class)
   fun handleException(e: java.lang.Exception): ResponseEntity<ErrorResponse?>? {

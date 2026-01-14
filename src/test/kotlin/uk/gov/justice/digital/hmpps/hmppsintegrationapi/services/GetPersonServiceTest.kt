@@ -28,6 +28,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FilterViolationException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.PrisonerOffenderSearchException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CorePersonRecordGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
@@ -714,7 +715,6 @@ internal class GetPersonServiceTest(
           result.data.shouldBe(NomisNumber(nomsNumber))
         }
 
-
         it("Nomis number passed in, filters present, filter check failed - return 404") {
           val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR))
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerWithWrongPrisonId, errors = emptyList()))
@@ -762,8 +762,11 @@ internal class GetPersonServiceTest(
           whenever(deliusGateway.getOffender(crnNumber)).thenReturn(Response(data = personOnProbation, errors = emptyList()))
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = null, errors = errors))
 
-          val result = getPersonService.getNomisNumber(crnNumber, filters)
-          result.errors.shouldBe(errors)
+          val exception =
+            assertThrows<PrisonerOffenderSearchException> {
+              getPersonService.getNomisNumber(crnNumber, filters)
+            }
+          exception.errors.shouldBe(errors)
         }
 
         it("Crn number passed in, filters present - POS returns prison id, filter check failed - return 404") {
@@ -776,7 +779,8 @@ internal class GetPersonServiceTest(
             assertThrows<FilterViolationException> {
               getPersonService.getNomisNumber(crnNumber, filters)
             }
-          exception.message.shouldBe("PrisonFilter restricts access to the requested prisoner's location")        }
+          exception.message.shouldBe("PrisonFilter restricts access to the requested prisoner's location")
+        }
       }
 
       describe("getNomisNumber() with SupervisionStatus filters arg") {

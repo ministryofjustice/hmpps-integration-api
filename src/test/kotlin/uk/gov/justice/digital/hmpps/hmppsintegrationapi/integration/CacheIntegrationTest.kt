@@ -62,7 +62,7 @@ class CacheIntegrationTest : IntegrationTestBase() {
     assertEquals(2L, cache.nativeCache.stats().missCount())
 
     // 2 cache hit for the second request
-    assertEquals(4L, cache.nativeCache.stats().hitCount())
+    assertEquals(2L, cache.nativeCache.stats().hitCount())
 
     verify(telemetryService, atLeast(1)).trackEvent(eq(GATEWAY_CACHE_METRICS), anyMap(), anyMap())
   }
@@ -110,8 +110,8 @@ class CacheDisabledIntegrationTest : IntegrationTestBase() {
     callApiWithCN(addressPath, specificPrisonCn)
       .andExpect(status().isOk)
 
-    // Calls the cacheable method four times (does not cache)
-    verify(prisonerOffenderSearchGateway, times(4)).getPrisonOffender(nomsId)
+    // Calls the cacheable method twice (does not cache)
+    verify(prisonerOffenderSearchGateway, times(2)).getPrisonOffender(nomsId)
 
     // Calls the cached CPR method only once
     verify(corePersonRecordGateway, times(2)).corePersonRecordFor(any(), eq(nomsId))
