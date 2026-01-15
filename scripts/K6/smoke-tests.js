@@ -93,14 +93,14 @@ const get_endpoints = [
 const postEducationUpdateEndpoint = `/v1/persons/${hmppsId}/education/status`
 const postEducationUpdateRequest = JSON.stringify({
   status: "EDUCATION_STARTED",
-  detailUrl:"https://example.com/sequation-virtual-campus2-api/learnerEducation/${hmppsId}",
+  detailUrl:`https://example.com/sequation-virtual-campus2-api/learnerEducation/${hmppsId}`,
   requestId: "0650ba37-a977-4fbe-9000-4715aaecadba"
 })
 
 const postEducationALNUpdateEndpoint = `/v1/persons/${hmppsId}/education/aln-assessment`
 const postEducationALNUpdateRequest = JSON.stringify({
   status: "ASSESSMENT_COMPLETED",
-  detailUrl:"https://example.com/sequation-virtual-campus2-api/learnerAssessments/v2/A1234AB",
+  detailUrl:`https://example.com/sequation-virtual-campus2-api/learnerAssessments/v2/${hmppsId}`,
   requestId: "0650ba37-a977-4fbe-9000-4715aaecadba"
 })
 
