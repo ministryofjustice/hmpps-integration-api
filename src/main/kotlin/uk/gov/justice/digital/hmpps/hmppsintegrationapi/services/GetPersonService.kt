@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.CprResultExcep
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FilterViolationException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.UpstreamApiException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CorePersonRecordGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
@@ -26,6 +27,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffenders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchQuery
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSIdentifierWithPrisonerNumber
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationintegrationepf.LimitedAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
@@ -255,14 +257,8 @@ class GetPersonService(
     val id = convert(hmppsId, IdentifierType.NOMS)
     val nomisNumber = id.data ?: return Response(data = null, errors = id.errors)
 
-    if (filters != null) {
-      val searchResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
-      if (searchResponse.errors.isNotEmpty()) {
-        return Response(data = null, errors = searchResponse.errors)
-      }
-      ensurePermittedPrisonerLocation(nomisNumber, filters)
-      ensurePermittedSupervisionStatus(nomisNumber, filters)
-    }
+    ensurePermittedPrisonerLocation(nomisNumber, filters)
+    ensurePermittedSupervisionStatus(nomisNumber, filters)
 
     return Response(
       data = NomisNumber(nomisNumber),
@@ -285,32 +281,31 @@ class GetPersonService(
 
   private fun getPersonSupervisionStatus(nomisId: String): String {
     val inPrisonStatuses = listOf("ACTIVE_IN", "ACTIVE_OUT")
-    val searchResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomisId)
-    val status = searchResponse.data?.status
 
-    if (status != null && inPrisonStatuses.contains(status)) {
+    val status = getPersonFromPrisonerOffenderSearch(nomisId)?.status ?: return "UNKNOWN"
+
+    if (inPrisonStatuses.contains(status)) {
       return "PRISONS"
     }
-    val probationData = getPerson(nomisId)
-
-    if (probationData.data?.underActiveSupervision == true) {
-      return "PROBATION"
+    val probationData = getPersonFromDelius(nomisId, true)
+    return when (probationData.data?.underActiveSupervision) {
+      true -> "PROBATION"
+      false -> "NONE"
+      else -> "UNKNOWN"
     }
-    return "NONE"
   }
 
   private fun ensurePermittedPrisonerLocation(
     nomisId: String,
     filters: ConsumerFilters?,
   ) {
-    if (filters?.hasPrisonFilter() == true) {
-      val searchResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomisId)
+    if (filters?.hasPrisonFilter() != true) return
+    val prisoner = getPersonFromPrisonerOffenderSearch(nomisId)
 
-      val prisonId = searchResponse.data?.prisonId
+    val prisonId = prisoner?.prisonId
 
-      if (prisonId == null || consumerPrisonAccessService.checkConsumerHasPrisonAccess<NomisNumber>(prisonId, filters).errors.isNotEmpty()) {
-        throw FilterViolationException("PrisonFilter restricts access to the requested prisoner's location")
-      }
+    if (prisonId == null || consumerPrisonAccessService.checkConsumerHasPrisonAccess<NomisNumber>(prisonId, filters).errors.isNotEmpty()) {
+      throw FilterViolationException("PrisonFilter restricts access to the requested prisoner's location")
     }
   }
 
@@ -481,10 +476,24 @@ class GetPersonService(
       )
     }
 
-  private fun getProbationResponse(hmppsId: String) = getPerson(hmppsId)
+  private fun getProbationResponse(hmppsId: String) = getPersonFromDelius(hmppsId)
 
-  fun getPerson(id: String? = null): Response<PersonOnProbation?> {
+  private fun getPersonFromPrisonerOffenderSearch(nomisId: String): POSPrisoner? {
+    val searchResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomisId)
+    if (searchResponse.errors.isNotEmpty()) {
+      throw UpstreamApiException(UpstreamApi.PRISONER_OFFENDER_SEARCH, searchResponse.errors.first().type, "person", nomisId, searchResponse.errors)
+    }
+    return searchResponse.data
+  }
+
+  fun getPersonFromDelius(
+    id: String? = null,
+    throwErrors: Boolean? = false,
+  ): Response<PersonOnProbation?> {
     val offender = deliusGateway.getOffender(id)
+    if (throwErrors == true && offender.errors.isNotEmpty()) {
+      throw UpstreamApiException(UpstreamApi.NDELIUS, offender.errors.first().type, "person", id, offender.errors)
+    }
     return Response(data = offender.data?.toPersonOnProbation(), errors = offender.errors)
   }
 }
