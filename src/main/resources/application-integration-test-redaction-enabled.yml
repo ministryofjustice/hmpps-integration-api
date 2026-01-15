@@ -96,6 +96,7 @@ feature-flag:
   use-contact-events-endpoint: true
   use-stubbed-contact-events-data: false
   gateway-cache-enabled: true
+  normalised-path-matching: true
 
 authorisation:
   consumers:
