@@ -134,9 +134,15 @@ authorisation:
       filters:
         case-notes:
           - "CAB"
-    supervision-status-test:
+    supervision-status-prison-only:
       roles:
         - "all-endpoints"
       filters:
         supervisionStatuses:
           - PRISONS
+    supervision-status-probation-only:
+      roles:
+        - "all-endpoints"
+      filters:
+        supervisionStatuses:
+          - PROBATION
