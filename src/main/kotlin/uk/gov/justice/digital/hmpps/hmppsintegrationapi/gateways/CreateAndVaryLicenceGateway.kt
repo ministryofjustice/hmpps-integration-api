@@ -25,6 +25,7 @@ class CreateAndVaryLicenceGateway(
       apiDocUrl = "https://create-and-vary-a-licence-api-test2.hmpps.service.justice.gov.uk/swagger-ui/index.html",
       apiSpecUrl = "https://create-and-vary-a-licence-api-test2.hmpps.service.justice.gov.uk/v3/api-docs/public",
       gitHubRepoUrl = "https://github.com/ministryofjustice/create-and-vary-a-licence",
+      slackChannel = "#create-and-vary-a-licence"
     )
 
   private val webClient = WebClientWrapper(baseUrl)
