@@ -282,16 +282,17 @@ class GetPersonService(
   private fun getPersonSupervisionStatus(nomisId: String): String {
     val inPrisonStatuses = listOf("ACTIVE_IN", "ACTIVE_OUT")
 
-    val status = getPersonFromPrisonerOffenderSearch(nomisId)?.status
+    val status = getPersonFromPrisonerOffenderSearch(nomisId)?.status ?: return "UNKNOWN"
 
-    if (status != null && inPrisonStatuses.contains(status)) {
+    if (inPrisonStatuses.contains(status)) {
       return "PRISONS"
     }
     val probationData = getPersonFromDelius(nomisId, true)
-    if (probationData.data?.underActiveSupervision == true) {
-      return "PROBATION"
+    return when (probationData.data?.underActiveSupervision) {
+      true -> "PROBATION"
+      false -> "NONE"
+      else -> "UNKNOWN"
     }
-    return "NONE"
   }
 
   private fun ensurePermittedPrisonerLocation(
