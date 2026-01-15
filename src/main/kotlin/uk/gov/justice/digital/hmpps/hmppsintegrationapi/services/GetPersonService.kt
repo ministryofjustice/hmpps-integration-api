@@ -269,11 +269,10 @@ class GetPersonService(
     nomisId: String,
     filters: ConsumerFilters?,
   ) {
-    if (filters?.hasSupervisionStatusesFilter() == true) {
-      if (filters.supervisionStatuses!!.containsAll(setOf("PRISONS", "PROBATION", "NONE"))) return
-
-      val personStatus = getPersonSupervisionStatus(nomisId)
-      if (!filters.supervisionStatuses.contains(personStatus)) {
+    when {
+      filters?.hasSupervisionStatusesFilter() != true -> return
+      filters.supervisionStatuses!!.containsAll(setOf("PRISONS", "PROBATION", "NONE")) -> return
+      !filters.supervisionStatuses.contains(getPersonSupervisionStatus(nomisId)) -> {
         throw FilterViolationException("SupervisionStatus filter restricts access to the requested prisoner's supervision status")
       }
     }
