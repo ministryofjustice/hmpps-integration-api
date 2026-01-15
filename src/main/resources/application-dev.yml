@@ -64,6 +64,7 @@ feature-flag:
   epf-gateway-disabled: true
   cpr-enabled: true
   gateway-cache-enabled: true
+  normalised-path-matching: true
 
 authorisation:
   consumers:
@@ -182,4 +183,4 @@ authorisation:
     cats:
       notes: "See client list in Confluence"
       roles:
-        - "status-only"
+        - "cats"
