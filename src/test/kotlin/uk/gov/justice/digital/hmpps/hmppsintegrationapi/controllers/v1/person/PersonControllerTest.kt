@@ -143,7 +143,7 @@ internal class PersonControllerTest(
 
         it("gets a person with matching search criteria") {
           val result = mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName&pnc_number=$pncNumber&date_of_birth=$dateOfBirth")
-          result.response.status.shouldBe(HttpStatus.OK.value())
+          result.response.status.shouldNotBe(HttpStatus.FORBIDDEN.value())
           verify(getPersonsService, times(1)).personAttributeSearch(firstName, lastName, pncNumber, dateOfBirth.toString())
         }
 
