@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.config
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.normalisePath
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters.Companion.NO_FILTERS
@@ -53,7 +54,7 @@ class AuthorisationConfig {
   private fun anyMatch(
     patterns: List<String>?,
     endpoint: String,
-  ): Boolean = patterns != null && patterns.any { Regex(it).matches(endpoint) }
+  ): Boolean = patterns != null && patterns.any { Regex(normalisePath(it)).matches(endpoint) }
 
   /**
    * Merges the filters from the consumer config and roles

@@ -91,9 +91,9 @@ val roleConstants =
       -"/v1/activities/schedule/{scheduleId}/deallocate"
       -"/v1/prison/{prisonId}/{hmppsId}/scheduled-instances"
       -"/v1/activities/deallocation-reasons"
-      -"/v1/activities/schedule/scheduleId/allocate"
+      -"/v1/activities/schedule/{scheduleId}/allocate"
       -"/v1/prison/prisoners/{hmppsId}/activities/attendances"
-      -"/v1/activities/schedule/scheduleId/waiting-list-applications"
+      -"/v1/activities/schedule/{scheduleId}/waiting-list-applications"
       -"/v1/status"
       -"/v1/persons/{hmppsId}/education/san/plan-creation-schedule"
       -"/v1/persons/{hmppsId}/education/san/review-schedule"
@@ -113,6 +113,9 @@ val roleConstants =
       -"/v1/activities/{activityId}/schedules"
       -"/v1/activities/schedule/{scheduleId}"
       -"/v1/activities/schedule/{scheduleId}/suitability-criteria"
+      -"/v1/epf/person-details/{hmppsId}/{eventNumber}"
+      -"/v1/hmpps/id/nomis-number/{hmppsId}"
+      -"/v1/visit/{visitReference}/cancel"
     }
   }
 

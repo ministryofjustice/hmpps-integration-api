@@ -20,6 +20,8 @@ private val pathPlaceholders =
     "{clientVisitReference}",
     "{activityId}",
     "{clientUniqueRef}",
+    "{contactEventId}",
+    "{eventNumber}",
     "[^/]*",
     "[^/]+",
     ".*",

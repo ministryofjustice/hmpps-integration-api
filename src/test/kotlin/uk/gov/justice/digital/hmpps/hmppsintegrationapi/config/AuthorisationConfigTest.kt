@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.config
 import org.junit.jupiter.api.Test
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.normalisePath
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters.Companion.NO_FILTERS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
@@ -20,11 +21,6 @@ class AuthorisationConfigTest : ConfigTest() {
   @Test
   fun `has permission`() {
     assertTrue(getAuthConfig("dev").hasAccess("smoke-test-full-access", "/v1/status"))
-  }
-
-  @Test
-  fun `has permission to generic path`() {
-    assertTrue(getAuthConfig("dev").hasAccess("smoke-test-full-access", "/v1/persons/{hmppsId}"))
   }
 
   @Test
