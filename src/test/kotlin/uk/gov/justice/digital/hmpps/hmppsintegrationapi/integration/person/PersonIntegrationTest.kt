@@ -33,7 +33,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
   @MockitoBean
   private lateinit var featureFlagConfig: FeatureFlagConfig
 
-   @AfterEach
+  @AfterEach
   fun resetValidators() {
     prisonerOffenderSearchMockServer.resetValidator()
     unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
