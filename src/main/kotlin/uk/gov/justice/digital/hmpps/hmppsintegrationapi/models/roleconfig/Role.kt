@@ -116,6 +116,10 @@ val roleConstants =
       -"/v1/epf/person-details/{hmppsId}/{eventNumber}"
       -"/v1/hmpps/id/nomis-number/{hmppsId}"
       -"/v1/visit/{visitReference}/cancel"
+      -"/v1/prison/{prisonId}/location/{key}/deactivate"
+      -"/v1/prison/{prisonId}/activities"
+      -"/v1/prison/{prisonId}/appointments/search"
+      -"/v1/prison/{prisonId}/prisoners/{hmppsId}/scheduled-instances"
     }
   }
 
