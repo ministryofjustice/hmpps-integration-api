@@ -33,7 +33,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
   @MockitoBean
   private lateinit var featureFlagConfig: FeatureFlagConfig
 
-  @AfterEach
+   @AfterEach
   fun resetValidators() {
     prisonerOffenderSearchMockServer.resetValidator()
     unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
@@ -42,6 +42,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
   @BeforeEach
   fun resetMocks() {
     whenever(featureFlagConfig.getConfigFlagValue(FeatureFlagConfig.USE_EDUCATION_ENDPOINT)).thenReturn(true)
+    whenever(featureFlagConfig.getConfigFlagValue(FeatureFlagConfig.NORMALISED_PATH_MATCHING)).thenReturn(true)
     prisonerOffenderSearchMockServer.stubForGet(
       "/prisoner/$nomsId",
       File(
