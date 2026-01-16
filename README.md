@@ -41,7 +41,7 @@ as well as the following technologies for its infrastructure:
 - [Cloud Platform](https://user-guide.cloud-platform.service.justice.gov.uk/#cloud-platform-user-guide) - Ministry of
   Justice's (MOJ) cloud hosting platform built on top of AWS which offers numerous tools such as logging, monitoring and
   alerting for our services.
-- [Docker](https://www.docker.com/) - The API is built into docker images which are deployed to our containers.
+- [Docker](https://www.docker.com/) - The API is built into docker images which are deployed to our containers. A docker hub licence will be required to run all unit tests.
 - [Kubernetes](https://kubernetes.io/docs/home/) - Creates 'pods' to host our environment. Manages auto-scaling, load
   balancing and networking to our application.
 
@@ -129,6 +129,17 @@ To run the application using IntelliJ:
 1. Start dependencies using `make serve-dependencies`
 2. Select the `HmppsIntegrationApi` run configuration file.
 3. Click the run button.
+
+**Note**: If IntelliJ dose not automatically detect a run configuration you will need to make one yourself. To do this go into edit a configuration, add a Gradle setup. There we want to
+1. Set the Run command to be `bootRun`
+2. Set the Gradle project to be the root of `hmpps-integration-api`
+3. Set Environment Variables to be `SPRING_PROFILES_ACTIVE=local`
+
+Example setup
+
+![Config Example](docs/diagrams/config.png)
+
+After that you can now use the run button.
 
 Or, to run the application using the command line:
 
