@@ -126,7 +126,7 @@ using IntelliJ but other IDEs will prove similar.
 
 To run the application using IntelliJ:
 
-1. Start dependencies using `make serve-dependencies`
+1. Start dependencies using `make serve-dependencies` `Note`: Make sure all docker services are stopped before running this command.
 2. Select the `HmppsIntegrationApi` run configuration file.
 3. Click the run button.
 
@@ -160,7 +160,7 @@ the [NOMIS / Prison API](https://github.com/ministryofjustice/prison-api)
 and [HMPPS Auth](https://github.com/ministryofjustice/hmpps-auth) with Docker
 using [docker-compose](https://docs.docker.com/compose/).
 
-1.  Build and start the containers for each service.
+1.  Build and start the containers for each service. `Note`: Make sure all docker services are stopped before running this command.
 
     ```bash
     make serve
