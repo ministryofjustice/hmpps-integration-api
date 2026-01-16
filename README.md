@@ -131,6 +131,7 @@ To run the application using IntelliJ:
 3. Click the run button.
 
 **Note**: If IntelliJ dose not automatically detect a run configuration you will need to make one yourself. To do this go into edit a configuration, add a Gradle setup. There we want to
+
 1. Set the Run command to be `bootRun`
 2. Set the Gradle project to be the root of `hmpps-integration-api`
 3. Set Environment Variables to be `SPRING_PROFILES_ACTIVE=local`
