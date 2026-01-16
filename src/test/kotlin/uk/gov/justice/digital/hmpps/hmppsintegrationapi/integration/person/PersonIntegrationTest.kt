@@ -111,7 +111,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
 
     @Test
     fun `returns a person from Prisoner Offender Search and Probation Offender Search`() {
-      callApi("$basePath/$pnc")
+      callApi("$basePath/$crn")
         .andExpect(status().isOk)
         .andExpect(content().json(getExpectedResponse("person-offender-and-probation-search-response")))
 

@@ -8,7 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationT
 class NeedsIntegrationTest : IntegrationTestBase() {
   @Test
   fun `returns needs for a person`() {
-    callApi("$basePath/$pnc/needs")
+    callApi("$basePath/$crn/needs")
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("person-needs")))
   }
