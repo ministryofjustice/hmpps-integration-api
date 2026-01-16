@@ -8,6 +8,7 @@ import org.mockito.Mockito
 import org.mockito.Mockito.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
@@ -48,6 +49,11 @@ class EducationAssessmentsControllerTest(
       val invalidHmppsId = "C1234BC"
 
       fun apiPath(hmppsId: String = validHmppsId) = "/v1/persons/$hmppsId/education/assessments/status"
+
+      beforeTest {
+        Mockito.reset(featureFlagConfig)
+        whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.NORMALISED_PATH_MATCHING)).thenReturn(true)
+      }
 
       describe("Notify that a given person/offender has had a change of status to their Education Assessments") {
         it("should return 200 given a valid request body") {
