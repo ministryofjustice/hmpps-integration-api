@@ -33,7 +33,7 @@ val roleConstants =
   constants {
     allEndpoints {
       // Provides access to all endpoints
-      -"/.*"
+//      -"/.*"
       // Provides access to all events on queue
       -"/v1/activities/attendance-reasons"
       -"/v1/contacts/{contactId}"
