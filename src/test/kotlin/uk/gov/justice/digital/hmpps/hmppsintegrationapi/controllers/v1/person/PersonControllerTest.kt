@@ -192,7 +192,7 @@ internal class PersonControllerTest(
           val expectedFilters = ConsumerFilters(supervisionStatuses = listOf("PRISONS"))
           whenever(getPersonsService.personAttributeSearch(firstName, null, pncNumber, null, false, expectedFilters)).thenReturn(Response(data = emptyList()))
 
-          mockMvc.performAuthorisedWithCN("$basePath?first_name=$firstName&pnc_number=$pncNumber", "supervision-status-test")
+          mockMvc.performAuthorisedWithCN("$basePath?first_name=$firstName&pnc_number=$pncNumber", "supervision-status-prison-only")
 
           verify(getPersonsService, times(1)).personAttributeSearch(firstName, null, pncNumber, null, false, expectedFilters)
         }

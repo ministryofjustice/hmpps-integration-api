@@ -24,11 +24,13 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ConflictFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FilterViolationException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.HmppsAuthFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.UpstreamApiException
 
 @RestControllerAdvice
 class HmppsIntegrationApiExceptionHandler {
@@ -129,6 +131,34 @@ class HmppsIntegrationApiExceptionHandler {
           status = FORBIDDEN,
           developerMessage = "Forbidden to complete action by upstream service: ${e.message}",
           userMessage = e.message,
+        ),
+      )
+  }
+
+  @ExceptionHandler(FilterViolationException::class)
+  fun handleFilterViolationException(e: FilterViolationException): ResponseEntity<ErrorResponse?>? {
+    logAndCapture("Access to requested resource restricted by consumer filter: ${e.message}", e)
+    return ResponseEntity
+      .status(NOT_FOUND)
+      .body(
+        ErrorResponse(
+          status = NOT_FOUND,
+          userMessage = "The requested resource could not be found",
+          moreInfo = traceId,
+        ),
+      )
+  }
+
+  @ExceptionHandler(UpstreamApiException::class)
+  fun handleUpstreamApiException(e: UpstreamApiException): ResponseEntity<ErrorResponse?>? {
+    logAndCapture("[${e.errorType}] error occurred in upstream API: [${e.upstreamApi}] while requesting [${e.resourceType}] with id [${e.resourceId}]", e)
+    return ResponseEntity
+      .status(INTERNAL_SERVER_ERROR)
+      .body(
+        ErrorResponse(
+          status = INTERNAL_SERVER_ERROR,
+          userMessage = "The requested ${e.resourceType} could not be found: ${e.resourceId}",
+          moreInfo = traceId,
         ),
       )
   }
@@ -255,6 +285,7 @@ class HmppsIntegrationApiExceptionHandler {
 
   companion object {
     private val log = LoggerFactory.getLogger(this::class.java)
+    private val traceId = "${Sentry.getSpan()?.traceContext()?.traceId}"
   }
 }
 

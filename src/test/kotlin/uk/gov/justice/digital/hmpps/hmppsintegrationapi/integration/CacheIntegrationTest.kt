@@ -101,7 +101,7 @@ class CacheDisabledIntegrationTest : IntegrationTestBase() {
   private lateinit var nDeliusGateway: NDeliusGateway
 
   @Test
-  fun `does not cache prisoner data when addresses endpoint called twice and feature disabled`() {
+  fun `does not cache prisoner data when addresses endpoint called four times and feature disabled`() {
     // Request 1
     callApiWithCN(addressPath, specificPrisonCn)
       .andExpect(status().isOk)
