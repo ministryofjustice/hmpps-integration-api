@@ -37,6 +37,7 @@ data class FeatureFlagConfig(
     const val CPR_ENABLED = "cpr-enabled"
     const val GATEWAY_CACHE_ENABLED = "gateway-cache-enabled"
     const val NORMALISED_PATH_MATCHING = "normalised-path-matching"
+    const val USE_NEW_RISK_SCORE_API = "use-new-risk-score-api"
   }
 
   /**
