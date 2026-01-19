@@ -44,7 +44,7 @@ class ContactEventsIntegrationTest : IntegrationTestBase() {
   fun resetMocks() {
     nDeliusMockServer.resetAll()
     whenever(featureFlagConfig.getConfigFlagValue(USE_CONTACT_EVENTS_ENDPOINT)).thenReturn(true)
-    whenever(featureFlagConfig.getConfigFlagValue(NORMALISED_PATH_MATCHING)).thenReturn(true)
+    whenever(featureFlagConfig.isEnabled(NORMALISED_PATH_MATCHING)).thenReturn(true)
     prisonerOffenderSearchMockServer.stubForGet(
       "/prisoner/$nomsId",
       File(

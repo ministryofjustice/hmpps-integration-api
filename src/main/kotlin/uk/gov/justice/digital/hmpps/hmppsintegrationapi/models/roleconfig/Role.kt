@@ -129,6 +129,7 @@ val roleConstants =
       -"/v1/persons/{hmppsId}/access-limitations"
       -"/v1/persons/{hmppsId}/education"
       -"/v1/hmpps/id/by-nomis-number/{nomisNumber}"
+      -"/v1/persons/{hmppsId}/plp-review-schedule/history"
       -"/health"
       -"/health/ping"
       -"/health/readiness"
