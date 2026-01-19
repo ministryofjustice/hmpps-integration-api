@@ -12,6 +12,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ErrorResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.NORMALISED_PATH_MATCHING
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_CONTACT_EVENTS_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.writeAsJson
@@ -43,6 +44,7 @@ class ContactEventsIntegrationTest : IntegrationTestBase() {
   fun resetMocks() {
     nDeliusMockServer.resetAll()
     whenever(featureFlagConfig.getConfigFlagValue(USE_CONTACT_EVENTS_ENDPOINT)).thenReturn(true)
+    whenever(featureFlagConfig.getConfigFlagValue(NORMALISED_PATH_MATCHING)).thenReturn(true)
     prisonerOffenderSearchMockServer.stubForGet(
       "/prisoner/$nomsId",
       File(
