@@ -203,7 +203,7 @@ abstract class IntegrationTestBase {
 
   fun callApi(path: String): ResultActions = mockMvc.perform(get(path).headers(getAuthHeader()))
 
-    fun callApiWithCN(
+  fun callApiWithCN(
     path: String,
     cn: String,
     serialNumber: String? = null,
