@@ -50,6 +50,8 @@ class RetryIntegrationTest : IntegrationTestBase() {
     ReflectionTestUtils.setField(activitiesGateway, "webClient", wrapper)
 
     activitiesMockServer.resetValidator()
+
+    whenever(featureFlagConfig.getConfigFlagValue(FeatureFlagConfig.NORMALISED_PATH_MATCHING)).thenReturn(true)
   }
 
   @Nested

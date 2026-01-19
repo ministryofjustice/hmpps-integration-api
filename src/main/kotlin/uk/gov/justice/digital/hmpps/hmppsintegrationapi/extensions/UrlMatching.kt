@@ -23,6 +23,7 @@ private val pathPlaceholders =
     "{contactEventId}",
     "{eventNumber}",
     "{jobId}",
+    "{nomisNumber}",
     "[^/]*",
     "[^/]+",
     ".*",
