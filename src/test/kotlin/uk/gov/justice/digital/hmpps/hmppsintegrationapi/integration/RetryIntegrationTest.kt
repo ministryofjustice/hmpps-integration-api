@@ -51,7 +51,7 @@ class RetryIntegrationTest : IntegrationTestBase() {
 
     activitiesMockServer.resetValidator()
 
-    whenever(featureFlagConfig.getConfigFlagValue(FeatureFlagConfig.NORMALISED_PATH_MATCHING)).thenReturn(true)
+    whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.NORMALISED_PATH_MATCHING)).thenReturn(true)
   }
 
   @Nested

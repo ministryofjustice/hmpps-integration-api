@@ -42,7 +42,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
   @BeforeEach
   fun resetMocks() {
     whenever(featureFlagConfig.getConfigFlagValue(FeatureFlagConfig.USE_EDUCATION_ENDPOINT)).thenReturn(true)
-    whenever(featureFlagConfig.getConfigFlagValue(FeatureFlagConfig.NORMALISED_PATH_MATCHING)).thenReturn(true)
+    whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.NORMALISED_PATH_MATCHING)).thenReturn(true)
     prisonerOffenderSearchMockServer.stubForGet(
       "/prisoner/$nomsId",
       File(
