@@ -17,7 +17,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.SANGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PlanReviewScheduleStatus
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PlanReviewSchedules
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import java.util.UUID
 
 @ActiveProfiles("test")
@@ -107,6 +109,13 @@ class GetReviewSchedulesForPrisonerTest(
         schedule.reviewCompletedByJobRole.shouldBe(null)
         schedule.exemptionReason.shouldBe(null)
         schedule.version.shouldBe(1)
+      }
+
+      it("returns error with incorrect parameters") {
+        val response = sanGateway.getReviewSchedules("0")
+
+        response.data.shouldBe(PlanReviewSchedules(planReviewSchedules = listOf()))
+        response.errors.shouldBe(listOf(UpstreamApiError(causedBy = UpstreamApi.SAN, type = UpstreamApiError.Type.ENTITY_NOT_FOUND, description = null)))
       }
     },
   )
