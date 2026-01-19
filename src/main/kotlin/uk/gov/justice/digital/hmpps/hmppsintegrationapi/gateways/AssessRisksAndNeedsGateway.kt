@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_NEW_RISK_SCORE_API
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotImplementedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.ArnNeeds
@@ -37,6 +39,10 @@ class AssessRisksAndNeedsGateway(
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
   fun getRiskPredictorScoresForPerson(id: String): Response<List<RiskPredictorScore>> {
+    if (featureConfig.isEnabled(USE_NEW_RISK_SCORE_API)) {
+      // TODO: Work for HIA-1173
+      throw FeatureNotImplementedException(USE_NEW_RISK_SCORE_API)
+    }
     val result =
       webClient.requestList<ArnRiskPredictorScore>(
         HttpMethod.GET,
