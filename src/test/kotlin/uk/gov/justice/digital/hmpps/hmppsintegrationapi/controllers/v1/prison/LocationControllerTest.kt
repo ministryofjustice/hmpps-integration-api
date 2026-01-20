@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
@@ -32,13 +33,14 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 @WebMvcTest(controllers = [LocationController::class])
-@Import(WebMvcTestConfiguration::class)
+@Import(WebMvcTestConfiguration::class, FeatureFlagConfig::class)
 @ActiveProfiles("test")
 class LocationControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getLocationByKeyService: GetLocationByKeyService,
   @MockitoBean val locationQueueService: LocationQueueService,
+  @Autowired val featureFlagConfig: FeatureFlagConfig,
 ) : DescribeSpec({
     val prisonId = "MDI"
     val basePath = "/v1/prison/$prisonId/location"

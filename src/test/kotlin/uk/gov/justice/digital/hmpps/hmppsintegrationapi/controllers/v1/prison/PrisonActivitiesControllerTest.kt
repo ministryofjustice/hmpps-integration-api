@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
@@ -39,7 +40,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 
 @WebMvcTest(controllers = [PrisonActivitiesController::class])
-@Import(WebMvcTestConfiguration::class)
+@Import(WebMvcTestConfiguration::class, FeatureFlagConfig::class)
 @ActiveProfiles("test")
 class PrisonActivitiesControllerTest(
   @Autowired var springMockMvc: MockMvc,
@@ -49,6 +50,7 @@ class PrisonActivitiesControllerTest(
   @MockitoBean val getScheduledInstancesForPrisonerService: GetScheduledInstancesForPrisonerService,
   @MockitoBean val searchAppointmentsService: SearchAppointmentsService,
   @MockitoBean val getHistoricalAttendancesService: GetHistoricalAttendancesService,
+  @Autowired val featureFlagConfig: FeatureFlagConfig,
 ) : DescribeSpec(
     {
       val basePath = "/v1/prison"

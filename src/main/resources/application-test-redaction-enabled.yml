@@ -94,6 +94,7 @@ feature-flag:
   use-stubbed-contact-events-data: false
   gateway-cache-enabled: true
   use-new-risk-score-api: false
+  normalised-path-matching: true
 
 authorisation:
   consumers:

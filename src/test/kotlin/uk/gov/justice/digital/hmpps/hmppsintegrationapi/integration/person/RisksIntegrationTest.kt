@@ -32,7 +32,7 @@ class RisksIntegrationTest : IntegrationTestBase() {
   @ParameterizedTest
   @ValueSource(strings = ["categories"])
   fun `return a 400 when invalid hmpps submitted`(path: String) {
-    callApi("$basePath/invalid=invalid/risks/$path")
+    callApi("$basePath/invalid-invalid/risks/$path")
       .andExpect(status().isBadRequest)
   }
 }
