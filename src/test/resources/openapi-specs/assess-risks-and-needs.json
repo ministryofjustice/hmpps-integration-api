@@ -23,9 +23,7 @@
   "paths": {
     "/risks/supplementary": {
       "post": {
-        "tags": [
-          "supplementary-risks-controller"
-        ],
+        "tags": ["supplementary-risks-controller"],
         "description": "Create new supplementary risk for a given source",
         "operationId": "createSupplementaryRisk",
         "requestBody": {
@@ -121,9 +119,7 @@
     },
     "/tier-assessment/sections/{crn}": {
       "get": {
-        "tags": [
-          "tier-assessment-controller"
-        ],
+        "tags": ["tier-assessment-controller"],
         "description": "Gets all question answers required for a tier calculation",
         "operationId": "getTierAssessmentAnswers",
         "parameters": [
@@ -219,9 +215,7 @@
     },
     "/san-indicator/crn/{crn}": {
       "get": {
-        "tags": [
-          "assessment-controller"
-        ],
+        "tags": ["assessment-controller"],
         "description": "Gets san-indicator by CRN",
         "operationId": "getSanIndicatorByCrn",
         "parameters": [
@@ -319,9 +313,7 @@
     },
     "/san-indicator/crn/{crn}/{timeframe}": {
       "get": {
-        "tags": [
-          "assessment-controller"
-        ],
+        "tags": ["assessment-controller"],
         "description": "Gets san-indicator by CRN within specified timeframe, measured in weeks",
         "operationId": "getSanIndicatorByCrnWithinTimeframe",
         "parameters": [
@@ -426,9 +418,7 @@
     },
     "/risks/supplementary/{supplementaryRiskId}": {
       "get": {
-        "tags": [
-          "supplementary-risks-controller"
-        ],
+        "tags": ["supplementary-risks-controller"],
         "description": "Gets supplementary risk for a given ID",
         "operationId": "getSupplementaryRiskById",
         "parameters": [
@@ -527,9 +517,7 @@
     },
     "/risks/rosh/{crn}": {
       "get": {
-        "tags": [
-          "integration-controller"
-        ],
+        "tags": ["integration-controller"],
         "description": "Gets ROSH risks for crn. Only returns freeform text concerns for risk to self where answer to corresponding risk question is Yes. Returns only assessments completed within the last year",
         "operationId": "getRoshRisksByCrn",
         "parameters": [
@@ -627,9 +615,7 @@
     },
     "/risks/rosh/{crn}/{timeframe}": {
       "get": {
-        "tags": [
-          "integration-controller"
-        ],
+        "tags": ["integration-controller"],
         "description": "Gets ROSH risks for crn. Only returns freeform text concerns for risk to self where answer to corresponding risk question is Yes. Returns only assessments completed within specified timeframe, measured in weeks",
         "operationId": "getRoshRisksByCrnWithinTimeframe",
         "parameters": [
@@ -738,9 +724,7 @@
     },
     "/risks/risk-management-plan/{crn}": {
       "get": {
-        "tags": [
-          "integration-controller"
-        ],
+        "tags": ["integration-controller"],
         "description": "Gets Risk Management Plan from latest complete assessments for crn",
         "operationId": "getRiskManagementPlan",
         "parameters": [
@@ -838,9 +822,7 @@
     },
     "/risks/predictors/{crn}": {
       "get": {
-        "tags": [
-          "integration-controller"
-        ],
+        "tags": ["integration-controller"],
         "description": "\n    Gets risk predictors scores for all latest completed assessments from the last 1 year\n    Deprecated endpoint.\n    Please use /risks/predictors/all/{identifierType}/{identifierValue} instead.\n    This endpoint will be removed in a future release.\n    ",
         "operationId": "getAllRiskScores",
         "parameters": [
@@ -940,9 +922,7 @@
     },
     "/risks/predictors/unsafe/all/{identifierType}/{identifierValue}": {
       "get": {
-        "tags": [
-          "integration-controller"
-        ],
+        "tags": ["integration-controller"],
         "description": "# Gets all risk predictor scores for completed assessments for an identifier type (e.g. CRN)\n\nReturns a list of completed assessments containing all predictor scores.\nAssessments within the list will have predictor scores in **either legacy** (OGRS3 generation) **or new** (OGRS4 generation) format.\n\nNote that all fields should be implemented as nullable as data may not be available.\n\n## Determining the predictor score format\nEach assessment contains a top level `outputVersion` field which dictates the format of the predictors nested within the `output` field.\n\n### Legacy risk predictor score format (outputVersion = 1)\n```json\n[\n  {\n    \"completedDate\": \"2025-10-23T03:02:59\",\n    \"source\": \"OASYS\",\n    \"status\": \"COMPLETE\",\n    \"outputVersion\": \"1\",\n    \"output\": {\n      \"groupReconvictionScore\": {\n        \"oneYear\": 0,\n        \"twoYears\": 0,\n        \"scoreLevel\": \"LOW\"\n      },\n      \"violencePredictorScore\": {\n        \"ovpStaticWeightedScore\": 0,\n        \"ovpDynamicWeightedScore\": 0,\n        \"ovpTotalWeightedScore\": 0,\n        \"oneYear\": 0,\n        \"twoYears\": 0,\n        \"ovpRisk\": \"LOW\"\n      },\n      \"generalPredictorScore\": {\n        \"ogpStaticWeightedScore\": 0,\n        \"ogpDynamicWeightedScore\": 0,\n        \"ogpTotalWeightedScore\": 0,\n        \"ogp1Year\": 0,\n        \"ogp2Year\": 0,\n        \"ogpRisk\": \"LOW\"\n      },\n      \"riskOfSeriousRecidivismScore\": {\n        \"percentageScore\": 0,\n        \"staticOrDynamic\": \"STATIC\",\n        \"source\": \"OASYS\",\n        \"algorithmVersion\": \"5\",\n        \"scoreLevel\": \"LOW\"\n      },\n      \"sexualPredictorScore\": {\n        \"ospIndecentPercentageScore\": null,\n        \"ospContactPercentageScore\": null,\n        \"ospIndecentScoreLevel\": null,\n        \"ospContactScoreLevel\": null,\n        \"ospIndirectImagePercentageScore\": 0,\n        \"ospDirectContactPercentageScore\": 0,\n        \"ospIndirectImageScoreLevel\": \"LOW\",\n        \"ospDirectContactScoreLevel\": \"LOW\"\n      }\n    }\n  }\n]\n```\n\n### New risk predictor score format (outputVersion = 2)\n```json\n[\n  {\n    \"completedDate\": \"2025-10-23T03:02:59\",\n    \"source\": \"OASYS\",\n    \"status\": \"COMPLETE\",\n    \"outputVersion\": \"2\",\n    \"output\": {\n      \"allReoffendingPredictor\": {\n        \"staticOrDynamic\": \"STATIC\",\n        \"score\": 1,\n        \"band\": \"LOW\"\n      },\n      \"violentReoffendingPredictor\": {\n        \"staticOrDynamic\": \"DYNAMIC\",\n        \"score\": 30,\n        \"band\": \"MEDIUM\"\n      },\n      \"seriousViolentReoffendingPredictor\": {\n        \"staticOrDynamic\": \"STATIC\",\n        \"score\": 99,\n        \"band\": \"HIGH\"\n      },\n      \"directContactSexualReoffendingPredictor\": {\n        \"score\": 10,\n        \"band\": \"LOW\"\n      },\n      \"indirectImageContactSexualReoffendingPredictor\": {\n        \"score\": 10,\n        \"band\": \"LOW\"\n      },\n      \"combinedSeriousReoffendingPredictor\": {\n        \"algorithmVersion\": \"6\",\n        \"staticOrDynamic\": \"STATIC\",\n        \"score\": 0,\n        \"band\": \"LOW\"\n      }\n    }\n  }\n]\n```\n\nPlease see the associated documentation for further information: [OGRS4 ARNS API Change Specification - All Risk Predictors](https://dsdmoj.atlassian.net/wiki/spaces/ARN/pages/5962203966/OGRS4+ARNS+API+Change+Specification#Endpoint-%232%2F%234-Changes---All-Risk-Predictors-by-CRN-or-assessment-id).\n  ",
         "operationId": "getAllRiskScoresVersioned",
         "parameters": [
@@ -953,9 +933,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": [
-                "CRN"
-              ]
+              "enum": ["CRN"]
             }
           },
           {
@@ -1137,9 +1115,7 @@
     },
     "/risks/predictors/rsr/{identifierType}/{identifierValue}": {
       "get": {
-        "tags": [
-          "risk-predictors-controller"
-        ],
+        "tags": ["risk-predictors-controller"],
         "description": "# Gets Combined Serious Reoffending Predictor scores for an identifier type (e.g. CRN)\n\nReturns a list of assessments containing Combined Serious Reoffending Predictor scores (previously known as RSR scores).\nAssessments within the list will have predictor scores in **either legacy** (OGRS3 generation) **or new** (OGRS4 generation) format.\n\nNote that all fields should be implemented as nullable as data may not be available.\n\n## Determining the predictor score format\nEach assessment contains a top level `outputVersion` field which dictates the format of the predictors nested within the `output` field.\n\n### Legacy risk predictor score format (outputVersion = 1)\n```json\n[\n  {\n    \"completedDate\": \"2025-10-23T03:02:59\",\n    \"source\": \"OASYS\",\n    \"status\": \"COMPLETE\",\n    \"outputVersion\": \"1\",\n    \"output\": {\n      \"staticOrDynamic\": \"STATIC\",\n      \"algorithmVersion\": \"5\",\n      \"rsrPercentageScore\": 0,\n      \"rsrScoreLevel\": \"LOW\",\n      \"ospcPercentageScore\": 0,\n      \"ospcScoreLevel\": \"LOW\",\n      \"ospiPercentageScore\": 0,\n      \"ospiScoreLevel\": \"LOW\",\n      \"ospiiPercentageScore\": 0,\n      \"ospdcPercentageScore\": 0,\n      \"ospiiScoreLevel\": \"LOW\",\n      \"ospdcScoreLevel\": \"LOW\"\n    }\n  }\n]\n```\n\n### New risk predictor score format (outputVersion = 2)\n```json\n[\n  {\n    \"completedDate\": \"2025-10-23T03:02:59\",\n    \"source\": \"OASYS\",\n    \"status\": \"COMPLETE\",\n    \"outputVersion\": \"2\",\n    \"output\": {\n      \"seriousViolentReoffendingPredictor\": {\n        \"staticOrDynamic\": \"STATIC\",\n        \"score\": 10,\n        \"band\": \"LOW\"\n      },\n      \"directContactSexualReoffendingPredictor\": {\n        \"score\": 10,\n        \"band\": \"LOW\"\n      },\n      \"indirectImageContactSexualReoffendingPredictor\": {\n        \"score\": 10,\n        \"band\": \"LOW\"\n      },\n      \"combinedSeriousReoffendingPredictor\": {\n        \"algorithmVersion\": \"6\",\n        \"staticOrDynamic\": \"STATIC\",\n        \"score\": 0,\n        \"band\": \"LOW\"\n      }\n    }\n  }\n]\n```\n\nPlease see the associated documentation for further information: [OGRS4 ARNS API Change Specification - RSR Risk Predictors](https://dsdmoj.atlassian.net/wiki/spaces/ARN/pages/5962203966/OGRS4+ARNS+API+Change+Specification#Endpoint-%233-Changes---RSR-Risk-Predictors).\n  ",
         "operationId": "getRsrScoresByIdentifierType",
         "parameters": [
@@ -1150,9 +1126,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": [
-                "CRN"
-              ]
+              "enum": ["CRN"]
             }
           },
           {
@@ -1300,9 +1274,7 @@
     },
     "/risks/predictors/all/{identifierType}/{identifierValue}": {
       "get": {
-        "tags": [
-          "risk-predictors-controller"
-        ],
+        "tags": ["risk-predictors-controller"],
         "description": "# Gets all risk predictor scores for completed assessments for an identifier type (e.g. CRN)\n\nReturns a list of completed assessments containing all predictor scores.\nAssessments within the list will have predictor scores in **either legacy** (OGRS3 generation) **or new** (OGRS4 generation) format.\n\nNote that all fields should be implemented as nullable as data may not be available.\n\n## Determining the predictor score format\nEach assessment contains a top level `outputVersion` field which dictates the format of the predictors nested within the `output` field.\n\n### Legacy risk predictor score format (outputVersion = 1)\n```json\n[\n  {\n    \"completedDate\": \"2025-10-23T03:02:59\",\n    \"source\": \"OASYS\",\n    \"status\": \"COMPLETE\",\n    \"outputVersion\": \"1\",\n    \"output\": {\n      \"groupReconvictionScore\": {\n        \"oneYear\": 0,\n        \"twoYears\": 0,\n        \"scoreLevel\": \"LOW\"\n      },\n      \"violencePredictorScore\": {\n        \"ovpStaticWeightedScore\": 0,\n        \"ovpDynamicWeightedScore\": 0,\n        \"ovpTotalWeightedScore\": 0,\n        \"oneYear\": 0,\n        \"twoYears\": 0,\n        \"ovpRisk\": \"LOW\"\n      },\n      \"generalPredictorScore\": {\n        \"ogpStaticWeightedScore\": 0,\n        \"ogpDynamicWeightedScore\": 0,\n        \"ogpTotalWeightedScore\": 0,\n        \"ogp1Year\": 0,\n        \"ogp2Year\": 0,\n        \"ogpRisk\": \"LOW\"\n      },\n      \"riskOfSeriousRecidivismScore\": {\n        \"percentageScore\": 0,\n        \"staticOrDynamic\": \"STATIC\",\n        \"source\": \"OASYS\",\n        \"algorithmVersion\": \"5\",\n        \"scoreLevel\": \"LOW\"\n      },\n      \"sexualPredictorScore\": {\n        \"ospIndecentPercentageScore\": null,\n        \"ospContactPercentageScore\": null,\n        \"ospIndecentScoreLevel\": null,\n        \"ospContactScoreLevel\": null,\n        \"ospIndirectImagePercentageScore\": 0,\n        \"ospDirectContactPercentageScore\": 0,\n        \"ospIndirectImageScoreLevel\": \"LOW\",\n        \"ospDirectContactScoreLevel\": \"LOW\"\n      }\n    }\n  }\n]\n```\n\n### New risk predictor score format (outputVersion = 2)\n```json\n[\n  {\n    \"completedDate\": \"2025-10-23T03:02:59\",\n    \"source\": \"OASYS\",\n    \"status\": \"COMPLETE\",\n    \"outputVersion\": \"2\",\n    \"output\": {\n      \"allReoffendingPredictor\": {\n        \"staticOrDynamic\": \"STATIC\",\n        \"score\": 1,\n        \"band\": \"LOW\"\n      },\n      \"violentReoffendingPredictor\": {\n        \"staticOrDynamic\": \"DYNAMIC\",\n        \"score\": 30,\n        \"band\": \"MEDIUM\"\n      },\n      \"seriousViolentReoffendingPredictor\": {\n        \"staticOrDynamic\": \"STATIC\",\n        \"score\": 99,\n        \"band\": \"HIGH\"\n      },\n      \"directContactSexualReoffendingPredictor\": {\n        \"score\": 10,\n        \"band\": \"LOW\"\n      },\n      \"indirectImageContactSexualReoffendingPredictor\": {\n        \"score\": 10,\n        \"band\": \"LOW\"\n      },\n      \"combinedSeriousReoffendingPredictor\": {\n        \"algorithmVersion\": \"6\",\n        \"staticOrDynamic\": \"STATIC\",\n        \"score\": 0,\n        \"band\": \"LOW\"\n      }\n    }\n  }\n]\n```\n\nPlease see the associated documentation for further information: [OGRS4 ARNS API Change Specification - All Risk Predictors](https://dsdmoj.atlassian.net/wiki/spaces/ARN/pages/5962203966/OGRS4+ARNS+API+Change+Specification#Endpoint-%232%2F%234-Changes---All-Risk-Predictors-by-CRN-or-assessment-id).\n  ",
         "operationId": "getAllRiskScoresVersioned_1",
         "parameters": [
@@ -1313,9 +1285,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": [
-                "CRN"
-              ]
+              "enum": ["CRN"]
             }
           },
           {
@@ -1497,9 +1467,7 @@
     },
     "/risks/crn/{crn}": {
       "get": {
-        "tags": [
-          "risks-controller"
-        ],
+        "tags": ["risks-controller"],
         "description": "Gets ROSH risks for crn. Only returns freeform text concerns for risk to self where answer to corresponding risk question is Yes. Returns only assessments completed within the last year",
         "operationId": "getRoshRisksByCrn_1",
         "parameters": [
@@ -1597,9 +1565,7 @@
     },
     "/risks/crn/{crn}/{timeframe}": {
       "get": {
-        "tags": [
-          "risks-controller"
-        ],
+        "tags": ["risks-controller"],
         "description": "Gets ROSH risks for crn. Only returns freeform text concerns for risk to self where answer to corresponding risk question is Yes. Returns only assessments completed within specified timeframe, measured in weeks",
         "operationId": "getRoshRisksByCrnWithinTimeframe_1",
         "parameters": [
@@ -1704,9 +1670,7 @@
     },
     "/risks/crn/{crn}/widget": {
       "get": {
-        "tags": [
-          "widget-controller"
-        ],
+        "tags": ["widget-controller"],
         "description": "Gets rosh summary for crn",
         "operationId": "getRiskSummaryByCrn",
         "parameters": [
@@ -1804,9 +1768,7 @@
     },
     "/risks/crn/{crn}/widget/{timeframe}": {
       "get": {
-        "tags": [
-          "widget-controller"
-        ],
+        "tags": ["widget-controller"],
         "description": "Gets rosh summary for crn within specified timeframe, measured in weeks",
         "operationId": "getRiskSummaryByCrnWithinTimeframe",
         "parameters": [
@@ -1911,9 +1873,7 @@
     },
     "/risks/crn/{crn}/summary": {
       "get": {
-        "tags": [
-          "risks-controller"
-        ],
+        "tags": ["risks-controller"],
         "description": "Gets rosh summary for crn. Returns only assessments completed within the last year.",
         "operationId": "getRiskSummaryByCrn_1",
         "parameters": [
@@ -2011,9 +1971,7 @@
     },
     "/risks/crn/{crn}/summary/{timeframe}": {
       "get": {
-        "tags": [
-          "risks-controller"
-        ],
+        "tags": ["risks-controller"],
         "description": "Gets rosh summary for crn. Returns only assessments completed within specified timeframe, measured in weeks.",
         "operationId": "getRiskSummaryByCrnWithinTimeframe_1",
         "parameters": [
@@ -2118,9 +2076,7 @@
     },
     "/risks/crn/{crn}/risk-management-plan": {
       "get": {
-        "tags": [
-          "risks-controller"
-        ],
+        "tags": ["risks-controller"],
         "description": "Gets Risk Management Plan from latest complete assessments for crn",
         "operationId": "getRiskManagementPlan_1",
         "parameters": [
@@ -2218,9 +2174,7 @@
     },
     "/risks/crn/{crn}/predictors/rsr/history": {
       "get": {
-        "tags": [
-          "risk-predictors-controller"
-        ],
+        "tags": ["risk-predictors-controller"],
         "description": "\n    Gets RSR score history for a CRN\n    Deprecated endpoint.\n    Please use /risks/predictors/rsr/{identifierType}/{identifierValue} instead.\n    This endpoint will be removed in a future release.\n    ",
         "operationId": "getRsrScoresByCrn",
         "parameters": [
@@ -2321,9 +2275,7 @@
     },
     "/risks/crn/{crn}/predictors/all": {
       "get": {
-        "tags": [
-          "risk-predictors-controller"
-        ],
+        "tags": ["risk-predictors-controller"],
         "description": "\n    Gets risk predictors scores for all latest completed assessments from the last 1 year\n    Deprecated endpoint.\n    Please use /risks/predictors/all/{identifierType}/{identifierValue} instead.\n    This endpoint will be removed in a future release.\n    ",
         "operationId": "getAllRiskScores_1",
         "parameters": [
@@ -2423,9 +2375,7 @@
     },
     "/risks/crn/{crn}/fulltext": {
       "get": {
-        "tags": [
-          "risks-controller"
-        ],
+        "tags": ["risks-controller"],
         "description": "Gets ROSH risks for crn. Returns freeform concerns text regardless of answer to corresponding risk question. Returns only assessments completed within the last year",
         "operationId": "getFulltextRoshRisksByCrn",
         "parameters": [
@@ -2523,9 +2473,7 @@
     },
     "/risks/crn/{crn}/fulltext/{timeframe}": {
       "get": {
-        "tags": [
-          "risks-controller"
-        ],
+        "tags": ["risks-controller"],
         "description": "Gets ROSH risks for crn. Returns freeform concerns text regardless of answer to corresponding risk question. Returns only assessments completed within specified timeframe, measured in weeks",
         "operationId": "getFulltextRoshRisksByCrnWithinTimeframe",
         "parameters": [
@@ -2630,9 +2578,7 @@
     },
     "/needs/{crn}": {
       "get": {
-        "tags": [
-          "integration-controller"
-        ],
+        "tags": ["integration-controller"],
         "description": "Gets criminogenic needs for crn",
         "operationId": "getCriminogenicNeedsByCrn",
         "parameters": [
@@ -2740,9 +2686,7 @@
     },
     "/needs/{crn}/{timeframe}": {
       "get": {
-        "tags": [
-          "integration-controller"
-        ],
+        "tags": ["integration-controller"],
         "description": "Gets criminogenic needs for crn within specified timeframe, measured in weeks",
         "operationId": "getCriminogenicNeedsByCrnWithinTimeframe",
         "parameters": [
@@ -2861,9 +2805,7 @@
     },
     "/needs/crn/{crn}": {
       "get": {
-        "tags": [
-          "assessment-controller"
-        ],
+        "tags": ["assessment-controller"],
         "description": "Gets criminogenic needs for crn",
         "operationId": "getCriminogenicNeedsByCrn_1",
         "parameters": [
@@ -2961,9 +2903,7 @@
     },
     "/needs/crn/{crn}/{timeframe}": {
       "get": {
-        "tags": [
-          "assessment-controller"
-        ],
+        "tags": ["assessment-controller"],
         "description": "Gets criminogenic needs for crn within specified timeframe, measured in weeks",
         "operationId": "getCriminogenicNeedsByCrnWithinTimeframe_1",
         "parameters": [
@@ -3068,9 +3008,7 @@
     },
     "/assessments/timeline/{identifierType}/{identifierValue}": {
       "get": {
-        "tags": [
-          "assessment-controller"
-        ],
+        "tags": ["assessment-controller"],
         "description": "Gets assessment timeline for an identifier",
         "operationId": "getAssessmentTimelineByCrn",
         "parameters": [
@@ -3174,9 +3112,7 @@
     },
     "/assessments/id/{id}/risk/predictors/all": {
       "get": {
-        "tags": [
-          "risk-predictors-controller"
-        ],
+        "tags": ["risk-predictors-controller"],
         "description": "# Gets all risk predictors scores for the requested assessment ID\n\nReturns the requested assessment containing all associated predictor scores.\nThe assessment will have predictor scores in **either legacy** (OGRS3 generation) **or new** (OGRS4 generation) format.\n\nNote that all fields should be implemented as nullable as data may not be available.\n\n## Determining the predictor score format\nThe assessment contains a top level `outputVersion` field which dictates the format of the predictors nested within the `output` field.\n\n### Legacy risk predictor score format (outputVersion = 1)\n```json\n{\n  \"completedDate\": \"2024-01-01\",\n  \"status\": \"COMPLETE\",\n  \"outputVersion\": \"1\",\n  \"output\": {\n    \"groupReconvictionScore\": {\n      \"oneYear\": 0,\n      \"twoYears\": 0,\n      \"scoreLevel\": \"LOW\"\n    },\n    \"violencePredictorScore\": {\n      \"ovpStaticWeightedScore\": 0,\n      \"ovpDynamicWeightedScore\": 0,\n      \"ovpTotalWeightedScore\": 0,\n      \"oneYear\": 0,\n      \"twoYears\": 0,\n      \"ovpRisk\": \"LOW\"\n    },\n    \"generalPredictorScore\": {\n      \"ogpStaticWeightedScore\": 0,\n      \"ogpDynamicWeightedScore\": 0,\n      \"ogpTotalWeightedScore\": 0,\n      \"ogp1Year\": 0,\n      \"ogp2Year\": 0,\n      \"ogpRisk\": \"LOW\"\n    },\n    \"riskOfSeriousRecidivismScore\": {\n      \"percentageScore\": 0,\n      \"staticOrDynamic\": \"STATIC\",\n      \"source\": \"OASYS\",\n      \"algorithmVersion\": \"5\",\n      \"scoreLevel\": \"LOW\"\n    },\n    \"sexualPredictorScore\": {\n      \"ospIndecentPercentageScore\": null,\n      \"ospContactPercentageScore\": null,\n      \"ospIndecentScoreLevel\": null,\n      \"ospContactScoreLevel\": null,\n      \"ospIndirectImagePercentageScore\": 0,\n      \"ospDirectContactPercentageScore\": 0,\n      \"ospIndirectImageScoreLevel\": \"LOW\",\n      \"ospDirectContactScoreLevel\": \"LOW\"\n    }\n  }\n}\n```\n\n### New risk predictor score format (outputVersion = 2)\n```json\n{\n  \"completedDate\": \"2026-03-01\",\n  \"status\": \"COMPLETE\",\n  \"outputVersion\": \"2\",\n  \"output\": {\n    \"allReoffendingPredictor\": {\n      \"staticOrDynamic\": \"STATIC\",\n      \"score\": 1,\n      \"band\": \"LOW\"\n    },\n    \"violentReoffendingPredictor\": {\n      \"staticOrDynamic\": \"DYNAMIC\",\n      \"score\": 30,\n      \"band\": \"MEDIUM\"\n    },\n    \"seriousViolentReoffendingPredictor\": {\n      \"staticOrDynamic\": \"STATIC\",\n      \"score\": 99,\n      \"band\": \"HIGH\"\n    },\n    \"directContactSexualReoffendingPredictor\": {\n      \"score\": 10,\n      \"band\": \"LOW\"\n    },\n    \"indirectImageContactSexualReoffendingPredictor\": {\n      \"score\": 10,\n      \"band\": \"LOW\"\n    },\n    \"combinedSeriousReoffendingPredictor\": {\n      \"algorithmVersion\": \"6\",\n      \"staticOrDynamic\": \"STATIC\",\n      \"score\": 0,\n      \"band\": \"LOW\"\n    }\n  }\n}\n```\n\nPlease see the associated documentation for further information: [OGRS4 ARNS API Change Specification - All Risk Predictors](https://dsdmoj.atlassian.net/wiki/spaces/ARN/pages/5962203966/OGRS4+ARNS+API+Change+Specification#Endpoint-%232%2F%234-Changes---All-Risk-Predictors-by-CRN-or-assessment-id).\n  ",
         "operationId": "getRiskScoresByAssessmentId",
         "parameters": [
@@ -3362,9 +3298,7 @@
     },
     "/assessments/crn/{crn}/offence": {
       "get": {
-        "tags": [
-          "assessment-controller"
-        ],
+        "tags": ["assessment-controller"],
         "description": "Gets offence details from latest complete assessment for crn",
         "operationId": "getAssessmentOffenceDetails",
         "parameters": [
@@ -3494,11 +3428,7 @@
             "example": "Hard disk failure"
           }
         },
-        "required": [
-          "errorCode",
-          "status",
-          "userMessage"
-        ]
+        "required": ["errorCode", "status", "userMessage"]
       },
       "RedactedOasysRiskDto": {
         "type": "object",
@@ -3552,9 +3482,7 @@
           "source": {
             "type": "string",
             "description": "Source of Risk",
-            "enum": [
-              "INTERVENTION_REFERRAL"
-            ],
+            "enum": ["INTERVENTION_REFERRAL"],
             "example": "INTERVENTION_REFERRAL"
           },
           "sourceId": {
@@ -3592,14 +3520,7 @@
             "example": "Free text up to 4000 characters"
           }
         },
-        "required": [
-          "createdByUserType",
-          "createdDate",
-          "crn",
-          "riskSummaryComments",
-          "source",
-          "sourceId"
-        ]
+        "required": ["createdByUserType", "createdDate", "crn", "riskSummaryComments", "source", "sourceId"]
       },
       "CreateSupplementaryRiskDto": {
         "type": "object",
@@ -3608,9 +3529,7 @@
           "source": {
             "type": "string",
             "description": "Source of Risk",
-            "enum": [
-              "INTERVENTION_REFERRAL"
-            ],
+            "enum": ["INTERVENTION_REFERRAL"],
             "example": "INTERVENTION_REFERRAL"
           },
           "sourceId": {
@@ -3644,14 +3563,7 @@
             "example": "Free text up to 4000 characters"
           }
         },
-        "required": [
-          "createdByUserType",
-          "createdDate",
-          "crn",
-          "riskSummaryComments",
-          "source",
-          "sourceId"
-        ]
+        "required": ["createdByUserType", "createdDate", "crn", "riskSummaryComments", "source", "sourceId"]
       },
       "Accommodation": {
         "type": "object",
@@ -3682,19 +3594,11 @@
           },
           "linkedToReOffending": {
             "type": "string",
-            "enum": [
-              "Yes",
-              "No",
-              "Unknown"
-            ]
+            "enum": ["Yes", "No", "Unknown"]
           },
           "linkedToHarm": {
             "type": "string",
-            "enum": [
-              "Yes",
-              "No",
-              "Unknown"
-            ]
+            "enum": ["Yes", "No", "Unknown"]
           },
           "questionAnswers": {
             "type": "object",
@@ -3724,20 +3628,10 @@
           },
           "severity": {
             "type": "string",
-            "enum": [
-              "NO_NEED",
-              "STANDARD",
-              "SEVERE"
-            ]
+            "enum": ["NO_NEED", "STANDARD", "SEVERE"]
           }
         },
-        "required": [
-          "linkedToHarm",
-          "linkedToReOffending",
-          "oasysThreshold",
-          "questionAnswers",
-          "tierThreshold"
-        ]
+        "required": ["linkedToHarm", "linkedToReOffending", "oasysThreshold", "questionAnswers", "tierThreshold"]
       },
       "AlcoholMisuse": {
         "type": "object",
@@ -3768,19 +3662,11 @@
           },
           "linkedToReOffending": {
             "type": "string",
-            "enum": [
-              "Yes",
-              "No",
-              "Unknown"
-            ]
+            "enum": ["Yes", "No", "Unknown"]
           },
           "linkedToHarm": {
             "type": "string",
-            "enum": [
-              "Yes",
-              "No",
-              "Unknown"
-            ]
+            "enum": ["Yes", "No", "Unknown"]
           },
           "questionAnswers": {
             "type": "object",
@@ -3810,20 +3696,10 @@
           },
           "severity": {
             "type": "string",
-            "enum": [
-              "NO_NEED",
-              "STANDARD",
-              "SEVERE"
-            ]
+            "enum": ["NO_NEED", "STANDARD", "SEVERE"]
           }
         },
-        "required": [
-          "linkedToHarm",
-          "linkedToReOffending",
-          "oasysThreshold",
-          "questionAnswers",
-          "tierThreshold"
-        ]
+        "required": ["linkedToHarm", "linkedToReOffending", "oasysThreshold", "questionAnswers", "tierThreshold"]
       },
       "AssessmentSummary": {
         "type": "object",
@@ -3847,11 +3723,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "assessmentId",
-          "assessmentType",
-          "status"
-        ]
+        "required": ["assessmentId", "assessmentType", "status"]
       },
       "Attitudes": {
         "type": "object",
@@ -3882,19 +3754,11 @@
           },
           "linkedToReOffending": {
             "type": "string",
-            "enum": [
-              "Yes",
-              "No",
-              "Unknown"
-            ]
+            "enum": ["Yes", "No", "Unknown"]
           },
           "linkedToHarm": {
             "type": "string",
-            "enum": [
-              "Yes",
-              "No",
-              "Unknown"
-            ]
+            "enum": ["Yes", "No", "Unknown"]
           },
           "questionAnswers": {
             "type": "object",
@@ -3924,20 +3788,10 @@
           },
           "severity": {
             "type": "string",
-            "enum": [
-              "NO_NEED",
-              "STANDARD",
-              "SEVERE"
-            ]
+            "enum": ["NO_NEED", "STANDARD", "SEVERE"]
           }
         },
-        "required": [
-          "linkedToHarm",
-          "linkedToReOffending",
-          "oasysThreshold",
-          "questionAnswers",
-          "tierThreshold"
-        ]
+        "required": ["linkedToHarm", "linkedToReOffending", "oasysThreshold", "questionAnswers", "tierThreshold"]
       },
       "DrugMisuse": {
         "type": "object",
@@ -3972,19 +3826,11 @@
           },
           "linkedToReOffending": {
             "type": "string",
-            "enum": [
-              "Yes",
-              "No",
-              "Unknown"
-            ]
+            "enum": ["Yes", "No", "Unknown"]
           },
           "linkedToHarm": {
             "type": "string",
-            "enum": [
-              "Yes",
-              "No",
-              "Unknown"
-            ]
+            "enum": ["Yes", "No", "Unknown"]
           },
           "questionAnswers": {
             "type": "object",
@@ -4014,20 +3860,10 @@
           },
           "severity": {
             "type": "string",
-            "enum": [
-              "NO_NEED",
-              "STANDARD",
-              "SEVERE"
-            ]
+            "enum": ["NO_NEED", "STANDARD", "SEVERE"]
           }
         },
-        "required": [
-          "linkedToHarm",
-          "linkedToReOffending",
-          "oasysThreshold",
-          "questionAnswers",
-          "tierThreshold"
-        ]
+        "required": ["linkedToHarm", "linkedToReOffending", "oasysThreshold", "questionAnswers", "tierThreshold"]
       },
       "EducationTrainingEmployability": {
         "type": "object",
@@ -4058,19 +3894,11 @@
           },
           "linkedToReOffending": {
             "type": "string",
-            "enum": [
-              "Yes",
-              "No",
-              "Unknown"
-            ]
+            "enum": ["Yes", "No", "Unknown"]
           },
           "linkedToHarm": {
             "type": "string",
-            "enum": [
-              "Yes",
-              "No",
-              "Unknown"
-            ]
+            "enum": ["Yes", "No", "Unknown"]
           },
           "questionAnswers": {
             "type": "object",
@@ -4100,20 +3928,10 @@
           },
           "severity": {
             "type": "string",
-            "enum": [
-              "NO_NEED",
-              "STANDARD",
-              "SEVERE"
-            ]
+            "enum": ["NO_NEED", "STANDARD", "SEVERE"]
           }
         },
-        "required": [
-          "linkedToHarm",
-          "linkedToReOffending",
-          "oasysThreshold",
-          "questionAnswers",
-          "tierThreshold"
-        ]
+        "required": ["linkedToHarm", "linkedToReOffending", "oasysThreshold", "questionAnswers", "tierThreshold"]
       },
       "Frequency": {
         "allOf": [
@@ -4121,12 +3939,7 @@
             "$ref": "#/components/schemas/ScoredAnswer"
           }
         ],
-        "enum": [
-          "Never",
-          "Previous",
-          "Currently",
-          "Unknown"
-        ]
+        "enum": ["Never", "Previous", "Currently", "Unknown"]
       },
       "LifestyleAndAssociates": {
         "type": "object",
@@ -4153,19 +3966,11 @@
           },
           "linkedToReOffending": {
             "type": "string",
-            "enum": [
-              "Yes",
-              "No",
-              "Unknown"
-            ]
+            "enum": ["Yes", "No", "Unknown"]
           },
           "linkedToHarm": {
             "type": "string",
-            "enum": [
-              "Yes",
-              "No",
-              "Unknown"
-            ]
+            "enum": ["Yes", "No", "Unknown"]
           },
           "questionAnswers": {
             "type": "object",
@@ -4195,20 +4000,10 @@
           },
           "severity": {
             "type": "string",
-            "enum": [
-              "NO_NEED",
-              "STANDARD",
-              "SEVERE"
-            ]
+            "enum": ["NO_NEED", "STANDARD", "SEVERE"]
           }
         },
-        "required": [
-          "linkedToHarm",
-          "linkedToReOffending",
-          "oasysThreshold",
-          "questionAnswers",
-          "tierThreshold"
-        ]
+        "required": ["linkedToHarm", "linkedToReOffending", "oasysThreshold", "questionAnswers", "tierThreshold"]
       },
       "OasysThreshold": {
         "type": "object",
@@ -4218,9 +4013,7 @@
             "format": "int32"
           }
         },
-        "required": [
-          "standard"
-        ]
+        "required": ["standard"]
       },
       "Problem": {
         "allOf": [
@@ -4228,12 +4021,7 @@
             "$ref": "#/components/schemas/ScoredAnswer"
           }
         ],
-        "enum": [
-          "None",
-          "Some",
-          "Significant",
-          "Missing"
-        ]
+        "enum": ["None", "Some", "Significant", "Missing"]
       },
       "Relationships": {
         "type": "object",
@@ -4264,19 +4052,11 @@
           },
           "linkedToReOffending": {
             "type": "string",
-            "enum": [
-              "Yes",
-              "No",
-              "Unknown"
-            ]
+            "enum": ["Yes", "No", "Unknown"]
           },
           "linkedToHarm": {
             "type": "string",
-            "enum": [
-              "Yes",
-              "No",
-              "Unknown"
-            ]
+            "enum": ["Yes", "No", "Unknown"]
           },
           "questionAnswers": {
             "type": "object",
@@ -4302,11 +4082,7 @@
           },
           "parentalResponsibilities": {
             "type": "string",
-            "enum": [
-              "Yes",
-              "No",
-              "Unknown"
-            ]
+            "enum": ["Yes", "No", "Unknown"]
           },
           "score": {
             "type": "integer",
@@ -4314,21 +4090,10 @@
           },
           "severity": {
             "type": "string",
-            "enum": [
-              "NO_NEED",
-              "STANDARD",
-              "SEVERE"
-            ]
+            "enum": ["NO_NEED", "STANDARD", "SEVERE"]
           }
         },
-        "required": [
-          "linkedToHarm",
-          "linkedToReOffending",
-          "oasysThreshold",
-          "parentalResponsibilities",
-          "questionAnswers",
-          "tierThreshold"
-        ]
+        "required": ["linkedToHarm", "linkedToReOffending", "oasysThreshold", "parentalResponsibilities", "questionAnswers", "tierThreshold"]
       },
       "ScoredAnswer": {
         "type": "object",
@@ -4338,9 +4103,7 @@
             "format": "int32"
           }
         },
-        "required": [
-          "score"
-        ]
+        "required": ["score"]
       },
       "SectionSummary": {
         "type": "object",
@@ -4373,9 +4136,7 @@
             "$ref": "#/components/schemas/Attitudes"
           }
         },
-        "required": [
-          "assessment"
-        ]
+        "required": ["assessment"]
       },
       "ThinkingAndBehaviour": {
         "type": "object",
@@ -4414,19 +4175,11 @@
           },
           "linkedToReOffending": {
             "type": "string",
-            "enum": [
-              "Yes",
-              "No",
-              "Unknown"
-            ]
+            "enum": ["Yes", "No", "Unknown"]
           },
           "linkedToHarm": {
             "type": "string",
-            "enum": [
-              "Yes",
-              "No",
-              "Unknown"
-            ]
+            "enum": ["Yes", "No", "Unknown"]
           },
           "questionAnswers": {
             "type": "object",
@@ -4452,21 +4205,11 @@
           },
           "impulsivity": {
             "type": "string",
-            "enum": [
-              "None",
-              "Some",
-              "Significant",
-              "Missing"
-            ]
+            "enum": ["None", "Some", "Significant", "Missing"]
           },
           "temperControl": {
             "type": "string",
-            "enum": [
-              "None",
-              "Some",
-              "Significant",
-              "Missing"
-            ]
+            "enum": ["None", "Some", "Significant", "Missing"]
           },
           "score": {
             "type": "integer",
@@ -4474,22 +4217,10 @@
           },
           "severity": {
             "type": "string",
-            "enum": [
-              "NO_NEED",
-              "STANDARD",
-              "SEVERE"
-            ]
+            "enum": ["NO_NEED", "STANDARD", "SEVERE"]
           }
         },
-        "required": [
-          "impulsivity",
-          "linkedToHarm",
-          "linkedToReOffending",
-          "oasysThreshold",
-          "questionAnswers",
-          "temperControl",
-          "tierThreshold"
-        ]
+        "required": ["impulsivity", "linkedToHarm", "linkedToReOffending", "oasysThreshold", "questionAnswers", "temperControl", "tierThreshold"]
       },
       "TierThreshold": {
         "type": "object",
@@ -4503,10 +4234,7 @@
             "format": "int32"
           }
         },
-        "required": [
-          "severe",
-          "standard"
-        ]
+        "required": ["severe", "standard"]
       },
       "YesNo": {
         "allOf": [
@@ -4514,11 +4242,7 @@
             "$ref": "#/components/schemas/ScoredAnswer"
           }
         ],
-        "enum": [
-          "Yes",
-          "No",
-          "Unknown"
-        ]
+        "enum": ["Yes", "No", "Unknown"]
       },
       "SanIndicatorResponse": {
         "type": "object",
@@ -4530,10 +4254,7 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "crn",
-          "sanIndicator"
-        ]
+        "required": ["crn", "sanIndicator"]
       },
       "AllRoshRiskDto_AllRisksView": {
         "type": "object",
@@ -4552,11 +4273,7 @@
             "example": "2026-01-16T16:22:54"
           }
         },
-        "required": [
-          "otherRisks",
-          "riskToSelf",
-          "summary"
-        ]
+        "required": ["otherRisks", "riskToSelf", "summary"]
       },
       "OtherRoshRisksDto_AllRisksView": {
         "type": "object",
@@ -4564,42 +4281,22 @@
           "escapeOrAbscond": {
             "type": "string",
             "description": "Escape / abscond",
-            "enum": [
-              "YES",
-              "NO",
-              "DK",
-              "NA"
-            ]
+            "enum": ["YES", "NO", "DK", "NA"]
           },
           "controlIssuesDisruptiveBehaviour": {
             "type": "string",
             "description": "Control issues / disruptive behaviour",
-            "enum": [
-              "YES",
-              "NO",
-              "DK",
-              "NA"
-            ]
+            "enum": ["YES", "NO", "DK", "NA"]
           },
           "breachOfTrust": {
             "type": "string",
             "description": "Concerns in respect of breach of trust",
-            "enum": [
-              "YES",
-              "NO",
-              "DK",
-              "NA"
-            ]
+            "enum": ["YES", "NO", "DK", "NA"]
           },
           "riskToOtherPrisoners": {
             "type": "string",
             "description": "Risks to other prisoners",
-            "enum": [
-              "YES",
-              "NO",
-              "DK",
-              "NA"
-            ]
+            "enum": ["YES", "NO", "DK", "NA"]
           }
         }
       },
@@ -4609,23 +4306,13 @@
           "risk": {
             "type": "string",
             "description": "is there any risk",
-            "enum": [
-              "YES",
-              "NO",
-              "DK",
-              "NA"
-            ],
+            "enum": ["YES", "NO", "DK", "NA"],
             "example": "Yes, No, Don't know, null"
           },
           "previous": {
             "type": "string",
             "description": "Previous concerns",
-            "enum": [
-              "YES",
-              "NO",
-              "DK",
-              "NA"
-            ],
+            "enum": ["YES", "NO", "DK", "NA"],
             "example": "Yes, No, Don't know"
           },
           "previousConcernsText": {
@@ -4636,12 +4323,7 @@
           "current": {
             "type": "string",
             "description": "Current concerns",
-            "enum": [
-              "YES",
-              "NO",
-              "DK",
-              "NA"
-            ],
+            "enum": ["YES", "NO", "DK", "NA"],
             "example": "Yes, No, Don't know"
           },
           "currentConcernsText": {
@@ -4689,17 +4371,9 @@
             },
             "description": "Assess the risk of serious harm the offender poses in the community",
             "example": {
-              "HIGH ": [
-                "Children",
-                "Public",
-                "Know adult"
-              ],
-              "MEDIUM": [
-                "Staff"
-              ],
-              "LOW": [
-                "Prisoners"
-              ]
+              "HIGH ": ["Children", "Public", "Know adult"],
+              "MEDIUM": ["Staff"],
+              "LOW": ["Prisoners"]
             }
           },
           "riskInCustody": {
@@ -4712,35 +4386,19 @@
             },
             "description": "Assess the risk of serious harm the offender poses on the basis that they could be released imminently back into the community.Assess both the risk of serious harm the offender presents now, in custody, and the risk they could present to others whilst in a custodial setting.",
             "example": {
-              "HIGH ": [
-                "Know adult"
-              ],
-              "VERY_HIGH": [
-                "Staff",
-                "Prisoners"
-              ],
-              "LOW": [
-                "Children",
-                "Public"
-              ]
+              "HIGH ": ["Know adult"],
+              "VERY_HIGH": ["Staff", "Prisoners"],
+              "LOW": ["Children", "Public"]
             }
           },
           "overallRiskLevel": {
             "type": "string",
             "description": "Overall Risk Level",
-            "enum": [
-              "VERY_HIGH",
-              "HIGH",
-              "MEDIUM",
-              "LOW"
-            ],
+            "enum": ["VERY_HIGH", "HIGH", "MEDIUM", "LOW"],
             "example": "HIGH"
           }
         },
-        "required": [
-          "riskInCommunity",
-          "riskInCustody"
-        ]
+        "required": ["riskInCommunity", "riskInCustody"]
       },
       "RoshRiskToSelfDto_AllRisksView": {
         "type": "object",
@@ -4851,11 +4509,7 @@
             "example": "2026-01-16T16:22:54"
           }
         },
-        "required": [
-          "assessmentId",
-          "assessmentStatus",
-          "assessmentType"
-        ]
+        "required": ["assessmentId", "assessmentStatus", "assessmentType"]
       },
       "RiskManagementPlansDto": {
         "type": "object",
@@ -4873,11 +4527,7 @@
             }
           }
         },
-        "required": [
-          "crn",
-          "limitedAccessOffender",
-          "riskManagementPlan"
-        ]
+        "required": ["crn", "limitedAccessOffender", "riskManagementPlan"]
       },
       "OgpScoreDto": {
         "type": "object",
@@ -4899,13 +4549,7 @@
           },
           "ogpRisk": {
             "type": "string",
-            "enum": [
-              "LOW",
-              "MEDIUM",
-              "HIGH",
-              "VERY_HIGH",
-              "NOT_APPLICABLE"
-            ]
+            "enum": ["LOW", "MEDIUM", "HIGH", "VERY_HIGH", "NOT_APPLICABLE"]
           }
         }
       },
@@ -4920,13 +4564,7 @@
           },
           "scoreLevel": {
             "type": "string",
-            "enum": [
-              "LOW",
-              "MEDIUM",
-              "HIGH",
-              "VERY_HIGH",
-              "NOT_APPLICABLE"
-            ]
+            "enum": ["LOW", "MEDIUM", "HIGH", "VERY_HIGH", "NOT_APPLICABLE"]
           }
         }
       },
@@ -4941,23 +4579,11 @@
           },
           "ospIndecentScoreLevel": {
             "type": "string",
-            "enum": [
-              "LOW",
-              "MEDIUM",
-              "HIGH",
-              "VERY_HIGH",
-              "NOT_APPLICABLE"
-            ]
+            "enum": ["LOW", "MEDIUM", "HIGH", "VERY_HIGH", "NOT_APPLICABLE"]
           },
           "ospContactScoreLevel": {
             "type": "string",
-            "enum": [
-              "LOW",
-              "MEDIUM",
-              "HIGH",
-              "VERY_HIGH",
-              "NOT_APPLICABLE"
-            ]
+            "enum": ["LOW", "MEDIUM", "HIGH", "VERY_HIGH", "NOT_APPLICABLE"]
           },
           "ospIndirectImagePercentageScore": {
             "type": "number"
@@ -4967,23 +4593,11 @@
           },
           "ospIndirectImageScoreLevel": {
             "type": "string",
-            "enum": [
-              "LOW",
-              "MEDIUM",
-              "HIGH",
-              "VERY_HIGH",
-              "NOT_APPLICABLE"
-            ]
+            "enum": ["LOW", "MEDIUM", "HIGH", "VERY_HIGH", "NOT_APPLICABLE"]
           },
           "ospDirectContactScoreLevel": {
             "type": "string",
-            "enum": [
-              "LOW",
-              "MEDIUM",
-              "HIGH",
-              "VERY_HIGH",
-              "NOT_APPLICABLE"
-            ]
+            "enum": ["LOW", "MEDIUM", "HIGH", "VERY_HIGH", "NOT_APPLICABLE"]
           }
         }
       },
@@ -5007,13 +4621,7 @@
           },
           "ovpRisk": {
             "type": "string",
-            "enum": [
-              "LOW",
-              "MEDIUM",
-              "HIGH",
-              "VERY_HIGH",
-              "NOT_APPLICABLE"
-            ]
+            "enum": ["LOW", "MEDIUM", "HIGH", "VERY_HIGH", "NOT_APPLICABLE"]
           }
         }
       },
@@ -5052,34 +4660,21 @@
           },
           "staticOrDynamic": {
             "type": "string",
-            "enum": [
-              "STATIC",
-              "DYNAMIC"
-            ]
+            "enum": ["STATIC", "DYNAMIC"]
           },
           "source": {
             "type": "string",
-            "enum": [
-              "OASYS"
-            ]
+            "enum": ["OASYS"]
           },
           "algorithmVersion": {
             "type": "string"
           },
           "scoreLevel": {
             "type": "string",
-            "enum": [
-              "LOW",
-              "MEDIUM",
-              "HIGH",
-              "VERY_HIGH",
-              "NOT_APPLICABLE"
-            ]
+            "enum": ["LOW", "MEDIUM", "HIGH", "VERY_HIGH", "NOT_APPLICABLE"]
           }
         },
-        "required": [
-          "source"
-        ]
+        "required": ["source"]
       },
       "RoshRiskWidgetDto": {
         "type": "object",
@@ -5122,10 +4717,7 @@
             }
           }
         },
-        "required": [
-          "riskInCommunity",
-          "riskInCustody"
-        ]
+        "required": ["riskInCommunity", "riskInCustody"]
       },
       "RiskRoshSummaryDto": {
         "type": "object",
@@ -5165,17 +4757,9 @@
             },
             "description": "Assess the risk of serious harm the offender poses in the community",
             "example": {
-              "HIGH ": [
-                "Children",
-                "Public",
-                "Know adult"
-              ],
-              "MEDIUM": [
-                "Staff"
-              ],
-              "LOW": [
-                "Prisoners"
-              ]
+              "HIGH ": ["Children", "Public", "Know adult"],
+              "MEDIUM": ["Staff"],
+              "LOW": ["Prisoners"]
             }
           },
           "riskInCustody": {
@@ -5188,17 +4772,9 @@
             },
             "description": "Assess the risk of serious harm the offender poses on the basis that they could be released imminently back into the community.Assess both the risk of serious harm the offender presents now, in custody, and the risk they could present to others whilst in a custodial setting.",
             "example": {
-              "HIGH ": [
-                "Know adult"
-              ],
-              "VERY_HIGH": [
-                "Staff",
-                "Prisoners"
-              ],
-              "LOW": [
-                "Children",
-                "Public"
-              ]
+              "HIGH ": ["Know adult"],
+              "VERY_HIGH": ["Staff", "Prisoners"],
+              "LOW": ["Children", "Public"]
             }
           },
           "assessedOn": {
@@ -5209,19 +4785,11 @@
           "overallRiskLevel": {
             "type": "string",
             "description": "Overall Risk Level",
-            "enum": [
-              "VERY_HIGH",
-              "HIGH",
-              "MEDIUM",
-              "LOW"
-            ],
+            "enum": ["VERY_HIGH", "HIGH", "MEDIUM", "LOW"],
             "example": "HIGH"
           }
         },
-        "required": [
-          "riskInCommunity",
-          "riskInCustody"
-        ]
+        "required": ["riskInCommunity", "riskInCustody"]
       },
       "RsrPredictorDto": {
         "type": "object",
@@ -5231,39 +4799,21 @@
           },
           "rsrScoreLevel": {
             "type": "string",
-            "enum": [
-              "LOW",
-              "MEDIUM",
-              "HIGH",
-              "VERY_HIGH",
-              "NOT_APPLICABLE"
-            ]
+            "enum": ["LOW", "MEDIUM", "HIGH", "VERY_HIGH", "NOT_APPLICABLE"]
           },
           "ospcPercentageScore": {
             "type": "number"
           },
           "ospcScoreLevel": {
             "type": "string",
-            "enum": [
-              "LOW",
-              "MEDIUM",
-              "HIGH",
-              "VERY_HIGH",
-              "NOT_APPLICABLE"
-            ]
+            "enum": ["LOW", "MEDIUM", "HIGH", "VERY_HIGH", "NOT_APPLICABLE"]
           },
           "ospiPercentageScore": {
             "type": "number"
           },
           "ospiScoreLevel": {
             "type": "string",
-            "enum": [
-              "LOW",
-              "MEDIUM",
-              "HIGH",
-              "VERY_HIGH",
-              "NOT_APPLICABLE"
-            ]
+            "enum": ["LOW", "MEDIUM", "HIGH", "VERY_HIGH", "NOT_APPLICABLE"]
           },
           "ospiiPercentageScore": {
             "type": "number"
@@ -5273,23 +4823,11 @@
           },
           "ospiiScoreLevel": {
             "type": "string",
-            "enum": [
-              "LOW",
-              "MEDIUM",
-              "HIGH",
-              "VERY_HIGH",
-              "NOT_APPLICABLE"
-            ]
+            "enum": ["LOW", "MEDIUM", "HIGH", "VERY_HIGH", "NOT_APPLICABLE"]
           },
           "ospdcScoreLevel": {
             "type": "string",
-            "enum": [
-              "LOW",
-              "MEDIUM",
-              "HIGH",
-              "VERY_HIGH",
-              "NOT_APPLICABLE"
-            ]
+            "enum": ["LOW", "MEDIUM", "HIGH", "VERY_HIGH", "NOT_APPLICABLE"]
           },
           "calculatedDate": {
             "type": "object",
@@ -5305,23 +4843,15 @@
           },
           "staticOrDynamic": {
             "type": "string",
-            "enum": [
-              "STATIC",
-              "DYNAMIC"
-            ]
+            "enum": ["STATIC", "DYNAMIC"]
           },
           "source": {
             "type": "string",
-            "enum": [
-              "OASYS"
-            ]
+            "enum": ["OASYS"]
           },
           "status": {
             "type": "string",
-            "enum": [
-              "COMPLETE",
-              "LOCKED_INCOMPLETE"
-            ]
+            "enum": ["COMPLETE", "LOCKED_INCOMPLETE"]
           },
           "algorithmVersion": {
             "type": "string"
@@ -5354,11 +4884,7 @@
           "severity": {
             "type": "string",
             "description": "The calculated severity of the need",
-            "enum": [
-              "NO_NEED",
-              "STANDARD",
-              "SEVERE"
-            ],
+            "enum": ["NO_NEED", "STANDARD", "SEVERE"],
             "example": "SEVERE"
           },
           "score": {
@@ -5409,11 +4935,7 @@
             "example": "2026-01-16T16:22:54"
           }
         },
-        "required": [
-          "identifiedNeeds",
-          "notIdentifiedNeeds",
-          "unansweredNeeds"
-        ]
+        "required": ["identifiedNeeds", "notIdentifiedNeeds", "unansweredNeeds"]
       },
       "BasicAssessmentSummary": {
         "type": "object",
@@ -5437,11 +4959,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "assessmentId",
-          "assessmentType",
-          "status"
-        ]
+        "required": ["assessmentId", "assessmentType", "status"]
       },
       "Timeline": {
         "type": "object",
@@ -5453,9 +4971,7 @@
             }
           }
         },
-        "required": [
-          "timeline"
-        ]
+        "required": ["timeline"]
       },
       "AssessmentDto": {
         "type": "object",
@@ -5510,4 +5026,55 @@
             "type": "string"
           },
           "victimPerpetratorRelationship": {
-            "type":"string"},"victimOtherInfo":{"type":"string"},"evidencedMotivations":{"type":"array","items":{"type":"string"}},"offenceDetails":{"type":"array","items":{"$ref":"#/components/schemas/OffenceDetailDto"}},"victimDetails":{"type":"array","items":{"$ref":"#/components/schemas/VictimDetailDto"}},"laterWIPAssessmentExists":{"type":"boolean"},"latestWIPDate":{"type":"object","example":"2026-01-16T16:22:54"},"laterSignLockAssessmentExists":{"type":"boolean"},"latestSignLockDate":{"type":"object","example":"2026-01-16T16:22:54"},"laterPartCompUnsignedAssessmentExists":{"type":"boolean"},"latestPartCompUnsignedDate":{"type":"object","example":"2026-01-16T16:22:54"},"laterPartCompSignedAssessmentExists":{"type":"boolean"},"latestPartCompSignedDate":{"type":"object","example":"2026-01-16T16:22:54"},"laterCompleteAssessmentExists":{"type":"boolean"},"latestCompleteDate":{"type":"object","example":"2026-01-16T16:22:54"}},"required":["assessmentId","assessmentStatus","assessmentType"]},"AssessmentOffenceDto":{"type":"object","properties":{"crn":{"type":"string"},"limitedAccessOffender":{"type":"boolean"},"assessments":{"type":"array","items":{"$ref":"#/components/schemas/AssessmentDto"}}},"required":["assessments","crn","limitedAccessOffender"]},"OffenceDetailDto":{"type":"object","properties":{"type":{"type":"string"},"offenceDate":{"type":"object","example":"2026-01-16T16:22:54"},"offenceCode":{"type":"string"},"offenceSubCode":{"type":"string"},"offence":{"type":"string"},"subOffence":{"type":"string"}}},"VictimDetailDto":{"type":"object","properties":{"age":{"type":"string"},"gender":{"type":"string"},"ethnicCategory":{"type":"string"},"victimRelation":{"type":"string"}}}},"securitySchemes":{"bearer-jwt":{"type":"http","name":"Authorization","in":"header","scheme":"bearer","bearerFormat":"JWT"}}}}
+            "type": "string"
+          },
+          "victimOtherInfo": { "type": "string" },
+          "evidencedMotivations": { "type": "array", "items": { "type": "string" } },
+          "offenceDetails": { "type": "array", "items": { "$ref": "#/components/schemas/OffenceDetailDto" } },
+          "victimDetails": { "type": "array", "items": { "$ref": "#/components/schemas/VictimDetailDto" } },
+          "laterWIPAssessmentExists": { "type": "boolean" },
+          "latestWIPDate": { "type": "object", "example": "2026-01-16T16:22:54" },
+          "laterSignLockAssessmentExists": { "type": "boolean" },
+          "latestSignLockDate": { "type": "object", "example": "2026-01-16T16:22:54" },
+          "laterPartCompUnsignedAssessmentExists": { "type": "boolean" },
+          "latestPartCompUnsignedDate": { "type": "object", "example": "2026-01-16T16:22:54" },
+          "laterPartCompSignedAssessmentExists": { "type": "boolean" },
+          "latestPartCompSignedDate": { "type": "object", "example": "2026-01-16T16:22:54" },
+          "laterCompleteAssessmentExists": { "type": "boolean" },
+          "latestCompleteDate": { "type": "object", "example": "2026-01-16T16:22:54" }
+        },
+        "required": ["assessmentId", "assessmentStatus", "assessmentType"]
+      },
+      "AssessmentOffenceDto": {
+        "type": "object",
+        "properties": {
+          "crn": { "type": "string" },
+          "limitedAccessOffender": { "type": "boolean" },
+          "assessments": { "type": "array", "items": { "$ref": "#/components/schemas/AssessmentDto" } }
+        },
+        "required": ["assessments", "crn", "limitedAccessOffender"]
+      },
+      "OffenceDetailDto": {
+        "type": "object",
+        "properties": {
+          "type": { "type": "string" },
+          "offenceDate": { "type": "object", "example": "2026-01-16T16:22:54" },
+          "offenceCode": { "type": "string" },
+          "offenceSubCode": { "type": "string" },
+          "offence": { "type": "string" },
+          "subOffence": { "type": "string" }
+        }
+      },
+      "VictimDetailDto": {
+        "type": "object",
+        "properties": {
+          "age": { "type": "string" },
+          "gender": { "type": "string" },
+          "ethnicCategory": { "type": "string" },
+          "victimRelation": { "type": "string" }
+        }
+      }
+    },
+    "securitySchemes": { "bearer-jwt": { "type": "http", "name": "Authorization", "in": "header", "scheme": "bearer", "bearerFormat": "JWT" } }
+  }
+}
