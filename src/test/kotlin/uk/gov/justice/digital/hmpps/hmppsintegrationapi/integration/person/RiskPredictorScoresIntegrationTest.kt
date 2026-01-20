@@ -21,12 +21,12 @@ class RiskPredictorScoresIntegrationTest : IntegrationTestBase() {
   @BeforeEach
   fun setUp() {
     arnsMockServer.start()
-    arnsMockServer.resetValidator()
   }
 
   @AfterEach
   fun tearDown() {
     arnsMockServer.stop()
+    arnsMockServer.resetValidator()
   }
 
   @Test
