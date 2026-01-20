@@ -39,14 +39,20 @@ data class ArnRiskPredictorScoreV2(
   val outputVersion: String? = null,
   val output: ArnOutput,
 ) {
-  fun toRiskPredictorScore(): RiskPredictorScore =
-    RiskPredictorScore(
-      completedDate = if (!this.completedDate.isNullOrEmpty()) LocalDateTime.parse(this.completedDate) else null,
-      assessmentStatus = this.status,
-      generalPredictor = this.output.generalPredictorScore.toGeneralPredictor(),
-      violencePredictor = this.output.violencePredictorScore.toViolencePredictor(),
-      groupReconviction = this.output.groupReconvictionScore.toGroupReconviction(),
-      riskOfSeriousRecidivism = this.output.riskOfSeriousRecidivismScore.toRiskOfSeriousRecidivism(),
-      sexualPredictor = this.output.sexualPredictorScore.toSexualPredictor(),
-    )
+  fun toRiskPredictorScore(): RiskPredictorScore {
+    if (outputVersion == "1") {
+      return RiskPredictorScore(
+        completedDate = if (!this.completedDate.isNullOrEmpty()) LocalDateTime.parse(this.completedDate) else null,
+        assessmentStatus = this.status,
+        generalPredictor = this.output.generalPredictorScore.toGeneralPredictor(),
+        violencePredictor = this.output.violencePredictorScore.toViolencePredictor(),
+        groupReconviction = this.output.groupReconvictionScore.toGroupReconviction(),
+        riskOfSeriousRecidivism = this.output.riskOfSeriousRecidivismScore.toRiskOfSeriousRecidivism(),
+        sexualPredictor = this.output.sexualPredictorScore.toSexualPredictor(),
+      )
+    } else {
+      // TODO: To be implemented in HIA-1176
+      throw RuntimeException("Version not supported: $outputVersion")
+    }
+  }
 }
