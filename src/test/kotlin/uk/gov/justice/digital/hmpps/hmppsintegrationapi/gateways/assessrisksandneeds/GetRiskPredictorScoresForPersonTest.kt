@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.assessrisksand
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.shouldBe
+import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
@@ -13,6 +14,8 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_NEW_RISK_SCORE_API
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotImplementedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.AssessRisksAndNeedsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
@@ -127,6 +130,16 @@ class GetRiskPredictorScoresForPersonTest(
         val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrn)
 
         response.hasError(UpstreamApiError.Type.FORBIDDEN).shouldBeTrue()
+      }
+
+      it("throws a FeatureNotImplementedException when feature is enabled") {
+        whenever(featureFlag.isEnabled(USE_NEW_RISK_SCORE_API)).thenReturn(true)
+
+        val exception =
+          assertThrows<FeatureNotImplementedException> {
+            assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrn)
+          }
+        exception.message.shouldBe("$USE_NEW_RISK_SCORE_API not implemented")
       }
     },
   )
