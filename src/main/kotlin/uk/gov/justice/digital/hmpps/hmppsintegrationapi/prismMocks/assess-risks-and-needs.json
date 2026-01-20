@@ -1,137 +1,80 @@
 {
-  "openapi": "3.0.1",
+  "openapi": "3.1.0",
   "info": {
     "title": "HMPPS Risks and Needs API",
+    "description": "API for managing risks and needs",
     "contact": {
       "name": "HMPPS Digital Studio",
       "email": "feedback@digital.justice.gov.uk"
     },
-    "version": "2023-10-03.4364.1e3149c"
+    "version": "2026-01-16"
   },
   "servers": [
     {
-      "url": "/"
+      "url": "https://assess-risks-and-needs-dev.hmpps.service.justice.gov.uk",
+      "description": "Generated server url"
+    }
+  ],
+  "security": [
+    {
+      "bearer-jwt": []
     }
   ],
   "paths": {
-    "/risks/rosh/{crn}": {
-      "get": {
-        "tags": ["risks-controller"],
-        "description": "Gets ROSH risks for crn. Only returns freeform text concerns for risk to self where answer to corresponding risk question is Yes. Returns only assessments completed within the last year",
-        "operationId": "getRoshRisksByCrn",
-        "parameters": [
-          {
-            "name": "crn",
-            "in": "path",
-            "description": "CRN",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "D1974X"
-          }
+    "/risks/supplementary": {
+      "post": {
+        "tags": [
+          "supplementary-risks-controller"
         ],
+        "description": "Create new supplementary risk for a given source",
+        "operationId": "createSupplementaryRisk",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSupplementaryRiskDto"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
-          "200": {
-            "description": "OK",
+          "500": {
+            "description": "Internal Server Error",
             "content": {
-              "application/json": {
+              "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/AllRoshRiskDto_AllRisksView"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
-          }
-        }
-      }
-    },
-    "/risks/predictors/{crn}": {
-      "get": {
-        "tags": ["risk-predictors-controller"],
-        "description": "Gets risk predictors scores for all latest completed assessments from the last 1 year",
-        "operationId": "getAllRiskScores",
-        "parameters": [
-          {
-            "name": "crn",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
+          },
+          "403": {
+            "description": "Unauthorized",
             "content": {
-              "application/json": {
+              "*/*": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/RiskScoresDto"
-                  }
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
-          }
-        }
-      }
-    },
-    "/needs/{crn}": {
-      "get": {
-        "tags": ["assessment-controller"],
-        "description": "Gets criminogenic needs for crn",
-        "operationId": "getCriminogenicNeedsByCrn",
-        "parameters": [
-          {
-            "name": "crn",
-            "in": "path",
-            "description": "CRN",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "D1974X"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
+          },
+          "401": {
+            "description": "Unauthorized",
             "content": {
-              "application/json": {
+              "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/AssessmentNeedsDto"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
-          }
-        }
-      }
-    },
-    "/risks/risk-management-plan/{crn}": {
-      "get": {
-        "tags": ["risks-controller"],
-        "description": "Gets Risk Management Plan from latest complete assessments for crn",
-        "operationId": "getRiskManagementPlan",
-        "parameters": [
-          {
-            "name": "crn",
-            "in": "path",
-            "description": "CRN",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "D1974X"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
+          },
+          "404": {
+            "description": "Not Found",
             "content": {
-              "application/json": {
+              "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/RiskManagementPlansDto"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -153,8 +96,668 @@
               }
             }
           },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplementaryRiskDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplementaryRiskDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tier-assessment/sections/{crn}": {
+      "get": {
+        "tags": [
+          "tier-assessment-controller"
+        ],
+        "description": "Gets all question answers required for a tier calculation",
+        "operationId": "getTierAssessmentAnswers",
+        "parameters": [
+          {
+            "name": "crn",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "401": {
-            "description": "Unauthorised",
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplementaryRiskDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SectionSummary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/san-indicator/crn/{crn}": {
+      "get": {
+        "tags": [
+          "assessment-controller"
+        ],
+        "description": "Gets san-indicator by CRN",
+        "operationId": "getSanIndicatorByCrn",
+        "parameters": [
+          {
+            "name": "crn",
+            "in": "path",
+            "description": "CRN",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "D1974X"
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplementaryRiskDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SanIndicatorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/san-indicator/crn/{crn}/{timeframe}": {
+      "get": {
+        "tags": [
+          "assessment-controller"
+        ],
+        "description": "Gets san-indicator by CRN within specified timeframe, measured in weeks",
+        "operationId": "getSanIndicatorByCrnWithinTimeframe",
+        "parameters": [
+          {
+            "name": "crn",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "timeframe",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplementaryRiskDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SanIndicatorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/risks/supplementary/{supplementaryRiskId}": {
+      "get": {
+        "tags": [
+          "supplementary-risks-controller"
+        ],
+        "description": "Gets supplementary risk for a given ID",
+        "operationId": "getSupplementaryRiskById",
+        "parameters": [
+          {
+            "name": "supplementaryRiskId",
+            "in": "path",
+            "description": "Supplementary ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "78beac68-884c-4784-9bea-fd8088f52a47"
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Supplementary risk source Not Found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplementaryRiskDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplementaryRiskDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/risks/rosh/{crn}": {
+      "get": {
+        "tags": [
+          "integration-controller"
+        ],
+        "description": "Gets ROSH risks for crn. Only returns freeform text concerns for risk to self where answer to corresponding risk question is Yes. Returns only assessments completed within the last year",
+        "operationId": "getRoshRisksByCrn",
+        "parameters": [
+          {
+            "name": "crn",
+            "in": "path",
+            "description": "CRN",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "D1974X"
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "CRN Not Found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplementaryRiskDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AllRoshRiskDto_AllRisksView"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/risks/rosh/{crn}/{timeframe}": {
+      "get": {
+        "tags": [
+          "integration-controller"
+        ],
+        "description": "Gets ROSH risks for crn. Only returns freeform text concerns for risk to self where answer to corresponding risk question is Yes. Returns only assessments completed within specified timeframe, measured in weeks",
+        "operationId": "getRoshRisksByCrnWithinTimeframe",
+        "parameters": [
+          {
+            "name": "crn",
+            "in": "path",
+            "description": "CRN",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "D1974X"
+          },
+          {
+            "name": "timeframe",
+            "in": "path",
+            "description": "Timeframe",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 70
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "CRN Not Found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplementaryRiskDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AllRoshRiskDto_AllRisksView"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/risks/risk-management-plan/{crn}": {
+      "get": {
+        "tags": [
+          "integration-controller"
+        ],
+        "description": "Gets Risk Management Plan from latest complete assessments for crn",
+        "operationId": "getRiskManagementPlan",
+        "parameters": [
+          {
+            "name": "crn",
+            "in": "path",
+            "description": "CRN",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "D1974X"
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Internal Server Error",
             "content": {
               "*/*": {
                 "schema": {
@@ -173,12 +776,39 @@
               }
             }
           },
+          "401": {
+            "description": "Unauthorised",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "User does not exist in Delius for provided user name",
             "content": {
               "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
                 }
               }
             }
@@ -193,12 +823,2636 @@
               }
             }
           },
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/RiskManagementPlansDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/risks/predictors/{crn}": {
+      "get": {
+        "tags": [
+          "integration-controller"
+        ],
+        "description": "\n    Gets risk predictors scores for all latest completed assessments from the last 1 year\n    Deprecated endpoint.\n    Please use /risks/predictors/all/{identifierType}/{identifierValue} instead.\n    This endpoint will be removed in a future release.\n    ",
+        "operationId": "getAllRiskScores",
+        "parameters": [
+          {
+            "name": "crn",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
           "500": {
             "description": "Internal Server Error",
             "content": {
               "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User does not have permission to access offender with provided CRN",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorised",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User does not exist in Delius for provided user name",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplementaryRiskDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RiskScoresDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/risks/predictors/unsafe/all/{identifierType}/{identifierValue}": {
+      "get": {
+        "tags": [
+          "integration-controller"
+        ],
+        "description": "# Gets all risk predictor scores for completed assessments for an identifier type (e.g. CRN)\n\nReturns a list of completed assessments containing all predictor scores.\nAssessments within the list will have predictor scores in **either legacy** (OGRS3 generation) **or new** (OGRS4 generation) format.\n\nNote that all fields should be implemented as nullable as data may not be available.\n\n## Determining the predictor score format\nEach assessment contains a top level `outputVersion` field which dictates the format of the predictors nested within the `output` field.\n\n### Legacy risk predictor score format (outputVersion = 1)\n```json\n[\n  {\n    \"completedDate\": \"2025-10-23T03:02:59\",\n    \"source\": \"OASYS\",\n    \"status\": \"COMPLETE\",\n    \"outputVersion\": \"1\",\n    \"output\": {\n      \"groupReconvictionScore\": {\n        \"oneYear\": 0,\n        \"twoYears\": 0,\n        \"scoreLevel\": \"LOW\"\n      },\n      \"violencePredictorScore\": {\n        \"ovpStaticWeightedScore\": 0,\n        \"ovpDynamicWeightedScore\": 0,\n        \"ovpTotalWeightedScore\": 0,\n        \"oneYear\": 0,\n        \"twoYears\": 0,\n        \"ovpRisk\": \"LOW\"\n      },\n      \"generalPredictorScore\": {\n        \"ogpStaticWeightedScore\": 0,\n        \"ogpDynamicWeightedScore\": 0,\n        \"ogpTotalWeightedScore\": 0,\n        \"ogp1Year\": 0,\n        \"ogp2Year\": 0,\n        \"ogpRisk\": \"LOW\"\n      },\n      \"riskOfSeriousRecidivismScore\": {\n        \"percentageScore\": 0,\n        \"staticOrDynamic\": \"STATIC\",\n        \"source\": \"OASYS\",\n        \"algorithmVersion\": \"5\",\n        \"scoreLevel\": \"LOW\"\n      },\n      \"sexualPredictorScore\": {\n        \"ospIndecentPercentageScore\": null,\n        \"ospContactPercentageScore\": null,\n        \"ospIndecentScoreLevel\": null,\n        \"ospContactScoreLevel\": null,\n        \"ospIndirectImagePercentageScore\": 0,\n        \"ospDirectContactPercentageScore\": 0,\n        \"ospIndirectImageScoreLevel\": \"LOW\",\n        \"ospDirectContactScoreLevel\": \"LOW\"\n      }\n    }\n  }\n]\n```\n\n### New risk predictor score format (outputVersion = 2)\n```json\n[\n  {\n    \"completedDate\": \"2025-10-23T03:02:59\",\n    \"source\": \"OASYS\",\n    \"status\": \"COMPLETE\",\n    \"outputVersion\": \"2\",\n    \"output\": {\n      \"allReoffendingPredictor\": {\n        \"staticOrDynamic\": \"STATIC\",\n        \"score\": 1,\n        \"band\": \"LOW\"\n      },\n      \"violentReoffendingPredictor\": {\n        \"staticOrDynamic\": \"DYNAMIC\",\n        \"score\": 30,\n        \"band\": \"MEDIUM\"\n      },\n      \"seriousViolentReoffendingPredictor\": {\n        \"staticOrDynamic\": \"STATIC\",\n        \"score\": 99,\n        \"band\": \"HIGH\"\n      },\n      \"directContactSexualReoffendingPredictor\": {\n        \"score\": 10,\n        \"band\": \"LOW\"\n      },\n      \"indirectImageContactSexualReoffendingPredictor\": {\n        \"score\": 10,\n        \"band\": \"LOW\"\n      },\n      \"combinedSeriousReoffendingPredictor\": {\n        \"algorithmVersion\": \"6\",\n        \"staticOrDynamic\": \"STATIC\",\n        \"score\": 0,\n        \"band\": \"LOW\"\n      }\n    }\n  }\n]\n```\n\nPlease see the associated documentation for further information: [OGRS4 ARNS API Change Specification - All Risk Predictors](https://dsdmoj.atlassian.net/wiki/spaces/ARN/pages/5962203966/OGRS4+ARNS+API+Change+Specification#Endpoint-%232%2F%234-Changes---All-Risk-Predictors-by-CRN-or-assessment-id).\n  ",
+        "operationId": "getAllRiskScoresVersioned",
+        "parameters": [
+          {
+            "name": "identifierType",
+            "in": "path",
+            "description": "Identifier type (e.g. crn)",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "CRN"
+              ]
+            }
+          },
+          {
+            "name": "identifierValue",
+            "in": "path",
+            "description": "Identifier Value",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User does not have permission to access offender with provided CRN",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorised",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User does not exist in Delius for provided user name",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplementaryRiskDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "List of completed assessments containing both Legacy and New predictor score formats.": {
+                    "summary": "Completed assessments and associated risk predictor scores",
+                    "description": "List of completed assessments containing both Legacy and New predictor score formats.",
+                    "value": [
+                      {
+                        "completedDate": "2025-01-01",
+                        "status": "COMPLETE",
+                        "outputVersion": "1",
+                        "output": {
+                          "groupReconvictionScore": {
+                            "oneYear": 0,
+                            "twoYears": 0,
+                            "scoreLevel": "LOW"
+                          },
+                          "violencePredictorScore": {
+                            "ovpStaticWeightedScore": 0,
+                            "ovpDynamicWeightedScore": 0,
+                            "ovpTotalWeightedScore": 0,
+                            "oneYear": 0,
+                            "twoYears": 0,
+                            "ovpRisk": "LOW"
+                          },
+                          "generalPredictorScore": {
+                            "ogpStaticWeightedScore": 0,
+                            "ogpDynamicWeightedScore": 0,
+                            "ogpTotalWeightedScore": 0,
+                            "ogp1Year": 0,
+                            "ogp2Year": 0,
+                            "ogpRisk": "LOW"
+                          },
+                          "riskOfSeriousRecidivismScore": {
+                            "percentageScore": 0,
+                            "staticOrDynamic": "STATIC",
+                            "source": "OASYS",
+                            "algorithmVersion": "5",
+                            "scoreLevel": "LOW"
+                          },
+                          "sexualPredictorScore": {
+                            "ospIndecentPercentageScore": null,
+                            "ospContactPercentageScore": null,
+                            "ospIndecentScoreLevel": null,
+                            "ospContactScoreLevel": null,
+                            "ospIndirectImagePercentageScore": 0,
+                            "ospDirectContactPercentageScore": 0,
+                            "ospIndirectImageScoreLevel": "LOW",
+                            "ospDirectContactScoreLevel": "LOW"
+                          }
+                        }
+                      },
+                      {
+                        "completedDate": "2026-03-01",
+                        "status": "COMPLETE",
+                        "outputVersion": "2",
+                        "output": {
+                          "allReoffendingPredictor": {
+                            "staticOrDynamic": "STATIC",
+                            "score": 1,
+                            "band": "LOW"
+                          },
+                          "violentReoffendingPredictor": {
+                            "staticOrDynamic": "DYNAMIC",
+                            "score": 30,
+                            "band": "MEDIUM"
+                          },
+                          "seriousViolentReoffendingPredictor": {
+                            "staticOrDynamic": "STATIC",
+                            "score": 99,
+                            "band": "HIGH"
+                          },
+                          "directContactSexualReoffendingPredictor": {
+                            "score": 10,
+                            "band": "LOW"
+                          },
+                          "indirectImageContactSexualReoffendingPredictor": {
+                            "score": 10,
+                            "band": "LOW"
+                          },
+                          "combinedSeriousReoffendingPredictor": {
+                            "algorithmVersion": "6",
+                            "staticOrDynamic": "STATIC",
+                            "score": 0,
+                            "band": "LOW"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/risks/predictors/rsr/{identifierType}/{identifierValue}": {
+      "get": {
+        "tags": [
+          "risk-predictors-controller"
+        ],
+        "description": "# Gets Combined Serious Reoffending Predictor scores for an identifier type (e.g. CRN)\n\nReturns a list of assessments containing Combined Serious Reoffending Predictor scores (previously known as RSR scores).\nAssessments within the list will have predictor scores in **either legacy** (OGRS3 generation) **or new** (OGRS4 generation) format.\n\nNote that all fields should be implemented as nullable as data may not be available.\n\n## Determining the predictor score format\nEach assessment contains a top level `outputVersion` field which dictates the format of the predictors nested within the `output` field.\n\n### Legacy risk predictor score format (outputVersion = 1)\n```json\n[\n  {\n    \"completedDate\": \"2025-10-23T03:02:59\",\n    \"source\": \"OASYS\",\n    \"status\": \"COMPLETE\",\n    \"outputVersion\": \"1\",\n    \"output\": {\n      \"staticOrDynamic\": \"STATIC\",\n      \"algorithmVersion\": \"5\",\n      \"rsrPercentageScore\": 0,\n      \"rsrScoreLevel\": \"LOW\",\n      \"ospcPercentageScore\": 0,\n      \"ospcScoreLevel\": \"LOW\",\n      \"ospiPercentageScore\": 0,\n      \"ospiScoreLevel\": \"LOW\",\n      \"ospiiPercentageScore\": 0,\n      \"ospdcPercentageScore\": 0,\n      \"ospiiScoreLevel\": \"LOW\",\n      \"ospdcScoreLevel\": \"LOW\"\n    }\n  }\n]\n```\n\n### New risk predictor score format (outputVersion = 2)\n```json\n[\n  {\n    \"completedDate\": \"2025-10-23T03:02:59\",\n    \"source\": \"OASYS\",\n    \"status\": \"COMPLETE\",\n    \"outputVersion\": \"2\",\n    \"output\": {\n      \"seriousViolentReoffendingPredictor\": {\n        \"staticOrDynamic\": \"STATIC\",\n        \"score\": 10,\n        \"band\": \"LOW\"\n      },\n      \"directContactSexualReoffendingPredictor\": {\n        \"score\": 10,\n        \"band\": \"LOW\"\n      },\n      \"indirectImageContactSexualReoffendingPredictor\": {\n        \"score\": 10,\n        \"band\": \"LOW\"\n      },\n      \"combinedSeriousReoffendingPredictor\": {\n        \"algorithmVersion\": \"6\",\n        \"staticOrDynamic\": \"STATIC\",\n        \"score\": 0,\n        \"band\": \"LOW\"\n      }\n    }\n  }\n]\n```\n\nPlease see the associated documentation for further information: [OGRS4 ARNS API Change Specification - RSR Risk Predictors](https://dsdmoj.atlassian.net/wiki/spaces/ARN/pages/5962203966/OGRS4+ARNS+API+Change+Specification#Endpoint-%233-Changes---RSR-Risk-Predictors).\n  ",
+        "operationId": "getRsrScoresByIdentifierType",
+        "parameters": [
+          {
+            "name": "identifierType",
+            "in": "path",
+            "description": "Identifier type (e.g. crn)",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "CRN"
+              ]
+            }
+          },
+          {
+            "name": "identifierValue",
+            "in": "path",
+            "description": "Identifier Value",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplementaryRiskDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "List of assessments containing both Legacy RSR and New Combined Serious Reoffending Predictor score formats.": {
+                    "summary": "RSR & Combined Serious Reoffending Predictor Assessments",
+                    "description": "List of assessments containing both Legacy RSR and New Combined Serious Reoffending Predictor score formats.",
+                    "value": [
+                      {
+                        "completedDate": "2025-10-23T03:02:59",
+                        "source": "OASYS",
+                        "status": "COMPLETE",
+                        "outputVersion": "1",
+                        "output": {
+                          "staticOrDynamic": "STATIC",
+                          "algorithmVersion": "5",
+                          "rsrPercentageScore": 10,
+                          "rsrScoreLevel": "LOW",
+                          "ospcPercentageScore": null,
+                          "ospcScoreLevel": null,
+                          "ospiPercentageScore": null,
+                          "ospiScoreLevel": null,
+                          "ospiiPercentageScore": 10,
+                          "ospdcPercentageScore": 10,
+                          "ospiiScoreLevel": "LOW",
+                          "ospdcScoreLevel": "LOW"
+                        }
+                      },
+                      {
+                        "completedDate": "2025-10-23T03:02:59",
+                        "source": "OASYS",
+                        "status": "COMPLETE",
+                        "outputVersion": "2",
+                        "output": {
+                          "seriousViolentReoffendingPredictor": {
+                            "staticOrDynamic": "STATIC",
+                            "score": 10,
+                            "band": "LOW"
+                          },
+                          "directContactSexualReoffendingPredictor": {
+                            "score": 10,
+                            "band": "LOW"
+                          },
+                          "indirectImageContactSexualReoffendingPredictor": {
+                            "score": 10,
+                            "band": "LOW"
+                          },
+                          "combinedSeriousReoffendingPredictor": {
+                            "algorithmVersion": "6",
+                            "staticOrDynamic": "STATIC",
+                            "score": 10,
+                            "band": "LOW"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/risks/predictors/all/{identifierType}/{identifierValue}": {
+      "get": {
+        "tags": [
+          "risk-predictors-controller"
+        ],
+        "description": "# Gets all risk predictor scores for completed assessments for an identifier type (e.g. CRN)\n\nReturns a list of completed assessments containing all predictor scores.\nAssessments within the list will have predictor scores in **either legacy** (OGRS3 generation) **or new** (OGRS4 generation) format.\n\nNote that all fields should be implemented as nullable as data may not be available.\n\n## Determining the predictor score format\nEach assessment contains a top level `outputVersion` field which dictates the format of the predictors nested within the `output` field.\n\n### Legacy risk predictor score format (outputVersion = 1)\n```json\n[\n  {\n    \"completedDate\": \"2025-10-23T03:02:59\",\n    \"source\": \"OASYS\",\n    \"status\": \"COMPLETE\",\n    \"outputVersion\": \"1\",\n    \"output\": {\n      \"groupReconvictionScore\": {\n        \"oneYear\": 0,\n        \"twoYears\": 0,\n        \"scoreLevel\": \"LOW\"\n      },\n      \"violencePredictorScore\": {\n        \"ovpStaticWeightedScore\": 0,\n        \"ovpDynamicWeightedScore\": 0,\n        \"ovpTotalWeightedScore\": 0,\n        \"oneYear\": 0,\n        \"twoYears\": 0,\n        \"ovpRisk\": \"LOW\"\n      },\n      \"generalPredictorScore\": {\n        \"ogpStaticWeightedScore\": 0,\n        \"ogpDynamicWeightedScore\": 0,\n        \"ogpTotalWeightedScore\": 0,\n        \"ogp1Year\": 0,\n        \"ogp2Year\": 0,\n        \"ogpRisk\": \"LOW\"\n      },\n      \"riskOfSeriousRecidivismScore\": {\n        \"percentageScore\": 0,\n        \"staticOrDynamic\": \"STATIC\",\n        \"source\": \"OASYS\",\n        \"algorithmVersion\": \"5\",\n        \"scoreLevel\": \"LOW\"\n      },\n      \"sexualPredictorScore\": {\n        \"ospIndecentPercentageScore\": null,\n        \"ospContactPercentageScore\": null,\n        \"ospIndecentScoreLevel\": null,\n        \"ospContactScoreLevel\": null,\n        \"ospIndirectImagePercentageScore\": 0,\n        \"ospDirectContactPercentageScore\": 0,\n        \"ospIndirectImageScoreLevel\": \"LOW\",\n        \"ospDirectContactScoreLevel\": \"LOW\"\n      }\n    }\n  }\n]\n```\n\n### New risk predictor score format (outputVersion = 2)\n```json\n[\n  {\n    \"completedDate\": \"2025-10-23T03:02:59\",\n    \"source\": \"OASYS\",\n    \"status\": \"COMPLETE\",\n    \"outputVersion\": \"2\",\n    \"output\": {\n      \"allReoffendingPredictor\": {\n        \"staticOrDynamic\": \"STATIC\",\n        \"score\": 1,\n        \"band\": \"LOW\"\n      },\n      \"violentReoffendingPredictor\": {\n        \"staticOrDynamic\": \"DYNAMIC\",\n        \"score\": 30,\n        \"band\": \"MEDIUM\"\n      },\n      \"seriousViolentReoffendingPredictor\": {\n        \"staticOrDynamic\": \"STATIC\",\n        \"score\": 99,\n        \"band\": \"HIGH\"\n      },\n      \"directContactSexualReoffendingPredictor\": {\n        \"score\": 10,\n        \"band\": \"LOW\"\n      },\n      \"indirectImageContactSexualReoffendingPredictor\": {\n        \"score\": 10,\n        \"band\": \"LOW\"\n      },\n      \"combinedSeriousReoffendingPredictor\": {\n        \"algorithmVersion\": \"6\",\n        \"staticOrDynamic\": \"STATIC\",\n        \"score\": 0,\n        \"band\": \"LOW\"\n      }\n    }\n  }\n]\n```\n\nPlease see the associated documentation for further information: [OGRS4 ARNS API Change Specification - All Risk Predictors](https://dsdmoj.atlassian.net/wiki/spaces/ARN/pages/5962203966/OGRS4+ARNS+API+Change+Specification#Endpoint-%232%2F%234-Changes---All-Risk-Predictors-by-CRN-or-assessment-id).\n  ",
+        "operationId": "getAllRiskScoresVersioned_1",
+        "parameters": [
+          {
+            "name": "identifierType",
+            "in": "path",
+            "description": "Identifier type (e.g. crn)",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "CRN"
+              ]
+            }
+          },
+          {
+            "name": "identifierValue",
+            "in": "path",
+            "description": "Identifier Value",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User does not have permission to access offender with provided CRN",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorised",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User does not exist in Delius for provided user name",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplementaryRiskDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "List of completed assessments containing both Legacy and New predictor score formats.": {
+                    "summary": "Completed assessments and associated risk predictor scores",
+                    "description": "List of completed assessments containing both Legacy and New predictor score formats.",
+                    "value": [
+                      {
+                        "completedDate": "2025-01-01",
+                        "status": "COMPLETE",
+                        "outputVersion": "1",
+                        "output": {
+                          "groupReconvictionScore": {
+                            "oneYear": 0,
+                            "twoYears": 0,
+                            "scoreLevel": "LOW"
+                          },
+                          "violencePredictorScore": {
+                            "ovpStaticWeightedScore": 0,
+                            "ovpDynamicWeightedScore": 0,
+                            "ovpTotalWeightedScore": 0,
+                            "oneYear": 0,
+                            "twoYears": 0,
+                            "ovpRisk": "LOW"
+                          },
+                          "generalPredictorScore": {
+                            "ogpStaticWeightedScore": 0,
+                            "ogpDynamicWeightedScore": 0,
+                            "ogpTotalWeightedScore": 0,
+                            "ogp1Year": 0,
+                            "ogp2Year": 0,
+                            "ogpRisk": "LOW"
+                          },
+                          "riskOfSeriousRecidivismScore": {
+                            "percentageScore": 0,
+                            "staticOrDynamic": "STATIC",
+                            "source": "OASYS",
+                            "algorithmVersion": "5",
+                            "scoreLevel": "LOW"
+                          },
+                          "sexualPredictorScore": {
+                            "ospIndecentPercentageScore": null,
+                            "ospContactPercentageScore": null,
+                            "ospIndecentScoreLevel": null,
+                            "ospContactScoreLevel": null,
+                            "ospIndirectImagePercentageScore": 0,
+                            "ospDirectContactPercentageScore": 0,
+                            "ospIndirectImageScoreLevel": "LOW",
+                            "ospDirectContactScoreLevel": "LOW"
+                          }
+                        }
+                      },
+                      {
+                        "completedDate": "2026-03-01",
+                        "status": "COMPLETE",
+                        "outputVersion": "2",
+                        "output": {
+                          "allReoffendingPredictor": {
+                            "staticOrDynamic": "STATIC",
+                            "score": 1,
+                            "band": "LOW"
+                          },
+                          "violentReoffendingPredictor": {
+                            "staticOrDynamic": "DYNAMIC",
+                            "score": 30,
+                            "band": "MEDIUM"
+                          },
+                          "seriousViolentReoffendingPredictor": {
+                            "staticOrDynamic": "STATIC",
+                            "score": 99,
+                            "band": "HIGH"
+                          },
+                          "directContactSexualReoffendingPredictor": {
+                            "score": 10,
+                            "band": "LOW"
+                          },
+                          "indirectImageContactSexualReoffendingPredictor": {
+                            "score": 10,
+                            "band": "LOW"
+                          },
+                          "combinedSeriousReoffendingPredictor": {
+                            "algorithmVersion": "6",
+                            "staticOrDynamic": "STATIC",
+                            "score": 0,
+                            "band": "LOW"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/risks/crn/{crn}": {
+      "get": {
+        "tags": [
+          "risks-controller"
+        ],
+        "description": "Gets ROSH risks for crn. Only returns freeform text concerns for risk to self where answer to corresponding risk question is Yes. Returns only assessments completed within the last year",
+        "operationId": "getRoshRisksByCrn_1",
+        "parameters": [
+          {
+            "name": "crn",
+            "in": "path",
+            "description": "CRN",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "D1974X"
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "CRN Not Found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplementaryRiskDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AllRoshRiskDto_AllRisksView"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/risks/crn/{crn}/{timeframe}": {
+      "get": {
+        "tags": [
+          "risks-controller"
+        ],
+        "description": "Gets ROSH risks for crn. Only returns freeform text concerns for risk to self where answer to corresponding risk question is Yes. Returns only assessments completed within specified timeframe, measured in weeks",
+        "operationId": "getRoshRisksByCrnWithinTimeframe_1",
+        "parameters": [
+          {
+            "name": "crn",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "timeframe",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "CRN Not Found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplementaryRiskDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AllRoshRiskDto_AllRisksView"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/risks/crn/{crn}/widget": {
+      "get": {
+        "tags": [
+          "widget-controller"
+        ],
+        "description": "Gets rosh summary for crn",
+        "operationId": "getRiskSummaryByCrn",
+        "parameters": [
+          {
+            "name": "crn",
+            "in": "path",
+            "description": "CRN",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "D1974X"
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "CRN Not Found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplementaryRiskDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoshRiskWidgetDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/risks/crn/{crn}/widget/{timeframe}": {
+      "get": {
+        "tags": [
+          "widget-controller"
+        ],
+        "description": "Gets rosh summary for crn within specified timeframe, measured in weeks",
+        "operationId": "getRiskSummaryByCrnWithinTimeframe",
+        "parameters": [
+          {
+            "name": "crn",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "timeframe",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "CRN Not Found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplementaryRiskDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoshRiskWidgetDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/risks/crn/{crn}/summary": {
+      "get": {
+        "tags": [
+          "risks-controller"
+        ],
+        "description": "Gets rosh summary for crn. Returns only assessments completed within the last year.",
+        "operationId": "getRiskSummaryByCrn_1",
+        "parameters": [
+          {
+            "name": "crn",
+            "in": "path",
+            "description": "CRN",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "D1974X"
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "CRN Not Found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplementaryRiskDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/RiskRoshSummaryDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/risks/crn/{crn}/summary/{timeframe}": {
+      "get": {
+        "tags": [
+          "risks-controller"
+        ],
+        "description": "Gets rosh summary for crn. Returns only assessments completed within specified timeframe, measured in weeks.",
+        "operationId": "getRiskSummaryByCrnWithinTimeframe_1",
+        "parameters": [
+          {
+            "name": "crn",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "timeframe",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "CRN Not Found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplementaryRiskDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/RiskRoshSummaryDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/risks/crn/{crn}/risk-management-plan": {
+      "get": {
+        "tags": [
+          "risks-controller"
+        ],
+        "description": "Gets Risk Management Plan from latest complete assessments for crn",
+        "operationId": "getRiskManagementPlan_1",
+        "parameters": [
+          {
+            "name": "crn",
+            "in": "path",
+            "description": "CRN",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "D1974X"
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User does not have permission to access offender with provided CRN",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorised",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User does not exist in Delius for provided user name",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplementaryRiskDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/RiskManagementPlansDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/risks/crn/{crn}/predictors/rsr/history": {
+      "get": {
+        "tags": [
+          "risk-predictors-controller"
+        ],
+        "description": "\n    Gets RSR score history for a CRN\n    Deprecated endpoint.\n    Please use /risks/predictors/rsr/{identifierType}/{identifierValue} instead.\n    This endpoint will be removed in a future release.\n    ",
+        "operationId": "getRsrScoresByCrn",
+        "parameters": [
+          {
+            "name": "crn",
+            "in": "path",
+            "description": "CRN",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplementaryRiskDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RsrPredictorDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/risks/crn/{crn}/predictors/all": {
+      "get": {
+        "tags": [
+          "risk-predictors-controller"
+        ],
+        "description": "\n    Gets risk predictors scores for all latest completed assessments from the last 1 year\n    Deprecated endpoint.\n    Please use /risks/predictors/all/{identifierType}/{identifierValue} instead.\n    This endpoint will be removed in a future release.\n    ",
+        "operationId": "getAllRiskScores_1",
+        "parameters": [
+          {
+            "name": "crn",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User does not have permission to access offender with provided CRN",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorised",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User does not exist in Delius for provided user name",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplementaryRiskDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RiskScoresDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/risks/crn/{crn}/fulltext": {
+      "get": {
+        "tags": [
+          "risks-controller"
+        ],
+        "description": "Gets ROSH risks for crn. Returns freeform concerns text regardless of answer to corresponding risk question. Returns only assessments completed within the last year",
+        "operationId": "getFulltextRoshRisksByCrn",
+        "parameters": [
+          {
+            "name": "crn",
+            "in": "path",
+            "description": "CRN",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "D1974X"
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "CRN Not Found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplementaryRiskDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AllRoshRiskDto_AllRisksView"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/risks/crn/{crn}/fulltext/{timeframe}": {
+      "get": {
+        "tags": [
+          "risks-controller"
+        ],
+        "description": "Gets ROSH risks for crn. Returns freeform concerns text regardless of answer to corresponding risk question. Returns only assessments completed within specified timeframe, measured in weeks",
+        "operationId": "getFulltextRoshRisksByCrnWithinTimeframe",
+        "parameters": [
+          {
+            "name": "crn",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "timeframe",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "CRN Not Found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplementaryRiskDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AllRoshRiskDto_AllRisksView"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/needs/{crn}": {
+      "get": {
+        "tags": [
+          "integration-controller"
+        ],
+        "description": "Gets criminogenic needs for crn",
+        "operationId": "getCriminogenicNeedsByCrn",
+        "parameters": [
+          {
+            "name": "crn",
+            "in": "path",
+            "description": "CRN",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "D1974X"
+          },
+          {
+            "name": "excludeIncomplete",
+            "in": "query",
+            "description": "Exclude incomplete assessments",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            },
+            "example": false
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "CRN Not Found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplementaryRiskDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssessmentNeedsDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/needs/{crn}/{timeframe}": {
+      "get": {
+        "tags": [
+          "integration-controller"
+        ],
+        "description": "Gets criminogenic needs for crn within specified timeframe, measured in weeks",
+        "operationId": "getCriminogenicNeedsByCrnWithinTimeframe",
+        "parameters": [
+          {
+            "name": "crn",
+            "in": "path",
+            "description": "CRN",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "D1974X"
+          },
+          {
+            "name": "timeframe",
+            "in": "path",
+            "description": "Timeframe",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 70
+          },
+          {
+            "name": "excludeIncomplete",
+            "in": "query",
+            "description": "Exclude incomplete assessments",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            },
+            "example": false
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "CRN Not Found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplementaryRiskDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssessmentNeedsDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/needs/crn/{crn}": {
+      "get": {
+        "tags": [
+          "assessment-controller"
+        ],
+        "description": "Gets criminogenic needs for crn",
+        "operationId": "getCriminogenicNeedsByCrn_1",
+        "parameters": [
+          {
+            "name": "crn",
+            "in": "path",
+            "description": "CRN",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "D1974X"
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "CRN Not Found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplementaryRiskDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssessmentNeedsDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/needs/crn/{crn}/{timeframe}": {
+      "get": {
+        "tags": [
+          "assessment-controller"
+        ],
+        "description": "Gets criminogenic needs for crn within specified timeframe, measured in weeks",
+        "operationId": "getCriminogenicNeedsByCrnWithinTimeframe_1",
+        "parameters": [
+          {
+            "name": "crn",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "timeframe",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "CRN Not Found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplementaryRiskDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssessmentNeedsDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assessments/timeline/{identifierType}/{identifierValue}": {
+      "get": {
+        "tags": [
+          "assessment-controller"
+        ],
+        "description": "Gets assessment timeline for an identifier",
+        "operationId": "getAssessmentTimelineByCrn",
+        "parameters": [
+          {
+            "name": "identifierType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "identifierValue",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplementaryRiskDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Timeline"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assessments/id/{id}/risk/predictors/all": {
+      "get": {
+        "tags": [
+          "risk-predictors-controller"
+        ],
+        "description": "# Gets all risk predictors scores for the requested assessment ID\n\nReturns the requested assessment containing all associated predictor scores.\nThe assessment will have predictor scores in **either legacy** (OGRS3 generation) **or new** (OGRS4 generation) format.\n\nNote that all fields should be implemented as nullable as data may not be available.\n\n## Determining the predictor score format\nThe assessment contains a top level `outputVersion` field which dictates the format of the predictors nested within the `output` field.\n\n### Legacy risk predictor score format (outputVersion = 1)\n```json\n{\n  \"completedDate\": \"2024-01-01\",\n  \"status\": \"COMPLETE\",\n  \"outputVersion\": \"1\",\n  \"output\": {\n    \"groupReconvictionScore\": {\n      \"oneYear\": 0,\n      \"twoYears\": 0,\n      \"scoreLevel\": \"LOW\"\n    },\n    \"violencePredictorScore\": {\n      \"ovpStaticWeightedScore\": 0,\n      \"ovpDynamicWeightedScore\": 0,\n      \"ovpTotalWeightedScore\": 0,\n      \"oneYear\": 0,\n      \"twoYears\": 0,\n      \"ovpRisk\": \"LOW\"\n    },\n    \"generalPredictorScore\": {\n      \"ogpStaticWeightedScore\": 0,\n      \"ogpDynamicWeightedScore\": 0,\n      \"ogpTotalWeightedScore\": 0,\n      \"ogp1Year\": 0,\n      \"ogp2Year\": 0,\n      \"ogpRisk\": \"LOW\"\n    },\n    \"riskOfSeriousRecidivismScore\": {\n      \"percentageScore\": 0,\n      \"staticOrDynamic\": \"STATIC\",\n      \"source\": \"OASYS\",\n      \"algorithmVersion\": \"5\",\n      \"scoreLevel\": \"LOW\"\n    },\n    \"sexualPredictorScore\": {\n      \"ospIndecentPercentageScore\": null,\n      \"ospContactPercentageScore\": null,\n      \"ospIndecentScoreLevel\": null,\n      \"ospContactScoreLevel\": null,\n      \"ospIndirectImagePercentageScore\": 0,\n      \"ospDirectContactPercentageScore\": 0,\n      \"ospIndirectImageScoreLevel\": \"LOW\",\n      \"ospDirectContactScoreLevel\": \"LOW\"\n    }\n  }\n}\n```\n\n### New risk predictor score format (outputVersion = 2)\n```json\n{\n  \"completedDate\": \"2026-03-01\",\n  \"status\": \"COMPLETE\",\n  \"outputVersion\": \"2\",\n  \"output\": {\n    \"allReoffendingPredictor\": {\n      \"staticOrDynamic\": \"STATIC\",\n      \"score\": 1,\n      \"band\": \"LOW\"\n    },\n    \"violentReoffendingPredictor\": {\n      \"staticOrDynamic\": \"DYNAMIC\",\n      \"score\": 30,\n      \"band\": \"MEDIUM\"\n    },\n    \"seriousViolentReoffendingPredictor\": {\n      \"staticOrDynamic\": \"STATIC\",\n      \"score\": 99,\n      \"band\": \"HIGH\"\n    },\n    \"directContactSexualReoffendingPredictor\": {\n      \"score\": 10,\n      \"band\": \"LOW\"\n    },\n    \"indirectImageContactSexualReoffendingPredictor\": {\n      \"score\": 10,\n      \"band\": \"LOW\"\n    },\n    \"combinedSeriousReoffendingPredictor\": {\n      \"algorithmVersion\": \"6\",\n      \"staticOrDynamic\": \"STATIC\",\n      \"score\": 0,\n      \"band\": \"LOW\"\n    }\n  }\n}\n```\n\nPlease see the associated documentation for further information: [OGRS4 ARNS API Change Specification - All Risk Predictors](https://dsdmoj.atlassian.net/wiki/spaces/ARN/pages/5962203966/OGRS4+ARNS+API+Change+Specification#Endpoint-%232%2F%234-Changes---All-Risk-Predictors-by-CRN-or-assessment-id).\n  ",
+        "operationId": "getRiskScoresByAssessmentId",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Assessment ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User does not have permission to access assessment with provided ID",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorised",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Risk data does not exist for assessment ID",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplementaryRiskDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Assessment containing Legacy predictor score format.": {
+                    "summary": "Assessment containing Legacy predictor score format",
+                    "description": "Assessment containing Legacy predictor score format.",
+                    "value": {
+                      "completedDate": "2024-01-01",
+                      "status": "COMPLETE",
+                      "outputVersion": "1",
+                      "output": {
+                        "groupReconvictionScore": {
+                          "oneYear": 0,
+                          "twoYears": 0,
+                          "scoreLevel": "LOW"
+                        },
+                        "violencePredictorScore": {
+                          "ovpStaticWeightedScore": 0,
+                          "ovpDynamicWeightedScore": 0,
+                          "ovpTotalWeightedScore": 0,
+                          "oneYear": 0,
+                          "twoYears": 0,
+                          "ovpRisk": "LOW"
+                        },
+                        "generalPredictorScore": {
+                          "ogpStaticWeightedScore": 0,
+                          "ogpDynamicWeightedScore": 0,
+                          "ogpTotalWeightedScore": 0,
+                          "ogp1Year": 0,
+                          "ogp2Year": 0,
+                          "ogpRisk": "LOW"
+                        },
+                        "riskOfSeriousRecidivismScore": {
+                          "percentageScore": 0,
+                          "staticOrDynamic": "STATIC",
+                          "source": "OASYS",
+                          "algorithmVersion": "5",
+                          "scoreLevel": "LOW"
+                        },
+                        "sexualPredictorScore": {
+                          "ospIndecentPercentageScore": null,
+                          "ospContactPercentageScore": null,
+                          "ospIndecentScoreLevel": null,
+                          "ospContactScoreLevel": null,
+                          "ospIndirectImagePercentageScore": 0,
+                          "ospDirectContactPercentageScore": 0,
+                          "ospIndirectImageScoreLevel": "LOW",
+                          "ospDirectContactScoreLevel": "LOW"
+                        }
+                      }
+                    }
+                  },
+                  "Assessment containing New predictor score format.": {
+                    "summary": "Assessment containing New predictor score format",
+                    "description": "Assessment containing New predictor score format.",
+                    "value": {
+                      "completedDate": "2026-03-01",
+                      "status": "COMPLETE",
+                      "outputVersion": "2",
+                      "output": {
+                        "allReoffendingPredictor": {
+                          "staticOrDynamic": "STATIC",
+                          "score": 1,
+                          "band": "LOW"
+                        },
+                        "violentReoffendingPredictor": {
+                          "staticOrDynamic": "DYNAMIC",
+                          "score": 30,
+                          "band": "MEDIUM"
+                        },
+                        "seriousViolentReoffendingPredictor": {
+                          "staticOrDynamic": "STATIC",
+                          "score": 99,
+                          "band": "HIGH"
+                        },
+                        "directContactSexualReoffendingPredictor": {
+                          "score": 10,
+                          "band": "LOW"
+                        },
+                        "indirectImageContactSexualReoffendingPredictor": {
+                          "score": 10,
+                          "band": "LOW"
+                        },
+                        "combinedSeriousReoffendingPredictor": {
+                          "algorithmVersion": "6",
+                          "staticOrDynamic": "STATIC",
+                          "score": 0,
+                          "band": "LOW"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assessments/crn/{crn}/offence": {
+      "get": {
+        "tags": [
+          "assessment-controller"
+        ],
+        "description": "Gets offence details from latest complete assessment for crn",
+        "operationId": "getAssessmentOffenceDetails",
+        "parameters": [
+          {
+            "name": "crn",
+            "in": "path",
+            "description": "CRN",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "D1974X"
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User does not have permission to access offender with provided CRN",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorised",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User does not exist in Delius for provided user name",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplementaryRiskDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssessmentOffenceDto"
                 }
               }
             }
@@ -210,13 +3464,12 @@
   "components": {
     "schemas": {
       "ErrorResponse": {
-        "required": ["errorCode", "status", "userMessage"],
         "type": "object",
         "properties": {
           "status": {
             "type": "integer",
-            "description": "Status of Error Code",
             "format": "int32",
+            "description": "Status of Error Code",
             "example": 400
           },
           "developerMessage": {
@@ -226,8 +3479,8 @@
           },
           "errorCode": {
             "type": "integer",
-            "description": "Internal Error Code",
             "format": "int32",
+            "description": "Internal Error Code",
             "example": 20012
           },
           "userMessage": {
@@ -240,161 +3493,12 @@
             "description": "Additional information about the error",
             "example": "Hard disk failure"
           }
-        }
-      },
-      "RiskManagementPlanDto": {
-        "required": ["assessmentId", "assessmentStatus", "assessmentType"],
-        "type": "object",
-        "properties": {
-          "assessmentId": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "dateCompleted": {
-            "type": "string",
-            "example": "2024-05-08T23:11:23"
-          },
-          "partcompStatus": {
-            "type": "string"
-          },
-          "initiationDate": {
-            "type": "string",
-            "example": "2024-05-08T23:11:23"
-          },
-          "assessmentStatus": {
-            "type": "string"
-          },
-          "assessmentType": {
-            "type": "string"
-          },
-          "superStatus": {
-            "type": "string"
-          },
-          "keyInformationCurrentSituation": {
-            "type": "string"
-          },
-          "furtherConsiderationsCurrentSituation": {
-            "type": "string"
-          },
-          "supervision": {
-            "type": "string"
-          },
-          "monitoringAndControl": {
-            "type": "string"
-          },
-          "interventionsAndTreatment": {
-            "type": "string"
-          },
-          "victimSafetyPlanning": {
-            "type": "string"
-          },
-          "contingencyPlans": {
-            "type": "string"
-          },
-          "laterWIPAssessmentExists": {
-            "type": "boolean"
-          },
-          "latestWIPDate": {
-            "type": "string",
-            "example": "2024-05-08T23:11:23"
-          },
-          "laterSignLockAssessmentExists": {
-            "type": "boolean"
-          },
-          "latestSignLockDate": {
-            "type": "string",
-            "example": "2024-05-08T23:11:23"
-          },
-          "laterPartCompUnsignedAssessmentExists": {
-            "type": "boolean"
-          },
-          "latestPartCompUnsignedDate": {
-            "type": "string",
-            "example": "2024-05-08T23:11:23"
-          },
-          "laterPartCompSignedAssessmentExists": {
-            "type": "boolean"
-          },
-          "latestPartCompSignedDate": {
-            "type": "string",
-            "example": "2024-05-08T23:11:23"
-          },
-          "laterCompleteAssessmentExists": {
-            "type": "boolean"
-          },
-          "latestCompleteDate": {
-            "type": "string",
-            "example": "2024-05-08T23:11:23"
-          }
-        }
-      },
-      "RiskManagementPlansDto": {
-        "required": ["crn", "limitedAccessOffender", "riskManagementPlan"],
-        "type": "object",
-        "properties": {
-          "crn": {
-            "type": "string"
-          },
-          "limitedAccessOffender": {
-            "type": "string"
-          },
-          "riskManagementPlan": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/RiskManagementPlanDto"
-            }
-          }
-        }
-      },
-      "SupplementaryRiskDto": {
-        "required": ["createdByUserType", "createdDate", "crn", "riskSummaryComments", "source", "sourceId"],
-        "type": "object",
-        "properties": {
-          "supplementaryRiskId": {
-            "type": "string",
-            "description": "Supplementary Risk ID",
-            "format": "uuid",
-            "example": "78beac68-884c-4784-9bea-fd8088f52a47"
-          },
-          "source": {
-            "type": "string",
-            "description": "Source of Risk",
-            "example": "INTERVENTION_REFERRAL",
-            "enum": ["INTERVENTION_REFERRAL"]
-          },
-          "sourceId": {
-            "type": "string",
-            "description": "Source Id",
-            "example": "78beac68-884c-4784-9bea-fd8088f52a47 or 1989823"
-          },
-          "crn": {
-            "type": "string",
-            "description": "Offender CRN",
-            "example": "DX12340A"
-          },
-          "createdByUser": {
-            "type": "string",
-            "description": "Created By User",
-            "example": "Paul Newman"
-          },
-          "createdByUserType": {
-            "type": "string",
-            "description": "Created By User Type",
-            "example": "delius"
-          },
-          "createdDate": {
-            "type": "object",
-            "example": "2024-05-08T23:11:23"
-          },
-          "redactedRisk": {
-            "$ref": "#/components/schemas/RedactedOasysRiskDto"
-          },
-          "riskSummaryComments": {
-            "type": "string",
-            "description": "Risk Summary Comments",
-            "example": "Free text up to 4000 characters"
-          }
-        }
+        },
+        "required": [
+          "errorCode",
+          "status",
+          "userMessage"
+        ]
       },
       "RedactedOasysRiskDto": {
         "type": "object",
@@ -434,11 +3538,1004 @@
             "description": "Question corresponding to OASys ROSH 3.4, 'Concerns in relation to vulnerability'",
             "example": "Free text up to 4000 characters"
           }
+        }
+      },
+      "SupplementaryRiskDto": {
+        "type": "object",
+        "properties": {
+          "supplementaryRiskId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Supplementary Risk ID",
+            "example": "78beac68-884c-4784-9bea-fd8088f52a47"
+          },
+          "source": {
+            "type": "string",
+            "description": "Source of Risk",
+            "enum": [
+              "INTERVENTION_REFERRAL"
+            ],
+            "example": "INTERVENTION_REFERRAL"
+          },
+          "sourceId": {
+            "type": "string",
+            "description": "Source Id",
+            "example": "78beac68-884c-4784-9bea-fd8088f52a47 or 1989823"
+          },
+          "crn": {
+            "type": "string",
+            "description": "Offender CRN",
+            "example": "DX12340A"
+          },
+          "createdByUser": {
+            "type": "string",
+            "description": "Created By User",
+            "example": "Paul Newman"
+          },
+          "createdByUserType": {
+            "type": "string",
+            "description": "Created By User Type",
+            "example": "delius"
+          },
+          "createdDate": {
+            "type": "object",
+            "description": "Created At",
+            "example": "2026-01-16T16:22:54"
+          },
+          "redactedRisk": {
+            "$ref": "#/components/schemas/RedactedOasysRiskDto",
+            "description": "Redacted risk answers"
+          },
+          "riskSummaryComments": {
+            "type": "string",
+            "description": "Risk Summary Comments",
+            "example": "Free text up to 4000 characters"
+          }
         },
-        "description": "Redacted risk answers"
+        "required": [
+          "createdByUserType",
+          "createdDate",
+          "crn",
+          "riskSummaryComments",
+          "source",
+          "sourceId"
+        ]
+      },
+      "CreateSupplementaryRiskDto": {
+        "type": "object",
+        "description": "Supplementary Risk",
+        "properties": {
+          "source": {
+            "type": "string",
+            "description": "Source of Risk",
+            "enum": [
+              "INTERVENTION_REFERRAL"
+            ],
+            "example": "INTERVENTION_REFERRAL"
+          },
+          "sourceId": {
+            "type": "string",
+            "description": "Source Id",
+            "example": "78beac68-884c-4784-9bea-fd8088f52a47 or 1989823"
+          },
+          "crn": {
+            "type": "string",
+            "description": "Offender CRN",
+            "example": "DX12340A"
+          },
+          "createdByUserType": {
+            "type": "string",
+            "description": "Created By User Type",
+            "example": "delius"
+          },
+          "createdDate": {
+            "type": "object",
+            "description": "Created At",
+            "example": "2026-01-16T16:22:54"
+          },
+          "redactedRisk": {
+            "$ref": "#/components/schemas/RedactedOasysRiskDto",
+            "description": "Redacted Risk Data",
+            "example": "Free text up to 4000 characters"
+          },
+          "riskSummaryComments": {
+            "type": "string",
+            "description": "Risk Summary Comments",
+            "example": "Free text up to 4000 characters"
+          }
+        },
+        "required": [
+          "createdByUserType",
+          "createdDate",
+          "crn",
+          "riskSummaryComments",
+          "source",
+          "sourceId"
+        ]
+      },
+      "Accommodation": {
+        "type": "object",
+        "properties": {
+          "accLinkedToReoffending": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "accLinkedToHarm": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "noFixedAbodeOrTransient": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "suitabilityOfAccommodation": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "permanenceOfAccommodation": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "locationOfAccommodation": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "linkedToReOffending": {
+            "type": "string",
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ]
+          },
+          "linkedToHarm": {
+            "type": "string",
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ]
+          },
+          "questionAnswers": {
+            "type": "object",
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/Frequency"
+                },
+                {
+                  "$ref": "#/components/schemas/Problem"
+                },
+                {
+                  "$ref": "#/components/schemas/YesNo"
+                }
+              ]
+            }
+          },
+          "tierThreshold": {
+            "$ref": "#/components/schemas/TierThreshold"
+          },
+          "oasysThreshold": {
+            "$ref": "#/components/schemas/OasysThreshold"
+          },
+          "score": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "NO_NEED",
+              "STANDARD",
+              "SEVERE"
+            ]
+          }
+        },
+        "required": [
+          "linkedToHarm",
+          "linkedToReOffending",
+          "oasysThreshold",
+          "questionAnswers",
+          "tierThreshold"
+        ]
+      },
+      "AlcoholMisuse": {
+        "type": "object",
+        "properties": {
+          "alcoholLinkedToReoffending": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "alcoholLinkedToHarm": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "currentUse": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "bingeDrinking": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "frequencyAndLevel": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "alcoholTackleMotivation": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "linkedToReOffending": {
+            "type": "string",
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ]
+          },
+          "linkedToHarm": {
+            "type": "string",
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ]
+          },
+          "questionAnswers": {
+            "type": "object",
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/Frequency"
+                },
+                {
+                  "$ref": "#/components/schemas/Problem"
+                },
+                {
+                  "$ref": "#/components/schemas/YesNo"
+                }
+              ]
+            }
+          },
+          "tierThreshold": {
+            "$ref": "#/components/schemas/TierThreshold"
+          },
+          "oasysThreshold": {
+            "$ref": "#/components/schemas/OasysThreshold"
+          },
+          "score": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "NO_NEED",
+              "STANDARD",
+              "SEVERE"
+            ]
+          }
+        },
+        "required": [
+          "linkedToHarm",
+          "linkedToReOffending",
+          "oasysThreshold",
+          "questionAnswers",
+          "tierThreshold"
+        ]
+      },
+      "AssessmentSummary": {
+        "type": "object",
+        "properties": {
+          "assessmentId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "completedDate": {
+            "type": "object",
+            "example": "2026-01-16T16:22:54"
+          },
+          "assessmentType": {
+            "type": "string"
+          },
+          "initiationDate": {
+            "type": "object",
+            "example": "2026-01-16T16:22:54"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "assessmentId",
+          "assessmentType",
+          "status"
+        ]
+      },
+      "Attitudes": {
+        "type": "object",
+        "properties": {
+          "attLinkedToReoffending": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "attLinkedToHarm": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "proCriminalAttitudes": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "attitudesTowardsSupervision": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "attitudesTowardsCommunitySociety": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "motivationToAddressBehaviour": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "linkedToReOffending": {
+            "type": "string",
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ]
+          },
+          "linkedToHarm": {
+            "type": "string",
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ]
+          },
+          "questionAnswers": {
+            "type": "object",
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/Frequency"
+                },
+                {
+                  "$ref": "#/components/schemas/Problem"
+                },
+                {
+                  "$ref": "#/components/schemas/YesNo"
+                }
+              ]
+            }
+          },
+          "tierThreshold": {
+            "$ref": "#/components/schemas/TierThreshold"
+          },
+          "oasysThreshold": {
+            "$ref": "#/components/schemas/OasysThreshold"
+          },
+          "score": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "NO_NEED",
+              "STANDARD",
+              "SEVERE"
+            ]
+          }
+        },
+        "required": [
+          "linkedToHarm",
+          "linkedToReOffending",
+          "oasysThreshold",
+          "questionAnswers",
+          "tierThreshold"
+        ]
+      },
+      "DrugMisuse": {
+        "type": "object",
+        "properties": {
+          "drugLinkedToReoffending": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "drugLinkedToHarm": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "currentDrugNoted": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "levelOfUseOfMainDrug": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "everInjectedDrugs": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "motivationToTackleDrugMisuse": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "drugsMajorActivity": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "linkedToReOffending": {
+            "type": "string",
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ]
+          },
+          "linkedToHarm": {
+            "type": "string",
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ]
+          },
+          "questionAnswers": {
+            "type": "object",
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/Frequency"
+                },
+                {
+                  "$ref": "#/components/schemas/Problem"
+                },
+                {
+                  "$ref": "#/components/schemas/YesNo"
+                }
+              ]
+            }
+          },
+          "tierThreshold": {
+            "$ref": "#/components/schemas/TierThreshold"
+          },
+          "oasysThreshold": {
+            "$ref": "#/components/schemas/OasysThreshold"
+          },
+          "score": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "NO_NEED",
+              "STANDARD",
+              "SEVERE"
+            ]
+          }
+        },
+        "required": [
+          "linkedToHarm",
+          "linkedToReOffending",
+          "oasysThreshold",
+          "questionAnswers",
+          "tierThreshold"
+        ]
+      },
+      "EducationTrainingEmployability": {
+        "type": "object",
+        "properties": {
+          "eTeLinkedToReoffending": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "eTeLinkedToHarm": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "unemployed": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "employmentHistory": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "workRelatedSkills": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "attitudeToEmployment": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "linkedToReOffending": {
+            "type": "string",
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ]
+          },
+          "linkedToHarm": {
+            "type": "string",
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ]
+          },
+          "questionAnswers": {
+            "type": "object",
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/Frequency"
+                },
+                {
+                  "$ref": "#/components/schemas/Problem"
+                },
+                {
+                  "$ref": "#/components/schemas/YesNo"
+                }
+              ]
+            }
+          },
+          "tierThreshold": {
+            "$ref": "#/components/schemas/TierThreshold"
+          },
+          "oasysThreshold": {
+            "$ref": "#/components/schemas/OasysThreshold"
+          },
+          "score": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "NO_NEED",
+              "STANDARD",
+              "SEVERE"
+            ]
+          }
+        },
+        "required": [
+          "linkedToHarm",
+          "linkedToReOffending",
+          "oasysThreshold",
+          "questionAnswers",
+          "tierThreshold"
+        ]
+      },
+      "Frequency": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ScoredAnswer"
+          }
+        ],
+        "enum": [
+          "Never",
+          "Previous",
+          "Currently",
+          "Unknown"
+        ]
+      },
+      "LifestyleAndAssociates": {
+        "type": "object",
+        "properties": {
+          "lifestyleLinkedToReoffending": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "lifestyleLinkedToHarm": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "regActivitiesEncourageOffending": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "easilyInfluenced": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "recklessness": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "linkedToReOffending": {
+            "type": "string",
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ]
+          },
+          "linkedToHarm": {
+            "type": "string",
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ]
+          },
+          "questionAnswers": {
+            "type": "object",
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/Frequency"
+                },
+                {
+                  "$ref": "#/components/schemas/Problem"
+                },
+                {
+                  "$ref": "#/components/schemas/YesNo"
+                }
+              ]
+            }
+          },
+          "tierThreshold": {
+            "$ref": "#/components/schemas/TierThreshold"
+          },
+          "oasysThreshold": {
+            "$ref": "#/components/schemas/OasysThreshold"
+          },
+          "score": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "NO_NEED",
+              "STANDARD",
+              "SEVERE"
+            ]
+          }
+        },
+        "required": [
+          "linkedToHarm",
+          "linkedToReOffending",
+          "oasysThreshold",
+          "questionAnswers",
+          "tierThreshold"
+        ]
+      },
+      "OasysThreshold": {
+        "type": "object",
+        "properties": {
+          "standard": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "standard"
+        ]
+      },
+      "Problem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ScoredAnswer"
+          }
+        ],
+        "enum": [
+          "None",
+          "Some",
+          "Significant",
+          "Missing"
+        ]
+      },
+      "Relationships": {
+        "type": "object",
+        "properties": {
+          "relLinkedToReoffending": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "relLinkedToHarm": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "relCloseFamily": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "experienceOfChildhood": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "prevCloseRelationships": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "relParentalResponsibilities": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "linkedToReOffending": {
+            "type": "string",
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ]
+          },
+          "linkedToHarm": {
+            "type": "string",
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ]
+          },
+          "questionAnswers": {
+            "type": "object",
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/Frequency"
+                },
+                {
+                  "$ref": "#/components/schemas/Problem"
+                },
+                {
+                  "$ref": "#/components/schemas/YesNo"
+                }
+              ]
+            }
+          },
+          "tierThreshold": {
+            "$ref": "#/components/schemas/TierThreshold"
+          },
+          "oasysThreshold": {
+            "$ref": "#/components/schemas/OasysThreshold"
+          },
+          "parentalResponsibilities": {
+            "type": "string",
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ]
+          },
+          "score": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "NO_NEED",
+              "STANDARD",
+              "SEVERE"
+            ]
+          }
+        },
+        "required": [
+          "linkedToHarm",
+          "linkedToReOffending",
+          "oasysThreshold",
+          "parentalResponsibilities",
+          "questionAnswers",
+          "tierThreshold"
+        ]
+      },
+      "ScoredAnswer": {
+        "type": "object",
+        "properties": {
+          "score": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "score"
+        ]
+      },
+      "SectionSummary": {
+        "type": "object",
+        "properties": {
+          "assessment": {
+            "$ref": "#/components/schemas/AssessmentSummary"
+          },
+          "accommodation": {
+            "$ref": "#/components/schemas/Accommodation"
+          },
+          "educationTrainingEmployability": {
+            "$ref": "#/components/schemas/EducationTrainingEmployability"
+          },
+          "relationships": {
+            "$ref": "#/components/schemas/Relationships"
+          },
+          "lifestyleAndAssociates": {
+            "$ref": "#/components/schemas/LifestyleAndAssociates"
+          },
+          "drugMisuse": {
+            "$ref": "#/components/schemas/DrugMisuse"
+          },
+          "alcoholMisuse": {
+            "$ref": "#/components/schemas/AlcoholMisuse"
+          },
+          "thinkingAndBehaviour": {
+            "$ref": "#/components/schemas/ThinkingAndBehaviour"
+          },
+          "attitudes": {
+            "$ref": "#/components/schemas/Attitudes"
+          }
+        },
+        "required": [
+          "assessment"
+        ]
+      },
+      "ThinkingAndBehaviour": {
+        "type": "object",
+        "properties": {
+          "thinkLinkedToReoffending": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "thinkLinkedToHarm": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "recogniseProblems": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "problemSolvingSkills": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "awarenessOfConsequences": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "understandsViewsOfOthers": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "impulsivityStr": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "temperControlStr": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "linkedToReOffending": {
+            "type": "string",
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ]
+          },
+          "linkedToHarm": {
+            "type": "string",
+            "enum": [
+              "Yes",
+              "No",
+              "Unknown"
+            ]
+          },
+          "questionAnswers": {
+            "type": "object",
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/Frequency"
+                },
+                {
+                  "$ref": "#/components/schemas/Problem"
+                },
+                {
+                  "$ref": "#/components/schemas/YesNo"
+                }
+              ]
+            }
+          },
+          "tierThreshold": {
+            "$ref": "#/components/schemas/TierThreshold"
+          },
+          "oasysThreshold": {
+            "$ref": "#/components/schemas/OasysThreshold"
+          },
+          "impulsivity": {
+            "type": "string",
+            "enum": [
+              "None",
+              "Some",
+              "Significant",
+              "Missing"
+            ]
+          },
+          "temperControl": {
+            "type": "string",
+            "enum": [
+              "None",
+              "Some",
+              "Significant",
+              "Missing"
+            ]
+          },
+          "score": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "NO_NEED",
+              "STANDARD",
+              "SEVERE"
+            ]
+          }
+        },
+        "required": [
+          "impulsivity",
+          "linkedToHarm",
+          "linkedToReOffending",
+          "oasysThreshold",
+          "questionAnswers",
+          "temperControl",
+          "tierThreshold"
+        ]
+      },
+      "TierThreshold": {
+        "type": "object",
+        "properties": {
+          "standard": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "severe": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "severe",
+          "standard"
+        ]
+      },
+      "YesNo": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ScoredAnswer"
+          }
+        ],
+        "enum": [
+          "Yes",
+          "No",
+          "Unknown"
+        ]
+      },
+      "SanIndicatorResponse": {
+        "type": "object",
+        "properties": {
+          "crn": {
+            "type": "string"
+          },
+          "sanIndicator": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "crn",
+          "sanIndicator"
+        ]
       },
       "AllRoshRiskDto_AllRisksView": {
-        "required": ["otherRisks", "riskToSelf", "summary"],
         "type": "object",
         "properties": {
           "riskToSelf": {
@@ -452,9 +4549,14 @@
           },
           "assessedOn": {
             "type": "object",
-            "example": "2023-10-04T07:06:43"
+            "example": "2026-01-16T16:22:54"
           }
-        }
+        },
+        "required": [
+          "otherRisks",
+          "riskToSelf",
+          "summary"
+        ]
       },
       "OtherRoshRisksDto_AllRisksView": {
         "type": "object",
@@ -462,22 +4564,42 @@
           "escapeOrAbscond": {
             "type": "string",
             "description": "Escape / abscond",
-            "enum": ["YES", "NO", "DK", "NA"]
+            "enum": [
+              "YES",
+              "NO",
+              "DK",
+              "NA"
+            ]
           },
           "controlIssuesDisruptiveBehaviour": {
             "type": "string",
             "description": "Control issues / disruptive behaviour",
-            "enum": ["YES", "NO", "DK", "NA"]
+            "enum": [
+              "YES",
+              "NO",
+              "DK",
+              "NA"
+            ]
           },
           "breachOfTrust": {
             "type": "string",
             "description": "Concerns in respect of breach of trust",
-            "enum": ["YES", "NO", "DK", "NA"]
+            "enum": [
+              "YES",
+              "NO",
+              "DK",
+              "NA"
+            ]
           },
           "riskToOtherPrisoners": {
             "type": "string",
             "description": "Risks to other prisoners",
-            "enum": ["YES", "NO", "DK", "NA"]
+            "enum": [
+              "YES",
+              "NO",
+              "DK",
+              "NA"
+            ]
           }
         }
       },
@@ -487,14 +4609,24 @@
           "risk": {
             "type": "string",
             "description": "is there any risk",
-            "example": "YES",
-            "enum": ["YES", "NO", "DK", "NA"]
+            "enum": [
+              "YES",
+              "NO",
+              "DK",
+              "NA"
+            ],
+            "example": "Yes, No, Don't know, null"
           },
           "previous": {
             "type": "string",
             "description": "Previous concerns",
-            "example": "YES",
-            "enum": ["YES", "NO", "DK", "NA"]
+            "enum": [
+              "YES",
+              "NO",
+              "DK",
+              "NA"
+            ],
+            "example": "Yes, No, Don't know"
           },
           "previousConcernsText": {
             "type": "string",
@@ -504,19 +4636,22 @@
           "current": {
             "type": "string",
             "description": "Current concerns",
-            "example": "YES",
-            "enum": ["YES", "NO", "DK", "NA"]
+            "enum": [
+              "YES",
+              "NO",
+              "DK",
+              "NA"
+            ],
+            "example": "Yes, No, Don't know"
           },
           "currentConcernsText": {
             "type": "string",
             "description": "Current concerns supporting comments",
             "example": "Risk of self harms concerns due to ..."
           }
-        },
-        "description": "Vulnerability"
+        }
       },
       "RiskRoshSummaryDto_AllRisksView": {
-        "required": ["riskInCommunity", "riskInCustody"],
         "type": "object",
         "properties": {
           "whoIsAtRisk": {
@@ -548,75 +4683,201 @@
             "type": "object",
             "additionalProperties": {
               "type": "array",
-              "description": "Assess the risk of serious harm the offender poses in the community",
-              "example": {
-                "HIGH ": ["Children", "Public", "Know adult"],
-                "MEDIUM": ["Staff"],
-                "LOW": ["Prisoners"]
-              },
               "items": {
-                "type": "string",
-                "description": "Assess the risk of serious harm the offender poses in the community",
-                "example": "{\"HIGH \":[\"Children\",\"Public\",\"Know adult\"],\"MEDIUM\":[\"Staff\"],\"LOW\":[\"Prisoners\"]}"
+                "type": "string"
               }
             },
             "description": "Assess the risk of serious harm the offender poses in the community",
             "example": {
-              "HIGH ": ["Children", "Public", "Know adult"],
-              "MEDIUM": ["Staff"],
-              "LOW": ["Prisoners"]
+              "HIGH ": [
+                "Children",
+                "Public",
+                "Know adult"
+              ],
+              "MEDIUM": [
+                "Staff"
+              ],
+              "LOW": [
+                "Prisoners"
+              ]
             }
           },
           "riskInCustody": {
             "type": "object",
             "additionalProperties": {
               "type": "array",
-              "description": "Assess the risk of serious harm the offender poses on the basis that they could be released imminently back into the community.Assess both the risk of serious harm the offender presents now, in custody, and the risk they could present to others whilst in a custodial setting.",
-              "example": {
-                "HIGH ": ["Know adult"],
-                "VERY_HIGH": ["Staff", "Prisoners"],
-                "LOW": ["Children", "Public"]
-              },
               "items": {
-                "type": "string",
-                "description": "Assess the risk of serious harm the offender poses on the basis that they could be released imminently back into the community.Assess both the risk of serious harm the offender presents now, in custody, and the risk they could present to others whilst in a custodial setting.",
-                "example": "{\"HIGH \":[\"Know adult\"],\"VERY_HIGH\":[\"Staff\",\"Prisoners\"],\"LOW\":[\"Children\",\"Public\"]}"
+                "type": "string"
               }
             },
             "description": "Assess the risk of serious harm the offender poses on the basis that they could be released imminently back into the community.Assess both the risk of serious harm the offender presents now, in custody, and the risk they could present to others whilst in a custodial setting.",
             "example": {
-              "HIGH ": ["Know adult"],
-              "VERY_HIGH": ["Staff", "Prisoners"],
-              "LOW": ["Children", "Public"]
+              "HIGH ": [
+                "Know adult"
+              ],
+              "VERY_HIGH": [
+                "Staff",
+                "Prisoners"
+              ],
+              "LOW": [
+                "Children",
+                "Public"
+              ]
             }
           },
           "overallRiskLevel": {
             "type": "string",
             "description": "Overall Risk Level",
-            "example": "HIGH",
-            "enum": ["VERY_HIGH", "HIGH", "MEDIUM", "LOW"]
+            "enum": [
+              "VERY_HIGH",
+              "HIGH",
+              "MEDIUM",
+              "LOW"
+            ],
+            "example": "HIGH"
           }
-        }
+        },
+        "required": [
+          "riskInCommunity",
+          "riskInCustody"
+        ]
       },
       "RoshRiskToSelfDto_AllRisksView": {
         "type": "object",
         "properties": {
           "suicide": {
-            "$ref": "#/components/schemas/RiskDto_AllRisksView"
+            "$ref": "#/components/schemas/RiskDto_AllRisksView",
+            "description": "Risk of suicide?"
           },
           "selfHarm": {
-            "$ref": "#/components/schemas/RiskDto_AllRisksView"
+            "$ref": "#/components/schemas/RiskDto_AllRisksView",
+            "description": "Risk of self harm?"
           },
           "custody": {
-            "$ref": "#/components/schemas/RiskDto_AllRisksView"
+            "$ref": "#/components/schemas/RiskDto_AllRisksView",
+            "description": "Coping in custody"
           },
           "hostelSetting": {
-            "$ref": "#/components/schemas/RiskDto_AllRisksView"
+            "$ref": "#/components/schemas/RiskDto_AllRisksView",
+            "description": "Coping in hostel setting"
           },
           "vulnerability": {
-            "$ref": "#/components/schemas/RiskDto_AllRisksView"
+            "$ref": "#/components/schemas/RiskDto_AllRisksView",
+            "description": "Vulnerability"
           }
         }
+      },
+      "RiskManagementPlanDto": {
+        "type": "object",
+        "properties": {
+          "assessmentId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "dateCompleted": {
+            "type": "object",
+            "example": "2026-01-16T16:22:54"
+          },
+          "partcompStatus": {
+            "type": "string"
+          },
+          "initiationDate": {
+            "type": "object",
+            "example": "2026-01-16T16:22:54"
+          },
+          "assessmentStatus": {
+            "type": "string"
+          },
+          "assessmentType": {
+            "type": "string"
+          },
+          "superStatus": {
+            "type": "string"
+          },
+          "keyInformationCurrentSituation": {
+            "type": "string"
+          },
+          "furtherConsiderationsCurrentSituation": {
+            "type": "string"
+          },
+          "supervision": {
+            "type": "string"
+          },
+          "monitoringAndControl": {
+            "type": "string"
+          },
+          "interventionsAndTreatment": {
+            "type": "string"
+          },
+          "victimSafetyPlanning": {
+            "type": "string"
+          },
+          "contingencyPlans": {
+            "type": "string"
+          },
+          "laterWIPAssessmentExists": {
+            "type": "boolean"
+          },
+          "latestWIPDate": {
+            "type": "object",
+            "example": "2026-01-16T16:22:54"
+          },
+          "laterSignLockAssessmentExists": {
+            "type": "boolean"
+          },
+          "latestSignLockDate": {
+            "type": "object",
+            "example": "2026-01-16T16:22:54"
+          },
+          "laterPartCompUnsignedAssessmentExists": {
+            "type": "boolean"
+          },
+          "latestPartCompUnsignedDate": {
+            "type": "object",
+            "example": "2026-01-16T16:22:54"
+          },
+          "laterPartCompSignedAssessmentExists": {
+            "type": "boolean"
+          },
+          "latestPartCompSignedDate": {
+            "type": "object",
+            "example": "2026-01-16T16:22:54"
+          },
+          "laterCompleteAssessmentExists": {
+            "type": "boolean"
+          },
+          "latestCompleteDate": {
+            "type": "object",
+            "example": "2026-01-16T16:22:54"
+          }
+        },
+        "required": [
+          "assessmentId",
+          "assessmentStatus",
+          "assessmentType"
+        ]
+      },
+      "RiskManagementPlansDto": {
+        "type": "object",
+        "properties": {
+          "crn": {
+            "type": "string"
+          },
+          "limitedAccessOffender": {
+            "type": "boolean"
+          },
+          "riskManagementPlan": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RiskManagementPlanDto"
+            }
+          }
+        },
+        "required": [
+          "crn",
+          "limitedAccessOffender",
+          "riskManagementPlan"
+        ]
       },
       "OgpScoreDto": {
         "type": "object",
@@ -638,7 +4899,13 @@
           },
           "ogpRisk": {
             "type": "string",
-            "enum": ["LOW", "MEDIUM", "HIGH", "VERY_HIGH", "NOT_APPLICABLE"]
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH",
+              "VERY_HIGH",
+              "NOT_APPLICABLE"
+            ]
           }
         }
       },
@@ -653,7 +4920,13 @@
           },
           "scoreLevel": {
             "type": "string",
-            "enum": ["LOW", "MEDIUM", "HIGH", "VERY_HIGH", "NOT_APPLICABLE"]
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH",
+              "VERY_HIGH",
+              "NOT_APPLICABLE"
+            ]
           }
         }
       },
@@ -668,11 +4941,49 @@
           },
           "ospIndecentScoreLevel": {
             "type": "string",
-            "enum": ["LOW", "MEDIUM", "HIGH", "VERY_HIGH", "NOT_APPLICABLE"]
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH",
+              "VERY_HIGH",
+              "NOT_APPLICABLE"
+            ]
           },
           "ospContactScoreLevel": {
             "type": "string",
-            "enum": ["LOW", "MEDIUM", "HIGH", "VERY_HIGH", "NOT_APPLICABLE"]
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH",
+              "VERY_HIGH",
+              "NOT_APPLICABLE"
+            ]
+          },
+          "ospIndirectImagePercentageScore": {
+            "type": "number"
+          },
+          "ospDirectContactPercentageScore": {
+            "type": "number"
+          },
+          "ospIndirectImageScoreLevel": {
+            "type": "string",
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH",
+              "VERY_HIGH",
+              "NOT_APPLICABLE"
+            ]
+          },
+          "ospDirectContactScoreLevel": {
+            "type": "string",
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH",
+              "VERY_HIGH",
+              "NOT_APPLICABLE"
+            ]
           }
         }
       },
@@ -696,7 +5007,13 @@
           },
           "ovpRisk": {
             "type": "string",
-            "enum": ["LOW", "MEDIUM", "HIGH", "VERY_HIGH", "NOT_APPLICABLE"]
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH",
+              "VERY_HIGH",
+              "NOT_APPLICABLE"
+            ]
           }
         }
       },
@@ -704,8 +5021,8 @@
         "type": "object",
         "properties": {
           "completedDate": {
-            "type": "string",
-            "example": "2023-10-04T07:06:43"
+            "type": "object",
+            "example": "2026-01-16T16:22:54"
           },
           "assessmentStatus": {
             "type": "string"
@@ -728,7 +5045,6 @@
         }
       },
       "RsrScoreDto": {
-        "required": ["source"],
         "type": "object",
         "properties": {
           "percentageScore": {
@@ -736,18 +5052,279 @@
           },
           "staticOrDynamic": {
             "type": "string",
-            "enum": ["STATIC", "DYNAMIC"]
+            "enum": [
+              "STATIC",
+              "DYNAMIC"
+            ]
           },
           "source": {
             "type": "string",
-            "enum": ["ASSESSMENTS_API", "OASYS", "DELIUS"]
+            "enum": [
+              "OASYS"
+            ]
           },
           "algorithmVersion": {
             "type": "string"
           },
           "scoreLevel": {
             "type": "string",
-            "enum": ["LOW", "MEDIUM", "HIGH", "VERY_HIGH", "NOT_APPLICABLE"]
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH",
+              "VERY_HIGH",
+              "NOT_APPLICABLE"
+            ]
+          }
+        },
+        "required": [
+          "source"
+        ]
+      },
+      "RoshRiskWidgetDto": {
+        "type": "object",
+        "properties": {
+          "overallRisk": {
+            "type": "string",
+            "description": "Overall ROSH risk score",
+            "example": "VERY_HIGH"
+          },
+          "assessedOn": {
+            "type": "object",
+            "description": "Assessed on",
+            "example": "2021-10-10"
+          },
+          "riskInCommunity": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Risk in the community",
+            "example": {
+              "Public": "HIGH",
+              "Children": "LOW",
+              "Known Adult": "MEDIUM",
+              "Staff": "VERY_HIGH"
+            }
+          },
+          "riskInCustody": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Risk in custody",
+            "example": {
+              "Public": "HIGH",
+              "Children": "LOW",
+              "Known Adult": "MEDIUM",
+              "Staff": "VERY_HIGH",
+              "Prisoners": "MEDIUM"
+            }
+          }
+        },
+        "required": [
+          "riskInCommunity",
+          "riskInCustody"
+        ]
+      },
+      "RiskRoshSummaryDto": {
+        "type": "object",
+        "properties": {
+          "whoIsAtRisk": {
+            "type": "string",
+            "description": "Who is at risk?",
+            "example": "X, Y and Z are at risk"
+          },
+          "natureOfRisk": {
+            "type": "string",
+            "description": "What is the nature of the risk?",
+            "example": "The nature of the risk is X"
+          },
+          "riskImminence": {
+            "type": "string",
+            "description": "When is the risk likely to be greatest. Consider the timescale and indicate whether risk is immediate or not. Consider the risks in custody as well as on release.",
+            "example": "the risk is imminent and more probably in X situation"
+          },
+          "riskIncreaseFactors": {
+            "type": "string",
+            "description": "What circumstances are likely to increase risk. Describe factors, actions, events which might increase level of risk, now and in the future.",
+            "example": "If offender in situation X the risk can be higher"
+          },
+          "riskMitigationFactors": {
+            "type": "string",
+            "description": "What factors are likely to reduce the risk. Describe factors, actions, and events which may reduce or contain the level of risk. What has previously stopped him / her?",
+            "example": "Giving offender therapy in X will reduce the risk"
+          },
+          "riskInCommunity": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "description": "Assess the risk of serious harm the offender poses in the community",
+            "example": {
+              "HIGH ": [
+                "Children",
+                "Public",
+                "Know adult"
+              ],
+              "MEDIUM": [
+                "Staff"
+              ],
+              "LOW": [
+                "Prisoners"
+              ]
+            }
+          },
+          "riskInCustody": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "description": "Assess the risk of serious harm the offender poses on the basis that they could be released imminently back into the community.Assess both the risk of serious harm the offender presents now, in custody, and the risk they could present to others whilst in a custodial setting.",
+            "example": {
+              "HIGH ": [
+                "Know adult"
+              ],
+              "VERY_HIGH": [
+                "Staff",
+                "Prisoners"
+              ],
+              "LOW": [
+                "Children",
+                "Public"
+              ]
+            }
+          },
+          "assessedOn": {
+            "type": "object",
+            "description": "The date and time that the assessment was completed",
+            "example": "2026-01-16T16:22:54"
+          },
+          "overallRiskLevel": {
+            "type": "string",
+            "description": "Overall Risk Level",
+            "enum": [
+              "VERY_HIGH",
+              "HIGH",
+              "MEDIUM",
+              "LOW"
+            ],
+            "example": "HIGH"
+          }
+        },
+        "required": [
+          "riskInCommunity",
+          "riskInCustody"
+        ]
+      },
+      "RsrPredictorDto": {
+        "type": "object",
+        "properties": {
+          "rsrPercentageScore": {
+            "type": "number"
+          },
+          "rsrScoreLevel": {
+            "type": "string",
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH",
+              "VERY_HIGH",
+              "NOT_APPLICABLE"
+            ]
+          },
+          "ospcPercentageScore": {
+            "type": "number"
+          },
+          "ospcScoreLevel": {
+            "type": "string",
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH",
+              "VERY_HIGH",
+              "NOT_APPLICABLE"
+            ]
+          },
+          "ospiPercentageScore": {
+            "type": "number"
+          },
+          "ospiScoreLevel": {
+            "type": "string",
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH",
+              "VERY_HIGH",
+              "NOT_APPLICABLE"
+            ]
+          },
+          "ospiiPercentageScore": {
+            "type": "number"
+          },
+          "ospdcPercentageScore": {
+            "type": "number"
+          },
+          "ospiiScoreLevel": {
+            "type": "string",
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH",
+              "VERY_HIGH",
+              "NOT_APPLICABLE"
+            ]
+          },
+          "ospdcScoreLevel": {
+            "type": "string",
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH",
+              "VERY_HIGH",
+              "NOT_APPLICABLE"
+            ]
+          },
+          "calculatedDate": {
+            "type": "object",
+            "example": "2026-01-16T16:22:54"
+          },
+          "completedDate": {
+            "type": "object",
+            "example": "2026-01-16T16:22:54"
+          },
+          "signedDate": {
+            "type": "object",
+            "example": "2026-01-16T16:22:54"
+          },
+          "staticOrDynamic": {
+            "type": "string",
+            "enum": [
+              "STATIC",
+              "DYNAMIC"
+            ]
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "OASYS"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "COMPLETE",
+              "LOCKED_INCOMPLETE"
+            ]
+          },
+          "algorithmVersion": {
+            "type": "string"
           }
         }
       },
@@ -764,11 +5341,6 @@
             "description": "The name of the section need",
             "example": "Drug misuse"
           },
-          "overThreshold": {
-            "type": "boolean",
-            "description": "Represents whether the weighted score of the section is over the threshold",
-            "example": true
-          },
           "riskOfHarm": {
             "type": "boolean",
             "description": "Whether the section answers indicate a risk of harm",
@@ -779,33 +5351,35 @@
             "description": "Whether the section answers indicate a risk of reoffending",
             "example": false
           },
-          "flaggedAsNeed": {
-            "type": "boolean",
-            "description": "Whether the section has been flagged as a low scoring need",
-            "example": true
-          },
           "severity": {
             "type": "string",
             "description": "The calculated severity of the need",
-            "example": "SEVERE",
-            "enum": ["NO_NEED", "STANDARD", "SEVERE"]
+            "enum": [
+              "NO_NEED",
+              "STANDARD",
+              "SEVERE"
+            ],
+            "example": "SEVERE"
           },
-          "identifiedAsNeed": {
-            "type": "boolean",
-            "description": "Whether the section questions indicate that this section is a need",
-            "example": true
-          },
-          "needScore": {
+          "score": {
             "type": "integer",
-            "description": "The weighted score for the section",
-            "format": "int64",
-            "example": 4
+            "format": "int32",
+            "description": "The score of the section",
+            "example": 3
+          },
+          "oasysThreshold": {
+            "$ref": "#/components/schemas/OasysThreshold",
+            "description": "The thresholds for standard and severe needs from OASys",
+            "example": 3
+          },
+          "tierThreshold": {
+            "$ref": "#/components/schemas/TierThreshold",
+            "description": "The thresholds for standard and severe needs for used for tier",
+            "example": 3
           }
-        },
-        "description": "Collection of assessment need sections which have not been answered"
+        }
       },
       "AssessmentNeedsDto": {
-        "required": ["assessedOn", "identifiedNeeds", "notIdentifiedNeeds", "unansweredNeeds"],
         "type": "object",
         "properties": {
           "identifiedNeeds": {
@@ -831,10 +5405,109 @@
           },
           "assessedOn": {
             "type": "object",
-            "example": "2023-10-04T07:06:43"
+            "description": "The date and time that the assessment needs were completed",
+            "example": "2026-01-16T16:22:54"
           }
-        }
-      }
-    }
-  }
-}
+        },
+        "required": [
+          "identifiedNeeds",
+          "notIdentifiedNeeds",
+          "unansweredNeeds"
+        ]
+      },
+      "BasicAssessmentSummary": {
+        "type": "object",
+        "properties": {
+          "assessmentId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "initiationDate": {
+            "type": "object",
+            "example": "2026-01-16T16:22:54"
+          },
+          "completedDate": {
+            "type": "object",
+            "example": "2026-01-16T16:22:54"
+          },
+          "assessmentType": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "assessmentId",
+          "assessmentType",
+          "status"
+        ]
+      },
+      "Timeline": {
+        "type": "object",
+        "properties": {
+          "timeline": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BasicAssessmentSummary"
+            }
+          }
+        },
+        "required": [
+          "timeline"
+        ]
+      },
+      "AssessmentDto": {
+        "type": "object",
+        "properties": {
+          "assessmentId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "assessmentType": {
+            "type": "string"
+          },
+          "partcompStatus": {
+            "type": "string"
+          },
+          "dateCompleted": {
+            "type": "object",
+            "example": "2026-01-16T16:22:54"
+          },
+          "initiationDate": {
+            "type": "object",
+            "example": "2026-01-16T16:22:54"
+          },
+          "assessorSignedDate": {
+            "type": "object",
+            "example": "2026-01-16T16:22:54"
+          },
+          "assessmentStatus": {
+            "type": "string"
+          },
+          "superStatus": {
+            "type": "string"
+          },
+          "offence": {
+            "type": "string"
+          },
+          "disinhibitors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "patternOfOffending": {
+            "type": "string"
+          },
+          "offenceInvolved": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "specificWeapon": {
+            "type": "string"
+          },
+          "victimPerpetratorRelationship": {
+            "type":"string"},"victimOtherInfo":{"type":"string"},"evidencedMotivations":{"type":"array","items":{"type":"string"}},"offenceDetails":{"type":"array","items":{"$ref":"#/components/schemas/OffenceDetailDto"}},"victimDetails":{"type":"array","items":{"$ref":"#/components/schemas/VictimDetailDto"}},"laterWIPAssessmentExists":{"type":"boolean"},"latestWIPDate":{"type":"object","example":"2026-01-16T16:22:54"},"laterSignLockAssessmentExists":{"type":"boolean"},"latestSignLockDate":{"type":"object","example":"2026-01-16T16:22:54"},"laterPartCompUnsignedAssessmentExists":{"type":"boolean"},"latestPartCompUnsignedDate":{"type":"object","example":"2026-01-16T16:22:54"},"laterPartCompSignedAssessmentExists":{"type":"boolean"},"latestPartCompSignedDate":{"type":"object","example":"2026-01-16T16:22:54"},"laterCompleteAssessmentExists":{"type":"boolean"},"latestCompleteDate":{"type":"object","example":"2026-01-16T16:22:54"}},"required":["assessmentId","assessmentStatus","assessmentType"]},"AssessmentOffenceDto":{"type":"object","properties":{"crn":{"type":"string"},"limitedAccessOffender":{"type":"boolean"},"assessments":{"type":"array","items":{"$ref":"#/components/schemas/AssessmentDto"}}},"required":["assessments","crn","limitedAccessOffender"]},"OffenceDetailDto":{"type":"object","properties":{"type":{"type":"string"},"offenceDate":{"type":"object","example":"2026-01-16T16:22:54"},"offenceCode":{"type":"string"},"offenceSubCode":{"type":"string"},"offence":{"type":"string"},"subOffence":{"type":"string"}}},"VictimDetailDto":{"type":"object","properties":{"age":{"type":"string"},"gender":{"type":"string"},"ethnicCategory":{"type":"string"},"victimRelation":{"type":"string"}}}},"securitySchemes":{"bearer-jwt":{"type":"http","name":"Authorization","in":"header","scheme":"bearer","bearerFormat":"JWT"}}}}
