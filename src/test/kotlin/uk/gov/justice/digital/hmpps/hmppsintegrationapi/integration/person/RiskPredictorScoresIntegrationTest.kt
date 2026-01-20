@@ -21,6 +21,7 @@ class RiskPredictorScoresIntegrationTest : IntegrationTestBase() {
   @BeforeEach
   fun setUp() {
     arnsMockServer.start()
+    arnsMockServer.resetValidator()
   }
 
   @AfterEach
@@ -39,6 +40,7 @@ class RiskPredictorScoresIntegrationTest : IntegrationTestBase() {
     callApi("$basePath/$deliusCrn/risks/scores")
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("person-risk-scores")))
+    arnsMockServer.assertValidationPassed()
   }
 
   @Test
@@ -52,5 +54,6 @@ class RiskPredictorScoresIntegrationTest : IntegrationTestBase() {
     callApi("$basePath/$deliusCrn/risks/scores")
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("person-risk-scores")))
+    arnsMockServer.assertValidationPassed()
   }
 }
