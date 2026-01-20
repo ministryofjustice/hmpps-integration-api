@@ -32,9 +32,6 @@ data class Role(
 val roleConstants =
   constants {
     allEndpoints {
-      // Provides access to all endpoints
-      -"/.*"
-      // Provides access to all events on queue
       -"/v1/activities/attendance-reasons"
       -"/v1/contacts/{contactId}"
       -"/v1/persons/{hmppsId}/addresses"
@@ -91,9 +88,9 @@ val roleConstants =
       -"/v1/activities/schedule/{scheduleId}/deallocate"
       -"/v1/prison/{prisonId}/{hmppsId}/scheduled-instances"
       -"/v1/activities/deallocation-reasons"
-      -"/v1/activities/schedule/scheduleId/allocate"
+      -"/v1/activities/schedule/{scheduleId}/allocate"
       -"/v1/prison/prisoners/{hmppsId}/activities/attendances"
-      -"/v1/activities/schedule/scheduleId/waiting-list-applications"
+      -"/v1/activities/schedule/{scheduleId}/waiting-list-applications"
       -"/v1/status"
       -"/v1/persons/{hmppsId}/education/san/plan-creation-schedule"
       -"/v1/persons/{hmppsId}/education/san/review-schedule"
@@ -113,6 +110,28 @@ val roleConstants =
       -"/v1/activities/{activityId}/schedules"
       -"/v1/activities/schedule/{scheduleId}"
       -"/v1/activities/schedule/{scheduleId}/suitability-criteria"
+      -"/v1/epf/person-details/{hmppsId}/{eventNumber}"
+      -"/v1/hmpps/id/nomis-number/{hmppsId}"
+      -"/v1/visit/{visitReference}/cancel"
+      -"/v1/prison/{prisonId}/location/{key}/deactivate"
+      -"/v1/prison/{prisonId}/activities"
+      -"/v1/prison/{prisonId}/appointments/search"
+      -"/v1/prison/{prisonId}/prisoners/{hmppsId}/scheduled-instances"
+      -"/v1/persons/{hmppsId}/education/assessments"
+      -"/v1/persons/{hmppsId}/education/assessments/status"
+      -"/v1/persons/{hmppsId}/expression-of-interest/jobs/{jobId}"
+      -"/v1/persons"
+      -"/v1/persons/{hmppsId}/needs"
+      -"/v1/persons/{hmppsId}/name"
+      -"/v1/persons/{hmppsId}/access-limitations"
+      -"/v1/persons/{hmppsId}/education"
+      -"/v1/hmpps/id/by-nomis-number/{nomisNumber}"
+      -"/v1/persons/{hmppsId}/plp-review-schedule/history"
+      -"/v1/persons/{hmppsId}/plp-induction-schedule/history"
+      -"/health"
+      -"/health/ping"
+      -"/health/readiness"
+      -"/info"
     }
   }
 
