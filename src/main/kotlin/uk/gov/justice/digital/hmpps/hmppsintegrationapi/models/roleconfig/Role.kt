@@ -131,7 +131,9 @@ val roleConstants =
       -"/health"
       -"/health/ping"
       -"/health/readiness"
+      -"/health/liveness"
       -"/info"
+      -"/v2/config/authorisation"
     }
   }
 
