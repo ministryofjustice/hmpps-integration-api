@@ -44,13 +44,13 @@ class GetCaseNotesForPersonServiceTest(
         Mockito.reset(getPersonService)
         Mockito.reset(caseNotesGateway)
 
-        whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(NomisNumber(nomisNumber)))
+        whenever(getPersonService.getNomisNumber(hmppsId, filters)).thenReturn(Response(NomisNumber(nomisNumber)))
         whenever(caseNotesGateway.getCaseNotesForPerson(id = nomisNumber, caseNoteFilter)).thenReturn(Response(oCNCaseNote))
       }
 
       it("performs a search according to hmpps Id") {
         getCaseNoteForPersonService.execute(caseNoteFilter, filters)
-        verify(getPersonService, times(1)).getNomisNumberWithPrisonFilter(hmppsId, filters)
+        verify(getPersonService, times(1)).getNomisNumber(hmppsId, filters)
       }
 
       it("should return case notes from gateway") {
@@ -76,7 +76,7 @@ class GetCaseNotesForPersonServiceTest(
               description = "Mock error from person service",
             ),
           )
-        whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getNomisNumber(hmppsId, filters)).thenReturn(
           Response(
             data = null,
             errors = errors,
@@ -88,7 +88,7 @@ class GetCaseNotesForPersonServiceTest(
       }
 
       it("return entity not found if getPersonService returns no nomis number") {
-        whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getNomisNumber(hmppsId, filters)).thenReturn(
           Response(
             data = NomisNumber(null),
           ),

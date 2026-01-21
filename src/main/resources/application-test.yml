@@ -94,6 +94,9 @@ feature-flag:
   epf-endpoint-includes-lao: false
   cpr-enabled: true
   enhanced-search-enabled: false
+  gateway-cache-enabled: true
+  normalised-path-matching: true
+  use-new-risk-score-api: false
 
 authorisation:
   consumers:
@@ -132,9 +135,15 @@ authorisation:
       filters:
         case-notes:
           - "CAB"
-    supervision-status-test:
+    supervision-status-prison-only:
       roles:
         - "all-endpoints"
       filters:
         supervisionStatuses:
           - PRISONS
+    supervision-status-probation-only:
+      roles:
+        - "all-endpoints"
+      filters:
+        supervisionStatuses:
+          - PROBATION

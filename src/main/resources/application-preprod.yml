@@ -61,6 +61,8 @@ feature-flag:
   epf-endpoint-includes-lao: false
   epf-gateway-disabled: true
   cpr-enabled: true
+  gateway-cache-enabled: false
+  use-new-risk-score-api: false
 
 authorisation:
   consumers:

@@ -86,3 +86,6 @@ feature-flag:
   use-contact-events-endpoint: true
   epf-endpoint-includes-lao: false
   cpr-enabled: true
+  gateway-cache-enabled: true
+  normalised-path-matching: true
+  use-new-risk-score-api: false

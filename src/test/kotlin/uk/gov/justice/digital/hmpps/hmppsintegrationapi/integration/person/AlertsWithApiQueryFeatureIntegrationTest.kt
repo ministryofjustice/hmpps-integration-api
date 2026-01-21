@@ -1,7 +1,9 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.whenever
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -10,6 +12,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationT
 
 class AlertsWithApiQueryFeatureIntegrationTest : IntegrationTestBase() {
   @MockitoBean lateinit var featureFlagConfig: FeatureFlagConfig
+
+  @BeforeEach
+  fun setUp() {
+    whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.NORMALISED_PATH_MATCHING)).thenReturn(true)
+  }
 
   @Nested
   inner class GetAlerts {

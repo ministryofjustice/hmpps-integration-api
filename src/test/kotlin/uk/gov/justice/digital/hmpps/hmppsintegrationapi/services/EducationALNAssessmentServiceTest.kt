@@ -39,7 +39,7 @@ class EducationALNAssessmentServiceTest {
   fun `sendEducationALNAssessmentUpdateEvent publishes event with valid nomis number`() {
     val personResponse = Response<NomisNumber?>(data = NomisNumber(nomisNumber), errors = emptyList())
 
-    whenever(getPersonService.getNomisNumber(eq(hmppsId))).thenReturn(personResponse)
+    whenever(getPersonService.getNomisNumber(eq(hmppsId), eq(null))).thenReturn(personResponse)
 
     val response = service.sendEducationALNUpdateEvent(hmppsId, request)
 
@@ -57,7 +57,7 @@ class EducationALNAssessmentServiceTest {
 
   @Test
   fun `sendEducationUpdateEvent throws ValidationException when nomis number is null`() {
-    whenever(getPersonService.getNomisNumber(eq(hmppsId))).thenReturn(Response(data = null, errors = emptyList()))
+    whenever(getPersonService.getNomisNumber(eq(hmppsId), eq(null))).thenReturn(Response(data = null, errors = emptyList()))
 
     val exception =
       assertThrows<ValidationException> {

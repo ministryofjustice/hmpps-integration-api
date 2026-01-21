@@ -57,6 +57,7 @@ class RiskManagementControllerTest(
         every { roles["full-access"] } returns testRoleWithLaoRedactions
         Mockito.reset(getRiskManagementService)
         Mockito.reset(auditService)
+        whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.NORMALISED_PATH_MATCHING)).thenReturn(true)
         whenever(getCaseAccess.getAccessFor(any())).thenReturn(CaseAccess(laoOkCrn, false, false, "", ""))
         whenever(getCaseAccess.getAccessFor("R754321")).thenReturn(null)
         whenever(getRiskManagementService.execute(any())).thenReturn(
@@ -143,7 +144,7 @@ class RiskManagementControllerTest(
       }
 
       it("Gets a 404 error if provided ID has no risk management plan") {
-        val badHmppsId = "Not a real CRN"
+        val badHmppsId = "Not-a-real-CRN"
         whenever(getRiskManagementService.execute(badHmppsId)).thenReturn(
           Response(
             null,

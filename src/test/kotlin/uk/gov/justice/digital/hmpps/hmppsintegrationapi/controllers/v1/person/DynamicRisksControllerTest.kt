@@ -65,6 +65,7 @@ internal class DynamicRisksControllerTest(
           Mockito.reset(getDynamicRisksForPersonService)
           Mockito.reset(auditService)
           Mockito.reset(telemetryService)
+          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.NORMALISED_PATH_MATCHING)).thenReturn(true)
           whenever(getCaseAccess.getAccessFor(any())).thenReturn(CaseAccess(laoOkCrn, false, false, "", ""))
           whenever(getCaseAccess.getAccessFor("R754321")).thenReturn(null)
           whenever(getDynamicRisksForPersonService.execute(hmppsId)).thenReturn(

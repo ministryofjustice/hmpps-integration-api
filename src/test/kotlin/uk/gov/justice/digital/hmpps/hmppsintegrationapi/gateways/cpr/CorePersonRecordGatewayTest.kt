@@ -29,6 +29,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.CorePersonRec
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService.IdentifierType
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.TestConstants.DEFAULT_CRN
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -42,7 +43,7 @@ class CorePersonRecordGatewayTest(
     {
       val cprMockServer = ApiMockServer.Companion.create(UpstreamApi.CORE_PERSON_RECORD)
       val objectMapper = jacksonObjectMapper()
-      val crn = "AB123123"
+      val crn = DEFAULT_CRN
       val nomsId = "G2996UX"
 
       beforeEach {

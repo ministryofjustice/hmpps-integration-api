@@ -25,4 +25,5 @@ enum class UpstreamApi {
   ACTIVITIES,
   SAN,
   CORE_PERSON_RECORD,
+  ARNS_INTEGRATION_TEST,
 }

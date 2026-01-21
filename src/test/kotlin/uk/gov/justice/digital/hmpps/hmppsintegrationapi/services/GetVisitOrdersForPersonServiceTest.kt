@@ -39,7 +39,7 @@ class GetVisitOrdersForPersonServiceTest(
         "Invalid Hmpps Id format: $hmppsId"
       }
 
-      whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+      whenever(getPersonService.getNomisNumber(hmppsId = hmppsId, filters)).thenReturn(
         Response(data = NomisNumber(nomisNumber = nomisNumber)),
       )
 
@@ -51,8 +51,8 @@ class GetVisitOrdersForPersonServiceTest(
       response.data shouldBe (exampleVisitOrders)
     }
 
-    it("returns an error when getNomisNumberWithPrisonFilter returns an error") {
-      whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+    it("returns an error when getNomisNumber returns an error") {
+      whenever(getPersonService.getNomisNumber(hmppsId = hmppsId, filters)).thenReturn(
         Response(
           data = null,
           errors =
@@ -74,7 +74,7 @@ class GetVisitOrdersForPersonServiceTest(
     }
 
     it("records 404 when Nomis number is null") {
-      whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+      whenever(getPersonService.getNomisNumber(hmppsId = hmppsId, filters)).thenReturn(
         Response(
           data = NomisNumber(nomisNumber = null),
         ),
