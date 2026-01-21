@@ -25,6 +25,7 @@ data class RiskPredictorScore(
   val riskOfSeriousRecidivism: RiskOfSeriousRecidivism = RiskOfSeriousRecidivism(),
   val sexualPredictor: SexualPredictor = SexualPredictor(),
   // Version 2
+  val assessmentVersion: String? = null,
   val allReoffendingPredictor: RiskScoreV2? = null,
   val violentReoffendingPredictor: RiskScoreV2? = null,
   val seriousViolentReoffendingPredictor: RiskScoreV2? = null,
