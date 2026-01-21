@@ -25,11 +25,23 @@ data class ArnRiskPredictorScore(
 }
 
 data class ArnOutput(
+  // Version 1
   val generalPredictorScore: ArnGeneralPredictorScore = ArnGeneralPredictorScore(),
   val violencePredictorScore: ArnViolencePredictorScore = ArnViolencePredictorScore(),
   val groupReconvictionScore: ArnGroupReconvictionScore = ArnGroupReconvictionScore(),
   val riskOfSeriousRecidivismScore: ArnRiskOfSeriousRecidivismScore = ArnRiskOfSeriousRecidivismScore(),
   val sexualPredictorScore: ArnSexualPredictorScore = ArnSexualPredictorScore(),
+  // Version 2
+  val allReoffendingPredictor: ArnScore = ArnScore(),
+  val violentReoffendingPredictor: ArnScore = ArnScore(),
+  val seriousViolentReoffendingPredictor: ArnScore = ArnScore(),
+  val directContactSexualReoffendingPredictor: ArnScore = ArnScore(),
+  val indirectImageContactSexualReoffendingPredictor: ArnScore = ArnScore(),
+  val combinedSeriousReoffendingPredictor: ArnScore = ArnScore(),
+)
+
+data class ArnScore(
+  val band: String? = null,
 )
 
 data class ArnRiskPredictorScoreV2(
@@ -51,7 +63,7 @@ data class ArnRiskPredictorScoreV2(
         sexualPredictor = this.output.sexualPredictorScore.toSexualPredictor(),
       )
     } else {
-      // TODO: To be implemented in HIA-1176
+      // TODO: To be implemented in HIA-1177
       throw RuntimeException("Version not supported: $outputVersion")
     }
   }
