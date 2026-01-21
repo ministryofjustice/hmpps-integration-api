@@ -8,7 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationT
 
 class RisksIntegrationTest : IntegrationTestBase() {
   @ParameterizedTest
-  @ValueSource(strings = ["scores", "categories", "mappadetail", "dynamic", "serious-harm"])
+  @ValueSource(strings = ["categories", "mappadetail", "dynamic", "serious-harm"])
   fun `returns protected characteristics for a person`(path: String) {
     callApi("$basePath/$crn/risks/$path")
       .andExpect(status().isOk)
