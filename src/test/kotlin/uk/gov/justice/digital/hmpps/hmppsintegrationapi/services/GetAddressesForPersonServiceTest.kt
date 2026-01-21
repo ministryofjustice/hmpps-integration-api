@@ -16,6 +16,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.SupervisionStatus
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -92,7 +94,45 @@ internal class GetAddressesForPersonServiceTest(
         result.errors.shouldBe(errors)
       }
 
-      it("Nomis number, Delius success, Nomis success → Merge responses ") {
+      it("No supervision status filter, Nomis number, Delius success, Nomis success → Merge responses") {
+        whenever(personService.getNomisNumber(hmppsId, filters)).thenReturn(Response(NomisNumber(nomisNumber)))
+        whenever(deliusGateway.getAddressesForPerson(hmppsId)).thenReturn(Response(data = listOf(deliusAddress)))
+        whenever(prisonApiGateway.getAddressesForPerson(nomisNumber)).thenReturn(Response(data = listOf(nomisAddress)))
+
+        val result = getAddressesForPersonService.execute(hmppsId, filters)
+        result.errors.shouldBeEmpty()
+        result.data.shouldBe(listOf(nomisAddress, deliusAddress))
+      }
+
+      it("filter contains only a PROBATION SupervisionStatus - only return Delius response") {
+
+        val filters = ConsumerFilters(supervisionStatuses = listOf(SupervisionStatus.PROBATION.name))
+
+        whenever(personService.getNomisNumber(hmppsId, filters)).thenReturn(Response(NomisNumber(nomisNumber)))
+        whenever(deliusGateway.getAddressesForPerson(hmppsId)).thenReturn(Response(data = listOf(deliusAddress)))
+        whenever(prisonApiGateway.getAddressesForPerson(nomisNumber)).thenReturn(Response(data = listOf(nomisAddress)))
+
+        val result = getAddressesForPersonService.execute(hmppsId, filters)
+        result.errors.shouldBeEmpty()
+        result.data.shouldBe(listOf(deliusAddress))
+      }
+
+      it("filter contains only a PRISON SupervisionStatus - only return Prison response") {
+
+        val filters = ConsumerFilters(supervisionStatuses = listOf(SupervisionStatus.PRISONS.name))
+
+        whenever(personService.getNomisNumber(hmppsId, filters)).thenReturn(Response(NomisNumber(nomisNumber)))
+        whenever(deliusGateway.getAddressesForPerson(hmppsId)).thenReturn(Response(data = listOf(deliusAddress)))
+        whenever(prisonApiGateway.getAddressesForPerson(nomisNumber)).thenReturn(Response(data = listOf(nomisAddress)))
+
+        val result = getAddressesForPersonService.execute(hmppsId, filters)
+        result.errors.shouldBeEmpty()
+        result.data.shouldBe(listOf(nomisAddress))
+      }
+
+      it("filter contains both a PRISON and PROBATION SupervisionStatus - only return Prison response") {
+
+        val filters = ConsumerFilters(supervisionStatuses = listOf(SupervisionStatus.PROBATION.name, SupervisionStatus.PRISONS.name))
         whenever(personService.getNomisNumber(hmppsId, filters)).thenReturn(Response(NomisNumber(nomisNumber)))
         whenever(deliusGateway.getAddressesForPerson(hmppsId)).thenReturn(Response(data = listOf(deliusAddress)))
         whenever(prisonApiGateway.getAddressesForPerson(nomisNumber)).thenReturn(Response(data = listOf(nomisAddress)))

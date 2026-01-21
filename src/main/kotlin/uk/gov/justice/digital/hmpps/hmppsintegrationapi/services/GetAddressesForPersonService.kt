@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
@@ -15,16 +16,37 @@ class GetAddressesForPersonService(
   @Autowired val getPersonService: GetPersonService,
   private val deliusGateway: NDeliusGateway,
 ) {
+  private fun getNomisNumberIfHasAccess(
+    hmppsId: String,
+    filters: ConsumerFilters?,
+  ): Response<NomisNumber?> {
+    if (filters?.hasSupervisionStatusesFilter() == true && !filters.hasPrisons()) {
+      return Response(null, errors = emptyList())
+    }
+    return getPersonService.getNomisNumber(hmppsId = hmppsId, filters)
+  }
+
+  private fun getProbationAddressesIfHasAccess(
+    hmppsId: String,
+    filters: ConsumerFilters?,
+  ): Response<List<Address>> {
+    if (filters?.hasSupervisionStatusesFilter() == true && !filters.hasProbation()) {
+      return Response(emptyList(), errors = emptyList())
+    }
+    return deliusGateway.getAddressesForPerson(hmppsId)
+  }
+
   fun execute(
     hmppsId: String,
     filters: ConsumerFilters?,
   ): Response<List<Address>> {
-    val personResponse = getPersonService.getNomisNumber(hmppsId = hmppsId, filters)
+    val personResponse = getNomisNumberIfHasAccess(hmppsId, filters)
+
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = emptyList(), errors = personResponse.errors)
     }
 
-    val addressesFromDelius = deliusGateway.getAddressesForPerson(hmppsId)
+    val addressesFromDelius = getProbationAddressesIfHasAccess(hmppsId, filters)
 
     if (hasErrorOtherThanEntityNotFound(addressesFromDelius)) {
       return Response(data = emptyList(), errors = addressesFromDelius.errors)
