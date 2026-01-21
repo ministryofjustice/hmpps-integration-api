@@ -279,11 +279,9 @@ class GetPersonService(
   }
 
   private fun getPersonSupervisionStatus(nomisId: String): String {
-    val inPrisonStatuses = listOf("ACTIVE IN", "ACTIVE OUT")
-
     val status = getPersonFromPrisonerOffenderSearch(nomisId)?.status ?: return "UNKNOWN"
 
-    if (inPrisonStatuses.contains(status)) {
+    if (status.startsWith("ACTIVE")) {
       return "PRISONS"
     }
     val probationData = getPersonFromDelius(nomisId, true)
