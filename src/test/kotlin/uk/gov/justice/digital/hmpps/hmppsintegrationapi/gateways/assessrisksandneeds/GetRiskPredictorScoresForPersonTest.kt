@@ -230,5 +230,32 @@ class GetRiskPredictorScoresForPersonTest(
 
         response.hasError(UpstreamApiError.Type.FORBIDDEN).shouldBeTrue()
       }
+
+      it("returns an empty list when no risk predictor scores are found with new risk score api is enabled") {
+        assessRisksAndNeedsApiMockServer.stubForGet(pathNewV1, "[]")
+        whenever(featureFlag.isEnabled(USE_NEW_RISK_SCORE_API)).thenReturn(true)
+
+        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrnNewV1)
+
+        response.data.shouldBe(emptyList())
+      }
+
+      it("returns a 404 NOT FOUND status code when no person is found with new risk score api is enabled") {
+        assessRisksAndNeedsApiMockServer.stubForGet(pathNewV1, "", HttpStatus.NOT_FOUND)
+        whenever(featureFlag.isEnabled(USE_NEW_RISK_SCORE_API)).thenReturn(true)
+
+        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrnNewV1)
+
+        response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
+      }
+
+      it("returns a 403 FORBIDDEN status code when forbidden with new risk score api is enabled") {
+        assessRisksAndNeedsApiMockServer.stubForGet(pathNewV1, "", HttpStatus.FORBIDDEN)
+        whenever(featureFlag.isEnabled(USE_NEW_RISK_SCORE_API)).thenReturn(true)
+
+        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrnNewV1)
+
+        response.hasError(UpstreamApiError.Type.FORBIDDEN).shouldBeTrue()
+      }
     },
   )
