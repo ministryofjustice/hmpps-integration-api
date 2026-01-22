@@ -2,22 +2,22 @@
   "data": [
       {
         "completedDate": "2026-01-16T16:22:54",
-        "assessmentStatus": "string",
+        "assessmentStatus": "COMPLETE",
         "generalPredictor": {
             "scoreLevel": "LOW"
         },
         "violencePredictor": {
-            "scoreLevel": "LOW"
+            "scoreLevel": "MEDIUM"
         },
         "groupReconviction": {
-            "scoreLevel": "LOW"
+            "scoreLevel": "HIGH"
         },
         "riskOfSeriousRecidivism": {
             "scoreLevel": "LOW"
         },
         "sexualPredictor": {
             "indecentScoreLevel": "LOW",
-            "contactScoreLevel": "LOW"
+            "contactScoreLevel": "MEDIUM"
         }
       }
   ],

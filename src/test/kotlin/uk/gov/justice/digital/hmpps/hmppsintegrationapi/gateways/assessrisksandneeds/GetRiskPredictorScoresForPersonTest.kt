@@ -23,6 +23,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.GeneralPred
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.GroupReconviction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskOfSeriousRecidivism
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskPredictorScore
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskScoreV2
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SexualPredictor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -193,19 +194,42 @@ class GetRiskPredictorScoresForPersonTest(
               riskOfSeriousRecidivism = RiskOfSeriousRecidivism(scoreLevel = "VERY_HIGH"),
               sexualPredictor = SexualPredictor(indecentScoreLevel = "HIGH", contactScoreLevel = "VERY_HIGH"),
               assessmentVersion = 1,
+              allReoffendingPredictor = null,
+              violentReoffendingPredictor = null,
+              seriousViolentReoffendingPredictor = null,
+              directContactSexualReoffendingPredictor = null,
+              indirectImageContactSexualReoffendingPredictor = null,
+              combinedSeriousReoffendingPredictor = null,
             ),
           ),
         )
       }
 
-      it("returns error for the matching CRN with new risk score api is enabled version 2") {
+      it("returns risk predictor scores for the matching CRN with new risk score api is enabled version 2") {
         whenever(featureFlag.isEnabled(USE_NEW_RISK_SCORE_API)).thenReturn(true)
 
-        val exception =
-          assertThrows<RuntimeException> {
-            assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrnNewV2)
-          }
-        exception.message.shouldBe("Version not implement: 2")
+        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrnNewV2)
+
+        response.data.shouldBe(
+          listOf(
+            RiskPredictorScore(
+              completedDate = LocalDateTime.parse("2025-10-23T03:02:59"),
+              assessmentStatus = "COMPLETE",
+              assessmentVersion = 2,
+              allReoffendingPredictor = RiskScoreV2(band = "LOW"),
+              violentReoffendingPredictor = RiskScoreV2(band = "MEDIUM"),
+              seriousViolentReoffendingPredictor = RiskScoreV2(band = "HIGH"),
+              directContactSexualReoffendingPredictor = RiskScoreV2(band = "LOW"),
+              indirectImageContactSexualReoffendingPredictor = RiskScoreV2(band = "LOW"),
+              combinedSeriousReoffendingPredictor = RiskScoreV2(band = "LOW"),
+              groupReconviction = null,
+              generalPredictor = null,
+              violencePredictor = null,
+              riskOfSeriousRecidivism = null,
+              sexualPredictor = null,
+            ),
+          ),
+        )
       }
 
       it("returns error for the matching CRN with new risk score api is enabled for unknown version number") {

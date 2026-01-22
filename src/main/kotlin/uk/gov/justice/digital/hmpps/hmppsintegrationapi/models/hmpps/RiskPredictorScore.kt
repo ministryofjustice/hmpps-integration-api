@@ -21,11 +21,11 @@ data class RiskPredictorScore(
   @Schema(description = "Number representing the assessment version", example = "1")
   val assessmentVersion: Int? = null,
   // Version 1
-  val generalPredictor: GeneralPredictor = GeneralPredictor(),
-  val violencePredictor: ViolencePredictor = ViolencePredictor(),
-  val groupReconviction: GroupReconviction = GroupReconviction(),
-  val riskOfSeriousRecidivism: RiskOfSeriousRecidivism = RiskOfSeriousRecidivism(),
-  val sexualPredictor: SexualPredictor = SexualPredictor(),
+  val generalPredictor: GeneralPredictor? = null,
+  val violencePredictor: ViolencePredictor? = null,
+  val groupReconviction: GroupReconviction? = null,
+  val riskOfSeriousRecidivism: RiskOfSeriousRecidivism? = null,
+  val sexualPredictor: SexualPredictor? = null,
   // Version 2
   val allReoffendingPredictor: RiskScoreV2? = null,
   val violentReoffendingPredictor: RiskScoreV2? = null,

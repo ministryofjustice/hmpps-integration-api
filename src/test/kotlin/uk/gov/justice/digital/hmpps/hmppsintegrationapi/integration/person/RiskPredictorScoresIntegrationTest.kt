@@ -39,7 +39,7 @@ class RiskPredictorScoresIntegrationTest : IntegrationTestBase() {
 
     callApi("$basePath/$deliusCrn/risks/scores")
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("person-risk-scores")))
+      .andExpect(content().json(getExpectedResponse("person-risk-scores.json")))
     arnsMockServer.assertValidationPassed()
   }
 
@@ -53,7 +53,35 @@ class RiskPredictorScoresIntegrationTest : IntegrationTestBase() {
 
     callApi("$basePath/$deliusCrn/risks/scores")
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("person-risk-scores")))
+      .andExpect(content().json(getExpectedResponse("person-risk-scores-v1.json")))
+    arnsMockServer.assertValidationPassed()
+  }
+
+  @Test
+  fun `risk scores endpoint returns OK when new endpoint is enabled and uses new endpoint with version 2`() {
+    whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.USE_NEW_RISK_SCORE_API)).thenReturn(true)
+    arnsMockServer.stubForGet(
+      "/risks/predictors/unsafe/all/CRN/$deliusCrn",
+      getExpectedResponse("arns-risk-predictor-scores-new-v2-only.json"),
+    )
+
+    callApi("$basePath/$deliusCrn/risks/scores")
+      .andExpect(status().isOk)
+      .andExpect(content().json(getExpectedResponse("person-risk-scores-v2.json")))
+    arnsMockServer.assertValidationPassed()
+  }
+
+  @Test
+  fun `risk scores endpoint returns OK when new endpoint is enabled and uses new endpoint with version 1 and version 2`() {
+    whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.USE_NEW_RISK_SCORE_API)).thenReturn(true)
+    arnsMockServer.stubForGet(
+      "/risks/predictors/unsafe/all/CRN/$deliusCrn",
+      getExpectedResponse("arns-risk-predictor-scores-new-v1-and-v2.json"),
+    )
+
+    callApi("$basePath/$deliusCrn/risks/scores")
+      .andExpect(status().isOk)
+      .andExpect(content().json(getExpectedResponse("person-risk-scores-v1-and-v2.json")))
     arnsMockServer.assertValidationPassed()
   }
 }
