@@ -44,9 +44,11 @@ class GetRiskPredictorScoresForPersonTest(
       val deliusCrn = "X777776"
       val deliusCrnNewV1 = "X777777"
       val deliusCrnNewV2 = "X777778"
+      val deliusCrnNewV1AndV2 = "X777779"
       val path = "/risks/predictors/$deliusCrn"
       val pathNewV1 = "/risks/predictors/unsafe/all/CRN/$deliusCrnNewV1"
       val pathNewV2 = "/risks/predictors/unsafe/all/CRN/$deliusCrnNewV2"
+      var pathNewV1AndV2 = "/risks/predictors/unsafe/all/CRN/$deliusCrnNewV1AndV2"
       val assessRisksAndNeedsApiMockServer = ApiMockServer.create(UpstreamApi.ASSESS_RISKS_AND_NEEDS)
 
       beforeEach {
@@ -147,6 +149,64 @@ class GetRiskPredictorScoresForPersonTest(
           """,
         )
 
+        assessRisksAndNeedsApiMockServer.stubForGet(
+          pathNewV1AndV2,
+          """
+            [
+            {
+                "completedDate": "2025-10-23T03:02:59",
+                "source": "OASYS",
+                "status": "COMPLETE",
+                "outputVersion": "1",
+                "output": {
+                  "groupReconvictionScore": {
+                        "scoreLevel": "HIGH"
+                    },
+                  "generalPredictorScore": {
+                        "ogpRisk": "LOW"
+                    },
+                  "violencePredictorScore": {
+                        "ovpRisk": "MEDIUM"
+                    },
+                  "riskOfSeriousRecidivismScore": {
+                        "scoreLevel": "VERY_HIGH"
+                    },
+                  "sexualPredictorScore": {
+                        "ospIndecentScoreLevel": "HIGH",
+                        "ospContactScoreLevel": "VERY_HIGH"
+                    }
+                }
+              },
+              {
+                "completedDate": "2025-10-23T03:02:59",
+                "source": "OASYS",
+                "status": "COMPLETE",
+                "outputVersion": "2",
+                "output": {
+                  "allReoffendingPredictor": {
+                    "band": "LOW"
+                  },
+                  "violentReoffendingPredictor": {
+                    "band": "MEDIUM"
+                  },
+                  "seriousViolentReoffendingPredictor": {
+                    "band": "HIGH"
+                  },
+                  "directContactSexualReoffendingPredictor": {
+                    "band": "LOW"
+                  },
+                  "indirectImageContactSexualReoffendingPredictor": {
+                    "band": "LOW"
+                  },
+                  "combinedSeriousReoffendingPredictor": {
+                    "band": "LOW"
+                  }
+                }
+              }
+            ]
+          """,
+        )
+
         Mockito.reset(hmppsAuthGateway)
         whenever(hmppsAuthGateway.getClientToken("ASSESS_RISKS_AND_NEEDS")).thenReturn(HmppsAuthMockServer.TOKEN)
       }
@@ -212,6 +272,49 @@ class GetRiskPredictorScoresForPersonTest(
 
         response.data.shouldBe(
           listOf(
+            RiskPredictorScore(
+              completedDate = LocalDateTime.parse("2025-10-23T03:02:59"),
+              assessmentStatus = "COMPLETE",
+              assessmentVersion = 2,
+              allReoffendingPredictor = RiskScoreV2(band = "LOW"),
+              violentReoffendingPredictor = RiskScoreV2(band = "MEDIUM"),
+              seriousViolentReoffendingPredictor = RiskScoreV2(band = "HIGH"),
+              directContactSexualReoffendingPredictor = RiskScoreV2(band = "LOW"),
+              indirectImageContactSexualReoffendingPredictor = RiskScoreV2(band = "LOW"),
+              combinedSeriousReoffendingPredictor = RiskScoreV2(band = "LOW"),
+              groupReconviction = null,
+              generalPredictor = null,
+              violencePredictor = null,
+              riskOfSeriousRecidivism = null,
+              sexualPredictor = null,
+            ),
+          ),
+        )
+      }
+
+      it("returns risk predictor scores for the matching CRN with new risk score api is enabled version 1 and version 2") {
+        whenever(featureFlag.isEnabled(USE_NEW_RISK_SCORE_API)).thenReturn(true)
+
+        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrnNewV1AndV2)
+
+        response.data.shouldBe(
+          listOf(
+            RiskPredictorScore(
+              completedDate = LocalDateTime.parse("2025-10-23T03:02:59"),
+              assessmentStatus = "COMPLETE",
+              groupReconviction = GroupReconviction(scoreLevel = "HIGH"),
+              generalPredictor = GeneralPredictor(scoreLevel = "LOW"),
+              violencePredictor = ViolencePredictor(scoreLevel = "MEDIUM"),
+              riskOfSeriousRecidivism = RiskOfSeriousRecidivism(scoreLevel = "VERY_HIGH"),
+              sexualPredictor = SexualPredictor(indecentScoreLevel = "HIGH", contactScoreLevel = "VERY_HIGH"),
+              assessmentVersion = 1,
+              allReoffendingPredictor = null,
+              violentReoffendingPredictor = null,
+              seriousViolentReoffendingPredictor = null,
+              directContactSexualReoffendingPredictor = null,
+              indirectImageContactSexualReoffendingPredictor = null,
+              combinedSeriousReoffendingPredictor = null,
+            ),
             RiskPredictorScore(
               completedDate = LocalDateTime.parse("2025-10-23T03:02:59"),
               assessmentStatus = "COMPLETE",
