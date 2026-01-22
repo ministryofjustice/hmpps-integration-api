@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
@@ -43,7 +44,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 import java.time.LocalDateTime
 
 @WebMvcTest(controllers = [VisitsController::class])
-@Import(WebMvcTestConfiguration::class)
+@Import(WebMvcTestConfiguration::class, FeatureFlagConfig::class)
 @ActiveProfiles("test")
 class VisitsControllerTest(
   @Autowired var springMockMvc: MockMvc,
@@ -51,6 +52,7 @@ class VisitsControllerTest(
   @MockitoBean val getVisitInformationByReferenceService: GetVisitInformationByReferenceService,
   @MockitoBean val visitQueueService: VisitQueueService,
   @MockitoBean val getVisitReferencesByClientReferenceService: GetVisitReferencesByClientReferenceService,
+  @Autowired val featureFlagConfig: FeatureFlagConfig,
 ) : DescribeSpec(
     {
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)

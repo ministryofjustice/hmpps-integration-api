@@ -76,6 +76,7 @@ internal class StatusInformationControllerTest(
                 ),
             ),
           )
+          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.NORMALISED_PATH_MATCHING)).thenReturn(true)
         }
 
         afterTest {

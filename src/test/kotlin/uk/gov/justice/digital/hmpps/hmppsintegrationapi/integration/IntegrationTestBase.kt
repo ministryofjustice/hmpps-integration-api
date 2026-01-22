@@ -78,6 +78,7 @@ abstract class IntegrationTestBase {
     val nDeliusMockServer = ApiMockServer.create(UpstreamApi.NDELIUS_INTEGRATION_TEST)
     val prisonerBaseLocationMockServer = ApiMockServer.create(UpstreamApi.PRISONER_BASE_LOCATION)
     val corePersonRecordGateway = ApiMockServer.create(UpstreamApi.CORE_PERSON_RECORD)
+    val arnsMockServer = ApiMockServer.create(UpstreamApi.ARNS_INTEGRATION_TEST)
 
     @BeforeAll
     @JvmStatic

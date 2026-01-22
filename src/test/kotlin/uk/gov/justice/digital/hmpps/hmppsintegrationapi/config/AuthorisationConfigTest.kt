@@ -23,11 +23,6 @@ class AuthorisationConfigTest : ConfigTest() {
   }
 
   @Test
-  fun `has permission to generic path`() {
-    assertTrue(getAuthConfig("dev").hasAccess("smoke-test-full-access", "/v1/persons/{hmppsId}"))
-  }
-
-  @Test
   fun `has permission to specific path`() {
     assertTrue(getAuthConfig("dev").hasAccess("smoke-test-full-access", "/v1/persons/ABC123"))
   }
