@@ -205,7 +205,32 @@ class GetRiskPredictorScoresForPersonTest(
           assertThrows<RuntimeException> {
             assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrnNewV2)
           }
-        exception.message.shouldBe("Version not supported: 2")
+        exception.message.shouldBe("Version not implement: 2")
+      }
+
+      it("returns error for the matching CRN with new risk score api is enabled for unknown version number") {
+        assessRisksAndNeedsApiMockServer.stubForGet(
+          pathNewV2,
+          """
+            [
+              {
+                "completedDate": "2025-10-23T03:02:59",
+                "source": "OASYS",
+                "status": "COMPLETE",
+                "outputVersion": "3",
+                "output": {
+                }
+              }
+            ]
+          """,
+        )
+        whenever(featureFlag.isEnabled(USE_NEW_RISK_SCORE_API)).thenReturn(true)
+
+        val exception =
+          assertThrows<RuntimeException> {
+            assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrnNewV2)
+          }
+        exception.message.shouldBe("Version not supported: 3")
       }
 
       it("returns an empty list when no risk predictor scores are found") {
