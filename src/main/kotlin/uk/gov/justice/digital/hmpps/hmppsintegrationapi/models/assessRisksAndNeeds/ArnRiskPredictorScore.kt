@@ -25,34 +25,64 @@ data class ArnRiskPredictorScore(
 }
 
 data class ArnOutput(
+  // Version 1
   val generalPredictorScore: ArnGeneralPredictorScore = ArnGeneralPredictorScore(),
   val violencePredictorScore: ArnViolencePredictorScore = ArnViolencePredictorScore(),
   val groupReconvictionScore: ArnGroupReconvictionScore = ArnGroupReconvictionScore(),
   val riskOfSeriousRecidivismScore: ArnRiskOfSeriousRecidivismScore = ArnRiskOfSeriousRecidivismScore(),
   val sexualPredictorScore: ArnSexualPredictorScore = ArnSexualPredictorScore(),
+  // Version 2
+  val allReoffendingPredictor: ArnScore = ArnScore(),
+  val violentReoffendingPredictor: ArnScore = ArnScore(),
+  val seriousViolentReoffendingPredictor: ArnScore = ArnScore(),
+  val directContactSexualReoffendingPredictor: ArnScore = ArnScore(),
+  val indirectImageContactSexualReoffendingPredictor: ArnScore = ArnScore(),
+  val combinedSeriousReoffendingPredictor: ArnScore = ArnScore(),
+)
+
+data class ArnScore(
+  val band: String? = null,
 )
 
 data class ArnRiskPredictorScoreV2(
   val completedDate: String? = null,
   val status: String? = null,
   val source: String? = null,
-  val outputVersion: String? = null,
+  val outputVersion: String,
   val output: ArnOutput,
 ) {
   fun toRiskPredictorScore(): RiskPredictorScore {
-    if (outputVersion == "1") {
-      return RiskPredictorScore(
-        completedDate = if (!this.completedDate.isNullOrEmpty()) LocalDateTime.parse(this.completedDate) else null,
-        assessmentStatus = this.status,
-        generalPredictor = this.output.generalPredictorScore.toGeneralPredictor(),
-        violencePredictor = this.output.violencePredictorScore.toViolencePredictor(),
-        groupReconviction = this.output.groupReconvictionScore.toGroupReconviction(),
-        riskOfSeriousRecidivism = this.output.riskOfSeriousRecidivismScore.toRiskOfSeriousRecidivism(),
-        sexualPredictor = this.output.sexualPredictorScore.toSexualPredictor(),
-      )
-    } else {
-      // TODO: To be implemented in HIA-1176
-      throw RuntimeException("Version not supported: $outputVersion")
+    when (val assessmentVersion = outputVersion.toInt()) {
+      1 -> {
+        return RiskPredictorScore(
+          completedDate = if (!this.completedDate.isNullOrEmpty()) LocalDateTime.parse(this.completedDate) else null,
+          assessmentStatus = this.status,
+          generalPredictor = this.output.generalPredictorScore.toGeneralPredictor(),
+          violencePredictor = this.output.violencePredictorScore.toViolencePredictor(),
+          groupReconviction = this.output.groupReconvictionScore.toGroupReconviction(),
+          riskOfSeriousRecidivism = this.output.riskOfSeriousRecidivismScore.toRiskOfSeriousRecidivism(),
+          sexualPredictor = this.output.sexualPredictorScore.toSexualPredictor(),
+          assessmentVersion = assessmentVersion,
+        )
+      }
+      2 -> {
+        // TODO: To be implemented in HIA-1177
+        // return RiskPredictorScore(
+        // completedDate = if (!this.completedDate.isNullOrEmpty()) LocalDateTime.parse(this.completedDate) else null,
+        // assessmentStatus = this.status,
+        // assessmentVersion = assessmentVersion,
+        // allReoffendingPredictor = this.output.,
+        // violentReoffendingPredictor = this.output.,
+        // seriousViolentReoffendingPredictor = this.output.,
+        // directContactSexualReoffendingPredictor = this.output.,
+        // indirectImageContactSexualReoffendingPredictor = this.output.,
+        // combinedSeriousReoffendingPredictor = this.output.,
+        // )
+        throw RuntimeException("Version not implement: $outputVersion")
+      }
+      else -> {
+        throw RuntimeException("Version not supported: $outputVersion")
+      }
     }
   }
 }
