@@ -52,7 +52,8 @@ data class ArnRiskPredictorScoreV2(
   val output: ArnOutput,
 ) {
   fun toRiskPredictorScore(): RiskPredictorScore {
-    if (outputVersion == "1") {
+    val assessmentVersion = outputVersion?.toIntOrNull()
+    if (assessmentVersion == 1) {
       return RiskPredictorScore(
         completedDate = if (!this.completedDate.isNullOrEmpty()) LocalDateTime.parse(this.completedDate) else null,
         assessmentStatus = this.status,
@@ -61,9 +62,21 @@ data class ArnRiskPredictorScoreV2(
         groupReconviction = this.output.groupReconvictionScore.toGroupReconviction(),
         riskOfSeriousRecidivism = this.output.riskOfSeriousRecidivismScore.toRiskOfSeriousRecidivism(),
         sexualPredictor = this.output.sexualPredictorScore.toSexualPredictor(),
+        assessmentVersion = assessmentVersion,
       )
     } else {
       // TODO: To be implemented in HIA-1177
+      // return RiskPredictorScore(
+      // completedDate = if (!this.completedDate.isNullOrEmpty()) LocalDateTime.parse(this.completedDate) else null,
+      // assessmentStatus = this.status,
+      // assessmentVersion = assessmentVersion,
+      // allReoffendingPredictor = this.output.,
+      // violentReoffendingPredictor = this.output.,
+      // seriousViolentReoffendingPredictor = this.output.,
+      // directContactSexualReoffendingPredictor = this.output.,
+      // indirectImageContactSexualReoffendingPredictor = this.output.,
+      // combinedSeriousReoffendingPredictor = this.output.,
+      // )
       throw RuntimeException("Version not supported: $outputVersion")
     }
   }

@@ -192,6 +192,7 @@ class GetRiskPredictorScoresForPersonTest(
               violencePredictor = ViolencePredictor(scoreLevel = "MEDIUM"),
               riskOfSeriousRecidivism = RiskOfSeriousRecidivism(scoreLevel = "VERY_HIGH"),
               sexualPredictor = SexualPredictor(indecentScoreLevel = "HIGH", contactScoreLevel = "VERY_HIGH"),
+              assessmentVersion = 1,
             ),
           ),
         )
