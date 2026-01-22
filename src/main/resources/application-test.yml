@@ -96,7 +96,7 @@ feature-flag:
   enhanced-search-enabled: false
   gateway-cache-enabled: true
   normalised-path-matching: true
-  use-new-risk-score-api: false
+  use-new-risk-score-api: true
 
 authorisation:
   consumers:
