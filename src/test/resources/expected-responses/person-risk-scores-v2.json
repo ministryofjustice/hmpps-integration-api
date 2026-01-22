@@ -1,35 +1,35 @@
 {
   "data": [
-      {
-        "completedDate": "2026-01-16T16:22:54",
-        "assessmentStatus": "COMPLETE",
-        "assessmentVersion": 2,
-        "allReoffendingPredictor": {
-          "band": "LOW"
-        },
-        "violentReoffendingPredictor": {
-          "band": "MEDIUM"
-        },
-        "seriousViolentReoffendingPredictor": {
-          "band": "HIGH"
-        },
-        "directContactSexualReoffendingPredictor": {
-          "band": "LOW"
-        },
-        "indirectImageContactSexualReoffendingPredictor": {
-          "band": "LOW"
-        },
-        "combinedSeriousReoffendingPredictor": {
-          "band": "LOW"
-        }
+    {
+      "completedDate": "2026-01-16T16:22:54",
+      "assessmentStatus": "COMPLETE",
+      "assessmentVersion": 2,
+      "allReoffendingPredictor": {
+        "band": "LOW"
+      },
+      "violentReoffendingPredictor": {
+        "band": "MEDIUM"
+      },
+      "seriousViolentReoffendingPredictor": {
+        "band": "HIGH"
+      },
+      "directContactSexualReoffendingPredictor": {
+        "band": "LOW"
+      },
+      "indirectImageContactSexualReoffendingPredictor": {
+        "band": "LOW"
+      },
+      "combinedSeriousReoffendingPredictor": {
+        "band": "LOW"
       }
+    }
   ],
   "pagination": {
-      "isLastPage": true,
-      "count": 1,
-      "page": 1,
-      "perPage": 10,
-      "totalCount": 1,
-      "totalPages": 1
+    "isLastPage": true,
+    "count": 1,
+    "page": 1,
+    "perPage": 10,
+    "totalCount": 1,
+    "totalPages": 1
   }
 }
