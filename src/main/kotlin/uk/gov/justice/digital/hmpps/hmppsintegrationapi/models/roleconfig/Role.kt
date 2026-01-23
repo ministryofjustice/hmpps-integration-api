@@ -131,6 +131,7 @@ val roleConstants =
       -"/v1/visit/{visitReference}"
       -"/v1/visit/{visitReference}/cancel"
       -"/v2/config/authorisation"
+      -"/v3/api-docs"
     }
   }
 
