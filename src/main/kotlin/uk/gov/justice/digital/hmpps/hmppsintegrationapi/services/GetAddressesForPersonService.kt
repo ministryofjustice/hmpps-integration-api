@@ -20,26 +20,37 @@ class GetAddressesForPersonService(
     filters: ConsumerFilters?,
   ): Response<List<Address>> {
     val errors = mutableListOf<UpstreamApiError>()
+    // If the consumer has prison access
     // Get Nomis Number using getNomisNumber to perform prison filtering as well as the convert function.
     // If hmppsId is a CRN number, calls cpr to resolve the NOMS from the CRN
     // If CPR unsuccessful the noms number held in probation is used
-    val nomisId = getPersonService.getNomisNumber(hmppsId, filters).also { errors.addAll(it.errors) }
+    val nomisId =
+      takeIf { ConsumerFilters.hasPrisonsAccess(filters) }?.let {
+        getPersonService
+          .getNomisNumber(hmppsId, filters)
+          .also { errors.addAll(it.errors) }
+          .data
+          ?.nomisNumber
+      }
 
-    // If hmppsId is a Nomis number, calls cpr to resolve the CRN from the NOMS -
+    // If the consumer has probation access
+    // If hmppsId is a Nomis number, calls cpr to resolve the CRN from the NOMS
     // if CPR unsuccessful, probation search is used to find the CRN for the NOMS
-    val crn = getPersonService.convert(hmppsId, GetPersonService.IdentifierType.CRN).also { errors.addAll(it.errors) }
+    val crn =
+      takeIf { ConsumerFilters.hasProbationAccess(filters) }?.let {
+        getPersonService.convert(hmppsId, GetPersonService.IdentifierType.CRN).also { errors.addAll(it.errors) }.data
+      }
 
     // If a nomis number is resolved - get addresses from prisons and collect any non 404 errors
     val prisonAddresses =
-      nomisId.data
-        ?.nomisNumber
+      nomisId
         ?.let { id ->
           prisonApiGateway.getAddressesForPerson(id).also { errors.addAll(errorsWithoutNotFound(it.errors)) }
         }?.data ?: emptyList()
 
     // If a crn is resolved - get addresses from probation and collect any non 404 errors
     val probationAddresses =
-      crn.data
+      crn
         ?.let { crn ->
           deliusGateway.getAddressesForPerson(crn).also { errors.addAll(errorsWithoutNotFound(it.errors)) }
         }?.data ?: emptyList()

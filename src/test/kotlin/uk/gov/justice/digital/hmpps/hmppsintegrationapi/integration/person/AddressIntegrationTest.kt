@@ -1,5 +1,10 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
+import io.mockk.every
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -12,6 +17,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtens
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithPrisonAndProbationSupervisionFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithPrisonOnlySupervisionFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithProbationOnlySupervisionFilters
 import java.io.File
 import kotlin.test.assertEquals
 
@@ -37,6 +46,11 @@ class AddressIntegrationTest : IntegrationTestBase() {
         "$gatewaysFolder/cpr/fixtures/core-person-record-response.json",
       ).readText(),
     )
+  }
+
+  @AfterEach
+  fun tearDown() {
+    unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
   }
 
   @Test
@@ -121,5 +135,44 @@ class AddressIntegrationTest : IntegrationTestBase() {
   fun `returns a 404 for prisoner in wrong prison`() {
     callApiWithCN(path, limitedPrisonsCn)
       .andExpect(status().isNotFound)
+  }
+
+  @Test
+  fun `returns probation addresses only when only PROBATION supervision status`() {
+    mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
+    every { roles[any()] } returns testRoleWithProbationOnlySupervisionFilters
+    val response =
+      callApi(path)
+        .andExpect(status().isOk)
+        .andReturn()
+        .response
+        .contentAsJson<Response<List<Address>>>()
+    assertThat(response.data.size).isEqualTo(1)
+  }
+
+  @Test
+  fun `returns prison addresses only when only PRISON supervision status`() {
+    mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
+    every { roles[any()] } returns testRoleWithPrisonOnlySupervisionFilters
+    val response =
+      callApi(path)
+        .andExpect(status().isOk)
+        .andReturn()
+        .response
+        .contentAsJson<Response<List<Address>>>()
+    assertThat(response.data.size).isEqualTo(1)
+  }
+
+  @Test
+  fun `returns probation and prison addresses when PRISON and PROBATION supervision status`() {
+    mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
+    every { roles[any()] } returns testRoleWithPrisonAndProbationSupervisionFilters
+    val response =
+      callApi(path)
+        .andExpect(status().isOk)
+        .andReturn()
+        .response
+        .contentAsJson<Response<List<Address>>>()
+    assertThat(response.data.size).isEqualTo(2)
   }
 }
