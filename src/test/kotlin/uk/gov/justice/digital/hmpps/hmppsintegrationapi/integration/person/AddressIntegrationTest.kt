@@ -1,18 +1,108 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.springframework.http.HttpStatus
+import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.writeAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import java.io.File
+import kotlin.test.assertEquals
 
+@DisplayName("Address Integration")
+@TestPropertySource(properties = ["services.ndelius.base-url=http://localhost:4201"])
 class AddressIntegrationTest : IntegrationTestBase() {
   val path = "$basePath/$nomsId/addresses"
+  val crnPath = "$basePath/$crn/addresses"
+  val notExistsCrnPath = "$basePath/X999999/addresses"
+  val notexistsNomisPath = "$basePath/X9999XX/addresses"
+
+  @BeforeEach
+  fun setup() {
+    corePersonRecordGateway.stubForGet(
+      "/person/prison/$nomsId",
+      File(
+        "$gatewaysFolder/cpr/fixtures/core-person-record-response.json",
+      ).readText(),
+    )
+    corePersonRecordGateway.stubForGet(
+      "/person/probation/$crn",
+      File(
+        "$gatewaysFolder/cpr/fixtures/core-person-record-response.json",
+      ).readText(),
+    )
+  }
 
   @Test
   fun `returns addresses for a person`() {
     callApi(path)
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("person-addresses")))
+  }
+
+  @Test
+  fun `returns only delius addresses for a person when crn provided and nomis number from delius not present`() {
+    corePersonRecordGateway.stubForGet(
+      "/person/probation/$crn",
+      "not found",
+      HttpStatus.NOT_FOUND,
+    )
+
+    nDeliusMockServer.stubForPost(
+      "/search/probation-cases",
+      writeAsJson(mapOf("crn" to crn)),
+      File(
+        "$gatewaysFolder/ndelius/fixtures/GetOffenderResponseNoNomis.json",
+      ).readText(),
+    )
+
+    val addresses =
+      callApi(crnPath)
+        .andExpect(status().isOk)
+        .andReturn()
+        .response
+        .contentAsJson<Response<List<Address>>>()
+        .data
+    assertEquals(1, addresses.size)
+    assertEquals("From NDelius", addresses[0].notes)
+  }
+
+  @Test
+  fun `returns only prison addresses for a person when nomis provided and cpr does not find a valid crn`() {
+    corePersonRecordGateway.stubForGet(
+      "/person/prison/$nomsId",
+      File(
+        "$gatewaysFolder/cpr/fixtures/core-person-record-response-incorrect-ids.json",
+      ).readText(),
+    )
+
+    val addresses =
+      callApi(path)
+        .andExpect(status().isOk)
+        .andReturn()
+        .response
+        .contentAsJson<Response<List<Address>>>()
+        .data
+    assertEquals(1, addresses.size)
+    assertEquals("This is a comment text", addresses[0].notes)
+  }
+
+  @Test
+  fun `returns a not found when non existent crn passed and no valid CRN and NOMIS resolved`() {
+    callApi(notExistsCrnPath)
+      .andExpect(status().isNotFound)
+  }
+
+  @Test
+  fun `returns a not found when non existent nomis passed and no valid CRN and NOMIS resolved`() {
+    callApi(notexistsNomisPath)
+      .andExpect(status().isNotFound)
   }
 
   @Test
