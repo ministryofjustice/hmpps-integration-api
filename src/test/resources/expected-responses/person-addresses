@@ -26,23 +26,23 @@
     },
     {
       "country": null,
-      "county": "string",
-      "endDate": "2019-08-24",
-      "locality": "string",
-      "name": "string",
-      "noFixedAddress": true,
-      "number": "string",
-      "postcode": "string",
-      "startDate": "2019-08-24",
-      "street": "string",
-      "town": "string",
+      "county": "Test County",
+      "endDate": "2026-01-23",
+      "locality": "Test District",
+      "name": "Test Building Name",
+      "noFixedAddress": false,
+      "number": "31",
+      "postcode": "NE1 1AB",
+      "startDate": "2026-01-23",
+      "street": "Test Street",
+      "town": "Test Town",
       "types": [
         {
-          "code": "string",
-          "description": "string"
+          "code": "NDELIUS",
+          "description": "An NDelius Address"
         }
       ],
-      "notes": "string"
+      "notes": "From NDelius"
     }
   ]
 }

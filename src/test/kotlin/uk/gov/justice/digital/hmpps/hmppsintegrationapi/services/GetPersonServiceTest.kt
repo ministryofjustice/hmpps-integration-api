@@ -84,9 +84,9 @@ internal class GetPersonServiceTest(
       val personOnProbation = personaInProbationAndPrison.run { Offender(firstName = firstName, surname = lastName, otherIds = OtherIds(crn = identifiers.deliusCrn, nomsNumber = identifiers.nomisNumber), activeProbationManagedSentence = true) }
       val personOnProbationMissingNomisNumber = personaInProbationAndPrison.run { Offender(firstName = firstName, surname = lastName, otherIds = OtherIds(crn = identifiers.deliusCrn), activeProbationManagedSentence = true) }
       val prisoner = personaInProbationAndPrison.run { POSPrisoner(firstName = firstName, lastName = lastName, dateOfBirth = dateOfBirth, prisonerNumber = identifiers.nomisNumber, youthOffender = false) }
-      val prisonerWithPrisonId = POSPrisoner(firstName = prisoner.firstName, lastName = prisoner.lastName, prisonId = prisonId, youthOffender = false, status = "ACTIVE_IN")
-      val prisonerActiveOut = POSPrisoner(firstName = prisoner.firstName, lastName = prisoner.lastName, prisonId = prisonId, youthOffender = false, status = "ACTIVE_OUT")
-      val prisonerInactiveOut = POSPrisoner(firstName = prisoner.firstName, lastName = prisoner.lastName, prisonId = prisonId, youthOffender = false, status = "INACTIVE_OUT")
+      val prisonerWithPrisonId = POSPrisoner(firstName = prisoner.firstName, lastName = prisoner.lastName, prisonId = prisonId, youthOffender = false, status = "ACTIVE IN")
+      val prisonerActiveOut = POSPrisoner(firstName = prisoner.firstName, lastName = prisoner.lastName, prisonId = prisonId, youthOffender = false, status = "ACTIVE OUT")
+      val prisonerInactiveOut = POSPrisoner(firstName = prisoner.firstName, lastName = prisoner.lastName, prisonId = prisonId, youthOffender = false, status = "INACTIVE OUT")
       val prisonerWithWrongPrisonId = POSPrisoner(firstName = prisoner.firstName, lastName = prisoner.lastName, prisonId = wrongPrisonId, youthOffender = false)
       val personOnProbationOnly = personInProbationOnlyPersona.run { Offender(firstName = firstName, surname = lastName, otherIds = OtherIds(crn = identifiers.deliusCrn, nomsNumber = identifiers.nomisNumber), activeProbationManagedSentence = true) }
       val personOnProbationNotUnderActiveSupervision = personInProbationOnlyPersona.run { Offender(firstName = firstName, surname = lastName, otherIds = OtherIds(crn = identifiers.deliusCrn, nomsNumber = identifiers.nomisNumber), activeProbationManagedSentence = false) }
@@ -797,21 +797,21 @@ internal class GetPersonServiceTest(
           result.data.shouldBe(NomisNumber(nomsNumber))
         }
 
-        it("Only PRISONS allowed, prisoner is ACTIVE_IN, should return nomis number") {
+        it("Only PRISONS allowed, prisoner is ACTIVE IN, should return nomis number") {
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerWithPrisonId, errors = emptyList()))
 
           val result = getPersonService.getNomisNumber(nomsNumber, prisonsOnlyConsumerFilter)
           result.data.shouldBe(NomisNumber(nomsNumber))
         }
 
-        it("Only PRISONS allowed, prisoner is ACTIVE_OUT, should return nomis number") {
+        it("Only PRISONS allowed, prisoner is ACTIVE OUT, should return nomis number") {
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerActiveOut, errors = emptyList()))
 
           val result = getPersonService.getNomisNumber(nomsNumber, prisonsOnlyConsumerFilter)
           result.data.shouldBe(NomisNumber(nomsNumber))
         }
 
-        it("Only PRISONS allowed, prisoner is INACTIVE_OUT, NDelius has active sentence - return 404") {
+        it("Only PRISONS allowed, prisoner is INACTIVE OUT, NDelius has active sentence - return 404") {
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerWithWrongPrisonId, errors = emptyList()))
           whenever(deliusGateway.getOffender(nomsNumber)).thenReturn(Response(data = personOnProbation, errors = emptyList()))
 
@@ -833,7 +833,7 @@ internal class GetPersonServiceTest(
           exception.message.shouldBe("SupervisionStatus filter restricts access to the requested prisoner's supervision status")
         }
 
-        it("Only PROBATION allowed, prisoner is ACTIVE_IN, should return 404") {
+        it("Only PROBATION allowed, prisoner is ACTIVE IN, should return 404") {
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerWithPrisonId, errors = emptyList()))
 
           val exception =
@@ -872,7 +872,7 @@ internal class GetPersonServiceTest(
           exception.message.shouldBe("SupervisionStatus filter restricts access to the requested prisoner's supervision status")
         }
 
-        it("Only NONE allowed, prisoner is ACTIVE_IN, should return 404") {
+        it("Only NONE allowed, prisoner is ACTIVE IN, should return 404") {
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerWithPrisonId, errors = emptyList()))
 
           val exception =
