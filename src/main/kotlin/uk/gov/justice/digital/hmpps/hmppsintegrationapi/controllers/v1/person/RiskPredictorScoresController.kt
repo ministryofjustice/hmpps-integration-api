@@ -31,6 +31,8 @@ class RiskPredictorScoresController(
   @GetMapping("{hmppsId}/risks/scores")
   @Operation(
     summary =
+      "Returns risk scores from the last year associated with a person, sorted by completedDate (newest first). This endpoint does not serve LAO (Limited Access Offender) data.",
+    description =
       "Each assessment returned will have a version number which determines which specific score fields will be populated. Fields with a scoreLevel attribute are for version 1 assessments, and fields with a band attribute are for version 2 assessments.\n" +
         "Note that, to preserve backwards compatibility, the v1 fields are present even for v2 assessments, but all of the scoreLevel values will be missing.\n" +
         "This endpoint does not server Limited Access Offender (LAO) data.",
