@@ -58,11 +58,12 @@ class CacheIntegrationTest : IntegrationTestBase() {
     // Calls the cached CPR method only once
     verify(corePersonRecordGateway, times(1)).corePersonRecordFor(any(), eq(nomsId))
 
+    // Address endpoint calls CPR twice per request. One for nomis and one for crn
     // 2 cache misses for the first request
     assertEquals(2L, cache.nativeCache.stats().missCount())
 
-    // 2 cache hit for the second request
-    assertEquals(2L, cache.nativeCache.stats().hitCount())
+    // 4 cache hits after the second request
+    assertEquals(4L, cache.nativeCache.stats().hitCount())
 
     verify(telemetryService, atLeast(1)).trackEvent(eq(GATEWAY_CACHE_METRICS), anyMap(), anyMap())
   }
@@ -101,7 +102,7 @@ class CacheDisabledIntegrationTest : IntegrationTestBase() {
   private lateinit var nDeliusGateway: NDeliusGateway
 
   @Test
-  fun `does not cache prisoner data when addresses endpoint called four times and feature disabled`() {
+  fun `does not cache prisoner data when addresses endpoint called twice and feature disabled`() {
     // Request 1
     callApiWithCN(addressPath, specificPrisonCn)
       .andExpect(status().isOk)
@@ -113,8 +114,9 @@ class CacheDisabledIntegrationTest : IntegrationTestBase() {
     // Calls the cacheable method twice (does not cache)
     verify(prisonerOffenderSearchGateway, times(2)).getPrisonOffender(nomsId)
 
-    // Calls the cached CPR method only once
-    verify(corePersonRecordGateway, times(2)).corePersonRecordFor(any(), eq(nomsId))
+    // Address endpoint calls CPR twice per request. One for nomis and one for crn
+    // Calls the cached CPR method 4 times in total across 2 requests
+    verify(corePersonRecordGateway, times(4)).corePersonRecordFor(any(), eq(nomsId))
 
     verify(telemetryService, never()).trackEvent(eq(GATEWAY_CACHE_METRICS), anyMap(), anyMap())
   }
@@ -128,7 +130,6 @@ class CacheDisabledIntegrationTest : IntegrationTestBase() {
     // Request 2
     callApiWithCN(crnPath, specificPrisonCn)
       .andExpect(status().isOk)
-
     // Calls the cacheable method twice (does not cache)
     verify(nDeliusGateway, times(2)).getOffender(crn)
   }

@@ -145,6 +145,14 @@ abstract class IntegrationTestBase {
           "$gatewaysFolder/ndelius/fixtures/GetOffenderResponse.json",
         ).readText(),
       )
+
+      nDeliusMockServer.stubForGet(
+        "/case/$crn/addresses",
+        File(
+          "$gatewaysFolder/ndelius/fixtures/GetAddressesResponse.json",
+        ).readText(),
+      )
+
       managePomCaseMockServer.start()
       plpMockServer.start()
       sanMockServer.start()
