@@ -15,7 +15,7 @@ data class ArnRiskPredictorScore(
 ) {
   fun toRiskPredictorScore(): RiskPredictorScore =
     RiskPredictorScore(
-      completedDate = if (!this.completedDate.isNullOrEmpty()) LocalDateTime.parse(this.completedDate) else null,
+      completedDate = getDateFromString(this.completedDate),
       assessmentStatus = this.assessmentStatus,
       generalPredictor = this.generalPredictorScore.toGeneralPredictor(),
       violencePredictor = this.violencePredictorScore.toViolencePredictor(),
@@ -56,7 +56,7 @@ data class ArnRiskPredictorScoreV2(
     when (val assessmentVersion = outputVersion.toInt()) {
       1 -> {
         return RiskPredictorScore(
-          completedDate = if (!this.completedDate.isNullOrEmpty()) LocalDateTime.parse(this.completedDate) else null,
+          completedDate = getDateFromString(this.completedDate),
           assessmentStatus = this.status,
           generalPredictor = this.output.generalPredictorScore.toGeneralPredictor(),
           violencePredictor = this.output.violencePredictorScore.toViolencePredictor(),
@@ -68,7 +68,7 @@ data class ArnRiskPredictorScoreV2(
       }
       2 -> {
         return RiskPredictorScore(
-          completedDate = if (!this.completedDate.isNullOrEmpty()) LocalDateTime.parse(this.completedDate) else null,
+          completedDate = getDateFromString(this.completedDate),
           assessmentStatus = this.status,
           assessmentVersion = assessmentVersion,
           allReoffendingPredictor = RiskScoreV2(band = this.output.allReoffendingPredictor.band),
@@ -84,4 +84,11 @@ data class ArnRiskPredictorScoreV2(
       }
     }
   }
+}
+
+private fun getDateFromString(date: String?): LocalDateTime? {
+  if (!date.isNullOrEmpty()) {
+    return LocalDateTime.parse(date)
+  }
+  return null
 }
