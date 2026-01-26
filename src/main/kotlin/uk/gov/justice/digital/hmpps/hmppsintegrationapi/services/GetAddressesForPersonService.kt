@@ -19,10 +19,10 @@ class GetAddressesForPersonService(
     hmppsId: String,
     filters: ConsumerFilters?,
   ): Response<List<Address>> {
-    val prisonerId = getPersonService.getNomisNumber(hmppsId, filters)
+    val prisonerId = if (ConsumerFilters.hasPrisonAccess(filters)) getPersonService.getNomisNumber(hmppsId, filters) else Response(null, emptyList())
     val prisonAddresses = prisonerId.data?.nomisNumber?.let { prisonApiGateway.getAddressesForPerson(it).withoutNotFound() } ?: Response(data = emptyList(), errors = prisonerId.errors)
 
-    val probationId = getPersonService.convert(hmppsId, GetPersonService.IdentifierType.CRN)
+    val probationId = if (ConsumerFilters.hasProbationAccess(filters)) getPersonService.convert(hmppsId, GetPersonService.IdentifierType.CRN) else Response(null, emptyList())
     val probationAddresses = probationId.data?.let { deliusGateway.getAddressesForPerson(it).withoutNotFound() } ?: Response(data = emptyList(), errors = probationId.errors)
 
     return Response.merge(listOf(prisonAddresses, probationAddresses))
