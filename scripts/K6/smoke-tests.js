@@ -522,9 +522,13 @@ function verify_risk_endpoints(hmppsId) {
     validate_response_list_not_empty(res, "Status Information found");
     validate_get_request(`/v1/persons/${hmppsId}/licences/conditions`);
     validate_get_request(`/v1/persons/${hmppsId}/risks/serious-harm`);
-    validate_get_request(`/v1/persons/${hmppsId}/risks/scores`);
     validate_get_request(`/v1/persons/${hmppsId}/risks/dynamic`);
     validate_get_request(`/v1/persons/${hmppsId}/risks/categories`);
+
+    res = validate_get_request(`/v1/persons/${hmppsId}/risks/scores`);
+    check(res, {
+      [`Found both assessment versions 1 and 2`]: () => res.json()["data"][0]["assessmentVersion"] === 2 && res.json()["data"][1]["assessmentVersion"] === 1,
+    })
 
     res = validate_get_request(`/v1/persons/${hmppsId}/risks/mappadetail`);
     if ((res.status === 200) && (res.json()["data"] !== null)) {
