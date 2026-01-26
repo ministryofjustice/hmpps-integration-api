@@ -2,17 +2,33 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal
 
 import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.normalisePath
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 
 @Component
 @Service
-class AuthoriseConsumerService {
+class AuthoriseConsumerService(
+  private val featureFlagConfig: FeatureFlagConfig,
+) {
+  fun matches(
+    path: String,
+    pathTemplate: String,
+  ): Boolean =
+    Regex(
+      if (featureFlagConfig.isEnabled(FeatureFlagConfig.NORMALISED_PATH_MATCHING)) {
+        normalisePath(pathTemplate)
+      } else {
+        pathTemplate
+      },
+    ).matches(path)
+
   fun doesConsumerHaveIncludesAccess(
     consumerConfig: ConsumerConfig?,
     requestedPath: String,
   ): Boolean {
     consumerConfig?.permissions()?.forEach {
-      if (Regex(it).matches(requestedPath)) {
+      if (matches(requestedPath, it)) {
         return true
       }
     }
@@ -24,7 +40,7 @@ class AuthoriseConsumerService {
     requestPath: String,
   ): Boolean {
     consumerRolesInclude.forEach {
-      if (Regex(it).matches(requestPath)) {
+      if (matches(requestPath, it)) {
         return true
       }
     }

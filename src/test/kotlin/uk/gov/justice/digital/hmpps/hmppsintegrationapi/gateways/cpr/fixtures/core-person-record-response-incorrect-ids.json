@@ -1,0 +1,71 @@
+{
+  "cprUUID": "f91ef118-a51f-4874-9409-c0538b4ca6fd",
+  "firstName": "John",
+  "middleNames": "Morgan",
+  "lastName": "Doe",
+  "dateOfBirth": "1990-08-21",
+  "title": {
+    "code": "Mr",
+    "description": "Mr"
+  },
+  "sex": {
+    "code": "M",
+    "description": "Male"
+  },
+  "religion": {
+    "code": "Christianity",
+    "description": "Christianity"
+  },
+  "ethnicity": {
+    "code": "British",
+    "description": "British"
+  },
+  "aliases": [
+    {
+      "firstName": "Jon",
+      "lastName": "do",
+      "middleNames": "Morgain",
+      "title": {
+        "code": "Mr",
+        "description": "Mr"
+      }
+    }
+  ],
+  "nationalities": [
+    {
+      "code": "GB",
+      "description": "GB",
+      "startDate": "2000-01-01",
+      "endDate": "2025-08-12",
+      "notes": "Example notes"
+    }
+  ],
+  "addresses": [
+    {
+      "noFixedAbode": false,
+      "startDate": "2020-02-26",
+      "endDate": "2023-07-15",
+      "postcode": "SW1H 9AJ",
+      "subBuildingName": "Sub building 2",
+      "buildingName": "Main Building",
+      "buildingNumber": "102",
+      "thoroughfareName": "Petty France",
+      "dependentLocality": "Westminster",
+      "postTown": "London",
+      "county": "Greater London",
+      "country": "United Kingdom",
+      "uprn": "100120991537"
+    }
+  ],
+  "identifiers": {
+    "crns": ["A999999"],
+    "prisonNumbers": ["X9999XX"],
+    "defendantIds": ["46caa4e5-ae06-4226-9cb6-682cb26cf025"],
+    "cids": ["1234567"],
+    "pncs": ["2000/1234567A"],
+    "cros": ["123456/00A"],
+    "nationalInsuranceNumbers": ["QQ123456B"],
+    "driverLicenseNumbers": ["SMITH840325J912"],
+    "arrestSummonsNumbers": ["0700000000000002536Y"]
+  }
+}

@@ -47,7 +47,7 @@ class VisitQueueService(
     }
 
     val visitPrisonerId = createVisitRequest.prisonerId
-    val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId = visitPrisonerId, filters = filters)
+    val personResponse = getPersonService.getNomisNumber(hmppsId = visitPrisonerId, filters = filters)
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = personResponse.errors)
     }

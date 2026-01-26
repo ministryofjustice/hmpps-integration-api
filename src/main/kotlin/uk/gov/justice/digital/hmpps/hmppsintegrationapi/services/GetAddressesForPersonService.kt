@@ -6,7 +6,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.withoutNotFound
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
@@ -19,33 +19,12 @@ class GetAddressesForPersonService(
     hmppsId: String,
     filters: ConsumerFilters?,
   ): Response<List<Address>> {
-    val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId = hmppsId, filters)
-    if (personResponse.errors.isNotEmpty()) {
-      return Response(data = emptyList(), errors = personResponse.errors)
-    }
+    val prisonerId = getPersonService.getNomisNumber(hmppsId, filters)
+    val prisonAddresses = prisonerId.data?.nomisNumber?.let { prisonApiGateway.getAddressesForPerson(it).withoutNotFound() } ?: Response(data = emptyList(), errors = prisonerId.errors)
 
-    val addressesFromDelius = deliusGateway.getAddressesForPerson(hmppsId)
+    val probationId = getPersonService.convert(hmppsId, GetPersonService.IdentifierType.CRN)
+    val probationAddresses = probationId.data?.let { deliusGateway.getAddressesForPerson(it).withoutNotFound() } ?: Response(data = emptyList(), errors = probationId.errors)
 
-    if (hasErrorOtherThanEntityNotFound(addressesFromDelius)) {
-      return Response(data = emptyList(), errors = addressesFromDelius.errors)
-    }
-
-    val nomisNumber = personResponse.data?.nomisNumber ?: return addressesFromDelius
-
-    val addressesFromNomis = prisonApiGateway.getAddressesForPerson(id = nomisNumber)
-    if (hasErrorOtherThanEntityNotFound(addressesFromNomis)) {
-      return Response(data = emptyList(), errors = addressesFromNomis.errors)
-    }
-
-    if (
-      addressesFromNomis.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND) &&
-      !addressesFromDelius.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)
-    ) {
-      return addressesFromDelius
-    }
-
-    return Response.merge(listOfNotNull(addressesFromNomis, Response(data = addressesFromDelius.data)))
+    return Response.merge(listOf(prisonAddresses, probationAddresses))
   }
-
-  private fun hasErrorOtherThanEntityNotFound(addressesResponse: Response<List<Address>>): Boolean = addressesResponse.errors.isNotEmpty() && !addressesResponse.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)
 }

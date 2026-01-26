@@ -42,6 +42,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
   @BeforeEach
   fun resetMocks() {
     whenever(featureFlagConfig.getConfigFlagValue(FeatureFlagConfig.USE_EDUCATION_ENDPOINT)).thenReturn(true)
+    whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.NORMALISED_PATH_MATCHING)).thenReturn(true)
     prisonerOffenderSearchMockServer.stubForGet(
       "/prisoner/$nomsId",
       File(
@@ -111,7 +112,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
 
     @Test
     fun `returns a person from Prisoner Offender Search and Probation Offender Search`() {
-      callApi("$basePath/$pnc")
+      callApi("$basePath/$crn")
         .andExpect(status().isOk)
         .andExpect(content().json(getExpectedResponse("person-offender-and-probation-search-response")))
 

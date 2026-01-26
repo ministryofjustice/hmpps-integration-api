@@ -1,0 +1,23 @@
+{
+  "contactDetails": {
+    "addresses": [
+      {
+        "noFixedAbode": false,
+        "type": {
+          "code": "NDELIUS",
+          "description": "An NDelius Address"
+        },
+        "buildingName": "Test Building Name",
+        "addressNumber": "31",
+        "streetName": "Test Street",
+        "town": "Test Town",
+        "district": "Test District",
+        "county": "Test County",
+        "postcode": "NE1 1AB",
+        "from": "2026-01-23",
+        "to": "2026-01-23",
+        "notes": "From NDelius"
+      }
+    ]
+  }
+}

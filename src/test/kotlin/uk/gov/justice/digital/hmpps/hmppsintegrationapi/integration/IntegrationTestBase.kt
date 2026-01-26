@@ -56,6 +56,7 @@ abstract class IntegrationTestBase {
   final val limitedCaseNotesCn = "limited-case-notes"
   final val noPrisonsCn = "no-prisons"
   final val emptyPrisonsCn = "empty-prisons"
+  final val noProbationAccessCn = "supervision-status-prison-only"
   final val contactId = 123456L
   final val nomsIdFromProbation = "G5555TT"
 
@@ -77,6 +78,7 @@ abstract class IntegrationTestBase {
     val nDeliusMockServer = ApiMockServer.create(UpstreamApi.NDELIUS_INTEGRATION_TEST)
     val prisonerBaseLocationMockServer = ApiMockServer.create(UpstreamApi.PRISONER_BASE_LOCATION)
     val corePersonRecordGateway = ApiMockServer.create(UpstreamApi.CORE_PERSON_RECORD)
+    val arnsMockServer = ApiMockServer.create(UpstreamApi.ARNS_INTEGRATION_TEST)
 
     @BeforeAll
     @JvmStatic
@@ -95,7 +97,7 @@ abstract class IntegrationTestBase {
       prisonerOffenderSearchMockServer.stubForGet(
         "/prisoner/$nomsIdFromProbation",
         File(
-          "$gatewaysFolder/prisoneroffendersearch/fixtures/PrisonerByIdResponse.json",
+          "$gatewaysFolder/prisoneroffendersearch/fixtures/PrisonerByIdProbationResponse.json",
         ).readText(),
       )
       prisonerBaseLocationMockServer.stubForGet(
@@ -143,6 +145,14 @@ abstract class IntegrationTestBase {
           "$gatewaysFolder/ndelius/fixtures/GetOffenderResponse.json",
         ).readText(),
       )
+
+      nDeliusMockServer.stubForGet(
+        "/case/$crn/addresses",
+        File(
+          "$gatewaysFolder/ndelius/fixtures/GetAddressesResponse.json",
+        ).readText(),
+      )
+
       managePomCaseMockServer.start()
       plpMockServer.start()
       sanMockServer.start()
