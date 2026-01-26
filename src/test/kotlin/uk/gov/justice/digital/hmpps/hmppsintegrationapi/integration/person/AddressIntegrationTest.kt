@@ -1,26 +1,26 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
-import io.mockk.every
-import io.mockk.mockkStatic
-import io.mockk.unmockkStatic
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.mockito.ArgumentMatchers.anyList
+import org.mockito.kotlin.any
+import org.mockito.kotlin.reset
+import org.mockito.kotlin.whenever
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.TestPropertySource
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.writeAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithPrisonAndProbationSupervisionFilters
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithPrisonOnlySupervisionFilters
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithProbationOnlySupervisionFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.SupervisionStatus
 import java.io.File
 import kotlin.test.assertEquals
 
@@ -32,8 +32,12 @@ class AddressIntegrationTest : IntegrationTestBase() {
   val notExistsCrnPath = "$basePath/X999999/addresses"
   val notexistsNomisPath = "$basePath/X9999XX/addresses"
 
+  @MockitoSpyBean
+  lateinit var authorisationConfig: AuthorisationConfig
+
   @BeforeEach
   fun setup() {
+    reset(authorisationConfig)
     corePersonRecordGateway.stubForGet(
       "/person/prison/$nomsId",
       File(
@@ -46,11 +50,6 @@ class AddressIntegrationTest : IntegrationTestBase() {
         "$gatewaysFolder/cpr/fixtures/core-person-record-response.json",
       ).readText(),
     )
-  }
-
-  @AfterEach
-  fun tearDown() {
-    unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
   }
 
   @Test
@@ -139,8 +138,8 @@ class AddressIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `returns probation addresses only when only PROBATION supervision status`() {
-    mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-    every { roles[any()] } returns testRoleWithProbationOnlySupervisionFilters
+    whenever(authorisationConfig.allFilters(any(), anyList())).thenReturn(ConsumerFilters(supervisionStatuses = listOf(SupervisionStatus.PROBATION.name)))
+
     val response =
       callApi(path)
         .andExpect(status().isOk)
@@ -152,8 +151,7 @@ class AddressIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `returns prison addresses only when only PRISON supervision status`() {
-    mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-    every { roles[any()] } returns testRoleWithPrisonOnlySupervisionFilters
+    whenever(authorisationConfig.allFilters(any(), anyList())).thenReturn(ConsumerFilters(supervisionStatuses = listOf(SupervisionStatus.PRISONS.name)))
     val response =
       callApi(path)
         .andExpect(status().isOk)
@@ -165,8 +163,7 @@ class AddressIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `returns probation and prison addresses when PRISON and PROBATION supervision status`() {
-    mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-    every { roles[any()] } returns testRoleWithPrisonAndProbationSupervisionFilters
+    whenever(authorisationConfig.allFilters(any(), anyList())).thenReturn(ConsumerFilters(supervisionStatuses = listOf(SupervisionStatus.PRISONS.name, SupervisionStatus.PROBATION.name)))
     val response =
       callApi(path)
         .andExpect(status().isOk)
