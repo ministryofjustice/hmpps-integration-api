@@ -24,22 +24,22 @@ class RiskPredictorScoreTest :
 
           integrationApiRiskPredictorScore.completedDate.shouldBe(LocalDateTime.parse(arnRiskPredictorScore.completedDate))
           integrationApiRiskPredictorScore.assessmentStatus.shouldBe(arnRiskPredictorScore.assessmentStatus)
-          integrationApiRiskPredictorScore.generalPredictor.scoreLevel.shouldBe(
+          integrationApiRiskPredictorScore.generalPredictor?.scoreLevel.shouldBe(
             arnRiskPredictorScore.generalPredictorScore.ogpRisk,
           )
-          integrationApiRiskPredictorScore.violencePredictor.scoreLevel.shouldBe(
+          integrationApiRiskPredictorScore.violencePredictor?.scoreLevel.shouldBe(
             arnRiskPredictorScore.violencePredictorScore.ovpRisk,
           )
-          integrationApiRiskPredictorScore.groupReconviction.scoreLevel.shouldBe(
+          integrationApiRiskPredictorScore.groupReconviction?.scoreLevel.shouldBe(
             arnRiskPredictorScore.groupReconvictionScore.scoreLevel,
           )
-          integrationApiRiskPredictorScore.riskOfSeriousRecidivism.scoreLevel.shouldBe(
+          integrationApiRiskPredictorScore.riskOfSeriousRecidivism?.scoreLevel.shouldBe(
             arnRiskPredictorScore.riskOfSeriousRecidivismScore.scoreLevel,
           )
-          integrationApiRiskPredictorScore.sexualPredictor.indecentScoreLevel.shouldBe(
+          integrationApiRiskPredictorScore.sexualPredictor?.indecentScoreLevel.shouldBe(
             arnRiskPredictorScore.sexualPredictorScore.ospIndecentScoreLevel,
           )
-          integrationApiRiskPredictorScore.sexualPredictor.contactScoreLevel.shouldBe(
+          integrationApiRiskPredictorScore.sexualPredictor?.contactScoreLevel.shouldBe(
             arnRiskPredictorScore.sexualPredictorScore.ospContactScoreLevel,
           )
         }

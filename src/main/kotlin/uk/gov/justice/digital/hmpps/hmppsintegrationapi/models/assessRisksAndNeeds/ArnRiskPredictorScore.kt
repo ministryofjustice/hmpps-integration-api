@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskPredictorScore
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskScoreV2
 import java.time.LocalDateTime
 
 data class ArnRiskPredictorScore(
@@ -14,7 +15,7 @@ data class ArnRiskPredictorScore(
 ) {
   fun toRiskPredictorScore(): RiskPredictorScore =
     RiskPredictorScore(
-      completedDate = if (!this.completedDate.isNullOrEmpty()) LocalDateTime.parse(this.completedDate) else null,
+      completedDate = getDateFromString(this.completedDate),
       assessmentStatus = this.assessmentStatus,
       generalPredictor = this.generalPredictorScore.toGeneralPredictor(),
       violencePredictor = this.violencePredictorScore.toViolencePredictor(),
@@ -55,7 +56,7 @@ data class ArnRiskPredictorScoreV2(
     when (val assessmentVersion = outputVersion.toInt()) {
       1 -> {
         return RiskPredictorScore(
-          completedDate = if (!this.completedDate.isNullOrEmpty()) LocalDateTime.parse(this.completedDate) else null,
+          completedDate = getDateFromString(this.completedDate),
           assessmentStatus = this.status,
           generalPredictor = this.output.generalPredictorScore.toGeneralPredictor(),
           violencePredictor = this.output.violencePredictorScore.toViolencePredictor(),
@@ -66,23 +67,28 @@ data class ArnRiskPredictorScoreV2(
         )
       }
       2 -> {
-        // TODO: To be implemented in HIA-1177
-        // return RiskPredictorScore(
-        // completedDate = if (!this.completedDate.isNullOrEmpty()) LocalDateTime.parse(this.completedDate) else null,
-        // assessmentStatus = this.status,
-        // assessmentVersion = assessmentVersion,
-        // allReoffendingPredictor = this.output.,
-        // violentReoffendingPredictor = this.output.,
-        // seriousViolentReoffendingPredictor = this.output.,
-        // directContactSexualReoffendingPredictor = this.output.,
-        // indirectImageContactSexualReoffendingPredictor = this.output.,
-        // combinedSeriousReoffendingPredictor = this.output.,
-        // )
-        throw RuntimeException("Version not implement: $outputVersion")
+        return RiskPredictorScore(
+          completedDate = getDateFromString(this.completedDate),
+          assessmentStatus = this.status,
+          assessmentVersion = assessmentVersion,
+          allReoffendingPredictor = RiskScoreV2(band = this.output.allReoffendingPredictor.band),
+          violentReoffendingPredictor = RiskScoreV2(band = this.output.violentReoffendingPredictor.band),
+          seriousViolentReoffendingPredictor = RiskScoreV2(band = this.output.seriousViolentReoffendingPredictor.band),
+          directContactSexualReoffendingPredictor = RiskScoreV2(band = this.output.directContactSexualReoffendingPredictor.band),
+          indirectImageContactSexualReoffendingPredictor = RiskScoreV2(band = this.output.indirectImageContactSexualReoffendingPredictor.band),
+          combinedSeriousReoffendingPredictor = RiskScoreV2(band = this.output.combinedSeriousReoffendingPredictor.band),
+        )
       }
       else -> {
         throw RuntimeException("Version not supported: $outputVersion")
       }
     }
   }
+}
+
+private fun getDateFromString(date: String?): LocalDateTime? {
+  if (!date.isNullOrEmpty()) {
+    return LocalDateTime.parse(date)
+  }
+  return null
 }

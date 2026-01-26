@@ -1,11 +1,11 @@
 [
   {
     "completedDate": "2026-01-16T16:22:54",
-    "assessmentStatus": "string",
+    "assessmentStatus": "COMPLETE",
     "groupReconvictionScore": {
       "oneYear": 0,
       "twoYears": 0,
-      "scoreLevel": "LOW"
+      "scoreLevel": "HIGH"
     },
     "violencePredictorScore": {
       "ovpStaticWeightedScore": 0,
@@ -13,7 +13,7 @@
       "ovpTotalWeightedScore": 0,
       "oneYear": 0,
       "twoYears": 0,
-      "ovpRisk": "LOW"
+      "ovpRisk": "MEDIUM"
     },
     "generalPredictorScore": {
       "ogpStaticWeightedScore": 0,
@@ -34,7 +34,7 @@
       "ospIndecentPercentageScore": 0,
       "ospContactPercentageScore": 0,
       "ospIndecentScoreLevel": "LOW",
-      "ospContactScoreLevel": "LOW",
+      "ospContactScoreLevel": "MEDIUM",
       "ospIndirectImagePercentageScore": 0,
       "ospDirectContactPercentageScore": 0,
       "ospIndirectImageScoreLevel": "LOW",

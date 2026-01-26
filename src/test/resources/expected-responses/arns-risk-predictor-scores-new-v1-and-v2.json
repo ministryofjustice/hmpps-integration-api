@@ -3,6 +3,43 @@
     "completedDate": "2026-01-16T16:22:54",
     "source": "OASYS",
     "status": "COMPLETE",
+    "outputVersion": "2",
+    "output": {
+      "allReoffendingPredictor": {
+        "staticOrDynamic": "STATIC",
+        "score": 1,
+        "band": "LOW"
+      },
+      "violentReoffendingPredictor": {
+        "staticOrDynamic": "DYNAMIC",
+        "score": 30,
+        "band": "MEDIUM"
+      },
+      "seriousViolentReoffendingPredictor": {
+        "staticOrDynamic": "STATIC",
+        "score": 99,
+        "band": "HIGH"
+      },
+      "directContactSexualReoffendingPredictor": {
+        "score": 10,
+        "band": "LOW"
+      },
+      "indirectImageContactSexualReoffendingPredictor": {
+        "score": 10,
+        "band": "LOW"
+      },
+      "combinedSeriousReoffendingPredictor": {
+        "algorithmVersion": "6",
+        "staticOrDynamic": "STATIC",
+        "score": 0,
+        "band": "LOW"
+      }
+    }
+  },
+  {
+    "completedDate": "2026-01-16T16:22:54",
+    "source": "OASYS",
+    "status": "COMPLETE",
     "outputVersion": "1",
     "output": {
       "groupReconvictionScore": {
