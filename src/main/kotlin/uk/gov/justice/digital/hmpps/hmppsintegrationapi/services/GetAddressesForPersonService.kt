@@ -18,35 +18,50 @@ class GetAddressesForPersonService(
   fun execute(
     hmppsId: String,
     filters: ConsumerFilters?,
+  ): Response<List<Address>> =
+    Response.merge(
+      listOf(
+        getPrisonAddresses(hmppsId, filters),
+        getProbationAddresses(hmppsId, filters),
+      )
+    )
+
+
+  private fun getProbationAddresses(
+    hmppsId: String,
+    filters: ConsumerFilters?,
   ): Response<List<Address>> {
-    val errors = mutableListOf<UpstreamApiError>()
-    // Get Nomis Number using getNomisNumber to perform prison filtering as well as the convert function.
-    // If hmppsId is a CRN number, calls cpr to resolve the NOMS from the CRN
-    // If CPR unsuccessful the noms number held in probation is used
-    val nomisId = getPersonService.getNomisNumber(hmppsId, filters).also { errors.addAll(it.errors) }
+    if (!hasProbationAccess(filters)) return Response(emptyList())
 
-    // If hmppsId is a Nomis number, calls cpr to resolve the CRN from the NOMS -
-    // if CPR unsuccessful, probation search is used to find the CRN for the NOMS
-    val crn = getPersonService.convert(hmppsId, GetPersonService.IdentifierType.CRN).also { errors.addAll(it.errors) }
+    val crn = getPersonService.convert(hmppsId, GetPersonService.IdentifierType.CRN)
 
-    // If a nomis number is resolved - get addresses from prisons and collect any non 404 errors
-    val prisonAddresses =
-      nomisId.data
-        ?.nomisNumber
-        ?.let { id ->
-          prisonApiGateway.getAddressesForPerson(id).also { errors.addAll(errorsWithoutNotFound(it.errors)) }
-        }?.data ?: emptyList()
+    if (crn.data == null || crn.errors.isNotEmpty()) return errorResponse(crn.errors)
 
-    // If a crn is resolved - get addresses from probation and collect any non 404 errors
-    val probationAddresses =
-      crn.data
-        ?.let { crn ->
-          deliusGateway.getAddressesForPerson(crn).also { errors.addAll(errorsWithoutNotFound(it.errors)) }
-        }?.data ?: emptyList()
-
-    // Return both sets of addresses and any errors
-    return Response(data = prisonAddresses + probationAddresses, errors)
+    return removeNotFoundErrors(deliusGateway.getAddressesForPerson(crn.data))
   }
 
-  private fun errorsWithoutNotFound(errors: List<UpstreamApiError>) = errors.filter { it.type != UpstreamApiError.Type.ENTITY_NOT_FOUND }
+  private fun getPrisonAddresses(
+    hmppsId: String,
+    filters: ConsumerFilters?,
+  ): Response<List<Address>> {
+    if (!hasPrisonsAccess(filters)) return Response(emptyList())
+
+    val nomisId = getPersonService.getNomisNumber(hmppsId, filters)
+
+    if (nomisId.data?.nomisNumber == null || nomisId.errors.isNotEmpty()) return errorResponse(nomisId.errors)
+
+    return removeNotFoundErrors(prisonApiGateway.getAddressesForPerson(nomisId.data.nomisNumber))
+  }
+
+  // Move to Response.kt?
+  private fun removeNotFoundErrors(response: Response<List<Address>>) = Response(
+    response.data,
+    response.errors.filter { it.type != UpstreamApiError.Type.ENTITY_NOT_FOUND },
+  )
+  private fun errorResponse(errors: List<UpstreamApiError>): Response<List<Address>> = Response(emptyList(), errors)
+
+  // Move to ConsumerFilters.kt?
+  private fun hasProbationAccess(filters: ConsumerFilters?) = filters?.supervisionStatuses == null || filters.hasProbation()
+  private fun hasPrisonsAccess(filters: ConsumerFilters?) = filters?.supervisionStatuses == null || filters.hasPrisons()
 }
+
