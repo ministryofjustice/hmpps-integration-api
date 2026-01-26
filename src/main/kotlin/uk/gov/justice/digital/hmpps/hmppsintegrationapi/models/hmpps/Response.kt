@@ -19,3 +19,5 @@ data class Response<T>(
 data class DataResponse<T>(
   val data: T,
 )
+
+inline fun <reified T> Response<T>.withoutNotFound() = Response(data = data, errors = errors.filter { it.type != UpstreamApiError.Type.ENTITY_NOT_FOUND })
