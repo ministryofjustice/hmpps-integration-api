@@ -19,12 +19,22 @@ class GetAddressesForPersonService(
     hmppsId: String,
     filters: ConsumerFilters?,
   ): Response<List<Address>> {
-    val prisonerId = if (ConsumerFilters.hasPrisonAccess(filters)) getPersonService.getNomisNumber(hmppsId, filters) else Response(null, emptyList())
-    val prisonAddresses = prisonerId.data?.nomisNumber?.let { prisonApiGateway.getAddressesForPerson(it).withoutNotFound() } ?: Response(data = emptyList(), errors = prisonerId.errors)
+    val prisonerAddresses =
+      if (ConsumerFilters.hasPrisonAccess(filters)) {
+        val prisonerId = getPersonService.getNomisNumber(hmppsId, filters)
+        prisonerId.data?.nomisNumber?.let { prisonApiGateway.getAddressesForPerson(it).withoutNotFound() } ?: Response(data = emptyList(), errors = prisonerId.errors)
+      } else {
+        Response(emptyList(), emptyList())
+      }
 
-    val probationId = if (ConsumerFilters.hasProbationAccess(filters)) getPersonService.convert(hmppsId, GetPersonService.IdentifierType.CRN) else Response(null, emptyList())
-    val probationAddresses = probationId.data?.let { deliusGateway.getAddressesForPerson(it).withoutNotFound() } ?: Response(data = emptyList(), errors = probationId.errors)
+    val probationAddresses =
+      if (ConsumerFilters.hasProbationAccess(filters)) {
+        val probationId = getPersonService.convert(hmppsId, GetPersonService.IdentifierType.CRN)
+        probationId.data?.let { deliusGateway.getAddressesForPerson(it).withoutNotFound() } ?: Response(data = emptyList(), errors = probationId.errors)
+      } else {
+        Response(emptyList(), emptyList())
+      }
 
-    return Response.merge(listOf(prisonAddresses, probationAddresses))
+    return Response.merge(listOf(prisonerAddresses, probationAddresses))
   }
 }
