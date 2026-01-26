@@ -185,3 +185,6 @@ authorisation:
       notes: "See client list in Confluence"
       roles:
         - "cats"
+    jwylde:
+      roles:
+        - "full-access-lao-redactions"
