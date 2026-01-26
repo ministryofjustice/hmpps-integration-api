@@ -62,7 +62,7 @@ feature-flag:
   epf-gateway-disabled: true
   cpr-enabled: true
   gateway-cache-enabled: false
-  use-new-risk-score-api: false
+  use-new-risk-score-api: true
 
 authorisation:
   consumers:
