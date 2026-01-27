@@ -25,6 +25,10 @@ data class ConsumerFilters(
       }
 
     fun alertCodes(filters: ConsumerFilters?) = filters?.alertCodes ?: emptyList()
+
+    fun hasPrisonAccess(filters: ConsumerFilters?): Boolean = filters?.supervisionStatuses == null || filters.hasPrisons()
+
+    fun hasProbationAccess(filters: ConsumerFilters?): Boolean = filters?.supervisionStatuses == null || filters.hasProbation()
   }
 
   fun matchesPrison(prisonId: String?): Boolean = matchesFilterList(prisons, prisonId)

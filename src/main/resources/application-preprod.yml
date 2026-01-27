@@ -53,7 +53,6 @@ feature-flag:
   use-deallocation-reasons-endpoint: true
   use-allocation-endpoint: true
   use-education-endpoint: true
-  use-prisoner-base-location-api: true
   use-historical-attendances-endpoint: true
   use-suitability-endpoint: true
   use-waiting-list-endpoint: true
@@ -61,7 +60,7 @@ feature-flag:
   epf-endpoint-includes-lao: false
   epf-gateway-disabled: true
   cpr-enabled: true
-  gateway-cache-enabled: false
+  gateway-cache-enabled: true
   use-new-risk-score-api: false
 
 authorisation:
