@@ -134,7 +134,6 @@ class RetryIntegrationTest : IntegrationTestBase() {
 
     @Test
     fun `returns schedule details (request) on 3rd retry for http status 502`() {
-      whenever(featureFlagConfig.getConfigFlagValue(FeatureFlagConfig.USE_SCHEDULE_DETAIL_ENDPOINT)).thenReturn(true)
       activitiesMockServer.stubForRetry(
         scenario = "Retry scenario for request 1",
         numberOfRequests = 4,
@@ -153,7 +152,6 @@ class RetryIntegrationTest : IntegrationTestBase() {
 
     @Test
     fun `returns failure (request) after 3rd retry for http status 502`() {
-      whenever(featureFlagConfig.getConfigFlagValue(FeatureFlagConfig.USE_SCHEDULE_DETAIL_ENDPOINT)).thenReturn(true)
       activitiesMockServer.stubForRetry(
         scenario = "Retry scenario for request 2",
         numberOfRequests = 4,
@@ -170,7 +168,6 @@ class RetryIntegrationTest : IntegrationTestBase() {
 
     @Test
     fun `returns failure (request) when upstream service not available after 3 retries`() {
-      whenever(featureFlagConfig.getConfigFlagValue(FeatureFlagConfig.USE_SCHEDULE_DETAIL_ENDPOINT)).thenReturn(true)
       activitiesMockServer.stubForRetry(
         scenario = "Retry scenario for request 3",
         numberOfRequests = 4,
@@ -187,7 +184,6 @@ class RetryIntegrationTest : IntegrationTestBase() {
 
     @Test
     fun `returns success (requestList) when upstream service not available for 3 times and succeeds on last retry`() {
-      whenever(featureFlagConfig.getConfigFlagValue(FeatureFlagConfig.USE_SCHEDULE_DETAIL_ENDPOINT)).thenReturn(true)
       activitiesMockServer.stubForRetry(
         scenario = "Retry scenario for request 4",
         numberOfRequests = 4,

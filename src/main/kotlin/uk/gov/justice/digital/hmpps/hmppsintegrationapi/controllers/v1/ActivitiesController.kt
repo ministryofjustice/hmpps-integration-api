@@ -17,11 +17,9 @@ import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ConflictFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivitySchedule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivityScheduleDetailed
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AttendanceUpdateRequest
@@ -132,7 +130,6 @@ class ActivitiesController(
       ),
     ],
   )
-  @FeatureFlag(name = FeatureFlagConfig.USE_SCHEDULE_DETAIL_ENDPOINT)
   fun getScheduleDetails(
     @Parameter(description = "The ID of the schedule") @PathVariable scheduleId: Long,
     @RequestAttribute filters: ConsumerFilters?,
@@ -184,7 +181,6 @@ class ActivitiesController(
       ),
     ],
   )
-  @FeatureFlag(name = FeatureFlagConfig.USE_SUITABILITY_ENDPOINT)
   fun getActivityScheduleSuitabilityCriteria(
     @Parameter(description = "The ID of the schedule") @PathVariable scheduleId: Long,
     @RequestAttribute filters: ConsumerFilters?,
@@ -236,7 +232,6 @@ class ActivitiesController(
       ),
     ],
   )
-  @FeatureFlag(name = FeatureFlagConfig.Companion.USE_UPDATE_ATTENDANCE_ENDPOINT)
   fun putAttendance(
     @RequestAttribute filters: ConsumerFilters?,
     @RequestAttribute clientName: String,
@@ -325,7 +320,6 @@ class ActivitiesController(
       ),
     ],
   )
-  @FeatureFlag(name = FeatureFlagConfig.Companion.USE_DEALLOCATION_ENDPOINT)
   fun putDeallocateFromSchedule(
     @Parameter(description = "The ID of the schedule") @PathVariable scheduleId: Long,
     @RequestAttribute filters: ConsumerFilters?,
@@ -350,7 +344,6 @@ class ActivitiesController(
     return DataResponse(data = response.data)
   }
 
-  @FeatureFlag(name = FeatureFlagConfig.Companion.USE_DEALLOCATION_REASONS_ENDPOINT)
   @Tag(name = "Reference Data")
   @GetMapping("/deallocation-reasons")
   @Operation(
@@ -420,7 +413,6 @@ class ActivitiesController(
       ),
     ],
   )
-  @FeatureFlag(name = FeatureFlagConfig.Companion.USE_ALLOCATION_ENDPOINT)
   fun postAllocationEndpoint(
     @Parameter(description = "The ID of the schedule") @PathVariable scheduleId: Long,
     @RequestAttribute filters: ConsumerFilters?,
@@ -477,7 +469,6 @@ class ActivitiesController(
       ),
     ],
   )
-  @FeatureFlag(name = FeatureFlagConfig.Companion.USE_WAITING_LIST_ENDPOINT)
   fun getWaitingListApplicationsByScheduleId(
     @Parameter(description = "The ID of the schedule") @PathVariable scheduleId: Long,
     @RequestAttribute filters: ConsumerFilters?,

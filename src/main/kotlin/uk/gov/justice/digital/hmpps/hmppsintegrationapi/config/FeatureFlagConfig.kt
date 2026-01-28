@@ -20,17 +20,6 @@ data class FeatureFlagConfig(
 ) {
   companion object {
     const val COURSE_COMPLETION_EVENT = "course-completion-event-enabled"
-    const val USE_UPDATE_ATTENDANCE_ENDPOINT = "use-update-attendance-endpoint"
-    const val USE_SCHEDULE_DETAIL_ENDPOINT = "use-schedule-detail-endpoint"
-    const val USE_SEARCH_APPOINTMENTS_ENDPOINT = "use-search-appointments-endpoint"
-    const val USE_DEALLOCATION_ENDPOINT = "use-deallocation-endpoint"
-    const val USE_SCHEDULED_INSTANCES_ENDPOINT = "use-scheduled-instances-endpoint"
-    const val USE_DEALLOCATION_REASONS_ENDPOINT = "use-deallocation-reasons-endpoint"
-    const val USE_ALLOCATION_ENDPOINT = "use-allocation-endpoint"
-    const val USE_EDUCATION_ENDPOINT = "use-education-endpoint"
-    const val USE_SUITABILITY_ENDPOINT = "use-suitability-endpoint"
-    const val USE_HISTORICAL_ATTENDANCES_ENDPOINT = "use-historical-attendances-endpoint"
-    const val USE_WAITING_LIST_ENDPOINT = "use-waiting-list-endpoint"
     const val USE_CONTACT_EVENTS_ENDPOINT = "use-contact-events-endpoint"
     const val EPF_ENDPOINT_INCLUDES_LAO = "epf-endpoint-includes-lao"
     const val EPF_GATEWAY_DISABLED = "epf-gateway-disabled"
