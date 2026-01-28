@@ -522,9 +522,10 @@ function verify_risk_endpoints(hmppsId) {
     validate_response_list_not_empty(res, "Status Information found");
     validate_get_request(`/v1/persons/${hmppsId}/licences/conditions`);
     validate_get_request(`/v1/persons/${hmppsId}/risks/serious-harm`);
-    validate_get_request(`/v1/persons/${hmppsId}/risks/scores`);
     validate_get_request(`/v1/persons/${hmppsId}/risks/dynamic`);
     validate_get_request(`/v1/persons/${hmppsId}/risks/categories`);
+
+    validate_risks_scores_details(hmppsId);
 
     res = validate_get_request(`/v1/persons/${hmppsId}/risks/mappadetail`);
     if ((res.status === 200) && (res.json()["data"] !== null)) {
@@ -533,6 +534,59 @@ function verify_risk_endpoints(hmppsId) {
       console.log(`No MAPPA data for ${hmppsId}`);
     }
   })
+}
+
+function validate_risks_scores_details(hmppsId) {
+  const res = validate_get_request(`/v1/persons/${hmppsId}/risks/scores`);
+
+  if (res.status != 200) {
+    return;
+  }
+
+  const elevenMonthAgo = new Date();
+  elevenMonthAgo.setMonth(elevenMonthAgo.getMonth() - 11);
+  const expectedBands = [`LOW`,`MEDIUM`,`HIGH`,`VERY_HIGH`,`NOT_APPLICABLE`]
+  const newestVersion2 = res.json()["data"]
+    .filter(obj => obj.assessmentVersion === 2)
+    .reduce((latest, current) =>
+    new Date(current.completedDate) > new Date(latest.completedDate) ? current : latest) || null;
+
+  if(!check(newestVersion2, {
+    [`Risk scores version 2 exists.`]: (v2) =>
+      v2 !== null
+  })) {
+    exec.test.fail(`Risk scores version 2 data dose not exist.`);
+    return;
+  };
+
+  if(!check(newestVersion2, {
+    [`Risk scores version 2 bands do match expected bands.`]: (v2) =>
+      expectedBands.includes(v2.allReoffendingPredictor.band) &&
+      expectedBands.includes(v2.violentReoffendingPredictor.band) &&
+      expectedBands.includes(v2.seriousViolentReoffendingPredictor.band) &&
+      expectedBands.includes(v2.directContactSexualReoffendingPredictor.band) &&
+      expectedBands.includes(v2.indirectImageContactSexualReoffendingPredictor.band) &&
+      expectedBands.includes(v2.combinedSeriousReoffendingPredictor.band)
+  })) {
+    exec.test.fail(`Risk scores version 2 bands do not match expected bands.`);
+    return;
+  };
+
+  const version1 = res.json()["data"]
+      .find(d => d.assessmentVersion === 1) || null;
+
+  if(version1 != null) {
+    console.log(`Version 1 risk scores where found.`);
+  } else {
+    console.log(`Version 1 risk scores where not found.`);
+  }
+
+  if (!check(newestVersion2, {
+      [`Current risk scores data is not about to expire.`]: (v2) =>
+      new Date(v2.completedDate) > elevenMonthAgo,
+    })) {
+      exec.test.fail(`Current risk scores data is about to expire, please update the upstream dev data.`);
+  };
 }
 
 function verify_get_basic_details(hmppsId) {
