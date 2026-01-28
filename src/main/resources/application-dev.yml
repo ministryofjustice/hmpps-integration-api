@@ -188,3 +188,6 @@ authorisation:
     jwylde:
       roles:
         - "full-access-lao-redactions"
+    community-payback-dev:
+      roles:
+        - "status-only"
