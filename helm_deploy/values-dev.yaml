@@ -23,6 +23,8 @@ generic-service:
     other-services:
       APPINSIGHTS_INSTRUMENTATIONKEY: "azure-app-insights"
       SENTRY_DSN: "sentry"
+    cp-course-completion-events-secret:
+      HMPPS_SQS_QUEUES_EDUCATIONCOURSECOMPLETIONEVENTS_QUEUE_NAME: "sqs_queue_name"
 
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
