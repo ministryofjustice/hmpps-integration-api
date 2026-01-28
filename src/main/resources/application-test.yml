@@ -90,7 +90,7 @@ feature-flag:
   use-suitability-endpoint: true
   use-waiting-list-endpoint: true
   use-contact-events-endpoint: true
-  epf-endpoint-includes-lao: false
+  epf-endpoint-includes-lao: true
   cpr-enabled: true
   enhanced-search-enabled: false
   gateway-cache-enabled: true
