@@ -189,5 +189,6 @@ authorisation:
       roles:
         - "full-access-lao-redactions"
     community-payback-dev:
+      notes: "Role for developers in the Community Payback team"
       roles:
         - "status-only"
