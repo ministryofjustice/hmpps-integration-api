@@ -29,4 +29,5 @@ data class SexualPredictor(
     allowableValues = ["LOW", "MEDIUM", "HIGH", "VERY_HIGH", "NOT_APPLICABLE"],
   )
   val contactScoreLevel: String? = null,
+  val score: Int? = null,
 )

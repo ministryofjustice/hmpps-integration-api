@@ -16,4 +16,5 @@ data class GeneralPredictor(
     allowableValues = ["LOW", "MEDIUM", "HIGH", "VERY_HIGH", "NOT_APPLICABLE"],
   )
   val scoreLevel: String? = null,
+  val score: Int? = null,
 )

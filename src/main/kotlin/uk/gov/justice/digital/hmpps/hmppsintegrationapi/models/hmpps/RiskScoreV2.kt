@@ -16,4 +16,5 @@ data class RiskScoreV2(
     allowableValues = ["LOW", "MEDIUM", "HIGH", "VERY_HIGH", "NOT_APPLICABLE"],
   )
   val band: String? = null,
+  val score: Int? = null,
 )
