@@ -80,7 +80,6 @@ hmpps.sqs:
 feature-flag:
   course-completion-event-enabled: true
   use-contact-events-endpoint: true
-  use-stubbed-contact-events-data: false
   gateway-cache-enabled: true
   use-new-risk-score-api: true
   normalised-path-matching: true
