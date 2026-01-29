@@ -84,17 +84,6 @@ hmpps.sqs:
 
 feature-flag:
   course-completion-event-enabled: true
-  use-update-attendance-endpoint: true
-  use-schedule-detail-endpoint: true
-  use-search-appointments-endpoint: true
-  use-deallocation-endpoint: true
-  use-scheduled-instances-endpoint: true
-  use-deallocation-reasons-endpoint: true
-  use-allocation-endpoint: true
-  use-education-endpoint: true
-  use-historical-attendances-endpoint: true
-  use-suitability-endpoint: true
-  use-waiting-list-endpoint: true
   use-contact-events-endpoint: true
   epf-endpoint-includes-lao: true
   cpr-enabled: true
