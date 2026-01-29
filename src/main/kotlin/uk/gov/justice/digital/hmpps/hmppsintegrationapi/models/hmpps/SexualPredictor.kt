@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import io.swagger.v3.oas.annotations.media.Schema
 
 data class SexualPredictor(
@@ -29,6 +30,8 @@ data class SexualPredictor(
     allowableValues = ["LOW", "MEDIUM", "HIGH", "VERY_HIGH", "NOT_APPLICABLE"],
   )
   val contactScoreLevel: String? = null,
+  @JsonInclude(JsonInclude.Include.NON_NULL)
   val ospIndirectImagePercentageScore: Int? = null,
+  @JsonInclude(JsonInclude.Include.NON_NULL)
   val ospDirectContactPercentageScore: Int? = null,
 )

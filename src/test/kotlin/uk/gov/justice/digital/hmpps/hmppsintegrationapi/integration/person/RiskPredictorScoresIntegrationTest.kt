@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.kotlin.whenever
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
+import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
@@ -39,7 +40,7 @@ class RiskPredictorScoresIntegrationTest : IntegrationTestBase() {
 
     callApi("$basePath/$deliusCrn/risks/scores")
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("person-risk-scores.json")))
+      .andExpect(content().json(getExpectedResponse("person-risk-scores.json"), JsonCompareMode.STRICT))
     arnsMockServer.assertValidationPassed()
   }
 
@@ -53,7 +54,7 @@ class RiskPredictorScoresIntegrationTest : IntegrationTestBase() {
 
     callApi("$basePath/$deliusCrn/risks/scores")
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("person-risk-scores-v1.json")))
+      .andExpect(content().json(getExpectedResponse("person-risk-scores-v1.json"), JsonCompareMode.STRICT))
     arnsMockServer.assertValidationPassed()
   }
 
@@ -67,7 +68,7 @@ class RiskPredictorScoresIntegrationTest : IntegrationTestBase() {
 
     callApi("$basePath/$deliusCrn/risks/scores")
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("person-risk-scores-v2.json")))
+      .andExpect(content().json(getExpectedResponse("person-risk-scores-v2.json"), JsonCompareMode.STRICT))
     arnsMockServer.assertValidationPassed()
   }
 
@@ -81,7 +82,7 @@ class RiskPredictorScoresIntegrationTest : IntegrationTestBase() {
 
     callApi("$basePath/$deliusCrn/risks/scores")
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("person-risk-scores-v1-and-v2.json")))
+      .andExpect(content().json(getExpectedResponse("person-risk-scores-v1-and-v2.json"), JsonCompareMode.STRICT))
     arnsMockServer.assertValidationPassed()
   }
 }
