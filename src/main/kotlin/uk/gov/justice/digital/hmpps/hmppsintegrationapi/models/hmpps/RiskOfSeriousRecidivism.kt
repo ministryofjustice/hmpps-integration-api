@@ -16,5 +16,5 @@ data class RiskOfSeriousRecidivism(
     allowableValues = ["LOW", "MEDIUM", "HIGH", "VERY_HIGH", "NOT_APPLICABLE"],
   )
   val scoreLevel: String? = null,
-  val score: Int? = null,
+  val percentageScore: Int? = null,
 )

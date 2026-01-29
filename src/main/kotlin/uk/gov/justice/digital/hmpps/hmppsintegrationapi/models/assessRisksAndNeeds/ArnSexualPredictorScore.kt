@@ -5,10 +5,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SexualPredi
 data class ArnSexualPredictorScore(
   val ospIndecentScoreLevel: String? = null,
   val ospContactScoreLevel: String? = null,
+  val ospIndirectImagePercentageScore: Int? = null,
+  val ospDirectContactPercentageScore: Int? = null,
 ) {
-  fun toSexualPredictor(): SexualPredictor =
+  fun toSexualPredictor(useV2NumericalValue: Boolean = true): SexualPredictor =
     SexualPredictor(
       indecentScoreLevel = this.ospIndecentScoreLevel,
       contactScoreLevel = this.ospContactScoreLevel,
+      ospIndirectImagePercentageScore = if (useV2NumericalValue) this.ospIndirectImagePercentageScore else null,
+      ospDirectContactPercentageScore = if (useV2NumericalValue) this.ospDirectContactPercentageScore else null,
     )
 }

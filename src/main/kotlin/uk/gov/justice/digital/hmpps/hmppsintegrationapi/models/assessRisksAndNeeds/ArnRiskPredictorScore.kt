@@ -17,11 +17,11 @@ data class ArnRiskPredictorScore(
     RiskPredictorScore(
       completedDate = getDateFromString(this.completedDate),
       assessmentStatus = this.assessmentStatus,
-      generalPredictor = this.generalPredictorScore.toGeneralPredictor(),
-      violencePredictor = this.violencePredictorScore.toViolencePredictor(),
-      groupReconviction = this.groupReconvictionScore.toGroupReconviction(),
-      riskOfSeriousRecidivism = this.riskOfSeriousRecidivismScore.toRiskOfSeriousRecidivism(),
-      sexualPredictor = this.sexualPredictorScore.toSexualPredictor(),
+      generalPredictor = this.generalPredictorScore.toGeneralPredictor(false),
+      violencePredictor = this.violencePredictorScore.toViolencePredictor(false),
+      groupReconviction = this.groupReconvictionScore.toGroupReconviction(false),
+      riskOfSeriousRecidivism = this.riskOfSeriousRecidivismScore.toRiskOfSeriousRecidivism(false),
+      sexualPredictor = this.sexualPredictorScore.toSexualPredictor(false),
     )
 }
 
@@ -43,6 +43,7 @@ data class ArnOutput(
 
 data class ArnScore(
   val band: String? = null,
+  val score: Int? = null,
 )
 
 data class ArnRiskPredictorScoreV2(
@@ -71,12 +72,36 @@ data class ArnRiskPredictorScoreV2(
           completedDate = getDateFromString(this.completedDate),
           assessmentStatus = this.status,
           assessmentVersion = assessmentVersion,
-          allReoffendingPredictor = RiskScoreV2(band = this.output.allReoffendingPredictor.band),
-          violentReoffendingPredictor = RiskScoreV2(band = this.output.violentReoffendingPredictor.band),
-          seriousViolentReoffendingPredictor = RiskScoreV2(band = this.output.seriousViolentReoffendingPredictor.band),
-          directContactSexualReoffendingPredictor = RiskScoreV2(band = this.output.directContactSexualReoffendingPredictor.band),
-          indirectImageContactSexualReoffendingPredictor = RiskScoreV2(band = this.output.indirectImageContactSexualReoffendingPredictor.band),
-          combinedSeriousReoffendingPredictor = RiskScoreV2(band = this.output.combinedSeriousReoffendingPredictor.band),
+          allReoffendingPredictor =
+            RiskScoreV2(
+              band = this.output.allReoffendingPredictor.band,
+              score = this.output.allReoffendingPredictor.score,
+            ),
+          violentReoffendingPredictor =
+            RiskScoreV2(
+              band = this.output.violentReoffendingPredictor.band,
+              score = this.output.violentReoffendingPredictor.score,
+            ),
+          seriousViolentReoffendingPredictor =
+            RiskScoreV2(
+              band = this.output.seriousViolentReoffendingPredictor.band,
+              score = this.output.seriousViolentReoffendingPredictor.score,
+            ),
+          directContactSexualReoffendingPredictor =
+            RiskScoreV2(
+              band = this.output.directContactSexualReoffendingPredictor.band,
+              score = this.output.directContactSexualReoffendingPredictor.score,
+            ),
+          indirectImageContactSexualReoffendingPredictor =
+            RiskScoreV2(
+              band = this.output.indirectImageContactSexualReoffendingPredictor.band,
+              score = this.output.indirectImageContactSexualReoffendingPredictor.score,
+            ),
+          combinedSeriousReoffendingPredictor =
+            RiskScoreV2(
+              band = this.output.combinedSeriousReoffendingPredictor.band,
+              score = this.output.combinedSeriousReoffendingPredictor.score,
+            ),
         )
       }
       else -> {
