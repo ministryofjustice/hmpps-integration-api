@@ -6,5 +6,6 @@ val communityPayback =
   role("community-payback") {
     permissions {
       -"/v1/education/course-completion"
+      -"/v1/status"
     }
   }
