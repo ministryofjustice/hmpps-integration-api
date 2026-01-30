@@ -65,6 +65,7 @@ class EducationCourseServiceTest :
                 courseName = "Test Course",
                 courseType = "Test course type",
                 provider = "Moodle",
+                completionDateTime = LocalDate.of(2024, 1, 15),
                 status = "Completed",
                 totalTime = "02:30",
                 attempts = 1,
