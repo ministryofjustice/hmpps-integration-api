@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.allEndpoints
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.cats
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.communityPayback
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.ctrlo
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.curious
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.daso
@@ -159,4 +160,5 @@ val roles =
     prisonerFinance,
     cats,
     daso,
+    communityPayback,
   ).associateBy { it.name }
