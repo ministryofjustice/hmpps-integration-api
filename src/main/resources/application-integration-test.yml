@@ -174,7 +174,7 @@ authorisation:
       filters:
         supervisionStatuses:
           - PROBATION
-    edf:
+    epf:
       roles:
         - "ctrlo"
   certificate-revocation-list:

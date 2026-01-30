@@ -3,9 +3,9 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.riskScores
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionType.REMOVE
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.redactionPolicy
 
-val edfRiskScoreRedactions =
+val epfRiskScoreRedactions =
   redactionPolicy(
-    "edf-risk-score-redactions",
+    "epf-risk-score-redactions",
   ) {
     responseRedactions {
       jsonPath {

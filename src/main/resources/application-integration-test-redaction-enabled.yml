@@ -161,7 +161,7 @@ authorisation:
         - "test-role"
       include:
       filters:
-    edf:
+    epf:
       roles:
         - "ctrlo"
 
