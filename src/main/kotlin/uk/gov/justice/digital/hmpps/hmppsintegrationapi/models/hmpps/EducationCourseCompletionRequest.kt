@@ -64,6 +64,9 @@ data class CourseDetails(
   @Schema(description = "Provider of the course")
   @field:NotBlank(message = "provider must not be null or blank")
   val provider: String,
+  @Schema(description = "Date when the Person on Probation (PoP) completed the course", example = "2023-12-31")
+  @field:NotNull(message = "completionDateTime must not be null")
+  val completionDateTime: LocalDate,
   @Schema(description = "Status of the course the Person on Probation (PoP) has completed eg. Failed, Completed")
   @field:NotBlank(message = "status must not be null or blank")
   val status: String,

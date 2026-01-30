@@ -52,6 +52,7 @@ class EducationCourseCompletionService(
                 "courseName" to course.courseName,
                 "courseType" to course.courseType,
                 "provider" to course.provider,
+                "completionDateTime" to course.completionDateTime.toString(),
                 "status" to course.status,
                 "totalTime" to course.totalTime,
                 "attempts" to course.attempts?.toString().orEmpty(),
