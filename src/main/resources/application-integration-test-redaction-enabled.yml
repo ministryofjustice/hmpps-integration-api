@@ -161,6 +161,9 @@ authorisation:
         - "test-role"
       include:
       filters:
+    edf:
+      roles:
+        - "ctrlo"
 
 redaction:
   client-names:

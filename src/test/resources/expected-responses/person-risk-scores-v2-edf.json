@@ -4,6 +4,16 @@
       "completedDate": "2026-01-16T16:22:54",
       "assessmentStatus": "COMPLETE",
       "assessmentVersion": 2,
+      "generalPredictor": {
+      },
+      "violencePredictor": {
+      },
+      "groupReconviction": {
+      },
+      "riskOfSeriousRecidivism": {
+      },
+      "sexualPredictor": {
+      },
       "allReoffendingPredictor": {
         "score": 1
       },

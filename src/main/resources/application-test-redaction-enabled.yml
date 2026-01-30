@@ -121,3 +121,6 @@ authorisation:
       filters:
         case-notes:
           - "CAB"
+    edf:
+      roles:
+        - "ctrlo"

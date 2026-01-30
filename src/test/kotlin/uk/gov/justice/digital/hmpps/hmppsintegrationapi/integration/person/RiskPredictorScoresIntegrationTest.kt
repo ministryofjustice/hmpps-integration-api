@@ -66,7 +66,7 @@ class RiskPredictorScoresIntegrationTest : IntegrationTestBase() {
       getExpectedResponse("arns-risk-predictor-scores-new-v1-only.json"),
     )
 
-    callApiWithCN("$basePath/$deliusCrn/risks/scores", "ctrlo")
+    callApiWithCN("$basePath/$deliusCrn/risks/scores", "edf")
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("person-risk-scores-v1-edf.json"), JsonCompareMode.STRICT))
     arnsMockServer.assertValidationPassed()
@@ -94,7 +94,7 @@ class RiskPredictorScoresIntegrationTest : IntegrationTestBase() {
       getExpectedResponse("arns-risk-predictor-scores-new-v2-only.json"),
     )
 
-    callApiWithCN("$basePath/$deliusCrn/risks/scores", "ctrlo")
+    callApiWithCN("$basePath/$deliusCrn/risks/scores", "edf")
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("person-risk-scores-v2-edf.json"), JsonCompareMode.STRICT))
     arnsMockServer.assertValidationPassed()
