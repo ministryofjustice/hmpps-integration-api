@@ -55,6 +55,7 @@ class EducationCourseControllerTest(
                   courseName = "Test Course",
                   courseType = "Test course type",
                   provider = "Moodle",
+                  completionDateTime = LocalDate.parse("2024-01-15"),
                   status = "Completed",
                   totalTime = "02:30",
                   attempts = 1,
