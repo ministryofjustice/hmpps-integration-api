@@ -5,20 +5,20 @@
       "assessmentStatus": "COMPLETE",
       "assessmentVersion": 2,
       "generalPredictor": {
-        "scoreLevel":null
+        "scoreLevel": null
       },
       "violencePredictor": {
-        "scoreLevel":null
+        "scoreLevel": null
       },
       "groupReconviction": {
-        "scoreLevel":null
+        "scoreLevel": null
       },
       "riskOfSeriousRecidivism": {
-        "scoreLevel":null
+        "scoreLevel": null
       },
       "sexualPredictor": {
-        "indecentScoreLevel":null,
-        "contactScoreLevel":null
+        "indecentScoreLevel": null,
+        "contactScoreLevel": null
       },
       "allReoffendingPredictor": {
         "band": "LOW"
