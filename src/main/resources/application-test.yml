@@ -138,6 +138,3 @@ authorisation:
       filters:
         supervisionStatuses:
           - PROBATION
-    epf:
-      roles:
-        - "ctrlo"
