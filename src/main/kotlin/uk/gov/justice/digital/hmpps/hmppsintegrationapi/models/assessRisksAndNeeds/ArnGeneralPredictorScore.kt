@@ -9,6 +9,6 @@ data class ArnGeneralPredictorScore(
   fun toGeneralPredictor(useV2NumericalValue: Boolean = true): GeneralPredictor =
     GeneralPredictor(
       scoreLevel = this.ogpRisk,
-      ogp2Year = if (useV2NumericalValue) this.ogp2Year else null,
+      score = if (useV2NumericalValue) this.ogp2Year else null,
     )
 }

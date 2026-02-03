@@ -9,6 +9,6 @@ data class ArnGroupReconvictionScore(
   fun toGroupReconviction(useV2NumericalValue: Boolean = true): GroupReconviction =
     GroupReconviction(
       scoreLevel = this.scoreLevel,
-      twoYears = if (useV2NumericalValue) this.twoYears else null,
+      score = if (useV2NumericalValue) this.twoYears else null,
     )
 }

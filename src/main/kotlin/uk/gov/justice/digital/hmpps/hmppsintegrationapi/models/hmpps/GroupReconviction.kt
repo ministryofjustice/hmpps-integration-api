@@ -18,5 +18,9 @@ data class GroupReconviction(
   )
   val scoreLevel: String? = null,
   @JsonInclude(JsonInclude.Include.NON_NULL)
-  val twoYears: Int? = null,
+  @Schema(
+    description = "A numerical number representing the risk score.",
+    example = "50",
+  )
+  val score: Int? = null,
 )

@@ -5,20 +5,20 @@
       "assessmentStatus": "COMPLETE",
       "assessmentVersion": 1,
       "generalPredictor": {
-        "ogp2Year": 11
+        "score": 11
       },
       "violencePredictor": {
-        "twoYears": 6
+        "score": 6
       },
       "groupReconviction": {
-        "twoYears": 1
+        "score": 1
       },
       "riskOfSeriousRecidivism": {
-        "percentageScore": 12
+        "score": 12
       },
       "sexualPredictor": {
-        "ospIndirectImagePercentageScore": 15,
-        "ospDirectContactPercentageScore": 16
+        "indecentScore": 15,
+        "contactScore": 16
       }
     }
   ],

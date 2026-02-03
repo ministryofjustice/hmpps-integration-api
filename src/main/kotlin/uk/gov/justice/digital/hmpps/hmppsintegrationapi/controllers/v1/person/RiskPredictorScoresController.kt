@@ -37,7 +37,7 @@ class RiskPredictorScoresController(
 
  Note that, to preserve backwards compatibility, the v1 fields are present even for v2 assessments, but all of the `scoreLevel` values will be missing.
 
- This endpoint does not server Limited Access Offender (LAO) data.""",
+ Note in most cases we only return the levels/bands, with access to the numeric scores requiring specific approval.""",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found risk scores for a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),

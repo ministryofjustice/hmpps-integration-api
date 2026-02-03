@@ -9,6 +9,6 @@ data class ArnViolencePredictorScore(
   fun toViolencePredictor(useV2NumericalValue: Boolean = true): ViolencePredictor =
     ViolencePredictor(
       scoreLevel = this.ovpRisk,
-      twoYears = if (useV2NumericalValue) this.twoYears else null,
+      score = if (useV2NumericalValue) this.twoYears else null,
     )
 }

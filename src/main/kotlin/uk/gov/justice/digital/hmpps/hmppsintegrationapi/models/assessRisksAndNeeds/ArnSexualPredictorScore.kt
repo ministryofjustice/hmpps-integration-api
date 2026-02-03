@@ -12,7 +12,7 @@ data class ArnSexualPredictorScore(
     SexualPredictor(
       indecentScoreLevel = this.ospIndecentScoreLevel,
       contactScoreLevel = this.ospContactScoreLevel,
-      ospIndirectImagePercentageScore = if (useV2NumericalValue) this.ospIndirectImagePercentageScore else null,
-      ospDirectContactPercentageScore = if (useV2NumericalValue) this.ospDirectContactPercentageScore else null,
+      indecentScore = if (useV2NumericalValue) this.ospIndirectImagePercentageScore else null,
+      contactScore = if (useV2NumericalValue) this.ospDirectContactPercentageScore else null,
     )
 }

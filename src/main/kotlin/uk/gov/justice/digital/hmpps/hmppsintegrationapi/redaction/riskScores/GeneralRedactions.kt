@@ -14,11 +14,8 @@ val generalRiskScoreRedactions =
         }
         redactions {
           -("$..score" to REMOVE)
-          -("$..ogp2Year" to REMOVE)
-          -("$..twoYears" to REMOVE)
-          -("$..percentageScore" to REMOVE)
-          -("$..ospIndirectImagePercentageScore" to REMOVE)
-          -("$..ospDirectContactPercentageScore" to REMOVE)
+          -("$..indecentScore" to REMOVE)
+          -("$..contactScore" to REMOVE)
         }
       }
     }

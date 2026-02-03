@@ -9,6 +9,6 @@ data class ArnRiskOfSeriousRecidivismScore(
   fun toRiskOfSeriousRecidivism(useV2NumericalValue: Boolean = true): RiskOfSeriousRecidivism =
     RiskOfSeriousRecidivism(
       scoreLevel = this.scoreLevel,
-      percentageScore = if (useV2NumericalValue) this.percentageScore else null,
+      score = if (useV2NumericalValue) this.percentageScore else null,
     )
 }
