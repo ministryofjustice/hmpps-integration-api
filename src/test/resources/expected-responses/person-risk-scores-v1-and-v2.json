@@ -4,6 +4,22 @@
       "completedDate": "2026-01-16T16:22:54",
       "assessmentStatus": "COMPLETE",
       "assessmentVersion": 2,
+      "generalPredictor": {
+        "scoreLevel": null
+      },
+      "violencePredictor": {
+        "scoreLevel": null
+      },
+      "groupReconviction": {
+        "scoreLevel": null
+      },
+      "riskOfSeriousRecidivism": {
+        "scoreLevel": null
+      },
+      "sexualPredictor": {
+        "indecentScoreLevel": null,
+        "contactScoreLevel": null
+      },
       "allReoffendingPredictor": {
         "band": "LOW"
       },

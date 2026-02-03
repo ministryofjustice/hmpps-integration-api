@@ -1,0 +1,33 @@
+{
+  "data": [
+    {
+      "completedDate": "2026-01-16T16:22:54",
+      "assessmentStatus": "COMPLETE",
+      "assessmentVersion": 1,
+      "generalPredictor": {
+        "score": 11
+      },
+      "violencePredictor": {
+        "score": 6
+      },
+      "groupReconviction": {
+        "score": 1
+      },
+      "riskOfSeriousRecidivism": {
+        "score": 12
+      },
+      "sexualPredictor": {
+        "indecentScore": 15,
+        "contactScore": 16
+      }
+    }
+  ],
+  "pagination": {
+    "isLastPage": true,
+    "count": 1,
+    "page": 1,
+    "perPage": 10,
+    "totalCount": 1,
+    "totalPages": 1
+  }
+}
