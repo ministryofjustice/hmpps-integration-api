@@ -18,9 +18,5 @@ data class RiskScoreV2(
   )
   val band: String? = null,
   @JsonInclude(JsonInclude.Include.NON_NULL)
-  @Schema(
-    description = "A numerical number representing the risk score.",
-    example = "30",
-  )
   val score: Int? = null,
 )

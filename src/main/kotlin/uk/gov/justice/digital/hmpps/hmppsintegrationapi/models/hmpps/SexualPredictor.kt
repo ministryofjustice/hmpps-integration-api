@@ -31,15 +31,7 @@ data class SexualPredictor(
   )
   val contactScoreLevel: String? = null,
   @JsonInclude(JsonInclude.Include.NON_NULL)
-  @Schema(
-    description = "A numerical number representing the indecent risk score.",
-    example = "20",
-  )
   val indecentScore: Int? = null,
   @JsonInclude(JsonInclude.Include.NON_NULL)
-  @Schema(
-    description = "A numerical number representing the contact risk score.",
-    example = "10",
-  )
   val contactScore: Int? = null,
 )

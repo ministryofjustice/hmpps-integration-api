@@ -18,9 +18,5 @@ data class GeneralPredictor(
   )
   val scoreLevel: String? = null,
   @JsonInclude(JsonInclude.Include.NON_NULL)
-  @Schema(
-    description = "A numerical number representing the risk score.",
-    example = "80",
-  )
   val score: Int? = null,
 )
