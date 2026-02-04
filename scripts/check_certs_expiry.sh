@@ -110,7 +110,8 @@ enhanced_expiry_check() {
 
   expires_in_seconds=$((expiry_time - current_time))
 
-  warn_days=(30 21 14 7 6 5 4 3 2 1 0)
+  # warn_days=(30 21 14 7 6 5 4 3 2 1 0)
+  warn_days=(30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 12 11 10 9 8 7 6 5 4 3 2 1 0)
 
   for day in ${warn_days[@]}; do
     start_of_day=$((day * 24 * 3600))
