@@ -6,10 +6,11 @@ val prisonerFinance =
   role("prisoner-finance") {
     permissions {
       -"/v1/status"
-      -"/v1/prison/.*/prisoners/[^/]*/balances$"
-      -"/v1/prison/.*/prisoners/.*/accounts/.*/balances"
-      -"/v1/prison/.*/prisoners/.*/accounts/.*/transactions"
-      -"/v1/prison/.*/prisoners/.*/transactions/[^/]*$"
+      -"/v1/prison/{prisonId}/prisoners/{hmppsId}/balances"
+      -"/v1/prison/{prisonId}/prisoners/{hmppsId}/accounts/{accountCode}/balances"
+      -"/v1/prison/{prisonId}/prisoners/{hmppsId}/accounts/{accountCode}/transactions"
+      -"/v1/prison/{prisonId}/prisoners/{hmppsId}/transactions"
+      -"/v1/prison/{prisonId}/prisoners/{hmppsId}/transactions/{clientUniqueRef}"
     }
     filters {
       prisons {}
