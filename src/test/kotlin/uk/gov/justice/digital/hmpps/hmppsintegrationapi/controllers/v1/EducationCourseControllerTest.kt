@@ -43,7 +43,6 @@ class EducationCourseControllerTest(
               externalReference = "CC123",
               person =
                 PersonDetails(
-                  crn = "X123456",
                   firstName = "John",
                   lastName = "Doe",
                   dateOfBirth = LocalDate.parse("1990-01-01"),
@@ -55,11 +54,11 @@ class EducationCourseControllerTest(
                   courseName = "Test Course",
                   courseType = "Test course type",
                   provider = "Moodle",
-                  completionDateTime = LocalDate.parse("2024-01-15"),
+                  completionDate = LocalDate.parse("2024-01-15"),
                   status = "Completed",
-                  totalTime = "02:30",
+                  totalTimeMinutes = 150,
                   attempts = 1,
-                  expectedMinutes = 2.0,
+                  expectedTimeMinutes = 120,
                 ),
             ),
         )

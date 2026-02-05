@@ -26,13 +26,6 @@ data class CourseCompletion(
 )
 
 data class PersonDetails(
-  @Schema(description = "CRN of the Person on Probation (PoP)")
-  @field:NotBlank(message = "crn must not be null or blank")
-  @field:Pattern(
-    regexp = "^[A-Z]\\d{6}$",
-    message = "crn must be a valid CRN format",
-  )
-  val crn: String,
   @Schema(description = "First name of the Person on Probation (PoP)")
   @field:NotBlank(message = "firstName must not be null or blank")
   val firstName: String,
@@ -65,19 +58,18 @@ data class CourseDetails(
   @field:NotBlank(message = "provider must not be null or blank")
   val provider: String,
   @Schema(description = "Date when the Person on Probation (PoP) completed the course", example = "2023-12-31")
-  @field:NotNull(message = "completionDateTime must not be null")
-  val completionDateTime: LocalDate,
+  @field:NotNull(message = "completionDate must not be null")
+  val completionDate: LocalDate,
   @Schema(description = "Status of the course the Person on Probation (PoP) has completed eg. Failed, Completed")
   @field:NotBlank(message = "status must not be null or blank")
   val status: String,
-  @Schema(example = "02:30", description = "Total time spent on the course in HH:MM format", pattern = "^\\d{2}:\\d{2}$")
-  @field:Pattern(regexp = "^\\d{2}:\\d{2}$", message = "totalTime must be in HH:MM format")
-  @field:NotBlank(message = "totalTime must not be null or blank")
-  val totalTime: String,
+  @Schema(example = "150", description = "Total time spent on the course in minutes")
+  @field:Positive(message = "totalTime must be positive")
+  val totalTimeMinutes: Long,
   @Schema(description = "Number of attempts the Person on Probation (PoP) has taken", example = "3")
   val attempts: Int?,
   @Schema(description = "Expected minutes for the Person on Probation (PoP) to complete the course", example = "140")
-  @field:Positive(message = "expectedMinutes must be positive")
-  @field:NotNull(message = "expectedMinutes must not be null")
-  val expectedMinutes: Double,
+  @field:Positive(message = "expectedTimeMinutes must be positive")
+  @field:NotNull(message = "expectedTimeMinutes must not be null")
+  val expectedTimeMinutes: Long,
 )
