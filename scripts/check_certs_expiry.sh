@@ -117,7 +117,7 @@ enhanced_expiry_check() {
     start_of_day=$((day * 24 * 3600))
     end_of_day=$(((day+1) * 24 * 3600))
     if ((expires_in_seconds >= start_of_day && expires_in_seconds < end_of_day)); then
-      echo "**ALERT ACTION REQUIRED** The certificate for $certificate_name in $environment will expire at $expiry_date (in $day days)."
+      echo "**ALERT ACTION REQUIRED** The certificate for $certificate_name in $environment will expire on $expiry_date (in $day days)."
     fi
   done
 }
