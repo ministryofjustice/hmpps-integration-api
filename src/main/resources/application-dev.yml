@@ -177,6 +177,10 @@ authorisation:
     jwylde:
       roles:
         - "prisoner-finance"
+      filters:
+        prisons:
+          - MKI
+          - MDI
     community-payback-dev:
       notes: "Role for developers in the Community Payback team"
       roles:
