@@ -57,4 +57,9 @@ enum class HmppsMessageEventType(
     eventTypeCode = "AllocatePrisonerToActivitySchedule",
     description = "A prisoner has been allocated to an activity schedule",
   ),
+  EDUCATION_COURSE_COMPLETION_CREATED(
+    type = "education-course.completion.created",
+    eventTypeCode = "educationCourseCompletionCreated",
+    description = "A education course completion has been created",
+  ),
 }

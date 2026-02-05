@@ -1,0 +1,40 @@
+{
+  "data": [
+    {
+      "completedDate": "2026-01-16T16:22:54",
+      "assessmentStatus": "COMPLETE",
+      "assessmentVersion": 2,
+      "generalPredictor": {},
+      "violencePredictor": {},
+      "groupReconviction": {},
+      "riskOfSeriousRecidivism": {},
+      "sexualPredictor": {},
+      "allReoffendingPredictor": {
+        "score": 1
+      },
+      "violentReoffendingPredictor": {
+        "score": 30
+      },
+      "seriousViolentReoffendingPredictor": {
+        "score": 99
+      },
+      "directContactSexualReoffendingPredictor": {
+        "score": 10
+      },
+      "indirectImageContactSexualReoffendingPredictor": {
+        "score": 10
+      },
+      "combinedSeriousReoffendingPredictor": {
+        "score": 0
+      }
+    }
+  ],
+  "pagination": {
+    "isLastPage": true,
+    "count": 1,
+    "page": 1,
+    "perPage": 10,
+    "totalCount": 1,
+    "totalPages": 1
+  }
+}

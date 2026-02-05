@@ -45,23 +45,12 @@ services:
     base-url: https://hmpps-person-record-preprod.hmpps.service.justice.gov.uk
 
 feature-flag:
-  use-update-attendance-endpoint: true
-  use-schedule-detail-endpoint: true
-  use-search-appointments-endpoint: true
-  use-deallocation-endpoint: true
-  use-scheduled-instances-endpoint: true
-  use-deallocation-reasons-endpoint: true
-  use-allocation-endpoint: true
-  use-education-endpoint: true
-  use-prisoner-base-location-api: true
-  use-historical-attendances-endpoint: true
-  use-suitability-endpoint: true
-  use-waiting-list-endpoint: true
+  course-completion-event-enabled: false
   use-contact-events-endpoint: false
-  epf-endpoint-includes-lao: false
+  epf-endpoint-includes-lao: true
   epf-gateway-disabled: true
   cpr-enabled: true
-  gateway-cache-enabled: false
+  gateway-cache-enabled: true
   use-new-risk-score-api: false
 
 authorisation:

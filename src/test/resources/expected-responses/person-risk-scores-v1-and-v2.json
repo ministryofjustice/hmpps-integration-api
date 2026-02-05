@@ -1,0 +1,72 @@
+{
+  "data": [
+    {
+      "completedDate": "2026-01-16T16:22:54",
+      "assessmentStatus": "COMPLETE",
+      "assessmentVersion": 2,
+      "generalPredictor": {
+        "scoreLevel": null
+      },
+      "violencePredictor": {
+        "scoreLevel": null
+      },
+      "groupReconviction": {
+        "scoreLevel": null
+      },
+      "riskOfSeriousRecidivism": {
+        "scoreLevel": null
+      },
+      "sexualPredictor": {
+        "indecentScoreLevel": null,
+        "contactScoreLevel": null
+      },
+      "allReoffendingPredictor": {
+        "band": "LOW"
+      },
+      "violentReoffendingPredictor": {
+        "band": "MEDIUM"
+      },
+      "seriousViolentReoffendingPredictor": {
+        "band": "HIGH"
+      },
+      "directContactSexualReoffendingPredictor": {
+        "band": "LOW"
+      },
+      "indirectImageContactSexualReoffendingPredictor": {
+        "band": "LOW"
+      },
+      "combinedSeriousReoffendingPredictor": {
+        "band": "LOW"
+      }
+    },
+    {
+      "completedDate": "2026-01-16T16:22:54",
+      "assessmentStatus": "COMPLETE",
+      "assessmentVersion": 1,
+      "generalPredictor": {
+        "scoreLevel": "LOW"
+      },
+      "violencePredictor": {
+        "scoreLevel": "MEDIUM"
+      },
+      "groupReconviction": {
+        "scoreLevel": "HIGH"
+      },
+      "riskOfSeriousRecidivism": {
+        "scoreLevel": "LOW"
+      },
+      "sexualPredictor": {
+        "indecentScoreLevel": "LOW",
+        "contactScoreLevel": "MEDIUM"
+      }
+    }
+  ],
+  "pagination": {
+    "isLastPage": true,
+    "count": 2,
+    "page": 1,
+    "perPage": 10,
+    "totalCount": 2,
+    "totalPages": 1
+  }
+}

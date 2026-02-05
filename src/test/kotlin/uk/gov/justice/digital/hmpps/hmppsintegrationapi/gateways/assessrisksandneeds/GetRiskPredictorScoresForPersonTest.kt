@@ -23,10 +23,12 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.GeneralPred
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.GroupReconviction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskOfSeriousRecidivism
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskPredictorScore
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskScoreV2
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SexualPredictor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ViolencePredictor
+import java.io.File
 import java.time.LocalDateTime
 
 @ActiveProfiles("test")
@@ -43,9 +45,11 @@ class GetRiskPredictorScoresForPersonTest(
       val deliusCrn = "X777776"
       val deliusCrnNewV1 = "X777777"
       val deliusCrnNewV2 = "X777778"
+      val deliusCrnNewV1AndV2 = "X777779"
       val path = "/risks/predictors/$deliusCrn"
       val pathNewV1 = "/risks/predictors/unsafe/all/CRN/$deliusCrnNewV1"
       val pathNewV2 = "/risks/predictors/unsafe/all/CRN/$deliusCrnNewV2"
+      var pathNewV1AndV2 = "/risks/predictors/unsafe/all/CRN/$deliusCrnNewV1AndV2"
       val assessRisksAndNeedsApiMockServer = ApiMockServer.create(UpstreamApi.ASSESS_RISKS_AND_NEEDS)
 
       beforeEach {
@@ -54,96 +58,22 @@ class GetRiskPredictorScoresForPersonTest(
         Mockito.reset(featureFlag)
         assessRisksAndNeedsApiMockServer.stubForGet(
           path,
-          """
-            [
-              {
-                "completedDate": "2023-09-05T10:15:41",
-                "assessmentStatus": "COMPLETE",
-                "groupReconvictionScore": {
-                      "scoreLevel": "HIGH"
-                  },
-                "generalPredictorScore": {
-                      "ogpRisk": "LOW"
-                  },
-                "violencePredictorScore": {
-                      "ovpRisk": "MEDIUM"
-                  },
-                "riskOfSeriousRecidivismScore": {
-                      "scoreLevel": "VERY_HIGH"
-                  },
-                "sexualPredictorScore": {
-                      "ospIndecentScoreLevel": "HIGH",
-                      "ospContactScoreLevel": "VERY_HIGH"
-                  }
-              }
-            ]
-          """,
+          File("src/test/resources/expected-responses/arns-risk-predictor-scores-deprecated.json").readText(),
         )
 
         assessRisksAndNeedsApiMockServer.stubForGet(
           pathNewV1,
-          """
-            [
-              {
-                "completedDate": "2025-10-23T03:02:59",
-                "source": "OASYS",
-                "status": "COMPLETE",
-                "outputVersion": "1",
-                "output": {
-                  "groupReconvictionScore": {
-                        "scoreLevel": "HIGH"
-                    },
-                  "generalPredictorScore": {
-                        "ogpRisk": "LOW"
-                    },
-                  "violencePredictorScore": {
-                        "ovpRisk": "MEDIUM"
-                    },
-                  "riskOfSeriousRecidivismScore": {
-                        "scoreLevel": "VERY_HIGH"
-                    },
-                  "sexualPredictorScore": {
-                        "ospIndecentScoreLevel": "HIGH",
-                        "ospContactScoreLevel": "VERY_HIGH"
-                    }
-                }
-              }
-            ]
-          """,
+          File("src/test/resources/expected-responses/arns-risk-predictor-scores-new-v1-only.json").readText(),
         )
 
         assessRisksAndNeedsApiMockServer.stubForGet(
           pathNewV2,
-          """
-            [
-              {
-                "completedDate": "2025-10-23T03:02:59",
-                "source": "OASYS",
-                "status": "COMPLETE",
-                "outputVersion": "2",
-                "output": {
-                  "allReoffendingPredictor": {
-                    "band": "LOW"
-                  },
-                  "violentReoffendingPredictor": {
-                    "band": "MEDIUM"
-                  },
-                  "seriousViolentReoffendingPredictor": {
-                    "band": "HIGH"
-                  },
-                  "directContactSexualReoffendingPredictor": {
-                    "band": "LOW"
-                  },
-                  "indirectImageContactSexualReoffendingPredictor": {
-                    "band": "LOW"
-                  },
-                  "combinedSeriousReoffendingPredictor": {
-                    "band": "LOW"
-                  }
-                }
-              }
-            ]
-          """,
+          File("src/test/resources/expected-responses/arns-risk-predictor-scores-new-v2-only.json").readText(),
+        )
+
+        assessRisksAndNeedsApiMockServer.stubForGet(
+          pathNewV1AndV2,
+          File("src/test/resources/expected-responses/arns-risk-predictor-scores-new-v1-and-v2.json").readText(),
         )
 
         Mockito.reset(hmppsAuthGateway)
@@ -165,13 +95,13 @@ class GetRiskPredictorScoresForPersonTest(
         response.data.shouldBe(
           listOf(
             RiskPredictorScore(
-              completedDate = LocalDateTime.parse("2023-09-05T10:15:41"),
+              completedDate = LocalDateTime.parse("2026-01-16T16:22:54"),
               assessmentStatus = "COMPLETE",
               groupReconviction = GroupReconviction(scoreLevel = "HIGH"),
               generalPredictor = GeneralPredictor(scoreLevel = "LOW"),
               violencePredictor = ViolencePredictor(scoreLevel = "MEDIUM"),
-              riskOfSeriousRecidivism = RiskOfSeriousRecidivism(scoreLevel = "VERY_HIGH"),
-              sexualPredictor = SexualPredictor(indecentScoreLevel = "HIGH", contactScoreLevel = "VERY_HIGH"),
+              riskOfSeriousRecidivism = RiskOfSeriousRecidivism(scoreLevel = "LOW"),
+              sexualPredictor = SexualPredictor(indecentScoreLevel = "LOW", contactScoreLevel = "MEDIUM"),
             ),
           ),
         )
@@ -185,26 +115,118 @@ class GetRiskPredictorScoresForPersonTest(
         response.data.shouldBe(
           listOf(
             RiskPredictorScore(
-              completedDate = LocalDateTime.parse("2025-10-23T03:02:59"),
+              completedDate = LocalDateTime.parse("2026-01-16T16:22:54"),
               assessmentStatus = "COMPLETE",
-              groupReconviction = GroupReconviction(scoreLevel = "HIGH"),
-              generalPredictor = GeneralPredictor(scoreLevel = "LOW"),
-              violencePredictor = ViolencePredictor(scoreLevel = "MEDIUM"),
-              riskOfSeriousRecidivism = RiskOfSeriousRecidivism(scoreLevel = "VERY_HIGH"),
-              sexualPredictor = SexualPredictor(indecentScoreLevel = "HIGH", contactScoreLevel = "VERY_HIGH"),
+              groupReconviction = GroupReconviction(scoreLevel = "HIGH", score = 1),
+              generalPredictor = GeneralPredictor(scoreLevel = "LOW", score = 11),
+              violencePredictor = ViolencePredictor(scoreLevel = "MEDIUM", score = 6),
+              riskOfSeriousRecidivism = RiskOfSeriousRecidivism(scoreLevel = "LOW", score = 12),
+              sexualPredictor = SexualPredictor(indecentScoreLevel = "LOW", contactScoreLevel = "MEDIUM", contactScore = 16, indecentScore = 15),
+              assessmentVersion = 1,
+              allReoffendingPredictor = null,
+              violentReoffendingPredictor = null,
+              seriousViolentReoffendingPredictor = null,
+              directContactSexualReoffendingPredictor = null,
+              indirectImageContactSexualReoffendingPredictor = null,
+              combinedSeriousReoffendingPredictor = null,
             ),
           ),
         )
       }
 
-      it("returns error for the matching CRN with new risk score api is enabled version 2") {
+      it("returns risk predictor scores for the matching CRN with new risk score api is enabled version 2") {
+        whenever(featureFlag.isEnabled(USE_NEW_RISK_SCORE_API)).thenReturn(true)
+
+        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrnNewV2)
+
+        response.data.shouldBe(
+          listOf(
+            RiskPredictorScore(
+              completedDate = LocalDateTime.parse("2026-01-16T16:22:54"),
+              assessmentStatus = "COMPLETE",
+              assessmentVersion = 2,
+              allReoffendingPredictor = RiskScoreV2(band = "LOW", score = 1),
+              violentReoffendingPredictor = RiskScoreV2(band = "MEDIUM", score = 30),
+              seriousViolentReoffendingPredictor = RiskScoreV2(band = "HIGH", score = 99),
+              directContactSexualReoffendingPredictor = RiskScoreV2(band = "LOW", score = 10),
+              indirectImageContactSexualReoffendingPredictor = RiskScoreV2(band = "LOW", score = 10),
+              combinedSeriousReoffendingPredictor = RiskScoreV2(band = "LOW", score = 0),
+              groupReconviction = GroupReconviction(),
+              generalPredictor = GeneralPredictor(),
+              violencePredictor = ViolencePredictor(),
+              riskOfSeriousRecidivism = RiskOfSeriousRecidivism(),
+              sexualPredictor = SexualPredictor(),
+            ),
+          ),
+        )
+      }
+
+      it("returns risk predictor scores for the matching CRN with new risk score api is enabled version 1 and version 2") {
+        whenever(featureFlag.isEnabled(USE_NEW_RISK_SCORE_API)).thenReturn(true)
+
+        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrnNewV1AndV2)
+
+        response.data.shouldBe(
+          listOf(
+            RiskPredictorScore(
+              completedDate = LocalDateTime.parse("2026-01-16T16:22:54"),
+              assessmentStatus = "COMPLETE",
+              assessmentVersion = 2,
+              allReoffendingPredictor = RiskScoreV2(band = "LOW", score = 1),
+              violentReoffendingPredictor = RiskScoreV2(band = "MEDIUM", score = 30),
+              seriousViolentReoffendingPredictor = RiskScoreV2(band = "HIGH", score = 99),
+              directContactSexualReoffendingPredictor = RiskScoreV2(band = "LOW", score = 10),
+              indirectImageContactSexualReoffendingPredictor = RiskScoreV2(band = "LOW", score = 10),
+              combinedSeriousReoffendingPredictor = RiskScoreV2(band = "LOW", score = 0),
+              groupReconviction = GroupReconviction(),
+              generalPredictor = GeneralPredictor(),
+              violencePredictor = ViolencePredictor(),
+              riskOfSeriousRecidivism = RiskOfSeriousRecidivism(),
+              sexualPredictor = SexualPredictor(),
+            ),
+            RiskPredictorScore(
+              completedDate = LocalDateTime.parse("2026-01-16T16:22:54"),
+              assessmentStatus = "COMPLETE",
+              groupReconviction = GroupReconviction(scoreLevel = "HIGH", score = 1),
+              generalPredictor = GeneralPredictor(scoreLevel = "LOW", score = 11),
+              violencePredictor = ViolencePredictor(scoreLevel = "MEDIUM", score = 6),
+              riskOfSeriousRecidivism = RiskOfSeriousRecidivism(scoreLevel = "LOW", score = 12),
+              sexualPredictor = SexualPredictor(indecentScoreLevel = "LOW", contactScoreLevel = "MEDIUM", contactScore = 16, indecentScore = 15),
+              assessmentVersion = 1,
+              allReoffendingPredictor = null,
+              violentReoffendingPredictor = null,
+              seriousViolentReoffendingPredictor = null,
+              directContactSexualReoffendingPredictor = null,
+              indirectImageContactSexualReoffendingPredictor = null,
+              combinedSeriousReoffendingPredictor = null,
+            ),
+          ),
+        )
+      }
+
+      it("returns error for the matching CRN with new risk score api is enabled for unknown version number") {
+        assessRisksAndNeedsApiMockServer.stubForGet(
+          pathNewV2,
+          """
+            [
+              {
+                "completedDate": "2025-10-23T03:02:59",
+                "source": "OASYS",
+                "status": "COMPLETE",
+                "outputVersion": "3",
+                "output": {
+                }
+              }
+            ]
+          """,
+        )
         whenever(featureFlag.isEnabled(USE_NEW_RISK_SCORE_API)).thenReturn(true)
 
         val exception =
           assertThrows<RuntimeException> {
             assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrnNewV2)
           }
-        exception.message.shouldBe("Version not supported: 2")
+        exception.message.shouldBe("Version not supported: 3")
       }
 
       it("returns an empty list when no risk predictor scores are found") {

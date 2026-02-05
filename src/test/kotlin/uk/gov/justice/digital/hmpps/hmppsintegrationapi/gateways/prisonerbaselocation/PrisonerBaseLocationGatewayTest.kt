@@ -10,16 +10,13 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerBaseLocationGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.LastMovementType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 import java.io.File
 import java.time.LocalDate
 
@@ -28,11 +25,10 @@ internal const val FIXTURES_DIR = "src/test/kotlin/uk/gov/justice/digital/hmpps/
 @ActiveProfiles("test")
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [PrisonerBaseLocationGateway::class, PrisonerOffenderSearchGateway::class, FeatureFlagConfig::class],
+  classes = [PrisonerBaseLocationGateway::class],
 )
 class PrisonerBaseLocationGatewayTest(
   @MockitoBean private val hmppsAuthGateway: HmppsAuthGateway,
-  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
   private val prisonerBaseLocationGateway: PrisonerBaseLocationGateway,
 ) : DescribeSpec(
     {
@@ -47,7 +43,6 @@ class PrisonerBaseLocationGatewayTest(
           val knownPrisonerResponse = readFixtures("PrisonerBaseLocationResponse.json")
 
           beforeTest {
-            whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.USE_PRISONER_BASE_LOCATION_API)).thenReturn(true)
             prisonerBaseLocationApiMockServer.start()
           }
 
@@ -97,90 +92,6 @@ class PrisonerBaseLocationGatewayTest(
               }
 
               prisonerBaseLocationApiMockServer.assertValidationPassed()
-            }
-          }
-        }
-
-        describe("when prisoner offender search api is disabled") {
-          val prisonerOffenderSearchApiMockServer = ApiMockServer.create(UpstreamApi.PRISONER_OFFENDER_SEARCH)
-
-          fun mockPrisoner(
-            nomisNumber: String,
-            inOutStatus: String = "IN",
-            prisonId: String = "MDI",
-            lastPrisonId: String = "MDI",
-            lastMovementTypeCode: String = "ADM",
-            receptionDate: String = "2023-05-01",
-          ) = POSPrisoner(
-            prisonerNumber = nomisNumber,
-            inOutStatus = inOutStatus,
-            prisonId = prisonId,
-            lastPrisonId = lastPrisonId,
-            lastMovementTypeCode = lastMovementTypeCode,
-            receptionDate = receptionDate,
-            firstName = "First",
-            lastName = "Last",
-            youthOffender = false,
-          )
-
-          val knownPrisonerInOutStatus = "IN"
-          val knownPrisonerLastMovementTypeCode = "ADM"
-          val knownPrisonerLastMovementType = LastMovementType.ADMISSION
-          val knownPrisoner = mockPrisoner(nomisNumber = knownNomisNumber, inOutStatus = knownPrisonerInOutStatus, lastMovementTypeCode = knownPrisonerLastMovementTypeCode)
-          val knownPrisonerResponse = readFixtures("PrisonerByIdResponse.json")
-          val unknownPrisonerResponse = readFixtures("PrisonerByIdNotFoundResponse.json")
-
-          beforeTest {
-            whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.USE_PRISONER_BASE_LOCATION_API)).thenReturn(false)
-            prisonerOffenderSearchApiMockServer.start()
-          }
-
-          beforeEach {
-            whenever(hmppsAuthGateway.getClientToken("Prisoner Offender Search")).thenReturn(HmppsAuthMockServer.TOKEN)
-
-            with(prisonerOffenderSearchApiMockServer) {
-              stubForGet(
-                path = "/prisoner/$unknownNomisNumber",
-                status = HttpStatus.NOT_FOUND,
-                body = unknownPrisonerResponse,
-              )
-
-              stubForGet(
-                path = "/prisoner/$knownNomisNumber",
-                body = knownPrisonerResponse,
-              )
-            }
-          }
-
-          afterTest {
-            prisonerOffenderSearchApiMockServer.stop()
-            prisonerOffenderSearchApiMockServer.resetValidator()
-          }
-
-          describe("#getPrisonerBaseLocation()") {
-            it("does not return prisoner base location for unknown prisoner") {
-              val response = prisonerBaseLocationGateway.getPrisonerBaseLocation(unknownNomisNumber)
-
-              response.data shouldBe null
-              response.errors.firstOrNull().shouldNotBeNull().let {
-                it.causedBy shouldBe UpstreamApi.PRISONER_OFFENDER_SEARCH
-                it.type shouldBe UpstreamApiError.Type.ENTITY_NOT_FOUND
-              }
-            }
-
-            it("returns prisoner base location for known prisoner") {
-              val response = prisonerBaseLocationGateway.getPrisonerBaseLocation(knownNomisNumber)
-
-              response.errors.shouldBeEmpty()
-              response.data.shouldNotBeNull().let {
-                it.inPrison shouldBe (knownPrisonerInOutStatus == knownPrisoner.inOutStatus)
-                it.prisonId shouldBe knownPrisoner.prisonId
-                it.lastPrisonId shouldBe knownPrisoner.lastPrisonId
-                it.lastMovementType shouldBe knownPrisonerLastMovementType
-                it.receptionDate shouldBe knownPrisoner.receptionDate?.let { LocalDate.parse(it) }
-              }
-
-              prisonerOffenderSearchApiMockServer.assertValidationPassed()
             }
           }
         }

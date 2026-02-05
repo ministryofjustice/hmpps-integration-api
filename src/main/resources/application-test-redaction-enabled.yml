@@ -78,22 +78,10 @@ hmpps.sqs:
       arn: arn:aws:sns:eu-west-2:000000000000:domainevents-topic
 
 feature-flag:
-  use-update-attendance-endpoint: true
-  use-schedule-detail-endpoint: true
-  use-search-appointments-endpoint: true
-  use-deallocation-endpoint: true
-  use-scheduled-instances-endpoint: true
-  use-deallocation-reasons-endpoint: true
-  use-allocation-endpoint: true
-  use-education-endpoint: true
-  use-prisoner-base-location-api: true
-  use-historical-attendances-endpoint: true
-  use-suitability-endpoint: true
-  use-waiting-list-endpoint: true
+  course-completion-event-enabled: true
   use-contact-events-endpoint: true
-  use-stubbed-contact-events-data: false
   gateway-cache-enabled: true
-  use-new-risk-score-api: false
+  use-new-risk-score-api: true
   normalised-path-matching: true
 
 authorisation:

@@ -1,42 +1,42 @@
 [
   {
     "completedDate": "2026-01-16T16:22:54",
-    "assessmentStatus": "string",
+    "assessmentStatus": "COMPLETE",
     "groupReconvictionScore": {
       "oneYear": 0,
-      "twoYears": 0,
-      "scoreLevel": "LOW"
+      "twoYears": 1,
+      "scoreLevel": "HIGH"
     },
     "violencePredictorScore": {
-      "ovpStaticWeightedScore": 0,
-      "ovpDynamicWeightedScore": 0,
-      "ovpTotalWeightedScore": 0,
-      "oneYear": 0,
-      "twoYears": 0,
-      "ovpRisk": "LOW"
+      "ovpStaticWeightedScore": 2,
+      "ovpDynamicWeightedScore": 3,
+      "ovpTotalWeightedScore": 4,
+      "oneYear": 5,
+      "twoYears": 6,
+      "ovpRisk": "MEDIUM"
     },
     "generalPredictorScore": {
-      "ogpStaticWeightedScore": 0,
-      "ogpDynamicWeightedScore": 0,
-      "ogpTotalWeightedScore": 0,
-      "ogp1Year": 0,
-      "ogp2Year": 0,
+      "ogpStaticWeightedScore": 7,
+      "ogpDynamicWeightedScore": 8,
+      "ogpTotalWeightedScore": 9,
+      "ogp1Year": 10,
+      "ogp2Year": 11,
       "ogpRisk": "LOW"
     },
     "riskOfSeriousRecidivismScore": {
-      "percentageScore": 0,
+      "percentageScore": 12,
       "staticOrDynamic": "STATIC",
       "source": "OASYS",
       "algorithmVersion": "string",
       "scoreLevel": "LOW"
     },
     "sexualPredictorScore": {
-      "ospIndecentPercentageScore": 0,
-      "ospContactPercentageScore": 0,
+      "ospIndecentPercentageScore": 13,
+      "ospContactPercentageScore": 14,
       "ospIndecentScoreLevel": "LOW",
-      "ospContactScoreLevel": "LOW",
-      "ospIndirectImagePercentageScore": 0,
-      "ospDirectContactPercentageScore": 0,
+      "ospContactScoreLevel": "MEDIUM",
+      "ospIndirectImagePercentageScore": 15,
+      "ospDirectContactPercentageScore": 16,
       "ospIndirectImageScoreLevel": "LOW",
       "ospDirectContactScoreLevel": "LOW"
     }

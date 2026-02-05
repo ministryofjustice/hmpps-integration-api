@@ -6,11 +6,12 @@ plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.3.0"
   kotlin("plugin.spring") version "2.3.0"
   id("io.gitlab.arturbosch.detekt") version "1.23.8"
-  id("org.jetbrains.kotlinx.kover") version "0.9.4"
+  id("org.jetbrains.kotlinx.kover") version "0.9.5"
 }
 
 configurations {
   testImplementation { exclude(group = "org.junit.vintage") }
+  testCompileOnly { isCanBeResolved = true }
 }
 
 dependencies {
@@ -19,9 +20,9 @@ dependencies {
   runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.13.0")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-cache")
-  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
-  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.30.0")
-  implementation("io.sentry:sentry-logback:8.30.0")
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
+  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.31.0")
+  implementation("io.sentry:sentry-logback:8.31.0")
   implementation("org.springframework.data:spring-data-commons")
   implementation("org.springframework:spring-aop")
   implementation("org.aspectj:aspectjweaver")
@@ -38,11 +39,11 @@ dependencies {
   implementation("com.jayway.jsonpath:json-path:2.10.0")
   implementation("com.github.ben-manes.caffeine:caffeine:3.2.3")
 
-  testImplementation("io.kotest:kotest-assertions-json-jvm:6.1.0")
-  testImplementation("io.kotest:kotest-runner-junit5-jvm:6.1.0")
-  testImplementation("io.kotest:kotest-assertions-core-jvm:6.1.0")
-  testImplementation("io.kotest:kotest-extensions-spring:6.1.0")
-  developmentOnly("org.jetbrains.kotlinx:kover-cli:0.9.4")
+  testImplementation("io.kotest:kotest-assertions-json-jvm:6.1.2")
+  testImplementation("io.kotest:kotest-runner-junit5-jvm:6.1.2")
+  testImplementation("io.kotest:kotest-assertions-core-jvm:6.1.2")
+  testImplementation("io.kotest:kotest-extensions-spring:6.1.2")
+  testCompileOnly("org.jetbrains.kotlinx:kover-cli:0.9.5")
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
   testImplementation("org.mockito:mockito-core:5.21.0")
   testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.21.0")
@@ -59,13 +60,13 @@ dependencies {
   }
   // Explicitly add all necessary Jetty and Servlet dependencies
   testImplementation("javax.servlet:javax.servlet-api:4.0.1")
-  testImplementation("org.eclipse.jetty:jetty-util:12.1.5")
-  testImplementation("org.eclipse.jetty:jetty-server:12.1.5")
-  testImplementation("org.eclipse.jetty:jetty-http:12.1.5")
-  testImplementation("org.eclipse.jetty:jetty-io:12.1.5")
+  testImplementation("org.eclipse.jetty:jetty-util:12.1.6")
+  testImplementation("org.eclipse.jetty:jetty-server:12.1.6")
+  testImplementation("org.eclipse.jetty:jetty-http:12.1.6")
+  testImplementation("org.eclipse.jetty:jetty-io:12.1.6")
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
   testImplementation(kotlin("test"))
-  testImplementation("io.mockk:mockk:1.14.7")
+  testImplementation("io.mockk:mockk:1.14.9")
 }
 
 java {
@@ -133,7 +134,7 @@ tasks {
   }
 
   val koverCli by registering(Copy::class) {
-    from(configurations.runtimeClasspath).include("kover-cli*.jar")
+    from(configurations.testCompileOnly).include("kover-cli*.jar")
     into("lib")
     rename("(.*).jar", "kover-cli.jar")
   }
