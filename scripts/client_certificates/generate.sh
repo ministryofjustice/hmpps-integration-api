@@ -2,7 +2,7 @@
 set -e
 
 clean() {
-  rm -fr *.pem *.key *.csr
+  rm -fr *.pem *.key *.csr *-api-key
 }
 
 read_certificate_arguments() {
@@ -34,6 +34,55 @@ read_certificate_arguments() {
       echo "Invalid choice."
       exit 1
   esac
+
+  if [[ "$csr_required" == 1 ]]
+  then
+    echo "Do you wish to create a tar ball containing the client.pem to send to the client?"
+    echo "(y)es, (n)o, or (c)ancel:"
+    read create_tar_ball_user_input
+
+    case $create_tar_ball_user_input in
+      [yY])
+        echo "User selected 'Yes'."
+        create_tar_ball=1
+        ;;
+      [nN])
+        echo "User selected 'No'."
+        create_tar_ball=0
+        ;;
+      [cC])
+        echo "User selected 'Cancel'."
+        exit 1
+        ;;
+      *)
+        echo "Invalid choice."
+        exit 1
+    esac
+
+    if [[ "$create_tar_ball" == 1 ]]
+    then
+      echo "Do you wish to add the clients API key to the tar ball (i.e for new consumers)"
+      echo "(y)es, (n)o, or (c)ancel:"
+      read add_api_key_user_input
+        case $add_api_key_user_input in
+          [yY])
+            echo "User selected 'Yes'."
+            add_api_key=1
+            ;;
+          [nN])
+            echo "User selected 'No'."
+            add_api_key=0
+            ;;
+          [cC])
+            echo "User selected 'Cancel'."
+            exit 1
+            ;;
+          *)
+            echo "Invalid choice."
+            exit 1
+        esac
+    fi
+  fi
 
   if [[ "$csr_required" == 0 ]]
   then
@@ -89,8 +138,12 @@ clean_ca() {
 }
 
 success_message() {
-  echo
-  echo "Success: your client certificates have been generated in ./scripts/client_certificates"
+
+  if [[ "$create_tar_ball" != 1 ]]
+  then
+    echo
+    echo "Success: your client certificates have been generated in ./scripts/client_certificates"
+  fi
 }
 
 upload_backup() {
@@ -117,6 +170,29 @@ upload_backup() {
   aws configure set aws_secret_access_key ""
 }
 
+generate_tar_ball(){
+  if [[ "$create_tar_ball" == 1 ]]
+  then
+      if [[ "$add_api_key" == 1 ]]
+      then
+        get_api_key
+        tar cvfz hmpps-integration-api-$client-$environment.tar.gz $environment-$client-api-key $environment-$client-client.pem
+         echo "Success: hmpps-integration-api-$client-$environment.tar.gz containing $environment-$client-client.pem and $environment-$client-api-key has been generated in ./scripts/client_certificates"
+      else
+        tar cvfz hmpps-integration-api-$client-$environment.tar.gz $environment-$client-client.pem
+        echo "Success: hmpps-integration-api-$client-$environment.tar.gz containing $environment-$client-client.pem has been generated in ./scripts/client_certificates"
+      fi
+      echo
+      echo "To untar and check contents run: tar -xvf hmpps-integration-api-$client-$environment.tar.gz"
+      clean
+  fi
+}
+
+get_api_key() {
+  api_key=`kubectl -n hmpps-integration-api-$environment get secrets consumer-api-keys -o json | jq -r .data.$client | base64 -d`
+  echo -n $api_key > $environment-$client-api-key
+}
+
 verify_deps() {
   aws --version
   kubectl version
@@ -128,6 +204,7 @@ main() {
   read_certificate_arguments
   get_ca
   generate_client
+  generate_tar_ball
   success_message
   upload_backup
   clean_ca
