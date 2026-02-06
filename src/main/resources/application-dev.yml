@@ -176,7 +176,11 @@ authorisation:
         - "cats"
     jwylde:
       roles:
-        - "full-access-lao-redactions"
+        - "prisoner-finance"
+      filters:
+        prisons:
+          - MKI
+          - MDI
     community-payback-dev:
       notes: "Role for developers in the Community Payback team"
       roles:
