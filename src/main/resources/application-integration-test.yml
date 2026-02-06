@@ -1,13 +1,13 @@
 spring:
-  jpa:
-    show-sql: true
   datasource:
     url: "jdbc:postgresql://localhost:5432/event_store?sslmode=prefer"
     username: postgres
     password: postgres
     hikari:
       maximum-pool-size: 2
-  jpa.hibernate.ddl-auto: create-drop
+  flyway:
+    enabled: true
+    baselineOnMigrate: true
 
 server:
   shutdown: immediate
