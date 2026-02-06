@@ -176,7 +176,7 @@ authorisation:
         - "cats"
     jwylde:
       roles:
-        - "prisoner-finance"
+        - "mappa"
       filters:
         prisons:
           - MKI
