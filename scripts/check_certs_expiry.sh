@@ -179,7 +179,7 @@ main() {
     slack_webhook_url=$(echo $SLACK_URL)
     configure_aws_credentials "$ENV"
     clients=$(get_folders_from_s3 "hmpps-integration-api-$ENV-certificates-backup")
-    check_certificate_expiry "k8s" "client-certificate-auth" "/home/appuser/ca-cert/ca.crt" "$ENV" "api-gateway" "$slack_webhook_url"
+    check_certificate_expiry "k8s" "client-certificate-auth" "/home/appuser/ca-cert/ca.crt" "$ENV" "api-gateway-to-nginx" "$slack_webhook_url"
     for client in $clients; do
         check_certificate_expiry "s3" "hmpps-integration-api-$ENV-certificates-backup" "/home/appuser/pem-certs/client.pem" "$ENV" "$client" "$slack_webhook_url"
     done
