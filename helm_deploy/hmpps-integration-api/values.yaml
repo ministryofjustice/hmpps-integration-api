@@ -67,6 +67,11 @@ generic-service:
       HMPPS_SQS_QUEUES_LOCATIONS_QUEUE_NAME: "sqs_queue_name"
     sqs-update-from-external-system-events-activities-queue-secret:
       HMPPS_SQS_QUEUES_ACTIVITIES_QUEUE_NAME: "sqs_queue_name"
+    rds-postgresql-instance-output:
+      DB_SERVER: "rds_instance_endpoint"
+      DB_NAME: "database_name"
+      DB_USER: "database_username"
+      DB_PASS: "database_password"
 
   allowlist:
     unrestricted: "0.0.0.0/0"
