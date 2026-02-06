@@ -86,6 +86,7 @@ const val GATEWAY_CACHE_METRICS = "GatewayCacheMetrics"
 
 @Component
 @ConditionalOnProperty("feature-flag.gateway-cache-enabled", havingValue = "true")
+@EnableScheduling
 @ConditionalOnBean(CaffeineCache::class)
 class CacheMetricsListener(
   private val gatewayCache: CaffeineCache,

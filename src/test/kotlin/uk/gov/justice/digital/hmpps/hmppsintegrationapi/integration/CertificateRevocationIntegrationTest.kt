@@ -4,7 +4,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import kotlin.test.Test
-
 @AutoConfigureMockMvc
 class CertificateRevocationIntegrationTest : IntegrationTestBase() {
   @Test

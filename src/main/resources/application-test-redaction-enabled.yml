@@ -69,8 +69,6 @@ hmpps.sqs:
       queueName: "locations"
     activities:
       queueName: "activities"
-    educationcoursecompletionevents:
-      queueName: "education-course-completion-events"
     educationstatusevents:
       queueName: "educationstatusevents"
       subscribeFilter: '{"eventType":["prison.education.updated"]}'
@@ -82,18 +80,14 @@ hmpps.sqs:
 feature-flag:
   course-completion-event-enabled: true
   use-contact-events-endpoint: true
-  epf-endpoint-includes-lao: true
-  cpr-enabled: true
-  enhanced-search-enabled: false
   gateway-cache-enabled: true
-  normalised-path-matching: true
   use-new-risk-score-api: true
+  normalised-path-matching: true
   enable-delete-processed-events: false
 
 authorisation:
   consumers:
     automated-test-client:
-      notes: "For automated testing in a local environment"
       roles:
         - "full-access"
     config-v2-test:
@@ -104,9 +98,9 @@ authorisation:
           - XYZ
     no-include-or-roles:
     empty-include:
-      notes: "A test consumer with no permissions"
+      include:
     empty-roles:
-      notes: "Consumer with no roles"
+      roles:
     limited-prisons:
       roles:
         - "all-endpoints"
@@ -121,21 +115,10 @@ authorisation:
     private-prison-only:
       roles:
         - "private-prison"
+      filters:
     limited-case-notes:
       roles:
         - "all-endpoints"
       filters:
         case-notes:
           - "CAB"
-    supervision-status-prison-only:
-      roles:
-        - "all-endpoints"
-      filters:
-        supervisionStatuses:
-          - PRISONS
-    supervision-status-probation-only:
-      roles:
-        - "all-endpoints"
-      filters:
-        supervisionStatuses:
-          - PROBATION
