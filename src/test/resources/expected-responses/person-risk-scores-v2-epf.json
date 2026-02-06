@@ -4,39 +4,28 @@
       "completedDate": "2026-01-16T16:22:54",
       "assessmentStatus": "COMPLETE",
       "assessmentVersion": 2,
-      "generalPredictor": {
-        "scoreLevel": null
-      },
-      "violencePredictor": {
-        "scoreLevel": null
-      },
-      "groupReconviction": {
-        "scoreLevel": null
-      },
-      "riskOfSeriousRecidivism": {
-        "scoreLevel": null
-      },
-      "sexualPredictor": {
-        "indecentScoreLevel": null,
-        "contactScoreLevel": null
-      },
+      "generalPredictor": {},
+      "violencePredictor": {},
+      "groupReconviction": {},
+      "riskOfSeriousRecidivism": {},
+      "sexualPredictor": {},
       "allReoffendingPredictor": {
-        "band": "LOW"
+        "score": 1
       },
       "violentReoffendingPredictor": {
-        "band": "MEDIUM"
+        "score": 30
       },
       "seriousViolentReoffendingPredictor": {
-        "band": "HIGH"
+        "score": 99
       },
       "directContactSexualReoffendingPredictor": {
-        "band": "LOW"
+        "score": 10
       },
       "indirectImageContactSexualReoffendingPredictor": {
-        "band": "LOW"
+        "score": 10
       },
       "combinedSeriousReoffendingPredictor": {
-        "band": "LOW"
+        "score": 0
       }
     }
   ],

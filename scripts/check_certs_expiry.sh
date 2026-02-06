@@ -92,7 +92,7 @@ check_certificate_expiry() {
 
     local message
     if [ "$approach" == "enhanced" ]; then
-      message=$(enhanced_expiry_check $expiry_seconds current_seconds $environment $certificate_name)
+      message=$(enhanced_expiry_check $expiry_seconds current_seconds $environment $certificate_name "$expiry_date")
     else
       message=$(generate_message "$difference" "$environment" "$certificate_name")
     fi
@@ -107,6 +107,7 @@ enhanced_expiry_check() {
   current_time="$2"
   environment="$3"
   certificate_name="$4"
+  expiry_date="$5"
 
   expires_in_seconds=$((expiry_time - current_time))
 
@@ -116,7 +117,7 @@ enhanced_expiry_check() {
     start_of_day=$((day * 24 * 3600))
     end_of_day=$(((day+1) * 24 * 3600))
     if ((expires_in_seconds >= start_of_day && expires_in_seconds < end_of_day)); then
-      echo "**ALERT ACTION REQUIRED** The certificate for $certificate_name in $environment will expire in $day days."
+      echo "**ALERT ACTION REQUIRED** The certificate for $certificate_name in $environment will expire on $expiry_date (in $day days)."
     fi
   done
 }
