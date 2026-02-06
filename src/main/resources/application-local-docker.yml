@@ -1,3 +1,14 @@
+spring:
+  datasource:
+    url: "jdbc:postgresql://localhost:5432/event_store?sslmode=prefer"
+    username: postgres
+    password: postgres
+    hikari:
+      maximum-pool-size: 2
+  flyway:
+    enabled: true
+    baselineOnMigrate: true
+
 services:
   hmpps-auth.base-url: http://hmpps-auth:8080
 
