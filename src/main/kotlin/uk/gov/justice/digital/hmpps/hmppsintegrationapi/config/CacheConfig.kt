@@ -25,7 +25,6 @@ import java.lang.reflect.Method
 import java.time.Duration
 
 @EnableCaching
-@EnableScheduling
 @Configuration
 class CacheConfig {
   companion object {
@@ -89,6 +88,7 @@ const val GATEWAY_CACHE_METRICS = "GatewayCacheMetrics"
 
 @Component
 @ConditionalOnProperty("feature-flag.gateway-cache-enabled", havingValue = "true")
+@EnableScheduling
 @ConditionalOnBean(CaffeineCache::class)
 class CacheMetricsListener {
   @Autowired private lateinit var gatewayCache: CaffeineCache
