@@ -11,7 +11,7 @@ build:
 	docker build -t hmpps-integration-api .
 
 serve-dependencies:
-	docker compose up prism local-stack-aws --build -d
+	docker compose up prism local-stack-aws postgres --build -d
 
 analyse-dependencies:
 	./gradlew dependencyCheckAnalyze --info

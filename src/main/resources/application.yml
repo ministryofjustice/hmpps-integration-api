@@ -7,6 +7,10 @@ spring:
     name: hmpps-integration-api
   codec:
     max-in-memory-size: 10MB
+  datasource:
+    url: "jdbc:postgresql://${DB_SERVER}/${DB_NAME}?sslmode=prefer"
+    username: ${DB_USER}
+    password: ${DB_PASS}
 
   jackson:
     date-format: "yyyy-MM-dd HH:mm:ss"
@@ -108,3 +112,7 @@ authorisation:
 
 sentry:
   traces-sample-rate: "0.05"
+
+delete-processed-events:
+  schedule:
+    rate: 10000

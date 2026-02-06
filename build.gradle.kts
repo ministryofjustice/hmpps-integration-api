@@ -15,11 +15,14 @@ configurations {
 }
 
 dependencies {
-  runtimeOnly("org.flywaydb:flyway-database-postgresql")
   runtimeOnly("io.jsonwebtoken:jjwt-impl:0.13.0")
   runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.13.0")
+  runtimeOnly("org.flywaydb:flyway-database-postgresql")
+  runtimeOnly("org.postgresql:postgresql:42.7.9")
+  runtimeOnly("org.flywaydb:flyway-core")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-cache")
+  implementation("org.springframework.boot:spring-boot-starter-jdbc")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
   implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.31.0")
   implementation("io.sentry:sentry-logback:8.31.0")
@@ -83,6 +86,8 @@ tasks {
   val classesToBeExcluded =
     arrayOf(
       "uk.gov.justice.digital.hmpps.hmppsintegrationapi.HmppsIntegrationApiKt",
+      "uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.SchedulingConfig",
+      "uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification",
     )
 
   // Enables the coverage report to be created for only unit tests or integration tests

@@ -52,6 +52,7 @@ feature-flag:
   cpr-enabled: true
   gateway-cache-enabled: true
   use-new-risk-score-api: false
+  enable-delete-processed-events: false
 
 authorisation:
   consumers:

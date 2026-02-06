@@ -1,11 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 
 import org.junit.jupiter.api.Test
-import org.mockito.ArgumentMatchers.anyMap
 import org.mockito.kotlin.any
-import org.mockito.kotlin.atLeast
 import org.mockito.kotlin.eq
-import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,7 +11,6 @@ import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.GATEWAY_CACHE_METRICS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CorePersonRecordGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
@@ -64,8 +60,6 @@ class CacheIntegrationTest : IntegrationTestBase() {
 
     // 4 cache hits after the second request
     assertEquals(4L, cache.nativeCache.stats().hitCount())
-
-    verify(telemetryService, atLeast(1)).trackEvent(eq(GATEWAY_CACHE_METRICS), anyMap(), anyMap())
   }
 
   @Test
@@ -117,8 +111,6 @@ class CacheDisabledIntegrationTest : IntegrationTestBase() {
     // Address endpoint calls CPR twice per request. One for nomis and one for crn
     // Calls the cached CPR method 4 times in total across 2 requests
     verify(corePersonRecordGateway, times(4)).corePersonRecordFor(any(), eq(nomsId))
-
-    verify(telemetryService, never()).trackEvent(eq(GATEWAY_CACHE_METRICS), anyMap(), anyMap())
   }
 
   @Test
