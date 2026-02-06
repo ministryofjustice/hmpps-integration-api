@@ -53,7 +53,6 @@ class EducationCourseServiceTest :
             externalReference = "CC123",
             person =
               PersonDetails(
-                crn = "X123456",
                 firstName = "John",
                 lastName = "Doe",
                 dateOfBirth = LocalDate.of(1990, 1, 1),
@@ -65,11 +64,11 @@ class EducationCourseServiceTest :
                 courseName = "Test Course",
                 courseType = "Test course type",
                 provider = "Moodle",
-                completionDateTime = LocalDate.of(2024, 1, 15),
+                completionDate = LocalDate.of(2024, 1, 15),
                 status = "Completed",
-                totalTime = "02:30",
+                totalTimeMinutes = 150,
                 attempts = 1,
-                expectedMinutes = 2.0,
+                expectedTimeMinutes = 120,
               ),
           ),
       )
@@ -87,7 +86,6 @@ class EducationCourseServiceTest :
           "RECORD_COURSE_COMPLETION",
           mapOf(
             "externalReference" to "CC123",
-            "crn" to "X123456",
             "courseName" to "Test Course",
             "personEmail" to "john.doe@example.com",
           ),
@@ -126,7 +124,6 @@ class EducationCourseServiceTest :
           "RECORD_COURSE_COMPLETION",
           mapOf(
             "externalReference" to "CC123",
-            "crn" to "X123456",
             "courseName" to "Test Course",
             "personEmail" to "john.doe@example.com",
           ),
@@ -166,7 +163,6 @@ class EducationCourseServiceTest :
           eq("RECORD_COURSE_COMPLETION"),
           argThat<Map<String, String>> { auditData ->
             auditData["externalReference"] == "CC123" &&
-              auditData["crn"] == "X123456" &&
               auditData["courseName"] == "Test Course" &&
               auditData["personEmail"] == "john.doe@example.com"
           },

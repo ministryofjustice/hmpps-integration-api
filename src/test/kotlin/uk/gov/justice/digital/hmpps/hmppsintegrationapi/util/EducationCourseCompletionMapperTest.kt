@@ -9,7 +9,6 @@ import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.maps.shouldContainExactly
-import io.kotest.matchers.shouldBe
 import jakarta.validation.Validation
 import jakarta.validation.Validator
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CourseCompletion
@@ -37,13 +36,12 @@ class EducationCourseCompletionMapperTest :
     }
 
     fun validPerson(
-      crn: String = "A123456",
       firstName: String = "John",
       lastName: String = "Doe",
       dateOfBirth: LocalDate = LocalDate.of(1990, 1, 1),
       region: String = "East of England",
       email: String = "John@example.org",
-    ) = PersonDetails(crn, firstName, lastName, dateOfBirth, region, email)
+    ) = PersonDetails(firstName, lastName, dateOfBirth, region, email)
 
     fun validCourse(
       courseName: String = "Intro to litter picking",
@@ -51,16 +49,16 @@ class EducationCourseCompletionMapperTest :
       provider: String = "Acme Learning",
       completionDateTime: LocalDate = LocalDate.of(2021, 1, 1),
       status: String = "Completed",
-      totalTime: String = "02:30",
+      totalTimeMinutes: Long = 150,
       attempts: Int? = 3,
-      expectedMinutes: Double = 10.5,
+      expectedMinutes: Long = 120,
     ) = CourseDetails(
       courseName,
       courseType,
       provider,
       completionDateTime,
       status,
-      totalTime,
+      totalTimeMinutes,
       attempts,
       expectedMinutes,
     )
@@ -81,12 +79,6 @@ class EducationCourseCompletionMapperTest :
       }
 
       describe("PersonDetails validation") {
-
-        it("CRN must match [A-Z][0-9]{6}") {
-          val person = validPerson(crn = "ZZ123") // invalid
-          val violations = validator.validate(validRequest(person = person))
-          violations.map { it.propertyPath.toString() }.shouldContain("courseCompletion.person.crn")
-        }
 
         it("email must match the regex") {
           val person = validPerson(email = "nope")
@@ -124,20 +116,12 @@ class EducationCourseCompletionMapperTest :
           )
         }
 
-        it("totalTime must match HH:MM") {
-          val course = validCourse(totalTime = "5:3")
+        it("expectedTimeMinutes must be positive") {
+          val course = validCourse(expectedMinutes = 0L)
           val violations = validator.validate(validRequest(course = course))
           violations
             .map { it.propertyPath.toString() }
-            .shouldContain("courseCompletion.course.totalTime")
-        }
-
-        it("expectedMinutes must be positive") {
-          val course = validCourse(expectedMinutes = 0.0)
-          val violations = validator.validate(validRequest(course = course))
-          violations
-            .map { it.propertyPath.toString() }
-            .shouldContain("courseCompletion.course.expectedMinutes")
+            .shouldContain("courseCompletion.course.expectedTimeMinutes")
         }
 
         it("attempts may be null") {
@@ -153,7 +137,6 @@ class EducationCourseCompletionMapperTest :
       it("serializes correct messageAttributes") {
         val person =
           validPerson(
-            crn = "B123456",
             firstName = "Jane",
             lastName = "Doe",
             dateOfBirth = LocalDate.of(1992, 5, 14),
@@ -168,9 +151,9 @@ class EducationCourseCompletionMapperTest :
             provider = "Gov Academy",
             completionDateTime = LocalDate.of(2023, 12, 31),
             status = "Completed",
-            totalTime = "10:45",
+            totalTimeMinutes = 150,
             attempts = 5,
-            expectedMinutes = 12.0,
+            expectedMinutes = 120,
           )
 
         val cc = CourseCompletion("EXT-XYZ", person, course)
@@ -180,7 +163,6 @@ class EducationCourseCompletionMapperTest :
             eventType = HmppsMessageEventType.EDUCATION_COURSE_COMPLETION_CREATED,
             messageAttributes =
               mapOf(
-                "crn" to person.crn,
                 "firstName" to person.firstName,
                 "lastName" to person.lastName,
                 "dateOfBirth" to person.dateOfBirth.toString(),
@@ -189,11 +171,11 @@ class EducationCourseCompletionMapperTest :
                 "courseName" to course.courseName,
                 "courseType" to course.courseType,
                 "provider" to course.provider,
-                "completionDateTime" to course.completionDateTime.toString(),
+                "completionDate" to course.completionDate.toString(),
                 "status" to course.status,
-                "totalTime" to course.totalTime,
-                "attempts" to course.attempts.toString(),
-                "expectedMinutes" to course.expectedMinutes.toString(),
+                "totalTimeMinutes" to course.totalTimeMinutes,
+                "attempts" to course.attempts,
+                "expectedTimeMinutes" to course.expectedTimeMinutes,
                 "externalReference" to cc.externalReference,
               ),
           )
@@ -203,7 +185,6 @@ class EducationCourseCompletionMapperTest :
 
         roundTrip.messageAttributes.shouldContainExactly(
           mapOf(
-            "crn" to "B123456",
             "firstName" to "Jane",
             "lastName" to "Doe",
             "dateOfBirth" to "1992-05-14",
@@ -212,45 +193,14 @@ class EducationCourseCompletionMapperTest :
             "courseName" to "Health & Safety",
             "courseType" to "Compliance",
             "provider" to "Gov Academy",
-            "completionDateTime" to "2023-12-31",
+            "completionDate" to "2023-12-31",
             "status" to "Completed",
-            "totalTime" to "10:45",
-            "attempts" to "5",
-            "expectedMinutes" to "12.0",
+            "totalTimeMinutes" to 150,
+            "attempts" to 5,
+            "expectedTimeMinutes" to 120,
             "externalReference" to "EXT-XYZ",
           ),
         )
-      }
-
-      it("null attempts becomes empty string") {
-        val course = validCourse(attempts = null)
-        val person = validPerson()
-        val cc = CourseCompletion("EXT-NULL", person, course)
-
-        val message =
-          HmppsMessage(
-            eventType = HmppsMessageEventType.EDUCATION_COURSE_COMPLETION_CREATED,
-            messageAttributes =
-              mapOf(
-                "crn" to person.crn,
-                "firstName" to person.firstName,
-                "lastName" to person.lastName,
-                "dateOfBirth" to person.dateOfBirth.toString(),
-                "region" to person.region,
-                "email" to person.email,
-                "courseName" to course.courseName,
-                "courseType" to course.courseType,
-                "provider" to course.provider,
-                "completionDateTime" to course.completionDateTime.toString(),
-                "status" to course.status,
-                "totalTime" to course.totalTime,
-                "attempts" to course.attempts?.toString().orEmpty(),
-                "expectedMinutes" to course.expectedMinutes.toString(),
-                "externalReference" to cc.externalReference,
-              ),
-          )
-
-        message.messageAttributes["attempts"]!!.shouldBe("")
       }
     }
   })

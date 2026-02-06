@@ -43,7 +43,6 @@ class EducationCourseCompletionService(
             eventType = eventType,
             messageAttributes =
               mapOf(
-                "crn" to person.crn,
                 "firstName" to person.firstName,
                 "lastName" to person.lastName,
                 "dateOfBirth" to person.dateOfBirth.toString(),
@@ -52,11 +51,11 @@ class EducationCourseCompletionService(
                 "courseName" to course.courseName,
                 "courseType" to course.courseType,
                 "provider" to course.provider,
-                "completionDateTime" to course.completionDateTime.toString(),
+                "completionDate" to course.completionDate.toString(),
                 "status" to course.status,
-                "totalTime" to course.totalTime,
+                "totalTimeMinutes" to course.totalTimeMinutes,
                 "attempts" to course.attempts?.toString().orEmpty(),
-                "expectedMinutes" to course.expectedMinutes.toString(),
+                "expectedTimeMinutes" to course.expectedTimeMinutes.toString(),
                 "externalReference" to courseCompletion.externalReference,
               ),
           ),
@@ -85,7 +84,6 @@ class EducationCourseCompletionService(
         "RECORD_COURSE_COMPLETION",
         mapOf(
           "externalReference" to courseCompletion.externalReference,
-          "crn" to person.crn,
           "courseName" to course.courseName,
           "personEmail" to person.email,
         ),
