@@ -9,6 +9,7 @@ val mappa =
       -"/v1/persons"
       -"/v1/persons/{hmppsId}"
       -"/v1/persons/{hmppsId}/images"
+      -"/v1/images/{id}"
       -"/v1/persons/{hmppsId}/addresses"
       -"/v1/persons/{hmppsId}/offences"
       -"/v1/persons/{hmppsId}/alerts"
@@ -28,7 +29,6 @@ val mappa =
       -"/v1/persons/{hmppsId}/risk-management-plan"
       -"/v1/persons/{hmppsId}/contact-events"
       -"/v1/persons/{hmppsId}/contact-events/{contactEventId}"
-      -"/v1/images/{id}"
       -"/v1/hmpps/reference-data"
       -"/v1/status"
     }
