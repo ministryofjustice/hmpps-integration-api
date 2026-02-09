@@ -30,22 +30,6 @@ class PersonIntegrationTest : IntegrationTestBase() {
     unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
   }
 
-//  @BeforeEach
-//  fun resetMocks() {
-//    prisonerOffenderSearchMockServer.stubForGet(
-//      "/prisoner/$nomsId",
-//      File(
-//        "$gatewaysFolder/prisoneroffendersearch/fixtures/PrisonerByIdResponse.json",
-//      ).readText(),
-//    )
-//    prisonerOffenderSearchMockServer.stubForGet(
-//      "/prisoner/$nomsIdFromProbation",
-//      File(
-//        "$gatewaysFolder/prisoneroffendersearch/fixtures/PrisonerByIdResponse.json",
-//      ).readText(),
-//    )
-//  }
-
   @Nested
   inner class GetPerson {
     @Test
