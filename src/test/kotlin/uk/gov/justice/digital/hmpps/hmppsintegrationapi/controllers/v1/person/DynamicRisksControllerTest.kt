@@ -41,7 +41,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryServi
 
 @WebMvcTest(controllers = [DynamicRisksController::class])
 @Import(value = [WebMvcTestConfiguration::class])
-@ActiveProfiles("test-redaction-enabled")
+@ActiveProfiles("test")
 internal class DynamicRisksControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getDynamicRisksForPersonService: GetDynamicRisksForPersonService,

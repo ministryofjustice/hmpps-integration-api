@@ -51,7 +51,7 @@ internal class AlertsControllerTest(
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
       val alert =
         Alert(
-          offenderNo = "A7777ZZ",
+          offenderNo = "G2996UX",
           type = "X",
           typeDescription = "Security",
           code = "XNR",
@@ -116,7 +116,7 @@ internal class AlertsControllerTest(
             """
           "data": [
             {
-              "offenderNo": "A7777ZZ",
+              "offenderNo": "G2996UX",
               "type": "X",
               "typeDescription": "Security",
               "code": "XNR",

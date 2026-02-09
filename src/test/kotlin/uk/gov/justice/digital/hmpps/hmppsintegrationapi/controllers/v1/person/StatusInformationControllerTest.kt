@@ -39,7 +39,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 
 @WebMvcTest(controllers = [StatusInformationController::class])
 @Import(value = [WebMvcTestConfiguration::class])
-@ActiveProfiles("test-redaction-enabled")
+@ActiveProfiles("test")
 internal class StatusInformationControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getStatusInformationForPersonService: GetStatusInformationForPersonService,

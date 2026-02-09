@@ -1,0 +1,107 @@
+{
+  "communityManager": {
+    "code": "string",
+    "name": {
+      "forename": "string",
+      "surname": "string",
+      "middleName": "string"
+    },
+    "username": "string",
+    "email": "string",
+    "telephoneNumber": "string",
+    "team": {
+      "code": "string",
+      "description": "string",
+      "email": "string",
+      "telephoneNumber": "string",
+      "provider": {
+        "code": "string",
+        "description": "string"
+      }
+    },
+    "allocated": true
+  },
+  "mappaDetail": {
+    "level": -2147483648,
+    "levelDescription": "string",
+    "category": -2147483648,
+    "categoryDescription": "string",
+    "startDate": "2019-08-24",
+    "reviewDate": "2019-08-24",
+    "notes": "string"
+  },
+  "supervisions": [
+    {
+      "number": 0,
+      "active": true,
+      "date": "2026-02-09",
+      "sentence": {
+        "description": "string",
+        "date": "2026-02-09",
+        "length": 0,
+        "lengthUnits": "Hours",
+        "custodial": true
+      },
+      "mainOffence": {
+        "date": "2026-02-09",
+        "count": 0,
+        "code": "string",
+        "description": "string",
+        "mainCategory": {
+          "code": "string",
+          "description": "string"
+        },
+        "subCategory": {
+          "code": "string",
+          "description": "string"
+        },
+        "schedule15SexualOffence": true,
+        "schedule15ViolentOffence": true
+      },
+      "additionalOffences": [
+        {
+          "date": "2026-02-09",
+          "count": 0,
+          "code": "string",
+          "description": "string",
+          "mainCategory": {
+            "code": "string",
+            "description": "string"
+          },
+          "subCategory": {
+            "code": "string",
+            "description": "string"
+          },
+          "schedule15SexualOffence": true,
+          "schedule15ViolentOffence": true
+        }
+      ],
+      "courtAppearances": [
+        {
+          "type": "string",
+          "date": "2026-02-09T13:21:43.904Z",
+          "court": "string",
+          "plea": "string"
+        }
+      ]
+    }
+  ],
+  "dynamicRisks": [
+    {
+      "code": "RCCO",
+      "description": "Child Concerns",
+      "startDate": "2019-08-24",
+      "reviewDate": "2019-08-24",
+      "notes": "string"
+    }
+  ],
+  "personStatus": [
+    {
+      "code": "WRSM",
+      "description": "Warrant/Summons - Outstanding warrant or summons",
+      "startDate": "2019-08-24",
+      "reviewDate": "2019-08-24",
+      "notes": "string"
+    }
+  ]
+}

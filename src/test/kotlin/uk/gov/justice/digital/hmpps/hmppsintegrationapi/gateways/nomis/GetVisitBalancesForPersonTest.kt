@@ -31,7 +31,7 @@ class GetVisitBalancesForPersonTest(
   val prisonApiGateway: PrisonApiGateway,
 ) : DescribeSpec({
     val nomisApiMockServer = ApiMockServer.create(UpstreamApi.PRISON_API)
-    val offenderNumber = "A7777ZZ"
+    val offenderNumber = "G2996UX"
     val visitBalancesPath = "/api/bookings/offenderNo/$offenderNumber/visit/balances"
 
     beforeEach {

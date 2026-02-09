@@ -24,7 +24,7 @@ class PrisonIntegrationTest : IntegrationTestBase() {
   fun `return a prisoner with all fields populated`() {
     callApi("$basePrisonPath/prisoners/$hmppsId")
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("prisoner-response")))
+      .andExpect(content().json(getExpectedResponse("prisoner-response.json")))
 
     prisonerOffenderSearchMockServer.assertValidationPassed()
   }

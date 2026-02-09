@@ -12,7 +12,7 @@ class HmppsIdIntegrationTest : IntegrationTestBase() {
       .andExpect(
         content().json(
           """
-        {"data":{"hmppsId":"A123456"}}
+        {"data":{"hmppsId":"A123123"}}
       """,
         ),
       )
@@ -43,7 +43,7 @@ class HmppsIdIntegrationTest : IntegrationTestBase() {
       .andExpect(
         content().json(
           """
-        {"data":{"hmppsId":"A123456"}}
+        {"data":{"hmppsId":"A123123"}}
       """,
         ),
       )

@@ -1,0 +1,29 @@
+{
+  "data": {
+    "prisonerOffenderSearch": {
+      "firstName": "Robert",
+      "lastName": "Larsen",
+      "middleName": "**REDACTED**",
+      "dateOfBirth": "1975-04-02",
+      "gender": "Female",
+      "ethnicity": "White: Eng./Welsh/Scot./N.Irish/British",
+      "aliases": [
+        {
+          "firstName": "Robert",
+          "lastName": "Lorsen",
+          "middleName": "**REDACTED**",
+          "dateOfBirth": "1975-04-02",
+          "gender": "Male",
+          "ethnicity": "White : Irish"
+        }
+      ],
+      "identifiers": {
+        "nomisNumber": "G2996UX",
+        "croNumber": "**REDACTED**"
+      },
+      "pncId": "**REDACTED**",
+      "hmppsId": "G2996UX",
+      "contactDetails": null
+    }
+  }
+}

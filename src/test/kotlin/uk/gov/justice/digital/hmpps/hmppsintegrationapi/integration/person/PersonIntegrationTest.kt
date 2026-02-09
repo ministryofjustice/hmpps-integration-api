@@ -11,50 +11,40 @@ import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.whenever
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithPrisonFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService.Companion.attributeSearchRequest
 import java.io.File
 
-@ActiveProfiles("integration-test-redaction-enabled")
 class PersonIntegrationTest : IntegrationTestBase() {
-  @MockitoBean
-  private lateinit var featureFlagConfig: FeatureFlagConfig
-
   @AfterEach
   fun resetValidators() {
     prisonerOffenderSearchMockServer.resetValidator()
     unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
   }
 
-  @BeforeEach
-  fun resetMocks() {
-    whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.NORMALISED_PATH_MATCHING)).thenReturn(true)
-    prisonerOffenderSearchMockServer.stubForGet(
-      "/prisoner/$nomsId",
-      File(
-        "$gatewaysFolder/prisoneroffendersearch/fixtures/PrisonerByIdResponse.json",
-      ).readText(),
-    )
-    prisonerOffenderSearchMockServer.stubForGet(
-      "/prisoner/$nomsIdFromProbation",
-      File(
-        "$gatewaysFolder/prisoneroffendersearch/fixtures/PrisonerByIdResponse.json",
-      ).readText(),
-    )
-  }
+//  @BeforeEach
+//  fun resetMocks() {
+//    prisonerOffenderSearchMockServer.stubForGet(
+//      "/prisoner/$nomsId",
+//      File(
+//        "$gatewaysFolder/prisoneroffendersearch/fixtures/PrisonerByIdResponse.json",
+//      ).readText(),
+//    )
+//    prisonerOffenderSearchMockServer.stubForGet(
+//      "/prisoner/$nomsIdFromProbation",
+//      File(
+//        "$gatewaysFolder/prisoneroffendersearch/fixtures/PrisonerByIdResponse.json",
+//      ).readText(),
+//    )
+//  }
 
   @Nested
   inner class GetPerson {
@@ -76,7 +66,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
 
       callApi("$basePath?$queryParams")
         .andExpect(status().isOk)
-        .andExpect(content().json(getExpectedResponse("person-name-search-response")))
+        .andExpect(content().json(getExpectedResponse("person-name-search-response.json")))
 
       prisonerOffenderSearchMockServer.assertValidationPassed()
     }
@@ -113,7 +103,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
     fun `returns a person from Prisoner Offender Search and Probation Offender Search`() {
       callApi("$basePath/$crn")
         .andExpect(status().isOk)
-        .andExpect(content().json(getExpectedResponse("person-offender-and-probation-search-response")))
+        .andExpect(content().json(getExpectedResponse("person-offender-and-probation-search-response.json")))
 
       prisonerOffenderSearchMockServer.assertValidationPassed()
     }
@@ -219,7 +209,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
         .andExpect(
           content().json(
             """
-      {"data":{"firstName":"string","lastName":"string"}}
+      {"data":{"firstName":"Matt","lastName":"Nolan"}}
     """,
           ),
         )

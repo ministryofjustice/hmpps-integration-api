@@ -20,12 +20,12 @@
       "cjsCode": null,
       "hoCode": "string",
       "courtDates": [
-        "2019-08-24"
+        "2026-02-09"
       ],
       "courtName": "string",
       "description": "string",
       "endDate": null,
-      "startDate": "2019-08-24",
+      "startDate": "2026-02-09",
       "statuteCode": null
     },
     {
@@ -34,12 +34,12 @@
       "cjsCode": null,
       "hoCode": "string",
       "courtDates": [
-        "2019-08-24"
+        "2026-02-09"
       ],
       "courtName": "string",
       "description": "string",
       "endDate": null,
-      "startDate": "2019-08-24",
+      "startDate": "2026-02-09",
       "statuteCode": null
     }
   ],

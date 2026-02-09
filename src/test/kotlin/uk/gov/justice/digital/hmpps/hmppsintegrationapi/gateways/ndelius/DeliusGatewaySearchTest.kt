@@ -380,7 +380,7 @@ class DeliusGatewaySearchTest(
       }
 
       describe("when a Nomis number is used to make requests") {
-        val hmppsId = "A7777ZZ"
+        val hmppsId = "G2996UX"
 
         it("calls the Probation API service with a Nomis number") {
           nDeliusMockServer.stubForPost(

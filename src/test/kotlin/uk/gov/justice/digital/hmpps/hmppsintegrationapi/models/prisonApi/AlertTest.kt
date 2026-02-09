@@ -13,7 +13,7 @@ class AlertTest :
         it("maps one-to-one attributes to integration API attributes") {
           val alertFromNomis =
             PrisonApiAlert(
-              offenderNo = "A7777ZZ",
+              offenderNo = "G2996UX",
               alertType = "X",
               alertTypeDescription = "Security",
               alertCode = "XNR",
@@ -46,7 +46,7 @@ class AlertTest :
         it("maps case where dateExpires is not populated") {
           val alertFromNomis =
             PrisonApiAlert(
-              offenderNo = "A7777ZZ",
+              offenderNo = "G2996UX",
               alertType = "X",
               alertTypeDescription = "Security",
               alertCode = "XNR",
