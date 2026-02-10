@@ -27,11 +27,11 @@ class DeleteProcessedEventsService(
     val cutOff = LocalDateTime.now(clock).minusHours(24)
     try {
       log.info("Deleting processed events older than $cutOff")
-      eventRepository.deleteEvents(cutOff)
+      val numberOfDeletedEvents = eventRepository.deleteEvents(cutOff)
+      log.info("Successfully deleted $numberOfDeletedEvents processed events")
     } catch (e: Exception) {
       log.error("Error deleting processed events", e)
       telemetryService.captureException(e)
     }
-    log.info("Successfully deleted processed events")
   }
 }
