@@ -4,7 +4,6 @@ import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.filter.Filter
 import ch.qos.logback.core.spi.FilterReply
 import com.github.benmanes.caffeine.cache.Caffeine
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.cache.CacheManager
@@ -15,7 +14,6 @@ import org.springframework.cache.support.NoOpCacheManager
 import org.springframework.cache.support.SimpleCacheManager
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.util.StringUtils
@@ -25,7 +23,6 @@ import java.lang.reflect.Method
 import java.time.Duration
 
 @EnableCaching
-@EnableScheduling
 @Configuration
 class CacheConfig {
   companion object {
@@ -90,11 +87,10 @@ const val GATEWAY_CACHE_METRICS = "GatewayCacheMetrics"
 @Component
 @ConditionalOnProperty("feature-flag.gateway-cache-enabled", havingValue = "true")
 @ConditionalOnBean(CaffeineCache::class)
-class CacheMetricsListener {
-  @Autowired private lateinit var gatewayCache: CaffeineCache
-
-  @Autowired private lateinit var telemetryService: TelemetryService
-
+class CacheMetricsListener(
+  private val gatewayCache: CaffeineCache,
+  private val telemetryService: TelemetryService,
+) {
   @Scheduled(fixedDelay = 60000)
   fun logCacheMetrics() {
     val metrics = gatewayCache.nativeCache.stats()

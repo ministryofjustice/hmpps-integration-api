@@ -83,6 +83,7 @@ tasks {
   val classesToBeExcluded =
     arrayOf(
       "uk.gov.justice.digital.hmpps.hmppsintegrationapi.HmppsIntegrationApiKt",
+      "uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.SchedulingConfig",
     )
 
   // Enables the coverage report to be created for only unit tests or integration tests
