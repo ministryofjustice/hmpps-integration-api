@@ -23,7 +23,7 @@ services:
   adjudications:
     base-url: http://localhost:4010
   assess-risks-and-needs:
-    base-url: http://localhost:4032
+    base-url: http://localhost:4011
   case-notes:
     base-url: http://localhost:4012
   create-and-vary-licence:
