@@ -13,17 +13,18 @@ import java.time.LocalDateTime
 @ConditionalOnProperty("feature-flag.enable-delete-processed-events", havingValue = "true")
 @Component
 class DeleteProcessedEventsService(
-  val eventRepository: EventNotificationRepository,
+  private val eventRepository: EventNotificationRepository,
   private val telemetryService: TelemetryService,
+  private val clock: Clock,
 ) {
   companion object {
     private val log = LoggerFactory.getLogger(this::class.java)
   }
 
-  @Scheduled(fixedRateString = "\${delete-processed-events.schedule.rate}")
+  @Scheduled(fixedRateString = $$"${delete-processed-events.schedule.rate}")
   @Transactional
   fun deleteProcessedEvents() {
-    val cutOff = LocalDateTime.now(Clock.systemDefaultZone()).minusHours(24)
+    val cutOff = LocalDateTime.now(clock).minusHours(24)
     try {
       log.info("Deleting processed events older than $cutOff")
       eventRepository.deleteEvents(cutOff)

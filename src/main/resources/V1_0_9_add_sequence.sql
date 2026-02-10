@@ -1,6 +1,0 @@
--- CREATE SEQUENCE IF NOT EXISTS event_notification_event_id_seq
---     INCREMENT 1
---     START 1
---     MINVALUE 1
---     MAXVALUE 9223372036854775807
---     CACHE 1;

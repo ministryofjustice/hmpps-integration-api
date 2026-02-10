@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.integration
 
-import io.kotest.assertions.any
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.mockito.kotlin.any
@@ -8,13 +7,14 @@ import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.IntegrationEventStatus
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.IntegrationEventStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.DeleteProcessedEventsService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import kotlin.test.Test
 
-class DeleteProcessedIntegrationTest : EventsIntegrationTestBase() {
+class DeleteProcessedIntegrationTest : IntegrationTestBase() {
   @Autowired
   private lateinit var deleteProcessedEventsService: DeleteProcessedEventsService
 

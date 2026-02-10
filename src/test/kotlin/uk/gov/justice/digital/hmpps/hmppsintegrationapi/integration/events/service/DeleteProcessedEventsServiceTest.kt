@@ -7,13 +7,14 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.EventNotificationRepository
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.JdbcTemplateEventNotificationRepository
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.DeleteProcessedEventsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
+import java.time.Clock
 import kotlin.test.Test
 
 class DeleteProcessedEventsServiceTest {
-  val repo: EventNotificationRepository = mock(EventNotificationRepository::class.java)
+  val repo: JdbcTemplateEventNotificationRepository = mock(JdbcTemplateEventNotificationRepository::class.java)
   val telemetry: TelemetryService = mock(TelemetryService::class.java)
 
   @BeforeEach
@@ -23,14 +24,14 @@ class DeleteProcessedEventsServiceTest {
 
   @Test
   fun `completes successfully`() {
-    assertDoesNotThrow { DeleteProcessedEventsService(repo, telemetry).deleteProcessedEvents() }
+    assertDoesNotThrow { DeleteProcessedEventsService(repo, telemetry, Clock.systemDefaultZone()).deleteProcessedEvents() }
   }
 
   @Test
   fun `logs an error to sentry`() {
     val ex = RuntimeException("Something went wrong")
     whenever(repo.deleteEvents(any())).thenThrow(ex)
-    DeleteProcessedEventsService(repo, telemetry).deleteProcessedEvents()
+    DeleteProcessedEventsService(repo, telemetry, Clock.systemDefaultZone()).deleteProcessedEvents()
     verify(telemetry).captureException(ex)
   }
 }

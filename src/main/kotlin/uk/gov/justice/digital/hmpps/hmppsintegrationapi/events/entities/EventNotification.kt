@@ -11,3 +11,9 @@ data class EventNotification(
   val status: String,
   val lastModifiedDateTime: LocalDateTime,
 )
+
+enum class IntegrationEventStatus {
+  PENDING,
+  PROCESSING,
+  PROCESSED,
+}
