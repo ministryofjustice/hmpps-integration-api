@@ -92,3 +92,7 @@ authorisation:
       notes: "See client list in Confluence"
       roles:
         - "smartinbox"
+    prisonerfacing:
+      notes: "See client list in Confluence"
+      roles:
+        - "moj-prisoner-facing"
