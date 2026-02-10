@@ -184,7 +184,6 @@ generate_tar_ball(){
       fi
       echo
       echo "To untar and check contents run: tar -xvf hmpps-integration-api-$client-$environment.tar.gz"
-      clean
   fi
 }
 
