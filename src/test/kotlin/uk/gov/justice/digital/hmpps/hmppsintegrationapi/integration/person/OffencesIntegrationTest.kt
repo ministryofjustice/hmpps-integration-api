@@ -16,7 +16,7 @@ class OffencesIntegrationTest : IntegrationTestBase() {
      */
     callApiWithCN("$basePath/$nomsId/offences", cn = "automated-test-client")
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("person-prison-probation-offences")))
+      .andExpect(content().json(getExpectedResponse("person-prison-probation-offences.json")))
   }
 
   // Should be exactly the same outcome as above
@@ -29,7 +29,7 @@ class OffencesIntegrationTest : IntegrationTestBase() {
      */
     callApiWithCN("$basePath/$nomsId/offences", cn = "automated-test-client-no-filters")
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("person-prison-probation-offences")))
+      .andExpect(content().json(getExpectedResponse("person-prison-probation-offences.json")))
   }
 
   @Test

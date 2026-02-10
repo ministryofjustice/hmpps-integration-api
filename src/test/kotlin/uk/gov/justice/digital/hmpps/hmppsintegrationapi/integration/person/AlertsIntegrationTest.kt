@@ -9,13 +9,10 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
-import org.springframework.test.context.TestPropertySource
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerAlertsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.fullAccess
@@ -23,11 +20,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithLaoRed
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithPndAlerts
 import java.io.File
 
-@TestPropertySource(properties = ["services.ndelius.base-url=http://localhost:4201"])
 class AlertsIntegrationTest : IntegrationTestBase() {
-  @MockitoSpyBean
-  private lateinit var alertsGateway: PrisonerAlertsGateway
-
   @Nested
   inner class GetAlerts {
     val path = "$basePath/$nomsId/alerts"
@@ -118,7 +111,7 @@ class AlertsIntegrationTest : IntegrationTestBase() {
 
     @Test
     fun `returns Redacted alerts for an LAO`() {
-      corePersonRecordGateway.stubForGet(
+      corePersonRecordMockServer.stubForGet(
         "/person/probation/$crn",
         File(
           "$gatewaysFolder/cpr/fixtures/core-person-record-response.json",

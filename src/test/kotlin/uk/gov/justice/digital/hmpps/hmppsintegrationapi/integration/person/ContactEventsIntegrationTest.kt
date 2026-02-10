@@ -7,11 +7,8 @@ import org.junit.jupiter.api.Test
 import org.mockito.kotlin.whenever
 import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpStatus
-import org.springframework.test.context.TestPropertySource
-import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ErrorResponse
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.NORMALISED_PATH_MATCHING
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_CONTACT_EVENTS_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
@@ -29,11 +26,7 @@ import java.io.File
 import java.nio.charset.Charset
 import kotlin.test.assertEquals
 
-@TestPropertySource(properties = ["services.ndelius.base-url=http://localhost:4201"])
 class ContactEventsIntegrationTest : IntegrationTestBase() {
-  @MockitoBean
-  private lateinit var featureFlagConfig: FeatureFlagConfig
-
   @AfterEach
   fun resetValidators() {
     prisonerOffenderSearchMockServer.resetValidator()

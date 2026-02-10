@@ -39,7 +39,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 
 @WebMvcTest(controllers = [LicenceConditionController::class])
 @Import(value = [WebMvcTestConfiguration::class, FeatureFlagConfig::class])
-@ActiveProfiles("test-redaction-enabled")
+@ActiveProfiles("test")
 class LicenceConditionControllerTests(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getLicenceConditionService: GetLicenceConditionService,

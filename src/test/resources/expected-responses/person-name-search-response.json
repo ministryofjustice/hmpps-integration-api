@@ -1,9 +1,9 @@
 {
-  "data": {
-    "prisonerOffenderSearch": {
+  "data": [
+    {
       "firstName": "Robert",
       "lastName": "Larsen",
-      "middleName": "**REDACTED**",
+      "middleName": "John James",
       "dateOfBirth": "1975-04-02",
       "gender": "Female",
       "ethnicity": "White: Eng./Welsh/Scot./N.Irish/British",
@@ -11,7 +11,7 @@
         {
           "firstName": "Robert",
           "lastName": "Lorsen",
-          "middleName": "**REDACTED**",
+          "middleName": "Trevor",
           "dateOfBirth": "1975-04-02",
           "gender": "Male",
           "ethnicity": "White : Irish"
@@ -19,11 +19,24 @@
       ],
       "identifiers": {
         "nomisNumber": "A1234AA",
-        "croNumber": "**REDACTED**"
+        "croNumber": "29906/12J",
+        "deliusCrn": null
       },
-      "pncId": "**REDACTED**",
+      "pncId": "12/394773H",
       "hmppsId": "A1234AA",
-      "contactDetails": null
+      "contactDetails": null,
+      "currentRestriction": null,
+      "restrictionMessage": null,
+      "currentExclusion": null,
+      "exclusionMessage": null
     }
+  ],
+  "pagination": {
+    "isLastPage": true,
+    "count": 1,
+    "page": 1,
+    "perPage": 10,
+    "totalCount": 1,
+    "totalPages": 1
   }
 }

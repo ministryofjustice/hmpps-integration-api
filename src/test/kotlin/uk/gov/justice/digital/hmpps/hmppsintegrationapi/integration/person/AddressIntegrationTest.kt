@@ -9,11 +9,8 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.whenever
 import org.springframework.http.HttpStatus
-import org.springframework.test.context.TestPropertySource
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.writeAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
@@ -25,26 +22,22 @@ import java.io.File
 import kotlin.test.assertEquals
 
 @DisplayName("Address Integration")
-@TestPropertySource(properties = ["services.ndelius.base-url=http://localhost:4201"])
 class AddressIntegrationTest : IntegrationTestBase() {
   val path = "$basePath/$nomsId/addresses"
   val crnPath = "$basePath/$crn/addresses"
   val notExistsCrnPath = "$basePath/X999999/addresses"
   val notexistsNomisPath = "$basePath/X9999XX/addresses"
 
-  @MockitoSpyBean
-  lateinit var authorisationConfig: AuthorisationConfig
-
   @BeforeEach
   fun setup() {
     reset(authorisationConfig)
-    corePersonRecordGateway.stubForGet(
+    corePersonRecordMockServer.stubForGet(
       "/person/prison/$nomsId",
       File(
         "$gatewaysFolder/cpr/fixtures/core-person-record-response.json",
       ).readText(),
     )
-    corePersonRecordGateway.stubForGet(
+    corePersonRecordMockServer.stubForGet(
       "/person/probation/$crn",
       File(
         "$gatewaysFolder/cpr/fixtures/core-person-record-response.json",
@@ -61,7 +54,7 @@ class AddressIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `returns only delius addresses for a person when crn provided and nomis number from delius not present`() {
-    corePersonRecordGateway.stubForGet(
+    corePersonRecordMockServer.stubForGet(
       "/person/probation/$crn",
       "not found",
       HttpStatus.NOT_FOUND,
@@ -88,7 +81,7 @@ class AddressIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `returns only prison addresses for a person when nomis provided and cpr does not find a valid crn`() {
-    corePersonRecordGateway.stubForGet(
+    corePersonRecordMockServer.stubForGet(
       "/person/prison/$nomsId",
       File(
         "$gatewaysFolder/cpr/fixtures/core-person-record-response-incorrect-ids.json",

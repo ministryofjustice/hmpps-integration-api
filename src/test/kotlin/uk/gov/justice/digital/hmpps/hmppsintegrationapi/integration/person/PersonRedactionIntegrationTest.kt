@@ -16,9 +16,6 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.verification.VerificationMode
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.TestPropertySource
-import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.result.JsonPathResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
@@ -30,16 +27,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithIdOnlyRedaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithLaoRedactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService.Companion.attributeSearchRequest
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.TestConstants.DEFAULT_CRN
 import java.io.File
 
-@ActiveProfiles("integration-test-redaction-enabled")
-@TestPropertySource(properties = ["services.ndelius.base-url=http://localhost:4201"])
 class PersonRedactionIntegrationTest : IntegrationTestBase() {
-  @MockitoBean
-  lateinit var telemetryService: TelemetryService
-
   @AfterEach
   fun resetValidators() {
     prisonerOffenderSearchMockServer.resetValidator()
@@ -103,7 +94,7 @@ class PersonRedactionIntegrationTest : IntegrationTestBase() {
       fun `return a person from Prisoner Offender Search with some data redacted`() {
         callApiWithCN("$basePath/$crn", clientNameWithRoleBaseRedaction)
           .andExpect(status().isOk)
-          .andExpect(content().json(getExpectedResponse("person-offender-and-probation-search-redacted-response")))
+          .andExpect(content().json(getExpectedResponse("person-offender-and-probation-search-redacted-response.json")))
 
         verifyRedactionEvent("prison-education", "role-based-redacted-client", times(1), removes = 1)
         prisonerOffenderSearchMockServer.assertValidationPassed()
