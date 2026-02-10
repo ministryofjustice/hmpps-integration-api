@@ -62,9 +62,7 @@
             "type": "TELEPHONE"
           }
         ],
-        "emails": [
-          "string"
-        ]
+        "emails": ["string"]
       },
       "currentRestriction": false,
       "restrictionMessage": "SOME RESTRICTION MESSAGE",
