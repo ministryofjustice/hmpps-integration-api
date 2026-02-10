@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.JdbcTemplateEventNotificationRepository
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.writeAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGateway
@@ -66,6 +67,9 @@ abstract class IntegrationTestBase {
   @MockitoSpyBean
   lateinit var authorisationConfig: AuthorisationConfig
 
+  @MockitoSpyBean
+  lateinit var eventNotificationRepository: JdbcTemplateEventNotificationRepository
+
   @Autowired
   lateinit var mockMvc: MockMvc
 
@@ -82,6 +86,7 @@ abstract class IntegrationTestBase {
     reset(nDeliusGateway)
     reset(featureFlagConfig)
     reset(authorisationConfig)
+    reset(eventNotificationRepository)
 
     cacheManager.cacheNames.forEach {
       cacheManager.getCache(it).clear()

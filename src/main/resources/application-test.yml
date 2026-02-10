@@ -1,3 +1,14 @@
+spring:
+  datasource:
+    url: "jdbc:postgresql://localhost:5432/event_store?sslmode=prefer"
+    username: postgres
+    password: postgres
+    hikari:
+      maximum-pool-size: 2
+  flyway:
+    enabled: true
+    baselineOnMigrate: true
+
 server:
   shutdown: immediate
 
@@ -88,6 +99,7 @@ feature-flag:
   gateway-cache-enabled: true
   normalised-path-matching: true
   use-new-risk-score-api: true
+  enable-delete-processed-events: false
 
 authorisation:
   consumers:
