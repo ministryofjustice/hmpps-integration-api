@@ -14,6 +14,15 @@ configurations {
   testCompileOnly { isCanBeResolved = true }
 }
 
+configurations.all {
+  resolutionStrategy.eachDependency {
+    if (requested.group == "org.apache.logging.log4j" && requested.version == "2.24.3") {
+      useVersion("2.25.3")
+      because("Fix CVE-2025-68161")
+    }
+  }
+}
+
 dependencies {
   runtimeOnly("io.jsonwebtoken:jjwt-impl:0.13.0")
   runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.13.0")
