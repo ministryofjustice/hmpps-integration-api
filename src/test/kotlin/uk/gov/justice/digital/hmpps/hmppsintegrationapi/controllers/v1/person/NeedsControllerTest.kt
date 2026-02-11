@@ -16,6 +16,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
@@ -29,12 +30,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 import java.time.LocalDateTime
 
 @WebMvcTest(controllers = [NeedsController::class])
-@Import(WebMvcTestConfiguration::class)
+@Import(WebMvcTestConfiguration::class, FeatureFlagConfig::class)
 @ActiveProfiles("test")
 internal class NeedsControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getNeedsForPersonService: GetNeedsForPersonService,
   @MockitoBean val auditService: AuditService,
+  @Autowired val featureFlagConfig: FeatureFlagConfig,
 ) : DescribeSpec(
     {
       val hmppsId = "A1234AA"

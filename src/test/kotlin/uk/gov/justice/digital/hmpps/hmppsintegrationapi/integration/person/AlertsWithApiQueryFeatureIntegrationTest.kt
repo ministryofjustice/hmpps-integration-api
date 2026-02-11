@@ -2,15 +2,11 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 
 class AlertsWithApiQueryFeatureIntegrationTest : IntegrationTestBase() {
-  @MockitoBean lateinit var featureFlagConfig: FeatureFlagConfig
-
   @Nested
   inner class GetAlerts {
     val path = "$basePath/$nomsId/alerts"

@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskPredictorScore
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskScoreV2
 import java.time.LocalDateTime
 
 data class ArnRiskPredictorScore(
@@ -14,12 +15,105 @@ data class ArnRiskPredictorScore(
 ) {
   fun toRiskPredictorScore(): RiskPredictorScore =
     RiskPredictorScore(
-      completedDate = if (!this.completedDate.isNullOrEmpty()) LocalDateTime.parse(this.completedDate) else null,
+      completedDate = getDateFromString(this.completedDate),
       assessmentStatus = this.assessmentStatus,
-      generalPredictor = this.generalPredictorScore.toGeneralPredictor(),
-      violencePredictor = this.violencePredictorScore.toViolencePredictor(),
-      groupReconviction = this.groupReconvictionScore.toGroupReconviction(),
-      riskOfSeriousRecidivism = this.riskOfSeriousRecidivismScore.toRiskOfSeriousRecidivism(),
-      sexualPredictor = this.sexualPredictorScore.toSexualPredictor(),
+      generalPredictor = this.generalPredictorScore.toGeneralPredictor(false),
+      violencePredictor = this.violencePredictorScore.toViolencePredictor(false),
+      groupReconviction = this.groupReconvictionScore.toGroupReconviction(false),
+      riskOfSeriousRecidivism = this.riskOfSeriousRecidivismScore.toRiskOfSeriousRecidivism(false),
+      sexualPredictor = this.sexualPredictorScore.toSexualPredictor(false),
     )
+}
+
+data class ArnOutput(
+  // Version 1
+  val generalPredictorScore: ArnGeneralPredictorScore = ArnGeneralPredictorScore(),
+  val violencePredictorScore: ArnViolencePredictorScore = ArnViolencePredictorScore(),
+  val groupReconvictionScore: ArnGroupReconvictionScore = ArnGroupReconvictionScore(),
+  val riskOfSeriousRecidivismScore: ArnRiskOfSeriousRecidivismScore = ArnRiskOfSeriousRecidivismScore(),
+  val sexualPredictorScore: ArnSexualPredictorScore = ArnSexualPredictorScore(),
+  // Version 2
+  val allReoffendingPredictor: ArnScore = ArnScore(),
+  val violentReoffendingPredictor: ArnScore = ArnScore(),
+  val seriousViolentReoffendingPredictor: ArnScore = ArnScore(),
+  val directContactSexualReoffendingPredictor: ArnScore = ArnScore(),
+  val indirectImageContactSexualReoffendingPredictor: ArnScore = ArnScore(),
+  val combinedSeriousReoffendingPredictor: ArnScore = ArnScore(),
+)
+
+data class ArnScore(
+  val band: String? = null,
+  val score: Int? = null,
+)
+
+data class ArnRiskPredictorScoreV2(
+  val completedDate: String? = null,
+  val status: String? = null,
+  val source: String? = null,
+  val outputVersion: String,
+  val output: ArnOutput,
+) {
+  fun toRiskPredictorScore(): RiskPredictorScore {
+    when (val assessmentVersion = outputVersion.toInt()) {
+      1 -> {
+        return RiskPredictorScore(
+          completedDate = getDateFromString(this.completedDate),
+          assessmentStatus = this.status,
+          generalPredictor = this.output.generalPredictorScore.toGeneralPredictor(),
+          violencePredictor = this.output.violencePredictorScore.toViolencePredictor(),
+          groupReconviction = this.output.groupReconvictionScore.toGroupReconviction(),
+          riskOfSeriousRecidivism = this.output.riskOfSeriousRecidivismScore.toRiskOfSeriousRecidivism(),
+          sexualPredictor = this.output.sexualPredictorScore.toSexualPredictor(),
+          assessmentVersion = assessmentVersion,
+        )
+      }
+      2 -> {
+        return RiskPredictorScore(
+          completedDate = getDateFromString(this.completedDate),
+          assessmentStatus = this.status,
+          assessmentVersion = assessmentVersion,
+          allReoffendingPredictor =
+            RiskScoreV2(
+              band = this.output.allReoffendingPredictor.band,
+              score = this.output.allReoffendingPredictor.score,
+            ),
+          violentReoffendingPredictor =
+            RiskScoreV2(
+              band = this.output.violentReoffendingPredictor.band,
+              score = this.output.violentReoffendingPredictor.score,
+            ),
+          seriousViolentReoffendingPredictor =
+            RiskScoreV2(
+              band = this.output.seriousViolentReoffendingPredictor.band,
+              score = this.output.seriousViolentReoffendingPredictor.score,
+            ),
+          directContactSexualReoffendingPredictor =
+            RiskScoreV2(
+              band = this.output.directContactSexualReoffendingPredictor.band,
+              score = this.output.directContactSexualReoffendingPredictor.score,
+            ),
+          indirectImageContactSexualReoffendingPredictor =
+            RiskScoreV2(
+              band = this.output.indirectImageContactSexualReoffendingPredictor.band,
+              score = this.output.indirectImageContactSexualReoffendingPredictor.score,
+            ),
+          combinedSeriousReoffendingPredictor =
+            RiskScoreV2(
+              band = this.output.combinedSeriousReoffendingPredictor.band,
+              score = this.output.combinedSeriousReoffendingPredictor.score,
+            ),
+        )
+      }
+      else -> {
+        throw RuntimeException("Version not supported: $outputVersion")
+      }
+    }
+  }
+}
+
+private fun getDateFromString(date: String?): LocalDateTime? {
+  if (!date.isNullOrEmpty()) {
+    return LocalDateTime.parse(date)
+  }
+  return null
 }

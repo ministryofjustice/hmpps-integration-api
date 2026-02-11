@@ -10,12 +10,10 @@ import org.awaitility.kotlin.untilCallTo
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.web.reactive.function.client.WebClientResponseException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestWithQueueBase
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DeactivateLocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DeactivationReason
@@ -25,8 +23,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffenders
 import java.time.LocalDate
 
 class DeactivateLocationIntegrationTest : IntegrationTestWithQueueBase("locations") {
-  @Autowired lateinit var prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway
-
   private val prisonId = "MDI"
   private val key = "MDI-A-1-001"
   private val path = "/v1/prison/$prisonId/location/$key/deactivate"

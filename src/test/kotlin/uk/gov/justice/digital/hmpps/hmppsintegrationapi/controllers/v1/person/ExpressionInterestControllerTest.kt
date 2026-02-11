@@ -13,17 +13,19 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.PutExpressionInterestService
 
 @WebMvcTest(controllers = [ExpressionInterestController::class])
-@Import(WebMvcTestConfiguration::class)
+@Import(WebMvcTestConfiguration::class, FeatureFlagConfig::class)
 @ActiveProfiles("test")
 class ExpressionInterestControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val expressionOfInterestService: PutExpressionInterestService,
+  @Autowired val featureFlagConfig: FeatureFlagConfig,
 ) : DescribeSpec({
     val mockMvc = IntegrationAPIMockMvc(springMockMvc)
     val basePath = "/v1/persons"

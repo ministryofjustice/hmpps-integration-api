@@ -113,6 +113,10 @@ internal class PersonControllerTest(
 
       fun <T> notFoundErrorResponseEmptyList(vararg upstreamApi: UpstreamApi) = Response<List<T>>(data = emptyList(), errors = notFoundErrors(*upstreamApi))
 
+      beforeTest {
+        whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.NORMALISED_PATH_MATCHING)).thenReturn(true)
+      }
+
       describe("GET $basePath") {
         beforeTest {
           Mockito.reset(getPersonsService)
@@ -138,7 +142,8 @@ internal class PersonControllerTest(
         }
 
         it("gets a person with matching search criteria") {
-          mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName&pnc_number=$pncNumber&date_of_birth=$dateOfBirth")
+          val result = mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName&pnc_number=$pncNumber&date_of_birth=$dateOfBirth")
+          result.response.status.shouldNotBe(HttpStatus.FORBIDDEN.value())
           verify(getPersonsService, times(1)).personAttributeSearch(firstName, lastName, pncNumber, dateOfBirth.toString())
         }
 
@@ -192,7 +197,7 @@ internal class PersonControllerTest(
           val expectedFilters = ConsumerFilters(supervisionStatuses = listOf("PRISONS"))
           whenever(getPersonsService.personAttributeSearch(firstName, null, pncNumber, null, false, expectedFilters)).thenReturn(Response(data = emptyList()))
 
-          mockMvc.performAuthorisedWithCN("$basePath?first_name=$firstName&pnc_number=$pncNumber", "supervision-status-test")
+          mockMvc.performAuthorisedWithCN("$basePath?first_name=$firstName&pnc_number=$pncNumber", "supervision-status-prison-only")
 
           verify(getPersonsService, times(1)).personAttributeSearch(firstName, null, pncNumber, null, false, expectedFilters)
         }
@@ -528,7 +533,8 @@ internal class PersonControllerTest(
         }
 
         it("logs audit") {
-          mockMvc.performAuthorised(path)
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.OK.value())
           verify(auditService, times(1)).createEvent("GET_LIMITED_ACCESS_INFORMATION", mapOf("hmppsId" to sanitisedHmppsId))
         }
 

@@ -1,18 +1,18 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.util
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.utlis
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.ApplicationContext
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.UpstreamGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.ControllerGatewayMapper
 
-@SpringBootTest
 internal class ControllerGatewayMapperTest(
   @Autowired val context: ApplicationContext,
-) {
+) : IntegrationTestBase() {
   val mappings = ControllerGatewayMapper().getControllerGatewayMapping(context)
 
   @Test

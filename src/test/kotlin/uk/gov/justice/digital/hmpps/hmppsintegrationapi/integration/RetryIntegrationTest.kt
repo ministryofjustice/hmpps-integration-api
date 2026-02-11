@@ -9,9 +9,6 @@ import org.junit.jupiter.api.Test
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.test.context.TestPropertySource
-import org.springframework.test.context.bean.override.mockito.MockitoBean
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.util.ReflectionTestUtils
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -20,20 +17,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
 import java.io.File
 import java.time.Duration
-import kotlin.collections.first
 
 class RetryIntegrationTest : IntegrationTestBase() {
   @Value("\${services.activities.base-url}")
   lateinit var baseUrl: String
-
-  @MockitoBean lateinit var featureFlagConfig: FeatureFlagConfig
-
-  @MockitoSpyBean lateinit var activitiesGateway: ActivitiesGateway
   lateinit var client: WebClientWrapper
   lateinit var wrapper: WebClientWrapper
 
@@ -50,6 +40,8 @@ class RetryIntegrationTest : IntegrationTestBase() {
     ReflectionTestUtils.setField(activitiesGateway, "webClient", wrapper)
 
     activitiesMockServer.resetValidator()
+
+    whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.NORMALISED_PATH_MATCHING)).thenReturn(true)
   }
 
   @Nested
@@ -132,7 +124,6 @@ class RetryIntegrationTest : IntegrationTestBase() {
 
     @Test
     fun `returns schedule details (request) on 3rd retry for http status 502`() {
-      whenever(featureFlagConfig.getConfigFlagValue(FeatureFlagConfig.USE_SCHEDULE_DETAIL_ENDPOINT)).thenReturn(true)
       activitiesMockServer.stubForRetry(
         scenario = "Retry scenario for request 1",
         numberOfRequests = 4,
@@ -151,7 +142,6 @@ class RetryIntegrationTest : IntegrationTestBase() {
 
     @Test
     fun `returns failure (request) after 3rd retry for http status 502`() {
-      whenever(featureFlagConfig.getConfigFlagValue(FeatureFlagConfig.USE_SCHEDULE_DETAIL_ENDPOINT)).thenReturn(true)
       activitiesMockServer.stubForRetry(
         scenario = "Retry scenario for request 2",
         numberOfRequests = 4,
@@ -168,7 +158,6 @@ class RetryIntegrationTest : IntegrationTestBase() {
 
     @Test
     fun `returns failure (request) when upstream service not available after 3 retries`() {
-      whenever(featureFlagConfig.getConfigFlagValue(FeatureFlagConfig.USE_SCHEDULE_DETAIL_ENDPOINT)).thenReturn(true)
       activitiesMockServer.stubForRetry(
         scenario = "Retry scenario for request 3",
         numberOfRequests = 4,
@@ -185,7 +174,6 @@ class RetryIntegrationTest : IntegrationTestBase() {
 
     @Test
     fun `returns success (requestList) when upstream service not available for 3 times and succeeds on last retry`() {
-      whenever(featureFlagConfig.getConfigFlagValue(FeatureFlagConfig.USE_SCHEDULE_DETAIL_ENDPOINT)).thenReturn(true)
       activitiesMockServer.stubForRetry(
         scenario = "Retry scenario for request 4",
         numberOfRequests = 4,
@@ -203,10 +191,7 @@ class RetryIntegrationTest : IntegrationTestBase() {
 
   @Nested
   @DisplayName("Delius POST Retries")
-  @TestPropertySource(properties = ["services.ndelius.base-url=http://localhost:4201"])
   inner class DeliusPosts {
-    @MockitoSpyBean lateinit var deliusGateway: NDeliusGateway
-
     @Value("\${services.ndelius.base-url}")
     lateinit var deliusBaseUrl: String
 
@@ -226,7 +211,7 @@ class RetryIntegrationTest : IntegrationTestBase() {
           initialBackOffDuration = Duration.ofSeconds(0),
         )
       deliusWrapper = spy(deliusClient)
-      ReflectionTestUtils.setField(deliusGateway, "webClient", deliusWrapper)
+      ReflectionTestUtils.setField(nDeliusGateway, "webClient", deliusWrapper)
     }
 
     @AfterEach
@@ -258,7 +243,7 @@ class RetryIntegrationTest : IntegrationTestBase() {
         ]
         """.trimIndent(),
       )
-      val response = deliusGateway.getPersons("Ahsoka", "Tano", null, null)
+      val response = nDeliusGateway.getPersons("Ahsoka", "Tano", null, null)
       response.data.count().shouldBe(1)
       response.data
         .first()
@@ -293,7 +278,7 @@ class RetryIntegrationTest : IntegrationTestBase() {
         }
         """.trimIndent(),
       )
-      val response = deliusGateway.getCaseAccess("AB123456")
+      val response = nDeliusGateway.getCaseAccess("AB123456")
       response.data.shouldBe(CaseAccess("AB123456", false, false))
     }
 
@@ -319,7 +304,7 @@ class RetryIntegrationTest : IntegrationTestBase() {
         ]
         """.trimIndent(),
       )
-      val response = deliusGateway.getOffender("AB123456")
+      val response = nDeliusGateway.getOffender("AB123456")
       response.data?.firstName.shouldBe("Test")
       response.data?.surname.shouldBe("User")
     }

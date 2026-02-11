@@ -108,3 +108,7 @@ authorisation:
 
 sentry:
   traces-sample-rate: "0.05"
+
+delete-processed-events:
+  schedule:
+    rate: 10000

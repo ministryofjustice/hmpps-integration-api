@@ -41,7 +41,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryServi
 
 @WebMvcTest(controllers = [DynamicRisksController::class])
 @Import(value = [WebMvcTestConfiguration::class])
-@ActiveProfiles("test-redaction-enabled")
+@ActiveProfiles("test")
 internal class DynamicRisksControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getDynamicRisksForPersonService: GetDynamicRisksForPersonService,
@@ -65,6 +65,7 @@ internal class DynamicRisksControllerTest(
           Mockito.reset(getDynamicRisksForPersonService)
           Mockito.reset(auditService)
           Mockito.reset(telemetryService)
+          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.NORMALISED_PATH_MATCHING)).thenReturn(true)
           whenever(getCaseAccess.getAccessFor(any())).thenReturn(CaseAccess(laoOkCrn, false, false, "", ""))
           whenever(getCaseAccess.getAccessFor("R754321")).thenReturn(null)
           whenever(getDynamicRisksForPersonService.execute(hmppsId)).thenReturn(

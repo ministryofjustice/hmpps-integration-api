@@ -2,13 +2,9 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 
 import org.assertj.core.api.Assertions.assertThat
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import kotlin.test.Test
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("integration-test")
 @AutoConfigureMockMvc
 class CertificateRevocationIntegrationTest : IntegrationTestBase() {
   @Test

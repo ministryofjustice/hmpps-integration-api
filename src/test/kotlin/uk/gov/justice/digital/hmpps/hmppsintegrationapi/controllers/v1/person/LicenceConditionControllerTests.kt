@@ -20,6 +20,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
@@ -37,13 +38,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetLicenceCondi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [LicenceConditionController::class])
-@Import(value = [WebMvcTestConfiguration::class])
-@ActiveProfiles("test-redaction-enabled")
+@Import(value = [WebMvcTestConfiguration::class, FeatureFlagConfig::class])
+@ActiveProfiles("test")
 class LicenceConditionControllerTests(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getLicenceConditionService: GetLicenceConditionService,
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getCaseAccess: GetCaseAccess,
+  @Autowired val featureFlagConfig: FeatureFlagConfig,
 ) : DescribeSpec(
     {
       val hmppsId = "A1234AA"

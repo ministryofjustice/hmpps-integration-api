@@ -35,7 +35,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 
 @WebMvcTest(controllers = [MappaDetailController::class])
 @Import(value = [WebMvcTestConfiguration::class])
-@ActiveProfiles("test-redaction-enabled")
+@ActiveProfiles("test")
 internal class MappaDetailControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getMappaDetailForPersonService: GetMappaDetailForPersonService,
@@ -72,6 +72,7 @@ internal class MappaDetailControllerTest(
           )
 
           Mockito.reset(auditService)
+          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.NORMALISED_PATH_MATCHING)).thenReturn(true)
         }
 
         afterTest {

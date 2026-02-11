@@ -7,8 +7,6 @@ import io.mockk.unmockkStatic
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ErrorResponse
@@ -23,8 +21,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithPrison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithProbationOnlySupervisionFilters
 import java.io.File
 
-@ActiveProfiles("integration-test")
-@TestPropertySource(properties = ["services.ndelius.base-url=http://localhost:4201"])
 class SupervisionStatusIntegrationTest : IntegrationTestBase() {
   val path = "$basePath/$crn"
 

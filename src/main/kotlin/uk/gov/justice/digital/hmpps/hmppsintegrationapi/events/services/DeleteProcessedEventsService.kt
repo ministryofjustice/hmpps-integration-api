@@ -1,0 +1,37 @@
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services
+
+import org.slf4j.LoggerFactory
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.scheduling.annotation.Scheduled
+import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.EventNotificationRepository
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
+import java.time.Clock
+import java.time.LocalDateTime
+
+@ConditionalOnProperty("feature-flag.enable-delete-processed-events", havingValue = "true")
+@Component
+class DeleteProcessedEventsService(
+  private val eventRepository: EventNotificationRepository,
+  private val telemetryService: TelemetryService,
+  private val clock: Clock,
+) {
+  companion object {
+    private val log = LoggerFactory.getLogger(this::class.java)
+  }
+
+  @Scheduled(fixedRateString = $$"${delete-processed-events.schedule.rate}")
+  @Transactional
+  fun deleteProcessedEvents() {
+    val cutOff = LocalDateTime.now(clock).minusHours(24)
+    try {
+      log.info("Deleting processed events older than $cutOff")
+      val numberOfDeletedEvents = eventRepository.deleteEvents(cutOff)
+      log.info("Successfully deleted $numberOfDeletedEvents processed events")
+    } catch (e: Exception) {
+      log.error("Error deleting processed events", e)
+      telemetryService.captureException(e)
+    }
+  }
+}

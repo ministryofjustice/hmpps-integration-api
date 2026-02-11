@@ -50,7 +50,7 @@ class AddressController(
       throw ValidationException("Invalid id: $hmppsId")
     }
 
-    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+    if (response.data.isEmpty() && response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
 

@@ -4,33 +4,28 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.3.0"
-  kotlin("plugin.spring") version "2.3.0"
+  kotlin("plugin.spring") version "2.3.10"
   id("io.gitlab.arturbosch.detekt") version "1.23.8"
-  id("org.jetbrains.kotlinx.kover") version "0.9.4"
+  id("org.jetbrains.kotlinx.kover") version "0.9.6"
 }
 
 configurations {
   testImplementation { exclude(group = "org.junit.vintage") }
-}
-
-configurations.all {
-  resolutionStrategy.eachDependency {
-    if (requested.group == "org.apache.logging.log4j" && requested.version == "2.24.3") {
-      useVersion("2.25.3")
-      because("Fix CVE-2025-68161")
-    }
-  }
+  testCompileOnly { isCanBeResolved = true }
 }
 
 dependencies {
-  runtimeOnly("org.flywaydb:flyway-database-postgresql")
   runtimeOnly("io.jsonwebtoken:jjwt-impl:0.13.0")
   runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.13.0")
+  runtimeOnly("org.flywaydb:flyway-database-postgresql")
+  runtimeOnly("org.postgresql:postgresql:42.7.9")
+  runtimeOnly("org.flywaydb:flyway-core")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-cache")
-  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
-  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.29.0")
-  implementation("io.sentry:sentry-logback:8.29.0")
+  implementation("org.springframework.boot:spring-boot-starter-jdbc")
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
+  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.32.0")
+  implementation("io.sentry:sentry-logback:8.32.0")
   implementation("org.springframework.data:spring-data-commons")
   implementation("org.springframework:spring-aop")
   implementation("org.aspectj:aspectjweaver")
@@ -46,14 +41,15 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt-api:0.13.0")
   implementation("com.jayway.jsonpath:json-path:2.10.0")
   implementation("com.github.ben-manes.caffeine:caffeine:3.2.3")
-  testImplementation("io.kotest:kotest-assertions-json-jvm:6.0.7")
-  testImplementation("io.kotest:kotest-runner-junit5-jvm:6.0.7")
-  testImplementation("io.kotest:kotest-assertions-core-jvm:6.0.7")
-  testImplementation("io.kotest:kotest-extensions-spring:6.0.7")
-  developmentOnly("org.jetbrains.kotlinx:kover-cli:0.9.4")
+
+  testImplementation("io.kotest:kotest-assertions-json-jvm:6.1.3")
+  testImplementation("io.kotest:kotest-runner-junit5-jvm:6.1.3")
+  testImplementation("io.kotest:kotest-assertions-core-jvm:6.1.3")
+  testImplementation("io.kotest:kotest-extensions-spring:6.1.3")
+  testCompileOnly("org.jetbrains.kotlinx:kover-cli:0.9.6")
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
   testImplementation("org.mockito:mockito-core:5.21.0")
-  testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.20.1")
+  testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.21.0")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
   testImplementation("com.atlassian.oai:swagger-request-validator-wiremock:2.46.0") {
     // Exclude WireMock artifacts
@@ -67,13 +63,13 @@ dependencies {
   }
   // Explicitly add all necessary Jetty and Servlet dependencies
   testImplementation("javax.servlet:javax.servlet-api:4.0.1")
-  testImplementation("org.eclipse.jetty:jetty-util:12.1.5")
-  testImplementation("org.eclipse.jetty:jetty-server:12.1.5")
-  testImplementation("org.eclipse.jetty:jetty-http:12.1.5")
-  testImplementation("org.eclipse.jetty:jetty-io:12.1.5")
+  testImplementation("org.eclipse.jetty:jetty-util:12.1.6")
+  testImplementation("org.eclipse.jetty:jetty-server:12.1.6")
+  testImplementation("org.eclipse.jetty:jetty-http:12.1.6")
+  testImplementation("org.eclipse.jetty:jetty-io:12.1.6")
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
   testImplementation(kotlin("test"))
-  testImplementation("io.mockk:mockk:1.14.7")
+  testImplementation("io.mockk:mockk:1.14.9")
 }
 
 java {
@@ -90,6 +86,7 @@ tasks {
   val classesToBeExcluded =
     arrayOf(
       "uk.gov.justice.digital.hmpps.hmppsintegrationapi.HmppsIntegrationApiKt",
+      "uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.SchedulingConfig",
     )
 
   // Enables the coverage report to be created for only unit tests or integration tests
@@ -141,7 +138,7 @@ tasks {
   }
 
   val koverCli by registering(Copy::class) {
-    from(configurations.runtimeClasspath).include("kover-cli*.jar")
+    from(configurations.testCompileOnly).include("kover-cli*.jar")
     into("lib")
     rename("(.*).jar", "kover-cli.jar")
   }

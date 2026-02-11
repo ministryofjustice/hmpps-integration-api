@@ -17,9 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivityScheduledInstanceForPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AppointmentDetails
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AppointmentSearchRequest
@@ -78,7 +76,6 @@ class PrisonActivitiesController(
     return DataResponse(data = response.data)
   }
 
-  @FeatureFlag(name = FeatureFlagConfig.Companion.USE_SCHEDULED_INSTANCES_ENDPOINT)
   @GetMapping("/{prisonId}/prisoners/{hmppsId}/scheduled-instances")
   @Operation(
     summary = "Returns all scheduled instances for a prisoner given a prisonId and hmppsId.",
@@ -148,7 +145,6 @@ class PrisonActivitiesController(
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
   )
-  @FeatureFlag(name = FeatureFlagConfig.USE_SEARCH_APPOINTMENTS_ENDPOINT)
   fun searchAppointments(
     @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
     @RequestAttribute filters: ConsumerFilters?,
@@ -184,7 +180,6 @@ class PrisonActivitiesController(
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
   )
-  @FeatureFlag(name = FeatureFlagConfig.USE_HISTORICAL_ATTENDANCES_ENDPOINT)
   fun getHistoricalAttendances(
     @Parameter(description = "The ID of the prisoner to be queried against") @PathVariable hmppsId: String,
     @RequestParam startDate: String,

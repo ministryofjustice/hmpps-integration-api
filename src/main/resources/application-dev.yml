@@ -1,3 +1,9 @@
+spring:
+  datasource:
+    url: "jdbc:postgresql://${DB_SERVER}/${DB_NAME}?sslmode=prefer"
+    username: ${DB_USER}
+    password: ${DB_PASS}
+
 services:
   prison-api:
     base-url: https://prison-api-dev.prison.service.justice.gov.uk
@@ -47,23 +53,15 @@ services:
     base-url: https://hmpps-person-record-dev.hmpps.service.justice.gov.uk
 
 feature-flag:
-  use-update-attendance-endpoint: true
-  use-schedule-detail-endpoint: true
-  use-search-appointments-endpoint: true
-  use-deallocation-endpoint: true
-  use-scheduled-instances-endpoint: true
-  use-deallocation-reasons-endpoint: true
-  use-allocation-endpoint: true
-  use-historical-attendances-endpoint: true
-  use-education-endpoint: true
-  use-prisoner-base-location-api: true
-  use-suitability-endpoint: true
-  use-waiting-list-endpoint: true
+  course-completion-event-enabled: true
   use-contact-events-endpoint: true
   epf-endpoint-includes-lao: true
   epf-gateway-disabled: true
   cpr-enabled: true
   gateway-cache-enabled: true
+  normalised-path-matching: true
+  use-new-risk-score-api: true
+  enable-delete-processed-events: true
 
 authorisation:
   consumers:
@@ -183,3 +181,18 @@ authorisation:
       notes: "See client list in Confluence"
       roles:
         - "cats"
+    jwylde:
+      roles:
+        - "mappa"
+      filters:
+        prisons:
+          - MKI
+          - MDI
+    community-payback-dev:
+      notes: "Role for developers in the Community Payback team"
+      roles:
+        - "community-payback"
+    daso:
+      notes: "See client list in Confluence"
+      roles:
+        - "daso"

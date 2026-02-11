@@ -73,6 +73,6 @@ class FeatureFlagConfigTest : ConfigTest() {
     }
 
     // Reduce the threshold in the following assertion over time
-    assertTrue(allSameFlags.size <= 15, "Too many flags enabled in all configs: $flagCounts")
+    assertTrue(allSameFlags.size <= 14, "Too many flags enabled in all configs: $flagCounts")
   }
 }
