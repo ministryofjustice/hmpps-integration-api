@@ -1,11 +1,13 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.queryForObject
 import org.springframework.stereotype.Repository
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
 import java.time.LocalDateTime
 
+@ConditionalOnProperty("feature-flag.enable-delete-processed-events", havingValue = "true")
 @Repository
 class JdbcTemplateEventNotificationRepository(
   private val jdbcTemplate: JdbcTemplate,
