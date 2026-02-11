@@ -16,7 +16,7 @@ configurations {
 
 configurations.all {
   resolutionStrategy.eachDependency {
-    if (requested.group == "org.apache.logging.log4j" && requested.version == "2.24.3") {
+    if (requested.group == "org.apache.logging.log4j") {
       useVersion("2.25.3")
       because("Fix CVE-2025-68161")
     }
