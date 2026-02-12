@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.queues.QueueProvider
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivityScheduleDetailed
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AttendanceUpdateRequest
@@ -35,10 +36,11 @@ class ActivitiesQueueService(
   @Autowired private val getPrisonPayBandsService: GetPrisonPayBandsService,
   @Autowired private val getWaitingListApplicationsByScheduleIdService: GetWaitingListApplicationsByScheduleIdService,
   @Autowired val activitiesGateway: ActivitiesGateway,
+  @Autowired val queueProvider: QueueProvider,
 ) {
-  private val activitiesQueue by lazy { hmppsQueueService.findByQueueId("activities") as HmppsQueue }
-  private val activitiesQueueSqsClient by lazy { activitiesQueue.sqsClient }
-  private val activitiesQueueUrl by lazy { activitiesQueue.queueUrl }
+  private val activitiesQueue by lazy { queueProvider.findByQueueId("activities") }
+//  private val activitiesQueueSqsClient by lazy { activitiesQueue.sqsClient }
+//  private val activitiesQueueUrl by lazy { activitiesQueue.queueUrl }
 
   fun sendAttendanceUpdateRequest(
     attendanceUpdateRequests: List<AttendanceUpdateRequest>,
@@ -310,15 +312,16 @@ class ActivitiesQueueService(
   ) {
     try {
       val stringifiedMessage = objectMapper.writeValueAsString(hmppsMessage)
-      val sendMessageRequest =
-        SendMessageRequest
-          .builder()
-          .queueUrl(activitiesQueueUrl)
-          .messageBody(stringifiedMessage)
-          .eventTypeMessageAttributes(hmppsMessage.eventType.toString())
-          .build()
-
-      activitiesQueueSqsClient.sendMessage(sendMessageRequest)
+//      val sendMessageRequest =
+//        SendMessageRequest
+//          .builder()
+//          .queueUrl(activitiesQueueUrl)
+//          .messageBody(stringifiedMessage)
+//          .eventTypeMessageAttributes(hmppsMessage.eventType.toString())
+//          .build()
+//
+//      activitiesQueueSqsClient.sendMessage(sendMessageRequest)
+      activitiesQueue?.sendMessage(hmppsMessage.eventType.toString(), stringifiedMessage)
     } catch (e: Exception) {
       throw MessageFailedException(exceptionMessage, e)
     }

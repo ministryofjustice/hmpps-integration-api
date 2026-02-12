@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 
 interface Queue {
+  fun getId() : String
   fun getName() : String
   fun sendMessage(eventType: String, event: String)
 }
@@ -15,14 +16,14 @@ class QueueProvider(val hmppsQueueService: HmppsQueueService? = null) {
   }
 
   open fun registerQueue(queue: Queue) {
-    testQueues[queue.getName()] = queue
+    testQueues[queue.getId()] = queue
   }
 
-  fun getQueue(queueName: String): Queue? {
+  fun findByQueueId(queueId: String): Queue? {
     if (hmppsQueueService != null) {
-      return AwsQueue(hmppsQueueService?.findByQueueId(queueName)!!)
+      return AwsQueue(hmppsQueueService?.findByQueueId(queueId)!!)
     } else {
-      return testQueues[queueName]
+      return testQueues[queueId]
     }
   }
 }
