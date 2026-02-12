@@ -80,7 +80,7 @@ authorisation:
     meganexus:
       notes: "See client list in Confluence"
       roles:
-        - "curious"
+        - "status-only"
     pnd:
       notes: "See client list in Confluence"
       roles:
