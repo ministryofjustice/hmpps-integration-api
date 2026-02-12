@@ -56,7 +56,7 @@ feature-flag:
   epf-gateway-disabled: true
   cpr-enabled: true
   gateway-cache-enabled: true
-  use-new-risk-score-api: false
+  use-new-risk-score-api: true
   enable-delete-processed-events: false
 
 authorisation:
@@ -93,3 +93,7 @@ authorisation:
       notes: "See client list in Confluence"
       roles:
         - "smartinbox"
+    prisonerfacing:
+      notes: "See client list in Confluence"
+      roles:
+        - "moj-prisoner-facing"
