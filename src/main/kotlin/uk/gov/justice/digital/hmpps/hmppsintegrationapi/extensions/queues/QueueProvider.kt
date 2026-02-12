@@ -4,8 +4,8 @@ import org.springframework.stereotype.Component
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 
 interface Queue {
-  fun queueId() : String
-  fun queueName() : String
+  fun getId() : String
+  fun getName() : String
   fun sendMessage(eventType: String, event: String)
 }
 
@@ -16,7 +16,7 @@ class QueueProvider(val hmppsQueueService: HmppsQueueService? = null) {
   }
 
   open fun registerQueue(queue: Queue) {
-    testQueues[queue.queueId()] = queue
+    testQueues[queue.getId()] = queue
   }
 
   fun findByQueueId(queueId: String): Queue? {
