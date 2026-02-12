@@ -51,7 +51,6 @@ import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
-import kotlin.test.assertEquals
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -126,7 +125,8 @@ class ActivitiesQueueServiceTest(
           result.data.message.shouldBe("Attendance update written to queue")
           result.errors.shouldBeEmpty()
 
-          assertEquals(1, activitiesQueue.messageCount())
+          activitiesQueue.messageCount().shouldBe(1)
+
         }
 
         it("should send attendance update test request") {
@@ -134,7 +134,7 @@ class ActivitiesQueueServiceTest(
           result.data?.message.shouldBe("Attendance update written to queue")
           result.errors.shouldBeEmpty()
 
-          assertEquals(1, activitiesQueue.messageCount())
+          activitiesQueue.messageCount().shouldBe(1)
         }
 
         it("successfully adds test message to message queue") {
@@ -144,7 +144,7 @@ class ActivitiesQueueServiceTest(
           val result = activitiesQueueService.sendAttendanceUpdateRequest(attendanceUpdateRequests.map { it.copy(status = "TestEvent") }, who, filters)
           result.data.shouldBeTypeOf<HmppsMessageResponse>()
 
-          assertEquals(1, activitiesQueue.messageCount())
+          activitiesQueue.messageCount().shouldBe(1)
         }
 
         it("should return errors when consumer does not have access to the prison") {
@@ -286,7 +286,7 @@ class ActivitiesQueueServiceTest(
           result.data.message.shouldBe("Prisoner deallocation written to queue")
           result.errors.shouldBeEmpty()
 
-          assertEquals(1, activitiesQueue.messageCount())
+          activitiesQueue.messageCount().shouldBe(1)
         }
 
         it("successfully adds to message queue when the schedule does not have an end date") {
@@ -299,7 +299,7 @@ class ActivitiesQueueServiceTest(
           result.data.message.shouldBe("Prisoner deallocation written to queue")
           result.errors.shouldBeEmpty()
 
-          assertEquals(1, activitiesQueue.messageCount())
+          activitiesQueue.messageCount().shouldBe(1)
         }
 
         it("successfully adds test message to message queue") {
@@ -309,7 +309,7 @@ class ActivitiesQueueServiceTest(
           val result = activitiesQueueService.sendPrisonerDeallocationRequest(scheduleId, prisonerDeallocationRequest.copy(reasonCode = "TestEvent"), who, filters)
           result.data.shouldBeTypeOf<HmppsMessageResponse>()
 
-          assertEquals(1, activitiesQueue.messageCount())
+          activitiesQueue.messageCount().shouldBe(1)
         }
 
         it("returns an error if getScheduleDetailsService has an error") {
@@ -914,7 +914,7 @@ class ActivitiesQueueServiceTest(
           result.data.message.shouldBe("Prisoner allocation written to queue")
           result.errors.shouldBeEmpty()
 
-          assertEquals(1, activitiesQueue.messageCount())
+          activitiesQueue.messageCount().shouldBe(1)
         }
 
         it("successfully adds to message queue when the schedule does not have an end date") {
@@ -929,7 +929,7 @@ class ActivitiesQueueServiceTest(
           result.data.message.shouldBe("Prisoner allocation written to queue")
           result.errors.shouldBeEmpty()
 
-          assertEquals(1, activitiesQueue.messageCount())
+          activitiesQueue.messageCount().shouldBe(1)
         }
 
         it("successfully adds test message to message queue") {
@@ -963,7 +963,7 @@ class ActivitiesQueueServiceTest(
           val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
           result.data.shouldBeTypeOf<HmppsMessageResponse>()
 
-          assertEquals(1, activitiesQueue.messageCount())
+          activitiesQueue.messageCount().shouldBe(1)
         }
       }
     },
