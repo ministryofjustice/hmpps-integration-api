@@ -126,7 +126,6 @@ class ActivitiesQueueServiceTest(
           result.errors.shouldBeEmpty()
 
           activitiesQueue.messageCount().shouldBe(1)
-
         }
 
         it("should send attendance update test request") {
