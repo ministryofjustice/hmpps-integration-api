@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import software.amazon.awssdk.services.sqs.model.SendMessageRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.queues.QueueProvider
@@ -20,9 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.toHmppsMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.toTestMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
-import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
-import uk.gov.justice.hmpps.sqs.eventTypeMessageAttributes
 import java.time.LocalDate
 
 @Service
@@ -39,8 +36,6 @@ class ActivitiesQueueService(
   @Autowired val queueProvider: QueueProvider,
 ) {
   private val activitiesQueue by lazy { queueProvider.findByQueueId("activities") }
-//  private val activitiesQueueSqsClient by lazy { activitiesQueue.sqsClient }
-//  private val activitiesQueueUrl by lazy { activitiesQueue.queueUrl }
 
   fun sendAttendanceUpdateRequest(
     attendanceUpdateRequests: List<AttendanceUpdateRequest>,
@@ -311,16 +306,7 @@ class ActivitiesQueueService(
     exceptionMessage: String,
   ) {
     try {
-      val stringifiedMessage = objectMapper.writeValueAsString(hmppsMessage)
-//      val sendMessageRequest =
-//        SendMessageRequest
-//          .builder()
-//          .queueUrl(activitiesQueueUrl)
-//          .messageBody(stringifiedMessage)
-//          .eventTypeMessageAttributes(hmppsMessage.eventType.toString())
-//          .build()
-//
-//      activitiesQueueSqsClient.sendMessage(sendMessageRequest)
+      val stringifiedMessage = objectMapper.writeValueAsString(hmppsMessage) ?: ""
       activitiesQueue?.sendMessage(hmppsMessage.eventType.toString(), stringifiedMessage)
     } catch (e: Exception) {
       throw MessageFailedException(exceptionMessage, e)
