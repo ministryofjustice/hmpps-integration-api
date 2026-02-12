@@ -1,12 +1,18 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.queues
 
-class TestQueue(val id: String) : Queue {
+class TestQueue(
+  val id: String,
+) : Queue {
   val messages = mutableListOf<String>()
+
   override fun queueId() = id
 
   override fun queueName() = "Queue $id"
 
-  override fun sendMessage(eventType: String, event: String) {
+  override fun sendMessage(
+    eventType: String,
+    event: String,
+  ) {
     messages.add(event)
   }
 

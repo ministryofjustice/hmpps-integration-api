@@ -4,13 +4,20 @@ import org.springframework.stereotype.Component
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 
 interface Queue {
-  fun queueId() : String
-  fun queueName() : String
-  fun sendMessage(eventType: String, event: String)
+  fun queueId(): String
+
+  fun queueName(): String
+
+  fun sendMessage(
+    eventType: String,
+    event: String,
+  )
 }
 
 @Component
-class QueueProvider(val hmppsQueueService: HmppsQueueService? = null) {
+class QueueProvider(
+  val hmppsQueueService: HmppsQueueService? = null,
+) {
   companion object {
     val testQueues = mutableMapOf<String, Queue>()
   }
