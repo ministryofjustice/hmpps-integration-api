@@ -23,20 +23,25 @@ class QueueProvider(
   val hmppsQueueService: HmppsQueueService? = null,
 ) {
   companion object {
-    val testQueues = mutableMapOf<String, Queue>()
+    val registeredQueues = mutableMapOf<String, Queue>()
   }
 
   open fun registerQueue(queue: Queue) {
-    testQueues[queue.queueId()] = queue
+    registeredQueues[queue.queueId()] = queue
   }
 
   fun findByQueueId(queueId: String): Queue? {
-    if (testQueues.containsKey(queueId)) return testQueues[queueId]
+    if (registeredQueues.containsKey(queueId)) return registeredQueues[queueId]
 
-    if (hmppsQueueService != null) {
-      return AwsQueue(hmppsQueueService?.findByQueueId(queueId)!!)
+    if (hmppsQueueService == null) {
+      throw IllegalStateException("No registered queue found for queueId: $queueId")
     }
 
-    throw IllegalStateException("No queue found for queueId: $queueId")
+    val awsQueue = hmppsQueueService?.findByQueueId(queueId)
+    if (awsQueue == null) {
+      throw IllegalStateException("No SQS queue found for queueId: $queueId")
+    }
+
+    return AwsQueue(awsQueue)
   }
 }

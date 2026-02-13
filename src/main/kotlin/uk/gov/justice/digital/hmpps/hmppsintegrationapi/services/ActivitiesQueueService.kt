@@ -307,9 +307,10 @@ class ActivitiesQueueService(
     hmppsMessage: HmppsMessage,
     exceptionMessage: String,
   ) {
+    val queue = queueProvider.findByQueueId(ACTIVITIES_QUEUE_ID) ?: throw MessageFailedException("Queue $ACTIVITIES_QUEUE_ID not found")
     try {
       val stringifiedMessage = objectMapper.writeValueAsString(hmppsMessage) ?: ""
-      queueProvider.findByQueueId(ACTIVITIES_QUEUE_ID)?.sendMessage(hmppsMessage.eventType.toString(), stringifiedMessage)
+      queue.sendMessage(hmppsMessage.eventType.toString(), stringifiedMessage)
     } catch (e: Exception) {
       throw MessageFailedException(exceptionMessage, e)
     }
