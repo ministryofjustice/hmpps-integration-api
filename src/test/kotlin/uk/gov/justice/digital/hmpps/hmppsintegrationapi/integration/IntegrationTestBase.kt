@@ -372,7 +372,7 @@ abstract class IntegrationTestBase {
   }
 
   fun getTestQueue(queue: String): TestQueue {
-    val queue = queueProvider().findByQueueId(queue)
+    val queue = queueProvider.findByQueueId(queue)
     when (queue) {
       is TestQueue -> return queue
       else -> throw IllegalStateException("TestQueue $queue not found")
