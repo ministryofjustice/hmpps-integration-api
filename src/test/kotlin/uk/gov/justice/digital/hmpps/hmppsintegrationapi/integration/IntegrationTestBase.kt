@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 import org.springframework.cache.CacheManager
+import org.springframework.context.annotation.Bean
 import org.springframework.http.HttpHeaders
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
@@ -24,6 +25,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.JdbcTemplateEventNotificationRepository
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.writeAsJson
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.queues.Queue
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.queues.QueueProvider
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.queues.TestQueue
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CorePersonRecordGateway
@@ -75,6 +79,13 @@ abstract class IntegrationTestBase {
 
   @Autowired
   lateinit var cacheManager: CacheManager
+
+  @Bean
+  fun queueProvider(): QueueProvider {
+    val provider = QueueProvider()
+    provider.registerQueue(TestQueue("activities"))
+    return provider
+  }
 
   @BeforeEach
   fun evictAllCaches() {
@@ -361,4 +372,18 @@ abstract class IntegrationTestBase {
 
     return objectMapper.writeValueAsString(obj)
   }
+
+  fun getTestQueue(queue: String): TestQueue {
+    val queue = queueProvider().findByQueueId(queue)
+    when (queue) {
+      is TestQueue -> return queue
+      else -> throw IllegalStateException("TestQueue $queue not found")
+    }
+  }
+
+  fun queueMessageCount(queue: String) = getTestQueue(queue).messageCount()
+
+  fun checkQueueIsEmpty(queue: String) = queueMessageCount(queue) == 0
+
+  fun lastQueueMessage(queue: String) = getTestQueue(queue).lastMessage()
 }
