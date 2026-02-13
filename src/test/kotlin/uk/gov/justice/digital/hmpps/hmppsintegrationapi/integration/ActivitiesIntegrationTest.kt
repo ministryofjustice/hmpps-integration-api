@@ -25,16 +25,16 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerAll
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerDeallocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.toHmppsMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.toTestMessage
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ActivitiesQueueService.Companion.ACTIVITIES_QUEUE_ID
 import java.io.File
 import java.time.DayOfWeek
 import java.time.LocalDate
 
 class ActivitiesIntegrationTest : IntegrationTestBase() {
   private val prisonCode = "MDI"
-  private val ACTIVITIES_QUEUE = "activities"
 
   fun checkQueueIsEmpty() {
-    checkQueueIsEmpty(ACTIVITIES_QUEUE)
+    checkQueueIsEmpty(ACTIVITIES_QUEUE_ID)
   }
 
   @AfterEach
@@ -44,7 +44,7 @@ class ActivitiesIntegrationTest : IntegrationTestBase() {
 
   @BeforeEach
   fun setup() {
-    queueProvider.registerQueue(TestQueue("activities"))
+    queueProvider.registerQueue(TestQueue(ACTIVITIES_QUEUE_ID))
   }
 
   @Nested
@@ -199,10 +199,10 @@ class ActivitiesIntegrationTest : IntegrationTestBase() {
 //      await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
 
 //      val queueMessages = getQueueMessages()
-      queueMessageCount(ACTIVITIES_QUEUE).shouldBe(1)
+      queueMessageCount(ACTIVITIES_QUEUE_ID).shouldBe(1)
 
       //val messageJson = queueMessages[0].body()
-      val messageJson = lastQueueMessage(ACTIVITIES_QUEUE)
+      val messageJson = lastQueueMessage(ACTIVITIES_QUEUE_ID)
       val expectedMessage = attendanceUpdateRequests.toHmppsMessage(defaultCn)
       messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
       messageJson.shouldContainJsonKeyValue("$.who", defaultCn)
@@ -334,10 +334,10 @@ class ActivitiesIntegrationTest : IntegrationTestBase() {
 
 //      val queueMessages = getQueueMessages()
 //      queueMessages.size.shouldBe(1)
-      queueMessageCount(ACTIVITIES_QUEUE).shouldBe(1)
+      queueMessageCount(ACTIVITIES_QUEUE_ID).shouldBe(1)
 
 //      val messageJson = queueMessages[0].body()
-      val messageJson = lastQueueMessage(ACTIVITIES_QUEUE)
+      val messageJson = lastQueueMessage(ACTIVITIES_QUEUE_ID)
       val expectedMessage = prisonerDeallocationRequest.toHmppsMessage(defaultCn, scheduleId)
       messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
       messageJson.shouldContainJsonKeyValue("$.who", defaultCn)
@@ -377,10 +377,10 @@ class ActivitiesIntegrationTest : IntegrationTestBase() {
 
 //      val queueMessages = getQueueMessages()
 //      queueMessages.size.shouldBe(1)
-      queueMessageCount(ACTIVITIES_QUEUE).shouldBe(1)
+      queueMessageCount(ACTIVITIES_QUEUE_ID).shouldBe(1)
 
 //      val messageJson = queueMessages[0].body()
-      val messageJson = lastQueueMessage(ACTIVITIES_QUEUE)
+      val messageJson = lastQueueMessage(ACTIVITIES_QUEUE_ID)
       val expectedMessage = prisonerDeallocationRequest.toTestMessage(defaultCn)
       messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
       messageJson.shouldContainJsonKeyValue("$.who", defaultCn)
@@ -407,7 +407,7 @@ class ActivitiesIntegrationTest : IntegrationTestBase() {
       putApiWithCN(path, requestBody, noPrisonsCn)
         .andExpect(MockMvcResultMatchers.status().isNotFound)
 
-      checkQueueIsEmpty(ACTIVITIES_QUEUE)
+      checkQueueIsEmpty()
     }
 
     @Test
@@ -422,7 +422,7 @@ class ActivitiesIntegrationTest : IntegrationTestBase() {
       putApi(path, requestBody)
         .andExpect(MockMvcResultMatchers.status().isNotFound)
 
-      checkQueueIsEmpty(ACTIVITIES_QUEUE)
+      checkQueueIsEmpty()
     }
 
     @Test
@@ -436,7 +436,7 @@ class ActivitiesIntegrationTest : IntegrationTestBase() {
       putApi(path, requestBody)
         .andExpect(MockMvcResultMatchers.status().isNotFound)
 
-      checkQueueIsEmpty(ACTIVITIES_QUEUE)
+      checkQueueIsEmpty()
     }
 
     @Test
@@ -450,7 +450,7 @@ class ActivitiesIntegrationTest : IntegrationTestBase() {
       putApi(path, requestBody)
         .andExpect(MockMvcResultMatchers.status().isBadRequest)
 
-      checkQueueIsEmpty(ACTIVITIES_QUEUE)
+      checkQueueIsEmpty()
     }
 
     @Test
@@ -459,7 +459,7 @@ class ActivitiesIntegrationTest : IntegrationTestBase() {
       putApi(path, requestBody)
         .andExpect(MockMvcResultMatchers.status().isBadRequest)
 
-      checkQueueIsEmpty(ACTIVITIES_QUEUE)
+      checkQueueIsEmpty()
     }
 
     @Test
@@ -468,7 +468,7 @@ class ActivitiesIntegrationTest : IntegrationTestBase() {
       putApi(path, requestBody)
         .andExpect(MockMvcResultMatchers.status().isBadRequest)
 
-      checkQueueIsEmpty(ACTIVITIES_QUEUE)
+      checkQueueIsEmpty()
     }
 
     @Test
@@ -477,7 +477,7 @@ class ActivitiesIntegrationTest : IntegrationTestBase() {
       putApi(path, requestBody)
         .andExpect(MockMvcResultMatchers.status().isBadRequest)
 
-      checkQueueIsEmpty(ACTIVITIES_QUEUE)
+      checkQueueIsEmpty()
     }
   }
 
@@ -571,10 +571,10 @@ class ActivitiesIntegrationTest : IntegrationTestBase() {
 
 //      val queueMessages = getQueueMessages()
 //      queueMessages.size.shouldBe(1)
-      queueMessageCount(ACTIVITIES_QUEUE).shouldBe(1)
+      queueMessageCount(ACTIVITIES_QUEUE_ID).shouldBe(1)
 
 //      val messageJson = queueMessages[0].body()
-      val messageJson = lastQueueMessage(ACTIVITIES_QUEUE)
+      val messageJson = lastQueueMessage(ACTIVITIES_QUEUE_ID)
       val expectedMessage = prisonerAllocationRequest.toHmppsMessage(defaultCn, scheduleId)
       messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
       messageJson.shouldContainJsonKeyValue("$.who", defaultCn)
@@ -599,7 +599,7 @@ class ActivitiesIntegrationTest : IntegrationTestBase() {
       postToApiWithCN(path, requestBody, limitedPrisonsCn)
         .andExpect(MockMvcResultMatchers.status().isNotFound)
 
-      checkQueueIsEmpty(ACTIVITIES_QUEUE)
+      checkQueueIsEmpty()
     }
 
     @Test
@@ -608,7 +608,7 @@ class ActivitiesIntegrationTest : IntegrationTestBase() {
       postToApiWithCN(path, requestBody, noPrisonsCn)
         .andExpect(MockMvcResultMatchers.status().isNotFound)
 
-      checkQueueIsEmpty(ACTIVITIES_QUEUE)
+      checkQueueIsEmpty()
     }
 
     @Test
@@ -617,7 +617,7 @@ class ActivitiesIntegrationTest : IntegrationTestBase() {
       postToApi(path, requestBody)
         .andExpect(MockMvcResultMatchers.status().isBadRequest)
         .andExpect(MockMvcResultMatchers.jsonPath("$.validationErrors[0]").value("Start date must not be in the past"))
-      checkQueueIsEmpty(ACTIVITIES_QUEUE)
+      checkQueueIsEmpty()
     }
 
     @Test
@@ -646,7 +646,7 @@ class ActivitiesIntegrationTest : IntegrationTestBase() {
       postToApi(path, requestBody)
         .andExpect(MockMvcResultMatchers.status().isBadRequest)
         .andExpect(MockMvcResultMatchers.jsonPath("$.userMessage").value("Invalid query parameters: scheduleInstanceId must be provided when allocation start date is today"))
-      checkQueueIsEmpty(ACTIVITIES_QUEUE)
+      checkQueueIsEmpty()
     }
 
     @Test
@@ -946,10 +946,10 @@ class ActivitiesIntegrationTest : IntegrationTestBase() {
 
 //      val queueMessages = getQueueMessages()
 //      queueMessages.size.shouldBe(1)
-      queueMessageCount(ACTIVITIES_QUEUE).shouldBe(1)
+      queueMessageCount(ACTIVITIES_QUEUE_ID).shouldBe(1)
 
 //      val messageJson = queueMessages[0].body()
-      val messageJson = lastQueueMessage(ACTIVITIES_QUEUE)
+      val messageJson = lastQueueMessage(ACTIVITIES_QUEUE_ID)
       val expectedMessage = prisonerAllocationRequest.toTestMessage(defaultCn)
       messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
       messageJson.shouldContainJsonKeyValue("$.who", defaultCn)

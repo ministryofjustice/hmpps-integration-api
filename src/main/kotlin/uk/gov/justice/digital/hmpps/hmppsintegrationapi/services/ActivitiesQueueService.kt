@@ -35,7 +35,12 @@ class ActivitiesQueueService(
   @Autowired val activitiesGateway: ActivitiesGateway,
   @Autowired val queueProvider: QueueProvider,
 ) {
-  private val activitiesQueue by lazy { queueProvider.findByQueueId("activities") }
+
+  private val activitiesQueue by lazy { queueProvider.findByQueueId(ACTIVITIES_QUEUE_ID) }
+
+  companion object {
+    const val ACTIVITIES_QUEUE_ID = "activities"
+  }
 
   fun sendAttendanceUpdateRequest(
     attendanceUpdateRequests: List<AttendanceUpdateRequest>,
