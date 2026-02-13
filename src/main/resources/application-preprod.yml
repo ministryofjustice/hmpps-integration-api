@@ -64,11 +64,11 @@ authorisation:
     ctrlo:
       notes: "See client list in Confluence"
       roles:
-        - "ctrlo"
+        - "status-only"
     moj-pes:
       notes: "See client list in Confluence"
       roles:
-        - "moj-prisoner-education"
+        - "status-only"
     kubernetes-health-check-client:
       notes: "Kubernetes cluster automated healthchecks"
       roles:
@@ -80,15 +80,15 @@ authorisation:
     meganexus:
       notes: "See client list in Confluence"
       roles:
-        - "curious"
+        - "status-only"
     pnd:
       notes: "See client list in Confluence"
       roles:
-        - "police"
+        - "status-only"
     pmcphee:
       notes: "ExtApi developer"
       roles:
-        - "police"
+        - "status-only"
     smoke-test:
       notes: "Post-deployment smoke tests"
       roles:
@@ -96,4 +96,4 @@ authorisation:
     smartinbox:
       notes: "See client list in Confluence"
       roles:
-        - "smartinbox"
+        - "status-only"
