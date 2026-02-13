@@ -36,7 +36,7 @@ class ActivitiesQueueService(
   @Autowired val queueProvider: QueueProvider,
 ) {
 
-  private val activitiesQueue by lazy { queueProvider.findByQueueId(ACTIVITIES_QUEUE_ID) }
+//  private val activitiesQueue by lazy { queueProvider.findByQueueId(ACTIVITIES_QUEUE_ID) }
 
   companion object {
     const val ACTIVITIES_QUEUE_ID = "activities"
@@ -312,7 +312,7 @@ class ActivitiesQueueService(
   ) {
     try {
       val stringifiedMessage = objectMapper.writeValueAsString(hmppsMessage) ?: ""
-      activitiesQueue?.sendMessage(hmppsMessage.eventType.toString(), stringifiedMessage)
+      queueProvider.findByQueueId(ACTIVITIES_QUEUE_ID)?.sendMessage(hmppsMessage.eventType.toString(), stringifiedMessage)
     } catch (e: Exception) {
       throw MessageFailedException(exceptionMessage, e)
     }
