@@ -80,12 +80,8 @@ abstract class IntegrationTestBase {
   @Autowired
   lateinit var cacheManager: CacheManager
 
-  @Bean
-  fun queueProvider(): QueueProvider {
-    val provider = QueueProvider()
-    provider.registerQueue(TestQueue("activities"))
-    return provider
-  }
+  @Autowired
+  lateinit var queueProvider: QueueProvider
 
   @BeforeEach
   fun evictAllCaches() {
@@ -102,6 +98,8 @@ abstract class IntegrationTestBase {
     cacheManager.cacheNames.forEach {
       cacheManager.getCache(it).clear()
     }
+
+    queueProvider.registerQueue(TestQueue("activities"))
 
     prisonerOffenderSearchMockServer.stubForGet(
       "/prisoner/${Companion.nomsId}",

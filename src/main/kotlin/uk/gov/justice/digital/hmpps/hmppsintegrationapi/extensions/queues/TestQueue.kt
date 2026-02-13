@@ -16,11 +16,12 @@ class TestQueue(
     messages.add(event)
   }
 
-  fun messageCount() = messages.size
+  override fun messageCount() = messages.size
+
+  override fun lastMessage() = messages.lastOrNull()
 
   fun clearMessages() {
     messages.clear()
   }
 
-  fun lastMessage() = messages.lastOrNull()
 }

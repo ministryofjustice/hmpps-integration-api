@@ -12,6 +12,10 @@ interface Queue {
     eventType: String,
     event: String,
   )
+
+  fun messageCount(): Int
+
+  fun lastMessage(): String?
 }
 
 @Component
