@@ -23,5 +23,4 @@ class TestQueue(
   fun clearMessages() {
     messages.clear()
   }
-
 }

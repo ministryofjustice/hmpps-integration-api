@@ -8,9 +8,6 @@ import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import io.kotest.assertions.json.shouldContainJsonKeyValue
 import io.kotest.matchers.shouldBe
-import org.awaitility.kotlin.await
-import org.awaitility.kotlin.matches
-import org.awaitility.kotlin.untilCallTo
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -24,7 +21,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Exclusion
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerAllocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerDeallocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.toHmppsMessage
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.toTestMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ActivitiesQueueService.Companion.ACTIVITIES_QUEUE_ID
 import java.io.File
 import java.time.DayOfWeek
@@ -196,12 +192,8 @@ class ActivitiesIntegrationTest : IntegrationTestBase() {
           ),
         )
 
-//      await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
-
-//      val queueMessages = getQueueMessages()
       queueMessageCount(ACTIVITIES_QUEUE_ID).shouldBe(1)
 
-      //val messageJson = queueMessages[0].body()
       val messageJson = lastQueueMessage(ACTIVITIES_QUEUE_ID)
       val expectedMessage = attendanceUpdateRequests.toHmppsMessage(defaultCn)
       messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
@@ -330,13 +322,8 @@ class ActivitiesIntegrationTest : IntegrationTestBase() {
           ),
         )
 
-//      await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
-
-//      val queueMessages = getQueueMessages()
-//      queueMessages.size.shouldBe(1)
       queueMessageCount(ACTIVITIES_QUEUE_ID).shouldBe(1)
 
-//      val messageJson = queueMessages[0].body()
       val messageJson = lastQueueMessage(ACTIVITIES_QUEUE_ID)
       val expectedMessage = prisonerDeallocationRequest.toHmppsMessage(defaultCn, scheduleId)
       messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
@@ -373,13 +360,8 @@ class ActivitiesIntegrationTest : IntegrationTestBase() {
           ),
         )
 
-//      await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
-
-//      val queueMessages = getQueueMessages()
-//      queueMessages.size.shouldBe(1)
       queueMessageCount(ACTIVITIES_QUEUE_ID).shouldBe(1)
 
-//      val messageJson = queueMessages[0].body()
       val messageJson = lastQueueMessage(ACTIVITIES_QUEUE_ID)
       val expectedMessage = prisonerDeallocationRequest.toTestMessage(defaultCn)
       messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
@@ -567,13 +549,8 @@ class ActivitiesIntegrationTest : IntegrationTestBase() {
           ),
         )
 
-//      await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
-
-//      val queueMessages = getQueueMessages()
-//      queueMessages.size.shouldBe(1)
       queueMessageCount(ACTIVITIES_QUEUE_ID).shouldBe(1)
 
-//      val messageJson = queueMessages[0].body()
       val messageJson = lastQueueMessage(ACTIVITIES_QUEUE_ID)
       val expectedMessage = prisonerAllocationRequest.toHmppsMessage(defaultCn, scheduleId)
       messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
@@ -942,13 +919,8 @@ class ActivitiesIntegrationTest : IntegrationTestBase() {
           ),
         )
 
-//      await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
-
-//      val queueMessages = getQueueMessages()
-//      queueMessages.size.shouldBe(1)
       queueMessageCount(ACTIVITIES_QUEUE_ID).shouldBe(1)
 
-//      val messageJson = queueMessages[0].body()
       val messageJson = lastQueueMessage(ACTIVITIES_QUEUE_ID)
       val expectedMessage = prisonerAllocationRequest.toTestMessage(defaultCn)
       messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)

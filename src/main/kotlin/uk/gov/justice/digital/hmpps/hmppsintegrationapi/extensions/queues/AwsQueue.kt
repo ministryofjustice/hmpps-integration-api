@@ -21,14 +21,12 @@ class AwsQueue(
 
   override fun messageCount() = hmppsQueue.sqsClient.countMessagesOnQueue(hmppsQueue.queueUrl).get()
 
-  override fun lastMessage(): String? {
-    return hmppsQueue
+  override fun lastMessage(): String? =
+    hmppsQueue
       .sqsClient
       .receiveMessage(ReceiveMessageRequest.builder().queueUrl(hmppsQueue.queueUrl).build())
       .join()
       .messages()
       .last()
       .body()
-  }
-
 }
