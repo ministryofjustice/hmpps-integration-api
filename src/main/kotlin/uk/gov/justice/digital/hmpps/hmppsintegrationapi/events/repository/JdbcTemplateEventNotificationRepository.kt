@@ -91,9 +91,11 @@ class JdbcTemplateEventNotificationRepository(
       HMPPS_ID,
       CLAIM_ID,
       EVENT_TYPE,
+      PRISON_ID,
       URL,
       STATUS,
       LAST_MODIFIED_DATETIME
+      ) values (?,?,?,?,?,?,?)
     """
     return jdbcTemplate.update(insertQuery, eventNotification.hmppsId, eventNotification.claimId, eventNotification.eventType, eventNotification.prisonId, eventNotification.url, eventNotification.status, eventNotification.lastModifiedDateTime)
   }

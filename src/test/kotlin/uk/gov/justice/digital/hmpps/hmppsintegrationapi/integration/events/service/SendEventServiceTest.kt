@@ -14,6 +14,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.autoconfigure.json.JsonTest
 import org.springframework.test.context.ActiveProfiles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.IntegrationEventStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.EventNotificationRepository
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.IntegrationEventTopicService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.SendEventsService
@@ -60,7 +61,7 @@ class SendEventServiceTest {
         url = "mockUrl",
         lastModifiedDateTime = currentTime,
         claimId = null,
-        status = "",
+        status = IntegrationEventStatus.PENDING,
       )
     whenever(eventRepository.findAllProcessingEvents(any())).thenReturn(listOf(event))
 
@@ -83,7 +84,7 @@ class SendEventServiceTest {
         url = "mockUrl",
         lastModifiedDateTime = currentTime,
         claimId = null,
-        status = "",
+        status = IntegrationEventStatus.PENDING,
       )
     whenever(eventRepository.findAllWithLastModifiedDateTimeBefore(any())).thenReturn(listOf(event))
     whenever(integrationEventTopicService.sendEvent(event)).thenThrow(RuntimeException("error"))
