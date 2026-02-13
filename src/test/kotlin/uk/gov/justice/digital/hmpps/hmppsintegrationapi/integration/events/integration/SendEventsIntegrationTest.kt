@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.AdditionalAnswers
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -14,13 +15,15 @@ import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.IntegrationEventStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.EventNotificationRepository
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.DeleteProcessedEventsService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.IntegrationEventTopicService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.SendEventsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import java.time.LocalDateTime
 
-class SendEventsTest {
+class SendEventsIntegrationTest {
   @MockitoBean
   private lateinit var integrationEventTopicService: IntegrationEventTopicService
 
@@ -55,7 +58,7 @@ class SendEventsTest {
       lastModifiedDateTime = LocalDateTime.now().minusMinutes(7),
       eventId = null,
       claimId = null,
-      status = "",
+      status = IntegrationEventStatus.PROCESSING,
     )
 
   @Test
@@ -75,7 +78,7 @@ class SendEventsTest {
     deleteThread1.start()
     deleteThread2.start()
     // Await until all are processed
-    Awaitility.await().until { eventNotificationRepository.findAll().map { it.status?.name }.toSet() == setOf("PROCESSED") }
+    Awaitility.await().until { eventNotificationRepository.findAll().map { it.status }.toSet() == setOf("PROCESSED") }
     verify(telemetryService, never()).captureException(any())
   }
 
@@ -96,7 +99,20 @@ class SendEventsTest {
     )
     eventNotifierService.sentNotifications()
     // Check all are processed
-    assertThat(eventNotificationRepository.findAll().map { it.status?.name }.toSet()).isEqualTo(setOf("PROCESSED"))
+    assertThat(eventNotificationRepository.findAll().map { it.status }.toSet()).isEqualTo(setOf("PROCESSED"))
     verify(telemetryService, times(2)).captureException(any())
+  }
+
+  @Test
+  fun `Stuck messages are found in the database`() {
+    val expectedExceptionMessage =
+      """
+      stuck events with status PROCESSING
+      """.trimIndent()
+    val message = argumentCaptor<String>()
+    val thread1 = Thread { eventNotifierService.sentNotifications() }
+    thread1.start()
+    // verify(telemetryService, timeout(10_000).atLeast(1)).captureException(throw(message.capture())
+    assertThat(message.firstValue).contains(expectedExceptionMessage)
   }
 }

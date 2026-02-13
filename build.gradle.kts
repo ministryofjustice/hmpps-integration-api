@@ -83,6 +83,7 @@ dependencies {
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
   testImplementation(kotlin("test"))
   testImplementation("io.mockk:mockk:1.14.9")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:4.1.1")
 }
 
 java {

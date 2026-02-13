@@ -8,7 +8,7 @@ data class EventNotification(
   val eventType: String,
   val prisonId: String? = null,
   val url: String,
-  val status: String,
+  val status: IntegrationEventStatus,
   val lastModifiedDateTime: LocalDateTime,
 )
 

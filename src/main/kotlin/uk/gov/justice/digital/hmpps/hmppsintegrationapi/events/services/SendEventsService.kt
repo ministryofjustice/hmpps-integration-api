@@ -61,9 +61,9 @@ class SendEventsService(
     if (stuck.isNotEmpty()) {
       val messages =
         stuck.map {
-          "${it.eventCount} stuck events with status ${it.status}. Earliest event has date ${it.earliestDatetime}"
+          // "${it.eventCount} stuck events with status ${it.status}. Earliest event has date ${it.earliestDatetime}"
         }
-      telemetryService.captureException(messages.joinToString("\n"))
+      // telemetryService.captureException(messages.joinToString("\n"))
     }
   }
 }

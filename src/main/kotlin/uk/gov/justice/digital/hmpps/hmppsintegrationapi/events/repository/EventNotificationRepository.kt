@@ -6,22 +6,26 @@ import java.time.LocalDateTime
 interface EventNotificationRepository {
   fun deleteEvents(dateTime: LocalDateTime): Int
 
-  fun getStuckEvents(minusMinutes: LocalDateTime)
+  fun getStuckEvents(minusMinutes: LocalDateTime): List<EventNotification>
 
-  fun setProcessed(eventId: Any)
+  fun setProcessed(eventId: Any): Int
 
-  fun setPending(eventId: Any)
+  fun setPending(eventId: Any): Int
 
   fun setProcessing(
     fiveMinutesAgo: LocalDateTime,
     claimId: String,
-  )
+  ): Int
 
-  fun findAllProcessingEvents(claimId: String)
+  fun findAllProcessingEvents(claimId: String): List<EventNotification>
 
-  fun save(makeEvent: EventNotification)
+  fun save(makeEvent: EventNotification): Int
 
-  fun deleteAll()
+  fun deleteAll(): Int
 
-  fun findAll()
+  fun findAll(): List<EventNotification>
+
+  fun findAllWithLastModifiedDateTimeBefore(dateTimeBefore: LocalDateTime): List<EventNotification>
+
+  fun deleteById(id: Int): Int
 }

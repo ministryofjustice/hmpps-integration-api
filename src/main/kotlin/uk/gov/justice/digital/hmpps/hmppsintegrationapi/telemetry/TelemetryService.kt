@@ -24,7 +24,7 @@ class TelemetryService(
   }
 
   fun captureException(
-    @NotNull throwable: Throwable,
+    @NotNull throwable: Exception,
   ) {
     Sentry.captureException(throwable)
   }
