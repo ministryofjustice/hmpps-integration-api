@@ -12,11 +12,13 @@ import org.awaitility.kotlin.await
 import org.awaitility.kotlin.matches
 import org.awaitility.kotlin.untilCallTo
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.queues.TestQueue
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AttendanceUpdateRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Exclusion
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerAllocationRequest
@@ -38,6 +40,11 @@ class ActivitiesIntegrationTest : IntegrationTestBase() {
   @AfterEach
   fun resetValidators() {
     activitiesMockServer.resetValidator()
+  }
+
+  @BeforeEach
+  fun setup() {
+    queueProvider.registerQueue(TestQueue("activities"))
   }
 
   @Nested

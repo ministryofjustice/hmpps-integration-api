@@ -31,10 +31,12 @@ class QueueProvider(
   }
 
   fun findByQueueId(queueId: String): Queue? {
+    if (testQueues.containsKey(queueId)) return testQueues[queueId]
+
     if (hmppsQueueService != null) {
       return AwsQueue(hmppsQueueService?.findByQueueId(queueId)!!)
-    } else {
-      return testQueues[queueId]
     }
+
+    throw IllegalStateException("No queue found for queueId: $queueId")
   }
 }

@@ -99,8 +99,6 @@ abstract class IntegrationTestBase {
       cacheManager.getCache(it).clear()
     }
 
-    queueProvider.registerQueue(TestQueue("activities"))
-
     prisonerOffenderSearchMockServer.stubForGet(
       "/prisoner/${Companion.nomsId}",
       File(
