@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services
 
 import org.slf4j.LoggerFactory
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Configuration
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
@@ -10,6 +11,7 @@ import java.time.Clock
 import java.time.LocalDateTime
 import java.util.UUID
 
+@ConditionalOnProperty("feature-flag.enable-send-processed-events", havingValue = "true")
 @Component
 @Configuration
 class SendEventsService(
