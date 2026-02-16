@@ -18,7 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.SendEven
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 import java.time.LocalDateTime
 
-class StuckEventsIntergrationTest : IntegrationTestBase() {
+class StuckEventsIntegrationTest : IntegrationTestBase() {
   @Autowired
   private lateinit var eventNotifierService: SendEventsService
 
