@@ -113,3 +113,7 @@ sentry:
 delete-processed-events:
   schedule:
     rate: 10000
+
+notifier:
+  schedule:
+    rate: 10000
