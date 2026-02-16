@@ -61,7 +61,7 @@ feature-flag:
   gateway-cache-enabled: true
   normalised-path-matching: true
   use-new-risk-score-api: true
-  enable-delete-processed-events: true
+  enable-delete-processed-events: false
 
 authorisation:
   consumers:
