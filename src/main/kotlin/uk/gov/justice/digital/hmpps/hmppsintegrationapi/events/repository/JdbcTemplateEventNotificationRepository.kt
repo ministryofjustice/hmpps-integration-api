@@ -1,10 +1,12 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.jdbc.core.DataClassRowMapper
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.queryForObject
 import org.springframework.stereotype.Repository
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.StuckEvents
 import java.time.LocalDateTime
 
 const val EVENT_NOTIFICATION_BATCH_LIMIT = 1000
@@ -20,7 +22,7 @@ class JdbcTemplateEventNotificationRepository(
     return jdbcTemplate.update(deleteQuery, dateTime)
   }
 
-  override fun getStuckEvents(minusMinutes: LocalDateTime): List<EventNotification> {
+  override fun getStuckEvents(minusMinutes: LocalDateTime): List<StuckEvents> {
     val getStuckQuery = """
       select count(*) as event_count, status,
       min(last_modified_datetime) as earliest_datetime
@@ -30,14 +32,18 @@ class JdbcTemplateEventNotificationRepository(
       group by status
       order by earliest_datetime asc
     """
-    return jdbcTemplate.queryForObject<List<EventNotification>>(getStuckQuery, args = arrayOf(minusMinutes))!!
+    return jdbcTemplate.query(
+      getStuckQuery,
+      DataClassRowMapper(StuckEvents::class.java),
+      minusMinutes,
+    )
   }
 
   override fun setProcessed(eventId: Any): Int {
     val setProcessedQuery = """
-      update EventNotification a
-      set a.status = "PROCESSED"
-      where a.eventId = ?
+      update EVENT_NOTIFICATION a
+      set status = 'PROCESSED'
+      where a.event_id = ?
     """
 
     return jdbcTemplate.update(setProcessedQuery, eventId)
@@ -45,9 +51,9 @@ class JdbcTemplateEventNotificationRepository(
 
   override fun setPending(eventId: Any): Int {
     val setPendingQuery = """
-      update EventNotification a
-      set a.status = "PENDING", a.claimId = null
-      where a.eventId = ?
+      update EVENT_NOTIFICATION a
+      set status = 'PENDING', claim_id = null
+      where a.event_id = ?
     """
 
     return jdbcTemplate.update(setPendingQuery, eventId)
@@ -58,12 +64,12 @@ class JdbcTemplateEventNotificationRepository(
     claimId: String,
   ): Int {
     val setProcessingQuery = """
-      update EventNotification a
-      set a.claimId = ?, a.status = "PROCESSING"
-      where a.eventId in
-        (select b.eventId from EventNotification b
-          where b.lastModifiedDateTime <= ? and b.status = "PENDING"
-          order by b.lastModifiedDateTime asc limit ?
+      update EVENT_NOTIFICATION a
+      set claim_id = ?, status = 'PROCESSING'
+      where a.event_id in
+        (select b.event_id from EVENT_NOTIFICATION b
+          where b.last_modified_datetime <= ? and b.status = 'PENDING'
+          order by b.last_modified_datetime asc limit ?
         )
     """
 
@@ -72,11 +78,15 @@ class JdbcTemplateEventNotificationRepository(
 
   override fun findAllProcessingEvents(claimId: String): List<EventNotification> {
     val findAllProcessingQuery = """
-      select a from EventNotification a
-      where a.status = "PROCESSING" and a.claimId = ?
-      order by a.lastModifiedDateTime asc
+      select * from EVENT_NOTIFICATION a
+      where a.status = 'PROCESSING' and a.claim_id = ?
+      order by a.last_modified_datetime asc
     """
-    return jdbcTemplate.queryForObject<List<EventNotification>>(findAllProcessingQuery, args = arrayOf(claimId))!!
+    return jdbcTemplate.query(
+      findAllProcessingQuery,
+      DataClassRowMapper(EventNotification::class.java),
+      claimId,
+    )
   }
 
   fun saveAll(events: List<EventNotification>): List<EventNotification> {
@@ -84,8 +94,7 @@ class JdbcTemplateEventNotificationRepository(
     return events
   }
 
-  override fun save(eventNotification: EventNotification): Int {
-    // language=Postgres
+  override fun save(makeEvent: EventNotification): Int {
     val insertQuery = """
       insert into EVENT_NOTIFICATION(
       HMPPS_ID,
@@ -97,7 +106,7 @@ class JdbcTemplateEventNotificationRepository(
       LAST_MODIFIED_DATETIME
       ) values (?,?,?,?,?,?,?)
     """
-    return jdbcTemplate.update(insertQuery, eventNotification.hmppsId, eventNotification.claimId, eventNotification.eventType, eventNotification.prisonId, eventNotification.url, eventNotification.status, eventNotification.lastModifiedDateTime)
+    return jdbcTemplate.update(insertQuery, makeEvent.hmppsId, makeEvent.claimId, makeEvent.eventType, makeEvent.prisonId, makeEvent.url, makeEvent.status, makeEvent.lastModifiedDatetime)
   }
 
   override fun deleteAll(): Int {
@@ -107,12 +116,15 @@ class JdbcTemplateEventNotificationRepository(
   }
 
   override fun findAll(): List<EventNotification> {
-    val getAllQuery = "select * from EVENT_NOTIFICATION" // Jess - I feel like there should be a limit to this?
-    return jdbcTemplate.queryForObject<List<EventNotification>>(getAllQuery)
+    val getAllQuery = """select * from EVENT_NOTIFICATION""" // Jess - I feel like there should be a limit to this?
+    return jdbcTemplate.query(
+      getAllQuery,
+      DataClassRowMapper(EventNotification::class.java),
+    )
   }
 
   override fun findAllWithLastModifiedDateTimeBefore(dateTimeBefore: LocalDateTime): List<EventNotification> {
-    val findAllQuery = "select a from EventNotification a where a.lastModifiedDateTime <= ?"
+    val findAllQuery = "select a from EVENT_NOTIFICATION a where a.last_modified_datetime <= ?"
     return jdbcTemplate.queryForObject<List<EventNotification>>(findAllQuery, args = arrayOf(dateTimeBefore))!!
   }
 

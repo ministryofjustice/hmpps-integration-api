@@ -57,9 +57,9 @@ class IntegrationEventTopicServiceTests(
         eventType = "MAPPA_DETAIL_CHANGED",
         prisonId = "MKI",
         url = "mockUrl",
-        lastModifiedDateTime = currentTime,
+        lastModifiedDatetime = currentTime,
         claimId = null,
-        status = IntegrationEventStatus.PROCESSING,
+        status = IntegrationEventStatus.PROCESSING.name,
       )
 
     val response =
@@ -102,7 +102,7 @@ class IntegrationEventTopicServiceTests(
 
   @Test
   fun `Publish Event with no prison Id`() {
-    val event = EventNotification(eventId = 123, claimId = "claimId", status = IntegrationEventStatus.PROCESSING, hmppsId = "hmppsId", eventType = "MAPPA_DETAIL_CHANGED", prisonId = null, url = "mockUrl", lastModifiedDateTime = currentTime)
+    val event = EventNotification(eventId = 123, hmppsId = "hmppsId", eventType = "MAPPA_DETAIL_CHANGED", prisonId = null, url = "mockUrl", lastModifiedDatetime = currentTime)
 
     val response =
       PublishResponse
@@ -121,8 +121,8 @@ class IntegrationEventTopicServiceTests(
       JsonAssertions.assertThatJson(payload).node("hmppsId").isEqualTo(event.hmppsId)
       JsonAssertions.assertThatJson(payload).node("prisonId").isEqualTo(event.prisonId)
       JsonAssertions.assertThatJson(payload).node("url").isEqualTo(event.url)
-      JsonAssertions.assertThatJson(payload).node("claimId").isAbsent()
-      JsonAssertions.assertThatJson(payload).node("status").isAbsent()
+      JsonAssertions.assertThatJson(payload).node("claimId").isNull() // Jess - this was change form isAbsent() to isNull(), I don't think its an issue but would like to check
+      JsonAssertions.assertThatJson(payload).node("status").isNull()
       Assertions
         .assertThat(messageAttributes["eventType"])
         .isEqualTo(

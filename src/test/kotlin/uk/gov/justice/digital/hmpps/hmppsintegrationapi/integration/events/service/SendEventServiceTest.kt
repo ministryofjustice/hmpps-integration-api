@@ -59,9 +59,9 @@ class SendEventServiceTest {
         eventType = "MAPPA_DETAIL_CHANGED",
         prisonId = "MKI",
         url = "mockUrl",
-        lastModifiedDateTime = currentTime,
+        lastModifiedDatetime = currentTime,
         claimId = null,
-        status = IntegrationEventStatus.PENDING,
+        status = IntegrationEventStatus.PENDING.name,
       )
     whenever(eventRepository.findAllProcessingEvents(any())).thenReturn(listOf(event))
 
@@ -82,9 +82,9 @@ class SendEventServiceTest {
         eventType = "MAPPA_DETAIL_CHANGED",
         prisonId = null,
         url = "mockUrl",
-        lastModifiedDateTime = currentTime,
+        lastModifiedDatetime = currentTime,
         claimId = null,
-        status = IntegrationEventStatus.PENDING,
+        status = IntegrationEventStatus.PENDING.name,
       )
     whenever(eventRepository.findAllWithLastModifiedDateTimeBefore(any())).thenReturn(listOf(event))
     whenever(integrationEventTopicService.sendEvent(event)).thenThrow(RuntimeException("error"))

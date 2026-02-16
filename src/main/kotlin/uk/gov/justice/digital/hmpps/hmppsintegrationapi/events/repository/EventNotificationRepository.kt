@@ -1,12 +1,13 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.StuckEvents
 import java.time.LocalDateTime
 
 interface EventNotificationRepository {
   fun deleteEvents(dateTime: LocalDateTime): Int
 
-  fun getStuckEvents(minusMinutes: LocalDateTime): List<EventNotification>
+  fun getStuckEvents(minusMinutes: LocalDateTime): List<StuckEvents>
 
   fun setProcessed(eventId: Any): Int
 

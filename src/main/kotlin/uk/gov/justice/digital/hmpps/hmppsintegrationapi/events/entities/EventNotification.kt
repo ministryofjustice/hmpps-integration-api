@@ -8,8 +8,8 @@ data class EventNotification(
   val eventType: String,
   val prisonId: String? = null,
   val url: String,
-  val status: IntegrationEventStatus,
-  val lastModifiedDateTime: LocalDateTime,
+  val status: String? = null,
+  val lastModifiedDatetime: LocalDateTime? = null,
 )
 
 enum class IntegrationEventStatus {

@@ -3,18 +3,18 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Configuration
 import org.springframework.scheduling.annotation.Scheduled
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.EventNotificationRepository
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import java.time.Clock
 import java.time.LocalDateTime
 import java.util.UUID
 
-@Service
+@Component
 @Configuration
 class SendEventsService(
   private val integrationEventTopicService: IntegrationEventTopicService,
-  val eventRepository: EventNotificationRepository,
+  private val eventRepository: EventNotificationRepository,
   private val telemetryService: TelemetryService,
   private val clock: Clock,
 ) {
@@ -61,9 +61,9 @@ class SendEventsService(
     if (stuck.isNotEmpty()) {
       val messages =
         stuck.map {
-          // "${it.eventCount} stuck events with status ${it.status}. Earliest event has date ${it.earliestDatetime}"
+          "${it.eventCount} stuck events with status ${it.status}. Earliest event has date ${it.earliestDatetime}"
         }
-      // telemetryService.captureException(messages.joinToString("\n"))
+      telemetryService.captureException(Throwable(messages.joinToString("\n")))
     }
   }
 }

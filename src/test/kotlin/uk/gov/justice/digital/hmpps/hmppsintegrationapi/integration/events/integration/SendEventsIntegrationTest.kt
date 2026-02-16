@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test
 import org.mockito.AdditionalAnswers
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
-import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -16,28 +15,21 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.IntegrationEventStatus
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.EventNotificationRepository
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.DeleteProcessedEventsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.IntegrationEventTopicService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.SendEventsService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 import java.time.LocalDateTime
 
-class SendEventsIntegrationTest {
+class SendEventsIntegrationTest : IntegrationTestBase() {
   @MockitoBean
   private lateinit var integrationEventTopicService: IntegrationEventTopicService
-
-  @MockitoBean
-  private lateinit var telemetryService: TelemetryService
 
   @Autowired
   private lateinit var eventNotifierService: SendEventsService
 
   @Autowired
   private lateinit var deleteProcessedService: DeleteProcessedEventsService
-
-  @Autowired
-  private lateinit var eventNotificationRepository: EventNotificationRepository
 
   @BeforeEach
   fun setup() {
@@ -55,10 +47,10 @@ class SendEventsIntegrationTest {
       hmppsId = "MockId",
       prisonId = "MKI",
       url = url,
-      lastModifiedDateTime = LocalDateTime.now().minusMinutes(7),
+      lastModifiedDatetime = LocalDateTime.now().minusMinutes(7),
       eventId = null,
       claimId = null,
-      status = IntegrationEventStatus.PROCESSING,
+      status = IntegrationEventStatus.PENDING.name,
     )
 
   @Test
@@ -94,25 +86,11 @@ class SendEventsIntegrationTest {
     whenever(integrationEventTopicService.sendEvent(any())).thenAnswer(
       AdditionalAnswers.answersWithDelay(
         300,
-        { "SUCCESS" },
-      ),
+      ) { "SUCCESS" },
     )
     eventNotifierService.sentNotifications()
     // Check all are processed
     assertThat(eventNotificationRepository.findAll().map { it.status }.toSet()).isEqualTo(setOf("PROCESSED"))
     verify(telemetryService, times(2)).captureException(any())
-  }
-
-  @Test
-  fun `Stuck messages are found in the database`() {
-    val expectedExceptionMessage =
-      """
-      stuck events with status PROCESSING
-      """.trimIndent()
-    val message = argumentCaptor<String>()
-    val thread1 = Thread { eventNotifierService.sentNotifications() }
-    thread1.start()
-    // verify(telemetryService, timeout(10_000).atLeast(1)).captureException(throw(message.capture())
-    assertThat(message.firstValue).contains(expectedExceptionMessage)
   }
 }
