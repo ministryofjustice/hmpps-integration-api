@@ -16,12 +16,6 @@ const val EVENT_NOTIFICATION_BATCH_LIMIT = 1000
 class JdbcTemplateEventNotificationRepository(
   private val jdbcTemplate: JdbcTemplate,
 ) : EventNotificationRepository {
-  override fun deleteEvents(dateTime: LocalDateTime): Int {
-    // language=PostgresSql
-    val deleteQuery = "delete from EVENT_NOTIFICATION where LAST_MODIFIED_DATETIME <= ? and STATUS = 'PROCESSED'"
-    return jdbcTemplate.update(deleteQuery, dateTime)
-  }
-
   override fun getStuckEvents(minusMinutes: LocalDateTime): List<StuckEvents> {
     val getStuckQuery = """
       select count(*) as event_count, status,
@@ -37,6 +31,38 @@ class JdbcTemplateEventNotificationRepository(
       DataClassRowMapper(StuckEvents::class.java),
       minusMinutes,
     )
+  }
+
+  override fun findAll(): List<EventNotification> {
+    val getAllQuery = """select * from EVENT_NOTIFICATION""" // Jess - I feel like there should be a limit to this?
+    return jdbcTemplate.query(
+      getAllQuery,
+      DataClassRowMapper(EventNotification::class.java),
+    )
+  }
+
+  override fun findAllWithLastModifiedDateTimeBefore(dateTimeBefore: LocalDateTime): List<EventNotification> {
+    val findAllQuery = "select a from EVENT_NOTIFICATION a where a.last_modified_datetime <= ?"
+    return jdbcTemplate.queryForObject<List<EventNotification>>(findAllQuery, args = arrayOf(dateTimeBefore))!!
+  }
+
+  override fun findAllProcessingEvents(claimId: String): List<EventNotification> {
+    val findAllProcessingQuery = """
+      select * from EVENT_NOTIFICATION a
+      where a.status = 'PROCESSING' and a.claim_id = ?
+      order by a.last_modified_datetime asc
+    """
+    return jdbcTemplate.query(
+      findAllProcessingQuery,
+      DataClassRowMapper(EventNotification::class.java),
+      claimId,
+    )
+  }
+
+  fun count(): Int {
+    // language=Postgres
+    val countQuery = "select count(*) from EVENT_NOTIFICATION"
+    return jdbcTemplate.queryForObject<Int>(countQuery)
   }
 
   override fun setProcessed(eventId: Any): Int {
@@ -76,19 +102,6 @@ class JdbcTemplateEventNotificationRepository(
     return jdbcTemplate.update(setProcessingQuery, claimId, fiveMinutesAgo, EVENT_NOTIFICATION_BATCH_LIMIT)
   }
 
-  override fun findAllProcessingEvents(claimId: String): List<EventNotification> {
-    val findAllProcessingQuery = """
-      select * from EVENT_NOTIFICATION a
-      where a.status = 'PROCESSING' and a.claim_id = ?
-      order by a.last_modified_datetime asc
-    """
-    return jdbcTemplate.query(
-      findAllProcessingQuery,
-      DataClassRowMapper(EventNotification::class.java),
-      claimId,
-    )
-  }
-
   fun saveAll(events: List<EventNotification>): List<EventNotification> {
     events.forEach { event -> save(event) }
     return events
@@ -109,33 +122,20 @@ class JdbcTemplateEventNotificationRepository(
     return jdbcTemplate.update(insertQuery, makeEvent.hmppsId, makeEvent.claimId, makeEvent.eventType, makeEvent.prisonId, makeEvent.url, makeEvent.status, makeEvent.lastModifiedDatetime)
   }
 
+  override fun deleteEvents(dateTime: LocalDateTime): Int {
+    // language=PostgresSql
+    val deleteQuery = "delete from EVENT_NOTIFICATION where LAST_MODIFIED_DATETIME <= ? and STATUS = 'PROCESSED'"
+    return jdbcTemplate.update(deleteQuery, dateTime)
+  }
+
   override fun deleteAll(): Int {
     // language=Postgres
     val deleteQuery = "delete from EVENT_NOTIFICATION"
     return jdbcTemplate.update(deleteQuery)
   }
 
-  override fun findAll(): List<EventNotification> {
-    val getAllQuery = """select * from EVENT_NOTIFICATION""" // Jess - I feel like there should be a limit to this?
-    return jdbcTemplate.query(
-      getAllQuery,
-      DataClassRowMapper(EventNotification::class.java),
-    )
-  }
-
-  override fun findAllWithLastModifiedDateTimeBefore(dateTimeBefore: LocalDateTime): List<EventNotification> {
-    val findAllQuery = "select a from EVENT_NOTIFICATION a where a.last_modified_datetime <= ?"
-    return jdbcTemplate.queryForObject<List<EventNotification>>(findAllQuery, args = arrayOf(dateTimeBefore))!!
-  }
-
   override fun deleteById(id: Int): Int {
     val deleteByIdQuery = "delete from EVENT_NOTIFICATION where id = ?"
     return jdbcTemplate.update(deleteByIdQuery, id)
-  }
-
-  fun count(): Int {
-    // language=Postgres
-    val countQuery = "select count(*) from EVENT_NOTIFICATION"
-    return jdbcTemplate.queryForObject<Int>(countQuery)
   }
 }

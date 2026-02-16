@@ -5,10 +5,16 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.StuckEve
 import java.time.LocalDateTime
 
 interface EventNotificationRepository {
-  fun deleteEvents(dateTime: LocalDateTime): Int
-
+  // Get
   fun getStuckEvents(minusMinutes: LocalDateTime): List<StuckEvents>
 
+  fun findAll(): List<EventNotification>
+
+  fun findAllWithLastModifiedDateTimeBefore(dateTimeBefore: LocalDateTime): List<EventNotification>
+
+  fun findAllProcessingEvents(claimId: String): List<EventNotification>
+
+  // Update
   fun setProcessed(eventId: Any): Int
 
   fun setPending(eventId: Any): Int
@@ -18,15 +24,12 @@ interface EventNotificationRepository {
     claimId: String,
   ): Int
 
-  fun findAllProcessingEvents(claimId: String): List<EventNotification>
-
   fun save(makeEvent: EventNotification): Int
 
+  // Delete
+  fun deleteEvents(dateTime: LocalDateTime): Int
+
   fun deleteAll(): Int
-
-  fun findAll(): List<EventNotification>
-
-  fun findAllWithLastModifiedDateTimeBefore(dateTimeBefore: LocalDateTime): List<EventNotification>
 
   fun deleteById(id: Int): Int
 }
