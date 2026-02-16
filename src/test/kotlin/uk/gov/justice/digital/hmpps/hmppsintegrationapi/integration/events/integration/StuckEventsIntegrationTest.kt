@@ -20,7 +20,7 @@ import java.time.LocalDateTime
 
 class StuckEventsIntegrationTest : IntegrationTestBase() {
   @Autowired
-  private lateinit var eventNotifierService: SendEventsService
+  private lateinit var sendEventsService: SendEventsService
 
   @MockitoBean
   private lateinit var integrationEventTopicService: IntegrationEventTopicService
@@ -67,7 +67,7 @@ class StuckEventsIntegrationTest : IntegrationTestBase() {
       stuck events with status PROCESSING
       """.trimIndent()
     val message = argumentCaptor<Throwable>()
-    val thread1 = Thread { eventNotifierService.sentNotifications() }
+    val thread1 = Thread { sendEventsService.sentNotifications() }
     thread1.start()
     verify(telemetryService, timeout(10_000).atLeast(1)).captureException(Throwable(message.capture()))
     assertThat(message.firstValue).hasMessageContaining(expectedExceptionMessage)

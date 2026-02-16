@@ -26,7 +26,7 @@ class SendEventsIntegrationTest : IntegrationTestBase() {
   private lateinit var integrationEventTopicService: IntegrationEventTopicService
 
   @Autowired
-  private lateinit var eventNotifierService: SendEventsService
+  private lateinit var sendEventsService: SendEventsService
 
   @Autowired
   private lateinit var deleteProcessedService: DeleteProcessedEventsService
@@ -55,8 +55,8 @@ class SendEventsIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `Concurrent Event Notifier services reads the DB records and deletes them without any exceptions`() {
-    val thread1 = Thread { eventNotifierService.sentNotifications() }
-    val thread2 = Thread { eventNotifierService.sentNotifications() }
+    val thread1 = Thread { sendEventsService.sentNotifications() }
+    val thread2 = Thread { sendEventsService.sentNotifications() }
     val deleteThread1 = Thread { deleteProcessedService.deleteProcessedEvents() }
     val deleteThread2 = Thread { deleteProcessedService.deleteProcessedEvents() }
     thread1.start()
@@ -80,7 +80,7 @@ class SendEventsIntegrationTest : IntegrationTestBase() {
     whenever(integrationEventTopicService.sendEvent(argThat<EventNotification> { url == "MockUrl2" || url == "MockUrl4" })).thenThrow(
       RuntimeException("Some AWS exception"),
     )
-    eventNotifierService.sentNotifications()
+    sendEventsService.sentNotifications()
 
     // Run a claim without exceptions
     whenever(integrationEventTopicService.sendEvent(any())).thenAnswer(
@@ -88,7 +88,7 @@ class SendEventsIntegrationTest : IntegrationTestBase() {
         300,
       ) { "SUCCESS" },
     )
-    eventNotifierService.sentNotifications()
+    sendEventsService.sentNotifications()
     // Check all are processed
     assertThat(eventNotificationRepository.findAll().map { it.status }.toSet()).isEqualTo(setOf("PROCESSED"))
     verify(telemetryService, times(2)).captureException(any())

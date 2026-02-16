@@ -27,7 +27,7 @@ import java.time.ZonedDateTime
 @ActiveProfiles("test")
 @JsonTest
 class SendEventServiceTest {
-  private lateinit var eventNotifierService: SendEventsService
+  private lateinit var sendEventsService: SendEventsService
 
   private val integrationEventTopicService: IntegrationEventTopicService = mock()
   private val eventRepository: EventNotificationRepository = mock()
@@ -40,13 +40,13 @@ class SendEventServiceTest {
   fun setUp() {
     Mockito.reset(eventRepository)
 
-    eventNotifierService = SendEventsService(integrationEventTopicService, eventRepository, telemetryService, testClock)
+    sendEventsService = SendEventsService(integrationEventTopicService, eventRepository, telemetryService, testClock)
   }
 
   @Test
   fun `No event published when repository return no event notifications`() {
     whenever(eventRepository.findAllWithLastModifiedDateTimeBefore(any())).thenReturn(emptyList())
-    eventNotifierService.sentNotifications()
+    sendEventsService.sentNotifications()
     verifyNoInteractions(integrationEventTopicService)
   }
 
@@ -65,7 +65,7 @@ class SendEventServiceTest {
       )
     whenever(eventRepository.findAllProcessingEvents(any())).thenReturn(listOf(event))
 
-    eventNotifierService.sentNotifications()
+    sendEventsService.sentNotifications()
 
     argumentCaptor<EventNotification>().apply {
       verify(integrationEventTopicService, times(1)).sendEvent(capture())
@@ -88,7 +88,7 @@ class SendEventServiceTest {
       )
     whenever(eventRepository.findAllWithLastModifiedDateTimeBefore(any())).thenReturn(listOf(event))
     whenever(integrationEventTopicService.sendEvent(event)).thenThrow(RuntimeException("error"))
-    eventNotifierService.sentNotifications()
+    sendEventsService.sentNotifications()
     verify(eventRepository, times(0)).deleteById(123)
   }
 }
