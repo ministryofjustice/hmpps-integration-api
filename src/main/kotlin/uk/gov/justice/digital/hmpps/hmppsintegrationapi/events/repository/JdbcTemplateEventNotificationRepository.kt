@@ -34,7 +34,7 @@ class JdbcTemplateEventNotificationRepository(
   }
 
   override fun findAll(): List<EventNotification> {
-    val getAllQuery = """select * from EVENT_NOTIFICATION""" // Jess - I feel like there should be a limit to this?
+    val getAllQuery = """select * from event_notification""" // Jess - I feel like there should be a limit to this?
     return jdbcTemplate.query(
       getAllQuery,
       DataClassRowMapper(EventNotification::class.java),
@@ -42,13 +42,13 @@ class JdbcTemplateEventNotificationRepository(
   }
 
   override fun findAllWithLastModifiedDateTimeBefore(dateTimeBefore: LocalDateTime): List<EventNotification> {
-    val findAllQuery = "select a from EVENT_NOTIFICATION a where a.last_modified_datetime <= ?"
+    val findAllQuery = "select a from event_notification a where a.last_modified_datetime <= ?"
     return jdbcTemplate.queryForObject<List<EventNotification>>(findAllQuery, args = arrayOf(dateTimeBefore))!!
   }
 
   override fun findAllProcessingEvents(claimId: String): List<EventNotification> {
     val findAllProcessingQuery = """
-      select * from EVENT_NOTIFICATION a
+      select * from event_notification a
       where a.status = 'PROCESSING' and a.claim_id = ?
       order by a.last_modified_datetime asc
     """
@@ -61,13 +61,13 @@ class JdbcTemplateEventNotificationRepository(
 
   fun count(): Int {
     // language=Postgres
-    val countQuery = "select count(*) from EVENT_NOTIFICATION"
+    val countQuery = "select count(*) from event_notification"
     return jdbcTemplate.queryForObject<Int>(countQuery)
   }
 
   override fun setProcessed(eventId: Any): Int {
     val setProcessedQuery = """
-      update EVENT_NOTIFICATION a
+      update event_notification a
       set status = 'PROCESSED'
       where a.event_id = ?
     """
@@ -77,7 +77,7 @@ class JdbcTemplateEventNotificationRepository(
 
   override fun setPending(eventId: Any): Int {
     val setPendingQuery = """
-      update EVENT_NOTIFICATION a
+      update event_notification a
       set status = 'PENDING', claim_id = null
       where a.event_id = ?
     """
@@ -90,10 +90,10 @@ class JdbcTemplateEventNotificationRepository(
     claimId: String,
   ): Int {
     val setProcessingQuery = """
-      update EVENT_NOTIFICATION a
+      update event_notification a
       set claim_id = ?, status = 'PROCESSING'
       where a.event_id in
-        (select b.event_id from EVENT_NOTIFICATION b
+        (select b.event_id from event_notification b
           where b.last_modified_datetime <= ? and b.status = 'PENDING'
           order by b.last_modified_datetime asc limit ?
         )
@@ -109,33 +109,31 @@ class JdbcTemplateEventNotificationRepository(
 
   override fun save(makeEvent: EventNotification): Int {
     val insertQuery = """
-      insert into EVENT_NOTIFICATION(
-      HMPPS_ID,
-      CLAIM_ID,
-      EVENT_TYPE,
-      PRISON_ID,
-      URL,
-      STATUS,
-      LAST_MODIFIED_DATETIME
+      insert into event_notification(
+      hmpps_id,
+      claim_id,
+      event_type,
+      prison_id,
+      url,
+      status,
+      last_modified_datetime
       ) values (?,?,?,?,?,?,?)
     """
     return jdbcTemplate.update(insertQuery, makeEvent.hmppsId, makeEvent.claimId, makeEvent.eventType, makeEvent.prisonId, makeEvent.url, makeEvent.status, makeEvent.lastModifiedDatetime)
   }
 
   override fun deleteEvents(dateTime: LocalDateTime): Int {
-    // language=PostgresSql
-    val deleteQuery = "delete from EVENT_NOTIFICATION where LAST_MODIFIED_DATETIME <= ? and STATUS = 'PROCESSED'"
+    val deleteQuery = "delete from event_notification where last_modified_datetime <= ? and status = 'PROCESSED'"
     return jdbcTemplate.update(deleteQuery, dateTime)
   }
 
   override fun deleteAll(): Int {
-    // language=Postgres
-    val deleteQuery = "delete from EVENT_NOTIFICATION"
+    val deleteQuery = "delete from event_notification"
     return jdbcTemplate.update(deleteQuery)
   }
 
   override fun deleteById(id: Int): Int {
-    val deleteByIdQuery = "delete from EVENT_NOTIFICATION where id = ?"
+    val deleteByIdQuery = "delete from event_notification where id = ?"
     return jdbcTemplate.update(deleteByIdQuery, id)
   }
 }
