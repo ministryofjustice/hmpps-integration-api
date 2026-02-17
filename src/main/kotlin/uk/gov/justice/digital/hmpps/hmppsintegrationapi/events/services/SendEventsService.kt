@@ -34,9 +34,9 @@ class SendEventsService(
 
     log.info("Setting to processing with claim id $claimId")
     // Claim records to process
-    eventRepository.setProcessing(fiveMinutesAgo, claimId)
+    val eventsSetToProcessing = eventRepository.setProcessing(fiveMinutesAgo, claimId)
 
-    log.info("Set processing with claim id $claimId")
+    log.info("Set $eventsSetToProcessing to processing with claim id $claimId")
 
     val events = eventRepository.findAllProcessingEvents(claimId)
 
