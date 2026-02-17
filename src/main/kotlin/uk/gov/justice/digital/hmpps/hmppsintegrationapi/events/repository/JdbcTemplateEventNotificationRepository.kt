@@ -60,7 +60,6 @@ class JdbcTemplateEventNotificationRepository(
   }
 
   fun count(): Int {
-    // language=Postgres
     val countQuery = "select count(*) from event_notification"
     return jdbcTemplate.queryForObject<Int>(countQuery)
   }

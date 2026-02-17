@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Service
-import software.amazon.awssdk.services.sns.SnsAsyncClient
 import software.amazon.awssdk.services.sns.model.MessageAttributeValue
 import software.amazon.awssdk.services.sns.model.PublishRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
@@ -16,20 +15,14 @@ class IntegrationEventTopicService(
   private val hmppsQueueService: HmppsQueueService,
   private val objectMapper: ObjectMapper,
 ) {
-  private final val hmppsEventsTopicSnsClient: SnsAsyncClient
-  private final val topicArn: String
-
   companion object {
     private val log = LoggerFactory.getLogger(this::class.java)
   }
 
-  init {
-    val hmppsEventTopic = hmppsQueueService.findByTopicId("integrationeventtopic")
-    topicArn = hmppsEventTopic!!.arn
-    hmppsEventsTopicSnsClient = hmppsEventTopic.snsClient
-  }
-
   fun sendEvent(payload: EventNotification) {
+    val hmppsEventTopic = hmppsQueueService.findByTopicId("integrationeventtopic")
+    val topicArn = hmppsEventTopic!!.arn
+    val hmppsEventsTopicSnsClient = hmppsEventTopic.snsClient
     val messageAttributes =
       mutableMapOf(
         "eventType" to

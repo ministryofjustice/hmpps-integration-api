@@ -33,14 +33,17 @@ class SendEventServiceTest {
   private val eventRepository: EventNotificationRepository = mock()
   private val telemetryService: TelemetryService = mock()
   private val currentTime: LocalDateTime = LocalDateTime.now()
-  private val zonedCurrentTime: ZonedDateTime = currentTime.atZone(ZoneId.systemDefault())
-  private val testClock: Clock = Clock.fixed(zonedCurrentTime.toInstant(), zonedCurrentTime.zone)
+
+  fun fixedClock(): Clock {
+    val zonedCurrentTime: ZonedDateTime = currentTime.atZone(ZoneId.systemDefault())
+    return Clock.fixed(zonedCurrentTime.toInstant(), zonedCurrentTime.zone)
+  }
 
   @BeforeEach
   fun setUp() {
     Mockito.reset(eventRepository)
 
-    sendEventsService = SendEventsService(integrationEventTopicService, eventRepository, telemetryService, testClock)
+    sendEventsService = SendEventsService(integrationEventTopicService, eventRepository, telemetryService, fixedClock())
   }
 
   @Test
