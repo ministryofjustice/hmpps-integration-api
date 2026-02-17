@@ -10,8 +10,7 @@ We are migrating the `hmpps-integration-events` code into the `hmpps-integration
 the integration-events service. The core of integration-events is a database table for notifications, which means that
 the migrated integation-api code will need to access that database.
 
-The integration-events code 
-
+The integration-events code
 
 ## Options
 
