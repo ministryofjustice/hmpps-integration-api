@@ -117,3 +117,9 @@ delete-processed-events:
 notifier:
   schedule:
     rate: 10000
+
+hmpps.sqs:
+  useWebToken: true
+  topics:
+    integrationeventtopic:
+      arn: ${INTEGRATION_EVENT_TOPIC_ARN}
