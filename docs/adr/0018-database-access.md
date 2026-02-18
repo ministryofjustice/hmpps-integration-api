@@ -15,7 +15,7 @@ that includes a lot of component scanning and code generation. The overhead of t
 the benefits of the complex object-relation-mapping (ORM) that JPA supports, but the External API database does not
 contain complex domain entities, only simple technical state tracking.
 
-The Spring Framework offers a simpler alternative for direct SQL access to database based on the `JdbcTemplate` class.
+The Spring Framework offers an alternative for direct SQL access to database based on the `JdbcTemplate` class.
 This handles all of the technical plumbing, but requires the user to specify SQL commands rather than defining the
 query using Kotlin concepts.
 
@@ -45,5 +45,5 @@ The recommended option B, switching to JdbcTemplate by default, will be progress
 
 ## Consequences
 
-- The External API code will be simpler and more explicit, with reduced build-time overheads from component scanning.
+- The External API database code will be more explicit, with reduced build-time overheads from component scanning.
 - The External API database access code may be less familiar to other HMPPS developers who are used to using JPA.
