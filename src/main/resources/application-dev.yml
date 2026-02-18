@@ -196,3 +196,7 @@ authorisation:
       notes: "See client list in Confluence"
       roles:
         - "daso"
+    community-campus:
+      notes: "See client list in Confluence"
+      roles:
+        - "community-payback"
