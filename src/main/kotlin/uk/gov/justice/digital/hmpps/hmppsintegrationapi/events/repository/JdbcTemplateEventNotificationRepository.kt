@@ -106,7 +106,7 @@ class JdbcTemplateEventNotificationRepository(
     return events
   }
 
-  override fun save(makeEvent: EventNotification): Int {
+  fun save(makeEvent: EventNotification): Int {
     val insertQuery = """
       insert into event_notification(
       hmpps_id,
