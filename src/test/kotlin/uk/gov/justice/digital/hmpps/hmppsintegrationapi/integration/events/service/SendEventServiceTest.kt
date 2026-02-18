@@ -11,13 +11,13 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.fixedClock
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.IntegrationEventStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.JdbcTemplateEventNotificationRepository
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.IntegrationEventTopicService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.SendEventsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.TestConstants.FIXED_CLOCK
 import java.time.LocalDateTime
 
 class SendEventServiceTest {
@@ -26,13 +26,13 @@ class SendEventServiceTest {
   private val integrationEventTopicService: IntegrationEventTopicService = mock()
   private val eventRepository: JdbcTemplateEventNotificationRepository = mock()
   private val telemetryService: TelemetryService = mock()
-  private val currentTime: LocalDateTime = LocalDateTime.now(FIXED_CLOCK)
+  private val fixedClock = fixedClock()
 
   @BeforeEach
   fun setUp() {
     Mockito.reset(eventRepository)
 
-    sendEventsService = SendEventsService(integrationEventTopicService, eventRepository, telemetryService, FIXED_CLOCK)
+    sendEventsService = SendEventsService(integrationEventTopicService, eventRepository, telemetryService, fixedClock)
   }
 
   @Test
@@ -51,7 +51,7 @@ class SendEventServiceTest {
         eventType = "MAPPA_DETAIL_CHANGED",
         prisonId = "MKI",
         url = "mockUrl",
-        lastModifiedDatetime = currentTime,
+        lastModifiedDatetime = LocalDateTime.now(fixedClock),
         claimId = null,
         status = IntegrationEventStatus.PENDING.name,
       )
@@ -74,7 +74,7 @@ class SendEventServiceTest {
         eventType = "MAPPA_DETAIL_CHANGED",
         prisonId = null,
         url = "mockUrl",
-        lastModifiedDatetime = currentTime,
+        lastModifiedDatetime = LocalDateTime.now(fixedClock),
         claimId = null,
         status = IntegrationEventStatus.PENDING.name,
       )
