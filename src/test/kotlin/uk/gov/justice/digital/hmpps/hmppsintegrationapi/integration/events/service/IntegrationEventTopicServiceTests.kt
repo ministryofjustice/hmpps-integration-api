@@ -121,8 +121,8 @@ class IntegrationEventTopicServiceTests(
       JsonAssertions.assertThatJson(payload).node("hmppsId").isEqualTo(event.hmppsId)
       JsonAssertions.assertThatJson(payload).node("prisonId").isEqualTo(event.prisonId)
       JsonAssertions.assertThatJson(payload).node("url").isEqualTo(event.url)
-      JsonAssertions.assertThatJson(payload).node("claimId").isNull() // Jess - this was change form isAbsent() to isNull(), I don't think its an issue but would like to check
-      JsonAssertions.assertThatJson(payload).node("status").isNull()
+      JsonAssertions.assertThatJson(payload).node("claimId").isAbsent()
+      JsonAssertions.assertThatJson(payload).node("status").isAbsent()
       Assertions
         .assertThat(messageAttributes["eventType"])
         .isEqualTo(

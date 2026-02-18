@@ -12,38 +12,29 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.autoconfigure.json.JsonTest
-import org.springframework.test.context.ActiveProfiles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.IntegrationEventStatus
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.EventNotificationRepository
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.JdbcTemplateEventNotificationRepository
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.IntegrationEventTopicService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.SendEventsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
-import java.time.Clock
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.TestConstants.FIXED_CLOCK
 import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.ZonedDateTime
 
-@ActiveProfiles("test")
 @JsonTest
 class SendEventServiceTest {
   private lateinit var sendEventsService: SendEventsService
 
   private val integrationEventTopicService: IntegrationEventTopicService = mock()
-  private val eventRepository: EventNotificationRepository = mock()
+  private val eventRepository: JdbcTemplateEventNotificationRepository = mock()
   private val telemetryService: TelemetryService = mock()
-  private val currentTime: LocalDateTime = LocalDateTime.now()
-
-  fun fixedClock(): Clock {
-    val zonedCurrentTime: ZonedDateTime = currentTime.atZone(ZoneId.systemDefault())
-    return Clock.fixed(zonedCurrentTime.toInstant(), zonedCurrentTime.zone)
-  }
+  private val currentTime: LocalDateTime = LocalDateTime.now(FIXED_CLOCK)
 
   @BeforeEach
   fun setUp() {
     Mockito.reset(eventRepository)
 
-    sendEventsService = SendEventsService(integrationEventTopicService, eventRepository, telemetryService, fixedClock())
+    sendEventsService = SendEventsService(integrationEventTopicService, eventRepository, telemetryService, FIXED_CLOCK)
   }
 
   @Test

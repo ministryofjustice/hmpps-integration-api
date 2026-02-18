@@ -8,8 +8,6 @@ interface EventNotificationRepository {
   // Get
   fun getStuckEvents(minusMinutes: LocalDateTime): List<StuckEvents>
 
-  fun findAll(): List<EventNotification>
-
   fun findAllWithLastModifiedDateTimeBefore(dateTimeBefore: LocalDateTime): List<EventNotification>
 
   fun findAllProcessingEvents(claimId: String): List<EventNotification>
@@ -28,8 +26,4 @@ interface EventNotificationRepository {
 
   // Delete
   fun deleteEvents(dateTime: LocalDateTime): Int
-
-  fun deleteAll(): Int
-
-  fun deleteById(id: Int): Int
 }

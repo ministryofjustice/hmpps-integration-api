@@ -33,8 +33,8 @@ class JdbcTemplateEventNotificationRepository(
     )
   }
 
-  override fun findAll(): List<EventNotification> {
-    val getAllQuery = """select * from event_notification""" // Jess - I feel like there should be a limit to this?
+  fun findAll(): List<EventNotification> {
+    val getAllQuery = """select * from event_notification"""
     return jdbcTemplate.query(
       getAllQuery,
       DataClassRowMapper(EventNotification::class.java),
@@ -126,12 +126,12 @@ class JdbcTemplateEventNotificationRepository(
     return jdbcTemplate.update(deleteQuery, dateTime)
   }
 
-  override fun deleteAll(): Int {
+  fun deleteAll(): Int {
     val deleteQuery = "delete from event_notification"
     return jdbcTemplate.update(deleteQuery)
   }
 
-  override fun deleteById(id: Int): Int {
+  fun deleteById(id: Int): Int {
     val deleteByIdQuery = "delete from event_notification where id = ?"
     return jdbcTemplate.update(deleteByIdQuery, id)
   }
