@@ -39,7 +39,9 @@ Use JdbcTemplate for all future database connectivity, with use of JPA prohibite
 
 ## Decision
 
-TBC
+The 18 Feb 2026 Steering Committee call concluded that this was a service implementation decision.
+
+The recommended option B, switching to JdbcTemplate by default, will be progressed.
 
 ## Consequences
 
