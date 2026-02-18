@@ -11,7 +11,6 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
-import org.springframework.boot.test.autoconfigure.json.JsonTest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.IntegrationEventStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.JdbcTemplateEventNotificationRepository
@@ -21,7 +20,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryServi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.TestConstants.FIXED_CLOCK
 import java.time.LocalDateTime
 
-@JsonTest
 class SendEventServiceTest {
   private lateinit var sendEventsService: SendEventsService
 
