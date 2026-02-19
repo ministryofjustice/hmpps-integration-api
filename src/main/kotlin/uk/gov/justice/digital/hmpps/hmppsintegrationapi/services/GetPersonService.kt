@@ -497,14 +497,16 @@ class GetPersonService(
    *
    */
   fun getIdFromCprOrPrisonOrProbationSystems(
-    id: String,
+    hmppsId: String,
     thisIdType: IdentifierType,
     requiredType: IdentifierType,
   ): Response<String?> {
     var cprFailureException: Exception? = null
     if (featureFlagConfig.isEnabled(CPR_ENABLED)) {
       try {
-        val cpr = corePersonRecordGateway.corePersonRecordFor(thisIdType, id)
+        val cpr = corePersonRecordGateway.corePersonRecordFor(thisIdType, hmppsId)
+        val id = cpr.getIdentifier(requiredType, hmppsId)
+        telemetryService.trackEvent("CPRNomsSuccess", mapOf("message" to "Successfully used CPR to convert $hmppsId to $id", "fromId" to hmppsId, "toId" to id))
         return Response(cpr.getIdentifier(requiredType, id))
       } catch (ex: Exception) {
         cprFailureException = ex
@@ -513,12 +515,12 @@ class GetPersonService(
     // Fall back to using the prison API or probation API to get the person id
     val response =
       when (thisIdType) {
-        IdentifierType.NOMS -> prisonAPIPersonId(id, requiredType)
-        else -> probationAPIPersonId(id, requiredType)
+        IdentifierType.NOMS -> prisonAPIPersonId(hmppsId, requiredType)
+        else -> probationAPIPersonId(hmppsId, requiredType)
       }
     // Track the CPR exception using the fallback response
     cprFailureException?.let {
-      trackCPRFailureEvent(it, id, response.data, response.errors)
+      trackCPRFailureEvent(it, hmppsId, response.data, response.errors)
     }
     return response
   }
