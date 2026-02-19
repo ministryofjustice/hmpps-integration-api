@@ -10,7 +10,7 @@ class RiskPredictorScoreTest :
       describe("#toRiskPredictorScore") {
         it("maps ARN Risk Predictor Score to integration API Risk Predictor Score v1") {
           val arnRiskPredictorScore =
-            ArnRiskPredictorScoreV2(
+            ArnRiskPredictorScore(
               completedDate = "2023-09-05T10:15:41",
               status = "COMPLETE",
               outputVersion = "1",
@@ -70,7 +70,7 @@ class RiskPredictorScoreTest :
 
         it("maps ARN Risk Predictor Score to integration API Risk Predictor Score v2") {
           val arnRiskPredictorScore =
-            ArnRiskPredictorScoreV2(
+            ArnRiskPredictorScore(
               completedDate = "2023-09-05T10:15:41",
               status = "COMPLETE",
               outputVersion = "2",
