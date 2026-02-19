@@ -72,6 +72,8 @@ generic-service:
       DB_NAME: "database_name"
       DB_USER: "database_username"
       DB_PASS: "database_password"
+    hmpps-integration-events-topic:
+      INTEGRATION_EVENT_TOPIC_ARN: "sns_arn"
 
   allowlist:
     unrestricted: "0.0.0.0/0"

@@ -114,3 +114,13 @@ sentry:
 delete-processed-events:
   schedule:
     rate: 10000
+
+notifier:
+  schedule:
+    rate: 10000
+
+hmpps.sqs:
+  useWebToken: true
+  topics:
+    integrationeventtopic:
+      arn: ${INTEGRATION_EVENT_TOPIC_ARN}
