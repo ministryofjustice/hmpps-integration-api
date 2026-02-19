@@ -59,22 +59,16 @@ class GetPersonService(
   fun convert(
     hmppsId: String,
     requiredType: IdentifierType,
-  ): Response<String?> {
-    val hmppsIdType = identifyHmppsId(hmppsId)
-    if (hmppsIdType == IdentifierType.UNKNOWN) {
-      return Response(
-        data = null,
-        errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.BAD_REQUEST, description = "Invalid HMPPS ID: $hmppsId")),
-      )
+  ): Response<String?> =
+    when (val hmppsIdType = identifyHmppsId(hmppsId)) {
+      IdentifierType.UNKNOWN ->
+        Response(
+          data = null,
+          errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.BAD_REQUEST, description = "Invalid HMPPS ID: $hmppsId")),
+        )
+      requiredType -> Response(hmppsId)
+      else -> getUpstreamId(hmppsId, hmppsIdType, requiredType)
     }
-
-    // Return the id if the hmppsIdType is the same as the required type
-    if (hmppsIdType == requiredType) {
-      return Response(hmppsId)
-    }
-
-    return getIdFromCprOrPrisonOrProbationSystems(hmppsId, hmppsIdType, requiredType)
-  }
 
   /**
    * Verifies that a given id exists in its own domain indicated by its format (whether it is a NOMS number or CRN)
@@ -88,7 +82,7 @@ class GetPersonService(
         errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.BAD_REQUEST, description = "Invalid HMPPS ID: $id")),
       )
     }
-    return getIdFromCprOrPrisonOrProbationSystems(id, hmppsIdType, hmppsIdType)
+    return getUpstreamId(id, hmppsIdType, hmppsIdType)
   }
 
   fun trackCPRFailureEvent(
@@ -246,6 +240,7 @@ class GetPersonService(
    * Returns a Nomis number from a HMPPS ID, taking into account optionally provided prison and supervision status filters
    * If the prisoner isn't found or their current location or supervision status doesn't match the consumer's
    * filters, a NOT_FOUND error response is returned
+   * N.B If the hmppsId is already a nomis number, then convert will simply return the hmppsId and not do an existence check
    */
   fun getNomisNumber(
     hmppsId: String,
@@ -496,7 +491,7 @@ class GetPersonService(
    * Falls back to Prison and Probation APIs if CPR is not successful
    *
    */
-  fun getIdFromCprOrPrisonOrProbationSystems(
+  fun getUpstreamId(
     hmppsId: String,
     thisIdType: IdentifierType,
     requiredType: IdentifierType,

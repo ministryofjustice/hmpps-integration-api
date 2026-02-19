@@ -22,10 +22,7 @@ class GetAddressesForPersonService(
     // Verify that the provided ID exists in its own domain
     val verifyId = getPersonService.verifyId(hmppsId)
     if (verifyId.errors.isNotEmpty()) {
-      return Response(
-        data = emptyList(),
-        errors = verifyId.errors,
-      )
+      return Response(data = emptyList(), errors = verifyId.errors)
     }
 
     val prisonerAddresses =
