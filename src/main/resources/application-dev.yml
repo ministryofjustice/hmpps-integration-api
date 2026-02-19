@@ -62,6 +62,7 @@ feature-flag:
   normalised-path-matching: true
   use-new-risk-score-api: true
   enable-delete-processed-events: false
+  enable-send-processed-events: false
 
 authorisation:
   consumers:
