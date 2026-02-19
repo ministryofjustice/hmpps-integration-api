@@ -19,6 +19,15 @@ class GetAddressesForPersonService(
     hmppsId: String,
     filters: ConsumerFilters?,
   ): Response<List<Address>> {
+    // Verify that the provided ID exists in its own domain
+    val verifyId = getPersonService.verifyId(hmppsId)
+    if (verifyId.errors.isNotEmpty()) {
+      return Response(
+        data = emptyList(),
+        errors = verifyId.errors,
+      )
+    }
+
     val prisonerAddresses =
       if (ConsumerFilters.hasPrisonAccess(filters)) {
         val prisonerId = getPersonService.getNomisNumber(hmppsId, filters)

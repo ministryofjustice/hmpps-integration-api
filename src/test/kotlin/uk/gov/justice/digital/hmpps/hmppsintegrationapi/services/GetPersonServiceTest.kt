@@ -655,14 +655,6 @@ internal class GetPersonServiceTest(
           result.data.shouldBe(NomisNumber(nomsNumber))
         }
 
-        it("Nomis number passed in, POS returns error, return error") {
-          val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR))
-          whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = null, errors = errors))
-
-          val result = getPersonService.getNomisNumber(nomsNumber)
-          result.errors.shouldBe(errors)
-        }
-
         it("Crn number passed in, return nomis number from probation") {
           whenever(deliusGateway.getOffender(crnNumber)).thenReturn(Response(data = personOnProbation, errors = emptyList()))
 
@@ -697,14 +689,6 @@ internal class GetPersonServiceTest(
 
           val result = getPersonService.getNomisNumber(nomsNumber, filters = null)
           result.data.shouldBe(NomisNumber(nomsNumber))
-        }
-
-        it("Nomis number passed in, POS returns error, return error") {
-          val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR))
-          whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = null, errors = errors))
-
-          val result = getPersonService.getNomisNumber(nomsNumber, filters = null)
-          result.errors.shouldBe(errors)
         }
 
         it("Nomis number passed in, filters present - return nomis number from POS") {
@@ -999,19 +983,6 @@ internal class GetPersonServiceTest(
         it("Nomis number is provided and new processing returns the nomis number") {
           val result = getPersonService.getNomisNumber(nomsNumber, filters = null)
           result.data.shouldBe(NomisNumber(nomsNumber))
-        }
-
-        it("Crn is provided and new processing returns the nomis number") {
-          val result = getPersonService.getNomisNumber(crnNumber, filters = null)
-          result.data.shouldBe(NomisNumber(nomsNumber))
-          verify(telemetryService).trackEvent(
-            "CPRNomsSuccess",
-            mapOf(
-              "message" to "Successfully used CPR to convert $crnNumber to $nomsNumber",
-              "fromId" to crnNumber,
-              "toId" to nomsNumber,
-            ),
-          )
         }
       }
 

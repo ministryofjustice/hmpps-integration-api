@@ -55,7 +55,6 @@ class GetPersonService(
    * Converts an hmppsId to the required person id using either CPR or the probation or prison APIs
    * Either a person on probation id or a person in prison id.
    *
-   * Note - existing processing also verifies that the hmppsId exists in its own domain
    */
   fun convert(
     hmppsId: String,
@@ -68,30 +67,28 @@ class GetPersonService(
         errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.BAD_REQUEST, description = "Invalid HMPPS ID: $hmppsId")),
       )
     }
-    // If the CPR feature flag is enabled then call CPR.
-    var cprFailureException: Exception? = null
-    if (featureFlagConfig.isEnabled(CPR_ENABLED)) {
-      try {
-        val cpr = corePersonRecordGateway.corePersonRecordFor(hmppsIdType, hmppsId)
-        val id = cpr.getIdentifier(requiredType, hmppsId)
-        telemetryService.trackEvent("CPRNomsSuccess", mapOf("message" to "Successfully used CPR to convert $hmppsId to $id", "fromId" to hmppsId, "toId" to id))
-        return Response(id)
-      } catch (ex: Exception) {
-        cprFailureException = ex
-      }
-    }
-    // Fall back to using the prison API or probation API to get the person id
-    val response =
-      when (hmppsIdType) {
-        IdentifierType.NOMS -> prisonAPIPersonId(hmppsId, requiredType)
-        else -> probationAPIPersonId(hmppsId, requiredType)
-      }
-    // Track the CPR exception using the fallback response
-    cprFailureException?.let {
-      trackCPRFailureEvent(it, hmppsId, response.data, response.errors)
+
+    // Return the id if the hmppsIdType is the same as the required type
+    if (hmppsIdType == requiredType) {
+      return Response(hmppsId)
     }
 
-    return response
+    return getIdFromCprOrPrisonOrProbationSystems(hmppsId, hmppsIdType, requiredType)
+  }
+
+  /**
+   * Verifies that a given id exists in its own domain indicated by its format (whether it is a NOMS number or CRN)
+   *
+   */
+  fun verifyId(id: String): Response<String?> {
+    val hmppsIdType = identifyHmppsId(id)
+    if (hmppsIdType == IdentifierType.UNKNOWN) {
+      return Response(
+        data = null,
+        errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.BAD_REQUEST, description = "Invalid HMPPS ID: $id")),
+      )
+    }
+    return getIdFromCprOrPrisonOrProbationSystems(id, hmppsIdType, hmppsIdType)
   }
 
   fun trackCPRFailureEvent(
@@ -492,5 +489,37 @@ class GetPersonService(
       throw UpstreamApiException(UpstreamApi.NDELIUS, offender.errors.first().type, "person", id, offender.errors)
     }
     return Response(data = offender.data?.toPersonOnProbation(), errors = offender.errors)
+  }
+
+  /**
+   * Attempts to get the id from CPR
+   * Falls back to Prison and Probation APIs if CPR is not successful
+   *
+   */
+  fun getIdFromCprOrPrisonOrProbationSystems(
+    id: String,
+    thisIdType: IdentifierType,
+    requiredType: IdentifierType,
+  ): Response<String?> {
+    var cprFailureException: Exception? = null
+    if (featureFlagConfig.isEnabled(CPR_ENABLED)) {
+      try {
+        val cpr = corePersonRecordGateway.corePersonRecordFor(thisIdType, id)
+        return Response(cpr.getIdentifier(requiredType, id))
+      } catch (ex: Exception) {
+        cprFailureException = ex
+      }
+    }
+    // Fall back to using the prison API or probation API to get the person id
+    val response =
+      when (thisIdType) {
+        IdentifierType.NOMS -> prisonAPIPersonId(id, requiredType)
+        else -> probationAPIPersonId(id, requiredType)
+      }
+    // Track the CPR exception using the fallback response
+    cprFailureException?.let {
+      trackCPRFailureEvent(it, id, response.data, response.errors)
+    }
+    return response
   }
 }
