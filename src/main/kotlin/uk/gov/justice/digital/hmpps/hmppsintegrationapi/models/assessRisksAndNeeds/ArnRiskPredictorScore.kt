@@ -4,27 +4,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskPredict
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskScoreV2
 import java.time.LocalDateTime
 
-data class ArnRiskPredictorScore(
-  val completedDate: String? = null,
-  val assessmentStatus: String? = null,
-  val generalPredictorScore: ArnGeneralPredictorScore = ArnGeneralPredictorScore(),
-  val violencePredictorScore: ArnViolencePredictorScore = ArnViolencePredictorScore(),
-  val groupReconvictionScore: ArnGroupReconvictionScore = ArnGroupReconvictionScore(),
-  val riskOfSeriousRecidivismScore: ArnRiskOfSeriousRecidivismScore = ArnRiskOfSeriousRecidivismScore(),
-  val sexualPredictorScore: ArnSexualPredictorScore = ArnSexualPredictorScore(),
-) {
-  fun toRiskPredictorScore(): RiskPredictorScore =
-    RiskPredictorScore(
-      completedDate = getDateFromString(this.completedDate),
-      assessmentStatus = this.assessmentStatus,
-      generalPredictor = this.generalPredictorScore.toGeneralPredictor(false),
-      violencePredictor = this.violencePredictorScore.toViolencePredictor(false),
-      groupReconviction = this.groupReconvictionScore.toGroupReconviction(false),
-      riskOfSeriousRecidivism = this.riskOfSeriousRecidivismScore.toRiskOfSeriousRecidivism(false),
-      sexualPredictor = this.sexualPredictorScore.toSexualPredictor(false),
-    )
-}
-
 data class ArnOutput(
   // Version 1
   val generalPredictorScore: ArnGeneralPredictorScore = ArnGeneralPredictorScore(),
@@ -46,7 +25,7 @@ data class ArnScore(
   val score: Int? = null,
 )
 
-data class ArnRiskPredictorScoreV2(
+data class ArnRiskPredictorScore(
   val completedDate: String? = null,
   val status: String? = null,
   val source: String? = null,

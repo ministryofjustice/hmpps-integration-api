@@ -19,7 +19,7 @@ data class RiskPredictorScore(
   )
   val assessmentStatus: String? = null,
   @Schema(description = "Number representing the assessment version", example = "1")
-  val assessmentVersion: Int? = null,
+  val assessmentVersion: Int,
   // Version 1
   val generalPredictor: GeneralPredictor = GeneralPredictor(),
   val violencePredictor: ViolencePredictor = ViolencePredictor(),

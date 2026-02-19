@@ -15,6 +15,7 @@ data class GroupReconviction(
     """,
     example = "LOW",
     allowableValues = ["LOW", "MEDIUM", "HIGH", "VERY_HIGH", "NOT_APPLICABLE"],
+    deprecated = true,
   )
   val scoreLevel: String? = null,
   @JsonInclude(JsonInclude.Include.NON_NULL)
