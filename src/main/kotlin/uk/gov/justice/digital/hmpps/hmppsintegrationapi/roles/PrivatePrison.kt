@@ -67,6 +67,7 @@ val privatePrison =
       -"/v1/activities/schedule/.*/allocate"
       -"/v1/prison/prisoners/.*/activities/attendances"
       -"/v1/activities/schedule/.*/waiting-list-applications"
+      -"/v1/persons/.*/risks/serious-harm"
       -"/v1/status"
     }
   }
