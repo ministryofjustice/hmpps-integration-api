@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.kotlin.whenever
@@ -74,6 +75,7 @@ internal class GetAddressesForPersonServiceTest(
         Mockito.reset(deliusGateway)
         Mockito.reset(featureFlag)
 
+        whenever(personService.verifyId(hmppsId)).thenReturn(Response(hmppsId))
         whenever(personService.convert(hmppsId, GetPersonService.IdentifierType.CRN)).thenReturn(Response(crn))
         whenever(personService.getNomisNumber(hmppsId, filters)).thenReturn(
           Response(
@@ -322,6 +324,25 @@ internal class GetAddressesForPersonServiceTest(
         val result = getAddressesForPersonService.execute(hmppsId, filters)
         result.errors.shouldBeEmpty()
         result.data.shouldBe(listOf(nomisAddress, deliusAddress))
+      }
+
+      it("id is not verified in hmpps systems - return 404") {
+
+        whenever(personService.verifyId(hmppsId)).thenReturn(
+          Response(
+            data = null,
+            errors =
+              listOf(
+                UpstreamApiError(
+                  type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR,
+                  causedBy = UpstreamApi.PRISON_API,
+                ),
+              ),
+          ),
+        )
+
+        val result = getAddressesForPersonService.execute(hmppsId, filters)
+        result.errors.shouldNotBeEmpty()
       }
     },
   )
