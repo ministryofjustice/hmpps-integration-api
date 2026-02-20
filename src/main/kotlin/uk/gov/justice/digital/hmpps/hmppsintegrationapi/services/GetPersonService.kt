@@ -238,9 +238,10 @@ class GetPersonService(
 
   /**
    * Returns a Nomis number from a HMPPS ID, taking into account optionally provided prison and supervision status filters
-   * If the prisoner isn't found or their current location or supervision status doesn't match the consumer's
-   * filters, a NOT_FOUND error response is returned
-   * N.B If the hmppsId is already a nomis number, then convert will simply return the hmppsId and not do an existence check
+   * If the prisoners's current location or supervision status doesn't match the specified consumer
+   * filters, or cannot be determined, a NOT_FOUND error response is returned.
+   * If no filters are supplied then no checks will be performed and if the hmppsId is already a
+   * nomis number then it will simply be returned as-is.
    */
   fun getNomisNumber(
     hmppsId: String,
