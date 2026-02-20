@@ -98,7 +98,6 @@ feature-flag:
   enhanced-search-enabled: false
   gateway-cache-enabled: true
   normalised-path-matching: true
-  use-new-risk-score-api: true
   enable-delete-processed-events: false
   enable-send-processed-events: false
 
