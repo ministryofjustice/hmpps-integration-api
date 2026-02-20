@@ -40,8 +40,9 @@ class EducationCourseCompletionMapperTest :
       lastName: String = "Doe",
       dateOfBirth: LocalDate = LocalDate.of(1990, 1, 1),
       region: String = "East of England",
+      office: String = "The Lighthouse",
       email: String = "John@example.org",
-    ) = PersonDetails(firstName, lastName, dateOfBirth, region, email)
+    ) = PersonDetails(firstName, lastName, dateOfBirth, region, office, email)
 
     fun validCourse(
       courseName: String = "Intro to litter picking",
