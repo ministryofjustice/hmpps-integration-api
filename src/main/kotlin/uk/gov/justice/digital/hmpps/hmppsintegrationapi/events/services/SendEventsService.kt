@@ -28,6 +28,7 @@ class SendEventsService(
   @Scheduled(fixedRateString = "\${notifier.schedule.rate}")
   fun sentNotifications() {
     alertForAnyStuckMessages()
+
     val fiveMinutesAgo = LocalDateTime.now(clock).minusMinutes(5)
 
     val claimId = UUID.randomUUID().toString()
