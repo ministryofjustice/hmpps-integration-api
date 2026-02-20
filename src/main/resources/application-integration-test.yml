@@ -102,7 +102,6 @@ feature-flag:
   cpr-enabled: true
   gateway-cache-enabled: true
   normalised-path-matching: true
-  use-new-risk-score-api: true
   enable-delete-processed-events: true
   enable-send-processed-events: true
 
