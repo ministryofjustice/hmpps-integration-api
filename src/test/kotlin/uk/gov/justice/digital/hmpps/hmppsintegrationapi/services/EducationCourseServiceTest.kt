@@ -57,6 +57,7 @@ class EducationCourseServiceTest :
                 lastName = "Doe",
                 dateOfBirth = LocalDate.of(1990, 1, 1),
                 region = "London",
+                office = "The Lighthouse",
                 email = "john.doe@example.com",
               ),
             course =
