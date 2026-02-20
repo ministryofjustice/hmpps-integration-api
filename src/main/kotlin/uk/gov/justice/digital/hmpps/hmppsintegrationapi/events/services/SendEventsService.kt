@@ -5,13 +5,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Configuration
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.EventNotificationRepository
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import java.time.Clock
 import java.time.LocalDateTime
 import java.util.UUID
 
-@ConditionalOnProperty("feature-flag.enable-send-processed-events", havingValue = "true")
+@ConditionalOnProperty("feature-flag.${FeatureFlagConfig.ENABLE_SEND_PROCESSED_EVENTS}", havingValue = "true")
 @Component
 @Configuration
 class SendEventsService(

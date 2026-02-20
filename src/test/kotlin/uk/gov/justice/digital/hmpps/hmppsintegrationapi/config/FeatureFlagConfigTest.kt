@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
+import kotlin.reflect.full.companionObject
+import kotlin.reflect.full.memberProperties
 import kotlin.test.assertFailsWith
 
 class FeatureFlagConfigTest : ConfigTest() {
@@ -74,5 +76,22 @@ class FeatureFlagConfigTest : ConfigTest() {
 
     // Reduce the threshold in the following assertion over time
     assertTrue(allSameFlags.size <= 14, "Too many flags enabled in all configs: $flagCounts")
+  }
+
+  @Test
+  fun `no unsued flags`() {
+    val flagsInCode =
+      FeatureFlagConfig::class
+        .companionObject!!
+        .memberProperties
+        .filter { it.isFinal }
+        .map { it.getter.call(FeatureFlagConfig()) }
+    val notInCode =
+      listConfigs()
+        .map { getFeatureConfig(it) }
+        .flatMap { it.keys.toList() }
+        .filterNot { it in flagsInCode }
+        .toSet()
+    assertTrue(notInCode.isEmpty(), "The following flags have been left in config: ${notInCode.joinToString(",")}")
   }
 }
