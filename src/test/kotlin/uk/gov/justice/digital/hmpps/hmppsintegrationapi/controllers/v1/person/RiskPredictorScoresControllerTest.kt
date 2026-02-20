@@ -77,6 +77,7 @@ internal class RiskPredictorScoresControllerTest(
                   RiskPredictorScore(
                     completedDate = LocalDateTime.parse("2023-09-05T10:15:41"),
                     assessmentStatus = "COMPLETE",
+                    assessmentVersion = 1,
                     generalPredictor = GeneralPredictor("HIGH"),
                     violencePredictor = ViolencePredictor("MEDIUM"),
                     groupReconviction = GroupReconviction("LOW"),
@@ -123,6 +124,7 @@ internal class RiskPredictorScoresControllerTest(
             {
               "completedDate": "2023-09-05T10:15:41",
               "assessmentStatus": "COMPLETE",
+              "assessmentVersion": 1,
               "generalPredictor": {"scoreLevel":"HIGH"},
               "violencePredictor": {"scoreLevel":"MEDIUM"},
               "groupReconviction": {"scoreLevel":"LOW"},
@@ -197,6 +199,7 @@ internal class RiskPredictorScoresControllerTest(
                   RiskPredictorScore(
                     completedDate = LocalDateTime.parse("2023-09-05T10:15:41"),
                     assessmentStatus = "COMPLETE",
+                    assessmentVersion = 1,
                     generalPredictor = GeneralPredictor("HIGH"),
                     violencePredictor = ViolencePredictor("MEDIUM"),
                     groupReconviction = GroupReconviction("LOW"),

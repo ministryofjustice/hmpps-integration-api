@@ -14,7 +14,6 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_NEW_RISK_SCORE_API
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.AssessRisksAndNeedsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
@@ -42,11 +41,9 @@ class GetRiskPredictorScoresForPersonTest(
   val assessRisksAndNeedsGateway: AssessRisksAndNeedsGateway,
 ) : DescribeSpec(
     {
-      val deliusCrn = "X777776"
       val deliusCrnNewV1 = "X777777"
       val deliusCrnNewV2 = "X777778"
       val deliusCrnNewV1AndV2 = "X777779"
-      val path = "/risks/predictors/$deliusCrn"
       val pathNewV1 = "/risks/predictors/unsafe/all/CRN/$deliusCrnNewV1"
       val pathNewV2 = "/risks/predictors/unsafe/all/CRN/$deliusCrnNewV2"
       var pathNewV1AndV2 = "/risks/predictors/unsafe/all/CRN/$deliusCrnNewV1AndV2"
@@ -55,11 +52,6 @@ class GetRiskPredictorScoresForPersonTest(
       beforeEach {
         assessRisksAndNeedsApiMockServer.start()
         Mockito.reset(hmppsAuthGateway)
-        Mockito.reset(featureFlag)
-        assessRisksAndNeedsApiMockServer.stubForGet(
-          path,
-          File("src/test/resources/expected-responses/arns-risk-predictor-scores-deprecated.json").readText(),
-        )
 
         assessRisksAndNeedsApiMockServer.stubForGet(
           pathNewV1,
@@ -85,31 +77,12 @@ class GetRiskPredictorScoresForPersonTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrn)
+        assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrnNewV1)
 
         verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("ASSESS_RISKS_AND_NEEDS")
       }
 
-      it("returns risk predictor scores for the matching CRN") {
-        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrn)
-        response.data.shouldBe(
-          listOf(
-            RiskPredictorScore(
-              completedDate = LocalDateTime.parse("2026-01-16T16:22:54"),
-              assessmentStatus = "COMPLETE",
-              groupReconviction = GroupReconviction(scoreLevel = "HIGH"),
-              generalPredictor = GeneralPredictor(scoreLevel = "LOW"),
-              violencePredictor = ViolencePredictor(scoreLevel = "MEDIUM"),
-              riskOfSeriousRecidivism = RiskOfSeriousRecidivism(scoreLevel = "LOW"),
-              sexualPredictor = SexualPredictor(indecentScoreLevel = "LOW", contactScoreLevel = "MEDIUM"),
-            ),
-          ),
-        )
-      }
-
-      it("returns risk predictor scores for the matching CRN with new risk score api is enabled version 1") {
-        whenever(featureFlag.isEnabled(USE_NEW_RISK_SCORE_API)).thenReturn(true)
-
+      it("returns risk predictor scores for the matching CRN with version 1") {
         val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrnNewV1)
 
         response.data.shouldBe(
@@ -134,9 +107,7 @@ class GetRiskPredictorScoresForPersonTest(
         )
       }
 
-      it("returns risk predictor scores for the matching CRN with new risk score api is enabled version 2") {
-        whenever(featureFlag.isEnabled(USE_NEW_RISK_SCORE_API)).thenReturn(true)
-
+      it("returns risk predictor scores for the matching CRN with version 2") {
         val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrnNewV2)
 
         response.data.shouldBe(
@@ -161,9 +132,7 @@ class GetRiskPredictorScoresForPersonTest(
         )
       }
 
-      it("returns risk predictor scores for the matching CRN with new risk score api is enabled version 1 and version 2") {
-        whenever(featureFlag.isEnabled(USE_NEW_RISK_SCORE_API)).thenReturn(true)
-
+      it("returns risk predictor scores for the matching CRN with version 1 and version 2") {
         val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrnNewV1AndV2)
 
         response.data.shouldBe(
@@ -204,7 +173,7 @@ class GetRiskPredictorScoresForPersonTest(
         )
       }
 
-      it("returns error for the matching CRN with new risk score api is enabled for unknown version number") {
+      it("returns error for the matching CRN for unknown version number") {
         assessRisksAndNeedsApiMockServer.stubForGet(
           pathNewV2,
           """
@@ -220,7 +189,6 @@ class GetRiskPredictorScoresForPersonTest(
             ]
           """,
         )
-        whenever(featureFlag.isEnabled(USE_NEW_RISK_SCORE_API)).thenReturn(true)
 
         val exception =
           assertThrows<RuntimeException> {
@@ -230,50 +198,23 @@ class GetRiskPredictorScoresForPersonTest(
       }
 
       it("returns an empty list when no risk predictor scores are found") {
-        assessRisksAndNeedsApiMockServer.stubForGet(path, "[]")
+        assessRisksAndNeedsApiMockServer.stubForGet(pathNewV1, "[]")
 
-        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrn)
+        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrnNewV1)
 
         response.data.shouldBe(emptyList())
       }
 
       it("returns a 404 NOT FOUND status code when no person is found") {
-        assessRisksAndNeedsApiMockServer.stubForGet(path, "", HttpStatus.NOT_FOUND)
+        assessRisksAndNeedsApiMockServer.stubForGet(pathNewV1, "", HttpStatus.NOT_FOUND)
 
-        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrn)
+        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrnNewV1)
 
         response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
       }
 
       it("returns a 403 FORBIDDEN status code when forbidden") {
-        assessRisksAndNeedsApiMockServer.stubForGet(path, "", HttpStatus.FORBIDDEN)
-
-        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrn)
-
-        response.hasError(UpstreamApiError.Type.FORBIDDEN).shouldBeTrue()
-      }
-
-      it("returns an empty list when no risk predictor scores are found with new risk score api is enabled") {
-        assessRisksAndNeedsApiMockServer.stubForGet(pathNewV1, "[]")
-        whenever(featureFlag.isEnabled(USE_NEW_RISK_SCORE_API)).thenReturn(true)
-
-        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrnNewV1)
-
-        response.data.shouldBe(emptyList())
-      }
-
-      it("returns a 404 NOT FOUND status code when no person is found with new risk score api is enabled") {
-        assessRisksAndNeedsApiMockServer.stubForGet(pathNewV1, "", HttpStatus.NOT_FOUND)
-        whenever(featureFlag.isEnabled(USE_NEW_RISK_SCORE_API)).thenReturn(true)
-
-        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrnNewV1)
-
-        response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
-      }
-
-      it("returns a 403 FORBIDDEN status code when forbidden with new risk score api is enabled") {
         assessRisksAndNeedsApiMockServer.stubForGet(pathNewV1, "", HttpStatus.FORBIDDEN)
-        whenever(featureFlag.isEnabled(USE_NEW_RISK_SCORE_API)).thenReturn(true)
 
         val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrnNewV1)
 
