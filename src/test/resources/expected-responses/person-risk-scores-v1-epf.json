@@ -5,20 +5,20 @@
       "assessmentStatus": "COMPLETE",
       "assessmentVersion": 1,
       "generalPredictor": {
-        "score": 11
+        "score": 11.12
       },
       "violencePredictor": {
-        "score": 6
+        "score": 6.1
       },
       "groupReconviction": {
         "score": 1
       },
       "riskOfSeriousRecidivism": {
-        "score": 12
+        "score": 12.17
       },
       "sexualPredictor": {
-        "indecentScore": 15,
-        "contactScore": 16
+        "indecentScore": 15.2,
+        "contactScore": 16.2
       }
     }
   ],

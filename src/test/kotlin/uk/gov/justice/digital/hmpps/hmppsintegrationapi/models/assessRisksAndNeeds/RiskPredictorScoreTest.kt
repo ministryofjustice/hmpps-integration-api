@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNe
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import java.math.BigDecimal
 import java.time.LocalDateTime
 
 class RiskPredictorScoreTest :
@@ -16,11 +17,11 @@ class RiskPredictorScoreTest :
               outputVersion = "1",
               output =
                 ArnOutput(
-                  generalPredictorScore = ArnGeneralPredictorScore(ogpRisk = "MEDIUM", ogp2Year = 2),
-                  violencePredictorScore = ArnViolencePredictorScore(ovpRisk = "LOW", twoYears = 2),
-                  groupReconvictionScore = ArnGroupReconvictionScore(scoreLevel = "VERY_HIGH", twoYears = 3),
-                  riskOfSeriousRecidivismScore = ArnRiskOfSeriousRecidivismScore(scoreLevel = "HIGH", percentageScore = 4),
-                  sexualPredictorScore = ArnSexualPredictorScore(ospIndecentScoreLevel = "HIGH", ospContactScoreLevel = "VERY_HIGH", ospDirectContactPercentageScore = 5, ospIndirectImagePercentageScore = 6),
+                  generalPredictorScore = ArnGeneralPredictorScore(ogpRisk = "MEDIUM", ogp2Year = BigDecimal(2)),
+                  violencePredictorScore = ArnViolencePredictorScore(ovpRisk = "LOW", twoYears = BigDecimal(2)),
+                  groupReconvictionScore = ArnGroupReconvictionScore(scoreLevel = "VERY_HIGH", twoYears = BigDecimal(3)),
+                  riskOfSeriousRecidivismScore = ArnRiskOfSeriousRecidivismScore(scoreLevel = "HIGH", percentageScore = BigDecimal(4)),
+                  sexualPredictorScore = ArnSexualPredictorScore(ospIndecentScoreLevel = "HIGH", ospContactScoreLevel = "VERY_HIGH", ospDirectContactPercentageScore = BigDecimal(5), ospIndirectImagePercentageScore = BigDecimal(6)),
                 ),
             )
 
@@ -76,12 +77,12 @@ class RiskPredictorScoreTest :
               outputVersion = "2",
               output =
                 ArnOutput(
-                  allReoffendingPredictor = ArnScore(band = "LOW", score = 7),
-                  violentReoffendingPredictor = ArnScore(band = "MEDIUM", score = 8),
-                  seriousViolentReoffendingPredictor = ArnScore(band = "HIGH", score = 9),
-                  directContactSexualReoffendingPredictor = ArnScore(band = "VERY_HIGH", score = 10),
-                  indirectImageContactSexualReoffendingPredictor = ArnScore(band = "LOW", score = 11),
-                  combinedSeriousReoffendingPredictor = ArnScore(band = "MEDIUM", score = 12),
+                  allReoffendingPredictor = ArnScore(band = "LOW", score = BigDecimal(7)),
+                  violentReoffendingPredictor = ArnScore(band = "MEDIUM", score = BigDecimal(8)),
+                  seriousViolentReoffendingPredictor = ArnScore(band = "HIGH", score = BigDecimal(9)),
+                  directContactSexualReoffendingPredictor = ArnScore(band = "VERY_HIGH", score = BigDecimal(10)),
+                  indirectImageContactSexualReoffendingPredictor = ArnScore(band = "LOW", score = BigDecimal("11.12")),
+                  combinedSeriousReoffendingPredictor = ArnScore(band = "MEDIUM", score = BigDecimal(12)),
                 ),
             )
 

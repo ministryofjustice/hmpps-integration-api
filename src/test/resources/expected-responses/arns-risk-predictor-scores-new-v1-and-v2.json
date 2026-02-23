@@ -12,26 +12,26 @@
       },
       "violentReoffendingPredictor": {
         "staticOrDynamic": "DYNAMIC",
-        "score": 30,
+        "score": 30.2,
         "band": "MEDIUM"
       },
       "seriousViolentReoffendingPredictor": {
         "staticOrDynamic": "STATIC",
-        "score": 99,
+        "score": 99.9,
         "band": "HIGH"
       },
       "directContactSexualReoffendingPredictor": {
-        "score": 10,
+        "score": 10.1,
         "band": "LOW"
       },
       "indirectImageContactSexualReoffendingPredictor": {
-        "score": 10,
+        "score": 10.3,
         "band": "LOW"
       },
       "combinedSeriousReoffendingPredictor": {
         "algorithmVersion": "6",
         "staticOrDynamic": "STATIC",
-        "score": 0,
+        "score": 0.3,
         "band": "LOW"
       }
     }
@@ -48,35 +48,35 @@
         "scoreLevel": "HIGH"
       },
       "violencePredictorScore": {
-        "ovpStaticWeightedScore": 2,
-        "ovpDynamicWeightedScore": 3,
-        "ovpTotalWeightedScore": 4,
-        "oneYear": 5,
-        "twoYears": 6,
+        "ovpStaticWeightedScore": 2.1,
+        "ovpDynamicWeightedScore": 3.0,
+        "ovpTotalWeightedScore": 4.0,
+        "oneYear": 5.1,
+        "twoYears": 6.1,
         "ovpRisk": "MEDIUM"
       },
       "generalPredictorScore": {
-        "ogpStaticWeightedScore": 7,
+        "ogpStaticWeightedScore": 7.1,
         "ogpDynamicWeightedScore": 8,
-        "ogpTotalWeightedScore": 9,
-        "ogp1Year": 10,
-        "ogp2Year": 11,
+        "ogpTotalWeightedScore": 9.1,
+        "ogp1Year": 10.53,
+        "ogp2Year": 11.12,
         "ogpRisk": "LOW"
       },
       "riskOfSeriousRecidivismScore": {
-        "percentageScore": 12,
+        "percentageScore": 12.17,
         "staticOrDynamic": "STATIC",
         "source": "OASYS",
         "algorithmVersion": "string",
         "scoreLevel": "LOW"
       },
       "sexualPredictorScore": {
-        "ospIndecentPercentageScore": 13,
-        "ospContactPercentageScore": 14,
+        "ospIndecentPercentageScore": 13.1,
+        "ospContactPercentageScore": 14.1,
         "ospIndecentScoreLevel": "LOW",
         "ospContactScoreLevel": "MEDIUM",
-        "ospIndirectImagePercentageScore": 15,
-        "ospDirectContactPercentageScore": 16,
+        "ospIndirectImagePercentageScore": 15.2,
+        "ospDirectContactPercentageScore": 16.2,
         "ospIndirectImageScoreLevel": "LOW",
         "ospDirectContactScoreLevel": "LOW"
       }

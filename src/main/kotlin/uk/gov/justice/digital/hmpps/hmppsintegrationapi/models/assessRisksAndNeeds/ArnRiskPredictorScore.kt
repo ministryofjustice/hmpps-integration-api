@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNe
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskPredictorScore
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskScoreV2
+import java.math.BigDecimal
 import java.time.LocalDateTime
 
 data class ArnOutput(
@@ -22,7 +23,7 @@ data class ArnOutput(
 
 data class ArnScore(
   val band: String? = null,
-  val score: Int? = null,
+  val score: BigDecimal? = null,
 )
 
 data class ArnRiskPredictorScore(
