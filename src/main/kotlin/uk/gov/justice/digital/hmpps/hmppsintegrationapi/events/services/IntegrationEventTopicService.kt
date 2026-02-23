@@ -6,10 +6,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Service
 import software.amazon.awssdk.services.sns.model.MessageAttributeValue
 import software.amazon.awssdk.services.sns.model.PublishRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 
-@ConditionalOnProperty("feature-flag.enable-send-processed-events", havingValue = "true")
+@ConditionalOnProperty("feature-flag.${FeatureFlagConfig.ENABLE_SEND_PROCESSED_EVENTS}", havingValue = "true")
 @Service
 class IntegrationEventTopicService(
   private val hmppsQueueService: HmppsQueueService,
