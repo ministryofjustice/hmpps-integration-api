@@ -7,6 +7,7 @@ val prisonerEscortCustodyService =
     permissions {
       -"/v1/status"
       -"/v1/persons/.*/case-notes"
+      -"/v1/persons/.*/languages"
     }
     filters {
       caseNotes {
