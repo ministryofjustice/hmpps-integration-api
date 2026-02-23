@@ -19,7 +19,7 @@ val prisonerEscortCustodyService =
         -"POS"
       }
       supervisionStatuses {
-        - "PRISONS"
+        -"PRISONS"
       }
     }
   }
