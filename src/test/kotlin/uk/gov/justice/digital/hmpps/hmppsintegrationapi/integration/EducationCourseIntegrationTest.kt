@@ -20,6 +20,7 @@ class EducationCourseIntegrationTest : IntegrationTestWithQueueBase("educationco
             "lastName": "Doe",
             "dateOfBirth": "1990-01-01",
             "region": "London",
+            "office": "The Lighthouse",
             "email": "john.doe@example.com"
           },
           "course": {

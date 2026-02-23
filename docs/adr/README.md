@@ -18,3 +18,4 @@
 | ✅ Accepted   | 0015    | [Upstream Owned Queues](./0015-upstream-owned-queues.md)                                                   |
 | ✅ Accepted   | 0016    | [Service Name Change](./0016-service-name-change.md)                                                       |
 | ✅ Accepted   | 0017    | [Events Service Merge](./0017-events-service-merge.md)                                                     |
+| ✅ Accepted   | 0018    | [JdbcTemplate for Database Access](./0018-database-access.md)                                              |

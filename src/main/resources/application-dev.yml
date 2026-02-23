@@ -60,8 +60,8 @@ feature-flag:
   cpr-enabled: true
   gateway-cache-enabled: true
   normalised-path-matching: true
-  use-new-risk-score-api: true
-  enable-delete-processed-events: false
+  enable-delete-processed-events: true
+  enable-send-processed-events: true
 
 authorisation:
   consumers:
@@ -196,3 +196,7 @@ authorisation:
       notes: "See client list in Confluence"
       roles:
         - "daso"
+    community-campus:
+      notes: "See client list in Confluence"
+      roles:
+        - "community-payback"

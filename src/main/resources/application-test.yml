@@ -95,11 +95,10 @@ feature-flag:
   use-contact-events-endpoint: true
   epf-endpoint-includes-lao: true
   cpr-enabled: true
-  enhanced-search-enabled: false
   gateway-cache-enabled: true
   normalised-path-matching: true
-  use-new-risk-score-api: true
   enable-delete-processed-events: false
+  enable-send-processed-events: false
 
 authorisation:
   consumers:

@@ -76,6 +76,7 @@ internal class GetRiskPredictorScoresForPersonServiceTest(
               groupReconviction = GroupReconviction(scoreLevel = "HIGH"),
               riskOfSeriousRecidivism = RiskOfSeriousRecidivism(scoreLevel = "VERY_HIGH"),
               sexualPredictor = SexualPredictor(indecentScoreLevel = "HIGH", contactScoreLevel = "VERY_HIGH"),
+              assessmentVersion = 1,
             ),
           )
         whenever(assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrn)).thenReturn(

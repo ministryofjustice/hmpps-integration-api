@@ -27,12 +27,12 @@ class DeleteProcessedIntegrationTest : IntegrationTestBase() {
     fun lessThan24HoursAgo() = LocalDateTime.now().minus(3, ChronoUnit.HOURS)
     val events =
       listOf(
-        EventNotification(status = IntegrationEventStatus.PROCESSED.name, lastModifiedDateTime = moreThan24HoursAgo(), claimId = "ID", hmppsId = "ID", eventType = "ID", prisonId = "ID", url = "URL"),
-        EventNotification(status = IntegrationEventStatus.PROCESSED.name, lastModifiedDateTime = lessThan24HoursAgo(), claimId = "ID", hmppsId = "ID", eventType = "ID", prisonId = "ID", url = "URL"),
-        EventNotification(status = IntegrationEventStatus.PROCESSED.name, lastModifiedDateTime = moreThan24HoursAgo(), claimId = "ID", hmppsId = "ID", eventType = "ID", prisonId = "ID", url = "URL"),
-        EventNotification(status = IntegrationEventStatus.PROCESSED.name, lastModifiedDateTime = lessThan24HoursAgo(), claimId = "ID", hmppsId = "ID", eventType = "ID", prisonId = "ID", url = "URL"),
-        EventNotification(status = IntegrationEventStatus.PENDING.name, lastModifiedDateTime = moreThan24HoursAgo(), claimId = "ID", hmppsId = "ID", eventType = "ID", prisonId = "ID", url = "URL"),
-        EventNotification(status = IntegrationEventStatus.PROCESSED.name, lastModifiedDateTime = lessThan24HoursAgo(), claimId = "ID", hmppsId = "ID", eventType = "ID", prisonId = "ID", url = "URL"),
+        EventNotification(status = IntegrationEventStatus.PROCESSED.name, lastModifiedDatetime = moreThan24HoursAgo(), claimId = "ID", hmppsId = "ID", eventType = "ID", prisonId = "ID", url = "URL"),
+        EventNotification(status = IntegrationEventStatus.PROCESSED.name, lastModifiedDatetime = lessThan24HoursAgo(), claimId = "ID", hmppsId = "ID", eventType = "ID", prisonId = "ID", url = "URL"),
+        EventNotification(status = IntegrationEventStatus.PROCESSED.name, lastModifiedDatetime = moreThan24HoursAgo(), claimId = "ID", hmppsId = "ID", eventType = "ID", prisonId = "ID", url = "URL"),
+        EventNotification(status = IntegrationEventStatus.PROCESSED.name, lastModifiedDatetime = lessThan24HoursAgo(), claimId = "ID", hmppsId = "ID", eventType = "ID", prisonId = "ID", url = "URL"),
+        EventNotification(status = IntegrationEventStatus.PENDING.name, lastModifiedDatetime = moreThan24HoursAgo(), claimId = "ID", hmppsId = "ID", eventType = "ID", prisonId = "ID", url = "URL"),
+        EventNotification(status = IntegrationEventStatus.PROCESSED.name, lastModifiedDatetime = lessThan24HoursAgo(), claimId = "ID", hmppsId = "ID", eventType = "ID", prisonId = "ID", url = "URL"),
       )
     eventNotificationRepository.saveAll(events)
   }

@@ -92,6 +92,8 @@ hmpps.sqs:
   topics:
     domainevents:
       arn: arn:aws:sns:eu-west-2:000000000000:domainevents-topic
+    integrationeventtopic:
+      arn: arn:aws:sns:eu-west-2:000000000000:integration_event_topic
 
 feature-flag:
   course-completion-event-enabled: true
@@ -100,8 +102,8 @@ feature-flag:
   cpr-enabled: true
   gateway-cache-enabled: true
   normalised-path-matching: true
-  use-new-risk-score-api: true
   enable-delete-processed-events: true
+  enable-send-processed-events: true
 
 authorisation:
   consumers:

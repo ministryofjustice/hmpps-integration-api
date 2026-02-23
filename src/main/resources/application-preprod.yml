@@ -56,8 +56,8 @@ feature-flag:
   epf-gateway-disabled: true
   cpr-enabled: true
   gateway-cache-enabled: true
-  use-new-risk-score-api: true
   enable-delete-processed-events: false
+  enable-send-processed-events: false
 
 authorisation:
   consumers:

@@ -15,6 +15,7 @@ data class SexualPredictor(
     """,
     example = "MEDIUM",
     allowableValues = ["LOW", "MEDIUM", "HIGH", "VERY_HIGH", "NOT_APPLICABLE"],
+    deprecated = true,
   )
   val indecentScoreLevel: String? = null,
   @Schema(
@@ -28,6 +29,7 @@ data class SexualPredictor(
     """,
     example = "MEDIUM",
     allowableValues = ["LOW", "MEDIUM", "HIGH", "VERY_HIGH", "NOT_APPLICABLE"],
+    deprecated = true,
   )
   val contactScoreLevel: String? = null,
   @JsonInclude(JsonInclude.Include.NON_NULL)
