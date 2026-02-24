@@ -19,6 +19,7 @@ class GetPrisonerContactsService(
     page: Int,
     size: Int,
     filter: ConsumerFilters?,
+    emergencyNextOfKinOnly: Boolean? = false,
   ): Response<PaginatedPrisonerContacts?> {
     val personResponse = getPersonService.getNomisNumber(prisonerId, filter)
     if (personResponse.errors.isNotEmpty()) {
@@ -31,7 +32,7 @@ class GetPrisonerContactsService(
         errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND)),
       )
 
-    val response = personalRelationshipsGateway.getContacts(nomisNumber, page, size)
+    val response = personalRelationshipsGateway.getContacts(nomisNumber, page, size, emergencyNextOfKinOnly)
     if (response.errors.isNotEmpty()) {
       return Response(data = null, errors = response.errors)
     }

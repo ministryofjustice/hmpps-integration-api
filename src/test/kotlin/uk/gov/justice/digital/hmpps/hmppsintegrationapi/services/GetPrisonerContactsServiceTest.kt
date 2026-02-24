@@ -138,6 +138,15 @@ internal class GetPrisonerContactsServiceTest(
       result.shouldBe(Response(data = prPaginatedContactsInstance.toPaginatedPrisonerContacts()))
     }
 
+    it("returns a list of emergency contacts with pagination details") {
+      whenever(personalRelationshipsGateway.getContacts(hmppsId, page, size, true)).thenReturn(Response(data = prPaginatedContactsInstance, errors = emptyList()))
+
+      val result = getPrisonerContactsService.execute(hmppsId, page, size, filters, true)
+
+      result.shouldNotBeNull()
+      result.shouldBe(Response(data = prPaginatedContactsInstance.toPaginatedPrisonerContacts()))
+    }
+
     it("failed personal relationship call") {
       val err = listOf(UpstreamApiError(UpstreamApi.PERSONAL_RELATIONSHIPS, UpstreamApiError.Type.INTERNAL_SERVER_ERROR))
       whenever(personalRelationshipsGateway.getContacts(hmppsId, page, size)).thenReturn(Response(data = null, errors = err))
