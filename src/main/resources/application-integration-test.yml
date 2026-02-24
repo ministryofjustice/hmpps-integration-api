@@ -200,6 +200,69 @@ authorisation:
         - "test-role"
       include:
       filters:
+    all-endpoints:
+      roles:
+        - "all-endpoints"
+    cats:
+      roles:
+        - "cats"
+    community-payback:
+      roles:
+        - "community-payback"
+    ctrlo:
+      roles:
+        - "ctrlo"
+    curious:
+      roles:
+        - "curious"
+    daso:
+      roles:
+        - "daso"
+    full-access:
+      roles:
+        - "full-access"
+    full-access-lao-redactions:
+      roles:
+        - "full-access-lao-redactions"
+    hmpps-system:
+      roles:
+        - "hmpps-system"
+    mappa:
+      roles:
+        - "mappa"
+    mappa-cat4:
+      roles:
+        - "mappa-cat4"
+    moj-prisoner-education:
+      roles:
+        - "moj-prisoner-education"
+    moj-prisoner-facing:
+      roles:
+        - "moj-prisoner-facing"
+    police:
+      roles:
+        - "police"
+    prisoner-escort-custody-service:
+      roles:
+        - "prisoner-escort-custody-service"
+    prisoner-finance:
+      roles:
+        - "prisoner-finance"
+    private-prison:
+      roles:
+        - "private-prison"
+    reference-data-only:
+      roles:
+        - "reference-data-only"
+    serco:
+      roles:
+        - "serco"
+    smartinbox:
+      roles:
+        - "smartinbox"
+    status-only:
+      roles:
+        - "status-only"
 
   certificate-revocation-list:
     - 01:7b:eb:77:06:db:11:f5:2e:b6:f7:37:7b:a9:e0:e4:84:c5:2c:a3

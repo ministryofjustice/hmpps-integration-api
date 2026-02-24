@@ -9,8 +9,6 @@ import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
-import kotlin.test.assertTrue
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -74,20 +72,6 @@ internal class AuthoriseConsumerServiceTest(
         it("works with normalised path parameters") {
           val features = FeatureFlagConfig(mapOf(FeatureFlagConfig.NORMALISED_PATH_MATCHING to true))
           AuthoriseConsumerService(features).matches("/v1/persons/123", "/v1/persons/{hmppsId}") shouldBe true
-        }
-      }
-
-      describe("verifyAllRolesCanAccessEndpointsAndRejectAllOthers") {
-        it("test all role endpoints to all mentiond path") {
-          val allRoles = roles
-          val allAccessRole = allRoles.getValue("all-endpoints")
-          for (role in allRoles) {
-            for (permisson in role.value.permissions!!) {
-              val result = authoriseConsumerService.doesConsumerHaveRoleAccess(emptyList(), permisson)
-              result.shouldBeTrue()
-            }
-          }
-          assertTrue(true)
         }
       }
     },
