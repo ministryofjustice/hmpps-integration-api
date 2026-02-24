@@ -33,12 +33,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonName
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonalCareNeed
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PhysicalCharacteristics
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerEducation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitOrders
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.interfaces.toPaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationintegrationepf.LimitedAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCareNeedsForPersonService
@@ -50,7 +48,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetNumberOfChil
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPhysicalCharacteristicsForPersonService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonerContactsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonerEducationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitOrdersForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
@@ -67,7 +64,6 @@ class PersonController(
   @Autowired val getPersonsService: GetPersonsService,
   @Autowired val getNameForPersonService: GetNameForPersonService,
   @Autowired val getImageMetadataForPersonService: GetImageMetadataForPersonService,
-  @Autowired val getPrisonerContactsService: GetPrisonerContactsService,
   @Autowired val getIEPLevelService: GetIEPLevelService,
   @Autowired val getVisitOrdersForPersonService: GetVisitOrdersForPersonService,
   @Autowired val getNumberOfChildrenForPersonService: GetNumberOfChildrenForPersonService,
@@ -248,38 +244,6 @@ class PersonController(
 
     auditService.createEvent("GET_PERSON_NAME", mapOf("hmppsId" to hmppsId))
     return DataResponse(response.data)
-  }
-
-  @GetMapping("{hmppsId}/contacts")
-  @Tags(value = [Tag(name = "Visits"), Tag(name = "Contacts"), Tag(name = "Reception")])
-  @Operation(
-    summary = "Returns a prisoners contacts.",
-    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
-    responses = [
-      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a prisoner's contacts."),
-      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
-      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
-    ],
-  )
-  fun getPrisonersContacts(
-    @Parameter(description = "The HMPPS ID of the prisoner") @PathVariable hmppsId: String,
-    @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
-    @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
-    @RequestAttribute filters: ConsumerFilters?,
-  ): PaginatedResponse<PrisonerContact> {
-    val response = getPrisonerContactsService.execute(hmppsId, page, perPage, filters)
-
-    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
-      throw EntityNotFoundException("Could not find person with id: $hmppsId")
-    }
-
-    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
-      throw ValidationException("Invalid HMPPS ID: $hmppsId")
-    }
-
-    auditService.createEvent("GET_PRISONER_CONTACTS", mapOf("hmppsId" to hmppsId))
-
-    return response.data.toPaginatedResponse()
   }
 
   @GetMapping("{hmppsId}/iep-level")
