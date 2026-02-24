@@ -6,8 +6,8 @@
     "outputVersion": "1",
     "output": {
       "groupReconvictionScore": {
-        "oneYear": 0,
-        "twoYears": 1,
+        "oneYear": 0.1,
+        "twoYears": 1.1,
         "scoreLevel": "HIGH"
       },
       "violencePredictorScore": {

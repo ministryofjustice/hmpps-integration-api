@@ -9,11 +9,14 @@ data class ArnSexualPredictorScore(
   val ospIndirectImagePercentageScore: BigDecimal? = null,
   val ospDirectContactPercentageScore: BigDecimal? = null,
 ) {
-  fun toSexualPredictor(useV2NumericalValue: Boolean = true): SexualPredictor =
+  fun toSexualPredictor(
+    useV2NumericalValue: Boolean = true,
+    sendDecimals: Boolean = true,
+  ): SexualPredictor =
     SexualPredictor(
       indecentScoreLevel = this.ospIndecentScoreLevel,
       contactScoreLevel = this.ospContactScoreLevel,
-      indecentScore = if (useV2NumericalValue) this.ospIndirectImagePercentageScore else null,
-      contactScore = if (useV2NumericalValue) this.ospDirectContactPercentageScore else null,
+      indecentScore = if (useV2NumericalValue) roundDownIfRequired(this.ospIndirectImagePercentageScore, sendDecimals) else null,
+      contactScore = if (useV2NumericalValue) roundDownIfRequired(this.ospDirectContactPercentageScore, sendDecimals) else null,
     )
 }
