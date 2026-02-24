@@ -7,9 +7,12 @@ data class ArnGroupReconvictionScore(
   val scoreLevel: String? = null,
   val twoYears: BigDecimal? = null,
 ) {
-  fun toGroupReconviction(useV2NumericalValue: Boolean = true): GroupReconviction =
+  fun toGroupReconviction(
+    useV2NumericalValue: Boolean = true,
+    sendDecimals: Boolean = true,
+  ): GroupReconviction =
     GroupReconviction(
       scoreLevel = this.scoreLevel,
-      score = if (useV2NumericalValue) this.twoYears else null,
+      score = if (useV2NumericalValue) roundDownIfRequired(this.twoYears, sendDecimals) else null,
     )
 }

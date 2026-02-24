@@ -122,7 +122,7 @@ class GetRiskPredictorScoresForPersonTest(
             RiskPredictorScore(
               completedDate = LocalDateTime.parse("2026-01-16T16:22:54"),
               assessmentStatus = "COMPLETE",
-              groupReconviction = GroupReconviction(scoreLevel = "HIGH", score = BigDecimal(1)),
+              groupReconviction = GroupReconviction(scoreLevel = "HIGH", score = BigDecimal("1.1")),
               generalPredictor = GeneralPredictor(scoreLevel = "LOW", score = BigDecimal("11.12")),
               violencePredictor = ViolencePredictor(scoreLevel = "MEDIUM", score = BigDecimal("6.1")),
               riskOfSeriousRecidivism = RiskOfSeriousRecidivism(scoreLevel = "LOW", score = BigDecimal("12.17")),
