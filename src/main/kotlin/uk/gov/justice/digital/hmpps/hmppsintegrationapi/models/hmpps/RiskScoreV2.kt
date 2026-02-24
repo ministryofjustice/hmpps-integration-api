@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import io.swagger.v3.oas.annotations.media.Schema
+import java.math.BigDecimal
 
 data class RiskScoreV2(
   @Schema(
@@ -18,5 +19,5 @@ data class RiskScoreV2(
   )
   val band: String? = null,
   @JsonInclude(JsonInclude.Include.NON_NULL)
-  val score: Int? = null,
+  val score: BigDecimal? = null,
 )

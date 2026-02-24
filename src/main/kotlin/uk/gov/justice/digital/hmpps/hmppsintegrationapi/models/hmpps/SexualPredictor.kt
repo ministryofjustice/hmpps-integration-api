@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import io.swagger.v3.oas.annotations.media.Schema
+import java.math.BigDecimal
 
 data class SexualPredictor(
   @Schema(
@@ -33,7 +34,7 @@ data class SexualPredictor(
   )
   val contactScoreLevel: String? = null,
   @JsonInclude(JsonInclude.Include.NON_NULL)
-  val indecentScore: Int? = null,
+  val indecentScore: BigDecimal? = null,
   @JsonInclude(JsonInclude.Include.NON_NULL)
-  val contactScore: Int? = null,
+  val contactScore: BigDecimal? = null,
 )

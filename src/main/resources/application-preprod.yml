@@ -58,6 +58,7 @@ feature-flag:
   gateway-cache-enabled: true
   enable-delete-processed-events: false
   enable-send-processed-events: false
+  enable-send-decimal-risk-scores: false
 
 authorisation:
   consumers:

@@ -104,6 +104,7 @@ feature-flag:
   normalised-path-matching: true
   enable-delete-processed-events: true
   enable-send-processed-events: true
+  enable-send-decimal-risk-scores: true
 
 authorisation:
   consumers:
