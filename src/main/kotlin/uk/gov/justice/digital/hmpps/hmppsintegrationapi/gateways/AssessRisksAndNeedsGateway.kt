@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.ArnNeeds
@@ -34,6 +35,9 @@ class AssessRisksAndNeedsGateway(
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
+  @Autowired
+  private lateinit var featureFlagConfig: FeatureFlagConfig
+
   fun getRiskPredictorScoresForPerson(id: String): Response<List<RiskPredictorScore>> {
     val result =
       webClient.requestList<ArnRiskPredictorScore>(
@@ -49,7 +53,7 @@ class AssessRisksAndNeedsGateway(
         Response(
           data =
             result.data
-              .map { it.toRiskPredictorScore() }
+              .map { it.toRiskPredictorScore(featureFlagConfig.isEnabled(FeatureFlagConfig.ENABLE_SEND_DECIMAL_RISK_SCORES)) }
               .sortedByDescending { it.completedDate },
         )
       }

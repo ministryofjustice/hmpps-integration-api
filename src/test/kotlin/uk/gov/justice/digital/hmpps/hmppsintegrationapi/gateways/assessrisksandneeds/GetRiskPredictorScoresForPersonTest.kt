@@ -28,6 +28,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ViolencePredictor
 import java.io.File
+import java.math.BigDecimal
 import java.time.LocalDateTime
 
 @ActiveProfiles("test")
@@ -90,11 +91,42 @@ class GetRiskPredictorScoresForPersonTest(
             RiskPredictorScore(
               completedDate = LocalDateTime.parse("2026-01-16T16:22:54"),
               assessmentStatus = "COMPLETE",
-              groupReconviction = GroupReconviction(scoreLevel = "HIGH", score = 1),
-              generalPredictor = GeneralPredictor(scoreLevel = "LOW", score = 11),
-              violencePredictor = ViolencePredictor(scoreLevel = "MEDIUM", score = 6),
-              riskOfSeriousRecidivism = RiskOfSeriousRecidivism(scoreLevel = "LOW", score = 12),
-              sexualPredictor = SexualPredictor(indecentScoreLevel = "LOW", contactScoreLevel = "MEDIUM", contactScore = 16, indecentScore = 15),
+              groupReconviction = GroupReconviction(scoreLevel = "HIGH", score = BigDecimal(1)),
+              generalPredictor = GeneralPredictor(scoreLevel = "LOW", score = BigDecimal(11)),
+              violencePredictor = ViolencePredictor(scoreLevel = "MEDIUM", score = BigDecimal(6)),
+              riskOfSeriousRecidivism = RiskOfSeriousRecidivism(scoreLevel = "LOW", score = BigDecimal(12)),
+              sexualPredictor = SexualPredictor(indecentScoreLevel = "LOW", contactScoreLevel = "MEDIUM", contactScore = BigDecimal(16), indecentScore = BigDecimal(15)),
+              assessmentVersion = 1,
+              allReoffendingPredictor = null,
+              violentReoffendingPredictor = null,
+              seriousViolentReoffendingPredictor = null,
+              directContactSexualReoffendingPredictor = null,
+              indirectImageContactSexualReoffendingPredictor = null,
+              combinedSeriousReoffendingPredictor = null,
+            ),
+          ),
+        )
+      }
+
+      it("returns risk predictor scores for the matching CRN with version 1 when send decimals is enabled") {
+
+        assessRisksAndNeedsApiMockServer.stubForGet(
+          pathNewV1,
+          File("src/test/resources/expected-responses/arns-risk-predictor-scores-new-v1-only-decimals.json").readText(),
+        )
+        whenever(featureFlag.isEnabled(FeatureFlagConfig.ENABLE_SEND_DECIMAL_RISK_SCORES)).thenReturn(true)
+        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrnNewV1)
+
+        response.data.shouldBe(
+          listOf(
+            RiskPredictorScore(
+              completedDate = LocalDateTime.parse("2026-01-16T16:22:54"),
+              assessmentStatus = "COMPLETE",
+              groupReconviction = GroupReconviction(scoreLevel = "HIGH", score = BigDecimal(1)),
+              generalPredictor = GeneralPredictor(scoreLevel = "LOW", score = BigDecimal("11.12")),
+              violencePredictor = ViolencePredictor(scoreLevel = "MEDIUM", score = BigDecimal("6.1")),
+              riskOfSeriousRecidivism = RiskOfSeriousRecidivism(scoreLevel = "LOW", score = BigDecimal("12.17")),
+              sexualPredictor = SexualPredictor(indecentScoreLevel = "LOW", contactScoreLevel = "MEDIUM", contactScore = BigDecimal("16.2"), indecentScore = BigDecimal("15.2")),
               assessmentVersion = 1,
               allReoffendingPredictor = null,
               violentReoffendingPredictor = null,
@@ -116,12 +148,42 @@ class GetRiskPredictorScoresForPersonTest(
               completedDate = LocalDateTime.parse("2026-01-16T16:22:54"),
               assessmentStatus = "COMPLETE",
               assessmentVersion = 2,
-              allReoffendingPredictor = RiskScoreV2(band = "LOW", score = 1),
-              violentReoffendingPredictor = RiskScoreV2(band = "MEDIUM", score = 30),
-              seriousViolentReoffendingPredictor = RiskScoreV2(band = "HIGH", score = 99),
-              directContactSexualReoffendingPredictor = RiskScoreV2(band = "LOW", score = 10),
-              indirectImageContactSexualReoffendingPredictor = RiskScoreV2(band = "LOW", score = 10),
-              combinedSeriousReoffendingPredictor = RiskScoreV2(band = "LOW", score = 0),
+              allReoffendingPredictor = RiskScoreV2(band = "LOW", score = BigDecimal(1)),
+              violentReoffendingPredictor = RiskScoreV2(band = "MEDIUM", score = BigDecimal(30)),
+              seriousViolentReoffendingPredictor = RiskScoreV2(band = "HIGH", score = BigDecimal(99)),
+              directContactSexualReoffendingPredictor = RiskScoreV2(band = "LOW", score = BigDecimal(10)),
+              indirectImageContactSexualReoffendingPredictor = RiskScoreV2(band = "LOW", score = BigDecimal(10)),
+              combinedSeriousReoffendingPredictor = RiskScoreV2(band = "LOW", score = BigDecimal(0)),
+              groupReconviction = GroupReconviction(),
+              generalPredictor = GeneralPredictor(),
+              violencePredictor = ViolencePredictor(),
+              riskOfSeriousRecidivism = RiskOfSeriousRecidivism(),
+              sexualPredictor = SexualPredictor(),
+            ),
+          ),
+        )
+      }
+
+      it("returns risk predictor scores for the matching CRN with version 2 when send decimals is enabled") {
+        assessRisksAndNeedsApiMockServer.stubForGet(
+          pathNewV2,
+          File("src/test/resources/expected-responses/arns-risk-predictor-scores-new-v2-only-decimals.json").readText(),
+        )
+        whenever(featureFlag.isEnabled(FeatureFlagConfig.ENABLE_SEND_DECIMAL_RISK_SCORES)).thenReturn(true)
+        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrnNewV2)
+
+        response.data.shouldBe(
+          listOf(
+            RiskPredictorScore(
+              completedDate = LocalDateTime.parse("2026-01-16T16:22:54"),
+              assessmentStatus = "COMPLETE",
+              assessmentVersion = 2,
+              allReoffendingPredictor = RiskScoreV2(band = "LOW", score = BigDecimal(1)),
+              violentReoffendingPredictor = RiskScoreV2(band = "MEDIUM", score = BigDecimal("30.2")),
+              seriousViolentReoffendingPredictor = RiskScoreV2(band = "HIGH", score = BigDecimal("99.9")),
+              directContactSexualReoffendingPredictor = RiskScoreV2(band = "LOW", score = BigDecimal("10.1")),
+              indirectImageContactSexualReoffendingPredictor = RiskScoreV2(band = "LOW", score = BigDecimal("10.3")),
+              combinedSeriousReoffendingPredictor = RiskScoreV2(band = "LOW", score = BigDecimal("0.3")),
               groupReconviction = GroupReconviction(),
               generalPredictor = GeneralPredictor(),
               violencePredictor = ViolencePredictor(),
@@ -141,12 +203,12 @@ class GetRiskPredictorScoresForPersonTest(
               completedDate = LocalDateTime.parse("2026-01-16T16:22:54"),
               assessmentStatus = "COMPLETE",
               assessmentVersion = 2,
-              allReoffendingPredictor = RiskScoreV2(band = "LOW", score = 1),
-              violentReoffendingPredictor = RiskScoreV2(band = "MEDIUM", score = 30),
-              seriousViolentReoffendingPredictor = RiskScoreV2(band = "HIGH", score = 99),
-              directContactSexualReoffendingPredictor = RiskScoreV2(band = "LOW", score = 10),
-              indirectImageContactSexualReoffendingPredictor = RiskScoreV2(band = "LOW", score = 10),
-              combinedSeriousReoffendingPredictor = RiskScoreV2(band = "LOW", score = 0),
+              allReoffendingPredictor = RiskScoreV2(band = "LOW", score = BigDecimal(1)),
+              violentReoffendingPredictor = RiskScoreV2(band = "MEDIUM", score = BigDecimal(30)),
+              seriousViolentReoffendingPredictor = RiskScoreV2(band = "HIGH", score = BigDecimal(99)),
+              directContactSexualReoffendingPredictor = RiskScoreV2(band = "LOW", score = BigDecimal(10)),
+              indirectImageContactSexualReoffendingPredictor = RiskScoreV2(band = "LOW", score = BigDecimal(10)),
+              combinedSeriousReoffendingPredictor = RiskScoreV2(band = "LOW", score = BigDecimal(0)),
               groupReconviction = GroupReconviction(),
               generalPredictor = GeneralPredictor(),
               violencePredictor = ViolencePredictor(),
@@ -156,11 +218,57 @@ class GetRiskPredictorScoresForPersonTest(
             RiskPredictorScore(
               completedDate = LocalDateTime.parse("2026-01-16T16:22:54"),
               assessmentStatus = "COMPLETE",
-              groupReconviction = GroupReconviction(scoreLevel = "HIGH", score = 1),
-              generalPredictor = GeneralPredictor(scoreLevel = "LOW", score = 11),
-              violencePredictor = ViolencePredictor(scoreLevel = "MEDIUM", score = 6),
-              riskOfSeriousRecidivism = RiskOfSeriousRecidivism(scoreLevel = "LOW", score = 12),
-              sexualPredictor = SexualPredictor(indecentScoreLevel = "LOW", contactScoreLevel = "MEDIUM", contactScore = 16, indecentScore = 15),
+              groupReconviction = GroupReconviction(scoreLevel = "HIGH", score = BigDecimal(1)),
+              generalPredictor = GeneralPredictor(scoreLevel = "LOW", score = BigDecimal(11)),
+              violencePredictor = ViolencePredictor(scoreLevel = "MEDIUM", score = BigDecimal(6)),
+              riskOfSeriousRecidivism = RiskOfSeriousRecidivism(scoreLevel = "LOW", score = BigDecimal(12)),
+              sexualPredictor = SexualPredictor(indecentScoreLevel = "LOW", contactScoreLevel = "MEDIUM", contactScore = BigDecimal(16), indecentScore = BigDecimal(15)),
+              assessmentVersion = 1,
+              allReoffendingPredictor = null,
+              violentReoffendingPredictor = null,
+              seriousViolentReoffendingPredictor = null,
+              directContactSexualReoffendingPredictor = null,
+              indirectImageContactSexualReoffendingPredictor = null,
+              combinedSeriousReoffendingPredictor = null,
+            ),
+          ),
+        )
+      }
+
+      it("returns risk predictor scores for the matching CRN with version 1 and version 2 with decimals enabled") {
+        assessRisksAndNeedsApiMockServer.stubForGet(
+          pathNewV1AndV2,
+          File("src/test/resources/expected-responses/arns-risk-predictor-scores-new-v1-and-v2-decimals.json").readText(),
+        )
+        whenever(featureFlag.isEnabled(FeatureFlagConfig.ENABLE_SEND_DECIMAL_RISK_SCORES)).thenReturn(true)
+        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrnNewV1AndV2)
+
+        response.data.shouldBe(
+          listOf(
+            RiskPredictorScore(
+              completedDate = LocalDateTime.parse("2026-01-16T16:22:54"),
+              assessmentStatus = "COMPLETE",
+              assessmentVersion = 2,
+              allReoffendingPredictor = RiskScoreV2(band = "LOW", score = BigDecimal(1)),
+              violentReoffendingPredictor = RiskScoreV2(band = "MEDIUM", score = BigDecimal("30.2")),
+              seriousViolentReoffendingPredictor = RiskScoreV2(band = "HIGH", score = BigDecimal("99.9")),
+              directContactSexualReoffendingPredictor = RiskScoreV2(band = "LOW", score = BigDecimal("10.1")),
+              indirectImageContactSexualReoffendingPredictor = RiskScoreV2(band = "LOW", score = BigDecimal("10.3")),
+              combinedSeriousReoffendingPredictor = RiskScoreV2(band = "LOW", score = BigDecimal("0.3")),
+              groupReconviction = GroupReconviction(),
+              generalPredictor = GeneralPredictor(),
+              violencePredictor = ViolencePredictor(),
+              riskOfSeriousRecidivism = RiskOfSeriousRecidivism(),
+              sexualPredictor = SexualPredictor(),
+            ),
+            RiskPredictorScore(
+              completedDate = LocalDateTime.parse("2026-01-16T16:22:54"),
+              assessmentStatus = "COMPLETE",
+              groupReconviction = GroupReconviction(scoreLevel = "HIGH", score = BigDecimal(1)),
+              generalPredictor = GeneralPredictor(scoreLevel = "LOW", score = BigDecimal("11.12")),
+              violencePredictor = ViolencePredictor(scoreLevel = "MEDIUM", score = BigDecimal("6.1")),
+              riskOfSeriousRecidivism = RiskOfSeriousRecidivism(scoreLevel = "LOW", score = BigDecimal("12.17")),
+              sexualPredictor = SexualPredictor(indecentScoreLevel = "LOW", contactScoreLevel = "MEDIUM", contactScore = BigDecimal("16.2"), indecentScore = BigDecimal("15.2")),
               assessmentVersion = 1,
               allReoffendingPredictor = null,
               violentReoffendingPredictor = null,

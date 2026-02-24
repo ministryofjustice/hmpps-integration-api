@@ -1,0 +1,39 @@
+[
+  {
+    "completedDate": "2026-01-16T16:22:54",
+    "source": "OASYS",
+    "status": "COMPLETE",
+    "outputVersion": "2",
+    "output": {
+      "allReoffendingPredictor": {
+        "staticOrDynamic": "STATIC",
+        "score": 1,
+        "band": "LOW"
+      },
+      "violentReoffendingPredictor": {
+        "staticOrDynamic": "DYNAMIC",
+        "score": 30.2,
+        "band": "MEDIUM"
+      },
+      "seriousViolentReoffendingPredictor": {
+        "staticOrDynamic": "STATIC",
+        "score": 99.9,
+        "band": "HIGH"
+      },
+      "directContactSexualReoffendingPredictor": {
+        "score": 10.1,
+        "band": "LOW"
+      },
+      "indirectImageContactSexualReoffendingPredictor": {
+        "score": 10.3,
+        "band": "LOW"
+      },
+      "combinedSeriousReoffendingPredictor": {
+        "algorithmVersion": "6",
+        "staticOrDynamic": "STATIC",
+        "score": 0.3,
+        "band": "LOW"
+      }
+    }
+  }
+]
