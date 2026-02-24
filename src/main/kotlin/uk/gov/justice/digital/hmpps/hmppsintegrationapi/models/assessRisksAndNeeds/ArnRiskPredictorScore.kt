@@ -34,7 +34,7 @@ data class ArnRiskPredictorScore(
   val output: ArnOutput,
 ) {
   fun toRiskPredictorScore(sendDecimals: Boolean = false): RiskPredictorScore {
-    fun roundDown(score: BigDecimal?): BigDecimal? = if (sendDecimals) score else score?.let { BigDecimal(it.toInt()) }
+    fun roundDownIfRequired(score: BigDecimal?): BigDecimal? = if (sendDecimals) score else score?.let { BigDecimal(it.toInt()) }
 
     when (val assessmentVersion = outputVersion.toInt()) {
       1 -> {
@@ -57,32 +57,32 @@ data class ArnRiskPredictorScore(
           allReoffendingPredictor =
             RiskScoreV2(
               band = this.output.allReoffendingPredictor.band,
-              score = roundDown(this.output.allReoffendingPredictor.score),
+              score = roundDownIfRequired(this.output.allReoffendingPredictor.score),
             ),
           violentReoffendingPredictor =
             RiskScoreV2(
               band = this.output.violentReoffendingPredictor.band,
-              score = roundDown(this.output.violentReoffendingPredictor.score),
+              score = roundDownIfRequired(this.output.violentReoffendingPredictor.score),
             ),
           seriousViolentReoffendingPredictor =
             RiskScoreV2(
               band = this.output.seriousViolentReoffendingPredictor.band,
-              score = roundDown(this.output.seriousViolentReoffendingPredictor.score),
+              score = roundDownIfRequired(this.output.seriousViolentReoffendingPredictor.score),
             ),
           directContactSexualReoffendingPredictor =
             RiskScoreV2(
               band = this.output.directContactSexualReoffendingPredictor.band,
-              score = roundDown(this.output.directContactSexualReoffendingPredictor.score),
+              score = roundDownIfRequired(this.output.directContactSexualReoffendingPredictor.score),
             ),
           indirectImageContactSexualReoffendingPredictor =
             RiskScoreV2(
               band = this.output.indirectImageContactSexualReoffendingPredictor.band,
-              score = roundDown(this.output.indirectImageContactSexualReoffendingPredictor.score),
+              score = roundDownIfRequired(this.output.indirectImageContactSexualReoffendingPredictor.score),
             ),
           combinedSeriousReoffendingPredictor =
             RiskScoreV2(
               band = this.output.combinedSeriousReoffendingPredictor.band,
-              score = roundDown(this.output.combinedSeriousReoffendingPredictor.score),
+              score = roundDownIfRequired(this.output.combinedSeriousReoffendingPredictor.score),
             ),
         )
       }
