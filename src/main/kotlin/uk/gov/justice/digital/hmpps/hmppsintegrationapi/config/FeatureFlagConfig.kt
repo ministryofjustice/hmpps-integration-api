@@ -28,6 +28,7 @@ data class FeatureFlagConfig(
     const val NORMALISED_PATH_MATCHING = "normalised-path-matching"
     const val ENABLE_DELETE_PROCESSED_EVENTS = "enable-delete-processed-events"
     const val ENABLE_SEND_PROCESSED_EVENTS = "enable-send-processed-events"
+    const val ENABLE_SEND_DECIMAL_RISK_SCORES = "enable-send-decimal-risk-scores"
   }
 
   /**
