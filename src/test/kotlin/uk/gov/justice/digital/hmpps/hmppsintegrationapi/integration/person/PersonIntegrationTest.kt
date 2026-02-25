@@ -253,17 +253,6 @@ class PersonIntegrationTest : IntegrationTestBase() {
   }
 
   @Nested
-  inner class GetPrisonerContacts {
-    @Test
-    fun `returns a prisoners contacts`() {
-      val params = "?page=1&size=10"
-      callApi("$basePath/$nomsId/contacts$params")
-        .andExpect(status().isOk)
-        .andExpect(content().json(getExpectedResponse("prisoners-contacts")))
-    }
-  }
-
-  @Nested
   inner class GetIEPLevel {
     val path = "$basePath/$nomsId/iep-level"
 

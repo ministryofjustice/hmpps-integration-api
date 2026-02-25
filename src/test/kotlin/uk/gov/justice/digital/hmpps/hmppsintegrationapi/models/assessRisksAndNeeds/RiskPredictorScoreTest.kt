@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNe
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import java.math.BigDecimal
 import java.time.LocalDateTime
 
 class RiskPredictorScoreTest :
@@ -16,11 +17,11 @@ class RiskPredictorScoreTest :
               outputVersion = "1",
               output =
                 ArnOutput(
-                  generalPredictorScore = ArnGeneralPredictorScore(ogpRisk = "MEDIUM", ogp2Year = 2),
-                  violencePredictorScore = ArnViolencePredictorScore(ovpRisk = "LOW", twoYears = 2),
-                  groupReconvictionScore = ArnGroupReconvictionScore(scoreLevel = "VERY_HIGH", twoYears = 3),
-                  riskOfSeriousRecidivismScore = ArnRiskOfSeriousRecidivismScore(scoreLevel = "HIGH", percentageScore = 4),
-                  sexualPredictorScore = ArnSexualPredictorScore(ospIndecentScoreLevel = "HIGH", ospContactScoreLevel = "VERY_HIGH", ospDirectContactPercentageScore = 5, ospIndirectImagePercentageScore = 6),
+                  generalPredictorScore = ArnGeneralPredictorScore(ogpRisk = "MEDIUM", ogp2Year = BigDecimal(2)),
+                  violencePredictorScore = ArnViolencePredictorScore(ovpRisk = "LOW", twoYears = BigDecimal(2)),
+                  groupReconvictionScore = ArnGroupReconvictionScore(scoreLevel = "VERY_HIGH", twoYears = BigDecimal(3)),
+                  riskOfSeriousRecidivismScore = ArnRiskOfSeriousRecidivismScore(scoreLevel = "HIGH", percentageScore = BigDecimal(4)),
+                  sexualPredictorScore = ArnSexualPredictorScore(ospIndecentScoreLevel = "HIGH", ospContactScoreLevel = "VERY_HIGH", ospDirectContactPercentageScore = BigDecimal(5), ospIndirectImagePercentageScore = BigDecimal(6)),
                 ),
             )
 
@@ -76,16 +77,77 @@ class RiskPredictorScoreTest :
               outputVersion = "2",
               output =
                 ArnOutput(
-                  allReoffendingPredictor = ArnScore(band = "LOW", score = 7),
-                  violentReoffendingPredictor = ArnScore(band = "MEDIUM", score = 8),
-                  seriousViolentReoffendingPredictor = ArnScore(band = "HIGH", score = 9),
-                  directContactSexualReoffendingPredictor = ArnScore(band = "VERY_HIGH", score = 10),
-                  indirectImageContactSexualReoffendingPredictor = ArnScore(band = "LOW", score = 11),
-                  combinedSeriousReoffendingPredictor = ArnScore(band = "MEDIUM", score = 12),
+                  allReoffendingPredictor = ArnScore(band = "LOW", score = BigDecimal(7)),
+                  violentReoffendingPredictor = ArnScore(band = "MEDIUM", score = BigDecimal(8)),
+                  seriousViolentReoffendingPredictor = ArnScore(band = "HIGH", score = BigDecimal(9)),
+                  directContactSexualReoffendingPredictor = ArnScore(band = "VERY_HIGH", score = BigDecimal(10)),
+                  indirectImageContactSexualReoffendingPredictor = ArnScore(band = "LOW", score = BigDecimal(11)),
+                  combinedSeriousReoffendingPredictor = ArnScore(band = "MEDIUM", score = BigDecimal(12)),
                 ),
             )
 
           val integrationApiRiskPredictorScore = arnRiskPredictorScore.toRiskPredictorScore()
+
+          integrationApiRiskPredictorScore.completedDate.shouldBe(LocalDateTime.parse(arnRiskPredictorScore.completedDate))
+          integrationApiRiskPredictorScore.assessmentStatus.shouldBe(arnRiskPredictorScore.status)
+          integrationApiRiskPredictorScore.assessmentVersion.shouldBe(arnRiskPredictorScore.outputVersion.toIntOrNull())
+
+          integrationApiRiskPredictorScore.allReoffendingPredictor?.band.shouldBe(
+            arnRiskPredictorScore.output.allReoffendingPredictor.band,
+          )
+          integrationApiRiskPredictorScore.allReoffendingPredictor?.score.shouldBe(
+            arnRiskPredictorScore.output.allReoffendingPredictor.score,
+          )
+          integrationApiRiskPredictorScore.violentReoffendingPredictor?.band.shouldBe(
+            arnRiskPredictorScore.output.violentReoffendingPredictor.band,
+          )
+          integrationApiRiskPredictorScore.violentReoffendingPredictor?.score.shouldBe(
+            arnRiskPredictorScore.output.violentReoffendingPredictor.score,
+          )
+          integrationApiRiskPredictorScore.seriousViolentReoffendingPredictor?.band.shouldBe(
+            arnRiskPredictorScore.output.seriousViolentReoffendingPredictor.band,
+          )
+          integrationApiRiskPredictorScore.seriousViolentReoffendingPredictor?.score.shouldBe(
+            arnRiskPredictorScore.output.seriousViolentReoffendingPredictor.score,
+          )
+          integrationApiRiskPredictorScore.directContactSexualReoffendingPredictor?.band.shouldBe(
+            arnRiskPredictorScore.output.directContactSexualReoffendingPredictor.band,
+          )
+          integrationApiRiskPredictorScore.directContactSexualReoffendingPredictor?.score.shouldBe(
+            arnRiskPredictorScore.output.directContactSexualReoffendingPredictor.score,
+          )
+          integrationApiRiskPredictorScore.indirectImageContactSexualReoffendingPredictor?.band.shouldBe(
+            arnRiskPredictorScore.output.indirectImageContactSexualReoffendingPredictor.band,
+          )
+          integrationApiRiskPredictorScore.indirectImageContactSexualReoffendingPredictor?.score.shouldBe(
+            arnRiskPredictorScore.output.indirectImageContactSexualReoffendingPredictor.score,
+          )
+          integrationApiRiskPredictorScore.combinedSeriousReoffendingPredictor?.band.shouldBe(
+            arnRiskPredictorScore.output.combinedSeriousReoffendingPredictor.band,
+          )
+          integrationApiRiskPredictorScore.combinedSeriousReoffendingPredictor?.score.shouldBe(
+            arnRiskPredictorScore.output.combinedSeriousReoffendingPredictor.score,
+          )
+        }
+
+        it("maps ARN Risk Predictor Score to integration API Risk Predictor Score v2 sending decimals") {
+          val arnRiskPredictorScore =
+            ArnRiskPredictorScore(
+              completedDate = "2023-09-05T10:15:41",
+              status = "COMPLETE",
+              outputVersion = "2",
+              output =
+                ArnOutput(
+                  allReoffendingPredictor = ArnScore(band = "LOW", score = BigDecimal("7.1")),
+                  violentReoffendingPredictor = ArnScore(band = "MEDIUM", score = BigDecimal("8.1")),
+                  seriousViolentReoffendingPredictor = ArnScore(band = "HIGH", score = BigDecimal("9.24")),
+                  directContactSexualReoffendingPredictor = ArnScore(band = "VERY_HIGH", score = BigDecimal("10.2")),
+                  indirectImageContactSexualReoffendingPredictor = ArnScore(band = "LOW", score = BigDecimal("11.28")),
+                  combinedSeriousReoffendingPredictor = ArnScore(band = "MEDIUM", score = BigDecimal("12.13")),
+                ),
+            )
+
+          val integrationApiRiskPredictorScore = arnRiskPredictorScore.toRiskPredictorScore(sendDecimals = true)
 
           integrationApiRiskPredictorScore.completedDate.shouldBe(LocalDateTime.parse(arnRiskPredictorScore.completedDate))
           integrationApiRiskPredictorScore.assessmentStatus.shouldBe(arnRiskPredictorScore.status)

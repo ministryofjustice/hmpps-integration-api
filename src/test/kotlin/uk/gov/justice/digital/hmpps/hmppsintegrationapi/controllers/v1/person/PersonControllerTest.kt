@@ -26,21 +26,17 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfigu
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.BodyMark
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Contact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.IEPLevel
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Language
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NumberOfChildren
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResult
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedPrisonerContacts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonName
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonOnProbation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonalCareNeed
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PhysicalCharacteristics
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContact
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContactRelationship
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerEducation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Qualification
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -64,7 +60,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetNumberOfChil
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPhysicalCharacteristicsForPersonService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonerContactsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonerEducationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitOrdersForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
@@ -81,7 +76,6 @@ internal class PersonControllerTest(
   @MockitoBean val getNameForPersonService: GetNameForPersonService,
   @MockitoBean val getImageMetadataForPersonService: GetImageMetadataForPersonService,
   @MockitoBean val auditService: AuditService,
-  @MockitoBean val getPrisonerContactsService: GetPrisonerContactsService,
   @MockitoBean val getIEPLevelService: GetIEPLevelService,
   @MockitoBean val getVisitOrdersForPersonService: GetVisitOrdersForPersonService,
   @MockitoBean val getNumberOfChildrenForPersonService: GetNumberOfChildrenForPersonService,
@@ -639,370 +633,11 @@ internal class PersonControllerTest(
         }
       }
 
-      describe("GET $basePath/$sanitisedHmppsId/contacts") {
-        beforeTest {
-          Mockito.reset(getPrisonerContactsService)
-          Mockito.reset(auditService)
-
-          whenever(getPrisonerContactsService.execute(sanitisedHmppsId, page = 1, size = 10, filter = null)).thenReturn(
-            Response(
-              data =
-                PaginatedPrisonerContacts(
-                  content =
-                    listOf(
-                      PrisonerContact(
-                        contact =
-                          Contact(
-                            contactId = 654321L,
-                            lastName = "Doe",
-                            firstName = "John",
-                            middleNames = "William",
-                            dateOfBirth = "1980-01-01",
-                            flat = "Flat 1",
-                            property = "123",
-                            street = "Baker Street",
-                            area = "Marylebone",
-                            cityCode = "25343",
-                            cityDescription = "Sheffield",
-                            countyCode = "S.YORKSHIRE",
-                            countyDescription = "South Yorkshire",
-                            postCode = "NW1 6XE",
-                            countryCode = "ENG",
-                            countryDescription = "England",
-                            primaryAddress = true,
-                            mailAddress = true,
-                            phoneType = "MOB",
-                            phoneTypeDescription = "Mobile",
-                            phoneNumber = "+1234567890",
-                            extNumber = "123",
-                          ),
-                        relationship =
-                          PrisonerContactRelationship(
-                            relationshipTypeCode = "FRIEND",
-                            relationshipTypeDescription = "Friend",
-                            relationshipToPrisonerCode = "FRI",
-                            relationshipToPrisonerDescription = "Friend of",
-                            approvedVisitor = true,
-                            nextOfKin = false,
-                            emergencyContact = true,
-                            isRelationshipActive = true,
-                            currentTerm = true,
-                            comments = "Close family friend",
-                          ),
-                      ),
-                    ),
-                  isLastPage = true,
-                  count = 1,
-                  page = 1,
-                  perPage = 10,
-                  totalCount = 1,
-                  totalPages = 1,
-                ),
-            ),
-          )
-        }
-
-        it("returns a 200 OK status code") {
-          val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/contacts")
-          result.response.status.shouldBe(HttpStatus.OK.value())
-        }
-
-        it("logs audit") {
-          mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/contacts")
-          verify(auditService, times(1)).createEvent("GET_PRISONER_CONTACTS", mapOf("hmppsId" to sanitisedHmppsId))
-        }
-
-        it("returns a 404 status code when a person cannot be found in both upstream APIs") {
-          val idThatDoesNotExist = "blablabla"
-          whenever(getPrisonerContactsService.execute(idThatDoesNotExist, page = 1, size = 10, filter = null))
-            .thenReturn(notFoundErrorResponse(UpstreamApi.PERSONAL_RELATIONSHIPS))
-
-          val result = mockMvc.performAuthorised("$basePath/$idThatDoesNotExist/contacts")
-          result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
-        }
-
-        it("returns a 400 status code when a invalid hmppsId") {
-          val idThatDoesNotExist = "blablabla"
-          whenever(getPrisonerContactsService.execute(idThatDoesNotExist, page = 1, size = 10, filter = null)).thenReturn(
-            Response(
-              data = null,
-              errors =
-                listOf(
-                  UpstreamApiError(
-                    causedBy = UpstreamApi.PRISON_API,
-                    type = UpstreamApiError.Type.BAD_REQUEST,
-                  ),
-                ),
-            ),
-          )
-
-          val result = mockMvc.performAuthorised("$basePath/$idThatDoesNotExist/contacts")
-          result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
-        }
-
-        it("verify getPrisonerContactsService is called ") {
-          mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/contacts")
-          verify(getPrisonerContactsService, times(1)).execute(sanitisedHmppsId, page = 1, size = 10, filter = null)
-        }
-
-        it("returns prisoner contacts with the matching ID") {
-          val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/contacts")
-          result.response.contentAsString.shouldBe(
-            """
-            {
-              "data":[
-                {
-                  "contact": {
-                    "contactId": 654321,
-                    "lastName": "Doe",
-                    "firstName": "John",
-                    "middleNames": "William",
-                    "dateOfBirth": "1980-01-01",
-                    "flat": "Flat 1",
-                    "property": "123",
-                    "street": "Baker Street",
-                    "area": "Marylebone",
-                    "cityCode": "25343",
-                    "cityDescription": "Sheffield",
-                    "countyCode": "S.YORKSHIRE",
-                    "countyDescription": "South Yorkshire",
-                    "postCode": "NW1 6XE",
-                    "countryCode": "ENG",
-                    "countryDescription": "England",
-                    "primaryAddress": true,
-                    "mailAddress": true,
-                    "phoneType": "MOB",
-                    "phoneTypeDescription": "Mobile",
-                    "phoneNumber": "+1234567890",
-                    "extNumber": "123"
-                  },
-                  "relationship": {
-                    "relationshipTypeCode": "FRIEND",
-                    "relationshipTypeDescription": "Friend",
-                    "relationshipToPrisonerCode": "FRI",
-                    "relationshipToPrisonerDescription": "Friend of",
-                    "approvedVisitor": true,
-                    "nextOfKin": false,
-                    "emergencyContact": true,
-                    "isRelationshipActive": true,
-                    "currentTerm": true,
-                    "comments": "Close family friend"
-                  }
-                }
-              ],
-              "pagination": {
-                "isLastPage": true,
-                "count": 1,
-                "page": 1,
-                "perPage": 10,
-                "totalCount": 1,
-                "totalPages": 1
-              }
-            }
-            """.removeWhitespaceAndNewlines(),
-          )
-        }
-
-        it("returns many prisoner contacts with the matching ID") {
-          whenever(getPrisonerContactsService.execute(sanitisedHmppsId, page = 1, size = 10, filter = null)).thenReturn(
-            Response(
-              data =
-                PaginatedPrisonerContacts(
-                  content =
-                    listOf(
-                      PrisonerContact(
-                        contact =
-                          Contact(
-                            contactId = 654321L,
-                            lastName = "Doe",
-                            firstName = "John",
-                            middleNames = "William",
-                            dateOfBirth = "1980-01-01",
-                            flat = "Flat 1",
-                            property = "123",
-                            street = "Baker Street",
-                            area = "Marylebone",
-                            cityCode = "25343",
-                            cityDescription = "Sheffield",
-                            countyCode = "S.YORKSHIRE",
-                            countyDescription = "South Yorkshire",
-                            postCode = "NW1 6XE",
-                            countryCode = "ENG",
-                            countryDescription = "England",
-                            primaryAddress = true,
-                            mailAddress = true,
-                            phoneType = "MOB",
-                            phoneTypeDescription = "Mobile",
-                            phoneNumber = "+1234567890",
-                            extNumber = "123",
-                          ),
-                        relationship =
-                          PrisonerContactRelationship(
-                            relationshipTypeCode = "FRIEND",
-                            relationshipTypeDescription = "Friend",
-                            relationshipToPrisonerCode = "FRI",
-                            relationshipToPrisonerDescription = "Friend of",
-                            approvedVisitor = true,
-                            nextOfKin = false,
-                            emergencyContact = true,
-                            isRelationshipActive = true,
-                            currentTerm = true,
-                            comments = "Close family friend",
-                          ),
-                      ),
-                      PrisonerContact(
-                        contact =
-                          Contact(
-                            contactId = 1234667L,
-                            lastName = "Doe",
-                            firstName = "BOB",
-                            middleNames = "William",
-                            dateOfBirth = "1980-01-01",
-                            flat = "Flat 1",
-                            property = "123",
-                            street = "Baker Street",
-                            area = "Marylebone",
-                            cityCode = "25343",
-                            cityDescription = "Sheffield",
-                            countyCode = "S.YORKSHIRE",
-                            countyDescription = "South Yorkshire",
-                            postCode = "NW1 6XE",
-                            countryCode = "ENG",
-                            countryDescription = "England",
-                            primaryAddress = true,
-                            mailAddress = true,
-                            phoneType = "MOB",
-                            phoneTypeDescription = "Mobile",
-                            phoneNumber = "+1234567890",
-                            extNumber = "123",
-                          ),
-                        relationship =
-                          PrisonerContactRelationship(
-                            relationshipTypeCode = "ROOMMATE",
-                            relationshipTypeDescription = "Friend",
-                            relationshipToPrisonerCode = "FRI",
-                            relationshipToPrisonerDescription = "Friend of",
-                            approvedVisitor = true,
-                            nextOfKin = false,
-                            emergencyContact = true,
-                            isRelationshipActive = true,
-                            currentTerm = true,
-                            comments = "Close family friend",
-                          ),
-                      ),
-                    ),
-                  isLastPage = true,
-                  count = 2,
-                  page = 1,
-                  perPage = 10,
-                  totalCount = 2,
-                  totalPages = 1,
-                ),
-            ),
-          )
-
-          val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/contacts")
-          result.response.contentAsString.shouldBe(
-            """
-              {
-                "data": [
-                  {
-                    "contact": {
-                      "contactId": 654321,
-                      "lastName": "Doe",
-                      "firstName": "John",
-                      "middleNames": "William",
-                      "dateOfBirth": "1980-01-01",
-                      "flat": "Flat 1",
-                      "property": "123",
-                      "street": "Baker Street",
-                      "area": "Marylebone",
-                      "cityCode": "25343",
-                      "cityDescription": "Sheffield",
-                      "countyCode": "S.YORKSHIRE",
-                      "countyDescription": "South Yorkshire",
-                      "postCode": "NW1 6XE",
-                      "countryCode": "ENG",
-                      "countryDescription": "England",
-                      "primaryAddress": true,
-                      "mailAddress": true,
-                      "phoneType": "MOB",
-                      "phoneTypeDescription": "Mobile",
-                      "phoneNumber": "+1234567890",
-                      "extNumber": "123"
-                    },
-                    "relationship": {
-                      "relationshipTypeCode": "FRIEND",
-                      "relationshipTypeDescription": "Friend",
-                      "relationshipToPrisonerCode": "FRI",
-                      "relationshipToPrisonerDescription": "Friend of",
-                      "approvedVisitor": true,
-                      "nextOfKin": false,
-                      "emergencyContact": true,
-                      "isRelationshipActive": true,
-                      "currentTerm": true,
-                      "comments": "Close family friend"
-                    }
-                  },
-                  {
-                    "contact": {
-                      "contactId": 1234667,
-                      "lastName": "Doe",
-                      "firstName": "BOB",
-                      "middleNames": "William",
-                      "dateOfBirth": "1980-01-01",
-                      "flat": "Flat 1",
-                      "property": "123",
-                      "street": "Baker Street",
-                      "area": "Marylebone",
-                      "cityCode": "25343",
-                      "cityDescription": "Sheffield",
-                      "countyCode": "S.YORKSHIRE",
-                      "countyDescription": "South Yorkshire",
-                      "postCode": "NW1 6XE",
-                      "countryCode": "ENG",
-                      "countryDescription": "England",
-                      "primaryAddress": true,
-                      "mailAddress": true,
-                      "phoneType": "MOB",
-                      "phoneTypeDescription": "Mobile",
-                      "phoneNumber": "+1234567890",
-                      "extNumber": "123"
-                    },
-                    "relationship": {
-                      "relationshipTypeCode": "ROOMMATE",
-                      "relationshipTypeDescription": "Friend",
-                      "relationshipToPrisonerCode": "FRI",
-                      "relationshipToPrisonerDescription": "Friend of",
-                      "approvedVisitor": true,
-                      "nextOfKin": false,
-                      "emergencyContact": true,
-                      "isRelationshipActive": true,
-                      "currentTerm": true,
-                      "comments": "Close family friend"
-                    }
-                  }
-                ],
-                "pagination": {
-                  "isLastPage": true,
-                  "count": 2,
-                  "page": 1,
-                  "perPage": 10,
-                  "totalCount": 2,
-                  "totalPages": 1
-                }
-              }
-            """.removeWhitespaceAndNewlines(),
-          )
-        }
-      }
-
       describe("/v1/persons/{hmppsId}/iep-level") {
         val path = "$basePath/$sanitisedHmppsId/iep-level"
         val iepLevel = IEPLevel(iepCode = "STD", iepLevel = "Standard")
 
         beforeTest {
-          Mockito.reset(getPrisonerContactsService)
           Mockito.reset(auditService)
 
           whenever(getIEPLevelService.execute(sanitisedHmppsId, filter = null)).thenReturn(

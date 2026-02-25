@@ -37,8 +37,8 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-cache")
   implementation("org.springframework.boot:spring-boot-starter-jdbc")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
-  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.32.0")
-  implementation("io.sentry:sentry-logback:8.32.0")
+  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.33.0")
+  implementation("io.sentry:sentry-logback:8.33.0")
   implementation("org.springframework.data:spring-data-commons")
   implementation("org.springframework:spring-aop")
   implementation("org.aspectj:aspectjweaver")
@@ -62,7 +62,7 @@ dependencies {
   testCompileOnly("org.jetbrains.kotlinx:kover-cli:0.9.7")
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
   testImplementation("org.mockito:mockito-core:5.21.0")
-  testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.21.0")
+  testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.21.1")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
   testImplementation("com.atlassian.oai:swagger-request-validator-wiremock:2.46.0") {
     // Exclude WireMock artifacts

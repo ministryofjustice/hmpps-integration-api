@@ -86,9 +86,11 @@ hmpps.sqs:
 feature-flag:
   course-completion-event-enabled: true
   use-contact-events-endpoint: true
+  use-emergency-contacts-endpoint: true
   epf-endpoint-includes-lao: true
   cpr-enabled: true
   gateway-cache-enabled: true
   normalised-path-matching: true
   enable-delete-processed-events: false
   enable-send-processed-events: false
+  enable-send-decimal-risk-scores: true

@@ -7,6 +7,9 @@ val prisonerEscortCustodyService =
     permissions {
       -"/v1/status"
       -"/v1/persons/.*/case-notes"
+      -"/v1/persons/.*/languages"
+      -"/v1/persons/.*/emergency-contacts"
+      -"/v1/persons/.*/health-and-diet"
     }
     filters {
       caseNotes {
@@ -15,6 +18,9 @@ val prisonerEscortCustodyService =
         -"CVM"
         -"INTERVENTION"
         -"POS"
+      }
+      supervisionStatuses {
+        -"PRISONS"
       }
     }
   }

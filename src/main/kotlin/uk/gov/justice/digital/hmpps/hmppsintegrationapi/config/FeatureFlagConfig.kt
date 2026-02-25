@@ -21,6 +21,7 @@ data class FeatureFlagConfig(
   companion object {
     const val COURSE_COMPLETION_EVENT = "course-completion-event-enabled"
     const val USE_CONTACT_EVENTS_ENDPOINT = "use-contact-events-endpoint"
+    const val USE_EMERGENCY_CONTACTS_ENDPOINT = "use-emergency-contacts-endpoint"
     const val EPF_ENDPOINT_INCLUDES_LAO = "epf-endpoint-includes-lao"
     const val EPF_GATEWAY_DISABLED = "epf-gateway-disabled"
     const val CPR_ENABLED = "cpr-enabled"
@@ -28,6 +29,7 @@ data class FeatureFlagConfig(
     const val NORMALISED_PATH_MATCHING = "normalised-path-matching"
     const val ENABLE_DELETE_PROCESSED_EVENTS = "enable-delete-processed-events"
     const val ENABLE_SEND_PROCESSED_EVENTS = "enable-send-processed-events"
+    const val ENABLE_SEND_DECIMAL_RISK_SCORES = "enable-send-decimal-risk-scores"
   }
 
   /**

@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNe
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskPredictorScore
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskScoreV2
+import java.math.BigDecimal
 import java.time.LocalDateTime
 
 data class ArnOutput(
@@ -22,8 +23,13 @@ data class ArnOutput(
 
 data class ArnScore(
   val band: String? = null,
-  val score: Int? = null,
+  val score: BigDecimal? = null,
 )
+
+fun roundDownIfRequired(
+  score: BigDecimal?,
+  sendDecimals: Boolean,
+): BigDecimal? = if (sendDecimals) score else score?.let { BigDecimal(it.toInt()) }
 
 data class ArnRiskPredictorScore(
   val completedDate: String? = null,
@@ -32,17 +38,17 @@ data class ArnRiskPredictorScore(
   val outputVersion: String,
   val output: ArnOutput,
 ) {
-  fun toRiskPredictorScore(): RiskPredictorScore {
+  fun toRiskPredictorScore(sendDecimals: Boolean = false): RiskPredictorScore {
     when (val assessmentVersion = outputVersion.toInt()) {
       1 -> {
         return RiskPredictorScore(
           completedDate = getDateFromString(this.completedDate),
           assessmentStatus = this.status,
-          generalPredictor = this.output.generalPredictorScore.toGeneralPredictor(),
-          violencePredictor = this.output.violencePredictorScore.toViolencePredictor(),
-          groupReconviction = this.output.groupReconvictionScore.toGroupReconviction(),
-          riskOfSeriousRecidivism = this.output.riskOfSeriousRecidivismScore.toRiskOfSeriousRecidivism(),
-          sexualPredictor = this.output.sexualPredictorScore.toSexualPredictor(),
+          generalPredictor = this.output.generalPredictorScore.toGeneralPredictor(sendDecimals = sendDecimals),
+          violencePredictor = this.output.violencePredictorScore.toViolencePredictor(sendDecimals = sendDecimals),
+          groupReconviction = this.output.groupReconvictionScore.toGroupReconviction(sendDecimals = sendDecimals),
+          riskOfSeriousRecidivism = this.output.riskOfSeriousRecidivismScore.toRiskOfSeriousRecidivism(sendDecimals = sendDecimals),
+          sexualPredictor = this.output.sexualPredictorScore.toSexualPredictor(sendDecimals = sendDecimals),
           assessmentVersion = assessmentVersion,
         )
       }
@@ -54,32 +60,32 @@ data class ArnRiskPredictorScore(
           allReoffendingPredictor =
             RiskScoreV2(
               band = this.output.allReoffendingPredictor.band,
-              score = this.output.allReoffendingPredictor.score,
+              score = roundDownIfRequired(this.output.allReoffendingPredictor.score, sendDecimals),
             ),
           violentReoffendingPredictor =
             RiskScoreV2(
               band = this.output.violentReoffendingPredictor.band,
-              score = this.output.violentReoffendingPredictor.score,
+              score = roundDownIfRequired(this.output.violentReoffendingPredictor.score, sendDecimals),
             ),
           seriousViolentReoffendingPredictor =
             RiskScoreV2(
               band = this.output.seriousViolentReoffendingPredictor.band,
-              score = this.output.seriousViolentReoffendingPredictor.score,
+              score = roundDownIfRequired(this.output.seriousViolentReoffendingPredictor.score, sendDecimals),
             ),
           directContactSexualReoffendingPredictor =
             RiskScoreV2(
               band = this.output.directContactSexualReoffendingPredictor.band,
-              score = this.output.directContactSexualReoffendingPredictor.score,
+              score = roundDownIfRequired(this.output.directContactSexualReoffendingPredictor.score, sendDecimals),
             ),
           indirectImageContactSexualReoffendingPredictor =
             RiskScoreV2(
               band = this.output.indirectImageContactSexualReoffendingPredictor.band,
-              score = this.output.indirectImageContactSexualReoffendingPredictor.score,
+              score = roundDownIfRequired(this.output.indirectImageContactSexualReoffendingPredictor.score, sendDecimals),
             ),
           combinedSeriousReoffendingPredictor =
             RiskScoreV2(
               band = this.output.combinedSeriousReoffendingPredictor.band,
-              score = this.output.combinedSeriousReoffendingPredictor.score,
+              score = roundDownIfRequired(this.output.combinedSeriousReoffendingPredictor.score, sendDecimals),
             ),
         )
       }

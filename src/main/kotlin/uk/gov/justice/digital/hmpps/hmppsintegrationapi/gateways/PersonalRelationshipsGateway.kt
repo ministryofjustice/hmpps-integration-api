@@ -111,11 +111,12 @@ class PersonalRelationshipsGateway(
     prisonerId: String,
     page: Int,
     size: Int,
+    emergencyOrNextOfKin: Boolean? = false,
   ): Response<PRPaginatedPrisonerContacts?> {
     val result =
       webClient.request<PRPaginatedPrisonerContacts?>(
         HttpMethod.GET,
-        "/prisoner/$prisonerId/contact?page=${page - 1}&size=$size",
+        "/prisoner/$prisonerId/contact?page=${page - 1}&size=$size${uriEmergencyOrNOK(emergencyOrNextOfKin)}",
         authenticationHeader(),
         UpstreamApi.PERSONAL_RELATIONSHIPS,
         badRequestAsError = true,
@@ -171,5 +172,9 @@ class PersonalRelationshipsGateway(
     return mapOf(
       "Authorization" to "Bearer $token",
     )
+  }
+
+  private fun uriEmergencyOrNOK(emergencyOrNextOfKin: Boolean?): String {
+    return if (emergencyOrNextOfKin == true) return "&emergencyContactOrNextOfKin=true" else ""
   }
 }

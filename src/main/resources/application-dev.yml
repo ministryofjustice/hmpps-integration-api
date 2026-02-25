@@ -54,6 +54,7 @@ services:
 
 feature-flag:
   course-completion-event-enabled: true
+  use-emergency-contacts-endpoint: true
   use-contact-events-endpoint: true
   epf-endpoint-includes-lao: true
   epf-gateway-disabled: true
@@ -62,6 +63,7 @@ feature-flag:
   normalised-path-matching: true
   enable-delete-processed-events: true
   enable-send-processed-events: true
+  enable-send-decimal-risk-scores: true
 
 authorisation:
   consumers:
