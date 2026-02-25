@@ -3,8 +3,10 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import kotlin.collections.iterator
+import kotlin.test.assertTrue
 
 class RolesIncludeIntegrationTest : IntegrationTestBase() {
   @Test
@@ -53,14 +55,12 @@ class RolesIncludeIntegrationTest : IntegrationTestBase() {
   fun `all endpoints in all roles are authenticated and exist`() {
     val allRoles = roles
     // val allEndpoints = roles.getValue("all-endpoints")
-    for (role in allRoles) {
-      val roleEndpoints = role.value.permissions!!
 
-      val match = roleEndpoints.any { it.contains(".*") || it.contains("[^/]") }
-      if (match) {
-        continue
-      }
-      for (endpoint in roleEndpoints) {
+    val responses = allRoles
+      .filter { !(it.value.permissions!!.any { r -> r.contains(".*") || r.contains("[^/]") })}
+      .flatMap { role ->
+      val roleEndpoints = role.value.permissions!!
+      roleEndpoints.map { endpoint ->
         val endpointCrn =
           endpoint
             .replace("{hmppsId}", crn)
@@ -78,14 +78,22 @@ class RolesIncludeIntegrationTest : IntegrationTestBase() {
             .replace("{clientReference}", "123")
             .replace("{visitReference}", "123")
             .replace("{eventNumber}", "123")
-        callApiWithCN(endpointCrn, role.value.name!!)
-          .andExpect { result ->
-            assert(
-              result.response.status != HttpStatus.FORBIDDEN.value() &&
-                !result.response.contentAsString.contains("No static resource"),
-            )
-          }
+
+       callApiWithCN(endpointCrn, role.value.name!!).andReturn().response
+//
+//        callApiWithCN(endpointCrn, role.value.name!!)
+//          .andExpect { result ->
+//            assert(
+//              result.response.status != HttpStatus.FORBIDDEN.value() &&
+//                !result.response.contentAsString.contains("No static resource"),
+//            )
+//          }
       }
     }
+
+    val listOfIssues = responses.filter { response ->
+      response.status != HttpStatus.FORBIDDEN.value() &&
+        !response.contentAsString.contains("No static resource") }
+    assertTrue (listOfIssues.isEmpty(), "Issues found with ${listOfIssues.map { it.contentAsString }} ")
   }
 }
