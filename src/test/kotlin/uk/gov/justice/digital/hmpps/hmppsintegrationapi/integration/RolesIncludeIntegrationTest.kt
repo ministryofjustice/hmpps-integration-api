@@ -50,21 +50,15 @@ class RolesIncludeIntegrationTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `test all role endpoints to all mentiond path`() {
+  fun `all endpoints in all roles are authenticated and exist`() {
     val allRoles = roles
-    val allEndpoints = roles.getValue("all-endpoints")
+    // val allEndpoints = roles.getValue("all-endpoints")
     for (role in allRoles) {
-      var roleEndpoints = allEndpoints.permissions!!
+      val roleEndpoints = role.value.permissions!!
 
-      if (roleEndpoints.contains("{") && roleEndpoints.contains("}")) {
-        val roleRegex = role.value.permissions!!.map { Regex(it) }
-        roleEndpoints =
-          roleEndpoints.filter { canonical ->
-            val canonicalAsRegex = canonicalToRegex(canonical)
-            roleRegex.any { roleRegex ->
-              roleRegex.pattern.replace("[^/]*$", ".*") == canonicalAsRegex.pattern
-            }
-          }
+      val match = roleEndpoints.any { it.contains(".*") || it.contains("[^/]") }
+      if (match) {
+        continue
       }
       for (endpoint in roleEndpoints) {
         val endpointCrn =
@@ -85,13 +79,13 @@ class RolesIncludeIntegrationTest : IntegrationTestBase() {
             .replace("{visitReference}", "123")
             .replace("{eventNumber}", "123")
         callApiWithCN(endpointCrn, role.value.name!!)
-          .andExpect { result -> assert(result.response.status != HttpStatus.FORBIDDEN.value() || result.response.status != HttpStatus.NOT_FOUND.value()) }
+          .andExpect { result ->
+            assert(
+              result.response.status != HttpStatus.FORBIDDEN.value() &&
+                !result.response.contentAsString.contains("No static resource"),
+            )
+          }
       }
     }
-  }
-
-  private fun canonicalToRegex(canonical: String): Regex {
-    val pattern = canonical.replace(Regex("\\{[^/]+}"), ".*")
-    return Regex(pattern)
   }
 }

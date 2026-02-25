@@ -8,7 +8,7 @@ val privatePrison =
       -"/v1/hmpps/id/by-nomis-number/[^/]*$"
       -"/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
       -"/v1/persons/.*/addresses"
-      -"/v1/persons/.*/contacts[^/]*$"
+      -"/v1/persons/.*/contacts"
       -"/v1/persons/.*/iep-level"
       -"/v1/persons/.*/visitor/.*/restrictions"
       -"/v1/persons/.*/visit-restrictions"
