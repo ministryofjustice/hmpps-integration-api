@@ -19,7 +19,6 @@ val mappa =
       -"/v1/persons/{hmppsId}/needs"
       -"/v1/persons/{hmppsId}/risks/serious-harm"
       -"/v1/persons/{hmppsId}/reported-adjudications"
-      -"/v1/persons/{hmppsId}/adjudications"
       -"/v1/persons/{hmppsId}/licences/conditions"
       -"/v1/persons/{hmppsId}/case-notes"
       -"/v1/persons/{hmppsId}/protected-characteristics"
