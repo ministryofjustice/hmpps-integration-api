@@ -24,6 +24,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.JdbcTemplateEventNotificationRepository
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.writeAsJson
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.queues.QueueProvider
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.queues.TestQueue
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CorePersonRecordGateway
@@ -75,6 +77,9 @@ abstract class IntegrationTestBase {
 
   @Autowired
   lateinit var cacheManager: CacheManager
+
+  @Autowired
+  lateinit var queueProvider: QueueProvider
 
   @BeforeEach
   fun evictAllCaches() {
@@ -361,4 +366,18 @@ abstract class IntegrationTestBase {
 
     return objectMapper.writeValueAsString(obj)
   }
+
+  fun getTestQueue(queue: String): TestQueue {
+    val queue = queueProvider.findByQueueId(queue)
+    when (queue) {
+      is TestQueue -> return queue
+      else -> throw IllegalStateException("TestQueue $queue not found")
+    }
+  }
+
+  fun queueMessageCount(queue: String) = getTestQueue(queue).messageCount()
+
+  fun checkQueueIsEmpty(queue: String) = queueMessageCount(queue) == 0
+
+  fun lastQueueMessage(queue: String) = getTestQueue(queue).lastMessage()
 }
