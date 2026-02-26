@@ -127,7 +127,7 @@ internal class GetAlertsForPersonServiceTest(
             data = paginatedAlerts,
           ),
         )
-        whenever(prisonerAlertsGateway.getPrisonerAlertsForCodes(hmppsId, page, perPage)).thenReturn(
+        whenever(prisonerAlertsGateway.getPrisonerAlertsForCodes(hmppsId, page, perPage, activeOnly = true)).thenReturn(
           Response(
             data = paginatedAlerts,
           ),

@@ -59,6 +59,7 @@ val roleConstants =
       -"/v1/persons/{hmppsId}"
       -"/v1/persons/{hmppsId}/access-limitations"
       -"/v1/persons/{hmppsId}/addresses"
+      -"/v1/persons/{hmppsId}/active-alerts"
       -"/v1/persons/{hmppsId}/alerts"
       -"/v1/persons/{hmppsId}/care-needs"
       -"/v1/persons/{hmppsId}/case-notes"
