@@ -10,6 +10,7 @@ val prisonerEscortCustodyService =
       -"/v1/persons/.*/case-notes"
       -"/v1/persons/.*/emergency-contacts"
       -"/v1/persons/.*/health-and-diet"
+      -"/v1/persons/.*/iep-level"
       -"/v1/persons/.*/languages"
       -"/v1/persons/.*/protected-characteristics"
     }
