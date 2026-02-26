@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_ACTIVE_ALERTS_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Alert
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedAlerts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -59,6 +61,7 @@ class AlertsController(
     return response.data.toPaginatedResponse()
   }
 
+  @FeatureFlag(name = USE_ACTIVE_ALERTS_ENDPOINT)
   @GetMapping("/persons/{hmppsId}/active-alerts")
   @Tags(value = [Tag("Reception"), Tag("Activities")])
   @Operation(
