@@ -127,6 +127,20 @@ class GetTransactionsForPersonTest(
           .shouldBe("2016-10-21")
       }
 
+      it("returns error with incorrect parameters") {
+        val response =
+          prisonApiGateway.getTransactionsForPerson(
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+          )
+
+        response.data.shouldBe(null)
+        response.errors.shouldBe(listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND, description = null)))
+      }
+
       it("returns an error when 404 Not Found is returned because no person is found") {
         nomisApiMockServer.stubForGet(transactionsPath, "", HttpStatus.NOT_FOUND)
 
