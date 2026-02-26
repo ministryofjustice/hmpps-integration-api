@@ -41,6 +41,7 @@ val roleConstants =
       -"/info"
       -"/v1/activities/attendance-reasons"
       -"/v1/activities/deallocation-reasons"
+      -"/v1/activities/schedule/attendance"
       -"/v1/activities/schedule/{scheduleId}"
       -"/v1/activities/schedule/{scheduleId}/allocate"
       -"/v1/activities/schedule/{scheduleId}/deallocate"
