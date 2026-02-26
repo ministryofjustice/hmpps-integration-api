@@ -191,7 +191,7 @@ internal class AlertsControllerTest(
           Mockito.reset(featureFlagConfig)
           whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.NORMALISED_PATH_MATCHING)).thenReturn(true)
 
-          whenever(getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)).thenReturn(
+          whenever(getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage, activeOnly = true)).thenReturn(
             Response(
               data = toPaginatedAlerts(listOf(alert)),
             ),
@@ -199,13 +199,13 @@ internal class AlertsControllerTest(
         }
 
         it("returns a 200 OK status code") {
-          val result = mockMvc.performAuthorised(path)
+          val result = mockMvc.performAuthorised(activeOnlyPath)
 
           result.response.status.shouldBe(HttpStatus.OK.value())
         }
 
         it("logs audit") {
-          mockMvc.performAuthorised(path)
+          mockMvc.performAuthorised(activeOnlyPath)
 
           verify(
             auditService,
@@ -214,13 +214,13 @@ internal class AlertsControllerTest(
         }
 
         it("gets the active alerts for a person with the matching ID") {
-          mockMvc.performAuthorised(path)
+          mockMvc.performAuthorised(activeOnlyPath)
 
           verify(getAlertsForPersonService, VerificationModeFactory.times(1)).getAlerts(hmppsId, filters, page, perPage, true)
         }
 
-        it("returns the alerts for a person with the matching ID") {
-          val result = mockMvc.performAuthorised(path)
+        it("returns the active alerts for a person with the matching ID") {
+          val result = mockMvc.performAuthorised(activeOnlyPath)
 
           result.response.contentAsString.shouldContain(
             """
@@ -256,7 +256,7 @@ internal class AlertsControllerTest(
             ),
           )
 
-          val result = mockMvc.performAuthorised(path)
+          val result = mockMvc.performAuthorised(activeOnlyPath)
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
         }
 
@@ -274,7 +274,7 @@ internal class AlertsControllerTest(
             ),
           )
 
-          val result = mockMvc.performAuthorised(path)
+          val result = mockMvc.performAuthorised(activeOnlyPath)
           result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
         }
 
@@ -283,7 +283,7 @@ internal class AlertsControllerTest(
             WebClientResponseException(500, "MockError", null, null, null, null),
           )
 
-          val response = mockMvc.performAuthorised(path)
+          val response = mockMvc.performAuthorised(activeOnlyPath)
           assert(response.response.status == 500)
           assert(
             response.response.contentAsString.equals(
