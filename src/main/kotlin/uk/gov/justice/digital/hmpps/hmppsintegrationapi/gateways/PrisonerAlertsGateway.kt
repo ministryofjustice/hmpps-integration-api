@@ -46,8 +46,9 @@ class PrisonerAlertsGateway(
     page: Int,
     size: Int,
     alertCodes: List<String> = emptyList(),
+    activeOnly: Boolean? = false,
   ): Response<PAPaginatedAlerts?> {
-    val uri = "/prisoners/$prisonerNumber/alerts?page=${page - 1}&size=$size"
+    val uri = "/prisoners/$prisonerNumber/alerts?page=${page - 1}&size=$size${uriActiveOnly(activeOnly)}"
     val result =
       webClient.request<PAPaginatedAlerts>(
         HttpMethod.GET,
@@ -75,4 +76,8 @@ class PrisonerAlertsGateway(
       }
     }
   }
+}
+
+private fun uriActiveOnly(activeOnly: Boolean?): String {
+  return if (activeOnly == true) return "&isActive=true" else ""
 }

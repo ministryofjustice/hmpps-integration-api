@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Alert
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedAlerts
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.interfaces.toPaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
@@ -50,16 +52,36 @@ class AlertsController(
     @RequestAttribute filters: ConsumerFilters?,
   ): PaginatedResponse<Alert> {
     val response = getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)
-
-    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
-      throw EntityNotFoundException("Could not find person with id: $hmppsId")
-    }
-
-    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
-      throw ValidationException("Invalid HMPPS ID: $hmppsId")
-    }
+    ensureResponse(hmppsId, response)
 
     auditService.createEvent("GET_PERSON_ALERTS", mapOf("hmppsId" to hmppsId))
+
+    return response.data.toPaginatedResponse()
+  }
+
+  @GetMapping("/persons/{hmppsId}/active-alerts")
+  @Tags(value = [Tag("Reception"), Tag("Activities")])
+  @Operation(
+    summary = "Returns active alerts associated with a prisoner, sorted by dateCreated (newest first).",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found alerts for a prisoner with the provided HMPPS ID."),
+      ApiResponse(responseCode = "400", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  fun getPersonActiveAlerts(
+    @Parameter(description = "The HMPPS ID of the person", example = "A1234AA") @PathVariable hmppsId: String,
+    @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
+    @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
+    @RequestAttribute filters: ConsumerFilters?,
+  ): PaginatedResponse<Alert> {
+    val response = getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage, true)
+
+    ensureResponse(hmppsId, response)
+
+    auditService.createEvent("GET_PERSON_ACTIVE_ALERTS", mapOf("hmppsId" to hmppsId))
 
     return response.data.toPaginatedResponse()
   }
@@ -84,4 +106,17 @@ class AlertsController(
   ): PaginatedResponse<Alert> =
     // This endpoint is deprecated - implementation is now identical to getPersonAlerts
     getPersonAlerts(hmppsId, page, perPage, filters)
+}
+
+private fun ensureResponse(
+  hmppsId: String,
+  response: Response<PaginatedAlerts?>,
+) {
+  if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+    throw EntityNotFoundException("Could not find person with id: $hmppsId")
+  }
+
+  if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+    throw ValidationException("Invalid HMPPS ID: $hmppsId")
+  }
 }
