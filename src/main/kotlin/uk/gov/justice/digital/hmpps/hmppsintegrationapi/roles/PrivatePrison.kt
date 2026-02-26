@@ -34,7 +34,7 @@ val privatePrison =
       -"/v1/prison/{prisonId}/prisoners/{hmppsId}/balances"
       -"/v1/prison/{prisonId}/prisoners/{hmppsId}/accounts/{accountCode}/balances"
       -"/v1/prison/{prisonId}/prisoners/{hmppsId}/accounts/{accountCode}/transactions"
-      -"/v1/prison/{prisonId}/prisoners/{hmppsId}/transactions/{clientUniqueRef}$"
+      -"/v1/prison/{prisonId}/prisoners/{hmppsId}/transactions/{clientUniqueRef}"
       -"/v1/prison/{prisonId}/prisoners/{hmppsId}/transactions"
       -"/v1/prison/{prisonId}/prisoners/{hmppsId}/non-associations"
       -"/v1/prison/{prisonId}/visit/search"
