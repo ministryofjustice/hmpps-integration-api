@@ -101,6 +101,8 @@ tasks {
     arrayOf(
       "uk.gov.justice.digital.hmpps.hmppsintegrationapi.HmppsIntegrationApiKt",
       "uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.SchedulingConfig",
+      "uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.subscriptionfilters.SubscriptionConfigGenerator",
+      "uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.subscriptionfilters.FileManager",
     )
 
   // Enables the coverage report to be created for only unit tests or integration tests
@@ -158,6 +160,12 @@ tasks {
   }
   getByName("mergeCoverageReport").dependsOn(koverCli)
   getByName("createCoverageReport").dependsOn(mergeCoverageReport)
+
+  register<JavaExec>("generateFilterPolicies") {
+    description = "Generates subscription filter policies"
+    classpath = sourceSets["main"].output + configurations["testRuntimeClasspath"] + sourceSets["test"].output
+    mainClass.set("uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.subscriptionfilters.SubscriptionConfigGenerator")
+  }
 
   register<Test>("unitTest") {
     group = "verification"

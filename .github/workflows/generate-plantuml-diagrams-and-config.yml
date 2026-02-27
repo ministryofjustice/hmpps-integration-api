@@ -1,11 +1,11 @@
-name: Generate PlantUML Diagrams
+name: Generate PlantUML Diagrams and Config
 
 on:
   - workflow_dispatch
   - push
 
 jobs:
-  generate-diagrams:
+  generate:
     if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     defaults:
@@ -33,4 +33,18 @@ jobs:
         run: |
           git add *.svg
           git commit -m "Exported .PUML PlantUML diagrams to .SVG" || true
+          git push origin ${BRANCH_NAME}
+      - uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      - uses: gradle/actions/setup-gradle@v5
+      - name: Check Subscription Policies
+        run: |
+          cd ../../
+          ./gradlew generateFilterPolicies
+      - name: Commit changes
+        run: |
+          git add ../../src/main/resources/event-filter-policies/.
+          git commit -m "Subscription filter policy changes" || true
           git push origin ${BRANCH_NAME}
