@@ -224,7 +224,7 @@ configurations.matching { it.name == "detekt" }.all {
   resolutionStrategy.eachDependency {
     if (requested.group == "org.jetbrains.kotlin") {
       // To address CVE-2020-29582
-      useVersion( "2.3.10")
+      useVersion("2.3.10")
     }
   }
 }
