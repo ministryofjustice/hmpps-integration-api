@@ -1,8 +1,5 @@
 name: Security OWASP dependency check
 on:
-  push:
-    branches:
-      - HIA-1275-owasp-issues
   workflow_dispatch:
   schedule:
     - cron: "0 5 * * MON-FRI" # Every weekday at 05:00 UTC
