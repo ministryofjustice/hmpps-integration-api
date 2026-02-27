@@ -24,6 +24,10 @@ configurations.all {
       useVersion("1.5.25")
       because("Fix CVE-2026-1225")
     }
+    if (requested.group == "org.apache.tomcat.embed") {
+      useVersion("10.1.52")
+      because("Fix CVE-2026-1225")
+    }
   }
 }
 
