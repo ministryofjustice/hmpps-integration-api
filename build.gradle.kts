@@ -24,6 +24,10 @@ configurations.all {
       useVersion("1.5.25")
       because("Fix CVE-2026-1225")
     }
+    if (requested.group == "org.apache.tomcat.embed") {
+      useVersion("10.1.52")
+      because("Fix CVE-2026-24734")
+    }
   }
 }
 
@@ -219,10 +223,8 @@ ktlint {
 configurations.matching { it.name == "detekt" }.all {
   resolutionStrategy.eachDependency {
     if (requested.group == "org.jetbrains.kotlin") {
-      useVersion(
-        io.gitlab.arturbosch.detekt
-          .getSupportedKotlinVersion(),
-      )
+      // To address CVE-2020-29582
+      useVersion( "2.3.10")
     }
   }
 }
