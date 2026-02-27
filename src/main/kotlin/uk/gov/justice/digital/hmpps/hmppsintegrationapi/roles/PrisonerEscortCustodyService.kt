@@ -6,6 +6,7 @@ val prisonerEscortCustodyService =
   role("prisoner-escort-custody-service") {
     permissions {
       -"/v1/status"
+      -"/v1/persons/{hmppsId}/active-alerts"
       -"/v1/persons/{hmppsId}/addresses"
       -"/v1/persons/{hmppsId}/case-notes"
       -"/v1/persons/{hmppsId}/emergency-contacts"

@@ -51,6 +51,7 @@ services:
 
 feature-flag:
   course-completion-event-enabled: false
+  use-active-alerts-endpoint: false
   use-contact-events-endpoint: false
   use-emergency-contacts-endpoint: false
   epf-endpoint-includes-lao: true
