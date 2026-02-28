@@ -1,5 +1,3 @@
 {
-  "eventType": [
-    "PRISONER_BASE_LOCATION_CHANGED"
-  ]
+  "eventType": ["PRISONER_BASE_LOCATION_CHANGED"]
 }

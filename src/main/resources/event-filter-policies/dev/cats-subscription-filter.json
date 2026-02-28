@@ -1,5 +1,3 @@
 {
-  "eventType": [
-    "RISK_OF_SERIOUS_HARM_CHANGED"
-  ]
+  "eventType": ["RISK_OF_SERIOUS_HARM_CHANGED"]
 }
