@@ -14,5 +14,7 @@ jobs:
           persist-credentials: false
       - name: Format code
         uses: ministryofjustice/github-actions/code-formatter@v14
+        with:
+          ignore-files: "*.json"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
