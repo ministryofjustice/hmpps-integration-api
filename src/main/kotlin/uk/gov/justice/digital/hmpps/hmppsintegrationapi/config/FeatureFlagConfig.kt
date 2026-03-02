@@ -30,6 +30,9 @@ data class FeatureFlagConfig(
     const val ENABLE_DELETE_PROCESSED_EVENTS = "enable-delete-processed-events"
     const val ENABLE_SEND_PROCESSED_EVENTS = "enable-send-processed-events"
     const val ENABLE_SEND_DECIMAL_RISK_SCORES = "enable-send-decimal-risk-scores"
+    const val PERSON_LANGUAGES_CHANGED_NOTIFICATIONS_ENABLED = "person-languages-changed-notifications-enabled"
+    const val PRISONER_BASE_LOCATION_CHANGED_NOTIFICATIONS_ENABLED = "prisoner-base-location-changed-notifications-enabled"
+    const val PRISONER_MERGED_NOTIFICATIONS_ENABLED = "prisoner-merge-notifications-enabled"
   }
 
   /**

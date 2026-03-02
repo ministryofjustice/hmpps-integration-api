@@ -102,6 +102,10 @@ class JdbcTemplateEventNotificationRepository(
     return jdbcTemplate.update(setProcessingQuery, claimId, fiveMinutesAgo, EVENT_NOTIFICATION_BATCH_LIMIT)
   }
 
+  override fun insertOrUpdate(match: EventNotification) {
+    TODO("Not yet implemented")
+  }
+
   fun saveAll(events: List<EventNotification>): List<EventNotification> {
     events.forEach { event -> save(event) }
     return events
