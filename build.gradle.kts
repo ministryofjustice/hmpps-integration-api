@@ -59,13 +59,13 @@ dependencies {
   implementation("com.jayway.jsonpath:json-path:2.10.0")
   implementation("com.github.ben-manes.caffeine:caffeine:3.2.3")
 
-  testImplementation("io.kotest:kotest-assertions-json-jvm:6.1.3")
-  testImplementation("io.kotest:kotest-runner-junit5-jvm:6.1.3")
-  testImplementation("io.kotest:kotest-assertions-core-jvm:6.1.3")
-  testImplementation("io.kotest:kotest-extensions-spring:6.1.3")
+  testImplementation("io.kotest:kotest-assertions-json-jvm:6.1.4")
+  testImplementation("io.kotest:kotest-runner-junit5-jvm:6.1.4")
+  testImplementation("io.kotest:kotest-assertions-core-jvm:6.1.4")
+  testImplementation("io.kotest:kotest-extensions-spring:6.1.4")
   testCompileOnly("org.jetbrains.kotlinx:kover-cli:0.9.7")
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
-  testImplementation("org.mockito:mockito-core:5.21.0")
+  testImplementation("org.mockito:mockito-core:5.22.0")
   testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.21.1")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
   testImplementation("com.atlassian.oai:swagger-request-validator-wiremock:2.46.0") {
