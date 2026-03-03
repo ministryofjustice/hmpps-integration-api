@@ -51,11 +51,11 @@ class StuckEventsIntegrationTest : IntegrationTestBase() {
     lastModifiedDateTime: LocalDateTime,
   ): EventNotification =
     EventNotification(
-      eventType = "MAPPA_DETAIL_CHANGED",
+      claimId = claimId,
       hmppsId = "MockId",
+      eventType = "MAPPA_DETAIL_CHANGED",
       prisonId = "MKI",
       url = url,
-      claimId = claimId,
       status = status,
       lastModifiedDatetime = lastModifiedDateTime,
     )

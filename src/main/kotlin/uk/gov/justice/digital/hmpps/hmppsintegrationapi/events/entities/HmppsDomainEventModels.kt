@@ -4,11 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class DomainEvent(
+data class HmppsDomainEvent(
   @JsonProperty("eventType") val eventType: String,
   @JsonProperty("occurredAt") val occurredAt: String,
-  @JsonProperty("personReference") val personReference: HmppsPersonReference?,
-  @JsonProperty("additionalInformation") val additionalInformation: HmppsAdditionalInformation?,
+  @JsonProperty("personReference") val personReference: PersonReference?,
+  @JsonProperty("additionalInformation") val additionalInformation: AdditionalInformation?,
   @JsonProperty("reason") val reason: String? = null,
   @JsonProperty("prisonerId") val prisonerId: String? = null,
   @JsonProperty("prisonId") val prisonId: String? = null,
@@ -19,8 +19,8 @@ data class DomainEvent(
 }
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class HmppsPersonReference(
-  @JsonProperty("identifiers") val identifiers: List<HmppsIdentifier>,
+data class PersonReference(
+  @JsonProperty("identifiers") val identifiers: List<Identifier>,
 ) {
   fun findCrnIdentifier(): String? = this.identifiers.firstOrNull { it.type == "CRN" }?.value
 
@@ -28,18 +28,18 @@ data class HmppsPersonReference(
 }
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class HmppsIdentifier(
+data class Identifier(
   @JsonProperty("type") val type: String,
   @JsonProperty("value") val value: String,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class HmppsMappa(
+data class Mappa(
   @JsonProperty("category") val category: Int?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class HmppsAdditionalInformation(
+data class AdditionalInformation(
   @JsonProperty("registerTypeDescription") val registerTypeDescription: String? = null,
   @JsonProperty("registerTypeCode") val registerTypeCode: String? = null,
   @JsonProperty("nomsNumber") val nomsNumber: String? = null,
@@ -54,7 +54,7 @@ data class HmppsAdditionalInformation(
   @JsonProperty("reason") val reason: String? = null,
   @JsonProperty("removedNomsNumber") val removedNomsNumber: String? = null,
   @JsonProperty("contactId") val contactEventId: String? = null,
-  @JsonProperty("mappa") val mappa: HmppsMappa? = null,
+  @JsonProperty("mappa") val mappa: Mappa? = null,
 ) {
   fun hasMatchingRegistrationType(registerTypeCode: List<String>): Boolean =
     (

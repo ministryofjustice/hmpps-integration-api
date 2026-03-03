@@ -19,6 +19,8 @@ data class FeatureFlagConfig(
   val flags: Map<String, Boolean> = mutableMapOf(),
 ) {
   companion object {
+    const val CONTACT_EVENTS_NOTIFICATIONS_ENABLED = "contact-events-notifications-enabled"
+    const val LIMITED_ACCESS_NOTIFICATIONS_ENABLED = "limited-access-notifications-enabled"
     const val COURSE_COMPLETION_EVENT = "course-completion-event-enabled"
     const val USE_CONTACT_EVENTS_ENDPOINT = "use-contact-events-endpoint"
     const val USE_EMERGENCY_CONTACTS_ENDPOINT = "use-emergency-contacts-endpoint"

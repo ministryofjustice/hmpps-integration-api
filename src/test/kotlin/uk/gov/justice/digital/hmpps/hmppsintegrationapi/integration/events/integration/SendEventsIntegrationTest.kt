@@ -43,14 +43,12 @@ class SendEventsIntegrationTest : IntegrationTestBase() {
 
   fun makeEvent(url: String): EventNotification =
     EventNotification(
-      eventType = "MAPPA_DETAIL_CHANGED",
       hmppsId = "MockId",
+      eventType = "MAPPA_DETAIL_CHANGED",
       prisonId = "MKI",
       url = url,
-      lastModifiedDatetime = LocalDateTime.now().minusMinutes(7),
-      eventId = null,
-      claimId = null,
       status = IntegrationEventStatus.PENDING.name,
+      lastModifiedDatetime = LocalDateTime.now().minusMinutes(7),
     )
 
   @Test

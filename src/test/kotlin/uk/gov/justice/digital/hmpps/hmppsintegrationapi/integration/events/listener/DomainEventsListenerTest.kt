@@ -21,8 +21,12 @@ import org.mockito.kotlin.whenever
 import org.springframework.messaging.support.GenericMessage
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.listener.DomainEventsListener
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.EventNotificationRepository
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.DomainEventIdentitiesResolver
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.DomainEventService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
+import uk.gov.justice.digital.hmpps.hmppsintegrationevents.integration.helpers.SqsNotificationGeneratingHelper
 import java.time.Clock
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -239,13 +243,12 @@ abstract class DomainEventsListenerTestCase(
   protected val testClock: Clock = Clock.fixed(zonedCurrentTime.toInstant(), zonedCurrentTime.zone)
   protected val sqsNotificationHelper by lazy { SqsNotificationGeneratingHelper(timestamp = zonedCurrentTime) }
 
-  protected val deadLetterQueueService = mockk<DeadLetterQueueService>()
   protected val eventNotificationRepository = mockk<EventNotificationRepository>()
   protected val domainEventIdentitiesResolver = mockk<DomainEventIdentitiesResolver>()
   protected val telemetryService = mockk<TelemetryService>()
 
-  protected val domainEventService = DomainEventService(eventNotificationRepository, deadLetterQueueService, domainEventIdentitiesResolver, baseUrl, testClock, featureFlag)
-  protected val domainEventsListener = DomainEventsListener(domainEventService, deadLetterQueueService, telemetryService)
+  protected val domainEventService = DomainEventService(eventNotificationRepository, domainEventIdentitiesResolver, baseUrl, testClock, featureFlag)
+  protected val domainEventsListener = DomainEventsListener(domainEventService, telemetryService)
 
   @BeforeEach
   open fun setupEventTest() {
@@ -260,7 +263,6 @@ abstract class DomainEventsListenerTestCase(
 
     every { eventNotificationRepository.insertOrUpdate(any()) } returnsArgument 0
 
-    every { deadLetterQueueService.sendEvent(any(), any()) } returnsArgument 0
     every { telemetryService.captureException(any()) } just Runs
   }
 
@@ -302,7 +304,6 @@ abstract class DomainEventsListenerTestCase(
 
     // Assert
     verify { eventNotificationRepository wasNot Called }
-    verify { deadLetterQueueService wasNot Called }
   }
 
   protected fun assumeIdentities(

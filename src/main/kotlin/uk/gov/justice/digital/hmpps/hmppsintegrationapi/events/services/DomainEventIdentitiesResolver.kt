@@ -2,9 +2,9 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.DomainEvent
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.HmppsDomainEvent
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationIntegrationApiGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.DomainEventPublisher
+import uk.gov.justice.digital.hmpps.hmppsintegrationevents.exceptions.NotFoundException
 
 @Service
 class DomainEventIdentitiesResolver(
@@ -18,7 +18,7 @@ class DomainEventIdentitiesResolver(
    * The end client that receives the messages must treat it as a hmpps_id and NOT a crn/noms number.
    * A look-up service exist to decode the hmpps_id into a crn or noms number.
    */
-  fun getHmppsId(hmppsEvent: DomainEvent): String? {
+  fun getHmppsId(hmppsEvent: HmppsDomainEvent): String? {
     val crn: String? = hmppsEvent.personReference?.findCrnIdentifier()
     if (crn != null) {
       probationIntegrationApiGateway.getPersonExists(crn).let {
@@ -60,7 +60,7 @@ class DomainEventIdentitiesResolver(
     return null
   }
 
-  private fun getNomisNumber(hmppsEvent: DomainEventPublisher.HmppsDomainEvent): String? {
+  private fun getNomisNumber(hmppsEvent: HmppsDomainEvent): String? {
     val nomsNumber =
       hmppsEvent.personReference?.findNomsIdentifier()
         ?: hmppsEvent.additionalInformation?.nomsNumber

@@ -6,16 +6,15 @@ import io.awspring.cloud.sqs.annotation.SqsListener
 import io.awspring.cloud.sqs.listener.AsyncAdapterBlockingExecutionFailedException
 import io.awspring.cloud.sqs.listener.ListenerExecutionFailedException
 import io.sentry.spring.jakarta.tracing.SentryTransaction
-import jakarta.transaction.Transactional
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.HmppsDomainEvent
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.SQSMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.DomainEventService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
-import uk.gov.justice.digital.hmpps.hmppsintegrationevents.models.HmppsDomainEvent
-import uk.gov.justice.digital.hmpps.hmppsintegrationevents.services.TelemetryService
 import java.util.concurrent.CompletionException
 
 @Service

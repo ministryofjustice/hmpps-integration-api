@@ -7,8 +7,10 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.DomainEvent
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.HmppsDomainEvent
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.IntegrationEventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.EventNotificationRepository
+import uk.gov.justice.digital.hmpps.hmppsintegrationevents.exceptions.UnmappableUrlException
 import java.time.Clock
 import java.time.LocalDateTime
 
@@ -27,7 +29,7 @@ class DomainEventService(
 
   protected val log: Logger get() = Companion.log
 
-  fun execute(hmppsDomainEvent: DomainEvent) {
+  fun execute(hmppsDomainEvent: HmppsDomainEvent) {
     // Matching domain event to integration event type(s)
     val integrationEventTypes = filterEventTypes(hmppsDomainEvent)
 
@@ -59,12 +61,12 @@ class DomainEventService(
    * - IntegrationEventTypes that reference a feature flag that does not exist are disabled,
    *      * and an error is logged with the name of the event and the name of the flag
    */
-  fun filterEventTypes(hmppsEvent: DomainEvent) =
+  fun filterEventTypes(hmppsEvent: HmppsDomainEvent) =
     IntegrationEventType.entries
       .filter { isNotDisabled(it) }
       .filter { it.predicate.invoke(hmppsEvent) }
 
-  private fun isNotDisabled(eventType: String): Boolean {
+  private fun isNotDisabled(eventType: IntegrationEventType): Boolean {
     // Filter event types per feature flag, if associated with
     return eventType.featureFlag?.let { feature ->
       // i) enabled or disabled according to the defined feature flag;
