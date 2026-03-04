@@ -47,6 +47,9 @@ class GetPersonService(
       val prisonResponse = prisonerOffenderSearchGateway.getPrisonOffender(hmppsId)
       return Response(data = prisonResponse.data?.toPerson(), prisonResponse.errors)
     } else {
+      val x = probationResponse.errors.map { it.type.name }.joinToString(",")
+      val d = probationResponse.data?.identifiers?.deliusCrn ?: ""
+      println("**** PMCP Found person for hmppsId: $hmppsId with errors $x and data $d")
       return Response(data = probationResponse.data, errors = probationResponse.errors)
     }
   }

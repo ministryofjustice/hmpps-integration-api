@@ -23,10 +23,10 @@ data class CNSearchNotesRequest(
       map["typeSubTypes"] = typeSubTypes.map { it.toApiConformingMap() }
     }
     if (page != null) {
-      map["page"] = page.toInt()
+      map["page"] = page
     }
     if (size != null) {
-      map["size"] = size.toInt()
+      map["size"] = size
     }
     return map
   }

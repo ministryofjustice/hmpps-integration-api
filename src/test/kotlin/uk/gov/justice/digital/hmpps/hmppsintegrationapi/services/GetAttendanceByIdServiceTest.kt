@@ -51,7 +51,7 @@ class GetAttendanceByIdServiceTest(
       val activitiesAttendance =
         ActivitiesAttendance(
           id = attendanceId,
-          scheduledInstanceId = 123456,
+          scheduleInstanceId = 123456,
           prisonerNumber = prisonerNumber,
           attendanceReason = activitiesAttendanceReason,
           comment = "Prisoner was too unwell to attend the activity.",

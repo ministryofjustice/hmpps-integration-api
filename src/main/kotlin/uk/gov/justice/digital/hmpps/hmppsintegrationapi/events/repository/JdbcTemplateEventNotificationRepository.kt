@@ -60,7 +60,7 @@ class JdbcTemplateEventNotificationRepository(
     )
   }
 
-  fun count(): Int {
+  fun count(): Int? {
     val countQuery = "select count(*) from event_notification"
     return jdbcTemplate.queryForObject<Int>(countQuery)
   }

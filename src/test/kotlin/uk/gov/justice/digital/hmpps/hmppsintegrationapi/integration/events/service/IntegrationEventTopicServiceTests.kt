@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.kotest.matchers.maps.shouldNotHaveKey
 import net.javacrumbs.jsonunit.assertj.JsonAssertions
 import org.assertj.core.api.Assertions
@@ -12,9 +13,6 @@ import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.json.JsonTest
-import org.springframework.test.context.ActiveProfiles
 import software.amazon.awssdk.services.sns.SnsAsyncClient
 import software.amazon.awssdk.services.sns.model.MessageAttributeValue
 import software.amazon.awssdk.services.sns.model.PublishRequest
@@ -28,11 +26,9 @@ import uk.gov.justice.hmpps.sqs.HmppsTopic
 import java.time.LocalDateTime
 import java.util.concurrent.CompletableFuture
 
-@ActiveProfiles("test")
-@JsonTest
-class IntegrationEventTopicServiceTests(
-  @Autowired private val objectMapper: ObjectMapper,
-) {
+// @ActiveProfiles("test")
+// @JsonTest
+class IntegrationEventTopicServiceTests {
   val hmppsQueueService: HmppsQueueService = mock()
   val hmppsEventSnsClient: SnsAsyncClient = mock()
   val mockQueue: HmppsQueue = mock()
@@ -45,7 +41,7 @@ class IntegrationEventTopicServiceTests(
       .thenReturn(HmppsTopic("integrationeventtopic", "sometopicarn", hmppsEventSnsClient))
     whenever(hmppsQueueService.findByQueueId("mockQueue")).thenReturn(mockQueue)
     whenever(mockQueue.queueArn).thenReturn("mockARN")
-    integrationEventTopicService = IntegrationEventTopicService(hmppsQueueService, objectMapper)
+    integrationEventTopicService = IntegrationEventTopicService(hmppsQueueService, ObjectMapper().registerKotlinModule())
   }
 
   @Test

@@ -172,6 +172,7 @@ class GetAddressesForPersonTest(
             "contactDetails": {
                "addresses": [
                 {
+                    "noFixedAbode": false,
                     "type": {}
                 }
               ]

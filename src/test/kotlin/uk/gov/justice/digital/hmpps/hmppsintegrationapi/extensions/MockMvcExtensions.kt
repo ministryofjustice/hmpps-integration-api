@@ -1,24 +1,24 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.springframework.mock.web.MockHttpServletResponse
+import tools.jackson.databind.DeserializationFeature
+import tools.jackson.databind.SerializationFeature
+import tools.jackson.databind.cfg.DateTimeFeature
+import tools.jackson.databind.json.JsonMapper
+import tools.jackson.module.kotlin.KotlinModule
+import tools.jackson.module.kotlin.readValue
 
 object MockMvcExtensions {
-  val objectMapper: ObjectMapper =
-    jacksonObjectMapper()
-      .registerKotlinModule()
-      .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-      .configure(SerializationFeature.INDENT_OUTPUT, true)
-      .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-      .registerModule(JavaTimeModule())
+  val objectMapper: JsonMapper =
+    JsonMapper
+      .builder()
+      .addModule(KotlinModule.Builder().build())
+      .enable(SerializationFeature.INDENT_OUTPUT)
+      .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+      .disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS)
+      .build()
 
   fun writeAsJson(obj: Any): String = objectMapper.writeValueAsString(obj)
 
-  inline fun <reified T> MockHttpServletResponse.contentAsJson(): T = objectMapper.registerModule(JavaTimeModule()).readValue<T>(this.contentAsString)
+  inline fun <reified T> MockHttpServletResponse.contentAsJson(): T = objectMapper.readValue<T>(this.contentAsString)
 }

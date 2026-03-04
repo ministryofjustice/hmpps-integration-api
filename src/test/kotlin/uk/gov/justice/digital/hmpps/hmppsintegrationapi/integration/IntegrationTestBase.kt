@@ -1,16 +1,13 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.mockito.kotlin.reset
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.cache.CacheManager
 import org.springframework.http.HttpHeaders
 import org.springframework.test.context.ActiveProfiles
@@ -20,6 +17,9 @@ import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
+import tools.jackson.databind.cfg.DateTimeFeature
+import tools.jackson.databind.json.JsonMapper
+import tools.jackson.module.kotlin.KotlinModule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.JdbcTemplateEventNotificationRepository
@@ -89,7 +89,8 @@ abstract class IntegrationTestBase {
     reset(eventNotificationRepository)
 
     cacheManager.cacheNames.forEach {
-      cacheManager.getCache(it).clear()
+      println("Clearing cache $it")
+      cacheManager.getCache(it)?.clear()
     }
 
     prisonerOffenderSearchMockServer.stubForGet(
@@ -355,9 +356,12 @@ abstract class IntegrationTestBase {
     )
 
   fun asJsonString(obj: Any): String {
-    val objectMapper = ObjectMapper()
-    objectMapper.registerModule(JavaTimeModule())
-    objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+    val objectMapper: JsonMapper =
+      JsonMapper
+        .builder()
+        .addModule(KotlinModule.Builder().build())
+        .disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS)
+        .build()
 
     return objectMapper.writeValueAsString(obj)
   }

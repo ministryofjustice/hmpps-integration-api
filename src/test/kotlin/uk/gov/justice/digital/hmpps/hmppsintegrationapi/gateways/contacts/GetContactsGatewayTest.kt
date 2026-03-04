@@ -88,9 +88,9 @@ class GetContactsGatewayTest(
                 "phoneTypeDescription": "Mobile",
                 "phoneNumber": "+1234567890",
                 "extNumber": "123",
-                "approvedVisitor": true,
-                "nextOfKin": false,
-                "emergencyContact": true,
+                "isApprovedVisitor": true,
+                "isNextOfKin": false,
+                "isEmergencyContact": true,
                 "isRelationshipActive": true,
                 "currentTerm": true,
                 "comments": "Close family friend"

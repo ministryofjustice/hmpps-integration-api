@@ -14,7 +14,7 @@ fun generateTestSentence(
   description: String? = "Some description",
   fineAmount: Number? = null,
   isActive: Boolean? = true,
-  isCustodial: Boolean = true,
+  isCustodial: Boolean = false,
   length: SentenceLength =
     SentenceLength(
       duration = null,

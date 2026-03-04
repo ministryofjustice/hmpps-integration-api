@@ -59,7 +59,7 @@ class GetScheduleDetailsServiceTest(
                   listOf(
                     ActivitiesAttendance(
                       id = 123L,
-                      scheduledInstanceId = 12L,
+                      scheduleInstanceId = 12L,
                       prisonerNumber = "A1234AA",
                       status = "ACTIVE",
                       editable = true,
