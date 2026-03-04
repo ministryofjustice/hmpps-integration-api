@@ -11,7 +11,7 @@ spring:
 
 services:
   hmpps-auth.base-url: http://hmpps-auth:8080
-
+  int-api.base-url: https://localhost
   adjudications.base-url: http://prism:4010
   assess-risks-and-needs.base-url: http://prism:4011
   case-notes.base-url: http://prism:4012
@@ -77,6 +77,11 @@ hmpps.sqs:
       queueName: "educationalnevents"
       subscribeFilter: '{"eventType":["prison.education-aln-assessment.updated"]}'
       subscribeTopicId: "domainevents"
+    hmppsdomainqueue:
+      queueName: hmpps_integrations_events_queue
+      queueArn: arn:aws:sns:eu-west-2:000000000000:hmpps_integrations_events_queue
+      dlqName: hmpps_integrations_events_queue_dlq
+      subscribeTopicId: domainevents
   topics:
     domainevents:
       arn: arn:aws:sns:eu-west-2:000000000000:domainevents-topic

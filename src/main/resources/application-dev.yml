@@ -5,6 +5,8 @@ spring:
     password: ${DB_PASS}
 
 services:
+  int-api:
+    base-url: https://dev.integration-api.hmpps.service.justice.gov.uk
   prison-api:
     base-url: https://prison-api-dev.prison.service.justice.gov.uk
   prisoner-offender-search:

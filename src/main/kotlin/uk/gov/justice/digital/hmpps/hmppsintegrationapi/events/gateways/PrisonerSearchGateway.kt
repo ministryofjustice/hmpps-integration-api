@@ -11,7 +11,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffenders
 
 @Component
 class PrisonerSearchGateway(
-  @Value("\${services.prisoner-search.base-url}") baseUrl: String,
+  @Value("\${services.prisoner-offender-search.base-url}") baseUrl: String,
 ) {
   private val webClient = WebClientWrapper(baseUrl)
 

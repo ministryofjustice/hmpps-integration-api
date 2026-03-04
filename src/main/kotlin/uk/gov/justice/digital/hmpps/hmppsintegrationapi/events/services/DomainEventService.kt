@@ -19,7 +19,7 @@ import java.time.LocalDateTime
 class DomainEventService(
   @Autowired val eventNotificationRepository: EventNotificationRepository,
   @Autowired val domainEventIdentitiesResolver: DomainEventIdentitiesResolver,
-  @Value("\${services.integration-api.url}") val baseUrl: String,
+  @Value("\${services.int-api.base-url}") val baseUrl: String,
   private val clock: Clock,
   private val featureFlagConfig: FeatureFlagConfig,
 ) {

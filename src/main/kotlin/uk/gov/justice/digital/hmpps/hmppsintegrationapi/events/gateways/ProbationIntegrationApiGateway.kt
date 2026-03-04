@@ -12,7 +12,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.person.PersonIden
 
 @Component
 class ProbationIntegrationApiGateway(
-  @Value("\${services.probation-integration.base-url}") baseUrl: String,
+  @Value("\${services.ndelius.base-url}") baseUrl: String,
 ) {
   private val webClient = WebClientWrapper(baseUrl)
 

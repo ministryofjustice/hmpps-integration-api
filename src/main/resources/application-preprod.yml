@@ -4,6 +4,8 @@ spring:
       - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 
 services:
+  int-api:
+    base-url: https://preprod.integration-api.hmpps.service.justice.gov.uk
   prison-api:
     base-url: https://prison-api-preprod.prison.service.justice.gov.uk
   prisoner-offender-search:
