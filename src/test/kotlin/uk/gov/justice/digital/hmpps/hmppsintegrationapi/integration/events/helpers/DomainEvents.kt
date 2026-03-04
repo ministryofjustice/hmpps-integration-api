@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationevents.integration.helpers
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.helpers
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.SQSMessage

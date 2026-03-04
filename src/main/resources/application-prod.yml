@@ -61,6 +61,12 @@ feature-flag:
   enable-send-processed-events: false
   enable-send-decimal-risk-scores: true
 
+  person-languages-changed-notifications-enabled: true
+  prisoner-base-location-changed-notifications-enabled: true
+  prisoner-merge-notifications-enabled: false
+  contact-events-notifications-enabled: false
+  limited-access-notifications-enabled: true
+
 authorisation:
   consumers:
     ctrlo:

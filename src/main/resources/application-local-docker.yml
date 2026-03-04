@@ -94,3 +94,9 @@ feature-flag:
   enable-delete-processed-events: false
   enable-send-processed-events: false
   enable-send-decimal-risk-scores: true
+
+  person-languages-changed-notifications-enabled: true
+  prisoner-base-location-changed-notifications-enabled: true
+  prisoner-merge-notifications-enabled: true
+  contact-events-notifications-enabled: true
+  limited-access-notifications-enabled: true

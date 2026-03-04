@@ -65,6 +65,12 @@ feature-flag:
   enable-send-processed-events: true
   enable-send-decimal-risk-scores: true
 
+  person-languages-changed-notifications-enabled: false
+  prisoner-base-location-changed-notifications-enabled: true
+  prisoner-merge-notifications-enabled: true
+  contact-events-notifications-enabled: true
+  limited-access-notifications-enabled: true
+
 authorisation:
   consumers:
     mapps:

@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationevents.integration.helpers
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.helpers
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue

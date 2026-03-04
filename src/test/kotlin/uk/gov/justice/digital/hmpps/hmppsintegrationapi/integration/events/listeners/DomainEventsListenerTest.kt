@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationevents.listeners
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.listeners
 
 import com.fasterxml.jackson.core.JsonParseException
 import io.awspring.cloud.sqs.listener.AsyncAdapterBlockingExecutionFailedException
@@ -21,12 +21,13 @@ import org.mockito.Mockito.mock
 import org.mockito.kotlin.whenever
 import org.springframework.messaging.support.GenericMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.IntegrationEventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.listener.DomainEventsListener
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.EventNotificationRepository
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.DomainEventIdentitiesResolver
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.DomainEventService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.helpers.SqsNotificationGeneratingHelper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
-import uk.gov.justice.digital.hmpps.hmppsintegrationevents.integration.helpers.SqsNotificationGeneratingHelper
 import java.time.Clock
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -111,7 +112,7 @@ class DomainEventsListenerTest : DomainEventsListenerTestCase() {
   @Test
   fun `when a valid registration added sqs event is received, it should create event notification MAPPA_DETAIL_CHANGED`() {
     val hmppsEventRawMessage = sqsNotificationHelper.generateRawHmppsDomainEvent()
-    val expectedNotificationType = "MAPPA_DETAIL_CHANGED"
+    val expectedNotificationType = IntegrationEventType.MAPPA_DETAIL_CHANGED.toString()
     assumeIdentities(hmppsId = crn)
 
     onDomainEventShouldCreateEventNotification(hmppsEventRawMessage, expectedNotificationType)
@@ -120,7 +121,7 @@ class DomainEventsListenerTest : DomainEventsListenerTestCase() {
   @Test
   fun `when a valid registration updated sqs event is received, it should create event notification MAPPA_DETAIL_CHANGED`() {
     val hmppsEventRawMessage = sqsNotificationHelper.generateRawHmppsDomainEvent("probation-case.registration.updated")
-    val expectedNotificationType = "MAPPA_DETAIL_CHANGED"
+    val expectedNotificationType = IntegrationEventType.MAPPA_DETAIL_CHANGED.toString()
     assumeIdentities(hmppsId = crn)
 
     onDomainEventShouldCreateEventNotification(hmppsEventRawMessage, expectedNotificationType)
@@ -220,7 +221,7 @@ class DomainEventsListenerTest : DomainEventsListenerTestCase() {
   @Test
   fun `when a valid SQS message (domain event) is received it should create notification`() {
     val rawMessage = sqsNotificationHelper.generateRawHmppsDomainEvent()
-    val expectedEvent = "MAPPA_DETAIL_CHANGED"
+    val expectedEvent = IntegrationEventType.MAPPA_DETAIL_CHANGED.toString()
     assumeIdentities(hmppsId = crn)
 
     domainEventsListener.onDomainEvent(rawMessage)
