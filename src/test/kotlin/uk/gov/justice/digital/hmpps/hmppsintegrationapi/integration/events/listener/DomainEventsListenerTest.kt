@@ -17,9 +17,9 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import org.mockito.Mockito.mock
 import org.mockito.kotlin.whenever
 import org.springframework.messaging.support.GenericMessage
-import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.listener.DomainEventsListener
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.EventNotificationRepository
@@ -34,9 +34,7 @@ import java.time.ZonedDateTime
 import java.util.concurrent.CompletionException
 import kotlin.getValue
 
-val featureFlag: FeatureFlagConfig = FeatureFlagConfig()
-
-class DomainEventsListenerTest : DomainEventsListenerTestCase(featureFlag) {
+class DomainEventsListenerTest : DomainEventsListenerTestCase() {
   private val crn = "X777776"
 
   @Test
@@ -231,12 +229,12 @@ class DomainEventsListenerTest : DomainEventsListenerTestCase(featureFlag) {
   }
 }
 
-abstract class DomainEventsListenerTestCase(
-  @MockitoBean val featureFlag: FeatureFlagConfig,
-) {
+abstract class DomainEventsListenerTestCase {
   companion object {
     protected val baseUrl = "https://dev.integration-api.hmpps.service.justice.gov.uk"
   }
+
+  protected val featureFlag = mock(FeatureFlagConfig::class.java)
 
   protected val currentTime: LocalDateTime = LocalDateTime.now()
   protected val zonedCurrentTime: ZonedDateTime = currentTime.atZone(ZoneId.systemDefault())
