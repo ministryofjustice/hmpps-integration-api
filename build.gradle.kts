@@ -5,13 +5,16 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.3.0"
   kotlin("plugin.spring") version "2.3.10"
-  id("io.gitlab.arturbosch.detekt") version "1.23.8"
+  id("dev.detekt") version "2.0.0-alpha.2"
   id("org.jetbrains.kotlinx.kover") version "0.9.7"
 }
 
 configurations {
   testImplementation { exclude(group = "org.junit.vintage") }
   testCompileOnly { isCanBeResolved = true }
+  all {
+    exclude(group = "dev.detekt", module = "detekt-report-checkstyle")
+  }
 }
 
 configurations.all {
@@ -191,10 +194,6 @@ tasks {
     systemProperty("kotest.framework.config.fqn", "uk.gov.justice.digital.hmpps.hmppsintegrationapi.kotest.ProjectConfig")
   }
 
-  withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
-    source = source.asFileTree
-  }
-
   getByName("check") {
     dependsOn(":ktlintCheck", "detekt")
   }
@@ -205,6 +204,16 @@ detekt {
   buildUponDefaultConfig = true
   ignoreFailures = true
   baseline = file("./detekt-baseline.xml")
+}
+
+// detekt must use a specific kotlin version when running, this block ensures it's using the correct version
+// this is variation on https://detekt.dev/docs/gettingstarted/gradle/#gradle-runtime-dependencies
+configurations.matching { it.name == "detekt" }.all {
+  resolutionStrategy.eachDependency {
+    if (requested.group == "org.jetbrains.kotlin") {
+      useVersion("2.3.0")
+    }
+  }
 }
 
 kotlin {
@@ -218,15 +227,4 @@ testlogger {
 // this is to address JLLeitschuh/ktlint-gradle#809
 ktlint {
   version = "1.5.0"
-}
-
-configurations.matching { it.name == "detekt" }.all {
-  resolutionStrategy.eachDependency {
-    if (requested.group == "org.jetbrains.kotlin") {
-      useVersion(
-        io.gitlab.arturbosch.detekt
-          .getSupportedKotlinVersion(),
-      )
-    }
-  }
 }
