@@ -206,6 +206,16 @@ detekt {
   baseline = file("./detekt-baseline.xml")
 }
 
+// detekt must use a specific kotlin version when running, this block ensures it's using the correct version
+// this is variation on https://detekt.dev/docs/gettingstarted/gradle/#gradle-runtime-dependencies
+configurations.matching { it.name == "detekt" }.all {
+  resolutionStrategy.eachDependency {
+    if (requested.group == "org.jetbrains.kotlin") {
+      useVersion("2.3.0")
+    }
+  }
+}
+
 kotlin {
   kotlinDaemonJvmArgs = listOf("-Xmx2g")
 }
