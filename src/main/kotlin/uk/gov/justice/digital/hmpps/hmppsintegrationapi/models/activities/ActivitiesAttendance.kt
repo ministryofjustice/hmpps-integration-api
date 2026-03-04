@@ -4,7 +4,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Attendance
 
 data class ActivitiesAttendance(
   val id: Long,
-  val scheduledInstanceId: Long,
+  val scheduleInstanceId: Long,
   val prisonerNumber: String,
   val attendanceReason: ActivitiesAttendanceReason?,
   val comment: String?,
@@ -25,7 +25,7 @@ data class ActivitiesAttendance(
   fun toAttendance(): Attendance =
     Attendance(
       id = this.id,
-      scheduledInstanceId = this.scheduledInstanceId,
+      scheduledInstanceId = this.scheduleInstanceId,
       prisonerNumber = this.prisonerNumber,
       attendanceReason = this.attendanceReason?.toAttendanceReason(),
       comment = this.comment,

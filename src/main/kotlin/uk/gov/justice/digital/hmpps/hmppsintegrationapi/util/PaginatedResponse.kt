@@ -9,7 +9,7 @@ data class PaginatedResponse<T>(
   val pagination: Pagination,
 ) {
   companion object {
-    fun <T> fromPageableResponse(pageableResponse: Page<T>): PaginatedResponse<T> {
+    fun <T : Any> fromPageableResponse(pageableResponse: Page<T>): PaginatedResponse<T> {
       val data: List<T> = pageableResponse.content
       val pagination =
         Pagination(

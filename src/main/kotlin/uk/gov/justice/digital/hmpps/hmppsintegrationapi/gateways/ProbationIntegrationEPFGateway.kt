@@ -36,7 +36,7 @@ class ProbationIntegrationEPFGateway(
     eventNumber: Int,
   ): Response<CaseDetail?> {
     val result =
-      webClient.request<EPFCaseDetail?>(
+      webClient.request<EPFCaseDetail>(
         HttpMethod.GET,
         "/case-details/$id/$eventNumber",
         authenticationHeader(),
@@ -45,7 +45,7 @@ class ProbationIntegrationEPFGateway(
 
     return when (result) {
       is WebClientWrapperResponse.Success -> {
-        Response(data = result.data?.toCaseDetail(includeLimitedAccess = featureFlag.isEnabled(EPF_ENDPOINT_INCLUDES_LAO)))
+        Response(data = result.data.toCaseDetail(includeLimitedAccess = featureFlag.isEnabled(EPF_ENDPOINT_INCLUDES_LAO)))
       }
 
       is WebClientWrapperResponse.Error -> {

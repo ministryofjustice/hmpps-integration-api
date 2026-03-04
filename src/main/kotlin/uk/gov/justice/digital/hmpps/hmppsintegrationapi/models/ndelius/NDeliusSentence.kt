@@ -7,6 +7,7 @@ data class NDeliusSentence(
   val description: String? = null,
   val length: Int? = null,
   val lengthUnits: String? = null,
+  val custodial: Boolean = false,
 ) {
   fun toLength(): SentenceLength =
     SentenceLength(

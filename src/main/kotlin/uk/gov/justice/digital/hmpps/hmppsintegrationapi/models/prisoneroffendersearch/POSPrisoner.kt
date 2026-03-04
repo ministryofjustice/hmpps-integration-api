@@ -19,7 +19,7 @@ data class POSPrisoner(
   val dateOfBirth: LocalDate? = null,
   val gender: String? = null,
   val ethnicity: String? = null,
-  val youthOffender: Boolean,
+  val youthOffender: Boolean? = null,
   val maritalStatus: String? = null,
   val smoker: String? = null,
   val status: String? = null,

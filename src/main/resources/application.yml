@@ -5,13 +5,17 @@ info.app:
 spring:
   application:
     name: hmpps-integration-api
+  http:
+    converters:
+      preferred-json-mapper: jackson2
   codec:
     max-in-memory-size: 10MB
-
   jackson:
     date-format: "yyyy-MM-dd HH:mm:ss"
-    serialization:
-      WRITE_DATES_AS_TIMESTAMPS: false
+    deserialization:
+      fail-on-missing-creator-properties: false
+      fail-on-unknown-properties: false
+      fail-on-null-for-primitives: false
 
   profiles:
     group:

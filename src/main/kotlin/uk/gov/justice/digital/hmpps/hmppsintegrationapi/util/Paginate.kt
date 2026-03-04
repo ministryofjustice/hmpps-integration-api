@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.util
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 
-fun <T> List<T>.paginateWith(
+fun <T : Any> List<T>.paginateWith(
   page: Int = 1,
   perPage: Int = 10,
 ): PaginatedResponse<T> {

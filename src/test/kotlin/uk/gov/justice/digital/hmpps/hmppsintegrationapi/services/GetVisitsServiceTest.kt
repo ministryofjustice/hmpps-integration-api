@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedVi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVPage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVPaginatedVisits
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisitContact
@@ -67,11 +68,11 @@ internal class GetVisitsServiceTest(
     val paginatedVisitsData =
       PVPaginatedVisits(
         content = listOf(visitResponse),
-        totalCount = 1L,
-        isLastPage = true,
-        count = 1,
-        page = 1,
-        perPage = 1,
+        totalElements = 1L,
+        last = true,
+        size = 1,
+        number = 1,
+        pageable = PVPage(1),
         totalPages = 1,
       )
 

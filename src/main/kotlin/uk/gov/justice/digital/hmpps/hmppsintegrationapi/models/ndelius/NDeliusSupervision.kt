@@ -9,7 +9,6 @@ import java.time.format.DateTimeFormatter
 
 data class NDeliusSupervision(
   val active: Boolean? = null,
-  val custodial: Boolean,
   val additionalOffences: List<NDeliusAdditionalOffence> = listOf(NDeliusAdditionalOffence()),
   val courtAppearances: List<NDeliusCourtAppearance> = listOf(NDeliusCourtAppearance()),
   val mainOffence: NDeliusMainOffence = NDeliusMainOffence(),
@@ -31,7 +30,7 @@ data class NDeliusSupervision(
       description = this.sentence.description,
       fineAmount = null,
       isActive = this.active,
-      isCustodial = this.custodial,
+      isCustodial = this.sentence.custodial,
       length = this.sentence.toLength(),
     )
 }

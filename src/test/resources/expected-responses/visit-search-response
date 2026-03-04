@@ -40,11 +40,11 @@
     }
   ],
   "pagination": {
-    "isLastPage": false,
-    "count": 0,
-    "page": 1,
-    "perPage": 0,
-    "totalCount": 0,
+    "isLastPage": true,
+    "count": -2147483648,
+    "page": -2147483647,
+    "perPage": -2147483648,
+    "totalCount": -9007199254740991,
     "totalPages": -2147483648
   }
 }

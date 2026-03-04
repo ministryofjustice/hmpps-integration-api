@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
@@ -51,17 +52,21 @@ class GetReasonableAdjustmentTest(
         nomisApiMockServer.stubForGet(
           reasonableAdjustmentPath,
           """
-            { "reasonableAdjustments":[
+            {
+              "reasonableAdjustments": [
                 {
-                      "treatmentCode": "WHEELCHR_ACC",
-                      "commentText": "abcd",
-                      "startDate": "2010-06-21",
-                      "endDate": "2010-06-21",
-                      "treatmentDescription": "Wheelchair accessibility"
-                 }
+                  "treatmentCode": "WHEELCHR_ACC",
+                  "commentText": "abcd",
+                  "startDate": "2010-06-21",
+                  "endDate": "2010-06-21",
+                  "agencyId": "LEI",
+                  "agencyDescription": "Moorland (HMP)",
+                  "treatmentDescription": "Wheelchair accessibility",
+                  "personalCareNeedId": 1
+                }
               ]
-           }
-        """,
+            }
+        """.removeWhitespaceAndNewlines(),
         )
 
         Mockito.reset(hmppsAuthGateway)
@@ -79,6 +84,27 @@ class GetReasonableAdjustmentTest(
       }
 
       it("returns reasonable adjustment for a person with the matching ID") {
+
+        nomisApiMockServer.stubForGet(
+          reasonableAdjustmentPath,
+          """
+            {
+              "reasonableAdjustments": [
+                {
+                  "treatmentCode": "WHEELCHR_ACC",
+                  "commentText": "abcd",
+                  "startDate": "2010-06-21",
+                  "endDate": "2010-06-21",
+                  "agencyId": "LEI",
+                  "agencyDescription": "Moorland (HMP)",
+                  "treatmentDescription": "Wheelchair accessibility",
+                  "personalCareNeedId": 1
+                }
+              ]
+            }
+        """.removeWhitespaceAndNewlines(),
+        )
+
         val response = prisonApiGateway.getReasonableAdjustments(bookingId)
 
         response.data.count().shouldBe(1)

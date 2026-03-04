@@ -13,7 +13,7 @@
       "attendances": [
         {
           "id": 123456,
-          "scheduleInstanceId": 123456,
+          "scheduleInstanceId": 0,
           "prisonerNumber": "G2996UX",
           "attendanceReason": {
             "id": 1,

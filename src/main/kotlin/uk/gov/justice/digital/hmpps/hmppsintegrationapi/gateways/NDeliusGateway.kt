@@ -170,7 +170,7 @@ class NDeliusGateway(
 
   fun getCommunityOffenderManagerForPerson(crn: String): Response<CommunityOffenderManager?> {
     val result =
-      webClient.request<NDeliusSupervisions?>(
+      webClient.request<NDeliusSupervisions>(
         HttpMethod.GET,
         "/case/$crn/supervisions",
         authenticationHeader(),
@@ -178,7 +178,7 @@ class NDeliusGateway(
       )
     return when (result) {
       is WebClientWrapperResponse.Success -> {
-        Response(data = result.data?.communityManager?.toCommunityOffenderManager())
+        Response(data = result.data.communityManager.toCommunityOffenderManager())
       }
 
       is WebClientWrapperResponse.Error -> {
@@ -215,7 +215,7 @@ class NDeliusGateway(
     eventNumber: Int,
   ): Response<CaseDetail?> {
     val result =
-      webClient.request<EPFCaseDetail?>(
+      webClient.request<EPFCaseDetail>(
         HttpMethod.GET,
         "/case-details/$id/$eventNumber",
         authenticationHeader(),
@@ -223,7 +223,7 @@ class NDeliusGateway(
       )
     return when (result) {
       is WebClientWrapperResponse.Success -> {
-        Response(data = result.data?.toCaseDetail(includeLimitedAccess = featureFlag.isEnabled(EPF_ENDPOINT_INCLUDES_LAO)))
+        Response(data = result.data.toCaseDetail(includeLimitedAccess = featureFlag.isEnabled(EPF_ENDPOINT_INCLUDES_LAO)))
       }
 
       is WebClientWrapperResponse.Error -> {
@@ -237,7 +237,7 @@ class NDeliusGateway(
 
   fun getAccessLimitations(crn: String): Response<LimitedAccess?> {
     val result =
-      webClient.request<LimitedAccess?>(
+      webClient.request<LimitedAccess>(
         HttpMethod.GET,
         "/case/$crn/access-limitations",
         authenticationHeader(),
@@ -389,6 +389,9 @@ class NDeliusGateway(
     mappaCategories: List<Number>?,
   ): Response<NDeliusContactEvents?> {
     val mappaCatQueryParam = "mappaCategories=${mappaCategories?.joinToString(",")}"
+
+    println("***** PMCP Calling /case/$crn/contacts?page=${pageNo - 1}&size=$perPage&$mappaCatQueryParam")
+
     val result =
       webClient.request<NDeliusContactEvents>(
         HttpMethod.GET,
@@ -404,6 +407,7 @@ class NDeliusGateway(
       }
 
       is WebClientWrapperResponse.Error -> {
+        println("***** PMCP Returned errors ${result.errors.map{it.type.name}.joinToString(",")}")
         Response(
           data = null,
           errors = result.errors,
@@ -419,6 +423,8 @@ class NDeliusGateway(
   ): Response<NDeliusContactEvent?> {
     val mappaCatQueryParam = "mappaCategories=${mappaCategories?.joinToString(",")}"
 
+    println("***** PMCP Calling /case/$crn/contacts/$contactEventId?$mappaCatQueryParam")
+
     val result =
       webClient.request<NDeliusContactEvent>(
         HttpMethod.GET,
@@ -432,6 +438,7 @@ class NDeliusGateway(
       }
 
       is WebClientWrapperResponse.Error -> {
+        println("***** PMCP Returned errors ${result.errors.map{it.type.name}.joinToString(",")}")
         Response(null, result.errors)
       }
     }

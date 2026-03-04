@@ -5,20 +5,24 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedVi
 data class PVPaginatedVisits(
   val content: List<PVVisit>,
   val totalPages: Int,
-  val totalCount: Long,
-  val isLastPage: Boolean,
-  val count: Int,
-  val page: Int,
-  val perPage: Int,
+  val totalElements: Long,
+  val last: Boolean,
+  val size: Int,
+  val number: Int,
+  val pageable: PVPage,
 ) {
   fun toPaginatedVisits(): PaginatedVisits =
     PaginatedVisits(
       content = this.content.map { it.toVisit() },
       totalPages = this.totalPages,
-      totalCount = this.totalCount,
-      isLastPage = this.isLastPage,
-      count = this.count,
-      page = this.page + 1,
-      perPage = this.perPage,
+      totalCount = this.totalElements,
+      isLastPage = this.last,
+      count = this.size,
+      page = this.number + 1,
+      perPage = pageable.pageSize,
     )
 }
+
+data class PVPage(
+  val pageSize: Int,
+)

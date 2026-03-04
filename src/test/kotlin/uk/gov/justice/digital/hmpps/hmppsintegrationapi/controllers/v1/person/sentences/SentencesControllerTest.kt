@@ -10,7 +10,7 @@ import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
@@ -86,7 +86,7 @@ internal class SentencesControllerTest(
             "dateOfSentencing": null,
             "description": "Some description 1",
             "isActive": true,
-            "isCustodial": true,
+            "isCustodial": false,
             "fineAmount": null,
             "length": {
                 "duration": null,
@@ -117,7 +117,7 @@ internal class SentencesControllerTest(
             "dateOfSentencing": null,
             "description": "Some description 2",
             "isActive": true,
-            "isCustodial": true,
+            "isCustodial": false,
             "fineAmount": null,
             "length": {
                 "duration": null,

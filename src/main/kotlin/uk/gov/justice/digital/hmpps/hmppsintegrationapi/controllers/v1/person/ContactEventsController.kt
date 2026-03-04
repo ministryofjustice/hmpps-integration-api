@@ -113,6 +113,7 @@ class ContactEventsController(
       throw ValidationException("Bad request from upstream ${response.errors.first().description}")
     }
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      println("****** PMCP NOT FOUND FOR $hmppsId and $contactEventId *****")
       throw EntityNotFoundException("Entity not found ${response.errors.first().description}")
     }
     auditService.createEvent("GET_PERSON_CONTACT_EVENT", mapOf("hmppsId" to hmppsId))

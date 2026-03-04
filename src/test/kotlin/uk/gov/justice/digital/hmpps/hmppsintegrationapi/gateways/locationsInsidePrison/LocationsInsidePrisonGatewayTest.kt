@@ -270,6 +270,7 @@ class LocationsInsidePrisonGatewayTest(
                   "CLOSE_SUPERVISION_CENTRE"
                 ],
                 "status": "ACTIVE",
+                "active": true,
                 "locked": false,
                 "convertedCellType": "HOLDING_ROOM",
                 "otherConvertedCellType": "string",
@@ -330,6 +331,7 @@ class LocationsInsidePrisonGatewayTest(
                     "CLOSE_SUPERVISION_CENTRE"
                   ],
                   "status": "ACTIVE",
+                  "active": true,
                   "locked": false,
                   "convertedCellType": "HOLDING_ROOM",
                   "otherConvertedCellType": "string",
@@ -406,15 +408,15 @@ class LocationsInsidePrisonGatewayTest(
           val result = locationsInsidePrisonGateway.getResidentialSummary(prisonId, parentPathHierarchy)
 
           result.data.shouldNotBeNull()
-          result.data!!
+          result.data
             .prisonSummary!!
             .workingCapacity
             .shouldBe(1073741824)
-          result.data!!
+          result.data
             .subLocations.size
             .shouldBe(1)
-          result.data!!.parentLocation.shouldNotBeNull()
-          result.data!!.topLevelLocationType.shouldBe("Wings")
+          result.data.parentLocation.shouldNotBeNull()
+          result.data.topLevelLocationType.shouldBe("Wings")
         }
 
         it("should return bad request if bad request thrown") {
