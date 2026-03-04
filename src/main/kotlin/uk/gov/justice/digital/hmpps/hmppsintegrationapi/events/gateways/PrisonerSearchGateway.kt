@@ -24,7 +24,7 @@ class PrisonerSearchGateway(
         HttpMethod.GET,
         "/prisoner/$nomsNumber",
         authenticationHeader(),
-        UpstreamApi.PRISONER_SEARCH,
+        UpstreamApi.PRISONER_OFFENDER_SEARCH,
       )
 
     return when (result) {

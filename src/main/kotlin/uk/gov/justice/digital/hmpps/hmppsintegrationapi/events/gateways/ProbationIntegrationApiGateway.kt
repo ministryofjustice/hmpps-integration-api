@@ -25,7 +25,7 @@ class ProbationIntegrationApiGateway(
         HttpMethod.GET,
         "/identifier-converter/noms-to-crn/$nomisId",
         authenticationHeader(),
-        UpstreamApi.PROBATION_INTEGRATION,
+        UpstreamApi.NDELIUS,
       )
 
     return when (result) {
@@ -45,7 +45,7 @@ class ProbationIntegrationApiGateway(
         HttpMethod.GET,
         "/exists-in-delius/crn/$crn",
         authenticationHeader(),
-        UpstreamApi.PROBATION_INTEGRATION,
+        UpstreamApi.NDELIUS,
       )
 
     return when (result) {

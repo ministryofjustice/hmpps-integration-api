@@ -36,8 +36,6 @@ class ApiMockServer(
           UpstreamApi.PRISONER_BASE_LOCATION -> ApiMockServerConfig(4030, "prisoner-base-location.json")
           UpstreamApi.CORE_PERSON_RECORD -> ApiMockServerConfig(4031, "core-person-record.json")
           UpstreamApi.ARNS_INTEGRATION_TEST -> ApiMockServerConfig(4032, "assess-risks-and-needs.json")
-          UpstreamApi.PROBATION_INTEGRATION -> ApiMockServerConfig(4201)
-          UpstreamApi.PRISONER_SEARCH -> ApiMockServerConfig(4202)
           // USE PRISM
           UpstreamApi.PRISON_API -> ApiMockServerConfig(4000)
           UpstreamApi.NDELIUS -> ApiMockServerConfig(4003)
