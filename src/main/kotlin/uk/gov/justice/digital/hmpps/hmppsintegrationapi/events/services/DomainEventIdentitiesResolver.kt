@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.HmppsDomainEvent
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationIntegrationApiGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.gateways.ProbationIntegrationApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationevents.exceptions.NotFoundException
 
 @Service

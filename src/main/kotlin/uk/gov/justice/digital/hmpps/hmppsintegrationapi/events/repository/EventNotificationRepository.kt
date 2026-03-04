@@ -12,6 +12,8 @@ interface EventNotificationRepository {
 
   fun findAllProcessingEvents(claimId: String): List<EventNotification>
 
+  fun findByHmppsIdIsIn(listOf: Collection<String>): List<EventNotification>
+
   // Update
   fun setProcessed(eventId: Any): Int
 

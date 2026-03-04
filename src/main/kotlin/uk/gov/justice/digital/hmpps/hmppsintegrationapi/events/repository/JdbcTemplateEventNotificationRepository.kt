@@ -60,6 +60,16 @@ class JdbcTemplateEventNotificationRepository(
     )
   }
 
+  override fun findByHmppsIdIsIn(listOf: Collection<String>): List<EventNotification> {
+    val paramAmount = List(listOf.count()) { "?" }.joinToString(",")
+    val getAllByHmppsIdQuery = "select * from event_notification where hmpps_id in ($paramAmount)"
+    return jdbcTemplate.query(
+      getAllByHmppsIdQuery,
+      DataClassRowMapper(EventNotification::class.java),
+      listOf,
+    )
+  }
+
   fun count(): Int {
     val countQuery = "select count(*) from event_notification"
     return jdbcTemplate.queryForObject<Int>(countQuery)

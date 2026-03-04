@@ -51,6 +51,10 @@ services:
     base-url: https://prisoner-base-location-api-dev.hmpps.service.justice.gov.uk
   core-person-record:
     base-url: https://hmpps-person-record-dev.hmpps.service.justice.gov.uk
+  probation-integration:
+    base-url: https://external-api-and-delius-dev.hmpps.service.justice.gov.uk
+  prisoner-search:
+    base-url: https://prisoner-search-dev.prison.service.justice.gov.uk
 
 feature-flag:
   course-completion-event-enabled: true
