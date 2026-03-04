@@ -12,6 +12,9 @@ plugins {
 configurations {
   testImplementation { exclude(group = "org.junit.vintage") }
   testCompileOnly { isCanBeResolved = true }
+  all {
+    exclude(group = "dev.detekt", module = "detekt-report-checkstyle")
+  }
 }
 
 configurations.all {
