@@ -17,8 +17,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
-import org.mockito.Mockito.mock
-import org.mockito.kotlin.whenever
 import org.springframework.messaging.support.GenericMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.IntegrationEventType
@@ -26,6 +24,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.listener.DomainEv
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.EventNotificationRepository
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.DomainEventIdentitiesResolver
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.DomainEventService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.config.FeatureFlagTestConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.helpers.SqsNotificationGeneratingHelper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import java.time.Clock
@@ -235,8 +234,6 @@ abstract class DomainEventsListenerTestCase {
     protected val baseUrl = "https://dev.integration-api.hmpps.service.justice.gov.uk"
   }
 
-  protected val featureFlag = mock(FeatureFlagConfig::class.java)
-
   protected val currentTime: LocalDateTime = LocalDateTime.now()
   protected val zonedCurrentTime: ZonedDateTime = currentTime.atZone(ZoneId.systemDefault())
   protected val testClock: Clock = Clock.fixed(zonedCurrentTime.toInstant(), zonedCurrentTime.zone)
@@ -245,8 +242,9 @@ abstract class DomainEventsListenerTestCase {
   protected val eventNotificationRepository = mockk<EventNotificationRepository>()
   protected val domainEventIdentitiesResolver = mockk<DomainEventIdentitiesResolver>()
   protected val telemetryService = mockk<TelemetryService>()
+  protected val featureFlagTestConfig = FeatureFlagTestConfig()
 
-  protected val domainEventService = DomainEventService(eventNotificationRepository, domainEventIdentitiesResolver, baseUrl, testClock, featureFlag)
+  protected val domainEventService = DomainEventService(eventNotificationRepository, domainEventIdentitiesResolver, baseUrl, testClock, featureFlagTestConfig.featureFlagConfig)
   protected val domainEventsListener = DomainEventsListener(domainEventService, telemetryService)
 
   @BeforeEach
@@ -258,9 +256,8 @@ abstract class DomainEventsListenerTestCase {
         FeatureFlagConfig.PRISONER_BASE_LOCATION_CHANGED_NOTIFICATIONS_ENABLED,
         FeatureFlagConfig.PRISONER_MERGED_NOTIFICATIONS_ENABLED,
       )
-    whenever(featureFlag.isEnabled(FeatureFlagConfig.PERSON_LANGUAGES_CHANGED_NOTIFICATIONS_ENABLED)).thenReturn(true)
-    whenever(featureFlag.isEnabled(FeatureFlagConfig.PRISONER_BASE_LOCATION_CHANGED_NOTIFICATIONS_ENABLED)).thenReturn(true)
-    whenever(featureFlag.isEnabled(FeatureFlagConfig.PRISONER_MERGED_NOTIFICATIONS_ENABLED)).thenReturn(true)
+
+    enabledFeatureFlags.forEach { featureFlagTestConfig.assumeFeatureFlag(it, true) }
 
     every { eventNotificationRepository.insertOrUpdate(any()) } returnsArgument 0
 
