@@ -52,6 +52,7 @@ services:
     base-url: https://hmpps-person-record.hmpps.service.justice.gov.uk
 
 feature-flag:
+  # API Config
   course-completion-event-enabled: false
   use-contact-events-endpoint: false
   use-emergency-contacts-endpoint: false
@@ -59,10 +60,11 @@ feature-flag:
   epf-gateway-disabled: true
   cpr-enabled: true
   gateway-cache-enabled: true
-  enable-delete-processed-events: false
-  enable-send-processed-events: false
   enable-send-decimal-risk-scores: true
-
+  # Events Config
+  enable-delete-processed-events: false
+  enable-publish-pending-events: false
+  enable-domain-events-queue-listener: false
   person-languages-changed-notifications-enabled: true
   prisoner-base-location-changed-notifications-enabled: true
   prisoner-merge-notifications-enabled: false

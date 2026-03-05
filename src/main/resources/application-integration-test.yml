@@ -103,6 +103,7 @@ hmpps.sqs:
       arn: arn:aws:sns:eu-west-2:000000000000:integration_event_topic
 
 feature-flag:
+  # API Config
   course-completion-event-enabled: true
   use-contact-events-endpoint: true
   use-emergency-contacts-endpoint: true
@@ -110,10 +111,11 @@ feature-flag:
   cpr-enabled: true
   gateway-cache-enabled: true
   normalised-path-matching: true
-  enable-delete-processed-events: true
-  enable-send-processed-events: true
   enable-send-decimal-risk-scores: true
-
+  # Events Config
+  enable-delete-processed-events: true
+  enable-publish-pending-events: true
+  enable-domain-events-queue-listener: true
   person-languages-changed-notifications-enabled: true
   prisoner-merge-notifications-enabled: true
   prisoner-base-location-changed-notifications-enabled: true

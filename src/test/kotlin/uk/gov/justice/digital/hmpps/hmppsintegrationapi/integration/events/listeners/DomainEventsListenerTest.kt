@@ -244,7 +244,14 @@ abstract class DomainEventsListenerTestCase {
   protected val telemetryService = mockk<TelemetryService>()
   protected val featureFlagTestConfig = FeatureFlagTestConfig()
 
-  protected val domainEventService = DomainEventService(eventNotificationRepository, domainEventIdentitiesResolver, baseUrl, testClock, featureFlagTestConfig.featureFlagConfig)
+  protected val domainEventService =
+    DomainEventService(
+      eventNotificationRepository,
+      domainEventIdentitiesResolver,
+      baseUrl,
+      testClock,
+      featureFlagTestConfig.featureFlagConfig,
+    )
   protected val domainEventsListener = DomainEventsListener(domainEventService, telemetryService)
 
   @BeforeEach
