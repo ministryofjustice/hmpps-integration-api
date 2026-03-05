@@ -1,11 +1,11 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.listeners
 
 import org.junit.jupiter.api.Test
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.IntegrationEventType
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.IntegrationEventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents.ASSESSMENT_SUMMARY_PRODUCED
 
-class DomainEventsListenerROSHTest : uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.listeners.DomainEventsListenerTestCase() {
+class DomainEventsListenerROSHTest : DomainEventsListenerTestCase() {
   private val crn = "X777776"
 
   @Test

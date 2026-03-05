@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.listeners
 
 import org.junit.jupiter.api.Test
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.IntegrationEventType
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.IntegrationEventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents.generateDomainEvent
 
 class DomainEventsListenerPLPReviewUpdatedTest : DomainEventsListenerTestCase() {

@@ -2,10 +2,10 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.listeners
 
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.IntegrationEventType
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.IntegrationEventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents
 
-class DomainEventsListenerLicenceConditionTest : uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.listeners.DomainEventsListenerTestCase() {
+class DomainEventsListenerLicenceConditionTest : DomainEventsListenerTestCase() {
   private val crn = "X777776"
   private val nomsNumber = "A1234BC"
 

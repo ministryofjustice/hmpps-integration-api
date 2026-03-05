@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.StuckEvents
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.StuckEvents
 import java.time.LocalDateTime
 
 interface EventNotificationRepository {

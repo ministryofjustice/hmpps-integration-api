@@ -13,8 +13,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.HmppsDomainEvent
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.SQSMessage
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.HmppsDomainEvent
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.SQSMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.DomainEventService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import java.util.concurrent.CompletionException

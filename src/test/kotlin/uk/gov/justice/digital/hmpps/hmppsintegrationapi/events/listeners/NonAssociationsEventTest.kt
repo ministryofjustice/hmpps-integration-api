@@ -3,11 +3,11 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.listeners
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.DomainEventName
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.IntegrationEventType
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.IntegrationEventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.DomainEventName
 
-class NonAssociationsEventTest : uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.listeners.DomainEventsListenerTestCase() {
+class NonAssociationsEventTest : DomainEventsListenerTestCase() {
   private val nomsNumber = "A1234BC"
 
   @BeforeEach

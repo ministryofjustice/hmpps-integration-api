@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationevents.exceptions
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.exceptions
 
 open class UnmappableUrlException(
   message: String,

@@ -1,10 +1,10 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.listeners
 
 import org.junit.jupiter.api.Test
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.IntegrationEventType
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.IntegrationEventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents
 
-class DomainEventsListenerSANPlanCreationScheduleUpdatedTest : uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.listeners.DomainEventsListenerTestCase() {
+class DomainEventsListenerSANPlanCreationScheduleUpdatedTest : DomainEventsListenerTestCase() {
   private val nomsNumber = "A1234BC"
 
   private val eventType = "san.plan-creation-schedule.updated"

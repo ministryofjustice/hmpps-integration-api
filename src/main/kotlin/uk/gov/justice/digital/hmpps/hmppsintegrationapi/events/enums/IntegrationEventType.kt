@@ -1,20 +1,24 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.RegisterTypes.CHILD_CONCERNS_CODE
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.RegisterTypes.CHILD_PROTECTION_CODE
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.RegisterTypes.HIGH_ROSH_CODE
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.RegisterTypes.LOW_ROSH_CODE
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.RegisterTypes.MAPPA_CODE
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.RegisterTypes.MED_ROSH_CODE
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.RegisterTypes.RISK_TO_VULNERABLE_ADULT_CODE
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.RegisterTypes.SERIOUS_FURTHER_OFFENCE_CODE
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.RegisterTypes.STREET_GANGS_CODE
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.RegisterTypes.VISOR_CODE
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.RegisterTypes.WARRANT_SUMMONS_CODE
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.RegisterTypes.WEAPONS_CODE
-import uk.gov.justice.digital.hmpps.hmppsintegrationevents.exceptions.NotFoundException
-import uk.gov.justice.digital.hmpps.hmppsintegrationevents.exceptions.PrisonNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.RegisterTypes.CHILD_CONCERNS_CODE
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.RegisterTypes.CHILD_PROTECTION_CODE
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.RegisterTypes.HIGH_ROSH_CODE
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.RegisterTypes.LOW_ROSH_CODE
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.RegisterTypes.MAPPA_CODE
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.RegisterTypes.MED_ROSH_CODE
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.RegisterTypes.RISK_TO_VULNERABLE_ADULT_CODE
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.RegisterTypes.SERIOUS_FURTHER_OFFENCE_CODE
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.RegisterTypes.STREET_GANGS_CODE
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.RegisterTypes.VISOR_CODE
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.RegisterTypes.WARRANT_SUMMONS_CODE
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.RegisterTypes.WEAPONS_CODE
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.exceptions.PrisonNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.AdditionalInformation
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.DomainEventName
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.HmppsDomainEvent
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import java.time.LocalDateTime
 
 val DYNAMIC_RISK_EVENTS =
@@ -653,7 +657,7 @@ enum class IntegrationEventType(
     var replacedPath = pathTemplate
     if (replacedPath.contains("{hmppsId}")) {
       if (hmppsId == null) {
-        throw NotFoundException("Identifier could not be found in domain event message for path $pathTemplate")
+        throw EntityNotFoundException("Identifier could not be found in domain event message for path $pathTemplate")
       }
       replacedPath = replacedPath.replace("{hmppsId}", hmppsId)
     }

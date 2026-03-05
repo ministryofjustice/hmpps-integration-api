@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models
 
 object DomainEventName {
   object ProbabtionCase {

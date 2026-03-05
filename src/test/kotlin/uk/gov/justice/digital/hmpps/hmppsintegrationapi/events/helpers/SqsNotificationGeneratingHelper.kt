@@ -2,10 +2,10 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventType
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.HmppsDomainEvent
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.SQSMessage
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.SQSMessageAttributes
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.EventType
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.HmppsDomainEvent
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.SQSMessage
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.SQSMessageAttributes
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime

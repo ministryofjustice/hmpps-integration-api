@@ -2,9 +2,9 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.HmppsDomainEvent
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.HmppsDomainEvent
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationevents.exceptions.NotFoundException
 
 @Service
 class DomainEventIdentitiesResolver(
@@ -25,7 +25,7 @@ class DomainEventIdentitiesResolver(
         if (it.existsInDelius) {
           return crn
         }
-        throw NotFoundException("Person with crn $crn not found")
+        throw EntityNotFoundException("Person with crn $crn not found")
       }
     }
 

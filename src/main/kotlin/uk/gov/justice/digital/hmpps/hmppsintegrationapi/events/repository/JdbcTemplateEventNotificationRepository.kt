@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.queryForObject
 import org.springframework.stereotype.Repository
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.StuckEvents
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.StuckEvents
 import java.time.LocalDateTime
 
 const val EVENT_NOTIFICATION_BATCH_LIMIT = 1000

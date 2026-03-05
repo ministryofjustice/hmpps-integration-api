@@ -20,7 +20,7 @@ import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.messaging.support.GenericMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.config.FeatureFlagTestConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.IntegrationEventType
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.IntegrationEventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.listener.DomainEventsListener
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.EventNotificationRepository
@@ -34,7 +34,7 @@ import java.time.ZonedDateTime
 import java.util.concurrent.CompletionException
 import kotlin.getValue
 
-class DomainEventsListenerTest : uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.listeners.DomainEventsListenerTestCase() {
+class DomainEventsListenerTest : DomainEventsListenerTestCase() {
   private val crn = "X777776"
 
   @Test
