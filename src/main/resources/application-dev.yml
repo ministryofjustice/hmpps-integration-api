@@ -57,6 +57,7 @@ services:
 feature-flag:
   # API Config
   course-completion-event-enabled: true
+  use-active-alerts-endpoint: true
   use-emergency-contacts-endpoint: true
   use-contact-events-endpoint: true
   epf-endpoint-includes-lao: true

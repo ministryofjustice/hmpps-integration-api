@@ -127,7 +127,7 @@ internal class GetAlertsForPersonServiceTest(
             data = paginatedAlerts,
           ),
         )
-        whenever(prisonerAlertsGateway.getPrisonerAlertsForCodes(hmppsId, page, perPage)).thenReturn(
+        whenever(prisonerAlertsGateway.getPrisonerAlertsForCodes(hmppsId, page, perPage, activeOnly = true)).thenReturn(
           Response(
             data = paginatedAlerts,
           ),
@@ -144,9 +144,9 @@ internal class GetAlertsForPersonServiceTest(
         verify(personService, times(1)).getNomisNumber(hmppsId = hmppsId, filters)
       }
 
-      it("gets alerts using a prisoner number") {
+      it("gets all alerts using a prisoner number") {
         val response = getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)
-        verify(prisonerAlertsGateway, times(1)).getPrisonerAlertsForCodes(hmppsId, page, perPage, emptyList())
+        verify(prisonerAlertsGateway, times(1)).getPrisonerAlertsForCodes(hmppsId, page, perPage, emptyList(), false)
         response.data.shouldBe(paginatedAlerts.toPaginatedAlertsFilterApplied())
       }
 
@@ -158,7 +158,13 @@ internal class GetAlertsForPersonServiceTest(
 
       it("gets alerts using a prisoner number - getAlerts") {
         val response = getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)
-        verify(prisonerAlertsGateway, times(1)).getPrisonerAlertsForCodes(hmppsId, page, perPage)
+        verify(prisonerAlertsGateway, times(1)).getPrisonerAlertsForCodes(hmppsId, page, perPage, activeOnly = false)
+        response.data.shouldBe(paginatedAlerts.toPaginatedAlertsFilterApplied())
+      }
+
+      it("gets active alerts using a prisoner number - getAlerts") {
+        val response = getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage, true)
+        verify(prisonerAlertsGateway, times(1)).getPrisonerAlertsForCodes(hmppsId, page, perPage, activeOnly = true)
         response.data.shouldBe(paginatedAlerts.toPaginatedAlertsFilterApplied())
       }
 

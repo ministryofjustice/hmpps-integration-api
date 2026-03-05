@@ -24,6 +24,7 @@ class AlertsIntegrationTest : IntegrationTestBase() {
   @Nested
   inner class GetAlerts {
     val path = "$basePath/$nomsId/alerts"
+    val activeOnlyPath = "$basePath/$nomsId/active-alerts"
 
     @BeforeEach
     fun setup() {
@@ -37,10 +38,21 @@ class AlertsIntegrationTest : IntegrationTestBase() {
     }
 
     @Test
-    fun `returns alerts for a person`() {
+    fun `returns all alerts for a person`() {
       callApi(path)
         .andExpect(status().isOk)
         .andExpect(content().json(getExpectedResponse("person-alerts")))
+
+      verify(alertsGateway, times(1)).getPrisonerAlertsForCodes(nomsId, 1, 10, emptyList(), false)
+    }
+
+    @Test
+    fun `returns active alerts for a person`() {
+      callApi(activeOnlyPath)
+        .andExpect(status().isOk)
+        .andExpect(content().json(getExpectedResponse("person-alerts")))
+
+      verify(alertsGateway, times(1)).getPrisonerAlertsForCodes(nomsId, 1, 10, emptyList(), true)
     }
 
     @Test
@@ -50,7 +62,7 @@ class AlertsIntegrationTest : IntegrationTestBase() {
         .andExpect(status().isOk)
         .andExpect(content().json(getExpectedResponse("person-alerts")))
 
-      verify(alertsGateway, times(1)).getPrisonerAlertsForCodes(nomsId, 1, 10, testRoleWithPndAlerts.filters?.alertCodes!!)
+      verify(alertsGateway, times(1)).getPrisonerAlertsForCodes(nomsId, 1, 10, testRoleWithPndAlerts.filters?.alertCodes!!, false)
     }
 
     @Test
