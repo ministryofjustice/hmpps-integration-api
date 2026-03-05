@@ -19,7 +19,7 @@ management.endpoint:
 # Use ports <4010, reuse if required
 services:
   int-api:
-    base-url: https://localhost
+    base-url: https://localhost:8443
   prison-api:
     base-url: http://localhost:4000
   hmpps-auth:

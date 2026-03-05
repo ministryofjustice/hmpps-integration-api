@@ -11,7 +11,7 @@ spring:
 
 # Use ports >= 4010
 services:
-  int-api.base-url: https://localhost
+  int-api.base-url: https://localhost:8443
   hmpps-auth.base-url: http://localhost:9090
   adjudications.base-url: http://localhost:4010
   assess-risks-and-needs.base-url: http://localhost:4011

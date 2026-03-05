@@ -3,12 +3,12 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.HmppsDomainEvent
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.gateways.ProbationIntegrationApiGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationevents.exceptions.NotFoundException
 
 @Service
 class DomainEventIdentitiesResolver(
-  @Autowired val probationIntegrationApiGateway: ProbationIntegrationApiGateway,
+  @Autowired val probationIntegrationApiGateway: NDeliusGateway,
   @Autowired val getPrisonIdService: GetPrisonIdService,
 ) {
   /**

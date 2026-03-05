@@ -259,6 +259,8 @@ abstract class DomainEventsListenerTestCase {
         FeatureFlagConfig.PRISONER_MERGED_NOTIFICATIONS_ENABLED,
       )
     whenever(featureFlag.isEnabled(FeatureFlagConfig.PERSON_LANGUAGES_CHANGED_NOTIFICATIONS_ENABLED)).thenReturn(true)
+    whenever(featureFlag.isEnabled(FeatureFlagConfig.PRISONER_BASE_LOCATION_CHANGED_NOTIFICATIONS_ENABLED)).thenReturn(true)
+    whenever(featureFlag.isEnabled(FeatureFlagConfig.PRISONER_MERGED_NOTIFICATIONS_ENABLED)).thenReturn(true)
 
     every { eventNotificationRepository.insertOrUpdate(any()) } returnsArgument 0
 

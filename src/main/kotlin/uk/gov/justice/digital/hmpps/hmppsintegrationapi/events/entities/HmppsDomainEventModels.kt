@@ -2,6 +2,9 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
+import kotlin.text.category
+
+val mappaCategories = intArrayOf(1, 2, 3, 4)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class HmppsDomainEvent(
@@ -13,9 +16,7 @@ data class HmppsDomainEvent(
   @JsonProperty("prisonerId") val prisonerId: String? = null,
   @JsonProperty("prisonId") val prisonId: String? = null,
 ) {
-  fun isValidContactEvent(): Boolean {
-    TODO("Not yet implemented")
-  }
+  fun isValidContactEvent(): Boolean = additionalInformation?.mappa?.category != null && mappaCategories.contains(additionalInformation.mappa.category)
 }
 
 @JsonIgnoreProperties(ignoreUnknown = true)

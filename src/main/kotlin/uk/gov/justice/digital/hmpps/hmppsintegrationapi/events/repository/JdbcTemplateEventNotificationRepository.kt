@@ -65,8 +65,8 @@ class JdbcTemplateEventNotificationRepository(
     val getAllByHmppsIdQuery = "select * from event_notification where hmpps_id in ($paramAmount)"
     return jdbcTemplate.query(
       getAllByHmppsIdQuery,
+      listOf.toTypedArray(),
       DataClassRowMapper(EventNotification::class.java),
-      listOf,
     )
   }
 
