@@ -1,9 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventType
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.SQSMessage
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.SQSMessageAttributes
-
 object DomainEvents {
   val occuredAt = "2024-08-09T12:20:40.282+01:00"
   val crn = "X777776"
@@ -45,7 +41,7 @@ object DomainEvents {
     """.trimIndent()
 
   private val sqsNotificationGeneratingHelper =
-      _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper()
+    SqsNotificationGeneratingHelper()
 
   fun generateDomainEvent(
     eventType: String,
@@ -69,14 +65,4 @@ object DomainEvents {
       }
     }
     """.trimIndent()
-
-  fun generateHmppsDomainEvent(
-    eventType: String,
-    message: String,
-  ) = SQSMessage(
-    type = "Notification",
-    message = message,
-    messageId = "d4419bdd-2079-598c-b608-c4f2ddb1bcd1",
-    messageAttributes = SQSMessageAttributes(EventType(eventType)),
-  ).let { sqsNotificationGeneratingHelper.extractDomainEventFrom(it) }
 }

@@ -2,9 +2,9 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.listeners
 
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.IntegrationEventType
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents.generateDomainEvent
 
-class DomainEventsListenerPLPReviewUpdatedTest : uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.listeners.DomainEventsListenerTestCase() {
+class DomainEventsListenerPLPReviewUpdatedTest : DomainEventsListenerTestCase() {
   private val nomsNumber = "A1234BC"
 
   private val eventType = "plp.review-schedule.updated"
@@ -17,7 +17,7 @@ class DomainEventsListenerPLPReviewUpdatedTest : uk.gov.justice.digital.hmpps.hm
       { \"eventType\": \"$eventType\",  \"description\": \"A prisoner learning plan review schedule created or amended\",  \"detailUrl\": \"http://localhost:8080/inductions/$nomsNumber/review-schedule\",  \"occurredAt\": \"2024-08-08T09:07:55\",  \"personReference\": {    \"identifiers\": [      {        \"type\": \"NOMS\",        \"value\": \"$nomsNumber\"      }    ]  }}
       """.trimIndent()
 
-    val payload = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents.generateDomainEvent(eventType, message)
+    val payload = generateDomainEvent(eventType, message)
 
     // Act, Assert
     onDomainEventShouldCreateEventNotification(

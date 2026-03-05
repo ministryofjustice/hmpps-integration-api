@@ -13,8 +13,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEve
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents.PROBATION_CASE_PRISON_IDENTIFIER_ADDED
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents.generateDomainEvent
 
-class PersonEventTest : uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.listeners.DomainEventsListenerTestCase() {
-  private val crn = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents.crn
+class PersonEventTest : DomainEventsListenerTestCase() {
+  private val crn = DomainEvents.crn
 
   @BeforeEach
   internal fun setupPersonTest() {

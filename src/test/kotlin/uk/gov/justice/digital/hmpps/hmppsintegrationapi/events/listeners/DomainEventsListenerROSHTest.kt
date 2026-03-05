@@ -14,7 +14,9 @@ class DomainEventsListenerROSHTest : uk.gov.justice.digital.hmpps.hmppsintegrati
     val eventType = "assessment.summary.produced"
     val message = ASSESSMENT_SUMMARY_PRODUCED
 
-    val payload = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents.generateDomainEvent(eventType, message)
+    val payload =
+      DomainEvents
+        .generateDomainEvent(eventType, message)
 
     // Act, Assert
     onDomainEventShouldCreateEventNotification(

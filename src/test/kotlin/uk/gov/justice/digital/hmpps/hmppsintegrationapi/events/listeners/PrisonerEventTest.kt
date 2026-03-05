@@ -47,7 +47,9 @@ class PrisonerEventTest : uk.gov.justice.digital.hmpps.hmppsintegrationapi.event
       }
       """.trimIndent().replace("\n", "")
 
-    val payload = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents.generateDomainEvent(eventType, message.replace("\"", "\\\""))
+    val payload =
+      DomainEvents
+        .generateDomainEvent(eventType, message.replace("\"", "\\\""))
 
     // Act, Assert
     onDomainEventShouldCreateEventNotifications(
@@ -88,7 +90,9 @@ class PrisonerEventTest : uk.gov.justice.digital.hmpps.hmppsintegrationapi.event
       }
       """.trimIndent().replace("\n", "")
 
-    val payload = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents.generateDomainEvent(eventType, message.replace("\"", "\\\""))
+    val payload =
+      DomainEvents
+        .generateDomainEvent(eventType, message.replace("\"", "\\\""))
 
     // Act, Assert
     onDomainEventShouldCreateEventNotifications(
@@ -125,7 +129,9 @@ class PrisonerEventTest : uk.gov.justice.digital.hmpps.hmppsintegrationapi.event
       }
       """.trimIndent().replace("\n", "")
 
-    val payload = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents.generateDomainEvent(eventType, message.replace("\"", "\\\""))
+    val payload =
+      DomainEvents
+        .generateDomainEvent(eventType, message.replace("\"", "\\\""))
 
     // Act, Assert
     onDomainEventShouldCreateEventNotifications(
@@ -160,7 +166,9 @@ class PrisonerEventTest : uk.gov.justice.digital.hmpps.hmppsintegrationapi.event
       }
       """.trimIndent().replace("\n", "")
 
-    val payload = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents.generateDomainEvent(eventType, message.replace("\"", "\\\""))
+    val payload =
+      DomainEvents
+        .generateDomainEvent(eventType, message.replace("\"", "\\\""))
 
     // Act, Assert
     onDomainEventShouldCreateEventNotifications(
@@ -195,7 +203,9 @@ class PrisonerEventTest : uk.gov.justice.digital.hmpps.hmppsintegrationapi.event
       }
       """.trimIndent().replace("\n", "")
 
-    val payload = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents.generateDomainEvent(eventType, message.replace("\"", "\\\""))
+    val payload =
+      DomainEvents
+        .generateDomainEvent(eventType, message.replace("\"", "\\\""))
 
     // Act, Assert
     onDomainEventShouldCreateEventNotifications(
@@ -229,7 +239,9 @@ class PrisonerEventTest : uk.gov.justice.digital.hmpps.hmppsintegrationapi.event
       }
       """.trimIndent().replace("\n", "")
 
-    val payload = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents.generateDomainEvent(eventType, message.replace("\"", "\\\""))
+    val payload =
+      DomainEvents
+        .generateDomainEvent(eventType, message.replace("\"", "\\\""))
 
     // Act, Assert
     onDomainEventShouldCreateEventNotifications(

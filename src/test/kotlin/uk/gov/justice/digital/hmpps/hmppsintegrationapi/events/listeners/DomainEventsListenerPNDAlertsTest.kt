@@ -65,7 +65,9 @@ class DomainEventsListenerPNDAlertsTest : uk.gov.justice.digital.hmpps.hmppsinte
       {\"eventType\":\"$eventType\",\"additionalInformation\":{\"alertUuid\":\"8339dd96-4a02-4d5b-bc78-4eda22f678fa\",\"alertCode\":\"$alertCode\",\"source\":\"NOMIS\"},\"version\":1,\"description\":\"$description\",\"occurredAt\":\"2024-08-12T19:48:12.771347283+01:00\",\"detailUrl\":\"https://alerts-api.hmpps.service.justice.gov.uk/alerts/8339dd96-4a02-4d5b-bc78-4eda22f678fa\",\"personReference\":{\"identifiers\":[{\"type\":\"NOMS\",\"value\":\"$nomsNumber\"}]}}
       """.trimIndent()
 
-    val payload = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents.generateDomainEvent(eventType, message)
+    val payload =
+      DomainEvents
+        .generateDomainEvent(eventType, message)
 
     // Act, Assert
     onDomainEventShouldCreateEventNotifications(

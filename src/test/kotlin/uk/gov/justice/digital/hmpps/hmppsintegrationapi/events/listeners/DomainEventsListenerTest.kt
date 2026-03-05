@@ -19,13 +19,13 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.messaging.support.GenericMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.config.FeatureFlagTestConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.IntegrationEventType
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.listener.DomainEventsListener
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.EventNotificationRepository
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.DomainEventIdentitiesResolver
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.DomainEventService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.config.FeatureFlagTestConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import java.time.Clock
 import java.time.LocalDateTime
@@ -238,16 +238,15 @@ abstract class DomainEventsListenerTestCase {
   protected val zonedCurrentTime: ZonedDateTime = currentTime.atZone(ZoneId.systemDefault())
   protected val testClock: Clock = Clock.fixed(zonedCurrentTime.toInstant(), zonedCurrentTime.zone)
   protected val sqsNotificationHelper by lazy {
-      _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper(
-          timestamp = zonedCurrentTime
-      )
+    SqsNotificationGeneratingHelper(
+      timestamp = zonedCurrentTime,
+    )
   }
 
   protected val eventNotificationRepository = mockk<EventNotificationRepository>()
   protected val domainEventIdentitiesResolver = mockk<DomainEventIdentitiesResolver>()
   protected val telemetryService = mockk<TelemetryService>()
-  protected val featureFlagTestConfig =
-      _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.config.FeatureFlagTestConfig()
+  protected val featureFlagTestConfig = FeatureFlagTestConfig()
 
   protected val domainEventService =
     DomainEventService(

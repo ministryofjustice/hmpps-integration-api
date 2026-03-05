@@ -17,7 +17,9 @@ class DomainEventsListenerSANPlanCreationScheduleUpdatedTest : uk.gov.justice.di
       { \"eventType\": \"$eventType\",  \"description\": \"A Support for additional needs plan creation schedule created or amended\",  \"detailUrl\": \"http://localhost:8080/profile/$nomsNumber/plan-creation-schedule\",  \"occurredAt\": \"2024-08-08T09:07:55\",  \"personReference\": {    \"identifiers\": [      {        \"type\": \"NOMS\",        \"value\": \"$nomsNumber\"      }    ]  }}
       """.trimIndent()
 
-    val payload = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents.generateDomainEvent(eventType, message)
+    val payload =
+      DomainEvents
+        .generateDomainEvent(eventType, message)
 
     // Act, Assert
     onDomainEventShouldCreateEventNotification(

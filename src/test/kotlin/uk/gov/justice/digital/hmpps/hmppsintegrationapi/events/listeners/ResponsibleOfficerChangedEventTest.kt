@@ -23,7 +23,9 @@ class ResponsibleOfficerChangedEventTest : uk.gov.justice.digital.hmpps.hmppsint
       {"eventType":"$eventType","version": 1,"description":"HMPPS Domain Event","detailUrl":"https://some-url.gov.uk","occurredAt": "2024-08-14T12:33:34+01:00","personReference":{"identifiers":[{"type": "CRN", "value": "$crn"}]}}
       """.trimIndent()
 
-    val payload = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents.generateDomainEvent(eventType, message.replace("\"", "\\\""))
+    val payload =
+      DomainEvents
+        .generateDomainEvent(eventType, message.replace("\"", "\\\""))
 
     // Act, Assert
     onDomainEventShouldCreateEventNotification(

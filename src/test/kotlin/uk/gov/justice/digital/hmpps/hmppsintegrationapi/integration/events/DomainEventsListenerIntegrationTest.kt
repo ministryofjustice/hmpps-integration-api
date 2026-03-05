@@ -35,10 +35,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.Integrat
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.PrisonerChangedCategory
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.ReceptionReasons
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.ReleaseReasons
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.JdbcTemplateEventNotificationRepository
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.servers.ProbationIntegrationApiExtension
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import uk.gov.justice.hmpps.sqs.MissingQueueException
 import java.time.Duration
@@ -65,9 +64,6 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
   lateinit var repo: JdbcTemplateEventNotificationRepository
   val prisonId = "MDI"
 
-  val prisonerSearchMockServer =
-    _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.servers.PrisonerSearchMockServer()
-
   val awaitTimeOut = Duration.ofSeconds(5)
   val awaitPollDelay = Duration.ofMillis(200)
   val defaultAwaitTimeOutNoEventSaved = Duration.ofSeconds(2)
@@ -75,24 +71,20 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
   @BeforeEach
   fun setup() {
     repo.deleteAll()
-    ProbationIntegrationApiExtension.server.stubGetPersonIdentifier(nomsId, crn)
-    prisonerSearchMockServer.start()
-    prisonerSearchMockServer.stubGetPrisoner(nomsId, prisonId)
     Awaitility.setDefaultTimeout(awaitTimeOut)
     Awaitility.setDefaultPollDelay(awaitPollDelay)
   }
 
   @AfterEach
   fun cleanup() {
-    prisonerSearchMockServer.stop()
     Awaitility.reset()
   }
 
   @Test
   fun `will process and save a valid domain event SQS message`() {
-    ProbationIntegrationApiExtension.server.stubGetIfPersonExists(crn)
-    val rawMessage = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper()
-      .generateRawGenericEvent()
+    val rawMessage =
+      SqsNotificationGeneratingHelper()
+        .generateRawGenericEvent()
     sendDomainSqsMessage(rawMessage)
 
     Awaitility.await().until { repo.findAll().isNotEmpty() }
@@ -125,8 +117,9 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `will not process and save a domain event message with an unknown register type code`() {
-    val rawMessage = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper()
-      .generateRawHmppsDomainEvent(registerTypeCode = "OtherType")
+    val rawMessage =
+      SqsNotificationGeneratingHelper()
+        .generateRawHmppsDomainEvent(registerTypeCode = "OtherType")
 
     sendDomainSqsMessage(rawMessage)
 
@@ -154,8 +147,9 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `will process and save a prisoner released event SQS message`() {
-    val rawMessage = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper()
-      .generatePrisonerReleasedEvent()
+    val rawMessage =
+      SqsNotificationGeneratingHelper()
+        .generatePrisonerReleasedEvent()
     sendDomainSqsMessage(rawMessage)
 
     Awaitility.await().until { repo.findAll().isNotEmpty() }
@@ -168,11 +162,13 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `will process and save a prisoner merge event SQS message`() {
-    val rawMessage = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper()
-      .generateRawHmppsMergeDomainEvent()
+    val rawMessage = SqsNotificationGeneratingHelper().generateRawHmppsMergeDomainEvent()
+
     sendDomainSqsMessage(rawMessage)
 
-    Awaitility.await().until { repo.findAll().isNotEmpty() }
+    Awaitility.await().until {
+      repo.findAll().isNotEmpty()
+    }
     val savedEvents: List<EventNotification> = repo.findByHmppsIdIsIn(listOf("A3646EA", "A3646EB"))
     savedEvents.shouldNotBeEmpty().shouldHaveSize(2)
 
@@ -214,8 +210,9 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
       }
     }
     """
-    val rawMessage = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper()
-      .generateRawDomainEvent(eventType, message)
+    val rawMessage =
+      SqsNotificationGeneratingHelper()
+        .generateRawDomainEvent(eventType, message)
     sendDomainSqsMessage(rawMessage)
 
     Awaitility.await().until { repo.findAll().isNotEmpty() }
@@ -246,8 +243,9 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
       }
     }
     """
-    val rawMessage = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper()
-      .generateRawDomainEvent(eventType, message)
+    val rawMessage =
+      SqsNotificationGeneratingHelper()
+        .generateRawDomainEvent(eventType, message)
     sendDomainSqsMessage(rawMessage)
 
     Awaitility.await().until { repo.findAll().isNotEmpty() }
@@ -286,8 +284,9 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
       }
     }
     """
-    val rawMessage = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper()
-      .generateRawDomainEvent(eventType, message)
+    val rawMessage =
+      SqsNotificationGeneratingHelper()
+        .generateRawDomainEvent(eventType, message)
     sendDomainSqsMessage(rawMessage)
 
     Awaitility.await().until { repo.findAll().isNotEmpty() }
@@ -321,8 +320,9 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
       }
     }
     """
-    val rawMessage = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper()
-      .generateRawDomainEvent(eventType, message)
+    val rawMessage =
+      SqsNotificationGeneratingHelper()
+        .generateRawDomainEvent(eventType, message)
     sendDomainSqsMessage(rawMessage)
 
     Awaitility.await().until { repo.findAll().isNotEmpty() }
@@ -355,8 +355,7 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
       }
     }
     """
-    val rawMessage = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper()
-      .generateRawDomainEvent(eventType, message)
+    val rawMessage = SqsNotificationGeneratingHelper().generateRawDomainEvent(eventType, message)
     sendDomainSqsMessage(rawMessage)
 
     Awaitility.await().until { repo.findAll().isNotEmpty() }
@@ -404,8 +403,9 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
     @Test
     fun `will process and save a prisoner personal details changed event SQS message`() {
       val message = generateMessage(PrisonerChangedCategory.PERSONAL_DETAILS.name)
-      val rawMessage = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper()
-        .generateRawDomainEvent(eventType, message)
+      val rawMessage =
+        SqsNotificationGeneratingHelper()
+          .generateRawDomainEvent(eventType, message)
       sendDomainSqsMessage(rawMessage)
 
       Awaitility.await().until { repo.findAll().isNotEmpty() }
@@ -428,8 +428,9 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
     @Test
     fun `will process and save a prisoner sentences changed event SQS message`() {
       val message = generateMessage(PrisonerChangedCategory.SENTENCE)
-      val rawMessage = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper()
-        .generateRawDomainEvent(eventType, message)
+      val rawMessage =
+        SqsNotificationGeneratingHelper()
+          .generateRawDomainEvent(eventType, message)
       sendDomainSqsMessage(rawMessage)
 
       Awaitility.await().until { repo.findAll().isNotEmpty() }
@@ -455,8 +456,9 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
     @Test
     fun `will process and save a prisoner physical details changed event SQS message`() {
       val message = generateMessage(PrisonerChangedCategory.PHYSICAL_DETAILS)
-      val rawMessage = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper()
-        .generateRawDomainEvent(eventType, message)
+      val rawMessage =
+        SqsNotificationGeneratingHelper()
+          .generateRawDomainEvent(eventType, message)
       sendDomainSqsMessage(rawMessage)
 
       Awaitility.await().until { repo.findAll().isNotEmpty() }
@@ -479,8 +481,9 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
     @Test
     fun `will process and save a prisoner location changed event SQS message`() {
       val message = generateMessage(PrisonerChangedCategory.LOCATION)
-      val rawMessage = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper()
-        .generateRawDomainEvent(eventType, message)
+      val rawMessage =
+        SqsNotificationGeneratingHelper()
+          .generateRawDomainEvent(eventType, message)
       sendDomainSqsMessage(rawMessage)
 
       Awaitility.await().until { repo.findAll().isNotEmpty() }
@@ -559,8 +562,9 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
       }
     }
     """
-    val rawMessage = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper()
-      .generateRawDomainEvent(eventType, message)
+    val rawMessage =
+      SqsNotificationGeneratingHelper()
+        .generateRawDomainEvent(eventType, message)
     sendDomainSqsMessage(rawMessage)
 
     Awaitility.await().until { repo.findAll().isNotEmpty() }
@@ -647,8 +651,9 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
       }
     }
     """
-    val rawMessage = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper()
-      .generateRawDomainEvent(eventType, message)
+    val rawMessage =
+      SqsNotificationGeneratingHelper()
+        .generateRawDomainEvent(eventType, message)
     sendDomainSqsMessage(rawMessage)
 
     Awaitility.await().until { repo.findAll().isNotEmpty() }
@@ -690,8 +695,9 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
       }
     }
     """
-    val rawMessage = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper()
-      .generateRawDomainEvent(eventType, message)
+    val rawMessage =
+      SqsNotificationGeneratingHelper()
+        .generateRawDomainEvent(eventType, message)
     sendDomainSqsMessage(rawMessage)
 
     Awaitility.await().until { repo.findAll().isNotEmpty() }
@@ -724,8 +730,9 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
       }
     }
     """
-    val rawMessage = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper()
-      .generateRawDomainEvent(eventType, message)
+    val rawMessage =
+      SqsNotificationGeneratingHelper()
+        .generateRawDomainEvent(eventType, message)
     sendDomainSqsMessage(rawMessage)
 
     Awaitility.await().until { repo.findAll().isNotEmpty() }
@@ -759,8 +766,9 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
       }
     }
     """
-    val rawMessage = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper()
-      .generateRawDomainEvent(eventType, message)
+    val rawMessage =
+      SqsNotificationGeneratingHelper()
+        .generateRawDomainEvent(eventType, message)
     sendDomainSqsMessage(rawMessage)
 
     Awaitility.await().until { repo.findAll().isNotEmpty() }
@@ -794,8 +802,9 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
       }
     }
     """
-    val rawMessage = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper()
-      .generateRawDomainEvent(eventType, message)
+    val rawMessage =
+      SqsNotificationGeneratingHelper()
+        .generateRawDomainEvent(eventType, message)
     sendDomainSqsMessage(rawMessage)
 
     Awaitility.await().until { repo.findAll().isNotEmpty() }
@@ -835,8 +844,9 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
       }
     }
     """
-    val rawMessage = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper()
-      .generateRawDomainEvent(eventType, message)
+    val rawMessage =
+      SqsNotificationGeneratingHelper()
+        .generateRawDomainEvent(eventType, message)
     sendDomainSqsMessage(rawMessage)
 
     Awaitility.await().until { repo.findAll().isNotEmpty() }
@@ -867,8 +877,9 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
       }
     }
     """
-    val rawMessage = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper()
-      .generateRawDomainEvent(eventType, message)
+    val rawMessage =
+      SqsNotificationGeneratingHelper()
+        .generateRawDomainEvent(eventType, message)
     sendDomainSqsMessage(rawMessage)
 
     Awaitility.await().until { repo.findAll().isNotEmpty() }
@@ -898,8 +909,9 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
       }
     }
     """
-    val rawMessage = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper()
-      .generateRawDomainEvent(eventType, message)
+    val rawMessage =
+      SqsNotificationGeneratingHelper()
+        .generateRawDomainEvent(eventType, message)
     sendDomainSqsMessage(rawMessage)
 
     Awaitility.await().until { repo.findAll().isNotEmpty() }
@@ -1049,7 +1061,6 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
       ],
     )
     fun `will process the domain event and create a CONTACT_EVENT_CREATED integration event for `(eventType: String) {
-      ProbationIntegrationApiExtension.server.stubGetIfPersonExists(crn)
       val contactEventId = "1234"
       val message = """
       {
@@ -1073,8 +1084,9 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
         }
       }
       """
-      val rawMessage = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper()
-        .generateRawDomainEvent(eventType, message)
+      val rawMessage =
+        SqsNotificationGeneratingHelper()
+          .generateRawDomainEvent(eventType, message)
       sendDomainSqsMessage(rawMessage)
 
       Awaitility.await().until { repo.findAll().isNotEmpty() }
@@ -1094,7 +1106,6 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
       ],
     )
     fun `will process the domain event and create a CONTACT_EVENT_CHANGED integration event for `(eventType: String) {
-      ProbationIntegrationApiExtension.server.stubGetIfPersonExists(crn)
       val contactEventId = "1234"
       val message = """
       {
@@ -1118,8 +1129,9 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
         }
       }
       """
-      val rawMessage = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper()
-        .generateRawDomainEvent(eventType, message)
+      val rawMessage =
+        SqsNotificationGeneratingHelper()
+          .generateRawDomainEvent(eventType, message)
       sendDomainSqsMessage(rawMessage)
 
       Awaitility.await().until { repo.findAll().isNotEmpty() }
@@ -1142,7 +1154,6 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
       ],
     )
     fun `will process the domain event and create a PERSON_ACCESS_LIMITATIONS_CHANGED integration event for `(eventType: String) {
-      ProbationIntegrationApiExtension.server.stubGetIfPersonExists(crn)
       val message = """
       {
           "eventType": "$eventType",
@@ -1160,8 +1171,9 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
           }
       }
       """ // language=json
-      val rawMessage = _root_ide_package_.uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper()
-        .generateRawDomainEvent(eventType, message)
+      val rawMessage =
+        SqsNotificationGeneratingHelper()
+          .generateRawDomainEvent(eventType, message)
       sendDomainSqsMessage(rawMessage)
 
       Awaitility.await().until { repo.findAll().isNotEmpty() }
@@ -1216,4 +1228,4 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
   }
 }
 
-private const val CLASS_QUALIFIED_NAME = "uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.integration.DomainEventsListenerIntegrationTest"
+private const val CLASS_QUALIFIED_NAME = "uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.DomainEventsListenerIntegrationTest"
