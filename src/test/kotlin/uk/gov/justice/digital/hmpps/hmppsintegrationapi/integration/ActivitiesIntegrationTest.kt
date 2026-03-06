@@ -8,31 +8,39 @@ import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import io.kotest.assertions.json.shouldContainJsonKeyValue
 import io.kotest.matchers.shouldBe
-import org.awaitility.kotlin.await
-import org.awaitility.kotlin.matches
-import org.awaitility.kotlin.untilCallTo
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.queues.TestQueue
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AttendanceUpdateRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Exclusion
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerAllocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerDeallocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.toHmppsMessage
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.toTestMessage
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ActivitiesQueueService.Companion.ACTIVITIES_QUEUE_ID
 import java.io.File
 import java.time.DayOfWeek
 import java.time.LocalDate
 
-class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
+class ActivitiesIntegrationTest : IntegrationTestBase() {
   private val prisonCode = "MDI"
+
+  fun checkQueueIsEmpty() {
+    checkQueueIsEmpty(ACTIVITIES_QUEUE_ID)
+  }
 
   @AfterEach
   fun resetValidators() {
     activitiesMockServer.resetValidator()
+  }
+
+  @BeforeEach
+  fun setup() {
+    queueProvider.registerQueue(TestQueue(ACTIVITIES_QUEUE_ID))
   }
 
   @Nested
@@ -184,12 +192,9 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
           ),
         )
 
-      await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
+      queueMessageCount(ACTIVITIES_QUEUE_ID).shouldBe(1)
 
-      val queueMessages = getQueueMessages()
-      queueMessages.size.shouldBe(1)
-
-      val messageJson = queueMessages[0].body()
+      val messageJson = lastQueueMessage(ACTIVITIES_QUEUE_ID)
       val expectedMessage = attendanceUpdateRequests.toHmppsMessage(defaultCn)
       messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
       messageJson.shouldContainJsonKeyValue("$.who", defaultCn)
@@ -317,12 +322,9 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
           ),
         )
 
-      await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
+      queueMessageCount(ACTIVITIES_QUEUE_ID).shouldBe(1)
 
-      val queueMessages = getQueueMessages()
-      queueMessages.size.shouldBe(1)
-
-      val messageJson = queueMessages[0].body()
+      val messageJson = lastQueueMessage(ACTIVITIES_QUEUE_ID)
       val expectedMessage = prisonerDeallocationRequest.toHmppsMessage(defaultCn, scheduleId)
       messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
       messageJson.shouldContainJsonKeyValue("$.who", defaultCn)
@@ -358,12 +360,9 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
           ),
         )
 
-      await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
+      queueMessageCount(ACTIVITIES_QUEUE_ID).shouldBe(1)
 
-      val queueMessages = getQueueMessages()
-      queueMessages.size.shouldBe(1)
-
-      val messageJson = queueMessages[0].body()
+      val messageJson = lastQueueMessage(ACTIVITIES_QUEUE_ID)
       val expectedMessage = prisonerDeallocationRequest.toTestMessage(defaultCn)
       messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
       messageJson.shouldContainJsonKeyValue("$.who", defaultCn)
@@ -550,12 +549,9 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
           ),
         )
 
-      await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
+      queueMessageCount(ACTIVITIES_QUEUE_ID).shouldBe(1)
 
-      val queueMessages = getQueueMessages()
-      queueMessages.size.shouldBe(1)
-
-      val messageJson = queueMessages[0].body()
+      val messageJson = lastQueueMessage(ACTIVITIES_QUEUE_ID)
       val expectedMessage = prisonerAllocationRequest.toHmppsMessage(defaultCn, scheduleId)
       messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
       messageJson.shouldContainJsonKeyValue("$.who", defaultCn)
@@ -923,12 +919,9 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
           ),
         )
 
-      await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
+      queueMessageCount(ACTIVITIES_QUEUE_ID).shouldBe(1)
 
-      val queueMessages = getQueueMessages()
-      queueMessages.size.shouldBe(1)
-
-      val messageJson = queueMessages[0].body()
+      val messageJson = lastQueueMessage(ACTIVITIES_QUEUE_ID)
       val expectedMessage = prisonerAllocationRequest.toTestMessage(defaultCn)
       messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
       messageJson.shouldContainJsonKeyValue("$.who", defaultCn)
