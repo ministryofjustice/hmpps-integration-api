@@ -13,6 +13,6 @@ jobs:
         with:
           persist-credentials: false
       - name: Format code
-        uses: ministryofjustice/github-actions/code-formatter@v14
+        uses: ./.github/actions/format
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
