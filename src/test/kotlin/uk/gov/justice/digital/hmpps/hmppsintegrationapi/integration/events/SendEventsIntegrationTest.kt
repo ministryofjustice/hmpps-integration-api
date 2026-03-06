@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.integration
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events
 
 import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.Awaitility
@@ -43,14 +43,12 @@ class SendEventsIntegrationTest : IntegrationTestBase() {
 
   fun makeEvent(url: String): EventNotification =
     EventNotification(
-      eventType = "MAPPA_DETAIL_CHANGED",
       hmppsId = "MockId",
+      eventType = "MAPPA_DETAIL_CHANGED",
       prisonId = "MKI",
       url = url,
-      lastModifiedDatetime = LocalDateTime.now().minusMinutes(7),
-      eventId = null,
-      claimId = null,
       status = IntegrationEventStatus.PENDING.name,
+      lastModifiedDatetime = LocalDateTime.now().minusMinutes(7),
     )
 
   @Test

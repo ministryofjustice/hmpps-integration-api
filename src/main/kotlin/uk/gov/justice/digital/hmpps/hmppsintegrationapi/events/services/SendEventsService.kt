@@ -12,7 +12,7 @@ import java.time.Clock
 import java.time.LocalDateTime
 import java.util.UUID
 
-@ConditionalOnProperty("feature-flag.${FeatureFlagConfig.ENABLE_SEND_PROCESSED_EVENTS}", havingValue = "true")
+@ConditionalOnProperty("feature-flag.${FeatureFlagConfig.ENABLE_PUBLISH_PENDING_EVENTS}", havingValue = "true")
 @Component
 @Configuration
 class SendEventsService(

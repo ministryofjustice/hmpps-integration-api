@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.service
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.matchers.maps.shouldNotHaveKey
@@ -57,9 +57,9 @@ class IntegrationEventTopicServiceTests(
         eventType = "MAPPA_DETAIL_CHANGED",
         prisonId = "MKI",
         url = "mockUrl",
+        status = IntegrationEventStatus.PROCESSING.name,
         lastModifiedDatetime = currentTime,
         claimId = null,
-        status = IntegrationEventStatus.PROCESSING.name,
       )
 
     val response =
@@ -102,7 +102,7 @@ class IntegrationEventTopicServiceTests(
 
   @Test
   fun `Publish Event with no prison Id`() {
-    val event = EventNotification(eventId = 123, hmppsId = "hmppsId", eventType = "MAPPA_DETAIL_CHANGED", prisonId = null, url = "mockUrl", lastModifiedDatetime = currentTime)
+    val event = EventNotification(eventId = 123, hmppsId = "hmppsId", eventType = "MAPPA_DETAIL_CHANGED", url = "mockUrl", lastModifiedDatetime = currentTime)
 
     val response =
       PublishResponse

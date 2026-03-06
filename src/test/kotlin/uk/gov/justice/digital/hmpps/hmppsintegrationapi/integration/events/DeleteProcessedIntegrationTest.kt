@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.integration
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -27,12 +27,60 @@ class DeleteProcessedIntegrationTest : IntegrationTestBase() {
     fun lessThan24HoursAgo() = LocalDateTime.now().minus(3, ChronoUnit.HOURS)
     val events =
       listOf(
-        EventNotification(status = IntegrationEventStatus.PROCESSED.name, lastModifiedDatetime = moreThan24HoursAgo(), claimId = "ID", hmppsId = "ID", eventType = "ID", prisonId = "ID", url = "URL"),
-        EventNotification(status = IntegrationEventStatus.PROCESSED.name, lastModifiedDatetime = lessThan24HoursAgo(), claimId = "ID", hmppsId = "ID", eventType = "ID", prisonId = "ID", url = "URL"),
-        EventNotification(status = IntegrationEventStatus.PROCESSED.name, lastModifiedDatetime = moreThan24HoursAgo(), claimId = "ID", hmppsId = "ID", eventType = "ID", prisonId = "ID", url = "URL"),
-        EventNotification(status = IntegrationEventStatus.PROCESSED.name, lastModifiedDatetime = lessThan24HoursAgo(), claimId = "ID", hmppsId = "ID", eventType = "ID", prisonId = "ID", url = "URL"),
-        EventNotification(status = IntegrationEventStatus.PENDING.name, lastModifiedDatetime = moreThan24HoursAgo(), claimId = "ID", hmppsId = "ID", eventType = "ID", prisonId = "ID", url = "URL"),
-        EventNotification(status = IntegrationEventStatus.PROCESSED.name, lastModifiedDatetime = lessThan24HoursAgo(), claimId = "ID", hmppsId = "ID", eventType = "ID", prisonId = "ID", url = "URL"),
+        EventNotification(
+          claimId = "ID",
+          hmppsId = "ID",
+          eventType = "ID",
+          prisonId = "ID",
+          url = "URL",
+          status = IntegrationEventStatus.PROCESSED.name,
+          lastModifiedDatetime = moreThan24HoursAgo(),
+        ),
+        EventNotification(
+          claimId = "ID",
+          hmppsId = "ID",
+          eventType = "ID",
+          prisonId = "ID",
+          url = "URL",
+          status = IntegrationEventStatus.PROCESSED.name,
+          lastModifiedDatetime = lessThan24HoursAgo(),
+        ),
+        EventNotification(
+          claimId = "ID",
+          hmppsId = "ID",
+          eventType = "ID",
+          prisonId = "ID",
+          url = "URL",
+          status = IntegrationEventStatus.PROCESSED.name,
+          lastModifiedDatetime = moreThan24HoursAgo(),
+        ),
+        EventNotification(
+          claimId = "ID",
+          hmppsId = "ID",
+          eventType = "ID",
+          prisonId = "ID",
+          url = "URL",
+          status = IntegrationEventStatus.PROCESSED.name,
+          lastModifiedDatetime = lessThan24HoursAgo(),
+        ),
+        EventNotification(
+          claimId = "ID",
+          hmppsId = "ID",
+          eventType = "ID",
+          prisonId = "ID",
+          url = "URL",
+          status = IntegrationEventStatus.PENDING.name,
+          lastModifiedDatetime = moreThan24HoursAgo(),
+        ),
+        EventNotification(
+          claimId = "ID",
+          hmppsId = "ID",
+          eventType = "ID",
+          prisonId = "ID",
+          url = "URL",
+          status = IntegrationEventStatus.PROCESSED.name,
+          lastModifiedDatetime = lessThan24HoursAgo(),
+        ),
       )
     eventNotificationRepository.saveAll(events)
   }

@@ -11,6 +11,7 @@ spring:
 
 # Use ports >= 4010
 services:
+  int-api.base-url: https://localhost:8443
   hmpps-auth.base-url: http://localhost:9090
   adjudications.base-url: http://localhost:4010
   assess-risks-and-needs.base-url: http://localhost:4011
@@ -55,6 +56,11 @@ hmpps.sqs:
       queueName: "educationstatusevents"
       subscribeFilter: '{"eventType":["prison.education.updated"]}'
       subscribeTopicId: "domainevents"
+    hmppsdomainqueue:
+      queueName: hmpps_integrations_events_queue
+      queueArn: arn:aws:sns:eu-west-2:000000000000:hmpps_integrations_events_queue
+      dlqName: hmpps_integrations_events_queue_dlq
+      subscribeTopicId: domainevents
   topics:
     domainevents:
       arn: arn:aws:sns:eu-west-2:000000000000:domainevents-topic
@@ -62,6 +68,7 @@ hmpps.sqs:
       arn: arn:aws:sns:eu-west-2:000000000000:integration-event-topic
 
 feature-flag:
+  # API Config
   course-completion-event-enabled: true
   use-active-alerts-endpoint: true
   use-contact-events-endpoint: true
@@ -70,9 +77,16 @@ feature-flag:
   cpr-enabled: true
   gateway-cache-enabled: true
   normalised-path-matching: true
-  enable-delete-processed-events: false
-  enable-send-processed-events: false
   enable-send-decimal-risk-scores: true
+  # Events Config
+  enable-delete-processed-events: false
+  enable-publish-pending-events: false
+  enable-domain-events-queue-listener: false
+  person-languages-changed-notifications-enabled: true
+  prisoner-base-location-changed-notifications-enabled: true
+  prisoner-merge-notifications-enabled: true
+  contact-events-notifications-enabled: true
+  limited-access-notifications-enabled: true
 
 authorisation:
   consumers:

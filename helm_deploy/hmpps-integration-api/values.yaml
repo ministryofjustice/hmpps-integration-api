@@ -74,6 +74,12 @@ generic-service:
       DB_PASS: "database_password"
     hmpps-integration-events-topic:
       INTEGRATION_EVENT_TOPIC_ARN: "sns_arn"
+    hmpps-integration-api-domain-events-sqs-instance-output:
+      HMPPS_DOMAIN_QUEUE_NAME: "sqs_name"
+      HMPPS_DOMAIN_QUEUE_ARN: "sqs_arn"
+      HMPPS_DOMAIN_TOPIC_ARN: "hmpps_domain_events_topic_arn"
+    hmpps-integration-api-domain-events-sqs-dl-instance-output:
+      HMPPS_DOMAIN_DL_QUEUE_NAME: "sqs_name"
 
   allowlist:
     unrestricted: "0.0.0.0/0"

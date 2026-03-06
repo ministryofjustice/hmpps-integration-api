@@ -18,6 +18,8 @@ management.endpoint:
 
 # Use ports <4010, reuse if required
 services:
+  int-api:
+    base-url: https://localhost:8443
   prison-api:
     base-url: http://localhost:4000
   hmpps-auth:
@@ -91,6 +93,7 @@ hmpps.sqs:
       arn: arn:aws:sns:eu-west-2:000000000000:domainevents-topic
 
 feature-flag:
+  # API Config
   course-completion-event-enabled: true
   use-active-alerts-endpoint: false
   use-contact-events-endpoint: true
@@ -99,9 +102,16 @@ feature-flag:
   cpr-enabled: true
   gateway-cache-enabled: true
   normalised-path-matching: true
-  enable-delete-processed-events: false
-  enable-send-processed-events: false
   enable-send-decimal-risk-scores: true
+  # Events Config
+  enable-delete-processed-events: false
+  enable-publish-pending-events: false
+  enable-domain-events-queue-listener: false
+  person-languages-changed-notifications-enabled: true
+  prisoner-merge-notifications-enabled: true
+  prisoner-base-location-changed-notifications-enabled: true
+  contact-events-notifications-enabled: true
+  limited-access-notifications-enabled: true
 
 authorisation:
   consumers:
