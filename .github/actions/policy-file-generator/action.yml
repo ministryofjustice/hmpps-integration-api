@@ -1,0 +1,54 @@
+name: Format code
+description: Identify subscription filter policy changes and commit
+
+inputs:
+  commit_message:
+    description: Commit message
+    default: Subscription Filter Policy Changes
+  token:
+    description: GitHub token to use for pushing changes. Defaults to GitHub actions token.
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-java@v5
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+    - uses: gradle/actions/setup-gradle@v5
+    - name: Use GitHub token
+      if: inputs.token == 'github'
+      shell: bash
+      run: echo "token=${{ github.token }}" >> $GITHUB_ENV
+    - name: Use provided token
+      if: inputs.token != 'github'
+      shell: bash
+      run: echo "token=${token}" >> $GITHUB_ENV
+      env:
+        token: ${{ inputs.token }}
+    - name: Checkout pull request
+      uses: actions/checkout@v6
+      if: github.event_name == 'pull_request'
+      with:
+        ref: ${{ github.event.pull_request.head.ref }}
+        token: ${{ env.token }}
+    - name: Checkout branch
+      uses: actions/checkout@v6
+      if: github.event_name != 'pull_request'
+      with:
+        ref: ${{ github.ref }}
+        token: ${{ env.token }}
+    - name: Check for subscription filter policy file changes
+      shell: bash
+      run: |
+        ./gradlew generateFilterPolicies
+    - name: Stage changes
+      shell: bash
+      run: |
+        git add src/main/resources/event-filter-policies/.
+    - name: Commit and push
+      uses: dsanders11/github-app-commit-action@43de6da2f4d927e997c0784c7a0b61bd19ad6aac # v1.5.0
+      with:
+        fail-on-no-changes: false
+        message: ${{ inputs.commit_message }}
+        token: ${{ env.token }}
