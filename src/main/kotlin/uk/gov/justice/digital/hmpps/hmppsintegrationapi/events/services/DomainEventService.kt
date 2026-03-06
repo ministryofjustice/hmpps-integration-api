@@ -4,6 +4,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
@@ -14,6 +15,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.EventN
 import java.time.Clock
 import java.time.LocalDateTime
 
+@ConditionalOnProperty("feature-flag.${FeatureFlagConfig.ENABLE_DOMAIN_EVENTS_QUEUE_LISTENER}", havingValue = "true")
 @Service
 @Configuration
 class DomainEventService(
