@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.service
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.service
 
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertDoesNotThrow

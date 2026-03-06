@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.service
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.service
 
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
@@ -51,9 +51,8 @@ class SendEventServiceTest {
         eventType = "MAPPA_DETAIL_CHANGED",
         prisonId = "MKI",
         url = "mockUrl",
-        lastModifiedDatetime = LocalDateTime.now(fixedClock),
-        claimId = null,
         status = IntegrationEventStatus.PENDING.name,
+        lastModifiedDatetime = LocalDateTime.now(fixedClock),
       )
     whenever(eventRepository.findAllProcessingEvents(any())).thenReturn(listOf(event))
 
@@ -72,11 +71,9 @@ class SendEventServiceTest {
         eventId = 123,
         hmppsId = "hmppsId",
         eventType = "MAPPA_DETAIL_CHANGED",
-        prisonId = null,
         url = "mockUrl",
-        lastModifiedDatetime = LocalDateTime.now(fixedClock),
-        claimId = null,
         status = IntegrationEventStatus.PENDING.name,
+        lastModifiedDatetime = LocalDateTime.now(fixedClock),
       )
     whenever(eventRepository.findAllWithLastModifiedDateTimeBefore(any())).thenReturn(listOf(event))
     whenever(integrationEventTopicService.sendEvent(event)).thenThrow(RuntimeException("error"))

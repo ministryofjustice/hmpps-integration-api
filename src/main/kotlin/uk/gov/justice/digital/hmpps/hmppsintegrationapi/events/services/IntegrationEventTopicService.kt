@@ -10,7 +10,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 
-@ConditionalOnProperty("feature-flag.${FeatureFlagConfig.ENABLE_SEND_PROCESSED_EVENTS}", havingValue = "true")
+@ConditionalOnProperty("feature-flag.${FeatureFlagConfig.ENABLE_PUBLISH_PENDING_EVENTS}", havingValue = "true")
 @Service
 class IntegrationEventTopicService(
   private val hmppsQueueService: HmppsQueueService,

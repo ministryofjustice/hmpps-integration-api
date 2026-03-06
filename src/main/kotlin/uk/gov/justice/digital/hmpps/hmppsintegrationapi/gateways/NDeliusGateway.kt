@@ -27,6 +27,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusCo
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusContactEvents
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusSupervisions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.UserAccess
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.person.PersonExists
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.person.PersonIdentifier
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationintegrationepf.EPFCaseDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationintegrationepf.LimitedAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.ContactDetailsWithAddress
@@ -433,6 +435,46 @@ class NDeliusGateway(
 
       is WebClientWrapperResponse.Error -> {
         Response(null, result.errors)
+      }
+    }
+  }
+
+  fun getPersonIdentifier(nomisId: String): PersonIdentifier? {
+    val result =
+      webClient.request<PersonIdentifier>(
+        HttpMethod.GET,
+        "/identifier-converter/noms-to-crn/$nomisId",
+        authenticationHeader(),
+        UpstreamApi.NDELIUS,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        result.data
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        null
+      }
+    }
+  }
+
+  fun getPersonExists(crn: String): PersonExists {
+    val result =
+      webClient.request<PersonExists>(
+        HttpMethod.GET,
+        "/exists-in-delius/crn/$crn",
+        authenticationHeader(),
+        UpstreamApi.NDELIUS,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        result.data
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        PersonExists(crn, false)
       }
     }
   }

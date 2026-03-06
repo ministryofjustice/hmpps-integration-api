@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.integration
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -51,11 +51,11 @@ class StuckEventsIntegrationTest : IntegrationTestBase() {
     lastModifiedDateTime: LocalDateTime,
   ): EventNotification =
     EventNotification(
-      eventType = "MAPPA_DETAIL_CHANGED",
+      claimId = claimId,
       hmppsId = "MockId",
+      eventType = "MAPPA_DETAIL_CHANGED",
       prisonId = "MKI",
       url = url,
-      claimId = claimId,
       status = status,
       lastModifiedDatetime = lastModifiedDateTime,
     )

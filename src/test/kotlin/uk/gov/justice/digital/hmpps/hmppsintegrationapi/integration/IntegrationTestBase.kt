@@ -237,6 +237,26 @@ abstract class IntegrationTestBase {
         ).readText(),
       )
 
+      nDeliusMockServer.stubForGet(
+        "/identifier-converter/noms-to-crn/$nomsId",
+        """
+                  {
+                  "crn": "$crn",
+                  "nomsId": "$nomsId"
+              }
+              """,
+      )
+
+      nDeliusMockServer.stubForGet(
+        "/exists-in-delius/crn/$crn",
+        """
+                  {
+                  "crn": "$crn",
+                  "existsInDelius": true
+              }
+              """,
+      )
+
       managePomCaseMockServer.start()
       plpMockServer.start()
       sanMockServer.start()

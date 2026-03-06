@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.queryForObject
 import org.springframework.stereotype.Repository
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.StuckEvents
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.StuckEvents
 import java.time.LocalDateTime
 
 const val EVENT_NOTIFICATION_BATCH_LIMIT = 1000
@@ -60,6 +60,17 @@ class JdbcTemplateEventNotificationRepository(
     )
   }
 
+  override fun findByHmppsIdIsIn(listOf: Collection<String>): List<EventNotification> {
+    val paramAmount = List(listOf.count()) { "?" }.joinToString(",")
+
+    val getAllByHmppsIdQuery = "select * from event_notification where hmpps_id in ($paramAmount)"
+    return jdbcTemplate.query(
+      getAllByHmppsIdQuery,
+      DataClassRowMapper(EventNotification::class.java),
+      *listOf.toTypedArray(),
+    )
+  }
+
   fun count(): Int {
     val countQuery = "select count(*) from event_notification"
     return jdbcTemplate.queryForObject<Int>(countQuery)
@@ -100,6 +111,17 @@ class JdbcTemplateEventNotificationRepository(
     """
 
     return jdbcTemplate.update(setProcessingQuery, claimId, fiveMinutesAgo, EVENT_NOTIFICATION_BATCH_LIMIT)
+  }
+
+  override fun insertOrUpdate(match: EventNotification) {
+    val insertOrUpdateQuery = """
+      insert into event_notification (url, event_type, hmpps_id, prison_id, status, last_modified_datetime)
+        values (?,?,?,?,?,?)
+      on conflict(url, event_type) where status = 'PENDING' or status = NULL
+        do update set last_modified_datetime = ?
+    """
+
+    jdbcTemplate.update(insertOrUpdateQuery, match.url, match.eventType, match.hmppsId, match.prisonId, match.status, match.lastModifiedDatetime, match.lastModifiedDatetime)
   }
 
   fun saveAll(events: List<EventNotification>): List<EventNotification> {

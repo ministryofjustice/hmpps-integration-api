@@ -121,6 +121,12 @@ notifier:
 
 hmpps.sqs:
   useWebToken: true
+  queues:
+    hmppsdomainqueue:
+      queueName: ${HMPPS_DOMAIN_QUEUE_NAME}
+      queueArn: ${HMPPS_DOMAIN_QUEUE_ARN}
+      dlqName: ${HMPPS_DOMAIN_DL_QUEUE_NAME}
+      subscribeTopicId: domainevents
   topics:
     integrationeventtopic:
       arn: ${INTEGRATION_EVENT_TOPIC_ARN}

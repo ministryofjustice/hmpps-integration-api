@@ -19,6 +19,7 @@ data class FeatureFlagConfig(
   val flags: Map<String, Boolean> = mutableMapOf(),
 ) {
   companion object {
+    // API feature flags
     const val COURSE_COMPLETION_EVENT = "course-completion-event-enabled"
     const val USE_ACTIVE_ALERTS_ENDPOINT = "use-active-alerts-endpoint"
     const val USE_CONTACT_EVENTS_ENDPOINT = "use-contact-events-endpoint"
@@ -28,9 +29,17 @@ data class FeatureFlagConfig(
     const val CPR_ENABLED = "cpr-enabled"
     const val GATEWAY_CACHE_ENABLED = "gateway-cache-enabled"
     const val NORMALISED_PATH_MATCHING = "normalised-path-matching"
-    const val ENABLE_DELETE_PROCESSED_EVENTS = "enable-delete-processed-events"
-    const val ENABLE_SEND_PROCESSED_EVENTS = "enable-send-processed-events"
     const val ENABLE_SEND_DECIMAL_RISK_SCORES = "enable-send-decimal-risk-scores"
+
+    // Events feature flags
+    const val ENABLE_DELETE_PROCESSED_EVENTS = "enable-delete-processed-events"
+    const val ENABLE_PUBLISH_PENDING_EVENTS = "enable-publish-pending-events"
+    const val ENABLE_DOMAIN_EVENTS_QUEUE_LISTENER = "enable-domain-events-queue-listener"
+    const val PERSON_LANGUAGES_CHANGED_NOTIFICATIONS_ENABLED = "person-languages-changed-notifications-enabled"
+    const val PRISONER_BASE_LOCATION_CHANGED_NOTIFICATIONS_ENABLED = "prisoner-base-location-changed-notifications-enabled"
+    const val PRISONER_MERGED_NOTIFICATIONS_ENABLED = "prisoner-merge-notifications-enabled"
+    const val CONTACT_EVENTS_NOTIFICATIONS_ENABLED = "contact-events-notifications-enabled"
+    const val LIMITED_ACCESS_NOTIFICATIONS_ENABLED = "limited-access-notifications-enabled"
   }
 
   /**

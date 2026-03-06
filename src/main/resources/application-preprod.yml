@@ -4,6 +4,8 @@ spring:
       - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 
 services:
+  int-api:
+    base-url: https://preprod.integration-api.hmpps.service.justice.gov.uk
   prison-api:
     base-url: https://prison-api-preprod.prison.service.justice.gov.uk
   prisoner-offender-search:
@@ -50,6 +52,7 @@ services:
     base-url: https://hmpps-person-record-preprod.hmpps.service.justice.gov.uk
 
 feature-flag:
+  # API Config
   course-completion-event-enabled: false
   use-active-alerts-endpoint: false
   use-contact-events-endpoint: false
@@ -58,9 +61,16 @@ feature-flag:
   epf-gateway-disabled: true
   cpr-enabled: true
   gateway-cache-enabled: true
-  enable-delete-processed-events: false
-  enable-send-processed-events: false
   enable-send-decimal-risk-scores: true
+  # Events Config
+  enable-delete-processed-events: false
+  enable-publish-pending-events: false
+  enable-domain-events-queue-listener: false
+  person-languages-changed-notifications-enabled: true
+  prisoner-base-location-changed-notifications-enabled: true
+  prisoner-merge-notifications-enabled: false
+  contact-events-notifications-enabled: false
+  limited-access-notifications-enabled: true
 
 authorisation:
   consumers:
