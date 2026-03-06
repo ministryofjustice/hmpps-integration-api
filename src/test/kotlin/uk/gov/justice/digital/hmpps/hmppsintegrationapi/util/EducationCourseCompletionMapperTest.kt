@@ -89,7 +89,7 @@ class EducationCourseCompletionMapperTest :
         }
 
         it("firstName, lastName, region, pdu must not be blank") {
-          val person = validPerson(firstName = " ", lastName = " ", region = " ")
+          val person = validPerson(firstName = " ", lastName = " ", region = " ", pdu = " ")
           val violations = validator.validate(validRequest(person = person))
           violations.map { it.propertyPath.toString() }.shouldContainAll(
             "courseCompletion.person.firstName",
