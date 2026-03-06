@@ -38,6 +38,9 @@ data class PersonDetails(
   @Schema(description = "Region of the Person on Probation (PoP)")
   @field:NotBlank(message = "region must not be null or blank")
   val region: String,
+  @Schema(description = "PDU of the Person on Probation (PoP)")
+  @field:NotBlank(message = "PDU must not be null or blank")
+  val pdu: String,
   @Schema(description = "The office that the Person on Probation (PoP) is associated with")
   @field:NotBlank(message = "office must not be null or blank")
   val office: String,

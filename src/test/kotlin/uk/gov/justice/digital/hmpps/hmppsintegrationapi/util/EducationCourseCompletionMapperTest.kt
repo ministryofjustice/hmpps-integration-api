@@ -40,9 +40,10 @@ class EducationCourseCompletionMapperTest :
       lastName: String = "Doe",
       dateOfBirth: LocalDate = LocalDate.of(1990, 1, 1),
       region: String = "East of England",
+      pdu: String = "Cambridgeshire",
       office: String = "The Lighthouse",
       email: String = "John@example.org",
-    ) = PersonDetails(firstName, lastName, dateOfBirth, region, office, email)
+    ) = PersonDetails(firstName, lastName, dateOfBirth, region, pdu, office, email)
 
     fun validCourse(
       courseName: String = "Intro to litter picking",
@@ -87,13 +88,14 @@ class EducationCourseCompletionMapperTest :
           violations.map { it.propertyPath.toString() }.shouldContain("courseCompletion.person.email")
         }
 
-        it("firstName, lastName, region must not be blank") {
+        it("firstName, lastName, region, pdu must not be blank") {
           val person = validPerson(firstName = " ", lastName = " ", region = " ")
           val violations = validator.validate(validRequest(person = person))
           violations.map { it.propertyPath.toString() }.shouldContainAll(
             "courseCompletion.person.firstName",
             "courseCompletion.person.lastName",
             "courseCompletion.person.region",
+            "courseCompletion.person.pdu",
           )
         }
       }
@@ -142,6 +144,7 @@ class EducationCourseCompletionMapperTest :
             lastName = "Doe",
             dateOfBirth = LocalDate.of(1992, 5, 14),
             region = "London",
+            pdu = "Lewisham and Bromley",
             email = "jane@example.org",
           )
 
@@ -171,6 +174,7 @@ class EducationCourseCompletionMapperTest :
                 "email" to person.email,
                 "courseName" to course.courseName,
                 "courseType" to course.courseType,
+                "pdu" to person.pdu,
                 "provider" to course.provider,
                 "completionDate" to course.completionDate.toString(),
                 "status" to course.status,
@@ -190,6 +194,7 @@ class EducationCourseCompletionMapperTest :
             "lastName" to "Doe",
             "dateOfBirth" to "1992-05-14",
             "region" to "London",
+            "pdu" to "Lewisham and Bromley",
             "email" to "jane@example.org",
             "courseName" to "Health & Safety",
             "courseType" to "Compliance",
