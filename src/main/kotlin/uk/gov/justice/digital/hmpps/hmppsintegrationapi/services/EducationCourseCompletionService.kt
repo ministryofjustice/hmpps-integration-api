@@ -46,6 +46,7 @@ class EducationCourseCompletionService(
                 "firstName" to person.firstName,
                 "lastName" to person.lastName,
                 "dateOfBirth" to person.dateOfBirth.toString(),
+                "pdu" to person.pdu,
                 "region" to person.region,
                 "office" to person.office,
                 "email" to person.email,
