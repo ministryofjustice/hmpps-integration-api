@@ -56,6 +56,33 @@ class RoleBuilder(
     }
     redactionPolicies?.addAll(init)
   }
+
+  fun redactionPoliciesNew(init: RedactionPolicyBuilder.() -> Unit) {
+    RedactionPolicyBuilder().apply(init).content?.let {
+      if (redactionPolicies == null) {
+        redactionPolicies = mutableListOf()
+      }
+      redactionPolicies?.addAll(it)
+    }
+  }
+}
+
+class RedactionPolicyBuilder {
+  var content: MutableList<RedactionPolicy>? = null
+
+  operator fun RedactionPolicy.unaryMinus() {
+    if (content == null) {
+      content = mutableListOf()
+    }
+    content?.add(this)
+  }
+
+  operator fun List<RedactionPolicy>.unaryMinus() {
+    if (content == null) {
+      content = mutableListOf()
+    }
+    content?.addAll(this)
+  }
 }
 
 class PermissionBuilder {

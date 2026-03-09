@@ -36,9 +36,7 @@ val mappa =
         -"*"
       }
     }
-    redactionPolicies(
-      listOf(
-        generalRiskScoreRedactions,
-      ),
-    )
+    redactionPoliciesNew {
+      -generalRiskScoreRedactions
+    }
   }

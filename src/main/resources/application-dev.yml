@@ -196,7 +196,7 @@ authorisation:
         - "cats"
     jwylde:
       roles:
-        - "mappa"
+        - "full-access-lao-redactions"
       filters:
         prisons:
           - MKI
