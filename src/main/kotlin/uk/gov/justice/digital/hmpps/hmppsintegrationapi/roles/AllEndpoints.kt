@@ -9,7 +9,7 @@ val allEndpoints =
     permissions {
       -roleConstants.allEndpoints
     }
-    redactionPoliciesNew {
+    redactionPolicies {
       -generalRiskScoreRedactions
     }
   }

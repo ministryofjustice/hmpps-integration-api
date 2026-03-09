@@ -18,7 +18,7 @@ val fullAccessLaoRedactions =
         -"*"
       }
     }
-    redactionPoliciesNew {
+    redactionPolicies {
       -laoRedactionPolicy
       -generalRiskScoreRedactions
     }

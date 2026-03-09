@@ -57,7 +57,7 @@ class RoleBuilder(
     redactionPolicies?.addAll(init)
   }
 
-  fun redactionPoliciesNew(init: RedactionPolicyBuilder.() -> Unit) {
+  fun redactionPolicies(init: RedactionPolicyBuilder.() -> Unit) {
     RedactionPolicyBuilder().apply(init).content?.let {
       if (redactionPolicies == null) {
         redactionPolicies = mutableListOf()
