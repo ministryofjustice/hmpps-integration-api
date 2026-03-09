@@ -37,6 +37,11 @@ class AuthorisationConfig {
       .sorted()
 
   /**
+   * Returns the consumers queue name if applicable.
+   */
+  fun queueName(consumer: String): String? = consumers[consumer]?.queueName
+
+  /**
    * Returns a list of all endpoint permissions for a consumer, whether direct or from roles.
    */
   fun allPermissions(consumerName: String): List<String> {

@@ -25,6 +25,23 @@ generic-service:
       SENTRY_DSN: "sentry"
     cp-course-completion-events-secret:
       HMPPS_SQS_QUEUES_EDUCATIONCOURSECOMPLETIONEVENTS_QUEUE_NAME: "sqs_queue_name"
+    event-test-client-queue:
+      TEST_CLIENT_QUEUE_NAME: "sqs_name"
+      TEST_CLIENT_QUEUE_ARN: "sqs_arn"
+    event-bmadley-queue:
+      BMADLEY_QUEUE_NAME: "sqs_name"
+      BMADLEY_QUEUE_ARN: "sqs_arn"
+      BMADLEY_FILTER_POLICY_SECRET_ID: "bmadley_filter_policy_secret_id"
+    event-kilco-queue:
+      KILCO_QUEUE_NAME: "sqs_name"
+      KILCO_QUEUE_ARN: "sqs_arn"
+      KILCO_FILTER_POLICY_SECRET_ID: "kilco_filter_policy_secret_id"
+    event-moj-esw-queue:
+      MOJ_ESW_QUEUE_NAME: "sqs_name"
+      MOJ_ESW_QUEUE_ARN: "sqs_arn"
+    event-daso-queue:
+      DASO_QUEUE_NAME: "sqs_name"
+      DASO_QUEUE_ARN: "sqs_arn"
 
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts

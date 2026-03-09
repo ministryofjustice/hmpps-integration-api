@@ -82,10 +82,12 @@ authorisation:
       notes: "See client list in Confluence"
       roles:
         - "mappa"
+      queueName: "mappssubscriberqueue"
     ctrlo:
       notes: "See client list in Confluence"
       roles:
         - "ctrlo"
+      queueName: "ctrlosubscriberqueue"
     moj-pes:
       notes: "See client list in Confluence"
       roles:
@@ -98,6 +100,7 @@ authorisation:
       notes: "See client list in Confluence"
       roles:
         - "police"
+      queueName: "pndsubscriberqueue"
     event-service:
       notes: "HMPPS External Events service"
       roles:
@@ -111,14 +114,17 @@ authorisation:
           - MKI
       roles:
         - "private-prison"
+      queueName: "kilcosubscriberqueue"
     meganexus:
       notes: "See client list in Confluence"
       roles:
         - "curious"
+      queueName: "plpsubscriberqueue"
     moj-esw:
       notes: "HMPPS Education Skills and Work team"
       roles:
         - "curious"
+      queueName: "mojeswsubscriberqueue"
     serco:
       notes: "See client list in Confluence"
       roles:
@@ -194,6 +200,7 @@ authorisation:
       notes: "See client list in Confluence"
       roles:
         - "cats"
+      queueName: "catssubscriberqueue"
     jwylde:
       roles:
         - "mappa"
@@ -209,7 +216,56 @@ authorisation:
       notes: "See client list in Confluence"
       roles:
         - "daso"
+      queueName: "dasosubscriberqueue"
     community-campus:
       notes: "See client list in Confluence"
       roles:
         - "community-payback"
+
+hmpps.sqs:
+  queues:
+    hmppsdomainqueue:
+      queueName: ${HMPPS_DOMAIN_QUEUE_NAME}
+      queueArn: ${HMPPS_DOMAIN_QUEUE_ARN}
+      dlqName: ${HMPPS_DOMAIN_DL_QUEUE_NAME}
+      subscribeTopicId: domainevents
+    mappssubscriberqueue:
+      queueName: ${MAPPS_QUEUE_NAME}
+      queueArn: ${MAPPS_QUEUE_ARN}
+      subscribeTopicId: integrationeventtopic
+    plpsubscriberqueue:
+      queueName: ${PLP_QUEUE_NAME}
+      queueArn: ${PLP_QUEUE_ARN}
+      subscribeTopicId: integrationeventtopic
+    pndsubscriberqueue:
+      queueName: ${PND_QUEUE_NAME}
+      queueArn: ${PND_QUEUE_ARN}
+      subscribeTopicId: integrationeventtopic
+    bmadleysubscriberqueue:
+      queueName: ${BMADLEY_QUEUE_NAME}
+      queueArn: ${BMADLEY_QUEUE_ARN}
+      subscribeTopicId: integrationeventtopic
+    testclientsubscriberqueue:
+      queueName: ${TEST_CLIENT_QUEUE_NAME}
+      queueArn: ${TEST_CLIENT_QUEUE_ARN}
+      subscribeTopicId: integrationeventtopic
+    kilcosubscriberqueue:
+      queueName: ${KILCO_QUEUE_NAME}
+      queueArn: ${KILCO_QUEUE_ARN}
+      subscribeTopicId: integrationeventtopic
+    catssubscriberqueue:
+      queueName: ${CATS_QUEUE_NAME}
+      queueArn: ${CATS_QUEUE_ARN}
+      subscribeTopicId: integrationeventtopic
+    mojeswsubscriberqueue:
+      queueName: ${MOJ_ESW_QUEUE_NAME}
+      queueArn: ${MOJ_ESW_QUEUE_ARN}
+      subscribeTopicId: integrationeventtopic
+    ctrlosubscriberqueue:
+      queueName: ${CTRLO_QUEUE_NAME}
+      queueArn: ${CTRLO_QUEUE_ARN}
+      subscribeTopicId: integrationeventtopic
+    dasosubscriberqueue:
+      queueName: ${DASO_QUEUE_NAME}
+      queueArn: ${DASO_QUEUE_ARN}
+      subscribeTopicId: integrationeventtopic

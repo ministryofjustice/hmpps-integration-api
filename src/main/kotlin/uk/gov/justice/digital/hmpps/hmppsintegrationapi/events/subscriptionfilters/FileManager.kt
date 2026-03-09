@@ -29,6 +29,13 @@ class FileManager {
   fun read(path: String): File? = File(path).takeIf { it.exists() }
 
   /**
+   * Function to delete a file if exists
+   *
+   * @param path The absolute path to the file to delete
+   */
+  fun delete(path: String) = File(path).takeIf { it.exists() }?.delete()
+
+  /**
    * Function that creates a folder at the specified path if it does not already exist
    *
    * @param path The absolute path to where the folder should exist

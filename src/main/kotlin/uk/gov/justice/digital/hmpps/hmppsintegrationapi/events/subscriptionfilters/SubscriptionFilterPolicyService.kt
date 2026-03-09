@@ -55,6 +55,7 @@ class SubscriptionFilterPolicyService(
           filterPolicyWriter.writePolicyFile(env.key, consumer.key, policy, updateType)
         }
       }
+      removeExistingWithoutQueue(env.key)
     }
   }
 
@@ -71,7 +72,7 @@ class SubscriptionFilterPolicyService(
     val endpointMap = IntegrationEventType.entries.groupBy { normalisePath(it.pathTemplate) }
     val policyMap = mutableMapOf<String, Pair<FilterPolicy, Boolean>>()
 
-    authorisation.forEach { consumer ->
+    authorisation.filter { it.value.queueName != null }.forEach { consumer ->
       logger.info("Checking $environment filter policy file for for ${consumer.key}")
       val existingFilterPolicies = filterPolicyReader.readFile(environment, consumer.key)
       val consumerEvents =
@@ -86,5 +87,21 @@ class SubscriptionFilterPolicyService(
       }
     }
     return policyMap
+  }
+
+  /**
+   * Function to remove any filter policy files that exist for a consumer without a configured queue
+   *
+   * @param environment
+   */
+  fun removeExistingWithoutQueue(environment: String) {
+    val authorisation = authorisationConfigReader.read(environment)
+    authorisation.filter { it.value.queueName == null }.forEach { consumer ->
+      val existingFilterPolicies = filterPolicyReader.readFile(environment, consumer.key)
+      if (existingFilterPolicies != null) {
+        logger.info("Deleting $environment filter policy file for ${consumer.key}")
+        filterPolicyWriter.deletePolicyFile(environment, consumer.key)
+      }
+    }
   }
 }

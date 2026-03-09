@@ -33,7 +33,7 @@ class SubscriptionFilterPolicyServiceTest {
   @Test
   fun `Should generate ALL subscription policy config files for the test environment when none exist`() {
     setUpConsumers(noPolicies = true)
-    val numberOfConsumers = testConfig.size
+    val numberOfConsumers = testConfig.filter { it.value.queueName != null }.size
     val filterPolicyJson = argumentCaptor<String>()
     service.generatePolicyFiles(listOf("test"))
     verify(fileManager, times(numberOfConsumers)).write(any(), filterPolicyJson.capture())
@@ -60,6 +60,17 @@ class SubscriptionFilterPolicyServiceTest {
     setUpConsumers(noPolicies = false, changedConsumers = listOf("automated-test-client"), throwsExceptionConsumers = listOf("no-include-or-roles"))
     assertThrows<RuntimeException> { service.generatePolicyFiles(listOf("test")) }
     verify(fileManager, times(0)).write(any(), any())
+  }
+
+  @Test
+  fun `Should remove policy files when consumer is no longer associated with a queue `() {
+    setUpConsumers(noPolicies = false, changedConsumers = listOf("limited-prisons"))
+    val policy = FilterPolicy(listOf("NEEDS_CHANGED"))
+    val json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(policy)
+    whenever(fileManager.readFileContentsFromResourcesFolder("event-filter-policies/test/limited-prisons-subscription-filter.json")).thenReturn(json)
+    service.generatePolicyFiles(listOf("test"))
+
+    verify(fileManager, times(1)).delete(any())
   }
 
   fun setUpConsumers(

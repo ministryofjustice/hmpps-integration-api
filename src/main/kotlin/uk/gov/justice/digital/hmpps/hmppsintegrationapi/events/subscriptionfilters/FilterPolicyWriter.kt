@@ -52,4 +52,19 @@ class FilterPolicyWriter(
     fileManager.checkOrCreateDirectory(path)
     return path
   }
+
+  /**
+   * Function to delete a policy file
+   *
+   * @param environment The environment (e.g dev/preprod/prod])
+   * @param consumer The consumer name
+   */
+  fun deletePolicyFile(
+    environment: String,
+    consumer: String,
+  ) {
+    val resourcesFolder = fileManager.getResourcesFolderPath()
+    val path = "$resourcesFolder/$SUBSCRIPTION_FILTER_FOLDER_NAME/$environment/$consumer-$SUBSCRIPTION_FILTER_FILE_SUFFIX"
+    fileManager.delete(path)
+  }
 }
