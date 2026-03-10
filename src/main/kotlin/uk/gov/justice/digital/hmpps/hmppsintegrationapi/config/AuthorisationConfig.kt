@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.config
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.IntegrationEventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.normalisePath
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
@@ -10,6 +11,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory
+import kotlin.collections.ifEmpty
+import kotlin.collections.map
 
 @Configuration
 @Component
@@ -52,6 +55,28 @@ class AuthorisationConfig {
     }
     return merged.toList().sorted()
   }
+
+  /**
+   * Returns the integration events for a consumer.
+   */
+  fun events(consumerName: String): List<String> {
+    val endpointMap = IntegrationEventType.entries.groupBy { normalisePath(it.pathTemplate) }
+    return allPermissions(consumerName)
+      .map { normalisePath(it) }
+      .mapNotNull { endpointMap[it]?.map { eventType -> eventType.name } }
+      .flatten()
+      .ifEmpty { listOf("default") }
+  }
+
+  /**
+   * Returns consumers with queues
+   */
+  fun consumersWithQueue(): Set<String> = consumers.filter { it.value?.queueName != null }.keys
+
+  /**
+   * Returns consumers without queues
+   */
+  fun consumersWithoutQueue(): Set<String> = consumers.filter { it.value?.queueName == null }.keys
 
   /**
    * Returns true if the endpoint matches any of the patterns.

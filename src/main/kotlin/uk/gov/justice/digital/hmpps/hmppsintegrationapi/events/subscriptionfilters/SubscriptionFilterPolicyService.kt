@@ -2,8 +2,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.subscriptionfilt
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.IntegrationEventType
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.normalisePath
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.AuthorisationConfigReader
 
 class SubscriptionFilterPolicyService(
@@ -70,21 +68,15 @@ class SubscriptionFilterPolicyService(
   fun generatePolicies(environment: String): Map<String, Pair<FilterPolicy, Boolean>> {
     logger.info("Checking policies for $environment")
     val authorisation = authorisationConfigReader.read(environment)
-    val endpointMap = IntegrationEventType.entries.groupBy { normalisePath(it.pathTemplate) }
     val policyMap = mutableMapOf<String, Pair<FilterPolicy, Boolean>>()
 
-    authorisation.filter { it.value.queueName != null }.forEach { consumer ->
-      logger.info("Checking $environment filter policy file for for ${consumer.key}")
-      val existingFilterPolicies = filterPolicyReader.readFile(environment, consumer.key)
-      val consumerEvents =
-        consumer.value.endpoints
-          .map { normalisePath(it) }
-          .mapNotNull { endpointMap[it]?.map { eventType -> eventType.name } }
-          .flatten()
-          .ifEmpty { listOf("default") }
+    authorisation.consumersWithQueue().forEach { consumer ->
+      logger.info("Checking $environment filter policy file for for $consumer")
+      val existingFilterPolicies = filterPolicyReader.readFile(environment, consumer)
+      val consumerEvents = authorisation.events(consumer)
       val isNewFile = existingFilterPolicies == null
       if (isNewFile || existingFilterPolicies.eventType.toSet() != consumerEvents.toSet()) {
-        policyMap[consumer.key] = Pair(FilterPolicy(consumerEvents), isNewFile)
+        policyMap[consumer] = Pair(FilterPolicy(consumerEvents), isNewFile)
       }
     }
     return policyMap
@@ -97,11 +89,11 @@ class SubscriptionFilterPolicyService(
    */
   fun removeExistingWithoutQueue(environment: String) {
     val authorisation = authorisationConfigReader.read(environment)
-    authorisation.filter { it.value.queueName == null }.forEach { consumer ->
-      val existingFilterPolicies = filterPolicyReader.readFile(environment, consumer.key)
+    authorisation.consumersWithoutQueue().forEach { consumer ->
+      val existingFilterPolicies = filterPolicyReader.readFile(environment, consumer)
       if (existingFilterPolicies != null) {
-        logger.info("Deleting $environment filter policy file for ${consumer.key}")
-        filterPolicyWriter.deletePolicyFile(environment, consumer.key)
+        logger.info("Deleting $environment filter policy file for $consumer")
+        filterPolicyWriter.deletePolicyFile(environment, consumer)
       }
     }
   }

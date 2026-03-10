@@ -11,7 +11,7 @@ import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ConfigAuthorisation
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.objectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.AuthorisationConfigReader
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.FileManager
@@ -21,7 +21,7 @@ class SubscriptionFilterPolicyServiceTest {
   val fileManager = Mockito.spy(FileManager::class.java)!!
 
   lateinit var service: SubscriptionFilterPolicyService
-  lateinit var testConfig: Map<String, ConfigAuthorisation>
+  lateinit var testConfig: AuthorisationConfig
 
   @BeforeEach
   fun setup() {
@@ -35,7 +35,7 @@ class SubscriptionFilterPolicyServiceTest {
   @Test
   fun `Should generate ALL subscription policy config files for the test environment when none exist`() {
     setUpConsumers(noPolicies = true)
-    val numberOfConsumers = testConfig.filter { it.value.queueName != null }.size
+    val numberOfConsumers = testConfig.consumersWithQueue().size
     val filterPolicyJson = argumentCaptor<String>()
     service.generatePolicyFiles(listOf("test"))
     verify(fileManager, times(numberOfConsumers)).write(any(), filterPolicyJson.capture())
