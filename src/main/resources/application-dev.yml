@@ -160,7 +160,7 @@ authorisation:
         - "full-access"
     pmcphee:
       roles:
-        - "full-access-lao-redactions"
+        - "curious"
     geoamey:
       notes: "See client list in Confluence"
       roles:
@@ -196,7 +196,7 @@ authorisation:
         - "cats"
     jwylde:
       roles:
-        - "mappa"
+        - "full-access-lao-redactions"
       filters:
         prisons:
           - MKI

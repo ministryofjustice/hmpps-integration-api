@@ -18,10 +18,8 @@ val fullAccessLaoRedactions =
         -"*"
       }
     }
-    redactionPolicies(
-      listOf(
-        laoRedactionPolicy,
-        generalRiskScoreRedactions,
-      ),
-    )
+    redactionPolicies {
+      -laoRedactionPolicy
+      -generalRiskScoreRedactions
+    }
   }

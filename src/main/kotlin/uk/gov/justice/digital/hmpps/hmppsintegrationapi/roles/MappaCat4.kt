@@ -14,9 +14,7 @@ val mappaCat4 =
         -CAT4
       }
     }
-    redactionPolicies(
-      listOf(
-        generalRiskScoreRedactions,
-      ),
-    )
+    redactionPolicies {
+      -generalRiskScoreRedactions
+    }
   }
