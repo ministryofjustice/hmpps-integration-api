@@ -20,7 +20,6 @@ class ConfigController(
 
   private fun mapConsumerToIncludesAndFilters(consumerName: String): ConfigAuthorisation =
     ConfigAuthorisation(
-      queueName = authorisationConfig.queueName(consumerName),
       endpoints = authorisationConfig.allPermissions(consumerName),
       filters = authorisationConfig.allFilters(consumerName),
     )
