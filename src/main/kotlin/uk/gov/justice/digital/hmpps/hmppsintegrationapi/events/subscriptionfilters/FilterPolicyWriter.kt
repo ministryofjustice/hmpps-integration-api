@@ -1,5 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.subscriptionfilters
 
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.util.DefaultIndenter
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
@@ -14,7 +17,19 @@ class FilterPolicyWriter(
       .registerKotlinModule()
       .enable(SerializationFeature.INDENT_OUTPUT)
       .enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-      .setDefaultPrettyPrinter(IndentedArraysPrettyPrettyPrinter())
+      .setDefaultPrettyPrinter(
+        object : DefaultPrettyPrinter() {
+          override fun createInstance(): DefaultPrettyPrinter {
+            val prettyPrinter = this
+            prettyPrinter.indentArraysWith(DefaultIndenter())
+            return prettyPrinter
+          }
+
+          override fun writeObjectFieldValueSeparator(g: JsonGenerator) {
+            g.writeRaw(": ")
+          }
+        },
+      )
 
   companion object {
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
