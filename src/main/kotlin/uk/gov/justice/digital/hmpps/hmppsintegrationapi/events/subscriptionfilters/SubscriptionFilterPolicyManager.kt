@@ -12,7 +12,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.FileManager
 
 class SubscriptionFilterPolicyManager(
-  private val fileManager: FileManager) {
+  private val fileManager: FileManager,
+) {
   companion object {
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
   }
