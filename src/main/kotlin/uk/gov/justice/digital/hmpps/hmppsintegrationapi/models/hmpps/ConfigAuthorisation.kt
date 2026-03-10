@@ -5,5 +5,4 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 data class ConfigAuthorisation(
   val endpoints: List<String>,
   val filters: ConsumerFilters?,
-  val queueName: String? = null,
 )
