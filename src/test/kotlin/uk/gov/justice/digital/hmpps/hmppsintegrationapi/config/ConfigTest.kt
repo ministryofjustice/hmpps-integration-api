@@ -7,7 +7,6 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.springframework.core.io.ClassPathResource
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.FileManager
 import java.io.File
-import java.io.FileReader
 
 /**
  * Abstract base class for unit tests of configuration files.

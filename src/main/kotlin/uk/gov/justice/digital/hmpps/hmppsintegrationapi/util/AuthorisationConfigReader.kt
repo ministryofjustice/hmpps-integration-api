@@ -6,14 +6,14 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v2.ConfigController
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.FileManager
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ConfigAuthorisation
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.FileManager
 
 /**
  * Class to get a Map containing the Authorisation Config for all consumers
  */
 class AuthorisationConfigReader(
-    val fileManager: FileManager,
+  val fileManager: FileManager,
 ) {
   /**
    * Function that reads all consumers authorisation configuration into a map
