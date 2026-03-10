@@ -74,6 +74,11 @@ class AuthorisationConfig {
   fun consumersWithoutQueue(): Set<String> = consumers.filter { it.value?.queueName == null }.keys
 
   /**
+   * Returns a consumers queue name (if applicable)
+   */
+  fun queueName(consumerName: String) = consumers[consumerName]?.queueName
+
+  /**
    * Returns true if the endpoint matches any of the patterns.
    */
   private fun anyMatch(
