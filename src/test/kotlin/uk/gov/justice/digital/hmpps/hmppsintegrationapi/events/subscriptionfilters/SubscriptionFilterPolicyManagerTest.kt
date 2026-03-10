@@ -17,10 +17,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.FileManager
 import kotlin.test.assertEquals
 
-class SubscriptionFilterPolicyServiceTest {
+class SubscriptionFilterPolicyManagerTest {
   val fileManager = Mockito.spy(FileManager::class.java)!!
 
-  lateinit var service: SubscriptionFilterPolicyService
+  lateinit var service: SubscriptionFilterPolicyManager
   lateinit var testConfig: AuthorisationConfig
 
   @BeforeEach
@@ -29,7 +29,7 @@ class SubscriptionFilterPolicyServiceTest {
     doNothing().whenever(fileManager).write(any(), any())
     doNothing().whenever(fileManager).checkOrCreateDirectory(any())
     testConfig = AuthorisationConfigReader(fileManager).read("test")
-    service = SubscriptionFilterPolicyService(FilterPolicyReader(fileManager), FilterPolicyWriter(fileManager), AuthorisationConfigReader(fileManager))
+    service = SubscriptionFilterPolicyManager(fileManager)
   }
 
   @Test
@@ -80,12 +80,7 @@ class SubscriptionFilterPolicyServiceTest {
     changedConsumers: List<String>? = null,
     throwsExceptionConsumers: List<String>? = null,
   ) {
-    val testGenerator =
-      SubscriptionFilterPolicyService(
-        FilterPolicyReader(fileManager),
-        FilterPolicyWriter(fileManager),
-        AuthorisationConfigReader(fileManager),
-      )
+    val testGenerator = SubscriptionFilterPolicyManager(fileManager)
 
     testGenerator
       .generatePoliciesForEnvironment("test")

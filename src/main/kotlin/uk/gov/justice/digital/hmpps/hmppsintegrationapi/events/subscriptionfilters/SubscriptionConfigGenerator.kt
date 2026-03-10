@@ -11,8 +11,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.FileManager
 object SubscriptionConfigGenerator {
   @JvmStatic
   fun main(args: Array<String>) {
-    val fileManager = FileManager()
-    val generator = SubscriptionFilterPolicyService(FilterPolicyReader(fileManager), FilterPolicyWriter(fileManager), AuthorisationConfigReader(fileManager))
+    val generator = SubscriptionFilterPolicyManager(FileManager())
     generator.generatePolicyFiles(listOf("dev", "preprod", "prod"))
   }
 }
