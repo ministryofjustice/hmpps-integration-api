@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.subscriptionfilters
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.util
 
 import java.io.File
 import java.nio.file.Files

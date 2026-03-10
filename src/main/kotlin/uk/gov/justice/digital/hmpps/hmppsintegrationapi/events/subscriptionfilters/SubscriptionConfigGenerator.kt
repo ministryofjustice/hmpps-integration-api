@@ -1,5 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.subscriptionfilters
 
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.AuthorisationConfigReader
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.FileManager
+
 /**
  * Main method used by the Gradle task 'generateFilterPolicies' to generate subscription filter policy files for dev, preprod and prod
  * Run from the root of the project

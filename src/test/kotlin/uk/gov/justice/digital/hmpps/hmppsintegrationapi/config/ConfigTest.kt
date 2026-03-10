@@ -5,13 +5,16 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.springframework.core.io.ClassPathResource
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.FileManager
 import java.io.File
+import java.io.FileReader
 
 /**
  * Abstract base class for unit tests of configuration files.
  */
 abstract class ConfigTest {
   val mapper = ObjectMapper(YAMLFactory()).registerKotlinModule()
+  val fileManager = FileManager()
 
   fun getConfigPath(
     environment: String,

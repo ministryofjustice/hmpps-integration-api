@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.subscriptionfilt
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.FileManager
 
 class FilterPolicyReader(
   val fileManager: FileManager,

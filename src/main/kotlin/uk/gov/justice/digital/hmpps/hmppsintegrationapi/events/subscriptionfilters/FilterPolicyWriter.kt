@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.FileManager
 
 class FilterPolicyWriter(
   val fileManager: FileManager,

@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.subscriptionfilt
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.AuthorisationConfigReader
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.IntegrationEventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.normalisePath
 
