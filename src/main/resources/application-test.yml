@@ -119,17 +119,22 @@ authorisation:
       notes: "For automated testing in a local environment"
       roles:
         - "full-access"
+      queueName: "testqueue"
     config-v2-test:
       roles:
         - "hmpps-system"
       filters:
         prisons:
           - XYZ
+      queueName: "testqueue"
     no-include-or-roles:
+      queueName: "testqueue"
     empty-include:
       notes: "A test consumer with no permissions"
+      queueName: "testqueue"
     empty-roles:
       notes: "Consumer with no roles"
+      queueName: "testqueue"
     limited-prisons:
       roles:
         - "all-endpoints"
@@ -141,24 +146,29 @@ authorisation:
         - "all-endpoints"
       filters:
         prisons:
+      queueName: "testqueue"
     private-prison-only:
       roles:
         - "private-prison"
+      queueName: "testqueue"
     limited-case-notes:
       roles:
         - "all-endpoints"
       filters:
         case-notes:
           - "CAB"
+      queueName: "testqueue"
     supervision-status-prison-only:
       roles:
         - "all-endpoints"
       filters:
         supervisionStatuses:
           - PRISONS
+      queueName: "testqueue"
     supervision-status-probation-only:
       roles:
         - "all-endpoints"
       filters:
         supervisionStatuses:
           - PROBATION
+      queueName: "testqueue"

@@ -1,0 +1,6 @@
+{
+  "eventType": [
+    "PERSON_ACCESS_LIMITATIONS_CHANGED",
+    "RISK_SCORE_CHANGED"
+  ]
+}

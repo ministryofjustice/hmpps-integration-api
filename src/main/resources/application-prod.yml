@@ -78,6 +78,7 @@ authorisation:
       notes: "See client list in Confluence"
       roles:
         - "ctrlo"
+      queueName: "ctrlosubscriberqueue"
     moj-pes:
       notes: "See client list in Confluence"
       roles:
@@ -94,10 +95,12 @@ authorisation:
       notes: "See client list in Confluence"
       roles:
         - "curious"
+      queueName: "plpsubscriberqueue"
     pnd:
       notes: "See client list in Confluence"
       roles:
         - "police"
+      queueName: "pndsubscriberqueue"
     smoke-test:
       notes: "Post-deployment smoke tests"
       roles:

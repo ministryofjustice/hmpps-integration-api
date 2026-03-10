@@ -80,6 +80,26 @@ generic-service:
       HMPPS_DOMAIN_TOPIC_ARN: "hmpps_domain_events_topic_arn"
     hmpps-integration-api-domain-events-sqs-dl-instance-output:
       HMPPS_DOMAIN_DL_QUEUE_NAME: "sqs_name"
+    event-pnd-queue:
+      PND_QUEUE_NAME: "sqs_name"
+      PND_QUEUE_ARN: "sqs_arn"
+      PND_FILTER_POLICY_SECRET_ID: "pnd_filter_policy_secret_id"
+    event-mapps-queue:
+      MAPPS_QUEUE_NAME: "sqs_name"
+      MAPPS_QUEUE_ARN: "sqs_arn"
+      MAPPS_FILTER_POLICY_SECRECT_ID: "mapps_filter_policy_secret_id"
+    event-plp-queue:
+      PLP_QUEUE_NAME: "sqs_name"
+      PLP_QUEUE_ARN: "sqs_arn"
+      PLP_FILTER_POLICY_SECRET_ID: "plp_filter_policy_secret_id"
+    event-cats-queue:
+      CATS_QUEUE_NAME: "sqs_name"
+      CATS_QUEUE_ARN: "sqs_arn"
+      CATS_FILTER_POLICY_SECRET_ID: "cats_filter_policy_secret_id"
+    event-ctrlo-queue:
+      CTRLO_QUEUE_NAME: "sqs_name"
+      CTRLO_QUEUE_ARN: "sqs_arn"
+      CTRLO_FILTER_POLICY_SECRET_ID: "ctrlo_filter_policy_secret_id"
 
   allowlist:
     unrestricted: "0.0.0.0/0"

@@ -78,6 +78,7 @@ authorisation:
       notes: "See client list in Confluence"
       roles:
         - "status-only"
+      queueName: "ctrlosubscriberqueue"
     moj-pes:
       notes: "See client list in Confluence"
       roles:
@@ -94,10 +95,12 @@ authorisation:
       notes: "See client list in Confluence"
       roles:
         - "status-only"
+      queueName: "plpsubscriberqueue"
     pnd:
       notes: "See client list in Confluence"
       roles:
         - "status-only"
+      queueName: "pndsubscriberqueue"
     pmcphee:
       notes: "ExtApi developer"
       roles:
