@@ -66,6 +66,7 @@ feature-flag:
   gateway-cache-enabled: true
   normalised-path-matching: true
   enable-send-decimal-risk-scores: true
+  enable-wrap-auth: true
   # Events Config
   enable-delete-processed-events: true
   enable-publish-pending-events: true

@@ -30,6 +30,7 @@ data class FeatureFlagConfig(
     const val GATEWAY_CACHE_ENABLED = "gateway-cache-enabled"
     const val NORMALISED_PATH_MATCHING = "normalised-path-matching"
     const val ENABLE_SEND_DECIMAL_RISK_SCORES = "enable-send-decimal-risk-scores"
+    const val ENABLE_WRAP_AUTH = "enable-wrap-auth"
 
     // Events feature flags
     const val ENABLE_DELETE_PROCESSED_EVENTS = "enable-delete-processed-events"
