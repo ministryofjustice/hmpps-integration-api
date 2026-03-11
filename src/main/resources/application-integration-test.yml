@@ -113,7 +113,7 @@ feature-flag:
   gateway-cache-enabled: true
   normalised-path-matching: true
   enable-send-decimal-risk-scores: true
-  enable-wrap-auth: false
+  use-webclient-wrapper-for-hmpps-auth: false
   # Events Config
   enable-delete-processed-events: true
   enable-publish-pending-events: true

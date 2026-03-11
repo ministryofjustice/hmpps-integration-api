@@ -10,7 +10,7 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientRequestException
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.ENABLE_WRAP_AUTH
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_WEBCLIENT_WRAPPER_FOR_HMPPS_AUTH
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.HmppsAuthFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
@@ -82,17 +82,15 @@ class HmppsAuthGateway(
     val credentials = Credentials(username, password)
     val uri = "/auth/oauth/token?grant_type=client_credentials"
 
-    val enableWrap = featureFlag.getConfigFlagValue(ENABLE_WRAP_AUTH)
-
     return try {
       var response: String?
-      if (enableWrap!!) {
+      if (featureFlag.isEnabled(USE_WEBCLIENT_WRAPPER_FOR_HMPPS_AUTH)) {
         val result =
           webClientWrapper.request<String>(
             HttpMethod.POST,
             uri,
             mapOf("Authorization" to credentials.toBasicAuth()),
-            UpstreamApi.AUTH,
+            UpstreamApi.HMPPS_AUTH,
           )
 
         when (result) {

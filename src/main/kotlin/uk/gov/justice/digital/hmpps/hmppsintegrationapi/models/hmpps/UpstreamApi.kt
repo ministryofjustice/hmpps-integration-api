@@ -26,5 +26,5 @@ enum class UpstreamApi {
   SAN,
   CORE_PERSON_RECORD,
   ARNS_INTEGRATION_TEST,
-  AUTH,
+  HMPPS_AUTH,
 }
