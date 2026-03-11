@@ -21,6 +21,7 @@ import software.amazon.awssdk.services.sns.model.SetSubscriptionAttributesReques
 import software.amazon.awssdk.services.sns.model.Subscription
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.INTEGRATION_EVENT_TOPIC
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.AuthorisationConfigReader
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.FileManager
 import uk.gov.justice.hmpps.sqs.HmppsQueue
@@ -38,6 +39,7 @@ class SubscriptionFilterPolicyUpdaterTest {
   val testQueue = mock(HmppsQueue::class.java)!!
   val subscriptionsByTopicResponse = mock(ListSubscriptionsByTopicResponse::class.java)!!
   val subscriptionAttributesResponse = mock(GetSubscriptionAttributesResponse::class.java)!!
+  val telemetryService = mock(TelemetryService::class.java)!!
 
   lateinit var updater: SubscriptionFilterPolicyUpdater
   lateinit var testConfig: AuthorisationConfig
@@ -75,7 +77,7 @@ class SubscriptionFilterPolicyUpdaterTest {
 
     testConfig = AuthorisationConfigReader(fileManager).read("integration-test")
     policyManager = SubscriptionFilterPolicyManager(fileManager)
-    updater = SubscriptionFilterPolicyUpdater(environment, testConfig, queueService, policyManager)
+    updater = SubscriptionFilterPolicyUpdater(environment, testConfig, queueService, policyManager, telemetryService)
   }
 
   fun setExistingFilterPolicy(policy: FilterPolicy = FilterPolicy()) {

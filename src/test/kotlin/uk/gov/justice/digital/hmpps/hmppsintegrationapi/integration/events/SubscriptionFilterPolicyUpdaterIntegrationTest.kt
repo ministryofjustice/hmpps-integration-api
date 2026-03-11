@@ -6,7 +6,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import software.amazon.awssdk.services.sns.SnsAsyncClient
 import software.amazon.awssdk.services.sns.model.GetSubscriptionAttributesRequest
 import software.amazon.awssdk.services.sns.model.ListSubscriptionsByTopicRequest
 import software.amazon.awssdk.services.sns.model.SetSubscriptionAttributesRequest
@@ -22,22 +21,18 @@ import uk.gov.justice.hmpps.sqs.HmppsTopic
 
 class SubscriptionFilterPolicyUpdaterIntegrationTest : IntegrationTestBase() {
   @Autowired
-  private lateinit var queueService: HmppsQueueService
-
-  @Autowired
   private lateinit var hmppsQueueService: HmppsQueueService
 
   @Autowired
   private lateinit var subscriptionFilterPolicyUpdater: SubscriptionFilterPolicyUpdater
 
-  private lateinit var client: SnsAsyncClient
+  private lateinit var hmppsIntegrationEventTopic: HmppsTopic
 
   private lateinit var subscriptionArn: String
 
   @BeforeEach
   fun setup() {
-    val topic = queueService.findByTopicId(INTEGRATION_EVENT_TOPIC) as HmppsTopic
-    client = topic.snsClient
+    hmppsIntegrationEventTopic = hmppsQueueService.findByTopicId(INTEGRATION_EVENT_TOPIC) as HmppsTopic
     subscriptionArn = getTestSubscription()?.subscriptionArn()!!
     val request =
       SetSubscriptionAttributesRequest
@@ -46,14 +41,13 @@ class SubscriptionFilterPolicyUpdaterIntegrationTest : IntegrationTestBase() {
         .attributeName(SUBSCRIPTION_FILTER_AWS_ATTRIBUTE_NAME)
         .attributeValue("{\"eventType\":[\"EXISTING_EVENT\"]}")
         .build()
-    client.setSubscriptionAttributes(request)
+    hmppsIntegrationEventTopic.snsClient.setSubscriptionAttributes(request)
   }
 
   fun getTestSubscription(): Subscription? {
-    val topic = queueService.findByTopicId("integrationeventtopic") as HmppsTopic
-    val queue = queueService.findByQueueId("testqueue") as HmppsQueue
-    val listSubscriptionsByTopicRequest = ListSubscriptionsByTopicRequest.builder().topicArn(topic.arn).build()
-    val listSubscriptionsResponse = client.listSubscriptionsByTopic(listSubscriptionsByTopicRequest).get()
+    val queue = hmppsQueueService.findByQueueId("testqueue") as HmppsQueue
+    val listSubscriptionsByTopicRequest = ListSubscriptionsByTopicRequest.builder().topicArn(hmppsIntegrationEventTopic.arn).build()
+    val listSubscriptionsResponse = hmppsIntegrationEventTopic.snsClient.listSubscriptionsByTopic(listSubscriptionsByTopicRequest).get()
     return listSubscriptionsResponse.subscriptions().firstOrNull {
       it.protocol() == "sqs" && it.endpoint() == queue.queueArn
     }
@@ -61,7 +55,7 @@ class SubscriptionFilterPolicyUpdaterIntegrationTest : IntegrationTestBase() {
 
   fun getTestFilterPolicy(): FilterPolicy? {
     val request = GetSubscriptionAttributesRequest.builder().subscriptionArn(subscriptionArn).build()
-    return client
+    return hmppsIntegrationEventTopic.snsClient
       .getSubscriptionAttributes(request)
       .get()
       .attributes()[SUBSCRIPTION_FILTER_AWS_ATTRIBUTE_NAME]
