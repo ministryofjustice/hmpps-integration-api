@@ -1,13 +1,13 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.subscriptionfilters
 
+import org.awaitility.kotlin.await
+import org.awaitility.kotlin.untilAsserted
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
-import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -33,8 +33,9 @@ import kotlin.test.assertEquals
 class SubscriptionFilterPolicyUpdaterTest {
   val fileManager = Mockito.spy(FileManager::class.java)!!
   val environment = mock(Environment::class.java)!!
-  val queueService = mock(HmppsQueueService::class.java)!!
   val topic = mock(HmppsTopic::class.java)!!
+  val hmppsQueueService = mock(HmppsQueueService::class.java)!!
+
   val snsClient = mock(SnsAsyncClient::class.java)!!
   val testQueue = mock(HmppsQueue::class.java)!!
   val subscriptionsByTopicResponse = mock(ListSubscriptionsByTopicResponse::class.java)!!
@@ -65,10 +66,10 @@ class SubscriptionFilterPolicyUpdaterTest {
   fun setup() {
     Mockito.reset(environment)
     whenever(testQueue.queueArn).thenReturn("test_queue_arn")
-    whenever(topic.arn).doReturn("event_topic_arn")
-    whenever(topic.snsClient).doReturn(snsClient)
-    whenever(queueService.findByTopicId(INTEGRATION_EVENT_TOPIC)).thenReturn(topic)
-    whenever(queueService.findByQueueId("testqueue")).thenReturn(testQueue)
+    whenever(topic.arn).thenReturn("event_topic_arn")
+    whenever(topic.snsClient).thenReturn(snsClient)
+    whenever(hmppsQueueService.findByTopicId(INTEGRATION_EVENT_TOPIC)).thenReturn(topic)
+    whenever(hmppsQueueService.findByQueueId("testqueue")).thenReturn(testQueue)
     whenever(environment.activeProfiles).thenReturn(arrayOf("integration-test"))
     whenever(snsClient.listSubscriptionsByTopic(any<ListSubscriptionsByTopicRequest>()))
       .thenReturn(CompletableFuture.completedFuture(subscriptionsByTopicResponse))
@@ -77,7 +78,7 @@ class SubscriptionFilterPolicyUpdaterTest {
 
     testConfig = AuthorisationConfigReader(fileManager).read("integration-test")
     policyManager = SubscriptionFilterPolicyManager(fileManager)
-    updater = SubscriptionFilterPolicyUpdater(environment, testConfig, queueService, policyManager, telemetryService)
+    updater = SubscriptionFilterPolicyUpdater(environment, testConfig, hmppsQueueService, policyManager, telemetryService)
   }
 
   fun setExistingFilterPolicy(policy: FilterPolicy = FilterPolicy()) {
@@ -92,10 +93,13 @@ class SubscriptionFilterPolicyUpdaterTest {
     whenever(subscriptionsByTopicResponse.subscriptions()).thenReturn(listOf(testQueueSubscription, anotherQueueSubscription))
     val attributesCaptor = argumentCaptor<SetSubscriptionAttributesRequest>()
     updater.init()
-    verify(snsClient, times(1)).setSubscriptionAttributes(attributesCaptor.capture())
-    val updatedAttributes = attributesCaptor.firstValue
-    val updatedFilterPolicy = policyManager.readPolicyValueFromString(updatedAttributes.attributeValue())
-    assertEquals(listOf("UPDATED_EVENT"), updatedFilterPolicy.eventType)
+
+    await untilAsserted {
+      verify(snsClient, times(1)).setSubscriptionAttributes(attributesCaptor.capture())
+      val updatedAttributes = attributesCaptor.firstValue
+      val updatedFilterPolicy = policyManager.readPolicyValueFromString(updatedAttributes.attributeValue())
+      assertEquals(listOf("UPDATED_EVENT"), updatedFilterPolicy.eventType)
+    }
   }
 
   @Test
@@ -103,10 +107,12 @@ class SubscriptionFilterPolicyUpdaterTest {
     setExistingFilterPolicy()
     whenever(subscriptionsByTopicResponse.subscriptions()).thenReturn(listOf(anotherQueueSubscription))
 
-    val exception =
-      assertThrows<RuntimeException> {
-        updater.init()
-      }
-    assertEquals("Failed to find an integration event subscription policy for testqueue. Please check the cloud platform configuration", exception.message)
+    updater.init()
+
+    val exception = argumentCaptor<RuntimeException>()
+    await untilAsserted {
+      verify(telemetryService).captureException(exception.capture())
+      assertEquals("Failed to find an integration event subscription policy for testqueue. Please check the cloud platform configuration", exception.firstValue.message)
+    }
   }
 }

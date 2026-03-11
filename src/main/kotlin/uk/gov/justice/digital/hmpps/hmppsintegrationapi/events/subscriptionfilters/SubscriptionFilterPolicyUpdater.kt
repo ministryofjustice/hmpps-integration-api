@@ -35,8 +35,16 @@ class SubscriptionFilterPolicyUpdater(
 
   @PostConstruct
   fun init() {
+    hmppsIntegrationEventTopic = hmppsQueueService.findByTopicId(INTEGRATION_EVENT_TOPIC)!!
+    Thread { execute() }.start()
+  }
+
+  /**
+   * Checks and updates where required, the subscription policy filters for consumers with a queue
+   *
+   */
+  fun execute() {
     try {
-      hmppsIntegrationEventTopic = hmppsQueueService.findByTopicId(INTEGRATION_EVENT_TOPIC)!!
       val environment = env.activeProfiles[0]
       authorisationConfig.consumersWithQueue().forEach { consumer ->
         logger.info("Checking subscription filter policy for $consumer")
@@ -56,7 +64,6 @@ class SubscriptionFilterPolicyUpdater(
       }
     } catch (ex: Exception) {
       telemetryService.captureException(ex)
-      throw ex
     }
   }
 
