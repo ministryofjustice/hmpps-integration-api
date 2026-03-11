@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 
 import io.sentry.Sentry
-import jakarta.validation.ValidationException
 import org.apache.tomcat.util.json.JSONParser
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -11,7 +10,7 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientRequestException
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.ENABLE_WRAP_AUTH
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.HmppsAuthFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
@@ -25,6 +24,7 @@ import java.util.Base64
 
 @Component
 class HmppsAuthGateway(
+  @Autowired val featureFlag: FeatureFlagConfig,
   @Value("\${services.hmpps-auth.base-url}") hmppsAuthUrl: String,
 ) : IAuthGateway,
   UpstreamGateway {
@@ -82,35 +82,41 @@ class HmppsAuthGateway(
     val credentials = Credentials(username, password)
     val uri = "/auth/oauth/token?grant_type=client_credentials"
 
+    val enableWrap = featureFlag.getConfigFlagValue(ENABLE_WRAP_AUTH)
+
     return try {
-      var response =
-        webClient
-          .post()
-          .uri(uri)
-          .header("Authorization", credentials.toBasicAuth())
-          .retrieve()
-          .bodyToMono(String::class.java)
-          .block()
+      var response: String?
+      if (enableWrap!!) {
+        val result =
+          webClientWrapper.request<String>(
+            HttpMethod.POST,
+            uri,
+            mapOf("Authorization" to credentials.toBasicAuth()),
+            UpstreamApi.AUTH,
+          )
 
-      val result =
-        webClientWrapper.request<String>(
-          HttpMethod.POST,
-          uri,
-          mapOf("Authorization" to credentials.toBasicAuth()),
-          UpstreamApi.AUTH,
-        )
+        when (result) {
+          is WebClientWrapperResponse.Success -> {
+            response = result.data
+          }
 
-      when (result) {
-        is WebClientWrapperResponse.Success -> {
-          response = result.data
-        }
-        is WebClientWrapperResponse.Error -> {
-          when (result.errors.map { it.type }.firstOrNull()) {
-            UpstreamApiError.Type.FORBIDDEN -> throw ValidationException("Invalid credentials used for $service.")
-            UpstreamApiError.Type.ENTITY_NOT_FOUND -> throw EntityNotFoundException("$uri is unavailable for $service.")
-            else -> throw HmppsAuthFailedException("Connection to $uri failed for $service.")
+          is WebClientWrapperResponse.Error -> {
+            when (result.errors.map { it.type }.firstOrNull()) {
+              UpstreamApiError.Type.FORBIDDEN -> throw HmppsAuthFailedException("Invalid credentials used for $service.")
+              UpstreamApiError.Type.ENTITY_NOT_FOUND -> throw HmppsAuthFailedException("$uri is unavailable for $service.")
+              else -> throw HmppsAuthFailedException("Connection to $uri failed for $service.")
+            }
           }
         }
+      } else {
+        response =
+          webClient
+            .post()
+            .uri(uri)
+            .header("Authorization", credentials.toBasicAuth())
+            .retrieve()
+            .bodyToMono(String::class.java)
+            .block()
       }
 
       val accessToken = JSONParser(response).parseObject()["access_token"].toString()
