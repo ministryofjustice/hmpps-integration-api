@@ -236,3 +236,7 @@ testlogger {
 ktlint {
   version = "1.5.0"
 }
+
+springBoot {
+  mainClass.set("uk.gov.justice.digital.hmpps.hmppsintegrationapi.HmppsIntegrationApiKt")
+}
