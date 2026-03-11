@@ -74,11 +74,4 @@ class SubscriptionFilterPolicyUpdaterIntegrationTest : IntegrationTestBase() {
     val updatedTestPolicy = getTestFilterPolicy()
     assertThat(updatedTestPolicy).isEqualTo(FilterPolicy(listOf("UPDATED_EVENT")))
   }
-
-  @Test
-  fun `Policy updater should throw an exception if no filter policy is found for the client queue`() {
-    subscriptionFilterPolicyUpdater.init()
-    val updatedTestPolicy = getTestFilterPolicy()
-    assertThat(updatedTestPolicy).isEqualTo(FilterPolicy(listOf("UPDATED_EVENT")))
-  }
 }
