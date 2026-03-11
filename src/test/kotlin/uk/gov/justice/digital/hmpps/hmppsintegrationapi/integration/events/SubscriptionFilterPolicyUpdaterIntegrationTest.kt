@@ -2,7 +2,9 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import org.assertj.core.api.Assertions.assertThat
+import org.awaitility.kotlin.await
+import org.awaitility.kotlin.matches
+import org.awaitility.kotlin.untilCallTo
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -65,7 +67,6 @@ class SubscriptionFilterPolicyUpdaterIntegrationTest : IntegrationTestBase() {
   @Test
   fun `Policy updater should update the subscription policy filter for the integration-test consumer on application start`() {
     subscriptionFilterPolicyUpdater.init()
-    val updatedTestPolicy = getTestFilterPolicy()
-    assertThat(updatedTestPolicy).isEqualTo(FilterPolicy(listOf("UPDATED_EVENT")))
+    await untilCallTo { getTestFilterPolicy()?.eventType } matches { it == listOf("UPDATED_EVENT") }
   }
 }
