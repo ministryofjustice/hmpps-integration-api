@@ -8,11 +8,14 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.core.io.ClassPathResource
+import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.AuthorisationConfigReader
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.FileManager
 
+@Component
 class SubscriptionFilterPolicyManager(
-  private val fileManager: FileManager,
+  private val fileManager: FileManager? = null,
 ) {
   companion object {
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
@@ -36,8 +39,6 @@ class SubscriptionFilterPolicyManager(
           }
         },
       )
-
-  val authorisationConfigReader: AuthorisationConfigReader = AuthorisationConfigReader(fileManager)
 
   /**
    * Function that creates and writes subscription filter policy files for a given list of environments
@@ -93,6 +94,7 @@ class SubscriptionFilterPolicyManager(
    */
   fun generatePolicies(environment: String): Map<String, Pair<FilterPolicy, Boolean>> {
     logger.info("Checking policies for $environment")
+    val authorisationConfigReader = AuthorisationConfigReader(fileManager!!)
     val authorisation = authorisationConfigReader.read(environment)
     val policyMap = mutableMapOf<String, Pair<FilterPolicy, Boolean>>()
 
@@ -114,6 +116,7 @@ class SubscriptionFilterPolicyManager(
    * @param environment
    */
   fun removeExistingWithoutQueue(environment: String) {
+    val authorisationConfigReader = AuthorisationConfigReader(fileManager!!)
     val authorisation = authorisationConfigReader.read(environment)
     authorisation.consumersWithoutQueue().forEach { consumer ->
       val existingFilterPolicies = readFile(environment, consumer)
@@ -142,7 +145,7 @@ class SubscriptionFilterPolicyManager(
     val path = "$absolutePath/$consumer-$SUBSCRIPTION_FILTER_FILE_SUFFIX"
     logger.info("$updateType $path")
     val content = objectMapper.writeValueAsString(policy)
-    fileManager.write(path, "$content\n")
+    fileManager?.write(path, "$content\n")
   }
 
   /**
@@ -151,9 +154,9 @@ class SubscriptionFilterPolicyManager(
    * @param environment The environment (e.g dev/preprod/prod])
    */
   fun checkPropertyFolderPath(environment: String): String {
-    val resourcesFolder = fileManager.getResourcesFolderPath()
+    val resourcesFolder = fileManager?.getResourcesFolderPath()
     val path = "$resourcesFolder/$SUBSCRIPTION_FILTER_FOLDER_NAME/$environment"
-    fileManager.checkOrCreateDirectory(path)
+    fileManager?.checkOrCreateDirectory(path)
     return path
   }
 
@@ -167,9 +170,9 @@ class SubscriptionFilterPolicyManager(
     environment: String,
     consumer: String,
   ) {
-    val resourcesFolder = fileManager.getResourcesFolderPath()
+    val resourcesFolder = fileManager?.getResourcesFolderPath()
     val path = "$resourcesFolder/$SUBSCRIPTION_FILTER_FOLDER_NAME/$environment/$consumer-$SUBSCRIPTION_FILTER_FILE_SUFFIX"
-    fileManager.delete(path)
+    fileManager?.delete(path)
   }
 
   /**
@@ -184,11 +187,40 @@ class SubscriptionFilterPolicyManager(
     environment: String,
     consumer: String,
   ): FilterPolicy? {
-    val fileContents = fileManager.readFileContentsFromResourcesFolder("$SUBSCRIPTION_FILTER_FOLDER_NAME/$environment/$consumer-$SUBSCRIPTION_FILTER_FILE_SUFFIX")
+    val fileContents = fileManager?.readFileContentsFromResourcesFolder("$SUBSCRIPTION_FILTER_FOLDER_NAME/$environment/$consumer-$SUBSCRIPTION_FILTER_FILE_SUFFIX")
     return if (fileContents != null) {
       objectMapper.readValue(fileContents, FilterPolicy::class.java)
     } else {
       null
     }
   }
+
+  /**
+   * Function that reads a filter policy file from the class path
+   *
+   * @param environment The environment (e.g dev/preprod/prod])
+   * @param consumer The consumers name
+   * @return An optional FilterPolicies object for the consumer and environment
+   */
+  fun readPolicyFromClasspath(
+    environment: String,
+    consumer: String,
+  ): FilterPolicy? {
+    val policyFile = ClassPathResource("$SUBSCRIPTION_FILTER_FOLDER_NAME/$environment/$consumer-$SUBSCRIPTION_FILTER_FILE_SUFFIX")
+    return if (policyFile.exists()) {
+      objectMapper.readValue(policyFile.file, FilterPolicy::class.java)
+    } else {
+      null
+    }
+  }
+
+  /**
+   * Writes a filter policy to a string
+   */
+  fun writePolicyValueAsString(filterPolicy: FilterPolicy): String = objectMapper.writeValueAsString(filterPolicy)
+
+  /**
+   * Reads from a string to a Filter policy
+   */
+  fun readPolicyValueFromString(filterPolicy: String): FilterPolicy = objectMapper.readValue(filterPolicy, FilterPolicy::class.java)
 }

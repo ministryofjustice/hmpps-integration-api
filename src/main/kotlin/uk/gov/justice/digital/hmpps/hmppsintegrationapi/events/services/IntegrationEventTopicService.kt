@@ -8,6 +8,7 @@ import software.amazon.awssdk.services.sns.model.MessageAttributeValue
 import software.amazon.awssdk.services.sns.model.PublishRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.INTEGRATION_EVENT_TOPIC
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 
 @ConditionalOnProperty("feature-flag.${FeatureFlagConfig.ENABLE_PUBLISH_PENDING_EVENTS}", havingValue = "true")
@@ -21,7 +22,7 @@ class IntegrationEventTopicService(
   }
 
   fun sendEvent(payload: EventNotification) {
-    val hmppsEventTopic = hmppsQueueService.findByTopicId("integrationeventtopic")
+    val hmppsEventTopic = hmppsQueueService.findByTopicId(INTEGRATION_EVENT_TOPIC)
     val topicArn = hmppsEventTopic!!.arn
     val hmppsEventsTopicSnsClient = hmppsEventTopic.snsClient
     val messageAttributes =

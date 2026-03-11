@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.FileManager
  * Run from the root of the project
  * ./gradlew generateFilterPolicies
  */
-object SubscriptionConfigGenerator {
+object SubscriptionFilterPolicyFileGenerator {
   @JvmStatic
   fun main(args: Array<String>) {
     val generator = SubscriptionFilterPolicyManager(FileManager())

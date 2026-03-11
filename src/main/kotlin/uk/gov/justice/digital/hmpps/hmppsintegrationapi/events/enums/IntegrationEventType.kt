@@ -21,6 +21,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.HmppsDomai
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import java.time.LocalDateTime
 
+const val INTEGRATION_EVENT_TOPIC = "integrationeventtopic"
+
 val DYNAMIC_RISK_EVENTS =
   listOf(
     DomainEventName.ProbabtionCase.Registration.ADDED,

@@ -11,15 +11,16 @@ import software.amazon.awssdk.services.sns.model.GetSubscriptionAttributesReques
 import software.amazon.awssdk.services.sns.model.ListSubscriptionsByTopicRequest
 import software.amazon.awssdk.services.sns.model.SetSubscriptionAttributesRequest
 import software.amazon.awssdk.services.sns.model.Subscription
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.subscriptionfilters.AWSSubscriptionPolicyUpdater
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.INTEGRATION_EVENT_TOPIC
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.subscriptionfilters.FilterPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.subscriptionfilters.SUBSCRIPTION_FILTER_AWS_ATTRIBUTE_NAME
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.subscriptionfilters.SubscriptionFilterPolicyUpdater
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import uk.gov.justice.hmpps.sqs.HmppsTopic
 
-class AWSSubscriptionPolicyUpdaterTest : IntegrationTestBase() {
+class SubscriptionFilterPolicyUpdaterIntegrationTest : IntegrationTestBase() {
   @Autowired
   private lateinit var queueService: HmppsQueueService
 
@@ -27,7 +28,7 @@ class AWSSubscriptionPolicyUpdaterTest : IntegrationTestBase() {
   private lateinit var hmppsQueueService: HmppsQueueService
 
   @Autowired
-  private lateinit var awsSubscriptionPolicyUpdater: AWSSubscriptionPolicyUpdater
+  private lateinit var subscriptionFilterPolicyUpdater: SubscriptionFilterPolicyUpdater
 
   private lateinit var client: SnsAsyncClient
 
@@ -35,7 +36,7 @@ class AWSSubscriptionPolicyUpdaterTest : IntegrationTestBase() {
 
   @BeforeEach
   fun setup() {
-    val topic = queueService.findByTopicId("integrationeventtopic") as HmppsTopic
+    val topic = queueService.findByTopicId(INTEGRATION_EVENT_TOPIC) as HmppsTopic
     client = topic.snsClient
     subscriptionArn = getTestSubscription()?.subscriptionArn()!!
     val request =
@@ -69,7 +70,14 @@ class AWSSubscriptionPolicyUpdaterTest : IntegrationTestBase() {
 
   @Test
   fun `Policy updater should update the subscription policy filter for the integration-test consumer on application start`() {
-    awsSubscriptionPolicyUpdater.init()
+    subscriptionFilterPolicyUpdater.init()
+    val updatedTestPolicy = getTestFilterPolicy()
+    assertThat(updatedTestPolicy).isEqualTo(FilterPolicy(listOf("UPDATED_EVENT")))
+  }
+
+  @Test
+  fun `Policy updater should throw an exception if no filter policy is found for the client queue`() {
+    subscriptionFilterPolicyUpdater.init()
     val updatedTestPolicy = getTestFilterPolicy()
     assertThat(updatedTestPolicy).isEqualTo(FilterPolicy(listOf("UPDATED_EVENT")))
   }
