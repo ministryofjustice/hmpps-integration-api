@@ -98,11 +98,13 @@ class SubscriptionFilterPolicyManager(
 
     authorisation.consumersWithQueue().forEach { consumer ->
       logger.info("Checking $environment filter policy file for for $consumer")
-      val existingFilterPolicies = readFile(environment, consumer)
+      val existingFilterPolicy = readFile(environment, consumer)
       val consumerEvents = authorisation.events(consumer)
-      val isNewFile = existingFilterPolicies == null
-      if (isNewFile || existingFilterPolicies.eventType.toSet() != consumerEvents.toSet()) {
-        policyMap[consumer] = Pair(FilterPolicy(consumerEvents), isNewFile)
+      val prisonIds = authorisation.allFilters(consumer)?.prisons
+      val filterPolicy = FilterPolicy(consumerEvents, prisonIds)
+      val isNewFile = existingFilterPolicy == null
+      if (isNewFile || filterPolicy != existingFilterPolicy) {
+        policyMap[consumer] = Pair(FilterPolicy(consumerEvents, prisonIds), isNewFile)
       }
     }
     return policyMap
