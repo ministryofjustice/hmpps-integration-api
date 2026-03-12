@@ -79,7 +79,6 @@ class SubscriptionFilterPolicyUpdater(
       } else {
         logger.info("Creating subscription filter policy for $consumer")
       }
-      logger.info("Updating subscription filter policy for $consumer")
       setSubscriptionFilterValue(
         subscriptionFilterValue.subscriptionArn,
         filterPolicy,
