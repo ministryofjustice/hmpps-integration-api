@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.subscriptionfilt
 
 data class FilterPolicy(
   val eventType: List<String> = listOf("default"),
+  val prisonId: List<String>? = null,
 )
 
 data class SubscriptionFilterPolicy(
