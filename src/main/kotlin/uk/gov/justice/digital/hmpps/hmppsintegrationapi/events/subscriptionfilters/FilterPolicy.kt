@@ -7,6 +7,8 @@ data class FilterPolicy(
 data class SubscriptionFilterPolicy(
   val filterPolicy: FilterPolicy,
   val subscriptionArn: String,
+  val eventType: List<String> = emptyList(),
+  val prisonId: List<String>? = null,
 )
 
 const val SUBSCRIPTION_FILTER_FILE_SUFFIX = "subscription-filter.json"

@@ -52,6 +52,7 @@ class ApiMockServer(
           UpstreamApi.PRISONER_ALERTS -> ApiMockServerConfig(4009)
           UpstreamApi.LOCATIONS_INSIDE_PRISON -> ApiMockServerConfig(4000)
           UpstreamApi.SAN -> ApiMockServerConfig(4200)
+          UpstreamApi.HMPPS_AUTH -> throw NotImplementedError("HMPPS Auth MockServer is already running, see HmppsAuthMockServer")
         }
 
       val wireMockConfig = WireMockConfiguration.wireMockConfig().port(apiMockerServerConfig.port)

@@ -40,5 +40,8 @@
     "PRISON_VISITS_CHANGED",
     "VISIT_FROM_EXTERNAL_SYSTEM_CREATED",
     "VISIT_CHANGED"
+  ],
+  "prisonId": [
+    "MKI"
   ]
 }

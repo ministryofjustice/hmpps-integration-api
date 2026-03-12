@@ -7,6 +7,7 @@ import io.kotest.matchers.shouldNotBe
 import org.mockito.Mockito
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
@@ -32,6 +33,7 @@ class HmppsAuthGatewayTest(
       hmppsAuthMockServer.start()
       Mockito.reset(telemetryService)
       hmppsAuthMockServer.stubGetOAuthToken("username", "password")
+      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.USE_WEBCLIENT_WRAPPER_FOR_HMPPS_AUTH)).thenReturn(false)
     }
 
     afterTest {
@@ -89,6 +91,75 @@ class HmppsAuthGatewayTest(
     }
 
     it("asks for new token if the existing access token is not valid") {
+      val firstMockedToken = hmppsAuthMockServer.getToken(expiresInMinutes = 0)
+      hmppsAuthMockServer.stubGetOAuthToken("client", "client-secret", firstMockedToken)
+      val firstToken = hmppsAuthGateway.getClientToken("NOMIS")
+      firstToken shouldBe firstMockedToken
+
+      val secondMockedToken = hmppsAuthMockServer.getToken()
+      hmppsAuthMockServer.stubGetOAuthToken("client", "client-secret", secondMockedToken)
+      val secondToken = hmppsAuthGateway.getClientToken("NOMIS")
+      secondToken shouldBe secondMockedToken
+      secondToken shouldNotBe firstToken
+
+      verify(telemetryService, times(2)).trackEvent("AuthTokenRequest")
+    }
+
+    it("throws an exception if connection is refused with webclient wrapper") {
+      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.USE_WEBCLIENT_WRAPPER_FOR_HMPPS_AUTH)).thenReturn(true)
+      hmppsAuthMockServer.stop()
+
+      val exception =
+        shouldThrow<HmppsAuthFailedException> {
+          hmppsAuthGateway.getClientToken("NOMIS")
+        }
+
+      exception.message.shouldBe("Connection to localhost:3000 failed for NOMIS.")
+    }
+
+    it("throws an exception if auth service is unavailable with webclient wrapper") {
+      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.USE_WEBCLIENT_WRAPPER_FOR_HMPPS_AUTH)).thenReturn(true)
+      hmppsAuthMockServer.stubServiceUnavailableForGetOAuthToken()
+
+      val exception =
+        shouldThrow<HmppsAuthFailedException> {
+          hmppsAuthGateway.getClientToken("NOMIS")
+        }
+
+      exception.message.shouldBe("localhost:3000 is unavailable for NOMIS.")
+    }
+
+    it("throws an exception if credentials are invalid with webclient wrapper") {
+      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.USE_WEBCLIENT_WRAPPER_FOR_HMPPS_AUTH)).thenReturn(true)
+      hmppsAuthMockServer.stubUnauthorizedForGetOAAuthToken()
+
+      val exception =
+        shouldThrow<HmppsAuthFailedException> {
+          hmppsAuthGateway.getClientToken("NOMIS")
+        }
+
+      exception.message.shouldBe("Invalid credentials used for NOMIS.")
+    }
+
+    it("re-uses the existing access token if it is still valid with webclient wrapper") {
+      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.USE_WEBCLIENT_WRAPPER_FOR_HMPPS_AUTH)).thenReturn(true)
+      val firstMockedToken = hmppsAuthMockServer.getToken()
+      hmppsAuthMockServer.stubGetOAuthToken("client", "client-secret", firstMockedToken)
+      val firstToken = hmppsAuthGateway.getClientToken("NOMIS")
+      firstToken shouldBe firstMockedToken
+
+      val secondMockedToken = hmppsAuthMockServer.getToken()
+      hmppsAuthMockServer.stubGetOAuthToken("client", "client-secret", hmppsAuthMockServer.getToken())
+      val secondToken = hmppsAuthGateway.getClientToken("NOMIS")
+      secondToken shouldBe firstToken
+      secondToken shouldNotBe secondMockedToken
+
+      verify(telemetryService, times(1)).trackEvent("AuthTokenRequest")
+      verify(telemetryService, times(1)).trackEvent("AuthTokenCache")
+    }
+
+    it("asks for new token if the existing access token is not valid with webclient wrapper") {
+      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.USE_WEBCLIENT_WRAPPER_FOR_HMPPS_AUTH)).thenReturn(true)
       val firstMockedToken = hmppsAuthMockServer.getToken(expiresInMinutes = 0)
       hmppsAuthMockServer.stubGetOAuthToken("client", "client-secret", firstMockedToken)
       val firstToken = hmppsAuthGateway.getClientToken("NOMIS")

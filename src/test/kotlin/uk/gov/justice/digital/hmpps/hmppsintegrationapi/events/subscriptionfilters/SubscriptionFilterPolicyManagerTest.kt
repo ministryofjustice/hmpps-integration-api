@@ -71,8 +71,17 @@ class SubscriptionFilterPolicyManagerTest {
     val json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(policy)
     whenever(fileManager.readFileContentsFromResourcesFolder("event-filter-policies/test/limited-prisons-subscription-filter.json")).thenReturn(json)
     service.generatePolicyFiles(listOf("test"))
-
     verify(fileManager, times(1)).delete(any())
+  }
+
+  @Test
+  fun `Should also return the prisonId within the policy file`() {
+    setUpConsumers(noPolicies = false, changedConsumers = listOf("config-v2-test"))
+    service.generatePolicyFiles(listOf("test"))
+    val jsonString = argumentCaptor<String>()
+    verify(fileManager, times(1)).write(any(), jsonString.capture())
+    val updatedPolicy = service.objectMapper.readValue(jsonString.firstValue, FilterPolicy::class.java)
+    assertEquals("XYZ", updatedPolicy.prisonId?.get(0))
   }
 
   fun setUpConsumers(
