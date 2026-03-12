@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.AuthorisationConfigReader
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.FileManager
@@ -200,7 +199,7 @@ class SubscriptionFilterPolicyManager(
   }
 
   /**
-   * Function that reads a filter policy file from the class path
+   * Function that reads a filter policy file from the classpath
    *
    * @param environment The environment (e.g dev/preprod/prod])
    * @param consumer The consumers name
@@ -209,14 +208,11 @@ class SubscriptionFilterPolicyManager(
   fun readPolicyFromClasspath(
     environment: String,
     consumer: String,
-  ): String? {
-    val policyFile = ClassPathResource("$SUBSCRIPTION_FILTER_FOLDER_NAME/$environment/$consumer-$SUBSCRIPTION_FILTER_FILE_SUFFIX")
-    return if (policyFile.exists()) {
-      policyFile.file.readText()
-    } else {
-      null
-    }
-  }
+  ): String? =
+    this::class.java
+      .getResourceAsStream("/$SUBSCRIPTION_FILTER_FOLDER_NAME/$environment/$consumer-$SUBSCRIPTION_FILTER_FILE_SUFFIX")
+      ?.bufferedReader()
+      ?.readText()
 
   /**
    * Writes a filter policy to a string
