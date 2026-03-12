@@ -40,33 +40,59 @@ class SubscriptionFilterPolicyUpdater(
   }
 
   /**
-   * Checks and updates where required, the subscription policy filters for consumers with a queue
+   * Checks and updates where required, the subscription policy filters for all consumers
+   * with a queue in the current environment
    *
    */
   fun execute() {
-    try {
-      val environment = env.activeProfiles[0]
-      authorisationConfig.consumersWithQueue().forEach { consumer ->
-        logger.info("Checking subscription filter policy for $consumer")
-        val queueName = authorisationConfig.queueName(consumer)!!
-        val filterPolicy = subscriptionFilterPolicyManager.readPolicyFromClasspath(environment, consumer)
-        if (filterPolicy != null) {
-          val subscriptionFilterValue = getSubscriptionFilterValue(queueName)
-          val existingFilterPolicy = subscriptionFilterValue.filterPolicy
-          if (filterPolicy.eventType.toSet() != existingFilterPolicy.eventType.toSet()) {
-            logger.info("Updating subscription filter policy for $consumer")
-            setSubscriptionFilterValue(
-              subscriptionFilterValue.subscriptionArn,
-              subscriptionFilterPolicyManager.writePolicyValueAsString(filterPolicy),
-            )
-          }
-        }
+    val environment = env.activeProfiles[0]
+    authorisationConfig.consumersWithQueue().forEach { consumer ->
+      try {
+        checkSubscriptionFilter(environment, consumer)
+      } catch (ex: Exception) {
+        telemetryService.captureException(ex)
       }
-    } catch (ex: Exception) {
-      telemetryService.captureException(ex)
     }
   }
 
+  /**
+   * Checks and updates where required, the subscription policy filters for
+   * a consumer in the current environment
+   *
+   * @param environment The environment for which to perform the update
+   * @param consumer The consumer
+   */
+  fun checkSubscriptionFilter(
+    environment: String,
+    consumer: String,
+  ) {
+    logger.info("Checking subscription filter policy for $consumer")
+    val queueName = authorisationConfig.queueName(consumer)!!
+    val filterPolicy =
+      subscriptionFilterPolicyManager.readPolicyFromClasspath(environment, consumer)
+        ?: throw RuntimeException("Subscription filter policy for $consumer not found in the resources folder")
+    val subscriptionFilterValue = getSubscriptionFilterValue(queueName)
+    val existingFilterPolicy = subscriptionFilterValue.filterPolicy
+    if (filterPolicy != existingFilterPolicy) {
+      if (existingFilterPolicy != null) {
+        logger.info("Updating subscription filter policy for $consumer")
+      } else {
+        logger.info("Creating subscription filter policy for $consumer")
+      }
+      logger.info("Updating subscription filter policy for $consumer")
+      setSubscriptionFilterValue(
+        subscriptionFilterValue.subscriptionArn,
+        filterPolicy,
+      )
+    }
+  }
+
+  /**
+   * Sets the FilterPolicy attribute for the subscription arn
+   *
+   * @param subscriptionArn
+   * @param value
+   */
   fun setSubscriptionFilterValue(
     subscriptionArn: String,
     value: String,
@@ -86,37 +112,34 @@ class SubscriptionFilterPolicyUpdater(
    * Throws a runtime exception if no filter policy is found for the consumer queue
    *
    * @param consumerQueueName
-   * @return the arn and Filter Policy
+   * @return the arn and Filter Policy value
    */
 
   fun getSubscriptionFilterValue(consumerQueueName: String): SubscriptionFilterPolicy {
     val consumerQueue = hmppsQueueService.findByQueueId(consumerQueueName) as HmppsQueue
-
-    return getIntegrationEventSubscriptions()
-      .firstOrNull {
-        it.protocol() == "sqs" && it.endpoint() == consumerQueue.queueArn
-      }?.let { subscription ->
-        val request = GetSubscriptionAttributesRequest.builder().subscriptionArn(subscription.subscriptionArn()).build()
-        val filterPolicy =
-          hmppsIntegrationEventTopic.snsClient
-            .getSubscriptionAttributes(request)
-            .get()
-            .attributes()[SUBSCRIPTION_FILTER_AWS_ATTRIBUTE_NAME]
-            ?.let { subscriptionFilterPolicyManager.readPolicyValueFromString(it) }
-            ?: FilterPolicy()
-
-        SubscriptionFilterPolicy(filterPolicy, subscription.subscriptionArn())
-      } ?: throw RuntimeException("Failed to find an integration event subscription policy for $consumerQueueName. Please check the cloud platform configuration")
+    val subscription = getIntegrationEventSubscriptionForQueue(consumerQueueName, consumerQueue.queueArn!!)
+    val request = GetSubscriptionAttributesRequest.builder().subscriptionArn(subscription.subscriptionArn()).build()
+    val filterPolicy =
+      hmppsIntegrationEventTopic.snsClient
+        .getSubscriptionAttributes(request)
+        .get()
+        .attributes()[SUBSCRIPTION_FILTER_AWS_ATTRIBUTE_NAME]
+    return SubscriptionFilterPolicy(filterPolicy, subscription.subscriptionArn())
   }
 
   /**
-   * Gets all the subscriptions for the hmpps integration events topic
+   * Gets the subscription to the hmpps integration events topic for the consumers queue
    *
-   * @return a list of subscriptions
+   * @return the subscription
    */
-  fun getIntegrationEventSubscriptions(): List<Subscription> {
+  fun getIntegrationEventSubscriptionForQueue(
+    queueName: String,
+    queueArn: String,
+  ): Subscription {
     val listSubscriptionsByTopicRequest = ListSubscriptionsByTopicRequest.builder().topicArn(hmppsIntegrationEventTopic.arn).build()
     val listSubscriptionsResponse = hmppsIntegrationEventTopic.snsClient.listSubscriptionsByTopic(listSubscriptionsByTopicRequest).get()
-    return listSubscriptionsResponse.subscriptions()
+    return listSubscriptionsResponse.subscriptions().firstOrNull {
+      it.protocol() == "sqs" && it.endpoint() == queueArn
+    } ?: throw RuntimeException("Failed to find an integration event subscription policy for $queueName. Please check the cloud platform configuration")
   }
 }

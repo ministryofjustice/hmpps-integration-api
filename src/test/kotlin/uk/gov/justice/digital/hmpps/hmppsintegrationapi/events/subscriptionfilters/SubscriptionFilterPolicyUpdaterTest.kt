@@ -5,9 +5,11 @@ import org.awaitility.kotlin.untilAsserted
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
+import org.mockito.Mockito.doAnswer
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -106,13 +108,25 @@ class SubscriptionFilterPolicyUpdaterTest {
   fun `Should throw a Runtime exception when no SNS subscription filter policy is present for the queue`() {
     setExistingFilterPolicy()
     whenever(subscriptionsByTopicResponse.subscriptions()).thenReturn(listOf(anotherQueueSubscription))
-
     updater.init()
-
     val exception = argumentCaptor<RuntimeException>()
     await untilAsserted {
       verify(telemetryService).captureException(exception.capture())
       assertEquals("Failed to find an integration event subscription policy for testqueue. Please check the cloud platform configuration", exception.firstValue.message)
+    }
+  }
+
+  @Test
+  fun `Should throw a Runtime exception when no Filter Policy JSON file found for the consumer`() {
+    setExistingFilterPolicy()
+    val policyManagerSpy = spy(policyManager)
+    updater = SubscriptionFilterPolicyUpdater(environment, testConfig, hmppsQueueService, policyManagerSpy, telemetryService)
+    doAnswer { null }.whenever(policyManagerSpy).readPolicyFromClasspath(any(), any())
+    updater.init()
+    val exception = argumentCaptor<RuntimeException>()
+    await untilAsserted {
+      verify(telemetryService).captureException(exception.capture())
+      assertEquals("Subscription filter policy for automated-test-client not found in the resources folder", exception.firstValue.message)
     }
   }
 }

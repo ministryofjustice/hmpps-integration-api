@@ -209,10 +209,10 @@ class SubscriptionFilterPolicyManager(
   fun readPolicyFromClasspath(
     environment: String,
     consumer: String,
-  ): FilterPolicy? {
+  ): String? {
     val policyFile = ClassPathResource("$SUBSCRIPTION_FILTER_FOLDER_NAME/$environment/$consumer-$SUBSCRIPTION_FILTER_FILE_SUFFIX")
     return if (policyFile.exists()) {
-      readPolicyValueFromString(policyFile.file.readText())
+      policyFile.file.readText()
     } else {
       null
     }
