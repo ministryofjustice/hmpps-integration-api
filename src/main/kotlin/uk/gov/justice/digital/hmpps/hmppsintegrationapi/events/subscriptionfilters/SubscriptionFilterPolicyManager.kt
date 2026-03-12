@@ -193,7 +193,7 @@ class SubscriptionFilterPolicyManager(
   ): FilterPolicy? {
     val fileContents = fileManager?.readFileContentsFromResourcesFolder("$SUBSCRIPTION_FILTER_FOLDER_NAME/$environment/$consumer-$SUBSCRIPTION_FILTER_FILE_SUFFIX")
     return if (fileContents != null) {
-      objectMapper.readValue(fileContents, FilterPolicy::class.java)
+      readPolicyValueFromString(fileContents)
     } else {
       null
     }

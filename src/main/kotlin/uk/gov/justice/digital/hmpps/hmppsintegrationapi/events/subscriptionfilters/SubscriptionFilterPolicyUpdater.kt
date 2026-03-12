@@ -74,11 +74,7 @@ class SubscriptionFilterPolicyUpdater(
     val subscriptionFilterValue = getSubscriptionFilterValue(queueName)
     val existingFilterPolicy = subscriptionFilterValue.filterPolicy
     if (filterPolicy != existingFilterPolicy) {
-      if (existingFilterPolicy != null) {
-        logger.info("Updating subscription filter policy for $consumer")
-      } else {
-        logger.info("Creating subscription filter policy for $consumer")
-      }
+      logger.info("Updating subscription filter policy for $consumer")
       setSubscriptionFilterValue(
         subscriptionFilterValue.subscriptionArn,
         filterPolicy,
