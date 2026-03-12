@@ -108,7 +108,7 @@ tasks {
     arrayOf(
       "uk.gov.justice.digital.hmpps.hmppsintegrationapi.HmppsIntegrationApiKt",
       "uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.SchedulingConfig",
-      "uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.subscriptionfilters.SubscriptionConfigGenerator",
+      "uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.subscriptionfilters.SubscriptionFilterPolicyFileGenerator",
       "uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.FileManager",
     )
 
@@ -171,7 +171,7 @@ tasks {
   register<JavaExec>("generateFilterPolicies") {
     description = "Generates subscription filter policies"
     classpath = sourceSets["main"].output + configurations["testRuntimeClasspath"] + sourceSets["test"].output
-    mainClass.set("uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.subscriptionfilters.SubscriptionConfigGenerator")
+    mainClass.set("uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.subscriptionfilters.SubscriptionFilterPolicyFileGenerator")
   }
 
   register<Test>("unitTest") {

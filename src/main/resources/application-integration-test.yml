@@ -96,6 +96,10 @@ hmpps.sqs:
       queueArn: arn:aws:sns:eu-west-2:000000000000:hmpps_integrations_events_queue
       dlqName: hmpps_integrations_events_queue_dlq
       subscribeTopicId: domainevents
+    testqueue:
+      queueName: test_queue
+      queueArn: arn:aws:sns:eu-west-2:000000000000:test_queue
+      subscribeTopicId: integrationeventtopic
   topics:
     domainevents:
       arn: arn:aws:sns:eu-west-2:000000000000:domainevents-topic
@@ -118,6 +122,7 @@ feature-flag:
   enable-delete-processed-events: true
   enable-publish-pending-events: true
   enable-domain-events-queue-listener: true
+  enable-subscription-filter-policy-updater: true
   person-languages-changed-notifications-enabled: true
   prisoner-merge-notifications-enabled: true
   prisoner-base-location-changed-notifications-enabled: true
@@ -131,6 +136,7 @@ authorisation:
         - "full-access"
         - "mappa-cat4"
       filters:
+      queueName: "testqueue"
     automated-test-client-mappa:
       roles:
         - "full-access"
