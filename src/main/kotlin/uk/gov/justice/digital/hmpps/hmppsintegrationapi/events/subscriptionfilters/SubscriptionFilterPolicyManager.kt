@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.subscriptionfilters
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.util.DefaultIndenter
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
@@ -24,6 +25,7 @@ class SubscriptionFilterPolicyManager(
   val objectMapper: ObjectMapper =
     ObjectMapper()
       .registerKotlinModule()
+      .setSerializationInclusion(JsonInclude.Include.NON_NULL)
       .enable(SerializationFeature.INDENT_OUTPUT)
       .enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
       .setDefaultPrettyPrinter(
