@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.ctrlo
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.curious
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.daso
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.constants
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.enhancedReceptionChecks
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.fullAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.fullAccessLaoRedactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.hmppsSystem
@@ -162,4 +163,5 @@ val roles =
     cats,
     daso,
     communityPayback,
+    enhancedReceptionChecks,
   ).associateBy { it.name }

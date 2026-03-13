@@ -223,6 +223,10 @@ authorisation:
       notes: "See client list in Confluence"
       roles:
         - "community-payback"
+    enhanced-reception-checks:
+      notes: "See client list in Confluence"
+      roles:
+        - "enhanced-reception-checks"
 
 hmpps.sqs:
   queues:
