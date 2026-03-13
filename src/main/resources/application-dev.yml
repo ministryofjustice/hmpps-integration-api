@@ -230,7 +230,7 @@ authorisation:
     bmadley:
       notes: "Used to test subscription filter policy"
       roles:
-        - "status-only"
+        - "mappa"
       queueName: "bmadleysubscriberqueue"
 
 hmpps.sqs:
