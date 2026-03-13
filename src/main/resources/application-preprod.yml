@@ -119,3 +119,7 @@ authorisation:
       notes: "See client list in Confluence"
       roles:
         - "status-only"
+    enhanced-reception-checks:
+      notes: "See client list in Confluence"
+      roles:
+        - "enhanced-reception-checks"
