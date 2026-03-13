@@ -227,6 +227,11 @@ authorisation:
       notes: "See client list in Confluence"
       roles:
         - "enhanced-reception-checks"
+    bmadley:
+      notes: "Used to test subscription filter policy"
+      roles:
+        - "mappa"
+      queueName: "bmadleysubscriberqueue"
 
 hmpps.sqs:
   queues:
