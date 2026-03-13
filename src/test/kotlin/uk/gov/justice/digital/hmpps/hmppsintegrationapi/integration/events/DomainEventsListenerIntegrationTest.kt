@@ -155,6 +155,7 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
     Awaitility.await().until { repo.findAll().isNotEmpty() }
     val savedEvent = repo.findAll().firstOrNull()
     savedEvent.shouldNotBeNull()
+    savedEvent.status.shouldBe("PENDING")
     savedEvent.eventType.shouldBe(IntegrationEventType.KEY_DATES_AND_ADJUSTMENTS_PRISONER_RELEASE.name)
     savedEvent.hmppsId.shouldBe(crn)
     savedEvent.url.shouldBe("https://localhost:8443/v1/persons/$crn/sentences/latest-key-dates-and-adjustments")

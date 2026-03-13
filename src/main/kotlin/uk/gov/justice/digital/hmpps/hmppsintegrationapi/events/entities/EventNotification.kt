@@ -10,7 +10,7 @@ data class EventNotification(
   val eventType: String,
   val prisonId: String? = null,
   val url: String,
-  val status: String? = null,
+  val status: String? = "PENDING",
   val lastModifiedDatetime: LocalDateTime? = null,
 )
 
