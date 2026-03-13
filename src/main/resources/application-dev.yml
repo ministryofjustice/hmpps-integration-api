@@ -231,6 +231,7 @@ authorisation:
       notes: "Used to test subscription filter policy"
       roles:
         - "status-only"
+      queueName: "bmadleysubscriberqueue"
 
 hmpps.sqs:
   queues:
