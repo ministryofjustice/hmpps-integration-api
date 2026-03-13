@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateCaseDeta
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import java.io.File
 
 @ActiveProfiles("test")
@@ -74,6 +75,13 @@ class GetEPFPersonDetailsTest(
         response.data.shouldBe(
           generateCaseDetail(includeLimitedAccess = true),
         )
+      }
+
+      it("returns error with incorrect parameters") {
+        val response = probationIntegrationEPFGateway.getCaseDetailForPerson("0", 0)
+
+        response.data.shouldBe(null)
+        response.errors.shouldBe(listOf(UpstreamApiError(causedBy = UpstreamApi.EFFECTIVE_PROPOSAL_FRAMEWORK, type = UpstreamApiError.Type.ENTITY_NOT_FOUND, description = null)))
       }
     },
   )
