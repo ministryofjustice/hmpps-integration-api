@@ -9,4 +9,9 @@ val enhancedReceptionChecks =
       -"/v1/persons/{hmppsId}/images/{id}"
       -"/v1/status"
     }
+    filters {
+      supervisionStatuses {
+        -"PRISONS"
+      }
+    }
   }

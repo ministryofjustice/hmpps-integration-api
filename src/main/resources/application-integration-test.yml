@@ -288,6 +288,9 @@ authorisation:
     status-only:
       roles:
         - "status-only"
+    enhanced-reception-checks:
+      roles:
+        - "enhanced-reception-checks"
 
   certificate-revocation-list:
     - 01:7b:eb:77:06:db:11:f5:2e:b6:f7:37:7b:a9:e0:e4:84:c5:2c:a3
