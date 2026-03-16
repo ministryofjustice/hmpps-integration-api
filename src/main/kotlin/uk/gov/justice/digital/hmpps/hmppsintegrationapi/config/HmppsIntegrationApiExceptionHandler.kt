@@ -31,6 +31,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessE
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.UpstreamApiException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 
 @RestControllerAdvice
 class HmppsIntegrationApiExceptionHandler {
@@ -139,11 +140,11 @@ class HmppsIntegrationApiExceptionHandler {
   fun handleFilterViolationException(e: FilterViolationException): ResponseEntity<ErrorResponse?>? {
     logAndCapture("Access to requested resource restricted by consumer filter: ${e.message}", e)
     return ResponseEntity
-      .status(NOT_FOUND)
+      .status(FORBIDDEN)
       .body(
         ErrorResponse(
-          status = NOT_FOUND,
-          userMessage = "The requested resource could not be found",
+          status = FORBIDDEN,
+          userMessage = "Access to requested resource restricted by consumer filter",
           moreInfo = traceId,
         ),
       )
@@ -151,13 +152,21 @@ class HmppsIntegrationApiExceptionHandler {
 
   @ExceptionHandler(UpstreamApiException::class)
   fun handleUpstreamApiException(e: UpstreamApiException): ResponseEntity<ErrorResponse?>? {
+    // Find error to be returned
+    val responseStatus =
+      when (e.errorType) {
+        UpstreamApiError.Type.ENTITY_NOT_FOUND -> NOT_FOUND
+        UpstreamApiError.Type.FORBIDDEN -> FORBIDDEN
+        else -> INTERNAL_SERVER_ERROR
+      }
+
     logAndCapture("[${e.errorType}] error occurred in upstream API: [${e.upstreamApi}] while requesting [${e.resourceType}] with id [${e.resourceId}]", e)
     return ResponseEntity
-      .status(INTERNAL_SERVER_ERROR)
+      .status(responseStatus)
       .body(
         ErrorResponse(
-          status = INTERNAL_SERVER_ERROR,
-          userMessage = "The requested ${e.resourceType} could not be found: ${e.resourceId}",
+          status = responseStatus,
+          userMessage = "The requested ${e.resourceType} resulted in an upstream api error: ${e.resourceId}",
           moreInfo = traceId,
         ),
       )
