@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.HmppsDomai
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.SQSMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.domain.DeduplicationDomainEventService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.domain.DirectDomainEventService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.domain.DomainEventService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import java.util.concurrent.CompletionException
 
@@ -43,11 +44,7 @@ class DomainEventsListener(
     try {
       val hmppsDomainEventMessage: SQSMessage = objectMapper.readValue(rawMessage)
       val hmppsDomainEvent: HmppsDomainEvent = objectMapper.readValue(hmppsDomainEventMessage.message)
-      if (featureFlagConfig.isEnabled(DEDUPLICATE_EVENTS)) {
-        deduplicationDomainEventService.execute(hmppsDomainEvent)
-      } else {
-        directDomainEventService.execute(hmppsDomainEvent)
-      }
+      getDomainEventService().execute(hmppsDomainEvent)
     } catch (e: Exception) {
       telemetryService.captureException(unwrapSqsExceptions(e))
       throw e
@@ -67,5 +64,13 @@ class DomainEventsListener(
       cause = unwrap(cause)
     }
     return cause
+  }
+
+  private fun getDomainEventService(): DomainEventService {
+    if (featureFlagConfig.isEnabled(DEDUPLICATE_EVENTS)) {
+      return deduplicationDomainEventService
+    } else {
+      return directDomainEventService
+    }
   }
 }
