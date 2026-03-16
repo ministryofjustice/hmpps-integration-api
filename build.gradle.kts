@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.3.0"
-  kotlin("plugin.spring") version "2.3.10"
+  kotlin("plugin.spring") version "2.3.20"
   id("dev.detekt") version "2.0.0-alpha.2"
   id("org.jetbrains.kotlinx.kover") version "0.9.7"
 }
@@ -44,8 +44,8 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-cache")
   implementation("org.springframework.boot:spring-boot-starter-jdbc")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
-  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.34.1")
-  implementation("io.sentry:sentry-logback:8.34.1")
+  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.35.0")
+  implementation("io.sentry:sentry-logback:8.35.0")
   implementation("org.springframework.data:spring-data-commons")
   implementation("org.springframework:spring-aop")
   implementation("org.aspectj:aspectjweaver")
@@ -62,13 +62,13 @@ dependencies {
   implementation("com.jayway.jsonpath:json-path:2.10.0")
   implementation("com.github.ben-manes.caffeine:caffeine:3.2.3")
 
-  testImplementation("io.kotest:kotest-assertions-json-jvm:6.1.5")
-  testImplementation("io.kotest:kotest-runner-junit5-jvm:6.1.5")
-  testImplementation("io.kotest:kotest-assertions-core-jvm:6.1.5")
-  testImplementation("io.kotest:kotest-extensions-spring:6.1.5")
+  testImplementation("io.kotest:kotest-assertions-json-jvm:6.1.7")
+  testImplementation("io.kotest:kotest-runner-junit5-jvm:6.1.7")
+  testImplementation("io.kotest:kotest-assertions-core-jvm:6.1.7")
+  testImplementation("io.kotest:kotest-extensions-spring:6.1.7")
   testCompileOnly("org.jetbrains.kotlinx:kover-cli:0.9.7")
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
-  testImplementation("org.mockito:mockito-core:5.22.0")
+  testImplementation("org.mockito:mockito-core:5.23.0")
   testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.21.1")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
   testImplementation("com.atlassian.oai:swagger-request-validator-wiremock:2.46.0") {
