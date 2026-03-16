@@ -30,6 +30,7 @@ import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import uk.gov.justice.hmpps.sqs.HmppsTopic
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ExecutionException
 import kotlin.test.assertEquals
 
 class SubscriptionFilterPolicyUpdaterTest {
@@ -127,6 +128,21 @@ class SubscriptionFilterPolicyUpdaterTest {
     await untilAsserted {
       verify(telemetryService).captureException(exception.capture())
       assertEquals("Subscription filter policy for automated-test-client not found in the resources folder", exception.firstValue.message)
+    }
+  }
+
+  @Test
+  fun `Should log an error to sentry if the SNS update failed`() {
+    setExistingFilterPolicy()
+    whenever(subscriptionsByTopicResponse.subscriptions()).thenReturn(listOf(testQueueSubscription, anotherQueueSubscription))
+    whenever(snsClient.setSubscriptionAttributes(any<SetSubscriptionAttributesRequest>()))
+      .thenReturn(CompletableFuture.failedFuture(RuntimeException("SNS update error")))
+
+    updater.init()
+    val exception = argumentCaptor<ExecutionException>()
+    await untilAsserted {
+      verify(telemetryService).captureException(exception.capture())
+      assertEquals("SNS update error", exception.firstValue.cause?.message)
     }
   }
 }

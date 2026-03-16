@@ -76,6 +76,7 @@ class SubscriptionFilterPolicyUpdater(
     if (filterPolicy != existingFilterPolicy) {
       logger.info("Updating subscription filter policy for $consumer")
       setSubscriptionFilterValue(
+        consumer,
         subscriptionFilterValue.subscriptionArn,
         filterPolicy,
       )
@@ -89,6 +90,7 @@ class SubscriptionFilterPolicyUpdater(
    * @param value
    */
   fun setSubscriptionFilterValue(
+    consumer: String,
     subscriptionArn: String,
     value: String,
   ) {
@@ -99,7 +101,17 @@ class SubscriptionFilterPolicyUpdater(
         .attributeName(SUBSCRIPTION_FILTER_AWS_ATTRIBUTE_NAME)
         .attributeValue(value)
         .build()
-    hmppsIntegrationEventTopic.snsClient.setSubscriptionAttributes(request)
+
+    val response =
+      hmppsIntegrationEventTopic.snsClient
+        .setSubscriptionAttributes(request)
+        .get()
+        .sdkHttpResponse()
+    if (response.isSuccessful) {
+      logger.info("Subscription filter policy for $consumer successfully updated")
+    } else {
+      throw RuntimeException("Attempt to set subscription filter policy for $consumer failed with status ${response.statusCode()}")
+    }
   }
 
   /**
