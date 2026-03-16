@@ -1,8 +1,9 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.domain
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.HmppsDomainEvent
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.GetPrisonIdService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 

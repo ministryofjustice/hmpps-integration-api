@@ -24,7 +24,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.Integration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.listener.DomainEventsListener
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.EventNotificationRepository
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.domain.DeduplicationDomainEventService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.IntegrationEventTopicService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.domain.DirectDomainEventService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.domain.DomainEventIdentitiesResolver
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import java.time.Clock
@@ -34,7 +35,7 @@ import java.time.ZonedDateTime
 import java.util.concurrent.CompletionException
 import kotlin.getValue
 
-class DomainEventsListenerTest : DomainEventsListenerTestCase() {
+class DirectDomainEventsListenerTest : DirectDomainEventsListenerTestCase() {
   private val crn = "X777776"
 
   @Test
@@ -229,7 +230,7 @@ class DomainEventsListenerTest : DomainEventsListenerTestCase() {
   }
 }
 
-abstract class DomainEventsListenerTestCase {
+abstract class DirectDomainEventsListenerTestCase {
   companion object {
     protected val baseUrl = "https://dev.integration-api.hmpps.service.justice.gov.uk"
   }
@@ -247,14 +248,15 @@ abstract class DomainEventsListenerTestCase {
   protected val domainEventIdentitiesResolver = mockk<DomainEventIdentitiesResolver>()
   protected val telemetryService = mockk<TelemetryService>()
   protected val featureFlagTestConfig = FeatureFlagTestConfig()
+  protected val integrationEventTopicService = mockk<IntegrationEventTopicService>()
 
   protected val domainEventService =
-    DeduplicationDomainEventService(
-      eventNotificationRepository,
+    DirectDomainEventService(
       domainEventIdentitiesResolver,
       baseUrl,
       testClock,
       featureFlagTestConfig.featureFlagConfig,
+      integrationEventTopicService,
     )
   protected val domainEventsListener = DomainEventsListener(domainEventService, telemetryService)
 

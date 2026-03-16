@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.HmppsDomainEvent
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.SQSMessage
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.DomainEventService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.domain.DomainEventService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import java.util.concurrent.CompletionException
 
