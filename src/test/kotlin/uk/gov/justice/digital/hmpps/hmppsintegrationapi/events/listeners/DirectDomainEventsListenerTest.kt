@@ -3,13 +3,13 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.listeners
 import com.fasterxml.jackson.core.JsonParseException
 import io.awspring.cloud.sqs.listener.AsyncAdapterBlockingExecutionFailedException
 import io.awspring.cloud.sqs.listener.ListenerExecutionFailedException
-import io.mockk.Called
 import io.mockk.Runs
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.verify
+import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -17,14 +17,21 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import org.mockito.Mockito.mock
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.atLeast
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verifyNoInteractions
 import org.springframework.messaging.support.GenericMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.config.FeatureFlagTestConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.IntegrationEventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.listener.DomainEventsListener
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.EventNotificationRepository
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.IntegrationEventTopicService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.domain.DeduplicationDomainEventService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.domain.DirectDomainEventService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.domain.DomainEventIdentitiesResolver
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
@@ -39,7 +46,7 @@ class DirectDomainEventsListenerTest : DirectDomainEventsListenerTestCase() {
   private val crn = "X777776"
 
   @Test
-  fun `when risk-assessment scores determined event is received, it should create event notification RISK_SCORE_CHANGED`() {
+  fun `when risk-assessment scores determined event is received, it should send event notification RISK_SCORE_CHANGED`() {
     val hmppsEventRawMessage =
       sqsNotificationHelper.generateRawHmppsDomainEventWithoutRegisterType(
         eventType = "risk-assessment.scores.determined",
@@ -48,7 +55,7 @@ class DirectDomainEventsListenerTest : DirectDomainEventsListenerTestCase() {
     val expectedNotificationType = "RISK_SCORE_CHANGED"
     assumeIdentities(hmppsId = crn)
 
-    onDomainEventShouldCreateEventNotification(hmppsEventRawMessage, expectedNotificationType)
+    onDomainEventShouldSendEventNotification(hmppsEventRawMessage, expectedNotificationType)
   }
 
   @ParameterizedTest
@@ -106,48 +113,48 @@ class DirectDomainEventsListenerTest : DirectDomainEventsListenerTestCase() {
     val hmppsEventRawMessage = sqsNotificationHelper.generateRawHmppsDomainEvent(eventType, registerTypeCode = registerTypeCode)
     assumeIdentities(hmppsId = crn)
 
-    onDomainEventShouldCreateEventNotification(hmppsEventRawMessage, integrationEvent)
+    onDomainEventShouldSendEventNotification(hmppsEventRawMessage, integrationEvent)
   }
 
   @Test
-  fun `when a valid registration added sqs event is received, it should create event notification MAPPA_DETAIL_CHANGED`() {
+  fun `when a valid registration added sqs event is received, it should send event notification MAPPA_DETAIL_CHANGED`() {
     val hmppsEventRawMessage = sqsNotificationHelper.generateRawHmppsDomainEvent()
     val expectedNotificationType = IntegrationEventType.MAPPA_DETAIL_CHANGED.toString()
     assumeIdentities(hmppsId = crn)
 
-    onDomainEventShouldCreateEventNotification(hmppsEventRawMessage, expectedNotificationType)
+    onDomainEventShouldSendEventNotification(hmppsEventRawMessage, expectedNotificationType)
   }
 
   @Test
-  fun `when a valid registration updated sqs event is received, it should create event notification MAPPA_DETAIL_CHANGED`() {
+  fun `when a valid registration updated sqs event is received, it should send event notification MAPPA_DETAIL_CHANGED`() {
     val hmppsEventRawMessage = sqsNotificationHelper.generateRawHmppsDomainEvent("probation-case.registration.updated")
     val expectedNotificationType = IntegrationEventType.MAPPA_DETAIL_CHANGED.toString()
     assumeIdentities(hmppsId = crn)
 
-    onDomainEventShouldCreateEventNotification(hmppsEventRawMessage, expectedNotificationType)
+    onDomainEventShouldSendEventNotification(hmppsEventRawMessage, expectedNotificationType)
   }
 
   @Test
-  fun `when an invalid SQS message (domain event) is received it should not create notification`() {
+  fun `when an invalid SQS message (domain event) is received it should not send notification`() {
     val rawMessage = "Invalid JSON message"
 
     assertThrows<JsonParseException> { domainEventsListener.onDomainEvent(rawMessage) }
 
-    verify { eventNotificationRepository wasNot Called }
+    verifyNoInteractions(integrationEventTopicService)
   }
 
   @Test
-  fun `when an unexpected event type is received, it should not create event notification`() {
+  fun `when an unexpected event type is received, it should not send event notification`() {
     val unexpectedEventType = "unexpected.event.type"
     val hmppsEventRawMessage = sqsNotificationHelper.generateRawHmppsDomainEvent(eventType = unexpectedEventType)
     assumeIdentities(hmppsId = crn)
 
-    onDomainEventShouldNotCreateEventNotification(hmppsEventRawMessage)
+    onDomainEventShouldNotSendEventNotification(hmppsEventRawMessage)
   }
 
   @Test
   fun `will not process and save a domain registration event message of none MAPP type`() =
-    onDomainEventShouldNotCreateEventNotification(
+    onDomainEventShouldNotSendEventNotification(
       hmppsEventRawMessage = sqsNotificationHelper.generateRawHmppsDomainEvent(registerTypeCode = "NOTMAPP"),
     )
 
@@ -156,12 +163,11 @@ class DirectDomainEventsListenerTest : DirectDomainEventsListenerTestCase() {
     val hmppsEventRawMessage = sqsNotificationHelper.generateRawHmppsDomainEventWithAlertCode(eventType = "person.alert.created", alertCode = "HA")
     val expectedNotificationTypes =
       arrayOf(
-        "PERSON_PND_ALERTS_CHANGED",
         "PERSON_ALERTS_CHANGED",
       )
     assumeIdentities(hmppsId = crn)
 
-    onDomainEventShouldCreateEventNotifications(hmppsEventRawMessage, *expectedNotificationTypes)
+    onDomainEventShouldSendEventNotifications(hmppsEventRawMessage, *expectedNotificationTypes)
   }
 
   @Nested
@@ -219,14 +225,19 @@ class DirectDomainEventsListenerTest : DirectDomainEventsListenerTestCase() {
   }
 
   @Test
-  fun `when a valid SQS message (domain event) is received it should create notification`() {
+  fun `when a valid SQS message (domain event) is received it should send notification`() {
     val rawMessage = sqsNotificationHelper.generateRawHmppsDomainEvent()
     val expectedEvent = IntegrationEventType.MAPPA_DETAIL_CHANGED.toString()
     assumeIdentities(hmppsId = crn)
 
     domainEventsListener.onDomainEvent(rawMessage)
 
-    verify(exactly = 1) { eventNotificationRepository.insertOrUpdate(match { it.eventType == expectedEvent }) }
+    argumentCaptor<EventNotification>().apply {
+      org.mockito.kotlin
+        .verify(integrationEventTopicService, atLeast(1))
+        .sendEvent(capture())
+      Assertions.assertThat(firstValue.eventType).isEqualTo(expectedEvent)
+    }
   }
 }
 
@@ -245,12 +256,20 @@ abstract class DirectDomainEventsListenerTestCase {
   }
 
   protected val eventNotificationRepository = mockk<EventNotificationRepository>()
+  protected val integrationEventTopicService: IntegrationEventTopicService = mock()
   protected val domainEventIdentitiesResolver = mockk<DomainEventIdentitiesResolver>()
   protected val telemetryService = mockk<TelemetryService>()
   protected val featureFlagTestConfig = FeatureFlagTestConfig()
-  protected val integrationEventTopicService = mockk<IntegrationEventTopicService>()
 
-  protected val domainEventService =
+  protected val deduplicationDomainEventService =
+    DeduplicationDomainEventService(
+      eventNotificationRepository,
+      domainEventIdentitiesResolver,
+      baseUrl,
+      testClock,
+      featureFlagTestConfig.featureFlagConfig,
+    )
+  protected val directDomainEventService =
     DirectDomainEventService(
       domainEventIdentitiesResolver,
       baseUrl,
@@ -258,7 +277,7 @@ abstract class DirectDomainEventsListenerTestCase {
       featureFlagTestConfig.featureFlagConfig,
       integrationEventTopicService,
     )
-  protected val domainEventsListener = DomainEventsListener(domainEventService, telemetryService)
+  protected val domainEventsListener = DomainEventsListener(deduplicationDomainEventService, directDomainEventService, telemetryService, featureFlagTestConfig.featureFlagConfig)
 
   @BeforeEach
   open fun setupEventTest() {
@@ -272,7 +291,7 @@ abstract class DirectDomainEventsListenerTestCase {
 
     enabledFeatureFlags.forEach { featureFlagTestConfig.assumeFeatureFlag(it, true) }
 
-    every { eventNotificationRepository.insertOrUpdate(any()) } returnsArgument 0
+    featureFlagTestConfig.assumeFeatureFlag(FeatureFlagConfig.DEDUPLICATE_EVENTS, false)
 
     every { telemetryService.captureException(any()) } just Runs
   }
@@ -282,21 +301,12 @@ abstract class DirectDomainEventsListenerTestCase {
     clearAllMocks()
   }
 
-  protected fun onDomainEventShouldCreateEventNotification(
-    hmppsEventRawMessage: String,
-    hmppsId: String,
-    expectedNotificationType: String,
-  ) {
-    assumeIdentities(hmppsId = hmppsId)
-    onDomainEventShouldCreateEventNotifications(hmppsEventRawMessage, expectedNotificationType)
-  }
-
-  protected fun onDomainEventShouldCreateEventNotification(
+  protected fun onDomainEventShouldSendEventNotification(
     hmppsEventRawMessage: String,
     expectedNotificationType: String,
-  ) = onDomainEventShouldCreateEventNotifications(hmppsEventRawMessage, expectedNotificationType)
+  ) = onDomainEventShouldSendEventNotifications(hmppsEventRawMessage, expectedNotificationType)
 
-  protected fun onDomainEventShouldCreateEventNotifications(
+  protected fun onDomainEventShouldSendEventNotifications(
     hmppsEventRawMessage: String,
     vararg expectedNotificationType: String,
   ) {
@@ -304,17 +314,20 @@ abstract class DirectDomainEventsListenerTestCase {
     domainEventsListener.onDomainEvent(hmppsEventRawMessage)
 
     // Assert
-    expectedNotificationType.forEach { expectedEventType ->
-      verify(exactly = 1) { eventNotificationRepository.insertOrUpdate(match { it.eventType == expectedEventType }) }
+    argumentCaptor<EventNotification>().apply {
+      org.mockito.kotlin
+        .verify(integrationEventTopicService, atLeast(1))
+        .sendEvent(capture())
+      Assertions.assertThat(firstValue.eventType).isEqualTo(expectedNotificationType.first())
     }
   }
 
-  protected fun onDomainEventShouldNotCreateEventNotification(hmppsEventRawMessage: String) {
+  protected fun onDomainEventShouldNotSendEventNotification(hmppsEventRawMessage: String) {
     // Act
     domainEventsListener.onDomainEvent(hmppsEventRawMessage)
 
     // Assert
-    verify { eventNotificationRepository wasNot Called }
+    verifyNoInteractions(integrationEventTopicService)
   }
 
   protected fun assumeIdentities(

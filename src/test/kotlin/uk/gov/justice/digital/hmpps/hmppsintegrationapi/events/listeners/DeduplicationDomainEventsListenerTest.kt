@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import org.mockito.Mockito.mock
 import org.springframework.messaging.support.GenericMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.config.FeatureFlagTestConfig
@@ -24,7 +25,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.Integration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.listener.DomainEventsListener
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.EventNotificationRepository
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.IntegrationEventTopicService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.domain.DeduplicationDomainEventService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.domain.DirectDomainEventService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.domain.DomainEventIdentitiesResolver
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import java.time.Clock
@@ -34,7 +37,7 @@ import java.time.ZonedDateTime
 import java.util.concurrent.CompletionException
 import kotlin.getValue
 
-class DomainEventsListenerTest : DomainEventsListenerTestCase() {
+class DeduplicationDomainEventsListenerTest : DomainEventsListenerTestCase() {
   private val crn = "X777776"
 
   @Test
@@ -244,11 +247,12 @@ abstract class DomainEventsListenerTestCase {
   }
 
   protected val eventNotificationRepository = mockk<EventNotificationRepository>()
+  protected val integrationEventTopicService: IntegrationEventTopicService = mock()
   protected val domainEventIdentitiesResolver = mockk<DomainEventIdentitiesResolver>()
   protected val telemetryService = mockk<TelemetryService>()
   protected val featureFlagTestConfig = FeatureFlagTestConfig()
 
-  protected val domainEventService =
+  protected val deduplicationDomainEventService =
     DeduplicationDomainEventService(
       eventNotificationRepository,
       domainEventIdentitiesResolver,
@@ -256,7 +260,15 @@ abstract class DomainEventsListenerTestCase {
       testClock,
       featureFlagTestConfig.featureFlagConfig,
     )
-  protected val domainEventsListener = DomainEventsListener(domainEventService, telemetryService)
+  protected val directDomainEventService =
+    DirectDomainEventService(
+      domainEventIdentitiesResolver,
+      baseUrl,
+      testClock,
+      featureFlagTestConfig.featureFlagConfig,
+      integrationEventTopicService,
+    )
+  protected val domainEventsListener = DomainEventsListener(deduplicationDomainEventService, directDomainEventService, telemetryService, featureFlagTestConfig.featureFlagConfig)
 
   @BeforeEach
   open fun setupEventTest() {
@@ -269,6 +281,8 @@ abstract class DomainEventsListenerTestCase {
       )
 
     enabledFeatureFlags.forEach { featureFlagTestConfig.assumeFeatureFlag(it, true) }
+
+    featureFlagTestConfig.assumeFeatureFlag(FeatureFlagConfig.DEDUPLICATE_EVENTS, true)
 
     every { eventNotificationRepository.insertOrUpdate(any()) } returnsArgument 0
 

@@ -42,6 +42,7 @@ data class FeatureFlagConfig(
     const val PRISONER_MERGED_NOTIFICATIONS_ENABLED = "prisoner-merge-notifications-enabled"
     const val CONTACT_EVENTS_NOTIFICATIONS_ENABLED = "contact-events-notifications-enabled"
     const val LIMITED_ACCESS_NOTIFICATIONS_ENABLED = "limited-access-notifications-enabled"
+    const val DEDUPLICATE_EVENTS = "deduplicate-events"
   }
 
   /**
