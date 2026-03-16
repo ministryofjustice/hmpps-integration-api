@@ -73,17 +73,25 @@ class SubscriptionFilterPolicyUpdater(
         ?: throw RuntimeException("Subscription filter policy for $consumer not found in the resources folder")
     val subscriptionFilterValue = getSubscriptionFilterValue(queueName)
     val existingFilterPolicy = subscriptionFilterValue.filterPolicy
-    if (filterPolicy != existingFilterPolicy) {
-      logger.info("Existing policy: $existingFilterPolicy")
-      logger.info("Updated policy: $filterPolicy")
+    if (policyObject(filterPolicy) != policyObject(existingFilterPolicy)) {
       logger.info("Updating subscription filter policy for $consumer")
       setSubscriptionFilterValue(
         consumer,
         subscriptionFilterValue.subscriptionArn,
         filterPolicy,
       )
+    } else {
+      logger.info("No changes have been identified in the subscription filter policy for $consumer")
     }
   }
+
+  /**
+   * Read JSON string into a policy object for comparison
+   *
+   * @param policyJsonString the policy JSON string
+   * @return a FilterPolicy or null if policyJsonString is null
+   */
+  fun policyObject(policyJsonString: String?): FilterPolicy? = policyJsonString?.let { subscriptionFilterPolicyManager.readPolicyValueFromString(it) }
 
   /**
    * Sets the FilterPolicy attribute for the subscription arn

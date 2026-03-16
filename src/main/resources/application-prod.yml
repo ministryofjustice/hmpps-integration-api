@@ -61,6 +61,7 @@ feature-flag:
   epf-gateway-disabled: true
   cpr-enabled: true
   gateway-cache-enabled: true
+  normalised-path-matching: true
   enable-send-decimal-risk-scores: true
   use-webclient-wrapper-for-hmpps-auth: false
   # Events Config
