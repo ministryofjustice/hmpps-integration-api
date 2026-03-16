@@ -66,11 +66,10 @@ class DomainEventsListener(
     return cause
   }
 
-  private fun getDomainEventService(): DomainEventService {
+  private fun getDomainEventService(): DomainEventService =
     if (featureFlagConfig.isEnabled(DEDUPLICATE_EVENTS)) {
-      return deduplicationDomainEventService
+      deduplicationDomainEventService
     } else {
-      return directDomainEventService
+      directDomainEventService
     }
-  }
 }
