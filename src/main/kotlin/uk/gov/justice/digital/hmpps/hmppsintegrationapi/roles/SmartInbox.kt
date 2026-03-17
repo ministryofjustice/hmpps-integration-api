@@ -8,7 +8,7 @@ val smartinbox =
     permissions {
       -"/v1/status"
       -"/v1/persons"
-      -"/v1/persons/[^/]+/prisoner-base-location"
+      -"/v1/persons/{hmppsId}/prisoner-base-location"
     }
     filters {
       supervisionStatuses {
