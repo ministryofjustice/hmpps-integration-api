@@ -1,16 +1,10 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.domain
 
 import org.slf4j.LoggerFactory
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
-import org.springframework.context.annotation.Configuration
-import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.IntegrationEventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.HmppsDomainEvent
 
-@ConditionalOnProperty("feature-flag.${FeatureFlagConfig.Companion.ENABLE_DOMAIN_EVENTS_QUEUE_LISTENER}", havingValue = "true")
-@Service
-@Configuration
 interface DomainEventService {
   companion object {
     private val log = LoggerFactory.getLogger(this::class.java)

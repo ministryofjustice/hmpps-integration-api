@@ -5,21 +5,17 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
-import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.exceptions.UnmappableUrlException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.HmppsDomainEvent
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.IntegrationEventTopicService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.domain.DomainEventIdentitiesResolver
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.domain.DomainEventService
 import java.time.Clock
 import java.time.LocalDateTime
 
-@ConditionalOnProperty("feature-flag.${FeatureFlagConfig.Companion.ENABLE_DOMAIN_EVENTS_QUEUE_LISTENER}", havingValue = "true")
+@ConditionalOnProperty("feature-flag.${FeatureFlagConfig.DEDUPLICATE_EVENTS}", havingValue = "false")
 @Service
-@Configuration
-open class DirectDomainEventService(
+class DirectDomainEventService(
   @Autowired val domainEventIdentitiesResolver: DomainEventIdentitiesResolver,
   @Value("\${services.int-api.base-url}") val baseUrl: String,
   private val clock: Clock,

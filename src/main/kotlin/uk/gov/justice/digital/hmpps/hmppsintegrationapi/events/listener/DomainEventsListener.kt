@@ -13,11 +13,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.DEDUPLICATE_EVENTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.HmppsDomainEvent
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.SQSMessage
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.domain.DeduplicationDomainEventService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.domain.DirectDomainEventService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.domain.DomainEventService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import java.util.concurrent.CompletionException
@@ -26,10 +23,8 @@ import java.util.concurrent.CompletionException
 @Service
 @Transactional
 class DomainEventsListener(
-  @Autowired val deduplicationDomainEventService: DeduplicationDomainEventService,
-  @Autowired val directDomainEventService: DirectDomainEventService,
+  @Autowired val domainEventService: DomainEventService,
   private val telemetryService: TelemetryService,
-  private val featureFlagConfig: FeatureFlagConfig,
 ) {
   private companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
@@ -44,7 +39,7 @@ class DomainEventsListener(
     try {
       val hmppsDomainEventMessage: SQSMessage = objectMapper.readValue(rawMessage)
       val hmppsDomainEvent: HmppsDomainEvent = objectMapper.readValue(hmppsDomainEventMessage.message)
-      getDomainEventService().execute(hmppsDomainEvent)
+      domainEventService.execute(hmppsDomainEvent)
     } catch (e: Exception) {
       telemetryService.captureException(unwrapSqsExceptions(e))
       throw e
@@ -65,11 +60,4 @@ class DomainEventsListener(
     }
     return cause
   }
-
-  private fun getDomainEventService(): DomainEventService =
-    if (featureFlagConfig.isEnabled(DEDUPLICATE_EVENTS)) {
-      deduplicationDomainEventService
-    } else {
-      directDomainEventService
-    }
 }
