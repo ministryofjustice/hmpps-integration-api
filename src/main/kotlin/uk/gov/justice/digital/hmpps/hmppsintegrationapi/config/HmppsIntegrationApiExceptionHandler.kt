@@ -140,11 +140,11 @@ class HmppsIntegrationApiExceptionHandler {
   fun handleFilterViolationException(e: FilterViolationException): ResponseEntity<ErrorResponse?>? {
     logAndCapture("Access to requested resource restricted by consumer filter: ${e.message}", e)
     return ResponseEntity
-      .status(FORBIDDEN)
+      .status(NOT_FOUND)
       .body(
         ErrorResponse(
-          status = FORBIDDEN,
-          userMessage = "Access to requested resource restricted by consumer filter",
+          status = NOT_FOUND,
+          userMessage = "The requested resource could not be found",
           moreInfo = traceId,
         ),
       )

@@ -20,7 +20,7 @@ class FilterViolationIntegrationTest : IntegrationTestBase() {
     val posPrisonerUnknownStatus = posPrisoner.copy(status = null)
     whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsId)).thenReturn(Response(data = posPrisonerUnknownStatus))
     callApiWithCN(addressPath, "supervision-status-prison-only")
-      .andExpect(status().isForbidden)
+      .andExpect(status().isNotFound)
   }
 
   @Test
