@@ -74,6 +74,7 @@ feature-flag:
   prisoner-merge-notifications-enabled: false
   contact-events-notifications-enabled: false
   limited-access-notifications-enabled: true
+  deduplicate-events: true
 
 authorisation:
   consumers:

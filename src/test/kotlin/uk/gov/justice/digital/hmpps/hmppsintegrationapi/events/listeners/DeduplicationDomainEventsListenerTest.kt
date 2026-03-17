@@ -24,8 +24,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.Integration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.listener.DomainEventsListener
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.EventNotificationRepository
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.DomainEventIdentitiesResolver
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.DomainEventService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.domain.DeduplicationDomainEventService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.domain.DomainEventIdentitiesResolver
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import java.time.Clock
 import java.time.LocalDateTime
@@ -34,7 +34,7 @@ import java.time.ZonedDateTime
 import java.util.concurrent.CompletionException
 import kotlin.getValue
 
-class DomainEventsListenerTest : DomainEventsListenerTestCase() {
+class DeduplicationDomainEventsListenerTest : DomainEventsListenerTestCase() {
   private val crn = "X777776"
 
   @Test
@@ -248,15 +248,15 @@ abstract class DomainEventsListenerTestCase {
   protected val telemetryService = mockk<TelemetryService>()
   protected val featureFlagTestConfig = FeatureFlagTestConfig()
 
-  protected val domainEventService =
-    DomainEventService(
+  protected val deduplicationDomainEventService =
+    DeduplicationDomainEventService(
       eventNotificationRepository,
       domainEventIdentitiesResolver,
       baseUrl,
       testClock,
       featureFlagTestConfig.featureFlagConfig,
     )
-  protected val domainEventsListener = DomainEventsListener(domainEventService, telemetryService)
+  val domainEventsListener = DomainEventsListener(deduplicationDomainEventService, telemetryService)
 
   @BeforeEach
   open fun setupEventTest() {
@@ -269,6 +269,8 @@ abstract class DomainEventsListenerTestCase {
       )
 
     enabledFeatureFlags.forEach { featureFlagTestConfig.assumeFeatureFlag(it, true) }
+
+    featureFlagTestConfig.assumeFeatureFlag(FeatureFlagConfig.DEDUPLICATE_EVENTS, true)
 
     every { eventNotificationRepository.insertOrUpdate(any()) } returnsArgument 0
 
