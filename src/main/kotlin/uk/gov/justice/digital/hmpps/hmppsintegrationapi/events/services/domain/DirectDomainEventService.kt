@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
