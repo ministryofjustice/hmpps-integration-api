@@ -232,6 +232,10 @@ authorisation:
       roles:
         - "status-only"
       queueName: "bmadleysubscriberqueue"
+    synalogik:
+      notes: "See client list in Confluence"
+      roles:
+        - "status-only"
 
 hmpps.sqs:
   queues:
