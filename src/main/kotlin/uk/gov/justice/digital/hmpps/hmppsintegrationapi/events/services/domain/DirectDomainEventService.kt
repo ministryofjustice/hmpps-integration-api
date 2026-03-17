@@ -14,6 +14,7 @@ import java.time.Clock
 import java.time.LocalDateTime
 
 @ConditionalOnProperty("feature-flag.${FeatureFlagConfig.DEDUPLICATE_EVENTS}", havingValue = "false")
+@ConditionalOnProperty("feature-flag.${FeatureFlagConfig.ENABLE_PUBLISH_PENDING_EVENTS}", havingValue = "true")
 @Service
 class DirectDomainEventService(
   @Autowired val domainEventIdentitiesResolver: DomainEventIdentitiesResolver,
