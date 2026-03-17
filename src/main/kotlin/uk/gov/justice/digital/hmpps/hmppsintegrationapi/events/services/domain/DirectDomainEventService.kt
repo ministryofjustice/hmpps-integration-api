@@ -4,7 +4,9 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.exceptions.UnmappableUrlException
@@ -13,7 +15,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.Integrat
 import java.time.Clock
 import java.time.LocalDateTime
 
-@ConditionalOnExpression($$"${feature-flag.${$${FeatureFlagConfig.DEDUPLICATE_EVENTS}}:false} and ${feature-flag.$${FeatureFlagConfig.ENABLE_PUBLISH_PENDING_EVENTS}:true}")
+@ConditionalOnProperty("feature-flag.${FeatureFlagConfig.DEDUPLICATE_EVENTS}", havingValue = "false")
+@ConditionalOnBean(IntegrationEventTopicService::class)
 @Service
 class DirectDomainEventService(
   @Autowired val domainEventIdentitiesResolver: DomainEventIdentitiesResolver,
