@@ -158,11 +158,10 @@ authorisation:
       notes: "Automated post-deployment smoke tests (all access denied)"
       roles:
     test:
-      filters:
-        prisons:
-          - MKI
+      notes: "Used for testing queues in dev"
       roles:
-        - "private-prison"
+        - "mappa"
+      queueName: "testclientsubscriberqueue"
     sleach:
       notes: "https://peoplefinder.service.gov.uk/people/steve-leach"
       roles:
@@ -231,7 +230,7 @@ authorisation:
     bmadley:
       notes: "Used to test subscription filter policy"
       roles:
-        - "mappa"
+        - "status-only"
       queueName: "bmadleysubscriberqueue"
 
 hmpps.sqs:
