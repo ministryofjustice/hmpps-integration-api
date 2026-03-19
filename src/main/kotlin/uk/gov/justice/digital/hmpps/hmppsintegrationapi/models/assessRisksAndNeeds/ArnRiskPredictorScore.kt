@@ -26,11 +26,6 @@ data class ArnScore(
   val score: BigDecimal? = null,
 )
 
-fun roundDownIfRequired(
-  score: BigDecimal?,
-  sendDecimals: Boolean,
-): BigDecimal? = if (sendDecimals) score else score?.let { BigDecimal(it.toInt()) }
-
 data class ArnRiskPredictorScore(
   val completedDate: String? = null,
   val status: String? = null,
@@ -38,17 +33,17 @@ data class ArnRiskPredictorScore(
   val outputVersion: String,
   val output: ArnOutput,
 ) {
-  fun toRiskPredictorScore(sendDecimals: Boolean = false): RiskPredictorScore {
+  fun toRiskPredictorScore(): RiskPredictorScore {
     when (val assessmentVersion = outputVersion.toInt()) {
       1 -> {
         return RiskPredictorScore(
           completedDate = getDateFromString(this.completedDate),
           assessmentStatus = this.status,
-          generalPredictor = this.output.generalPredictorScore.toGeneralPredictor(sendDecimals = sendDecimals),
-          violencePredictor = this.output.violencePredictorScore.toViolencePredictor(sendDecimals = sendDecimals),
-          groupReconviction = this.output.groupReconvictionScore.toGroupReconviction(sendDecimals = sendDecimals),
-          riskOfSeriousRecidivism = this.output.riskOfSeriousRecidivismScore.toRiskOfSeriousRecidivism(sendDecimals = sendDecimals),
-          sexualPredictor = this.output.sexualPredictorScore.toSexualPredictor(sendDecimals = sendDecimals),
+          generalPredictor = this.output.generalPredictorScore.toGeneralPredictor(),
+          violencePredictor = this.output.violencePredictorScore.toViolencePredictor(),
+          groupReconviction = this.output.groupReconvictionScore.toGroupReconviction(),
+          riskOfSeriousRecidivism = this.output.riskOfSeriousRecidivismScore.toRiskOfSeriousRecidivism(),
+          sexualPredictor = this.output.sexualPredictorScore.toSexualPredictor(),
           assessmentVersion = assessmentVersion,
         )
       }
@@ -60,32 +55,32 @@ data class ArnRiskPredictorScore(
           allReoffendingPredictor =
             RiskScoreV2(
               band = this.output.allReoffendingPredictor.band,
-              score = roundDownIfRequired(this.output.allReoffendingPredictor.score, sendDecimals),
+              score = this.output.allReoffendingPredictor.score,
             ),
           violentReoffendingPredictor =
             RiskScoreV2(
               band = this.output.violentReoffendingPredictor.band,
-              score = roundDownIfRequired(this.output.violentReoffendingPredictor.score, sendDecimals),
+              score = this.output.violentReoffendingPredictor.score,
             ),
           seriousViolentReoffendingPredictor =
             RiskScoreV2(
               band = this.output.seriousViolentReoffendingPredictor.band,
-              score = roundDownIfRequired(this.output.seriousViolentReoffendingPredictor.score, sendDecimals),
+              score = this.output.seriousViolentReoffendingPredictor.score,
             ),
           directContactSexualReoffendingPredictor =
             RiskScoreV2(
               band = this.output.directContactSexualReoffendingPredictor.band,
-              score = roundDownIfRequired(this.output.directContactSexualReoffendingPredictor.score, sendDecimals),
+              score = this.output.directContactSexualReoffendingPredictor.score,
             ),
           indirectImageContactSexualReoffendingPredictor =
             RiskScoreV2(
               band = this.output.indirectImageContactSexualReoffendingPredictor.band,
-              score = roundDownIfRequired(this.output.indirectImageContactSexualReoffendingPredictor.score, sendDecimals),
+              score = this.output.indirectImageContactSexualReoffendingPredictor.score,
             ),
           combinedSeriousReoffendingPredictor =
             RiskScoreV2(
               band = this.output.combinedSeriousReoffendingPredictor.band,
-              score = roundDownIfRequired(this.output.combinedSeriousReoffendingPredictor.score, sendDecimals),
+              score = this.output.combinedSeriousReoffendingPredictor.score,
             ),
         )
       }
