@@ -107,6 +107,7 @@ authorisation:
     - 25:13:0d:d4:02:ae:7a:30:17:36:02:2e:a9:e9:b8:48:f4:4b:f6:70 # HIA-1054
     - 10:67:6D:6D:8B:A4:5B:B0:B7:24:5C:68:1A:58:DB:78:21:3D:E1:83 # HIA-1266
     - 43:5A:CA:9A:6F:C4:A2:28:E6:0A:AA:23:50:5C:54:AE:DC:92:BC:70 # HIA-1271
+    - 4C:BE:74:46:EE:F8:4F:DC:BB:78:8B:1F:59:38:4B:E6:A2:70:3C:5E # Smoke test Renewed
 
 sentry:
   traces-sample-rate: "0.05"
