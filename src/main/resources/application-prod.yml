@@ -1,8 +1,3 @@
-spring:
-  autoconfigure:
-    exclude:
-      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-
 services:
   int-api:
     base-url: https://integration-api.hmpps.service.justice.gov.uk
