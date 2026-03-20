@@ -53,7 +53,7 @@ class AssessRisksAndNeedsGateway(
         Response(
           data =
             result.data
-              .map { it.toRiskPredictorScore(featureFlagConfig.isEnabled(FeatureFlagConfig.ENABLE_SEND_DECIMAL_RISK_SCORES)) }
+              .map { it.toRiskPredictorScore() }
               .sortedByDescending { it.completedDate },
         )
       }

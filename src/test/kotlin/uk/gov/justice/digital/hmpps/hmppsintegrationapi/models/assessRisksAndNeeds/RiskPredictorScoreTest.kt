@@ -147,7 +147,7 @@ class RiskPredictorScoreTest :
                 ),
             )
 
-          val integrationApiRiskPredictorScore = arnRiskPredictorScore.toRiskPredictorScore(sendDecimals = true)
+          val integrationApiRiskPredictorScore = arnRiskPredictorScore.toRiskPredictorScore()
 
           integrationApiRiskPredictorScore.completedDate.shouldBe(LocalDateTime.parse(arnRiskPredictorScore.completedDate))
           integrationApiRiskPredictorScore.assessmentStatus.shouldBe(arnRiskPredictorScore.status)
