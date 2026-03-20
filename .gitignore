@@ -9,7 +9,6 @@
 .venv/
 build/
 .DS_Store
-.trivyignore
 node_modules
 
 # CMake
