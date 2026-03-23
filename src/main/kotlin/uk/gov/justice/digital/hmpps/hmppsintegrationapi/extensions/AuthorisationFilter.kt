@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.properties.EnableConfigurationProperties
+import org.springframework.context.annotation.Profile
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
@@ -18,6 +19,72 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuthoriseConsumerService
 import java.io.IOException
+
+@Component
+@Order(0)
+@Profile("!local")
+class ConsumerNameExtractionFilter : Filter {
+  @Throws(IOException::class, ServletException::class)
+  override fun doFilter(
+    request: ServletRequest,
+    response: ServletResponse?,
+    chain: FilterChain,
+  ) {
+    val req = request as HttpServletRequest
+    response as HttpServletResponse
+    val subjectDistinguishedName = req.getHeader("subject-distinguished-name")
+    val certificateSerialNumber = extractCertificateSerialNumber(req.getHeader("cert-serial-number"))
+    val extractedConsumerName = extractConsumerName(subjectDistinguishedName)
+    req.setAttribute("clientName", extractedConsumerName)
+    req.setAttribute("certificateSerialNumber", certificateSerialNumber)
+    chain.doFilter(request, response)
+  }
+
+  fun extractConsumerName(subjectDistinguishedName: String?): String? {
+    if (subjectDistinguishedName.isNullOrEmpty()) {
+      return null
+    }
+
+    val match = Regex("^.*,CN=(.*)$").find(subjectDistinguishedName)
+
+    if (match?.groupValues == null) {
+      return null
+    }
+
+    return match.groupValues[1]
+  }
+
+  /**
+   * Converts the certificate serial number sent in the header into hex format
+   * e.g 9572494320151578633330348943480876283449388176
+   * becomes 01:7B:EB:77:06:DB:11:F5:2E:B6:F7:37:7B:A9:E0:E4:84:C5:2C:A3
+   */
+  fun extractCertificateSerialNumber(serialNumber: String?): String? =
+    serialNumber?.let {
+      runCatching {
+        serialNumber.toBigInteger().toByteArray().toHexString(
+          format =
+            HexFormat {
+              upperCase = true
+              bytes.byteSeparator = ":"
+            },
+        )
+      }.getOrNull()
+    }
+}
+
+@Component
+@Order(0)
+@Profile("local")
+class LocalConsumerNameExtractionFilter : Filter {
+  override fun doFilter(
+    request: ServletRequest,
+    response: ServletResponse?,
+    chain: FilterChain,
+  ) {
+    chain.doFilter(request.apply { setAttribute("clientName", "all-access") }, response)
+  }
+}
 
 @Component
 @Order(1)
@@ -69,39 +136,6 @@ class AuthorisationFilter(
     }
   }
 
-  /**
-   * Checks whether the certificate serial number exists in the certificate revocation list in application.yaml
-   * If the entry contains a "/" then the entry only applies to the consumer name that follows the "/"
-   * e.g for these 2 entries in application.yaml
-   * authorisation:
-   *  certificate-revocation-list:
-   *    - 01:7b:eb:77:06:db:11:f5:2e:b6:f7:37:7b:a9:e0:e4:84:c5:2c:a3
-   *    - 01/a-consumer
-   *
-   * The first entry would apply globally. The second entry would only apply to a consumer with name a-consumer
-   */
-  fun certificateRevoked(
-    authorisationConfig: AuthorisationConfig,
-    certificateSerialNumber: String,
-    consumerName: String,
-  ): Boolean {
-    authorisationConfig.certificateRevocationList.forEach {
-      val entry = it.split("/")
-      val serialNumber = entry[0]
-      val thisConsumerOnly = if (entry.size > 1) entry[1] else null
-      if (thisConsumerOnly != null) {
-        if (serialNumber.equals(certificateSerialNumber, ignoreCase = true) && thisConsumerOnly == consumerName) {
-          return true
-        }
-      } else {
-        if (serialNumber.equals(certificateSerialNumber, ignoreCase = true)) {
-          return true
-        }
-      }
-    }
-    return false
-  }
-
   private fun authorisedThroughRole(
     authoriseConsumerService: AuthoriseConsumerService,
     subjectDistinguishedName: String?,
@@ -126,3 +160,31 @@ class AuthorisationFilter(
     requestedPath: String,
   ) = authoriseConsumerService.doesConsumerHaveIncludesAccess(authorisationConfig.consumers[subjectDistinguishedName], requestedPath)
 }
+
+@Component
+@Order(2)
+@EnableConfigurationProperties(AuthorisationConfig::class)
+class FiltersExtractionFilter
+  @Autowired
+  constructor(
+    var authorisationConfig: AuthorisationConfig,
+  ) : Filter {
+    @Throws(IOException::class, ServletException::class)
+    override fun doFilter(
+      request: ServletRequest,
+      response: ServletResponse,
+      chain: FilterChain,
+    ) {
+      val subjectDistinguishedName = request.getAttribute("clientName") as String?
+      val consumerConfig: ConsumerConfig? = authorisationConfig.consumers[subjectDistinguishedName]
+
+      if (consumerConfig == null) {
+        (response as HttpServletResponse).sendError(HttpServletResponse.SC_FORBIDDEN, "No consumer authorisation config found for $subjectDistinguishedName")
+        return
+      }
+
+      val filters = authorisationConfig.allFilters(subjectDistinguishedName!!)
+      request.setAttribute("filters", filters)
+      chain.doFilter(request, response)
+    }
+  }
