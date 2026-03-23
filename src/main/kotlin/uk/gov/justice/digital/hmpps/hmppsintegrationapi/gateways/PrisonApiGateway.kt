@@ -36,6 +36,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonA
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiSentenceSummary
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiTransactionResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.visits.VisitBalances
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @Component
 class PrisonApiGateway(
@@ -260,7 +262,7 @@ class PrisonApiGateway(
 
   fun getReasonableAdjustments(booking: String): Response<List<ReasonableAdjustment>> {
     val treatmentCodes = getReferenceDomains("HEALTH_TREAT").data
-    val codes = treatmentCodes.map { "type=${it.code}" }.toList()
+    val codes = treatmentCodes.map { "type=${URLEncoder.encode(it.code, StandardCharsets.UTF_8)}" }.toList()
     val params = codes.joinToString(separator = "&", prefix = "?")
     val result =
       webClient.request<PrisonApiReasonableAdjustments>(
