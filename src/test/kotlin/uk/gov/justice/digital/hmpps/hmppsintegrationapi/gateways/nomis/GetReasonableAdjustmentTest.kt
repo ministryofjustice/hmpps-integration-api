@@ -43,8 +43,7 @@ class GetReasonableAdjustmentTest(
           [
             {"domain":"abc", "code":"a"},
             {"domain":"abc", "code":"b"},
-            {"domain":"abc", "code":"c"},
-            {"domain":"abc", "code":"a/b/c"}
+            {"domain":"abc", "code":"c"}
           ]
         """,
         )
