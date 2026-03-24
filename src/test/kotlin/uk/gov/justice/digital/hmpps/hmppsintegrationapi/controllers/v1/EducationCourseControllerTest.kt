@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonDetai
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.EducationCourseCompletionService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @WebMvcTest(controllers = [EducationCourseCompletionController::class])
 @Import(WebMvcTestConfiguration::class)
@@ -57,6 +58,7 @@ class EducationCourseControllerTest(
                   courseType = "Test course type",
                   provider = "Moodle",
                   completionDate = LocalDate.parse("2024-01-15"),
+                  completionDateTime = LocalDateTime.parse("2023-12-31T10:30:00"),
                   status = "Completed",
                   totalTimeMinutes = 150,
                   attempts = 1,

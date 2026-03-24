@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Positive
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 data class EducationCourseCompletionRequest(
   @field:NotNull(message = "courseCompletion must not be null")
@@ -63,9 +64,17 @@ data class CourseDetails(
   @Schema(description = "Provider of the course")
   @field:NotBlank(message = "provider must not be null or blank")
   val provider: String,
-  @Schema(description = "Date when the Person on Probation (PoP) completed the course", example = "2023-12-31")
-  @field:NotNull(message = "completionDate must not be null")
-  val completionDate: LocalDate,
+  @Schema(
+    description = "Date when the Person on Probation (PoP) completed the course",
+    example = "2023-12-31",
+    deprecated = true
+  )
+  val completionDate: LocalDate? = null,
+  @Schema(
+    description = "Date and time when the Person on Probation (PoP) completed the course (ISO‑8601 format)",
+    example = "2023-12-31T10:30:00"
+  )
+  val completionDateTime: LocalDateTime? = null,
   @Schema(description = "Status of the course the Person on Probation (PoP) has completed eg. Failed, Completed")
   @field:NotBlank(message = "status must not be null or blank")
   val status: String,
