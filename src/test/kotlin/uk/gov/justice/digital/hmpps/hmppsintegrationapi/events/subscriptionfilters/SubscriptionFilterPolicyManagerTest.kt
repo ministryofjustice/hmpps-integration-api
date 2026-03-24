@@ -16,6 +16,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.objectMapp
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.AuthorisationConfigReader
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.FileManager
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class SubscriptionFilterPolicyManagerTest {
   val fileManager = Mockito.spy(FileManager::class.java)!!
@@ -62,6 +64,20 @@ class SubscriptionFilterPolicyManagerTest {
     setUpConsumers(noPolicies = false, changedConsumers = listOf("automated-test-client"), throwsExceptionConsumers = listOf("no-include-or-roles"))
     assertThrows<RuntimeException> { service.generatePolicyFiles(listOf("test")) }
     verify(fileManager, times(0)).write(any(), any())
+  }
+
+  @Test
+  fun `the isDifferentTo method should report false if there is only an order change in the filter policy lists`() {
+    val thisPolicy = FilterPolicy(listOf("EVENT_1", "EVENT_2", "EVENT_3"), listOf("PRISON_1", "PRISON_2"))
+    val newPolicy = FilterPolicy(listOf("EVENT_3", "EVENT_2", "EVENT_1"), listOf("PRISON_2", "PRISON_1"))
+    assertFalse(thisPolicy.isDifferentTo(newPolicy))
+  }
+
+  @Test
+  fun `the isDifferentTo method should report true if there is a change other than an order change in the filter policy lists`() {
+    val thisPolicy = FilterPolicy(listOf("EVENT_1", "EVENT_2", "EVENT_3"), listOf("PRISON_1", "PRISON_2"))
+    val newPolicy = FilterPolicy(listOf("EVENT_3", "EVENT_2", "EVENT_4"), listOf("PRISON_2", "PRISON_1"))
+    assertTrue(thisPolicy.isDifferentTo(newPolicy))
   }
 
   @Test

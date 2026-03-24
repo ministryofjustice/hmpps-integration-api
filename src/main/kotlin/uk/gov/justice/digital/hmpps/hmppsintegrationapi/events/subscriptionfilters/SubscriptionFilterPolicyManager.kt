@@ -106,7 +106,7 @@ class SubscriptionFilterPolicyManager(
       val prisonIds = authorisation.allFilters(consumer)?.prisons
       val filterPolicy = FilterPolicy(consumerEvents, prisonIds)
       val isNewFile = existingFilterPolicy == null
-      if (isNewFile || filterPolicy != existingFilterPolicy) {
+      if (isNewFile || filterPolicy.isDifferentTo(existingFilterPolicy)) {
         policyMap[consumer] = Pair(FilterPolicy(consumerEvents, prisonIds), isNewFile)
       }
     }
