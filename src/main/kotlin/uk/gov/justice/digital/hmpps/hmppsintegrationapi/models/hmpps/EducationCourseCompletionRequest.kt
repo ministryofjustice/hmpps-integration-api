@@ -71,7 +71,7 @@ data class CourseDetails(
   )
   val completionDate: LocalDate? = null,
   @Schema(
-    description = "Date and time (ISO‑8601 timestamp) with the applicable Europe/London offset when the Person on Probation (PoP) completed the course",
+    description = "Date and time (ISO‑8601 timestamp with offset) when the Person on Probation (PoP) completed the course",
     example = "2023-12-31T16:00:00+00:00",
   )
   val completionDateTime: OffsetDateTime? = null,
