@@ -11,6 +11,11 @@ spring:
     url: "jdbc:postgresql://${DB_SERVER}/${DB_NAME}?sslmode=prefer"
     username: ${DB_USER}
     password: ${DB_PASS}
+  flyway:
+    url: ${spring.datasource.url}
+    user: ${spring.datasource.username}
+    password: ${spring.datasource.password}
+    enabled: true
 
   jackson:
     date-format: "yyyy-MM-dd HH:mm:ss"
