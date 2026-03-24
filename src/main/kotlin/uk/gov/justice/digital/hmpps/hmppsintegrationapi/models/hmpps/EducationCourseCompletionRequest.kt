@@ -67,12 +67,12 @@ data class CourseDetails(
   @Schema(
     description = "Date when the Person on Probation (PoP) completed the course",
     example = "2023-12-31",
-    deprecated = true
+    deprecated = true,
   )
   val completionDate: LocalDate? = null,
   @Schema(
     description = "Date and time when the Person on Probation (PoP) completed the course (ISO‑8601 format)",
-    example = "2023-12-31T10:30:00"
+    example = "2023-12-31T10:30:00",
   )
   val completionDateTime: LocalDateTime? = null,
   @Schema(description = "Status of the course the Person on Probation (PoP) has completed eg. Failed, Completed")

@@ -183,8 +183,10 @@ class EducationCourseCompletionMapperTest :
                 "pdu" to person.pdu,
                 "provider" to course.provider,
                 "completionDate" to course.completionDate.toString(),
-                "completionDateTime" to course.completionDateTime!!.atOffset(UTC)
-                  .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")),
+                "completionDateTime" to
+                  course.completionDateTime!!
+                    .atOffset(UTC)
+                    .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")),
                 "status" to course.status,
                 "totalTimeMinutes" to course.totalTimeMinutes,
                 "attempts" to course.attempts,

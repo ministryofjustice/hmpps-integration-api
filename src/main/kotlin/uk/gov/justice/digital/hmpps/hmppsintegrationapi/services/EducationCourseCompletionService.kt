@@ -56,9 +56,11 @@ class EducationCourseCompletionService(
                 "courseType" to course.courseType,
                 "provider" to course.provider,
                 "completionDate" to course.completionDate.toString(),
-                "completionDateTime" to course.completionDateTime?.atOffset(UTC)
-                  ?.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))
-                  .orEmpty(),
+                "completionDateTime" to
+                  course.completionDateTime
+                    ?.atOffset(UTC)
+                    ?.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))
+                    .orEmpty(),
                 "status" to course.status,
                 "totalTimeMinutes" to course.totalTimeMinutes,
                 "attempts" to course.attempts?.toString().orEmpty(),
