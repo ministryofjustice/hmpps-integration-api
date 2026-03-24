@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Positive
 import java.time.LocalDate
-import java.time.ZonedDateTime
+import java.time.OffsetDateTime
 
 data class EducationCourseCompletionRequest(
   @field:NotNull(message = "courseCompletion must not be null")
@@ -71,10 +71,10 @@ data class CourseDetails(
   )
   val completionDate: LocalDate? = null,
   @Schema(
-    description = "Date and time (with Europe/London timezone offset) when the Person on Probation (PoP) completed the course",
-    example = "2023-12-31T16:00:00.000+01:00",
+    description = "Date and time (ISO‑8601 timestamp) with the applicable Europe/London offset when the Person on Probation (PoP) completed the course",
+    example = "2023-12-31T16:00:00+00:00",
   )
-  val completionDateTime: ZonedDateTime? = null,
+  val completionDateTime: OffsetDateTime? = null,
   @Schema(description = "Status of the course the Person on Probation (PoP) has completed eg. Failed, Completed")
   @field:NotBlank(message = "status must not be null or blank")
   val status: String,

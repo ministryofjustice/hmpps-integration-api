@@ -58,7 +58,7 @@ class EducationCourseCompletionService(
                 "completionDate" to course.completionDate.toString(),
                 "completionDateTime" to
                   course.completionDateTime
-                    ?.withZoneSameInstant(ZoneId.of("Europe/London"))
+                    ?.atZoneSameInstant(ZoneId.of("Europe/London"))
                     ?.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX"))
                     .orEmpty(),
                 "status" to course.status,

@@ -18,8 +18,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessag
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageEventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonDetails
 import java.time.LocalDate
-import java.time.ZoneId
-import java.time.ZonedDateTime
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 class EducationCourseCompletionMapperTest :
@@ -53,7 +53,7 @@ class EducationCourseCompletionMapperTest :
       courseType: String = "Digital",
       provider: String = "Acme Learning",
       completionDate: LocalDate = LocalDate.of(2021, 1, 1),
-      completionDateTime: ZonedDateTime = ZonedDateTime.of(2021, 1, 1, 10, 0, 0, 0, ZoneId.of("Europe/London")),
+      completionDateTime: OffsetDateTime = OffsetDateTime.of(2021, 1, 1, 10, 0, 0, 0, ZoneOffset.ofHours(0)),
       status: String = "Completed",
       totalTimeMinutes: Long = 150,
       attempts: Int? = 3,
@@ -159,7 +159,7 @@ class EducationCourseCompletionMapperTest :
             courseType = "Compliance",
             provider = "Gov Academy",
             completionDate = LocalDate.of(2023, 12, 31),
-            completionDateTime = ZonedDateTime.of(2023, 12, 31, 10, 0, 0, 0, ZoneId.of("Europe/London")),
+            completionDateTime = OffsetDateTime.of(2023, 12, 31, 10, 0, 0, 0, ZoneOffset.ofHours(0)),
             status = "Completed",
             totalTimeMinutes = 150,
             attempts = 5,
@@ -185,7 +185,6 @@ class EducationCourseCompletionMapperTest :
                 "completionDate" to course.completionDate.toString(),
                 "completionDateTime" to
                   course.completionDateTime!!
-                    .withZoneSameInstant(ZoneId.of("Europe/London"))
                     .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")),
                 "status" to course.status,
                 "totalTimeMinutes" to course.totalTimeMinutes,
