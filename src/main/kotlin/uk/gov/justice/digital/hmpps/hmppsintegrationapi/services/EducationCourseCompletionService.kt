@@ -15,7 +15,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import uk.gov.justice.hmpps.sqs.eventTypeMessageAttributes
-import java.time.ZoneOffset.UTC
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @Service
@@ -58,8 +58,8 @@ class EducationCourseCompletionService(
                 "completionDate" to course.completionDate.toString(),
                 "completionDateTime" to
                   course.completionDateTime
-                    ?.atOffset(UTC)
-                    ?.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))
+                    ?.withZoneSameInstant(ZoneId.of("Europe/London"))
+                    ?.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX"))
                     .orEmpty(),
                 "status" to course.status,
                 "totalTimeMinutes" to course.totalTimeMinutes,

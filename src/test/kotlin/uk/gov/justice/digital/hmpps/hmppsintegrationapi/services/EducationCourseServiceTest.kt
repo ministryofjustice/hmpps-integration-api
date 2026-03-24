@@ -25,6 +25,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import java.time.LocalDate
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 class EducationCourseServiceTest :
   DescribeSpec({
@@ -67,6 +69,7 @@ class EducationCourseServiceTest :
                 courseType = "Test course type",
                 provider = "Moodle",
                 completionDate = LocalDate.of(2024, 1, 15),
+                completionDateTime = ZonedDateTime.of(2024, 1, 15, 16, 0, 0, 0, ZoneId.of("Europe/London")),
                 status = "Completed",
                 totalTimeMinutes = 150,
                 attempts = 1,
