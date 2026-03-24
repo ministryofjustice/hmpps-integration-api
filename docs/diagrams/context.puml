@@ -21,8 +21,9 @@ Boundary(moj, "Ministry of Justice (MOJ)", "Ministerial Department") {
 }
 
 Rel_Down(consumer, hmpps_integration_api, "Uses")
-Rel_Up(upstream, messaging, "Posts updates")
-Rel_Up(messaging, consumer, "Retrieves updates")
+Rel_Up(upstream, hmpps_integration_api, "Posts updates")
+Rel(hmpps_integration_api, messaging, "Sends notifications")
+Rel_Up(messaging, consumer, "Receives notifications")
 Rel(hmpps_integration_api, upstream, "Queries for data")
 
 SHOW_DYNAMIC_LEGEND()
