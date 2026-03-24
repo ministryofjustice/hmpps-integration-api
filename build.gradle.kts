@@ -31,15 +31,15 @@ configurations.all {
       useVersion("10.1.52")
       because("Fix CVE-2026-1225")
     }
-    if (requested.group == "org.springframework")  {
+    if (requested.group == "org.springframework") {
       useVersion("6.2.17")
       because("Fix CVE-2026-22737")
     }
-    if (requested.group == "org.springframework.boot")  {
+    if (requested.group == "org.springframework.boot") {
       useVersion("3.5.12")
       because("Fix CVE-2026-22733")
     }
-    if (requested.group == "org.webjars" && requested.name == "swagger-ui")  {
+    if (requested.group == "org.webjars" && requested.name == "swagger-ui") {
       useVersion("5.32.1")
       because("Fix CVE-2026-0540")
     }
