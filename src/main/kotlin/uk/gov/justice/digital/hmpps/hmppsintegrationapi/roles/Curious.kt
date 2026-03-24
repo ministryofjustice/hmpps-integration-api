@@ -6,21 +6,21 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.prisonEducatio
 val curious =
   role("curious") {
     permissions {
-      -"/v1/persons/.*/plp-induction-schedule"
-      -"/v1/persons/.*/plp-induction-schedule/history"
-      -"/v1/persons/.*/plp-review-schedule"
-      -"/v1/persons/[^/]+/expression-of-interest/jobs/[^/]+$"
-      -"/v1/hmpps/id/by-nomis-number/[^/]*$"
-      -"/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
-      -"/v1/persons/.*/education/assessments/status"
-      -"/v1/persons/[^/]*$"
-      -"/v1/persons/[^/]+/prisoner-base-location"
-      -"/v1/persons/.*/education/assessments"
+      -"/v1/persons/{hmppsId}/plp-induction-schedule"
+      -"/v1/persons/{hmppsId}/plp-induction-schedule/history"
+      -"/v1/persons/{hmppsId}/plp-review-schedule"
+      -"/v1/persons/{hmppsId}/expression-of-interest/jobs/{jobId}"
+      -"/v1/hmpps/id/by-nomis-number/{nomisNumber}"
+      -"/v1/hmpps/id/nomis-number/by-hmpps-id/{hmppsId}"
+      -"/v1/persons/{hmppsId}/education/assessments/status"
+      -"/v1/persons/{hmppsId}"
+      -"/v1/persons/{hmppsId}/prisoner-base-location"
+      -"/v1/persons/{hmppsId}/education/assessments"
       -"/v1/status"
-      -"/v1/persons/.*/education/san/plan-creation-schedule"
-      -"/v1/persons/.*/education/san/review-schedule"
-      -"/v1/persons/.*/education/status"
-      -"/v1/persons/.*/education/aln-assessment"
+      -"/v1/persons/{hmppsId}/education/san/plan-creation-schedule"
+      -"/v1/persons/{hmppsId}/education/san/review-schedule"
+      -"/v1/persons/{hmppsId}/education/status"
+      -"/v1/persons/{hmppsId}/education/aln-assessment"
     }
     redactionPolicies(
       listOf(
