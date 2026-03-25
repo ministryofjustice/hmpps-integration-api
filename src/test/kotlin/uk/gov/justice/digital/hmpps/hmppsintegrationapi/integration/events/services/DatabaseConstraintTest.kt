@@ -12,13 +12,13 @@ import java.util.UUID
 
 class DatabaseConstraintTest : IntegrationTestBase() {
   fun makeEvent(url: String): EventNotification =
-      EventNotification(
-          eventType = IntegrationEventType.MAPPA_DETAIL_CHANGED.name,
-          hmppsId = "MockId",
-          prisonId = "MKI",
-          url = url,
-          lastModifiedDatetime = LocalDateTime.now().minusHours(25),
-      )
+    EventNotification(
+      eventType = IntegrationEventType.MAPPA_DETAIL_CHANGED.name,
+      hmppsId = "MockId",
+      prisonId = "MKI",
+      url = url,
+      lastModifiedDatetime = LocalDateTime.now().minusHours(25),
+    )
 
   @BeforeEach
   fun setUp() {
