@@ -135,6 +135,9 @@
         <a href="./api-changes-and-versioning.html#breaking-change"><span>Breaking Change</span></a>
       </li>
       <li>
+        <a href="./api-changes-and-versioning.html#add-switch-remove-policy"><span>Add-switch-remove Policy</span></a>
+      </li>
+      <li>
         <a href="./api-changes-and-versioning.html#ongoing-assurance"><span>Ongoing Assurance</span></a>
       </li>
       <li>
@@ -190,6 +193,15 @@
 <li>Consumers - must commit to moving to the new version of the API within a reasonable timescale, usually 1 month</li>
 <li>Depending on the size of the change, MOJ may require the Consumer to go through additional re-assurance steps</li>
 </ul>
+<h2 id="add-switch-remove-policy">Add-switch-remove Policy</h2>
+<p>Because renaming fields would be a breaking change, we will in general use an add-switch-remove approach if this is
+required.</p>
+
+<ol>
+<li>Add a new field with the desired name, alongside the existing one, with the same value</li>
+<li>Deprecate the old field and ask clients to switch to the new field</li>
+<li>Once all clients have switched over, the old field can be safely removed</li>
+</ol>
 <h2 id="ongoing-assurance">Ongoing Assurance</h2>
 <p>As part of including new functionality into the system, new processes will be available to be undertaken via the API. As these are introduced, we will ask consumers to go through further rounds of assurance, broadly similar to the initial round described above.</p>
 <h2 id="uri-path">URI Path</h2>
@@ -197,17 +209,17 @@
 <div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>https://integration-api.hmpps.service.justice.gov.uk/v1/images/123456
 </code></pre></div><p>Versions will increment by major version only and no minor version updates will be supported.</p>
 
-              <div data-module='page-expiry' data-last-reviewed-on="2026-03-23">
+              <div data-module='page-expiry' data-last-reviewed-on="2026-09-24">
     <div class='page-expiry--not-expired'>
-      This page was last reviewed on 23 September 2025.
+      This page was last reviewed on 24 March 2026.
 
-        It needs to be reviewed again on 23 March 2026
+        It needs to be reviewed again on 24 September 2026
         by the page owner <a href="">#hmpps-integration-api-alerts</a>
         .
     </div>
 
     <div class='page-expiry--expired' hidden>
-      This page was set to be reviewed before 23 March 2026
+      This page was set to be reviewed before 24 September 2026
        by the page owner <a href="">#hmpps-integration-api-alerts</a>.
       This might mean the content is out of date.
     </div>
