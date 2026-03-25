@@ -28,4 +28,8 @@ class TelemetryService(
   ) {
     Sentry.captureException(throwable)
   }
+
+  fun captureMessage(message: String) {
+    Sentry.captureMessage(message)
+  }
 }

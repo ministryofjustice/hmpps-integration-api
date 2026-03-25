@@ -68,6 +68,7 @@ services:
 
 hmpps.sqs:
   provider: localstack
+  localstackUrl: http://localhost:4566
   queues:
     audit:
       queueName: "audit"

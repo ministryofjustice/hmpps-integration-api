@@ -66,7 +66,7 @@ class SendEventsService(
         stuck.map {
           "${it.eventCount} stuck events with status ${it.status}. Earliest event has date ${it.earliestDatetime}"
         }
-      telemetryService.captureException(Throwable(messages.joinToString("\n")))
+      telemetryService.captureMessage(messages.joinToString("\n"))
     }
   }
 }
