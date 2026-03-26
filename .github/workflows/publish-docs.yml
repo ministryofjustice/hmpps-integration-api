@@ -7,7 +7,7 @@ on:
       - main
 
 jobs:
-  deploy-openapi:
+  build-openapi:
     if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
@@ -34,17 +34,12 @@ jobs:
         with:
           name: openapi
           path: openapi/
-      - name: Deploy OpenAPI
-        uses: JamesIves/github-pages-deploy-action@d92aa235d04922e8f08b40ce78cc5442fcfbfa2f # v4.8.0
-        with:
-          folder: openapi
-          target-folder: openapi
 
   build-docs:
     if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     needs:
-      - deploy-openapi
+      - build-openapi
     steps:
       - uses: actions/checkout@v6
       - uses: ruby/setup-ruby@v1
@@ -63,7 +58,7 @@ jobs:
           path: tech-docs/build/
 
   deploy-docs:
-    if: github.actor != 'dependabot[bot]'
+    if: github.ref_name == 'main'
     runs-on: ubuntu-latest
     needs:
       - build-docs
@@ -77,14 +72,12 @@ jobs:
         with:
           name: openapi
           path: tech-docs-build/openapi/
-      - name: Deploy
-        if: github.ref_name == 'main'
-        uses: JamesIves/github-pages-deploy-action@d92aa235d04922e8f08b40ce78cc5442fcfbfa2f # v4.8.0
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          folder: tech-docs-build
-      - name: Deploy branch
-        if: github.ref_name != 'main'
-        uses: JamesIves/github-pages-deploy-action@d92aa235d04922e8f08b40ce78cc5442fcfbfa2f # v4.8.0
-        with:
-          folder: tech-docs-build
-          target-folder: drafts/${{ github.ref_name }}
+          path: tech-docs-build
+      - name: Deploy branch to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
