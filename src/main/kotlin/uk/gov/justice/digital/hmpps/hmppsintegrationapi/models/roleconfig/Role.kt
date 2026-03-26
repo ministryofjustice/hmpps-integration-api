@@ -24,6 +24,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.referenceDataOnly
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.serco
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.smartinbox
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.statusOnly
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.synalogik
 
 data class Role(
   val name: String? = null,
@@ -164,4 +165,5 @@ val roles =
     daso,
     communityPayback,
     enhancedReceptionChecks,
+    synalogik,
   ).associateBy { it.name }

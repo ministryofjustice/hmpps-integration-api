@@ -228,7 +228,7 @@ authorisation:
     synalogik:
       notes: "See client list in Confluence"
       roles:
-        - "status-only"
+        - "synalogik"
 
 hmpps.sqs:
   queues:
