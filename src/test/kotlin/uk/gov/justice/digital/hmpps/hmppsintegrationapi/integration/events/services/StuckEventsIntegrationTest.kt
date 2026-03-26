@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.services
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -66,10 +66,10 @@ class StuckEventsIntegrationTest : IntegrationTestBase() {
       """
       stuck events with status PROCESSING
       """.trimIndent()
-    val message = argumentCaptor<Throwable>()
+    val message = argumentCaptor<String>()
     val thread1 = Thread { sendEventsService.sentNotifications() }
     thread1.start()
-    verify(telemetryService, timeout(10_000).atLeast(1)).captureException(Throwable(message.capture()))
-    assertThat(message.firstValue).hasMessageContaining(expectedExceptionMessage)
+    verify(telemetryService, timeout(10_000).atLeast(1)).captureMessage(message.capture())
+    assertThat(message.firstValue).contains(expectedExceptionMessage)
   }
 }

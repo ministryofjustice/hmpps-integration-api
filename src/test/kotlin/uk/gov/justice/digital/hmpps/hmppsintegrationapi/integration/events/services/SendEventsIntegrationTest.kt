@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.services
 
 import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.Awaitility

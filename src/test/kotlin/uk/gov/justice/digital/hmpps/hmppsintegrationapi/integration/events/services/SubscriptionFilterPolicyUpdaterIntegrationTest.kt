@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.services
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
@@ -67,6 +67,6 @@ class SubscriptionFilterPolicyUpdaterIntegrationTest : IntegrationTestBase() {
   @Test
   fun `Policy updater should update the subscription policy filter for the integration-test consumer on application start`() {
     subscriptionFilterPolicyUpdater.init()
-    await untilCallTo { getTestFilterPolicy()?.eventType } matches { it == listOf("UPDATED_EVENT") }
+    await untilCallTo { getTestFilterPolicy()?.eventType } matches { it == listOf("MAPPA_DETAIL_CHANGED") }
   }
 }
