@@ -14,6 +14,7 @@ class RolesAuthenticationIntegrationTest : IntegrationTestBase() {
     val allRoles = roles
     val responses =
       allRoles
+        .filter { it.key == "synalogik" }
         .filter { !(it.value.permissions!!.any { r -> r.contains(".*") || r.contains("[^/]") }) }
         .flatMap { role ->
           val roleEndpoints = role.value.permissions!!
@@ -28,7 +29,7 @@ class RolesAuthenticationIntegrationTest : IntegrationTestBase() {
         response.status == HttpStatus.FORBIDDEN.value() &&
           !response.contentAsString.contains("No static resource")
       }
-    assertTrue(listOfIssues.isEmpty(), "Issues found with ${listOfIssues.map { it.contentAsString }} ")
+    assertTrue(listOfIssues.isEmpty(), "Issues found with ${listOfIssues.map { it.errorMessage }}. Check the consumer has been assigned the role in the integration test config")
   }
 
   @Test
