@@ -1,8 +1,5 @@
 name: Load Test
 on:
-  push:
-    branches:
-      - 'HIA-916-test-api-gw-usage-plan'
   workflow_dispatch:
     inputs:
       duration:
