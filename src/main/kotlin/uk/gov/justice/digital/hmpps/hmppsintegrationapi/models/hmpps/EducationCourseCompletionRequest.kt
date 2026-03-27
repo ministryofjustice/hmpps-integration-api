@@ -65,16 +65,11 @@ data class CourseDetails(
   @field:NotBlank(message = "provider must not be null or blank")
   val provider: String,
   @Schema(
-    description = "Date when the Person on Probation (PoP) completed the course",
-    example = "2023-12-31",
-    deprecated = true,
-  )
-  val completionDate: LocalDate? = null,
-  @Schema(
     description = "Date and time (ISO‑8601 timestamp with offset) when the Person on Probation (PoP) completed the course",
     example = "2023-12-31T16:00:00+00:00",
   )
-  val completionDateTime: OffsetDateTime? = null,
+  @field:NotNull(message = "completionDateTime must not be null or blank")
+  val completionDateTime: OffsetDateTime,
   @Schema(description = "Status of the course the Person on Probation (PoP) has completed eg. Failed, Completed")
   @field:NotBlank(message = "status must not be null or blank")
   val status: String,

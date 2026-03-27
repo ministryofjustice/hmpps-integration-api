@@ -57,7 +57,6 @@ class EducationCourseControllerTest(
                   courseName = "Test Course",
                   courseType = "Test course type",
                   provider = "Moodle",
-                  completionDate = LocalDate.parse("2024-01-15"),
                   completionDateTime = OffsetDateTime.parse("2023-12-31T10:30:00+00:00"),
                   status = "Completed",
                   totalTimeMinutes = 150,

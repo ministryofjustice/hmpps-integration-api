@@ -28,7 +28,6 @@ class EducationCourseIntegrationTest : IntegrationTestWithQueueBase("educationco
             "courseName": "Test Course",
             "courseType": "Test course type",
             "provider": "Moodle",
-            "completionDate": "2024-01-15",
             "completionDateTime": "2024-01-15T16:00:00.000+01:00",
             "status": "Completed",
             "totalTimeMinutes": 150,
