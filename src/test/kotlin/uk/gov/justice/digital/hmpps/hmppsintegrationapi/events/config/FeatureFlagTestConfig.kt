@@ -20,4 +20,6 @@ data class FeatureFlagTestConfig(
   fun resetFeatureFlag(feature: String) {
     featureFlags.remove(feature)
   }
+
+  fun resetAllFlags() = featureFlags.clear()
 }

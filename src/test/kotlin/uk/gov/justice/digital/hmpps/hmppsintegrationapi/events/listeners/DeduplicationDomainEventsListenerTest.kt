@@ -20,9 +20,11 @@ import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.messaging.support.GenericMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.config.FeatureFlagTestConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.IntegrationEventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.listener.DomainEventsListener
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.HmppsDomainEvent
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.EventNotificationRepository
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.domain.DeduplicationDomainEventService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.domain.DomainEventIdentitiesResolver
@@ -231,6 +233,7 @@ class DeduplicationDomainEventsListenerTest : DomainEventsListenerTestCase() {
 
 abstract class DomainEventsListenerTestCase {
   companion object {
+    @JvmStatic
     protected val baseUrl = "https://dev.integration-api.hmpps.service.justice.gov.uk"
   }
 
@@ -256,6 +259,7 @@ abstract class DomainEventsListenerTestCase {
       testClock,
       featureFlagTestConfig.featureFlagConfig,
     )
+
   val domainEventsListener = DomainEventsListener(deduplicationDomainEventService, telemetryService)
 
   @BeforeEach
@@ -306,6 +310,28 @@ abstract class DomainEventsListenerTestCase {
     // Assert
     expectedNotificationType.forEach { expectedEventType ->
       verify(exactly = 1) { eventNotificationRepository.insertOrUpdate(match { it.eventType == expectedEventType }) }
+    }
+  }
+
+  protected fun executeShouldSaveEventNotification(
+    hmppsDomainEvent: HmppsDomainEvent,
+    expectedEventNotification: EventNotification,
+  ) = executeShouldSaveEventNotifications(
+    hmppsDomainEvent = hmppsDomainEvent,
+    expectedEventNotifications = listOf(expectedEventNotification),
+  )
+
+  protected fun executeShouldSaveEventNotifications(
+    hmppsDomainEvent: HmppsDomainEvent,
+    expectedEventNotifications: List<EventNotification>,
+  ) {
+    // Act
+    deduplicationDomainEventService.execute(hmppsDomainEvent)
+
+    // Assert
+    expectedEventNotifications.forEach { expectedNotification ->
+      // Verify all expected event notifications persisted via repository
+      verify(exactly = 1) { eventNotificationRepository.insertOrUpdate(expectedNotification) }
     }
   }
 
