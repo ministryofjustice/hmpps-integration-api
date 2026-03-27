@@ -6,6 +6,8 @@ import { read_certificate } from "./support.js"
 /***********
  To run this script locally, make sure the following environment variables are set:-
 
+ - RPS = the number of requests per second
+ - DURATION = the duration of the test
  - DOMAIN = the fully qualified DNS name of the API server
  - HMPPSID = the primary hmppsId to use for testing
  - PROFILE = which testing profile to use (MAIN | LAO | NOPERMS | NOCERT)
