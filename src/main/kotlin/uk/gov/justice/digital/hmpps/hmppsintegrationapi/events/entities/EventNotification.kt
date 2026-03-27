@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities
 import com.fasterxml.jackson.annotation.JsonIncludeProperties
+import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
 
 @JsonIncludeProperties("eventId", "hmppsId", "eventType", "prisonId", "url", "lastModifiedDateTime")
@@ -11,6 +12,7 @@ data class EventNotification(
   val prisonId: String? = null,
   val url: String,
   val status: String? = "PENDING",
+  @JsonProperty("lastModifiedDateTime")
   val lastModifiedDatetime: LocalDateTime? = null,
 )
 

@@ -6,16 +6,17 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
 val police =
   role("police") {
     permissions {
-      -"/v1/persons/[^/]*$"
-      -"/v1/persons/.*/addresses"
-      -"/v1/pnd/persons/.*/alerts"
-      -"/v1/persons/.*/sentences"
-      -"/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
-      -"/v1/persons/.*/risks/serious-harm"
-      -"/v1/persons/.*/risks/dynamic"
-      -"/v1/persons/.*/risks/mappadetail"
-      -"/v1/persons/.*/licences/conditions"
-      -"/v1/persons/.*/person-responsible-officer"
+      -"/v1/persons/{hmppsId}"
+      -"/v1/persons/{hmppsId}/addresses"
+      -"/v1/pnd/persons/{hmppsId}/alerts"
+      -"/v1/persons/{hmppsId}/alerts"
+      -"/v1/persons/{hmppsId}/sentences"
+      -"/v1/persons/{hmppsId}/sentences/latest-key-dates-and-adjustments"
+      -"/v1/persons/{hmppsId}/risks/serious-harm"
+      -"/v1/persons/{hmppsId}/risks/dynamic"
+      -"/v1/persons/{hmppsId}/risks/mappadetail"
+      -"/v1/persons/{hmppsId}/licences/conditions"
+      -"/v1/persons/{hmppsId}/person-responsible-officer"
       -"/v1/hmpps/reference-data"
       -"/v1/status"
     }

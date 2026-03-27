@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.listener
 
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
@@ -26,8 +26,6 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import org.junit.jupiter.params.provider.ValueSource
-import org.springframework.beans.factory.annotation.Autowired
-import software.amazon.awssdk.services.sqs.model.SendMessageRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.EDUCATION_ASSESSMENTS_PRISONER_CHANGED_CATEGORIES
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.IntegrationEventType
@@ -36,32 +34,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.ReceptionRe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.ReleaseReasons
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.DomainEventName
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.JdbcTemplateEventNotificationRepository
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
-import uk.gov.justice.hmpps.sqs.HmppsQueueService
-import uk.gov.justice.hmpps.sqs.MissingQueueException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.IntegrationTestWithEventsQueueBase
 import java.time.Duration
 
-class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
-  @Autowired
-  protected lateinit var hmppsQueueService: HmppsQueueService
-
-  protected val domainEventsQueueConfig by lazy { hmppsQueueService.findByQueueId("hmppsdomainqueue") ?: throw MissingQueueException("HmppsQueue hmppsDomainQueue not found") }
-  protected val domainEventsQueueSqsUrl by lazy { domainEventsQueueConfig.queueUrl }
-  protected val domainEventsQueueSqsClient by lazy { domainEventsQueueConfig.sqsClient }
-
-  protected fun sendDomainSqsMessage(rawMessage: String) {
-    domainEventsQueueSqsClient.sendMessage(
-      SendMessageRequest
-        .builder()
-        .queueUrl(domainEventsQueueSqsUrl)
-        .messageBody(rawMessage)
-        .build(),
-    )
-  }
-
-  @Autowired
-  lateinit var repo: JdbcTemplateEventNotificationRepository
+class DomainEventsListenerIntegrationTest : IntegrationTestWithEventsQueueBase() {
   val prisonId = "MDI"
 
   val awaitTimeOut = Duration.ofSeconds(5)
@@ -70,7 +46,7 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
 
   @BeforeEach
   fun setup() {
-    repo.deleteAll()
+    eventNotificationRepository.deleteAll()
     Awaitility.setDefaultTimeout(awaitTimeOut)
     Awaitility.setDefaultPollDelay(awaitPollDelay)
   }
@@ -87,33 +63,33 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
         .generateRawGenericEvent()
     sendDomainSqsMessage(rawMessage)
 
-    Awaitility.await().until { repo.findAll().isNotEmpty() }
-    val savedEvent = repo.findAll().firstOrNull()
+    Awaitility.await().until { eventNotificationRepository.findAll().isNotEmpty() }
+    val savedEvent = eventNotificationRepository.findAll().firstOrNull()
     savedEvent.shouldNotBeNull()
   }
 
-//  @Test
-//  fun `will not process a malformed domain event SQS Message and log to dead letter queue`() {
-//    sendDomainSqsMessage("BAD JSON")
-//
-//    Awaitility.await().until { getNumberOfMessagesCurrentlyOndomainEventsDeadLetterQueue() == 1 }
-//    val deadLetterQueueMessage = geMessagesCurrentlyOnDomainEventsDeadLetterQueue()
-//    val message = deadLetterQueueMessage.messages().first()
-//    message.body().shouldBe("BAD JSON")
-//    val savedEvent = repo.findAll().firstOrNull()
-//    savedEvent.shouldBeNull()
-//  }
+  @Test
+  fun `will not process a malformed domain event SQS Message and log to dead letter queue`() {
+    sendDomainSqsMessage("BAD JSON")
 
-//  @Test
-//  fun `will not process and save a domain event message with an unknown type`() {
-//    val rawMessage = SqsNotificationGeneratingHelper().generateRawGenericEvent(eventTypeValue = "some.other-event")
-//
-//    sendDomainSqsMessage(rawMessage)
-//
-//    Awaitility.await().until { getNumberOfMessagesCurrentlyOndomainEventsDeadLetterQueue() == 0 }
-//    val savedEvent = repo.findAll().firstOrNull()
-//    savedEvent.shouldBeNull()
-//  }
+    Awaitility.await().until { getNumberOfMessagesCurrentlyOndomainEventsDeadLetterQueue() == 1 }
+    val deadLetterQueueMessage = geMessagesCurrentlyOnDomainEventsDeadLetterQueue()
+    val message = deadLetterQueueMessage.messages().first()
+    message.body().shouldBe("BAD JSON")
+    val savedEvent = eventNotificationRepository.findAll().firstOrNull()
+    savedEvent.shouldBeNull()
+  }
+
+  @Test
+  fun `will not process and save a domain event message with an unknown type`() {
+    val rawMessage = SqsNotificationGeneratingHelper().generateRawGenericEvent(eventTypeValue = "some.other-event")
+
+    sendDomainSqsMessage(rawMessage)
+
+    Awaitility.await().until { getNumberOfMessagesCurrentlyOndomainEventsDeadLetterQueue() == 0 }
+    val savedEvent = eventNotificationRepository.findAll().firstOrNull()
+    savedEvent.shouldBeNull()
+  }
 
   @Test
   fun `will not process and save a domain event message with an unknown register type code`() {
@@ -123,25 +99,25 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
 
     sendDomainSqsMessage(rawMessage)
 
-    val savedEvent = repo.findAll().firstOrNull()
+    val savedEvent = eventNotificationRepository.findAll().firstOrNull()
 
     savedEvent.shouldBeNull()
   }
 
-//  @Test
-//  fun `will not process and save a domain event message with no crn type and log to dead letter queue`() {
-//    val rawMessage = SqsNotificationGeneratingHelper().generateRawHmppsDomainEvent(identifiers = "[]")
-//
-//    sendDomainSqsMessage(rawMessage)
-//
-//    Awaitility.await().until { getNumberOfMessagesCurrentlyOndomainEventsDeadLetterQueue() == 1 }
-//    val deadLetterQueueMessage = geMessagesCurrentlyOnDomainEventsDeadLetterQueue()
-//    val message = deadLetterQueueMessage.messages().first()
-//    val payload = message.body()
-//    payload.shouldBe(rawMessage)
-//    val savedEvent = repo.findAll().firstOrNull()
-//    savedEvent.shouldBeNull()
-//  }
+  @Test
+  fun `will not process and save a domain event message with no crn type and log to dead letter queue`() {
+    val rawMessage = SqsNotificationGeneratingHelper().generateRawHmppsDomainEvent(identifiers = "[]")
+
+    sendDomainSqsMessage(rawMessage)
+
+    Awaitility.await().until { getNumberOfMessagesCurrentlyOndomainEventsDeadLetterQueue() == 1 }
+    val deadLetterQueueMessage = geMessagesCurrentlyOnDomainEventsDeadLetterQueue()
+    val message = deadLetterQueueMessage.messages().first()
+    val payload = message.body()
+    payload.shouldBe(rawMessage)
+    val savedEvent = eventNotificationRepository.findAll().firstOrNull()
+    savedEvent.shouldBeNull()
+  }
 
   // Specific event tests
 
@@ -152,8 +128,8 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
         .generatePrisonerReleasedEvent()
     sendDomainSqsMessage(rawMessage)
 
-    Awaitility.await().until { repo.findAll().isNotEmpty() }
-    val savedEvent = repo.findAll().firstOrNull()
+    Awaitility.await().until { eventNotificationRepository.findAll().isNotEmpty() }
+    val savedEvent = eventNotificationRepository.findAll().firstOrNull()
     savedEvent.shouldNotBeNull()
     savedEvent.status.shouldBe("PENDING")
     savedEvent.eventType.shouldBe(IntegrationEventType.KEY_DATES_AND_ADJUSTMENTS_PRISONER_RELEASE.name)
@@ -168,9 +144,9 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
     sendDomainSqsMessage(rawMessage)
 
     Awaitility.await().until {
-      repo.findAll().isNotEmpty()
+      eventNotificationRepository.findAll().isNotEmpty()
     }
-    val savedEvents: List<EventNotification> = repo.findByHmppsIdIsIn(listOf("A3646EA", "A3646EB"))
+    val savedEvents: List<EventNotification> = eventNotificationRepository.findByHmppsIdIsIn(listOf("A3646EA", "A3646EB"))
     savedEvents.shouldNotBeEmpty().shouldHaveSize(2)
 
     Assertions
@@ -216,8 +192,8 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
         .generateRawDomainEvent(eventType, message)
     sendDomainSqsMessage(rawMessage)
 
-    Awaitility.await().until { repo.findAll().isNotEmpty() }
-    val savedEvent = repo.findAll().firstOrNull()
+    Awaitility.await().until { eventNotificationRepository.findAll().isNotEmpty() }
+    val savedEvent = eventNotificationRepository.findAll().firstOrNull()
     savedEvent.shouldNotBeNull()
     savedEvent.eventType.shouldBe(IntegrationEventType.PERSON_CONTACTS_CHANGED.name)
     savedEvent.hmppsId.shouldBe(crn)
@@ -249,8 +225,8 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
         .generateRawDomainEvent(eventType, message)
     sendDomainSqsMessage(rawMessage)
 
-    Awaitility.await().until { repo.findAll().isNotEmpty() }
-    val savedEvent = repo.findAll().firstOrNull()
+    Awaitility.await().until { eventNotificationRepository.findAll().isNotEmpty() }
+    val savedEvent = eventNotificationRepository.findAll().firstOrNull()
     savedEvent.shouldNotBeNull()
     savedEvent.eventType.shouldBe(IntegrationEventType.PERSON_IEP_LEVEL_CHANGED.name)
     savedEvent.hmppsId.shouldBe(crn)
@@ -290,8 +266,8 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
         .generateRawDomainEvent(eventType, message)
     sendDomainSqsMessage(rawMessage)
 
-    Awaitility.await().until { repo.findAll().isNotEmpty() }
-    val savedEvent = repo.findAll().firstOrNull()
+    Awaitility.await().until { eventNotificationRepository.findAll().isNotEmpty() }
+    val savedEvent = eventNotificationRepository.findAll().firstOrNull()
     savedEvent.shouldNotBeNull()
     savedEvent.eventType.shouldBe(IntegrationEventType.PERSON_VISITOR_RESTRICTIONS_CHANGED.name)
     savedEvent.hmppsId.shouldBe(crn)
@@ -326,8 +302,8 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
         .generateRawDomainEvent(eventType, message)
     sendDomainSqsMessage(rawMessage)
 
-    Awaitility.await().until { repo.findAll().isNotEmpty() }
-    val savedEvent = repo.findAll().firstOrNull()
+    Awaitility.await().until { eventNotificationRepository.findAll().isNotEmpty() }
+    val savedEvent = eventNotificationRepository.findAll().firstOrNull()
     savedEvent.shouldNotBeNull()
     savedEvent.eventType.shouldBe(IntegrationEventType.PERSON_VISIT_RESTRICTIONS_CHANGED.name)
     savedEvent.hmppsId.shouldBe(crn)
@@ -359,8 +335,8 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
     val rawMessage = SqsNotificationGeneratingHelper().generateRawDomainEvent(eventType, message)
     sendDomainSqsMessage(rawMessage)
 
-    Awaitility.await().until { repo.findAll().isNotEmpty() }
-    val savedEvents = repo.findAll()
+    Awaitility.await().until { eventNotificationRepository.findAll().isNotEmpty() }
+    val savedEvents = eventNotificationRepository.findAll()
     savedEvents.size.shouldBe(3)
     savedEvents[0].eventType.shouldBe(IntegrationEventType.PERSON_FUTURE_VISITS_CHANGED.name)
     savedEvents[0].hmppsId.shouldBe(crn)
@@ -409,8 +385,8 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
           .generateRawDomainEvent(eventType, message)
       sendDomainSqsMessage(rawMessage)
 
-      Awaitility.await().until { repo.findAll().isNotEmpty() }
-      val savedEvents = repo.findAll()
+      Awaitility.await().until { eventNotificationRepository.findAll().isNotEmpty() }
+      val savedEvents = eventNotificationRepository.findAll()
       savedEvents.size.shouldBe(4)
       savedEvents[0].eventType.shouldBe(IntegrationEventType.PERSON_STATUS_CHANGED.name)
       savedEvents[0].hmppsId.shouldBe(crn)
@@ -434,8 +410,8 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
           .generateRawDomainEvent(eventType, message)
       sendDomainSqsMessage(rawMessage)
 
-      Awaitility.await().until { repo.findAll().isNotEmpty() }
-      val savedEvents = repo.findAll()
+      Awaitility.await().until { eventNotificationRepository.findAll().isNotEmpty() }
+      val savedEvents = eventNotificationRepository.findAll()
       savedEvents.size.shouldBe(5)
       savedEvents[0].eventType.shouldBe(IntegrationEventType.PERSON_STATUS_CHANGED.name)
       savedEvents[0].hmppsId.shouldBe(crn)
@@ -462,8 +438,8 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
           .generateRawDomainEvent(eventType, message)
       sendDomainSqsMessage(rawMessage)
 
-      Awaitility.await().until { repo.findAll().isNotEmpty() }
-      val savedEvents = repo.findAll()
+      Awaitility.await().until { eventNotificationRepository.findAll().isNotEmpty() }
+      val savedEvents = eventNotificationRepository.findAll()
       savedEvents.size.shouldBe(4)
       savedEvents[0].eventType.shouldBe(IntegrationEventType.PERSON_STATUS_CHANGED.name)
       savedEvents[0].hmppsId.shouldBe(crn)
@@ -487,8 +463,8 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
           .generateRawDomainEvent(eventType, message)
       sendDomainSqsMessage(rawMessage)
 
-      Awaitility.await().until { repo.findAll().isNotEmpty() }
-      val savedEvents = repo.findAll()
+      Awaitility.await().until { eventNotificationRepository.findAll().isNotEmpty() }
+      val savedEvents = eventNotificationRepository.findAll()
       savedEvents.size.shouldBe(5)
       savedEvents[0].eventType.shouldBe(IntegrationEventType.PERSON_STATUS_CHANGED.name)
       savedEvents[0].hmppsId.shouldBe(crn)
@@ -568,8 +544,8 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
         .generateRawDomainEvent(eventType, message)
     sendDomainSqsMessage(rawMessage)
 
-    Awaitility.await().until { repo.findAll().isNotEmpty() }
-    val savedEvents = repo.findAll()
+    Awaitility.await().until { eventNotificationRepository.findAll().isNotEmpty() }
+    val savedEvents = eventNotificationRepository.findAll()
     savedEvents.size.shouldBe(24)
     val eventTypes = savedEvents.map { it.eventType }
     val hmppsIds = savedEvents.map { it.hmppsId }
@@ -657,8 +633,8 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
         .generateRawDomainEvent(eventType, message)
     sendDomainSqsMessage(rawMessage)
 
-    Awaitility.await().until { repo.findAll().isNotEmpty() }
-    val savedEvents = repo.findAll()
+    Awaitility.await().until { eventNotificationRepository.findAll().isNotEmpty() }
+    val savedEvents = eventNotificationRepository.findAll()
     savedEvents.size.shouldBe(3)
     savedEvents[0].eventType.shouldBe(IntegrationEventType.PERSON_STATUS_CHANGED.name)
     savedEvents[0].hmppsId.shouldBe(crn)
@@ -701,8 +677,8 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
         .generateRawDomainEvent(eventType, message)
     sendDomainSqsMessage(rawMessage)
 
-    Awaitility.await().until { repo.findAll().isNotEmpty() }
-    val savedEvents = repo.findAll()
+    Awaitility.await().until { eventNotificationRepository.findAll().isNotEmpty() }
+    val savedEvents = eventNotificationRepository.findAll()
     savedEvents.size.shouldBe(1)
     savedEvents[0].eventType.shouldBe(IntegrationEventType.PERSON_CASE_NOTES_CHANGED.name)
     savedEvents[0].hmppsId.shouldBe(crn)
@@ -736,8 +712,8 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
         .generateRawDomainEvent(eventType, message)
     sendDomainSqsMessage(rawMessage)
 
-    Awaitility.await().until { repo.findAll().isNotEmpty() }
-    val savedEvents = repo.findAll()
+    Awaitility.await().until { eventNotificationRepository.findAll().isNotEmpty() }
+    val savedEvents = eventNotificationRepository.findAll()
     savedEvents.size.shouldBe(1)
     savedEvents[0].eventType.shouldBe(IntegrationEventType.PERSON_REPORTED_ADJUDICATIONS_CHANGED.name)
     savedEvents[0].hmppsId.shouldBe(crn)
@@ -772,8 +748,8 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
         .generateRawDomainEvent(eventType, message)
     sendDomainSqsMessage(rawMessage)
 
-    Awaitility.await().until { repo.findAll().isNotEmpty() }
-    val savedEvents = repo.findAll()
+    Awaitility.await().until { eventNotificationRepository.findAll().isNotEmpty() }
+    val savedEvents = eventNotificationRepository.findAll()
     savedEvents.size.shouldBe(1)
     savedEvents[0].eventType.shouldBe(IntegrationEventType.PRISONER_NON_ASSOCIATIONS_CHANGED.name)
     savedEvents[0].hmppsId.shouldBe(crn)
@@ -808,8 +784,8 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
         .generateRawDomainEvent(eventType, message)
     sendDomainSqsMessage(rawMessage)
 
-    Awaitility.await().until { repo.findAll().isNotEmpty() }
-    val savedEvents = repo.findAll()
+    Awaitility.await().until { eventNotificationRepository.findAll().isNotEmpty() }
+    val savedEvents = eventNotificationRepository.findAll()
     val eventTypes = savedEvents.map { it.eventType }
     val urls = savedEvents.map { it.url }
 
@@ -850,8 +826,8 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
         .generateRawDomainEvent(eventType, message)
     sendDomainSqsMessage(rawMessage)
 
-    Awaitility.await().until { repo.findAll().isNotEmpty() }
-    val savedEvents = repo.findAll()
+    Awaitility.await().until { eventNotificationRepository.findAll().isNotEmpty() }
+    val savedEvents = eventNotificationRepository.findAll()
     val eventTypes = savedEvents.map { it.eventType }
     val urls = savedEvents.map { it.url }
 
@@ -883,8 +859,8 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
         .generateRawDomainEvent(eventType, message)
     sendDomainSqsMessage(rawMessage)
 
-    Awaitility.await().until { repo.findAll().isNotEmpty() }
-    val savedEvents = repo.findAll()
+    Awaitility.await().until { eventNotificationRepository.findAll().isNotEmpty() }
+    val savedEvents = eventNotificationRepository.findAll()
     savedEvents.size.shouldBe(1)
     savedEvents[0].eventType.shouldBe(IntegrationEventType.SAN_PLAN_CREATION_SCHEDULE_CHANGED.name)
     savedEvents[0].hmppsId.shouldBe(crn)
@@ -915,8 +891,8 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
         .generateRawDomainEvent(eventType, message)
     sendDomainSqsMessage(rawMessage)
 
-    Awaitility.await().until { repo.findAll().isNotEmpty() }
-    val savedEvents = repo.findAll()
+    Awaitility.await().until { eventNotificationRepository.findAll().isNotEmpty() }
+    val savedEvents = eventNotificationRepository.findAll()
     savedEvents.size.shouldBe(1)
     savedEvents[0].eventType.shouldBe(IntegrationEventType.SAN_REVIEW_SCHEDULE_CHANGED.name)
     savedEvents[0].hmppsId.shouldBe(crn)
@@ -1090,8 +1066,8 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
           .generateRawDomainEvent(eventType, message)
       sendDomainSqsMessage(rawMessage)
 
-      Awaitility.await().until { repo.findAll().isNotEmpty() }
-      val savedEvent = repo.findAll().firstOrNull()
+      Awaitility.await().until { eventNotificationRepository.findAll().isNotEmpty() }
+      val savedEvent = eventNotificationRepository.findAll().firstOrNull()
       savedEvent.shouldNotBeNull()
       savedEvent.eventType.shouldBe(IntegrationEventType.CONTACT_EVENT_CREATED.name)
       savedEvent.hmppsId.shouldBe(crn)
@@ -1135,8 +1111,8 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
           .generateRawDomainEvent(eventType, message)
       sendDomainSqsMessage(rawMessage)
 
-      Awaitility.await().until { repo.findAll().isNotEmpty() }
-      val savedEvent = repo.findAll().firstOrNull()
+      Awaitility.await().until { eventNotificationRepository.findAll().isNotEmpty() }
+      val savedEvent = eventNotificationRepository.findAll().firstOrNull()
       savedEvent.shouldNotBeNull()
       savedEvent.eventType.shouldBe(IntegrationEventType.CONTACT_EVENT_CHANGED.name)
       savedEvent.hmppsId.shouldBe(crn)
@@ -1177,8 +1153,8 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
           .generateRawDomainEvent(eventType, message)
       sendDomainSqsMessage(rawMessage)
 
-      Awaitility.await().until { repo.findAll().isNotEmpty() }
-      val savedEvent = repo.findAll().firstOrNull()
+      Awaitility.await().until { eventNotificationRepository.findAll().isNotEmpty() }
+      val savedEvent = eventNotificationRepository.findAll().firstOrNull()
       savedEvent.shouldNotBeNull()
       savedEvent.eventType.shouldBe(IntegrationEventType.PERSON_ACCESS_LIMITATIONS_CHANGED.name)
       savedEvent.hmppsId.shouldBe(crn)
@@ -1196,7 +1172,7 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
   /**
    * await until timeout, that no event has been saved
    */
-  private fun awaitAndAssertNoEventSaved(timeout: Duration? = null) = awaitTimeout(timeout) untilAsserted { assertThat(repo.findAll(), empty()) }
+  private fun awaitAndAssertNoEventSaved(timeout: Duration? = null) = awaitTimeout(timeout) untilAsserted { assertThat(eventNotificationRepository.findAll(), empty()) }
 
   /**
    * await until some event(s) are saved, and then check the given integration event type is not saved.
@@ -1205,8 +1181,8 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
     eventType: IntegrationEventType,
     url: String? = null,
   ) {
-    await until { repo.findAll().isNotEmpty() }
-    repo.findAll().let { event ->
+    await until { eventNotificationRepository.findAll().isNotEmpty() }
+    eventNotificationRepository.findAll().let { event ->
       event.map { it.eventType }.toSet() shouldNotContain eventType
       url?.let { url ->
         event.map { it.url }.toSet() shouldNotContain url
@@ -1221,12 +1197,12 @@ class DomainEventsListenerIntegrationTest : IntegrationTestBase() {
     eventType: IntegrationEventType,
     url: String,
   ) {
-    await until { repo.findAll().isNotEmpty() }
-    repo.findAll().let { event ->
+    await until { eventNotificationRepository.findAll().isNotEmpty() }
+    eventNotificationRepository.findAll().let { event ->
       event.map { it.eventType }.toSet() shouldContain eventType.name
       event.map { it.url }.toSet() shouldContain url
     }
   }
 }
 
-private const val CLASS_QUALIFIED_NAME = "uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.DomainEventsListenerIntegrationTest"
+private const val CLASS_QUALIFIED_NAME = "uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.listener.DomainEventsListenerIntegrationTest"

@@ -6,10 +6,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
 val ctrlo =
   role("ctrlo") {
     permissions {
-      -"/v1/epf/person-details/.*/[^/]*$"
+      -"/v1/epf/person-details/{hmppsId}/{eventNumber}"
       -"/v1/status"
-      -"/v1/persons/.*/access-limitations"
-      -"/v1/persons/.*/risks/scores"
+      -"/v1/persons/{hmppsId}/access-limitations"
+      -"/v1/persons/{hmppsId}/risks/scores"
     }
     redactionPolicies(
       listOf(

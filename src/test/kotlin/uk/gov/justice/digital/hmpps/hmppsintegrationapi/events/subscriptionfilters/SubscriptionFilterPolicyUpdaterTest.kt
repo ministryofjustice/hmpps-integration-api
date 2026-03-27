@@ -101,7 +101,7 @@ class SubscriptionFilterPolicyUpdaterTest {
       verify(snsClient, times(1)).setSubscriptionAttributes(attributesCaptor.capture())
       val updatedAttributes = attributesCaptor.firstValue
       val updatedFilterPolicy = policyManager.readPolicyValueFromString(updatedAttributes.attributeValue())
-      assertEquals(listOf("UPDATED_EVENT"), updatedFilterPolicy.eventType)
+      assertEquals(listOf("MAPPA_DETAIL_CHANGED"), updatedFilterPolicy.eventType)
     }
   }
 

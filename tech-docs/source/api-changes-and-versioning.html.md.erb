@@ -2,7 +2,7 @@
 title: API Changes and Versioning
 weight: 4
 owner_slack: "#hmpps-integration-api-alerts"
-last_reviewed_on: 2025-09-23
+last_reviewed_on: 2026-03-25
 review_in: 6 months
 ---
 
@@ -30,6 +30,15 @@ Where a non-breaking change is not possible, there is then a breaking change. In
 - MOJ - must run both versions of the API, as long as this is practical, for at least 1 month
 - Consumers - must commit to moving to the new version of the API within a reasonable timescale, usually 1 month
 - Depending on the size of the change, MOJ may require the Consumer to go through additional re-assurance steps
+
+## Add-switch-remove Policy
+
+Because renaming fields would be a breaking change, we will in general use an add-switch-remove approach if this is
+required.
+
+1. Add a new field with the desired name, alongside the existing one, with the same value
+2. Deprecate the old field and ask clients to switch to the new field
+3. Once all clients have switched over, the old field can be safely removed
 
 ## Ongoing Assurance
 

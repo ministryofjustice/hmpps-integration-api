@@ -1,6 +1,6 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.services
 
-import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
@@ -91,8 +91,8 @@ class DeleteProcessedIntegrationTest : IntegrationTestBase() {
     deleteProcessedEventsService.deleteProcessedEvents()
     val entriesAfter = eventNotificationRepository.count()
 
-    assertThat(entriesBefore).isEqualTo(6)
-    assertThat(entriesAfter).isEqualTo(4)
+    Assertions.assertThat(entriesBefore).isEqualTo(6)
+    Assertions.assertThat(entriesAfter).isEqualTo(4)
   }
 
   @Test
@@ -104,7 +104,7 @@ class DeleteProcessedIntegrationTest : IntegrationTestBase() {
       eventNotificationRepository
         .count()
 
-    assertThat(entriesBefore).isEqualTo(6)
-    assertThat(entriesAfter).isEqualTo(6)
+    Assertions.assertThat(entriesBefore).isEqualTo(6)
+    Assertions.assertThat(entriesAfter).isEqualTo(6)
   }
 }

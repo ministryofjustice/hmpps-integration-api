@@ -18,6 +18,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessag
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageEventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonDetails
 import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 
 class EducationCourseCompletionMapperTest :
   DescribeSpec({
@@ -49,7 +52,8 @@ class EducationCourseCompletionMapperTest :
       courseName: String = "Intro to litter picking",
       courseType: String = "Digital",
       provider: String = "Acme Learning",
-      completionDateTime: LocalDate = LocalDate.of(2021, 1, 1),
+      completionDate: LocalDate = LocalDate.of(2021, 1, 1),
+      completionDateTime: OffsetDateTime = OffsetDateTime.of(2021, 1, 1, 10, 0, 0, 0, ZoneOffset.ofHours(0)),
       status: String = "Completed",
       totalTimeMinutes: Long = 150,
       attempts: Int? = 3,
@@ -58,6 +62,7 @@ class EducationCourseCompletionMapperTest :
       courseName,
       courseType,
       provider,
+      completionDate,
       completionDateTime,
       status,
       totalTimeMinutes,
@@ -153,7 +158,8 @@ class EducationCourseCompletionMapperTest :
             courseName = "Health & Safety",
             courseType = "Compliance",
             provider = "Gov Academy",
-            completionDateTime = LocalDate.of(2023, 12, 31),
+            completionDate = LocalDate.of(2023, 12, 31),
+            completionDateTime = OffsetDateTime.of(2023, 12, 31, 10, 0, 0, 0, ZoneOffset.ofHours(0)),
             status = "Completed",
             totalTimeMinutes = 150,
             attempts = 5,
@@ -177,6 +183,9 @@ class EducationCourseCompletionMapperTest :
                 "pdu" to person.pdu,
                 "provider" to course.provider,
                 "completionDate" to course.completionDate.toString(),
+                "completionDateTime" to
+                  course.completionDateTime!!
+                    .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")),
                 "status" to course.status,
                 "totalTimeMinutes" to course.totalTimeMinutes,
                 "attempts" to course.attempts,
@@ -200,6 +209,7 @@ class EducationCourseCompletionMapperTest :
             "courseType" to "Compliance",
             "provider" to "Gov Academy",
             "completionDate" to "2023-12-31",
+            "completionDateTime" to "2023-12-31T10:00:00.000Z",
             "status" to "Completed",
             "totalTimeMinutes" to 150,
             "attempts" to 5,

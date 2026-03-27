@@ -2,7 +2,7 @@
 title: Authentication
 weight: 3
 owner_slack: "#hmpps-integration-api-alerts"
-last_reviewed_on: 2025-09-23
+last_reviewed_on: 2026-03-25
 review_in: 6 months
 ---
 
@@ -41,7 +41,7 @@ To make an authenticated token request to the API using the client-specific TLS 
 curl --cert <client-cert-file> --key <client-key-file> -X POST https://<environment>.integration-api.hmpps.service.justice.gov.uk/token -H 'x-api-key: <api-key>'
 ```
 
-The `token` endpoint calls the AWS STS service and returns the Credentials object from the STS response.
-https://docs.aws.amazon.com/STS/latest/APIReference/API_Credentials.html
+The `token` endpoint calls the AWS STS service and returns the `Credentials` object from the
+[STS response](https://docs.aws.amazon.com/STS/latest/APIReference/API_Credentials.html).
 
 Once retrieved, the token can be used to access the AWS SQS queue directly until it expires.
