@@ -5,17 +5,17 @@ on:
       - HIA-916-test-api-gw-usage-plan
   workflow_dispatch:
 jobs:
-  dev-smoke-tests:
+  dev-load-tests:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v6
       - name: Setup K6
         uses: grafana/setup-k6-action@v1
-      - name: Run main Smoke Test script
+      - name: Run dev load Test script (11 RPS for 20 seconds)
         shell: bash
         env:
-          PROFILE: DEV_10_RPS_20_SECONDS
+          PROFILE: DEV_11_RPS_20_SECONDS
           DOMAIN: dev.integration-api.hmpps.service.justice.gov.uk
           CERT: "${{ secrets.DEV_SMOKE_TEST_FULL_ACCESS_CERT }}"
           PRIVATE_KEY: "${{ secrets.DEV_SMOKE_TEST_FULL_ACCESS_KEY }}"
