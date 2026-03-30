@@ -54,10 +54,9 @@ class EducationCourseCompletionService(
                 "courseName" to course.courseName,
                 "courseType" to course.courseType,
                 "provider" to course.provider,
-                "completionDate" to course.completionDate.toString(),
                 "completionDateTime" to
                   course.completionDateTime
-                    ?.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX"))
+                    .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX"))
                     .orEmpty(),
                 "status" to course.status,
                 "totalTimeMinutes" to course.totalTimeMinutes,

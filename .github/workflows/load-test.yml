@@ -1,0 +1,24 @@
+name: Load Test
+on:
+  push:
+    branches:
+      - HIA-916-test-api-gw-usage-plan
+  workflow_dispatch:
+jobs:
+  dev-load-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # V6
+      - name: Setup K6
+        uses: grafana/setup-k6-action@ffe7d7290dfa715e48c2ccc924d068444c94bde2 # V1
+      - name: Run dev load Test script (progressive load for 30s)
+        shell: bash
+        env:
+          PROFILE: PROGRESSIVE_LOAD
+          DOMAIN: dev.integration-api.hmpps.service.justice.gov.uk
+          CERT: "${{ secrets.DEV_SMOKE_TEST_FULL_ACCESS_CERT }}"
+          PRIVATE_KEY: "${{ secrets.DEV_SMOKE_TEST_FULL_ACCESS_KEY }}"
+          API_KEY: "${{ secrets.DEV_SMOKE_TEST_FULL_ACCESS_API_KEY }}"
+        run: |
+          k6 run --summary-mode=full --quiet ./scripts/K6/load-tests.js
