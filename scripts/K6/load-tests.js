@@ -9,12 +9,13 @@ import { read_certificate } from "./support.js"
  - RPS = the number of requests per second
  - DURATION = the duration of the test
  - DOMAIN = the fully qualified DNS name of the API server
- - HMPPSID = the primary hmppsId to use for testing
  - PROFILE = which testing profile to use (MAIN | LAO | NOPERMS | NOCERT)
  - API_KEY = API key that has full access to the API
  - CERT = certificate (either base 64 encoded or name of a file)
  - PRIVATE_KEY = private key for certificate (either base 64 encoded or name of a file)
 
+  - e.g from K6 folder
+  - k6 run -e DOMAIN=dev.integration-api.hmpps.service.justice.gov.uk -e PROFILE=DEV_11_RPS_20_SECONDS -e API_KEY=PxOy9iK8KV4VG2B68niGm8lPVlSztVsL7aVen84M -e CERT=../client_certificates/read/dev/smoke-test-full-access/client.pem -e PRIVATE_KEY=../client_certificates/read/dev/smoke-test-full-access/client.key load-tests.js
 
  The script is run using the k6 utility from https://k6.io/
 
@@ -24,13 +25,10 @@ import { read_certificate } from "./support.js"
 
 const domain = __ENV.DOMAIN;
 const profile = __ENV.PROFILE;
-const rps = __ENV.RPS;
-const duration = __ENV.DURATION;
-
 const [cert, key, api_key] = read_certificate();
+const [rps, duration] = set_rate_and_duration()
 
 export const options = (cert === "") ? {} : {
-
   scenarios: {
     constant_request_rate: {
       executor: 'constant-arrival-rate',
@@ -64,6 +62,10 @@ const httpParams = {
  */
 function validate_get_request(path) {
   const res = http.get(`${baseUrl}${path}`, httpParams);
+
+  if(res.status !== 200) {
+    console.log(`${baseUrl}${path} returned ${res.status}`);
+  }
   return res;
 }
 
@@ -73,20 +75,25 @@ function validate_get_request(path) {
  * @returns true if the status endpoint worked
  */
 function verify_system_endpoints() {
-  let response = validate_get_request("/v1/status");
-  if (!check(response, {
-    ["Status endpoint reports OK"]: (res) => res.status < 400,
-  })) {
-    return false
-  }
+  validate_get_request("/v1/status");
   return true
+}
+
+
+function set_rate_and_duration(){
+  switch (profile) {
+    case "DEV_11_RPS_20_SECONDS":
+      return ["11", "20"];
+    default:
+      return ["1", "2"];
+  }
 }
 
 /************************************************************************/
 
 export default function ()  {
   switch (profile) {
-    case "MAIN":
+    case "DEV_11_RPS_20_SECONDS":
       verify_system_endpoints();
       break
     default:

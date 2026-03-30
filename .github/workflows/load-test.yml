@@ -1,17 +1,9 @@
 name: Load Test
 on:
+  push:
+    branches:
+      - HIA-916-test-api-gw-usage-plan
   workflow_dispatch:
-    inputs:
-      duration:
-        default: "1"
-        description: Number of seconds for the test to run
-        required: true
-        type: string
-      requests_per_second:
-        default: "5"
-        description: Number of concurrent requests per second
-        required: true
-        type: string
 jobs:
   dev-smoke-tests:
     runs-on: ubuntu-latest
@@ -23,10 +15,7 @@ jobs:
       - name: Run main Smoke Test script
         shell: bash
         env:
-          DURATION: ${{ inputs.duration }}
-          RPS: ${{ inputs.requests_per_second }}
-          PROFILE: MAIN
-          HMPPSID: X688624
+          PROFILE: DEV_10_RPS_20_SECONDS
           DOMAIN: dev.integration-api.hmpps.service.justice.gov.uk
           CERT: "${{ secrets.DEV_SMOKE_TEST_FULL_ACCESS_CERT }}"
           PRIVATE_KEY: "${{ secrets.DEV_SMOKE_TEST_FULL_ACCESS_KEY }}"
