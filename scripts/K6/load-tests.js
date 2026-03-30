@@ -14,8 +14,8 @@ import { read_certificate } from "./support.js"
  - CERT = certificate (either base 64 encoded or name of a file)
  - PRIVATE_KEY = private key for certificate (either base 64 encoded or name of a file)
 
-  - e.g from K6 folder
-  - k6 run -e DOMAIN=dev.integration-api.hmpps.service.justice.gov.uk -e PROFILE=DEV_11_RPS_20_SECONDS -e API_KEY=PxOy9iK8KV4VG2B68niGm8lPVlSztVsL7aVen84M -e CERT=../client_certificates/read/dev/smoke-test-full-access/client.pem -e PRIVATE_KEY=../client_certificates/read/dev/smoke-test-full-access/client.key load-tests.js
+  - e.g. from K6 folder
+  - k6 run -e DOMAIN=dev.integration-api.hmpps.service.justice.gov.uk -e PROFILE=DEV_11_RPS_20_SECONDS -e API_KEY=XXX -e CERT=../path-to/client.pem -e PRIVATE_KEY=../path-to/client.key load-tests.js
 
  The script is run using the k6 utility from https://k6.io/
 
