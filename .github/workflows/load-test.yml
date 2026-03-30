@@ -12,7 +12,7 @@ jobs:
         uses: actions/checkout@v6
       - name: Setup K6
         uses: grafana/setup-k6-action@v1
-      - name: Run dev load Test script (11 RPS for 20 seconds)
+      - name: Run dev load Test script (progressive load for 30s)
         shell: bash
         env:
           PROFILE: PROGRESSIVE_LOAD
