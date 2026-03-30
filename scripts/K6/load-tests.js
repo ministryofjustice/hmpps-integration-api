@@ -1,7 +1,7 @@
 import http from 'k6/http';
-import { group, check, fail } from 'k6';
-import exec from 'k6/execution';
 import { read_certificate } from "./support.js"
+import { tagWithCurrentStageIndex } from 'https://jslib.k6.io/k6-utils/1.3.0/index.js';
+
 
 /***********
  To run this script locally, make sure the following environment variables are set:-
@@ -26,19 +26,28 @@ import { read_certificate } from "./support.js"
 const domain = __ENV.DOMAIN;
 const profile = __ENV.PROFILE;
 const [cert, key, api_key] = read_certificate();
-const [rps, duration] = set_rate_and_duration()
 
 export const options = (cert === "") ? {} : {
   scenarios: {
-    constant_request_rate: {
-      executor: 'constant-arrival-rate',
-      rate: rps, // X requests
-      timeUnit: '1s', // per second
-      duration: `${duration}s`, // for X seconds
-      preAllocatedVUs: 1, // Pre-allocate VUs to handle the load
+    progressive_load: {
+      executor: 'ramping-arrival-rate',
+      startRate: 0,
+      timeUnit: '1s',
+      preAllocatedVUs: 1,
+      maxVUs: 20,
+      stages: [
+        { duration: '10s', target: 5 },   // Ramp to 5 rps for 10s
+        { duration: '10s', target: 15 },   // Ramp to 15 rps for 10s
+        { duration: '10s', target: 5 },    // Ramp down to 5 rps for 10s
+      ],
     },
   },
-  vus: 1,
+  thresholds: {
+    'http_req_failed{stage:1}': ['rate==0.00'],
+    'http_req_failed{stage:2}': ['rate>0.00'],
+    'http_req_failed{stage:3}': ['rate==0.00'],
+    'http_req_failed{status:429}': ['rate>0.00'], //Check that all of the failures from stage 2 are 429s
+  },
   tlsAuth: [
     {
       cert,
@@ -49,24 +58,17 @@ export const options = (cert === "") ? {} : {
 
 const baseUrl = `https://${domain}`;
 
-const httpParams = {
-  headers: {
-    'Content-Type': 'application/json',
-    'x-api-key': api_key,
-  },
-};
-
 /**
- * Make a GET request to the API and validate that the http response code indicates success.
- * @returns the http response object
+ * Calls the status endpoint
  */
-function validate_get_request(path) {
-  const res = http.get(`${baseUrl}${path}`, httpParams);
-
-  if(res.status !== 200) {
-    console.log(`${baseUrl}${path} returned ${res.status}`);
-  }
-  return res;
+function call_status_endpoint(path) {
+  tagWithCurrentStageIndex()
+  http.get(`${baseUrl}/v1/status`, {
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': api_key,
+    },
+  });
 }
 
 /**
@@ -74,27 +76,13 @@ function validate_get_request(path) {
  *
  * @returns true if the status endpoint worked
  */
-function verify_system_endpoints() {
-  validate_get_request("/v1/status");
-  return true
-}
-
-
-function set_rate_and_duration(){
-  switch (profile) {
-    case "DEV_11_RPS_20_SECONDS":
-      return ["11", "20"];
-    default:
-      return ["1", "2"];
-  }
-}
 
 /************************************************************************/
 
 export default function ()  {
   switch (profile) {
-    case "DEV_11_RPS_20_SECONDS":
-      verify_system_endpoints();
+    case "PROGRESSIVE_LOAD":
+      call_status_endpoint();
       break
     default:
       console.log(`Unsupported profile: ${profile}`);

@@ -5,7 +5,7 @@ on:
       - HIA-916-test-api-gw-usage-plan
   workflow_dispatch:
 jobs:
-  dev-load-tests:
+  dev-load-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -15,7 +15,7 @@ jobs:
       - name: Run dev load Test script (11 RPS for 20 seconds)
         shell: bash
         env:
-          PROFILE: DEV_11_RPS_20_SECONDS
+          PROFILE: PROGRESSIVE_LOAD
           DOMAIN: dev.integration-api.hmpps.service.justice.gov.uk
           CERT: "${{ secrets.DEV_SMOKE_TEST_FULL_ACCESS_CERT }}"
           PRIVATE_KEY: "${{ secrets.DEV_SMOKE_TEST_FULL_ACCESS_KEY }}"
