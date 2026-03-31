@@ -108,7 +108,6 @@ internal class PersonControllerTest(
       fun <T> notFoundErrorResponseEmptyList(vararg upstreamApi: UpstreamApi) = Response<List<T>>(data = emptyList(), errors = notFoundErrors(*upstreamApi))
 
       beforeTest {
-        whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.NORMALISED_PATH_MATCHING)).thenReturn(true)
       }
 
       describe("GET $basePath") {

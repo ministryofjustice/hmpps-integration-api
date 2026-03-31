@@ -66,7 +66,6 @@ class EducationCourseControllerTest(
             ),
         )
 
-      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.NORMALISED_PATH_MATCHING)).thenReturn(true)
       whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.COURSE_COMPLETION_EVENT)).thenReturn(true)
 
       describe("Notify that a given person/offender has completed all relevant education assessments") {

@@ -80,7 +80,6 @@ internal class AlertsControllerTest(
           Mockito.reset(getAlertsForPersonService)
           Mockito.reset(auditService)
           Mockito.reset(featureFlagConfig)
-          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.NORMALISED_PATH_MATCHING)).thenReturn(true)
 
           whenever(getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)).thenReturn(
             Response(
@@ -189,7 +188,6 @@ internal class AlertsControllerTest(
           Mockito.reset(getAlertsForPersonService)
           Mockito.reset(auditService)
           Mockito.reset(featureFlagConfig)
-          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.NORMALISED_PATH_MATCHING)).thenReturn(true)
 
           whenever(getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage, activeOnly = true)).thenReturn(
             Response(
@@ -299,7 +297,6 @@ internal class AlertsControllerTest(
           Mockito.reset(getAlertsForPersonService)
           Mockito.reset(auditService)
           Mockito.reset(featureFlagConfig)
-          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.NORMALISED_PATH_MATCHING)).thenReturn(true)
 
           whenever(getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)).thenReturn(
             Response(
@@ -332,7 +329,6 @@ internal class AlertsControllerTest(
           Mockito.reset(getAlertsForPersonService)
           Mockito.reset(auditService)
           Mockito.reset(featureFlagConfig)
-          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.NORMALISED_PATH_MATCHING)).thenReturn(true)
 
           whenever(getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)).thenReturn(
             Response(
