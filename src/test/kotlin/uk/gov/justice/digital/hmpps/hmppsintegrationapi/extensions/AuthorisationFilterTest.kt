@@ -64,8 +64,9 @@ class AuthorisationFilterTest {
     val resp = MockHttpServletResponse()
 
     val authConfig = AuthorisationConfig()
-    authConfig.consumers = mapOf("sam" to ConsumerConfig(roles= listOf("private-prison"), filters = ConsumerFilters(prisons = listOf("MDI"))))
-    authConfig.certificateRevocationList = listOf("TEST_SERIAL_NUMBER")
+    val consumerConfig = ConsumerConfig(roles = listOf("private-prison"), filters = ConsumerFilters(prisons = listOf("MDI")))
+    authConfig.consumers = mapOf("sam" to consumerConfig)
+    authConfig.certificateRevocationList = listOf("REVOKED_SERIAL_NUMBER")
 
     val featureFlagConfig = FeatureFlagConfig(mapOf("normalised-path-matching" to true))
 
@@ -73,12 +74,13 @@ class AuthorisationFilterTest {
     req.addHeader("subject-distinguished-name", "O=test,CN=sam")
     req.addHeader("cert-serial-number", "9572494320151578633330348943480876283449388176")
 
-    val chain = MockFilterChain(
-      mock(HttpServlet::class.java),
-      ConsumerNameExtractionFilter(),
-      AuthorisationFilter(authConfig, featureFlagConfig),
-      FiltersExtractionFilter(authConfig),
-    )
+    val chain =
+      MockFilterChain(
+        mock(HttpServlet::class.java),
+        ConsumerNameExtractionFilter(),
+        AuthorisationFilter(authConfig, featureFlagConfig),
+        FiltersExtractionFilter(authConfig),
+      )
 
     chain.doFilter(req, resp)
 
