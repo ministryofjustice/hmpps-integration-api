@@ -43,6 +43,10 @@ configurations.all {
       useVersion("5.32.1")
       because("Fix CVE-2026-0540")
     }
+    if (requested.group == "io.netty") {
+      useVersion("4.1.132.Final")
+      because("Fix VE-2026-33870")
+    }
   }
 }
 
