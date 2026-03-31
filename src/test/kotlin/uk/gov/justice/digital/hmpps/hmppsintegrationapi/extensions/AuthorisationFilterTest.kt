@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 import io.mockk.every
 import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
+import jakarta.servlet.Filter
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException
 import jakarta.servlet.http.HttpServlet
@@ -15,6 +16,8 @@ import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.whenever
 import org.springframework.mock.web.MockFilterChain
@@ -62,13 +65,14 @@ class AuthorisationFilterTest {
   @Test
   fun `auth filter chain test`() {
     val resp = MockHttpServletResponse()
+    val mockFilter = mock(Filter::class.java)
 
     val authConfig = AuthorisationConfig()
     val consumerConfig = ConsumerConfig(roles = listOf("private-prison"), filters = ConsumerFilters(prisons = listOf("MDI")))
     authConfig.consumers = mapOf("sam" to consumerConfig)
     authConfig.certificateRevocationList = listOf("REVOKED_SERIAL_NUMBER")
 
-    val featureFlagConfig = FeatureFlagConfig(mapOf("normalised-path-matching" to true))
+    val defaultFeatureFlags = FeatureFlagConfig(mapOf("normalised-path-matching" to true))
 
     val req = MockHttpServletRequest("GET", "/v1/persons")
     req.addHeader("subject-distinguished-name", "O=test,CN=sam")
@@ -78,8 +82,9 @@ class AuthorisationFilterTest {
       MockFilterChain(
         mock(HttpServlet::class.java),
         ConsumerNameExtractionFilter(),
-        AuthorisationFilter(authConfig, featureFlagConfig),
         FiltersExtractionFilter(authConfig),
+        AuthorisationFilter(authConfig, defaultFeatureFlags),
+        mockFilter,
       )
 
     chain.doFilter(req, resp)
@@ -88,6 +93,7 @@ class AuthorisationFilterTest {
     assertThat(req.getAttribute("certificateSerialNumber")).isEqualTo("01:AD:3E:D8:7D:D5:AA:84:F5:2D:83:E7:87:E9:90:E4:84:C5:2C:90")
     assertThat(req.getAttribute("filters")).isEqualTo(ConsumerFilters(prisons = listOf("MDI")))
     assertThat(resp.status).isEqualTo(200)
+    verify(mockFilter, times(1)).doFilter(eq(req), eq(resp), any())
   }
 
   @Test
