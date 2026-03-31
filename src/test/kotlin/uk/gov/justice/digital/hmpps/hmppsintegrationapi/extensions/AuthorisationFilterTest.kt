@@ -5,8 +5,10 @@ import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException
+import jakarta.servlet.http.HttpServlet
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -15,6 +17,9 @@ import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.whenever
+import org.springframework.mock.web.MockFilterChain
+import org.springframework.mock.web.MockHttpServletRequest
+import org.springframework.mock.web.MockHttpServletResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
@@ -52,6 +57,35 @@ class AuthorisationFilterTest {
   @AfterEach
   fun after() {
     unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
+  }
+
+  @Test
+  fun `auth filter chain test`() {
+    val resp = MockHttpServletResponse()
+
+    val authConfig = AuthorisationConfig()
+    authConfig.consumers = mapOf("sam" to ConsumerConfig(roles= listOf("private-prison"), filters = ConsumerFilters(prisons = listOf("MDI"))))
+    authConfig.certificateRevocationList = listOf("TEST_SERIAL_NUMBER")
+
+    val featureFlagConfig = FeatureFlagConfig(mapOf("normalised-path-matching" to true))
+
+    val req = MockHttpServletRequest("GET", "/v1/persons")
+    req.addHeader("subject-distinguished-name", "O=test,CN=sam")
+    req.addHeader("cert-serial-number", "9572494320151578633330348943480876283449388176")
+
+    val chain = MockFilterChain(
+      mock(HttpServlet::class.java),
+      ConsumerNameExtractionFilter(),
+      AuthorisationFilter(authConfig, featureFlagConfig),
+      FiltersExtractionFilter(authConfig),
+    )
+
+    chain.doFilter(req, resp)
+
+    assertThat(req.getAttribute("clientName")).isEqualTo("sam")
+    assertThat(req.getAttribute("certificateSerialNumber")).isEqualTo("01:AD:3E:D8:7D:D5:AA:84:F5:2D:83:E7:87:E9:90:E4:84:C5:2C:90")
+    assertThat(req.getAttribute("filters")).isEqualTo(ConsumerFilters(prisons = listOf("MDI")))
+    assertThat(resp.status).isEqualTo(200)
   }
 
   @Test
