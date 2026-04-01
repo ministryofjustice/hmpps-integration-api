@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.fullAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithLaoRedactions
@@ -59,7 +60,8 @@ class AlertsIntegrationTest : IntegrationTestBase() {
 
     @Test
     fun `returns alerts for a person with alert filters`() {
-      authorisationConfig.definedRoles = mapOf("automated-test-client" to testRoleWithPndAlerts)
+      authorisationConfig.definedRoles = listOf(testRoleWithPndAlerts).associateBy { it.name }
+      authorisationConfig.consumers = mapOf("automated-test-client" to ConsumerConfig(roles = listOf(testRoleWithPndAlerts.name!!)))
       callApi(path)
         .andExpect(status().isOk)
         .andExpect(content().json(getExpectedResponse("person-alerts")))
