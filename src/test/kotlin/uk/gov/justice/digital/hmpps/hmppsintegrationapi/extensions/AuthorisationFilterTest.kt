@@ -276,14 +276,13 @@ class AuthorisationFilterTest {
   fun `can get prison filters attribute from the consumer config`() {
     // From FiltersExtractionFilterTest
     val resp = MockHttpServletResponse()
-    val finalFilter = mock(Filter::class.java)
     val authConfig = AuthorisationConfig()
     val config = ConsumerConfig(include = null, filters = ConsumerFilters(prisons = listOf("A", "B")), roles = listOf())
     authConfig.consumers = mapOf("consumer-name" to config)
 
     val req = mockRequest("GET", examplePath, "O=test,CN=consumer-name")
 
-    val chain = fullMockFilterChain(authConfig, finalFilter)
+    val chain = fullMockFilterChain(authConfig)
 
     chain.doFilter(req, resp)
 
@@ -294,13 +293,12 @@ class AuthorisationFilterTest {
   fun `can get prison filters attribute from the role`() {
     // From FiltersExtractionFilterTest
     val resp = MockHttpServletResponse()
-    val finalFilter = mock(Filter::class.java)
     val authConfig = AuthorisationConfig()
     authConfig.consumers = mapOf("consumer-name" to roleConfig)
 
     val req = mockRequest("GET", examplePath, "O=test,CN=consumer-name")
 
-    val chain = fullMockFilterChain(authConfig, finalFilter)
+    val chain = fullMockFilterChain(authConfig)
 
     chain.doFilter(req, resp)
 
