@@ -220,5 +220,4 @@ class AuthorisationFilterTest {
     assertThat(resp.status).isEqualTo(200)
     verify(finalFilter, times(1)).doFilter(eq(req), eq(resp), any())
   }
-
 }
