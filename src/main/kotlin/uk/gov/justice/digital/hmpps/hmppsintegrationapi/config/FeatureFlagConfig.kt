@@ -28,7 +28,6 @@ data class FeatureFlagConfig(
     const val EPF_GATEWAY_DISABLED = "epf-gateway-disabled"
     const val CPR_ENABLED = "cpr-enabled"
     const val GATEWAY_CACHE_ENABLED = "gateway-cache-enabled"
-    const val NORMALISED_PATH_MATCHING = "normalised-path-matching"
     const val USE_WEBCLIENT_WRAPPER_FOR_HMPPS_AUTH = "use-webclient-wrapper-for-hmpps-auth"
 
     // Events feature flags

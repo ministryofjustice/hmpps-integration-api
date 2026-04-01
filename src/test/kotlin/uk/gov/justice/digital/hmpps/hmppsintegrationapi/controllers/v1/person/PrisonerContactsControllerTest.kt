@@ -55,7 +55,6 @@ internal class PrisonerContactsControllerTest(
       fun <T> notFoundErrorResponse(vararg upstreamApi: UpstreamApi) = Response<T?>(data = null, errors = notFoundErrors(*upstreamApi))
 
       beforeTest {
-        whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.NORMALISED_PATH_MATCHING)).thenReturn(true)
       }
 
       describe("GET $basePath/$sanitisedHmppsId/contacts") {
