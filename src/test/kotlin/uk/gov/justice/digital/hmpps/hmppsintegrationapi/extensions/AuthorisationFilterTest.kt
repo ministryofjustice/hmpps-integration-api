@@ -292,9 +292,14 @@ class AuthorisationFilterTest {
   @Test
   fun `can get prison filters attribute from the role`() {
     // From FiltersExtractionFilterTest
+    mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
+    val testRole = Role(filters = ConsumerFilters(prisons = listOf("RolePrison")))
+    every { roles } returns mapOf("test-role" to testRole)
+
     val resp = MockHttpServletResponse()
     val authConfig = AuthorisationConfig()
-    authConfig.consumers = mapOf("consumer-name" to roleConfig)
+    val consumerConfig = ConsumerConfig(include = null, filters = null, roles = listOf("test-role"))
+    authConfig.consumers = mapOf("consumer-name" to consumerConfig)
 
     val req = mockRequest("GET", examplePath, "O=test,CN=consumer-name")
 
@@ -302,7 +307,31 @@ class AuthorisationFilterTest {
 
     chain.doFilter(req, resp)
 
-    assertThat(req.getAttribute("filters")).isEqualTo(ConsumerFilters(prisons = listOf("MDI")))
+    assertThat(req.getAttribute("filters")).isEqualTo(ConsumerFilters(prisons = listOf("RolePrison")))
+
+    unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
+  }
+
+  @Test
+  fun `can get prison filters attribute from the role and the consumer`() {
+    // From FiltersExtractionFilterTest
+    mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
+    val testRole = Role(filters = ConsumerFilters(prisons = listOf("RolePrison")))
+    every { roles } returns mapOf("test-role" to testRole)
+
+    val resp = MockHttpServletResponse()
+    val authConfig = AuthorisationConfig()
+    authConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, filters = ConsumerFilters(prisons = listOf("MDI")), roles = listOf("test-role")))
+
+    val req = mockRequest("GET", examplePath, "O=test,CN=consumer-name")
+
+    val chain = fullMockFilterChain(authConfig)
+
+    chain.doFilter(req, resp)
+
+    assertThat(req.getAttribute("filters")).isEqualTo(ConsumerFilters(prisons = listOf("MDI", "RolePrison")))
+
+    unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
   }
 
   @Test
