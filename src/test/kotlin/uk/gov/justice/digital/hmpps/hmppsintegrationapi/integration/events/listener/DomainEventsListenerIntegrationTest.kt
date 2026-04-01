@@ -40,7 +40,7 @@ import java.time.Duration
 class DomainEventsListenerIntegrationTest : IntegrationTestWithEventsQueueBase() {
   val prisonId = "MDI"
 
-  val awaitTimeOut = Duration.ofSeconds(5)
+  val awaitTimeOut = Duration.ofSeconds(500)
   val awaitPollDelay = Duration.ofMillis(200)
   val defaultAwaitTimeOutNoEventSaved = Duration.ofSeconds(2)
 

@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.Filters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.IntegrationEventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 import java.time.LocalDateTime
@@ -44,6 +45,7 @@ class EventNotificationRepositoryTest : IntegrationTestBase() {
         hmppsId = "MockId",
         prisonId = "MKI",
         url = "MockUrl",
+        filters = Filters(supervisionStatus = "PRISONS"),
         lastModifiedDatetime = LocalDateTime.now().minusMinutes(6),
       )
     eventNotificationRepository.insertOrUpdate(eventNotification)

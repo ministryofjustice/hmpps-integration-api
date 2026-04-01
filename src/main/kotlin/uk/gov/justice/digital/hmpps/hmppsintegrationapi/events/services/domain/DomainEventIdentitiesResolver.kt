@@ -6,11 +6,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.HmppsDomai
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.GetPrisonIdService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 
 @Service
 class DomainEventIdentitiesResolver(
   @Autowired val probationIntegrationApiGateway: NDeliusGateway,
   @Autowired val getPrisonIdService: GetPrisonIdService,
+  private val personService: GetPersonService,
 ) {
   /**
    * The hmpps id is an id that the end client will use in ongoing processing.
@@ -59,6 +61,11 @@ class DomainEventIdentitiesResolver(
       }
     }
     return null
+  }
+
+  fun getSupervisionStatus(hmppsEvent: HmppsDomainEvent): String? {
+    val nomsNumber = getNomisNumber(hmppsEvent)
+    return nomsNumber?.let { personService.getPersonSupervisionStatus(it) }
   }
 
   private fun getNomisNumber(hmppsEvent: HmppsDomainEvent): String? {

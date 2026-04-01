@@ -271,7 +271,7 @@ class GetPersonService(
     }
   }
 
-  private fun getPersonSupervisionStatus(nomisId: String): String {
+  fun getPersonSupervisionStatus(nomisId: String): String {
     val status = getPersonFromPrisonerOffenderSearch(nomisId)?.status ?: return "UNKNOWN"
 
     if (status.startsWith("ACTIVE")) {

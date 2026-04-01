@@ -105,6 +105,20 @@ abstract class IntegrationTestBase {
         "$gatewaysFolder/prisoneroffendersearch/fixtures/PrisonerByIdResponseA1234AA.json",
       ).readText(),
     )
+
+    prisonerOffenderSearchMockServer.stubForGet(
+      "/prisoner/A3646EA",
+      File(
+        "$gatewaysFolder/prisoneroffendersearch/fixtures/ActivePrisonerByIdResponse.json",
+      ).readText(),
+    )
+
+    prisonerOffenderSearchMockServer.stubForGet(
+      "/prisoner/A3646EB",
+      File(
+        "$gatewaysFolder/prisoneroffendersearch/fixtures/InactivePrisonerByIdResponse.json",
+      ).readText(),
+    )
   }
 
   final val basePath = "/v1/persons"
@@ -210,6 +224,14 @@ abstract class IntegrationTestBase {
       nDeliusMockServer.stubForPost(
         "/search/probation-cases",
         writeAsJson(mapOf("nomsNumber" to nomsId)),
+        File(
+          "$gatewaysFolder/ndelius/fixtures/GetOffenderResponse.json",
+        ).readText(),
+      )
+
+      nDeliusMockServer.stubForPost(
+        "/search/probation-cases",
+        writeAsJson(mapOf("nomsNumber" to "A3646EB")),
         File(
           "$gatewaysFolder/ndelius/fixtures/GetOffenderResponse.json",
         ).readText(),
