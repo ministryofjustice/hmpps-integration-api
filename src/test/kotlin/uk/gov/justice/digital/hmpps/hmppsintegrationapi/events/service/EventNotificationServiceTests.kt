@@ -22,6 +22,7 @@ import software.amazon.awssdk.services.sns.model.PublishResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.Filters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.IntegrationEventStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.messaging.QueueService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.EventNotificationService
@@ -69,6 +70,7 @@ class EventNotificationServiceTests(
         status = IntegrationEventStatus.PROCESSING.name,
         lastModifiedDatetime = currentTime,
         claimId = null,
+        filters = Filters(supervisionStatus = "PRISONS")
       )
 
     val response =
@@ -103,6 +105,15 @@ class EventNotificationServiceTests(
           MessageAttributeValue
             .builder()
             .stringValue(event.prisonId)
+            .dataType("String")
+            .build(),
+        )
+      Assertions
+        .assertThat(messageAttributes["supervisionStatus"])
+        .isEqualTo(
+          MessageAttributeValue
+            .builder()
+            .stringValue("PRISONS")
             .dataType("String")
             .build(),
         )
@@ -142,6 +153,7 @@ class EventNotificationServiceTests(
             .build(),
         )
       messageAttributes.shouldNotHaveKey("prisonId")
+      messageAttributes.shouldNotHaveKey("supervisionStatus")
     }
   }
 }

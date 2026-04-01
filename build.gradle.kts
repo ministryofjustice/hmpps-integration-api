@@ -26,7 +26,7 @@ dependencies {
   runtimeOnly("io.jsonwebtoken:jjwt-impl:0.13.0")
   runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.13.0")
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
-  implementation("org.postgresql:postgresql:42.7.10")
+  runtimeOnly("org.postgresql:postgresql:42.7.10")
   runtimeOnly("org.flywaydb:flyway-core")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-cache")

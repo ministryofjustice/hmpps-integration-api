@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.config
 
-import org.postgresql.util.PGobject
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.convert.converter.Converter
 import org.springframework.data.convert.ReadingConverter
@@ -24,17 +23,14 @@ class JdbcConfig(
 
 @Component
 @WritingConverter
-class FiltersWritingConverter : Converter<Filters, PGobject> {
-  override fun convert(source: Filters): PGobject {
-    val jsonObject = PGobject()
-    jsonObject.type = "jsonb"
-    jsonObject.value = objectMapper.writeValueAsString(source)
-    return jsonObject
+class FiltersWritingConverter : Converter<Filters, String> {
+  override fun convert(source: Filters): String {
+    return objectMapper.writeValueAsString(source)
   }
 }
 
 @Component
 @ReadingConverter
-class FiltersReadingConverter : Converter<PGobject, Filters> {
-  override fun convert(pgObject: PGobject): Filters = objectMapper.readValue(pgObject.value, Filters::class.java)
+class FiltersReadingConverter : Converter<String, Filters> {
+  override fun convert(source: String): Filters = objectMapper.readValue(source, Filters::class.java)
 }

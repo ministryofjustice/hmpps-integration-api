@@ -1,11 +1,13 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.repository
 
+import io.kotest.assertions.json.shouldContainJsonKeyValue
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.Filters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.IntegrationEventType
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.objectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -59,5 +61,41 @@ class EventNotificationRepositoryTest : IntegrationTestBase() {
     val updatedEventNotifications = eventNotificationRepository.findAll()
     assertThat(updatedEventNotifications).hasSize(1)
     assertThat(updatedEventNotifications[0].lastModifiedDatetime?.truncatedTo(ChronoUnit.MINUTES)).isEqualTo(updatedEventNotification.lastModifiedDatetime?.truncatedTo(ChronoUnit.MINUTES))
+  }
+
+  @Test
+  fun `saves and returns the filters object with a supervision status`() {
+    val eventNotification =
+      EventNotification(
+        eventType = IntegrationEventType.MAPPA_DETAIL_CHANGED.name,
+        hmppsId = "MockId",
+        prisonId = "MKI",
+        url = "MockUrl",
+        filters = Filters(supervisionStatus = "PROBATION"),
+        lastModifiedDatetime = LocalDateTime.now().minusMinutes(6),
+      )
+    eventNotificationRepository.insertOrUpdate(eventNotification)
+    val notifications = eventNotificationRepository.findAll()
+    assertThat(notifications).hasSize(1)
+    val notification = notifications[0]
+    assertThat(notification.filters).isEqualTo(Filters(supervisionStatus = "PROBATION"))
+  }
+
+  @Test
+  fun `saves and returns no filters object when filters is null`() {
+    val eventNotification =
+      EventNotification(
+        eventType = IntegrationEventType.MAPPA_DETAIL_CHANGED.name,
+        hmppsId = "MockId",
+        prisonId = "MKI",
+        url = "MockUrl",
+        filters = null,
+        lastModifiedDatetime = LocalDateTime.now().minusMinutes(6),
+      )
+    eventNotificationRepository.insertOrUpdate(eventNotification)
+    val notifications = eventNotificationRepository.findAll()
+    assertThat(notifications).hasSize(1)
+    val notification = notifications[0]
+    assertThat(notification.filters).isEqualTo(null)
   }
 }

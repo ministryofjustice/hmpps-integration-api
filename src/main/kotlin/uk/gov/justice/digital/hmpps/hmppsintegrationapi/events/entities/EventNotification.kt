@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonUnwrapped
 import java.time.LocalDateTime
 
-@JsonIncludeProperties("eventId", "hmppsId", "eventType", "prisonId", "url", "lastModifiedDateTime", "filters")
+@JsonIncludeProperties("eventId", "hmppsId", "eventType", "prisonId", "url", "lastModifiedDateTime")
 data class EventNotification(
   val eventId: Long? = null,
   val claimId: String? = null,
@@ -15,7 +15,6 @@ data class EventNotification(
   val status: String? = "PENDING",
   @JsonProperty("lastModifiedDateTime")
   val lastModifiedDatetime: LocalDateTime? = null,
-  @JsonUnwrapped
   val filters: Filters? = null,
 )
 

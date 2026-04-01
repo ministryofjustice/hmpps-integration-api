@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository
 
-import org.postgresql.util.PGobject
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.core.convert.ConversionService
 import org.springframework.jdbc.core.DataClassRowMapper
@@ -123,7 +122,7 @@ class JdbcTemplateEventNotificationRepository(
       on conflict(url, event_type) where status = 'PENDING' or status = NULL
         do update set last_modified_datetime = ?
     """
-    jdbcTemplate.update(insertOrUpdateQuery, match.url, match.eventType, match.hmppsId, match.prisonId, match.status, conversionService.convert(match.filters, PGobject::class.java), match.lastModifiedDatetime, match.lastModifiedDatetime)
+    jdbcTemplate.update(insertOrUpdateQuery, match.url, match.eventType, match.hmppsId, match.prisonId, match.status, conversionService.convert(match.filters, String::class.java), match.lastModifiedDatetime, match.lastModifiedDatetime)
   }
 
   fun saveAll(events: List<EventNotification>): List<EventNotification> {
@@ -144,7 +143,7 @@ class JdbcTemplateEventNotificationRepository(
       last_modified_datetime
       ) values (?,?,?,?,?,?,?,?)
     """
-    return jdbcTemplate.update(insertQuery, makeEvent.hmppsId, makeEvent.claimId, makeEvent.eventType, makeEvent.prisonId, makeEvent.url, makeEvent.status, conversionService.convert(makeEvent.filters, PGobject::class.java), makeEvent.lastModifiedDatetime)
+    return jdbcTemplate.update(insertQuery, makeEvent.hmppsId, makeEvent.claimId, makeEvent.eventType, makeEvent.prisonId, makeEvent.url, makeEvent.status, conversionService.convert(makeEvent.filters, String::class.java), makeEvent.lastModifiedDatetime)
   }
 
   override fun deleteEvents(dateTime: LocalDateTime): Int {

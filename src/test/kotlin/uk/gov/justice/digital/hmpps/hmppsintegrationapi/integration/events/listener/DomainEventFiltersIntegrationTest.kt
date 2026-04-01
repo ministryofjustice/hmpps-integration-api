@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.list
 import io.kotest.assertions.json.shouldContainJsonKeyValue
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.collections.shouldNotBeEmpty
+import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.Awaitility
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -10,6 +11,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNot
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.IntegrationTestWithEventsQueueBase
 import java.util.concurrent.TimeUnit
+import kotlin.test.assertEquals
 
 class DomainEventFiltersIntegrationTest : IntegrationTestWithEventsQueueBase() {
   @BeforeEach
@@ -30,9 +32,8 @@ class DomainEventFiltersIntegrationTest : IntegrationTestWithEventsQueueBase() {
     }
     val savedEvents: List<EventNotification> = eventNotificationRepository.findByHmppsIdIsIn(listOf("A123123"))
     savedEvents.shouldNotBeEmpty().shouldHaveSize(1)
-    val eventJson = objectMapper.writeValueAsString(savedEvents.first())
+    assertEquals("PRISONS", savedEvents.first().filters?.supervisionStatus )
 
-    eventJson.shouldContainJsonKeyValue("$.supervisionStatus", "PRISONS")
   }
 
   @Test
@@ -48,8 +49,6 @@ class DomainEventFiltersIntegrationTest : IntegrationTestWithEventsQueueBase() {
     }
     val savedEvents: List<EventNotification> = eventNotificationRepository.findByHmppsIdIsIn(listOf("A123123"))
     savedEvents.shouldNotBeEmpty().shouldHaveSize(1)
-
-    val eventJson = objectMapper.writeValueAsString(savedEvents.first())
-    eventJson.shouldContainJsonKeyValue("$.supervisionStatus", "PROBATION")
+    assertEquals("PROBATION", savedEvents.first().filters?.supervisionStatus )
   }
 }

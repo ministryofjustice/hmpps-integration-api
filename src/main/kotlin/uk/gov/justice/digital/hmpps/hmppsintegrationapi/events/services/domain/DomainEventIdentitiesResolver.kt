@@ -1,18 +1,26 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.domain
 
+import com.microsoft.applicationinsights.TelemetryClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.HmppsDomainEvent
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.GetPrisonIdService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.UpstreamApiException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.SupervisionStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
 @Service
 class DomainEventIdentitiesResolver(
   @Autowired val probationIntegrationApiGateway: NDeliusGateway,
   @Autowired val getPrisonIdService: GetPrisonIdService,
   private val personService: GetPersonService,
+  private val featureFlagService: FeatureFlagConfig,
+  private val telemetryService: TelemetryService
 ) {
   /**
    * The hmpps id is an id that the end client will use in ongoing processing.
@@ -64,8 +72,22 @@ class DomainEventIdentitiesResolver(
   }
 
   fun getSupervisionStatus(hmppsEvent: HmppsDomainEvent): String? {
-    val nomsNumber = getNomisNumber(hmppsEvent)
-    return nomsNumber?.let { personService.getPersonSupervisionStatus(it) }
+
+    if(!featureFlagService.isEnabled(FeatureFlagConfig.INCLUDE_SUPERVISION_STATUS_ATTRIBUTE)) {
+      return null
+    }
+    try{
+      val nomsNumber = getNomisNumber(hmppsEvent)
+      return nomsNumber?.let { personService.getPersonSupervisionStatus(it) }
+    } catch (ex: UpstreamApiException) {
+      when (ex.errorType){
+         UpstreamApiError.Type.ENTITY_NOT_FOUND -> { return SupervisionStatus.UNKNOWN.name }
+        else -> {
+          telemetryService.captureException(ex)
+          throw ex
+        }
+      }
+    }
   }
 
   private fun getNomisNumber(hmppsEvent: HmppsDomainEvent): String? {
