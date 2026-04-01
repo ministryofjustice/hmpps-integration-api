@@ -49,7 +49,6 @@ internal class ImageControllerTest(
           Mockito.reset(auditService)
 
           whenever(getImageService.getById(id)).thenReturn(Response(data = image))
-          whenever(featureFlag.isEnabled(FeatureFlagConfig.NORMALISED_PATH_MATCHING)).thenReturn(true)
         }
 
         it("returns a 200 OK status code") {
@@ -111,7 +110,6 @@ internal class ImageControllerTest(
           whenever(getImageService.execute(id, hmppsId, filter)).thenReturn(Response(data = image))
           Mockito.reset(auditService)
           Mockito.reset(featureFlag)
-          whenever(featureFlag.isEnabled(FeatureFlagConfig.NORMALISED_PATH_MATCHING)).thenReturn(true)
         }
 
         it("returns a 200 OK status code") {

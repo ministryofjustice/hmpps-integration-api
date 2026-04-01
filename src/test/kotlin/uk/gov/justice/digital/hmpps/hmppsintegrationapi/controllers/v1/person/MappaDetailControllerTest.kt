@@ -72,7 +72,6 @@ internal class MappaDetailControllerTest(
           )
 
           Mockito.reset(auditService)
-          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.NORMALISED_PATH_MATCHING)).thenReturn(true)
         }
 
         afterTest {
