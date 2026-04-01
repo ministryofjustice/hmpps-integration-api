@@ -198,6 +198,57 @@ class AuthorisationFilterTest {
   }
 
   @Test
+  fun `ConsumerNameExtractionFilter calls the onward chain`() {
+    // From ConsumerNameExtractionFilterTest
+    val resp = MockHttpServletResponse()
+    val finalFilter = mock(Filter::class.java)
+    val req = mockRequest("GET", examplePath, "O=test,CN=sam", "9572494320151578633330348943480876283449388176")
+
+    val chain =
+      mockFilterChain(
+        ConsumerNameExtractionFilter(),
+        finalFilter,
+      )
+
+    chain.doFilter(req, resp)
+
+    verify(finalFilter, times(1)).doFilter(eq(req), eq(resp), any())
+  }
+
+  @Test
+  fun `can get subject distinguished name from request and set as consumer name `() {
+    // From ConsumerNameExtractionFilterTest
+    val resp = MockHttpServletResponse()
+    val req = mockRequest("GET", examplePath, "O=test,CN=sam", "9572494320151578633330348943480876283449388176")
+
+    val chain =
+      mockFilterChain(
+        ConsumerNameExtractionFilter(),
+      )
+
+    chain.doFilter(req, resp)
+
+    assertThat(req.getAttribute("clientName")).isEqualTo("sam")
+    assertThat(req.getAttribute("certificateSerialNumber")).isEqualTo("01:AD:3E:D8:7D:D5:AA:84:F5:2D:83:E7:87:E9:90:E4:84:C5:2C:90")
+  }
+
+  @Test
+  fun `does not set a clientName from request if it does not match the regex `() {
+    // From ConsumerNameExtractionFilterTest
+    val resp = MockHttpServletResponse()
+    val req = mockRequest("GET", examplePath, "CN=consumer-name")
+
+    val chain =
+      mockFilterChain(
+        ConsumerNameExtractionFilter(),
+      )
+
+    chain.doFilter(req, resp)
+
+    assertThat(req.getAttribute("clientName")).isNull()
+  }
+
+  @Test
   fun `auth filter chain test`() {
     val resp = MockHttpServletResponse()
     val finalFilter = mock(Filter::class.java)
