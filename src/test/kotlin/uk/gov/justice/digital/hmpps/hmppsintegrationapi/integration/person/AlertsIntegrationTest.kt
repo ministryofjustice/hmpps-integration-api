@@ -28,13 +28,15 @@ class AlertsIntegrationTest : IntegrationTestBase() {
 
     @BeforeEach
     fun setup() {
-      mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-      every { roles.get(any()) } returns fullAccess
+//      mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
+//      every { roles.get(any()) } returns fullAccess
+//      authorisationConfig.definedRoles = mapOf("automated-test-client" to fullAccess)
     }
 
     @AfterEach
     fun tearDown() {
-      unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
+//      unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
+      authorisationConfig.definedRoles = roles
     }
 
     @Test
@@ -57,7 +59,7 @@ class AlertsIntegrationTest : IntegrationTestBase() {
 
     @Test
     fun `returns alerts for a person with alert filters`() {
-      every { roles.get(any()) } returns testRoleWithPndAlerts
+      authorisationConfig.definedRoles = mapOf("automated-test-client" to testRoleWithPndAlerts)
       callApi(path)
         .andExpect(status().isOk)
         .andExpect(content().json(getExpectedResponse("person-alerts")))

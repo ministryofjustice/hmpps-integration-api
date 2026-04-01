@@ -185,8 +185,6 @@ internal class PersonControllerTest(
         }
 
         it("passes supervision status filters from consumer config to service") {
-//          mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-//          every { roles[any()] } returns role("test-role") { permissions { -fullAccess.permissions!! } }
           authorisationConfig.definedRoles = mapOf("test-role" to role("test-role") { permissions { -fullAccess.permissions!! } })
           mockMvc.performAuthorised("$basePath?first_name=$firstName&pnc_number=$pncNumber")
 
