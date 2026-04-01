@@ -93,6 +93,17 @@ class AuthorisationFilterTest {
       *filters,
     )
 
+  fun fullMockFilterChain(
+    authConfig: AuthorisationConfig,
+    finalFilter: Filter = mock(Filter::class.java),
+  ): MockFilterChain =
+    mockFilterChain(
+      ConsumerNameExtractionFilter(),
+      FiltersExtractionFilter(authConfig),
+      AuthorisationFilter(authConfig, defaultFeatureFlags),
+      finalFilter,
+    )
+
   @Test
   fun `calls the onward chain when path found in either`() {
     val resp = MockHttpServletResponse()
@@ -221,10 +232,7 @@ class AuthorisationFilterTest {
     val resp = MockHttpServletResponse()
     val req = mockRequest("GET", examplePath, "O=test,CN=sam", "9572494320151578633330348943480876283449388176")
 
-    val chain =
-      mockFilterChain(
-        ConsumerNameExtractionFilter(),
-      )
+    val chain = fullMockFilterChain(authorisationConfig)
 
     chain.doFilter(req, resp)
 
@@ -238,14 +246,65 @@ class AuthorisationFilterTest {
     val resp = MockHttpServletResponse()
     val req = mockRequest("GET", examplePath, "CN=consumer-name")
 
-    val chain =
-      mockFilterChain(
-        ConsumerNameExtractionFilter(),
-      )
+    val chain = fullMockFilterChain(authorisationConfig)
 
     chain.doFilter(req, resp)
 
     assertThat(req.getAttribute("clientName")).isNull()
+  }
+
+  @Test
+  fun `FiltersExtractionFilterTest calls the onward chain`() {
+    // From FiltersExtractionFilterTest
+    val resp = MockHttpServletResponse()
+    val finalFilter = mock(Filter::class.java)
+    val req = mockRequest("GET", examplePath)
+    req.setAttribute("clientName", "consumer-name")
+
+    val chain =
+      mockFilterChain(
+        FiltersExtractionFilter(mockAuthConfig("consumer-name")),
+        finalFilter,
+      )
+
+    chain.doFilter(req, resp)
+
+    verify(finalFilter, times(1)).doFilter(eq(req), eq(resp), any())
+  }
+
+  @Test
+  fun `can get prison filters attribute from the consumer config`() {
+    // From FiltersExtractionFilterTest
+    val resp = MockHttpServletResponse()
+    val finalFilter = mock(Filter::class.java)
+    val authConfig = AuthorisationConfig()
+    val config = ConsumerConfig(include = null, filters = ConsumerFilters(prisons = listOf("A", "B")), roles = listOf())
+    authConfig.consumers = mapOf("consumer-name" to config)
+
+    val req = mockRequest("GET", examplePath, "O=test,CN=consumer-name")
+
+    val chain = fullMockFilterChain(authConfig, finalFilter)
+
+    chain.doFilter(req, resp)
+
+    assertThat(req.getAttribute("filters")).isEqualTo(ConsumerFilters(prisons = listOf("A", "B")))
+  }
+
+  @Test
+  fun `can get prison filters attribute from the role`() {
+    // From FiltersExtractionFilterTest
+    val resp = MockHttpServletResponse()
+    val finalFilter = mock(Filter::class.java)
+    val authConfig = AuthorisationConfig()
+    authConfig.consumers = mapOf("consumer-name" to roleConfig)
+
+    val req = mockRequest("GET", examplePath, "O=test,CN=consumer-name")
+
+    val chain = fullMockFilterChain(authConfig, finalFilter)
+
+    chain.doFilter(req, resp)
+
+    assertThat(req.getAttribute("filters")).isEqualTo(ConsumerFilters(prisons = listOf("MDI")))
   }
 
   @Test
@@ -255,13 +314,7 @@ class AuthorisationFilterTest {
     val authConfig = mockAuthConfig("sam")
     val req = mockRequest("GET", examplePath, "O=test,CN=sam", "9572494320151578633330348943480876283449388176")
 
-    val chain =
-      mockFilterChain(
-        ConsumerNameExtractionFilter(),
-        FiltersExtractionFilter(authConfig),
-        AuthorisationFilter(authConfig, defaultFeatureFlags),
-        finalFilter,
-      )
+    val chain = fullMockFilterChain(authConfig, finalFilter)
 
     chain.doFilter(req, resp)
 
