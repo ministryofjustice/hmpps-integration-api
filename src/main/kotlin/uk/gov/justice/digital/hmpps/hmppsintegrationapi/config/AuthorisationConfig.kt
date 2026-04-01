@@ -20,6 +20,7 @@ import kotlin.collections.map
 class AuthorisationConfig {
   var consumers: Map<String, ConsumerConfig?> = emptyMap()
   var certificateRevocationList: List<String> = emptyList()
+  var definedRoles = roles
 
   /**
    * Returns true if the consumer has access to the endpoint.
@@ -46,7 +47,7 @@ class AuthorisationConfig {
     val merged = mutableSetOf<String>()
     merged.addAll(consumers[consumerName]?.permissions().orEmpty())
     for (roleName in consumers[consumerName]?.roles ?: emptyList()) {
-      merged.addAll(roles[roleName]?.permissions.orEmpty())
+      merged.addAll(definedRoles[roleName]?.permissions.orEmpty())
     }
     return merged.toList().sorted()
   }
@@ -93,7 +94,7 @@ class AuthorisationConfig {
     val consumerConfig: ConsumerConfig? = consumers[consumerName]
     val roles: List<Role>? =
       consumerConfig?.roles?.mapNotNull {
-        uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles[it]
+        definedRoles[it]
       }
     return allFilters(consumerConfig, roles)
   }
