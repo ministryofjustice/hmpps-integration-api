@@ -1,6 +1,7 @@
 ## The role of events code
 
 The events served from this service are primarily intended to be used to let you know when to invalidate a cache. The events are:
+
 - Minimal - they do not contain data beyond what is needed to refresh your cache (e.g. the URL).
 - Mapped directly to API endpoints. An event is only provided to you if you have access to the corresponding endpoint.
 
@@ -11,6 +12,7 @@ This also means that if you have access to multiple endpoints, a single action (
 ### How it works
 
 At a high level, this service
+
 1. Listens for HMPPS Domain Events
 2. Transforms them into HMPPS Integration Events
 3. Puts the Integration Event on the Integration Event Topic
@@ -22,10 +24,12 @@ This project has three asynchronous processes:
 #### 1. Update filter policies - Every hour
 
 To restrict the events that a consumer receives, the SNS subscription filter policy for each queue is updated every hour. To do this, we
+
 1. Call the Integration API's config method to receive the updated consumer configurations.
 2. Update the SNS subscription filter policy.
 
 We set the filter policies to only allow the events that
+
 - Correspond to endpoints they have access to.
 - Match the filters they have on the Integration API (if any).
 
