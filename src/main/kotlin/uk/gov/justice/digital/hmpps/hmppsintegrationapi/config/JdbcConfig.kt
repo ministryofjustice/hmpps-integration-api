@@ -24,9 +24,7 @@ class JdbcConfig(
 @Component
 @WritingConverter
 class FiltersWritingConverter : Converter<Filters, String> {
-  override fun convert(source: Filters): String {
-    return objectMapper.writeValueAsString(source)
-  }
+  override fun convert(source: Filters): String = objectMapper.writeValueAsString(source)
 }
 
 @Component

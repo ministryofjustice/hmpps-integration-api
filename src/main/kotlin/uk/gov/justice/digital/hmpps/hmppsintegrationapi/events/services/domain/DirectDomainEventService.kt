@@ -38,7 +38,7 @@ class DirectDomainEventService(
     if (integrationEventTypes.isNotEmpty()) {
       val hmppsId = domainEventIdentitiesResolver.getHmppsId(hmppsDomainEvent)
       val prisonId = domainEventIdentitiesResolver.getPrisonId(hmppsDomainEvent)
-      val supervisionStatus = domainEventIdentitiesResolver.getSupervisionStatus(hmppsDomainEvent)
+      val supervisionStatus = domainEventIdentitiesResolver.getSupervisionStatus(hmppsId)
       val additionalInformation = hmppsDomainEvent.additionalInformation
 
       for (integrationEventType in integrationEventTypes) {
@@ -52,7 +52,7 @@ class DirectDomainEventService(
               prisonId,
               additionalInformation,
               currentTime,
-              Filters(supervisionStatus = supervisionStatus),
+              supervisionStatus?.let { Filters(supervisionStatus = supervisionStatus) },
             )
 
           eventNotificationService.sendEvent(eventNotification)

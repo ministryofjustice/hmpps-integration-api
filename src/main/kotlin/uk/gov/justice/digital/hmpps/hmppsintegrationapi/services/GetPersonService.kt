@@ -468,7 +468,7 @@ class GetPersonService(
 
   private fun getProbationResponse(hmppsId: String) = getPersonFromDelius(hmppsId)
 
-  private fun getPersonFromPrisonerOffenderSearch(nomisId: String): POSPrisoner? {
+  fun getPersonFromPrisonerOffenderSearch(nomisId: String): POSPrisoner? {
     val searchResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomisId)
     if (searchResponse.errors.isNotEmpty()) {
       throw UpstreamApiException(UpstreamApi.PRISONER_OFFENDER_SEARCH, searchResponse.errors.first().type, "person", nomisId, searchResponse.errors)

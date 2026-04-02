@@ -70,7 +70,7 @@ class EventNotificationServiceTests(
         status = IntegrationEventStatus.PROCESSING.name,
         lastModifiedDatetime = currentTime,
         claimId = null,
-        filters = Filters(supervisionStatus = "PRISONS")
+        filters = Filters(supervisionStatus = "PRISONS"),
       )
 
     val response =

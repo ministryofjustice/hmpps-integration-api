@@ -1,13 +1,11 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.repository
 
-import io.kotest.assertions.json.shouldContainJsonKeyValue
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.Filters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.IntegrationEventType
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.objectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit

@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities
 import com.fasterxml.jackson.annotation.JsonIncludeProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonUnwrapped
 import java.time.LocalDateTime
 
 @JsonIncludeProperties("eventId", "hmppsId", "eventType", "prisonId", "url", "lastModifiedDateTime")

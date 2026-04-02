@@ -107,16 +107,23 @@ abstract class IntegrationTestBase {
     )
 
     prisonerOffenderSearchMockServer.stubForGet(
-      "/prisoner/A3646EA",
+      "/prisoner/$nomsIdActiveInPrison",
       File(
         "$gatewaysFolder/prisoneroffendersearch/fixtures/ActivePrisonerByIdResponse.json",
       ).readText(),
     )
 
     prisonerOffenderSearchMockServer.stubForGet(
-      "/prisoner/A3646EB",
+      "/prisoner/$nomsIdNotActiveInPrison",
       File(
         "$gatewaysFolder/prisoneroffendersearch/fixtures/InactivePrisonerByIdResponse.json",
+      ).readText(),
+    )
+
+    prisonerOffenderSearchMockServer.stubForGet(
+      "/prisoner/$nomsIdNotActiveInPrisonOrProb",
+      File(
+        "$gatewaysFolder/prisoneroffendersearch/fixtures/NoStatusPrisonerByIdResponse.json",
       ).readText(),
     )
   }
@@ -140,6 +147,14 @@ abstract class IntegrationTestBase {
     private val nomsId = "G2996UX"
     private val nomsIdFromProbation = "G5555TT"
     private val crn = DEFAULT_CRN
+
+    val nomsIdActiveInPrison = "A3646EA"
+    val nomsIdNotActiveInPrison = "A3646EB"
+    val nomsIdNotActiveInPrisonOrProb = "A3646EC"
+
+    val crnActiveInProbation = "A654321"
+    val crnNotActiveInProbation = "A765432"
+    val crnNotActiveInPrisonOrProb = "A876543"
 
     val certSerialNumber = "9572494320151578633330348943480876283449388176"
     val revokedSerialNumber = "8472494320151578633330348943480876283449388195"
@@ -231,7 +246,7 @@ abstract class IntegrationTestBase {
 
       nDeliusMockServer.stubForPost(
         "/search/probation-cases",
-        writeAsJson(mapOf("nomsNumber" to "A3646EB")),
+        writeAsJson(mapOf("nomsNumber" to "$nomsIdNotActiveInPrison")),
         File(
           "$gatewaysFolder/ndelius/fixtures/GetOffenderResponse.json",
         ).readText(),
@@ -242,6 +257,38 @@ abstract class IntegrationTestBase {
         writeAsJson(mapOf("nomsNumber" to nomsIdFromProbation)),
         File(
           "$gatewaysFolder/ndelius/fixtures/GetOffenderResponse.json",
+        ).readText(),
+      )
+
+      nDeliusMockServer.stubForPost(
+        "/search/probation-cases",
+        writeAsJson(mapOf("crn" to crnActiveInProbation)),
+        File(
+          "$gatewaysFolder/ndelius/fixtures/GetOffenderResponseStatusActive.json",
+        ).readText(),
+      )
+
+      nDeliusMockServer.stubForPost(
+        "/search/probation-cases",
+        writeAsJson(mapOf("crn" to crnNotActiveInProbation)),
+        File(
+          "$gatewaysFolder/ndelius/fixtures/GetOffenderResponseStatusInactive.json",
+        ).readText(),
+      )
+
+      nDeliusMockServer.stubForPost(
+        "/search/probation-cases",
+        writeAsJson(mapOf("crn" to crnNotActiveInPrisonOrProb)),
+        File(
+          "$gatewaysFolder/ndelius/fixtures/GetOffenderResponseStatusNone.json",
+        ).readText(),
+      )
+
+      nDeliusMockServer.stubForPost(
+        "/search/probation-cases",
+        writeAsJson(mapOf("nomsNumber" to nomsIdNotActiveInPrisonOrProb)),
+        File(
+          "$gatewaysFolder/ndelius/fixtures/GetOffenderResponseStatusNone.json",
         ).readText(),
       )
 
@@ -274,6 +321,36 @@ abstract class IntegrationTestBase {
         """
                   {
                   "crn": "$crn",
+                  "existsInDelius": true
+              }
+              """,
+      )
+
+      nDeliusMockServer.stubForGet(
+        "/exists-in-delius/crn/$crnNotActiveInProbation",
+        """
+                  {
+                  "crn": "$crnActiveInProbation",
+                  "existsInDelius": true
+              }
+              """,
+      )
+
+      nDeliusMockServer.stubForGet(
+        "/exists-in-delius/crn/$crnActiveInProbation",
+        """
+              {
+                  "crn": "$crnNotActiveInProbation",
+                  "existsInDelius": true
+              }
+              """,
+      )
+
+      nDeliusMockServer.stubForGet(
+        "/exists-in-delius/crn/$crnNotActiveInPrisonOrProb",
+        """
+              {
+                  "crn": "$crnNotActiveInPrisonOrProb",
                   "existsInDelius": true
               }
               """,

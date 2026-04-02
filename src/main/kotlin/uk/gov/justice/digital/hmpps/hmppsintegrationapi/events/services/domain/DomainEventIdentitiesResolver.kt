@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.domain
 
-import com.microsoft.applicationinsights.TelemetryClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
@@ -20,7 +19,7 @@ class DomainEventIdentitiesResolver(
   @Autowired val getPrisonIdService: GetPrisonIdService,
   private val personService: GetPersonService,
   private val featureFlagService: FeatureFlagConfig,
-  private val telemetryService: TelemetryService
+  private val telemetryService: TelemetryService,
 ) {
   /**
    * The hmpps id is an id that the end client will use in ongoing processing.
@@ -71,17 +70,28 @@ class DomainEventIdentitiesResolver(
     return null
   }
 
-  fun getSupervisionStatus(hmppsEvent: HmppsDomainEvent): String? {
-
-    if(!featureFlagService.isEnabled(FeatureFlagConfig.INCLUDE_SUPERVISION_STATUS_ATTRIBUTE)) {
+  fun getSupervisionStatus(hmppsId: String?): String? {
+    if (!featureFlagService.isEnabled(FeatureFlagConfig.INCLUDE_SUPERVISION_STATUS_ATTRIBUTE)) {
       return null
     }
-    try{
-      val nomsNumber = getNomisNumber(hmppsEvent)
-      return nomsNumber?.let { personService.getPersonSupervisionStatus(it) }
+    // if hmppsId can not be resolved at all, then we cant determine the supervision status - return UNKNOWN
+    // hmppsId will always be a CRN if no nomis number is present in the event
+    // If we only have a CRN at this stage we need to find a nomis number from which to check the prison status
+    // If we cant find a nomis number then we cant determine the supervision status - return UNKNOWN
+    // The person service getPersonSupervisionStatus function will continue to check the probation status in NDelius using the nomis number
+
+    val nomisId =
+      hmppsId?.let {
+        personService.convert(it, GetPersonService.IdentifierType.NOMS).data
+      } ?: return SupervisionStatus.UNKNOWN.name
+
+    return try {
+      personService.getPersonSupervisionStatus(nomisId)
     } catch (ex: UpstreamApiException) {
-      when (ex.errorType){
-         UpstreamApiError.Type.ENTITY_NOT_FOUND -> { return SupervisionStatus.UNKNOWN.name }
+      when (ex.errorType) {
+        UpstreamApiError.Type.ENTITY_NOT_FOUND -> {
+          SupervisionStatus.UNKNOWN.name
+        }
         else -> {
           telemetryService.captureException(ex)
           throw ex
