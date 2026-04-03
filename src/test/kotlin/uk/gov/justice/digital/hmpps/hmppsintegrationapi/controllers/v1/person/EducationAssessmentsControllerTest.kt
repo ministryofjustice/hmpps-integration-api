@@ -51,7 +51,6 @@ class EducationAssessmentsControllerTest(
 
       beforeTest {
         Mockito.reset(featureFlagConfig)
-        whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.NORMALISED_PATH_MATCHING)).thenReturn(true)
       }
 
       describe("Notify that a given person/offender has had a change of status to their Education Assessments") {

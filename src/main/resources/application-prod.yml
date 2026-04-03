@@ -56,19 +56,18 @@ feature-flag:
   epf-gateway-disabled: true
   cpr-enabled: true
   gateway-cache-enabled: true
-  normalised-path-matching: true
   use-webclient-wrapper-for-hmpps-auth: false
   # Events Config
-  enable-delete-processed-events: false
-  enable-publish-pending-events: false
-  enable-domain-events-queue-listener: false
-  enable-subscription-filter-policy-updater: false
+  enable-delete-processed-events: true
+  enable-publish-pending-events: true
+  enable-domain-events-queue-listener: true
+  enable-subscription-filter-policy-updater: true
   person-languages-changed-notifications-enabled: true
   prisoner-base-location-changed-notifications-enabled: true
   prisoner-merge-notifications-enabled: false
   contact-events-notifications-enabled: false
   limited-access-notifications-enabled: true
-  deduplicate-events: false
+  deduplicate-events: true
 
 authorisation:
   consumers:
@@ -111,3 +110,23 @@ authorisation:
       notes: "See client list in Confluence"
       roles:
         - "moj-prisoner-facing"
+
+hmpps.sqs:
+  queues:
+    hmppsdomainqueue:
+      queueName: ${HMPPS_DOMAIN_QUEUE_NAME}
+      queueArn: ${HMPPS_DOMAIN_QUEUE_ARN}
+      dlqName: ${HMPPS_DOMAIN_DL_QUEUE_NAME}
+      subscribeTopicId: domainevents
+    plpsubscriberqueue:
+      queueName: ${PLP_QUEUE_NAME}
+      queueArn: ${PLP_QUEUE_ARN}
+      subscribeTopicId: integrationeventtopic
+    pndsubscriberqueue:
+      queueName: ${PND_QUEUE_NAME}
+      queueArn: ${PND_QUEUE_ARN}
+      subscribeTopicId: integrationeventtopic
+    ctrlosubscriberqueue:
+      queueName: ${CTRLO_QUEUE_NAME}
+      queueArn: ${CTRLO_QUEUE_ARN}
+      subscribeTopicId: integrationeventtopic

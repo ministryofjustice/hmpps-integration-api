@@ -68,7 +68,6 @@ class EducationCourseServiceTest :
                 courseName = "Test Course",
                 courseType = "Test course type",
                 provider = "Moodle",
-                completionDate = LocalDate.of(2024, 1, 15),
                 completionDateTime = OffsetDateTime.of(2024, 1, 15, 16, 0, 0, 0, ZoneOffset.ofHours(0)),
                 status = "Completed",
                 totalTimeMinutes = 150,
