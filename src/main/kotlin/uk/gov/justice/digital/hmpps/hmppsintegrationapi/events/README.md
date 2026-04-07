@@ -25,8 +25,7 @@ This project has three asynchronous processes:
 
 To restrict the events that a consumer receives, the SNS subscription filter policy for each queue is updated every deploy of the code. To do this, we
 
-1. Call the Integration API's config method to receive the updated consumer configurations.
-2. Update the SNS subscription filter policy.
+- Update the SNS subscription filter policy.
 
 We set the filter policies to only allow the events that
 
