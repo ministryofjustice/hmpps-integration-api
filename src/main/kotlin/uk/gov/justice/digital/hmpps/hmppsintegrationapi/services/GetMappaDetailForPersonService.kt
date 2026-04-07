@@ -30,7 +30,7 @@ class GetMappaDetailForPersonService(
       nDeliusMappaDetailResponse = nDeliusGateway.getMappaDetailForPerson(id = deliusCrn)
 
       if (nDeliusMappaDetailResponse.data != null) {
-        val mappaDetail = nDeliusMappaDetailResponse.data!!
+        val mappaDetail = nDeliusMappaDetailResponse.data
         if (isNotPopulated(mappaDetail)) {
           nDeliusMappaDetailResponse.errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NDELIUS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))
         }

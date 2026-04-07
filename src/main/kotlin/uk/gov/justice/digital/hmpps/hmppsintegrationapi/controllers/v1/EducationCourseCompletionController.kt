@@ -31,7 +31,7 @@ class EducationCourseCompletionController(
       ApiResponse(responseCode = "500", description = "Internal server error."),
     ],
   )
-  @FeatureFlag(name = FeatureFlagConfig.Companion.COURSE_COMPLETION_EVENT)
+  @FeatureFlag(name = FeatureFlagConfig.COURSE_COMPLETION_EVENT)
   fun recordCourseCompletion(
     @RequestBody request: EducationCourseCompletionRequest,
   ): Response<HmppsMessageResponse> = educationCourseCompletionService.recordCourseCompletion(request)

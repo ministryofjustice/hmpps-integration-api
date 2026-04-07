@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.service
 
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -63,7 +62,7 @@ class SendEventServiceTest {
 
     argumentCaptor<EventNotification>().apply {
       verify(integrationEventTopicService, times(1)).sendEvent(capture())
-      Assertions.assertThat(firstValue).isEqualTo(event)
+      assertThat(firstValue).isEqualTo(event)
     }
   }
 

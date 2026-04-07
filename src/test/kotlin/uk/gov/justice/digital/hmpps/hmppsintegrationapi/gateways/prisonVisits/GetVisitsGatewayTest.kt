@@ -133,10 +133,10 @@ class GetVisitsGatewayTest(
         prisonVisitsApiMockServer.stubForGet(pathWithQueryParams, body = exampleData, HttpStatus.OK)
         val response = prisonVisitsGateway.getVisits(prisonId, hmppsId, fromDate, toDate, visitStatus, page, size)
         response.data.shouldNotBeNull()
-        response.data!!
+        response.data
           .content
           .first()
-          ?.visitStatus
+          .visitStatus
           .shouldBe("RESERVED")
       }
 
@@ -256,14 +256,14 @@ class GetVisitsGatewayTest(
 
         val response = prisonVisitsGateway.getVisits(prisonId, hmppsId, fromDate, toDate, visitStatus, page, size)
         response.data.shouldNotBeNull()
-        response.data!!
+        response.data
           .content
           .first()
-          ?.visitStatus
+          .visitStatus
           .shouldBe("RESERVED")
-        response.data!!
+        response.data
           .content[1]
-          ?.visitStatus
+          .visitStatus
           .shouldBe("BOOKED")
       }
     },

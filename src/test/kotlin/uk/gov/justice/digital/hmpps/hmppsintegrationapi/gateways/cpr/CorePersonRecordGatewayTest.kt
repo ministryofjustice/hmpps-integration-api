@@ -41,7 +41,7 @@ class CorePersonRecordGatewayTest(
   private val corePersonRecordGateway: CorePersonRecordGateway,
 ) : DescribeSpec(
     {
-      val cprMockServer = ApiMockServer.Companion.create(UpstreamApi.CORE_PERSON_RECORD)
+      val cprMockServer = ApiMockServer.create(UpstreamApi.CORE_PERSON_RECORD)
       val objectMapper = jacksonObjectMapper()
       val crn = DEFAULT_CRN
       val nomsId = "G2996UX"
@@ -50,7 +50,7 @@ class CorePersonRecordGatewayTest(
         cprMockServer.start()
         Mockito.reset(hmppsAuthGateway)
         whenever(hmppsAuthGateway.getClientToken("CORE_PERSON_RECORD")).thenReturn(
-          HmppsAuthMockServer.Companion.TOKEN,
+          HmppsAuthMockServer.TOKEN,
         )
         cprMockServer.stubForGet("/person/probation/$crn", objectMapper.writeValueAsString(CorePersonRecord(identifiers = Identifiers(prisonNumbers = listOf(nomsId)))), HttpStatus.OK)
         cprMockServer.stubForGet("/person/prison/$nomsId", objectMapper.writeValueAsString(CorePersonRecord(identifiers = Identifiers(crns = listOf(crn)))), HttpStatus.OK)

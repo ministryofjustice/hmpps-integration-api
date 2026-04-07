@@ -89,9 +89,9 @@ class GetIEPReviewHistoryTest(
       val response = incentivesGateway.getIEPReviewHistory(hmppsId)
       response.errors.shouldBeEmpty()
       response.data.shouldNotBeNull()
-      response.data!!.id.shouldBe(12345)
-      response.data!!.iepCode.shouldBe("STD")
-      response.data!!.iepLevel shouldBe ("Standard")
+      response.data.id.shouldBe(12345)
+      response.data.iepCode.shouldBe("STD")
+      response.data.iepLevel shouldBe ("Standard")
     }
 
     it("should return error when bad request is returned") {

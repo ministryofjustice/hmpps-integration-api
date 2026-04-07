@@ -93,7 +93,7 @@ class PostTransactionForPersonTest(
 
       response.errors.shouldBeEmpty()
       response.data.shouldNotBeNull()
-      response.data!!
+      response.data
         .id
         .shouldBe("6179604-1")
     }

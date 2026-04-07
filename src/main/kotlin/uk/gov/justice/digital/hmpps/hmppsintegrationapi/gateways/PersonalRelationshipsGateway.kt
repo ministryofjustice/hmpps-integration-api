@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
@@ -30,7 +29,6 @@ class PersonalRelationshipsGateway(
     )
 
   private val webClient = WebClientWrapper(baseUrl)
-  private val mapper: ObjectMapper = ObjectMapper()
 
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
@@ -44,12 +42,12 @@ class PersonalRelationshipsGateway(
         UpstreamApi.PERSONAL_RELATIONSHIPS,
       )
     return when (result) {
-      is WebClientWrapper.WebClientWrapperResponse.Success -> {
-        return Response(
+      is WebClientWrapperResponse.Success -> {
+        Response(
           data = result.data,
         )
       }
-      is WebClientWrapper.WebClientWrapperResponse.Error -> {
+      is WebClientWrapperResponse.Error -> {
         Response(
           data = null,
           errors = result.errors,
@@ -68,12 +66,12 @@ class PersonalRelationshipsGateway(
       )
 
     return when (result) {
-      is WebClientWrapper.WebClientWrapperResponse.Success -> {
-        return Response(
+      is WebClientWrapperResponse.Success -> {
+        Response(
           data = result.data,
         )
       }
-      is WebClientWrapper.WebClientWrapperResponse.Error -> {
+      is WebClientWrapperResponse.Error -> {
         Response(
           data = null,
           errors = result.errors,
@@ -92,13 +90,13 @@ class PersonalRelationshipsGateway(
       )
 
     return when (result) {
-      is WebClientWrapper.WebClientWrapperResponse.Success -> {
-        return Response(
+      is WebClientWrapperResponse.Success -> {
+        Response(
           data = result.data,
         )
       }
 
-      is WebClientWrapper.WebClientWrapperResponse.Error -> {
+      is WebClientWrapperResponse.Error -> {
         Response(
           data = null,
           errors = result.errors,
@@ -174,7 +172,5 @@ class PersonalRelationshipsGateway(
     )
   }
 
-  private fun uriEmergencyOrNOK(emergencyOrNextOfKin: Boolean?): String {
-    return if (emergencyOrNextOfKin == true) return "&emergencyContactOrNextOfKin=true" else ""
-  }
+  private fun uriEmergencyOrNOK(emergencyOrNextOfKin: Boolean?): String = if (emergencyOrNextOfKin == true) "&emergencyContactOrNextOfKin=true" else ""
 }

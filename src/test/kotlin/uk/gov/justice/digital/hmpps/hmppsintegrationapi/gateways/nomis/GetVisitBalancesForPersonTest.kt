@@ -66,7 +66,7 @@ class GetVisitBalancesForPersonTest(
       val response = prisonApiGateway.getVisitBalances(offenderNumber)
 
       response.data.shouldNotBeNull()
-      response.data?.remainingVo.shouldBe(1073741824)
+      response.data.remainingVo.shouldBe(1073741824)
     }
 
     it("returns an error when 400 Bad Request is returned because of an invalid request") {

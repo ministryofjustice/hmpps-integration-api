@@ -93,7 +93,7 @@ class GetProtectedCharacteristicsServiceTest {
 
   @Test
   fun `Probation offender search return no nomsNumber, return only probation data`() {
-    val mockOffender: Offender = Offender("John", "Smith", otherIds = OtherIds(), age = 35, gender = "Male", offenderProfile = OffenderProfile(sexualOrientation = "Unknown", ethnicity = "British", nationality = "British", religion = "None", disabilities = emptyList()))
+    val mockOffender = Offender("John", "Smith", otherIds = OtherIds(), age = 35, gender = "Male", offenderProfile = OffenderProfile(sexualOrientation = "Unknown", ethnicity = "British", nationality = "British", religion = "None", disabilities = emptyList()))
     whenever(deliusGateway.getOffender(hmppsId)).thenReturn(Response<Offender?>(data = mockOffender, errors = emptyList()))
 
     val result = service.execute(hmppsId, filters)
@@ -102,20 +102,20 @@ class GetProtectedCharacteristicsServiceTest {
     verifyNoInteractions(prisonApiGateway)
     result.data.shouldNotBeNull()
     result.errors.shouldHaveSize(0)
-    result.data!!.age.shouldBe(35)
-    result.data!!.gender.shouldBe("Male")
-    result.data!!.sexualOrientation.shouldBe("Unknown")
-    result.data!!.ethnicity.shouldBe("British")
-    result.data!!.nationality.shouldBe("British")
-    result.data!!.religion.shouldBe("None")
-    result.data!!.disabilities.shouldHaveSize(0)
-    result.data!!.maritalStatus.shouldBeNull()
-    result.data!!.reasonableAdjustments.shouldHaveSize(0)
+    result.data.age.shouldBe(35)
+    result.data.gender.shouldBe("Male")
+    result.data.sexualOrientation.shouldBe("Unknown")
+    result.data.ethnicity.shouldBe("British")
+    result.data.nationality.shouldBe("British")
+    result.data.religion.shouldBe("None")
+    result.data.disabilities.shouldHaveSize(0)
+    result.data.maritalStatus.shouldBeNull()
+    result.data.reasonableAdjustments.shouldHaveSize(0)
   }
 
   @Test
   fun `Prisoner no booking, return data from probation and prison search`() {
-    val mockPrisonOffender: POSPrisoner = POSPrisoner(firstName = "John", lastName = "Smith", maritalStatus = "Widowed", youthOffender = false)
+    val mockPrisonOffender = POSPrisoner(firstName = "John", lastName = "Smith", maritalStatus = "Widowed", youthOffender = false)
 
     whenever(deliusGateway.getOffender(hmppsId)).thenReturn(Response(data = mockOffender, errors = emptyList()))
     whenever(prisonerOffenderSearchGateway.getPrisonOffender(mockOffender.otherIds.nomsNumber!!)).thenReturn(Response(data = mockPrisonOffender))
@@ -128,15 +128,15 @@ class GetProtectedCharacteristicsServiceTest {
     verifyNoInteractions(prisonApiGateway)
     result.data.shouldNotBeNull()
     result.errors.shouldHaveSize(0)
-    result.data!!.age.shouldBe(35)
-    result.data!!.gender.shouldBe("Male")
-    result.data!!.sexualOrientation.shouldBe("Unknown")
-    result.data!!.ethnicity.shouldBe("British")
-    result.data!!.nationality.shouldBe("British")
-    result.data!!.religion.shouldBe("None")
-    result.data!!.disabilities.shouldHaveSize(0)
-    result.data!!.maritalStatus.shouldBe("Widowed")
-    result.data!!.reasonableAdjustments.shouldHaveSize(0)
+    result.data.age.shouldBe(35)
+    result.data.gender.shouldBe("Male")
+    result.data.sexualOrientation.shouldBe("Unknown")
+    result.data.ethnicity.shouldBe("British")
+    result.data.nationality.shouldBe("British")
+    result.data.religion.shouldBe("None")
+    result.data.disabilities.shouldHaveSize(0)
+    result.data.maritalStatus.shouldBe("Widowed")
+    result.data.reasonableAdjustments.shouldHaveSize(0)
   }
 
   @Test
@@ -152,16 +152,16 @@ class GetProtectedCharacteristicsServiceTest {
 
     result.data.shouldNotBeNull()
     result.errors.shouldHaveSize(0)
-    result.data!!.age.shouldBe(35)
-    result.data!!.gender.shouldBe("Male")
-    result.data!!.sexualOrientation.shouldBe("Unknown")
-    result.data!!.ethnicity.shouldBe("British")
-    result.data!!.nationality.shouldBe("British")
-    result.data!!.religion.shouldBe("None")
-    result.data!!.disabilities.shouldHaveSize(0)
-    result.data!!.maritalStatus.shouldBe("Widowed")
-    result.data!!.reasonableAdjustments.shouldHaveSize(1)
-    result.data!!
+    result.data.age.shouldBe(35)
+    result.data.gender.shouldBe("Male")
+    result.data.sexualOrientation.shouldBe("Unknown")
+    result.data.ethnicity.shouldBe("British")
+    result.data.nationality.shouldBe("British")
+    result.data.religion.shouldBe("None")
+    result.data.disabilities.shouldHaveSize(0)
+    result.data.maritalStatus.shouldBe("Widowed")
+    result.data.reasonableAdjustments.shouldHaveSize(1)
+    result.data
       .reasonableAdjustments
       .first()
       .treatmentCode
@@ -181,16 +181,16 @@ class GetProtectedCharacteristicsServiceTest {
 
     result.data.shouldNotBeNull()
     result.errors.shouldHaveSize(0)
-    result.data!!.age.shouldBe(35)
-    result.data!!.gender.shouldBe("Male")
-    result.data!!.sexualOrientation.shouldBe("Unknown")
-    result.data!!.ethnicity.shouldBe("British")
-    result.data!!.nationality.shouldBe("British")
-    result.data!!.religion.shouldBe("None")
-    result.data!!.disabilities.shouldHaveSize(0)
-    result.data!!.maritalStatus.shouldBe("Widowed")
-    result.data!!.reasonableAdjustments.shouldHaveSize(1)
-    result.data!!
+    result.data.age.shouldBe(35)
+    result.data.gender.shouldBe("Male")
+    result.data.sexualOrientation.shouldBe("Unknown")
+    result.data.ethnicity.shouldBe("British")
+    result.data.nationality.shouldBe("British")
+    result.data.religion.shouldBe("None")
+    result.data.disabilities.shouldHaveSize(0)
+    result.data.maritalStatus.shouldBe("Widowed")
+    result.data.reasonableAdjustments.shouldHaveSize(1)
+    result.data
       .reasonableAdjustments
       .first()
       .treatmentCode

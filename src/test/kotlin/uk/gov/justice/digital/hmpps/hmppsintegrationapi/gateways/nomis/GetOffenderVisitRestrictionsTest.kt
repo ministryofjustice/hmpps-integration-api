@@ -77,7 +77,7 @@ class GetOffenderVisitRestrictionsTest(
         val response = prisonApiGateway.getOffenderVisitRestrictions(offenderNo)
 
         response.data.shouldNotBeNull()
-        response.data!!.count().shouldBeGreaterThan(0)
+        response.data.count().shouldBeGreaterThan(0)
       }
 
       it("returns a person with an empty list of restrictions when no restrictions are found") {

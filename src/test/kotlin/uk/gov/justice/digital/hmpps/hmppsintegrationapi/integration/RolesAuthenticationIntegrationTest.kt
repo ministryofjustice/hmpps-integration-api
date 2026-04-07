@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.TestPropertySource
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import kotlin.test.assertTrue
 
@@ -40,7 +39,7 @@ class RolesAuthenticationIntegrationTest : IntegrationTestBase() {
       allRoles
         .filter { !(it.value.permissions!!.any { r -> r.contains(".*") || r.contains("[^/]") }) }
         .flatMap { role ->
-          val roleEndpoints = ((role.value.permissions!!.toSet() subtract allEndpoints.permissions!!.toSet()) + (allEndpoints.permissions!!.toSet() subtract role.value.permissions!!.toSet())).toList()
+          val roleEndpoints = ((role.value.permissions!!.toSet() subtract allEndpoints.permissions!!.toSet()) + (allEndpoints.permissions.toSet() subtract role.value.permissions!!.toSet())).toList()
           roleEndpoints.map { endpoint ->
             val endpointCrn = fillEndpoint(endpoint)
             callApiWithCN(endpointCrn, role.value.name!!).andReturn().response

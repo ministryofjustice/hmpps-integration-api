@@ -138,10 +138,10 @@ class GetAlertsForPrisonerTest(
       it("returns alerts for the matching person ID") {
         val response = prisonerAlertsGateway.getPrisonerAlertsForCodes(prisonerNumber, page, size)
         response.data.shouldNotBeNull()
-        response.data!!
+        response.data
           .content.size
           .shouldBeGreaterThan(0)
-        response.data!!
+        response.data
           .content
           .first()
           .alertUuid
@@ -161,7 +161,7 @@ class GetAlertsForPrisonerTest(
         val response = prisonerAlertsGateway.getPrisonerAlertsForCodes(prisonerNumber, page, size, testRoleWithPndAlerts.filters?.alertCodes!!)
         // If the path has resolved to a stub and returned the json with the uuid, the request has used the path without codes
         response.data.shouldNotBeNull()
-        response.data!!
+        response.data
           .content
           .first()
           .alertUuid
@@ -174,7 +174,7 @@ class GetAlertsForPrisonerTest(
         val response = prisonerAlertsGateway.getPrisonerAlertsForCodes(prisonerNumber, page, size, emptyList())
         // If the path has NOT resolved to a stub and returned the json with the uuid, the request has used the path without alert codes
         response.data.shouldNotBeNull()
-        response.data!!
+        response.data
           .content
           .first()
           .alertUuid

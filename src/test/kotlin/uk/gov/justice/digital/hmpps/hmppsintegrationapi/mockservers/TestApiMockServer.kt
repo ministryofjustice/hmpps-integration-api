@@ -19,11 +19,9 @@ class TestApiMockServer : WireMockServer(WIREMOCK_PORT) {
     delayMillis: Int = 0,
   ) {
     stubFor(
-      WireMock
-        .get(path)
+      get(path)
         .willReturn(
-          WireMock
-            .aResponse()
+          aResponse()
             .withHeader("Content-Type", "application/json")
             .withStatus(status.value())
             .withBody(body.trimIndent())
@@ -63,8 +61,7 @@ class TestApiMockServer : WireMockServer(WIREMOCK_PORT) {
   ) {
     stubFor(
       WireMock.post(path).willReturn(
-        WireMock
-          .aResponse()
+        aResponse()
           .withHeader("Content-Type", "application/json")
           .withStatus(status.value())
           .withBody(body.trimIndent())

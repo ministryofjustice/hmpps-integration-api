@@ -27,44 +27,44 @@ class RiskPredictorScoreTest :
 
           val integrationApiRiskPredictorScore = arnRiskPredictorScore.toRiskPredictorScore()
 
-          integrationApiRiskPredictorScore.completedDate.shouldBe(LocalDateTime.parse(arnRiskPredictorScore.completedDate))
+          integrationApiRiskPredictorScore.completedDate.shouldBe(LocalDateTime.parse(arnRiskPredictorScore.completedDate!!))
           integrationApiRiskPredictorScore.assessmentStatus.shouldBe(arnRiskPredictorScore.status)
           integrationApiRiskPredictorScore.assessmentVersion.shouldBe(arnRiskPredictorScore.outputVersion.toIntOrNull())
 
-          integrationApiRiskPredictorScore.generalPredictor?.scoreLevel.shouldBe(
+          integrationApiRiskPredictorScore.generalPredictor.scoreLevel.shouldBe(
             arnRiskPredictorScore.output.generalPredictorScore.ogpRisk,
           )
-          integrationApiRiskPredictorScore.generalPredictor?.score.shouldBe(
+          integrationApiRiskPredictorScore.generalPredictor.score.shouldBe(
             arnRiskPredictorScore.output.generalPredictorScore.ogp2Year,
           )
-          integrationApiRiskPredictorScore.violencePredictor?.scoreLevel.shouldBe(
+          integrationApiRiskPredictorScore.violencePredictor.scoreLevel.shouldBe(
             arnRiskPredictorScore.output.violencePredictorScore.ovpRisk,
           )
-          integrationApiRiskPredictorScore.violencePredictor?.score.shouldBe(
+          integrationApiRiskPredictorScore.violencePredictor.score.shouldBe(
             arnRiskPredictorScore.output.violencePredictorScore.twoYears,
           )
-          integrationApiRiskPredictorScore.groupReconviction?.scoreLevel.shouldBe(
+          integrationApiRiskPredictorScore.groupReconviction.scoreLevel.shouldBe(
             arnRiskPredictorScore.output.groupReconvictionScore.scoreLevel,
           )
-          integrationApiRiskPredictorScore.groupReconviction?.score.shouldBe(
+          integrationApiRiskPredictorScore.groupReconviction.score.shouldBe(
             arnRiskPredictorScore.output.groupReconvictionScore.twoYears,
           )
-          integrationApiRiskPredictorScore.riskOfSeriousRecidivism?.scoreLevel.shouldBe(
+          integrationApiRiskPredictorScore.riskOfSeriousRecidivism.scoreLevel.shouldBe(
             arnRiskPredictorScore.output.riskOfSeriousRecidivismScore.scoreLevel,
           )
-          integrationApiRiskPredictorScore.riskOfSeriousRecidivism?.score.shouldBe(
+          integrationApiRiskPredictorScore.riskOfSeriousRecidivism.score.shouldBe(
             arnRiskPredictorScore.output.riskOfSeriousRecidivismScore.percentageScore,
           )
-          integrationApiRiskPredictorScore.sexualPredictor?.indecentScoreLevel.shouldBe(
+          integrationApiRiskPredictorScore.sexualPredictor.indecentScoreLevel.shouldBe(
             arnRiskPredictorScore.output.sexualPredictorScore.ospIndecentScoreLevel,
           )
-          integrationApiRiskPredictorScore.sexualPredictor?.indecentScore.shouldBe(
+          integrationApiRiskPredictorScore.sexualPredictor.indecentScore.shouldBe(
             arnRiskPredictorScore.output.sexualPredictorScore.ospIndirectImagePercentageScore,
           )
-          integrationApiRiskPredictorScore.sexualPredictor?.contactScoreLevel.shouldBe(
+          integrationApiRiskPredictorScore.sexualPredictor.contactScoreLevel.shouldBe(
             arnRiskPredictorScore.output.sexualPredictorScore.ospContactScoreLevel,
           )
-          integrationApiRiskPredictorScore.sexualPredictor?.contactScore.shouldBe(
+          integrationApiRiskPredictorScore.sexualPredictor.contactScore.shouldBe(
             arnRiskPredictorScore.output.sexualPredictorScore.ospDirectContactPercentageScore,
           )
         }
@@ -88,7 +88,7 @@ class RiskPredictorScoreTest :
 
           val integrationApiRiskPredictorScore = arnRiskPredictorScore.toRiskPredictorScore()
 
-          integrationApiRiskPredictorScore.completedDate.shouldBe(LocalDateTime.parse(arnRiskPredictorScore.completedDate))
+          integrationApiRiskPredictorScore.completedDate.shouldBe(LocalDateTime.parse(arnRiskPredictorScore.completedDate!!))
           integrationApiRiskPredictorScore.assessmentStatus.shouldBe(arnRiskPredictorScore.status)
           integrationApiRiskPredictorScore.assessmentVersion.shouldBe(arnRiskPredictorScore.outputVersion.toIntOrNull())
 
@@ -149,7 +149,7 @@ class RiskPredictorScoreTest :
 
           val integrationApiRiskPredictorScore = arnRiskPredictorScore.toRiskPredictorScore()
 
-          integrationApiRiskPredictorScore.completedDate.shouldBe(LocalDateTime.parse(arnRiskPredictorScore.completedDate))
+          integrationApiRiskPredictorScore.completedDate.shouldBe(LocalDateTime.parse(arnRiskPredictorScore.completedDate!!))
           integrationApiRiskPredictorScore.assessmentStatus.shouldBe(arnRiskPredictorScore.status)
           integrationApiRiskPredictorScore.assessmentVersion.shouldBe(arnRiskPredictorScore.outputVersion.toIntOrNull())
 

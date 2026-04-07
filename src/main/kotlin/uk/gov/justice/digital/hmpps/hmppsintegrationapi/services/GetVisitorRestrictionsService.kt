@@ -51,7 +51,7 @@ class GetVisitorRestrictionsService(
 
     val prisonerContactIds = linkedPrisoners.prisoners.map { it.prisonerContactId }
     for (prisonerContactId in prisonerContactIds) {
-      val gatewayResult = personalRelationshipsGateway.getPrisonerContactRestrictions(prisonerContactId!!)
+      val gatewayResult = personalRelationshipsGateway.getPrisonerContactRestrictions(prisonerContactId)
       if (gatewayResult.errors.isEmpty() && gatewayResult.data != null) {
         if (gatewayResult.data.prisonerContactRestrictions != null) {
           prisonerContactRestrictions.addAll(gatewayResult.data.prisonerContactRestrictions.map { it.toContactRestriction() })

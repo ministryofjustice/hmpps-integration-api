@@ -104,7 +104,7 @@ class AddressTest :
                 "WORK" to "Work Address",
               )
 
-            codeAndDescription.forEach { it ->
+            codeAndDescription.forEach {
               val address = generateNomisTestAddress(addressType = it.key)
               address.toAddress().types.shouldContain(Type(it.key, it.value))
             }

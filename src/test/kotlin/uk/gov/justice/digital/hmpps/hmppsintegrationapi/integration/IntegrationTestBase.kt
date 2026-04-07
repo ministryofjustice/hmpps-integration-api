@@ -89,7 +89,7 @@ abstract class IntegrationTestBase {
     reset(eventNotificationRepository)
 
     cacheManager.cacheNames.forEach {
-      cacheManager.getCache(it).clear()
+      cacheManager.getCache(it)!!.clear()
     }
 
     prisonerOffenderSearchMockServer.stubForGet(
@@ -343,12 +343,6 @@ abstract class IntegrationTestBase {
         .headers(getAuthHeader(cn))
         .content(requestBody)
         .contentType(org.springframework.http.MediaType.APPLICATION_JSON),
-    )
-
-  fun putApi(path: String): ResultActions =
-    mockMvc.perform(
-      put(path)
-        .headers(getAuthHeader()),
     )
 
   fun putApi(

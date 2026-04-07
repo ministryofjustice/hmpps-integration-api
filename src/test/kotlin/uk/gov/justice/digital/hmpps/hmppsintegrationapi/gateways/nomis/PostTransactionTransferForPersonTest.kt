@@ -106,13 +106,13 @@ class PostTransactionTransferForPersonTest(
 
       response.errors.shouldBeEmpty()
       response.data.shouldNotBeNull()
-      response.data!!
+      response.data
         .transactionId
         .shouldBe(6179604)
-      response.data!!
+      response.data
         .debitTransaction.id
         .shouldBe("6179604-1")
-      response.data!!
+      response.data
         .creditTransaction.id
         .shouldBe("6179604-1")
     }

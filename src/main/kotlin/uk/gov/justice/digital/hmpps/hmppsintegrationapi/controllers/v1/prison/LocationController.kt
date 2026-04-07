@@ -62,7 +62,7 @@ class LocationController(
   ): DataResponse<Location?> {
     val response = getLocationByKeyService.execute(prisonId, key, filters)
 
-    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+    if (response.hasError(BAD_REQUEST)) {
       throw ValidationException("Invalid query parameters.")
     }
 

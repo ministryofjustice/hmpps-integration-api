@@ -81,10 +81,8 @@ class PrisonApiGateway(
     }
   }
 
-  fun getImageData(id: Int): Response<ByteArray> {
-    val result = webClient.request<ByteArray>(HttpMethod.GET, "/api/images/$id/data", authenticationHeader(), UpstreamApi.PRISON_API)
-
-    return when (result) {
+  fun getImageData(id: Int): Response<ByteArray> =
+    when (val result = webClient.request<ByteArray>(HttpMethod.GET, "/api/images/$id/data", authenticationHeader(), UpstreamApi.PRISON_API)) {
       is WebClientWrapperResponse.Success -> {
         Response(data = result.data)
       }
@@ -96,7 +94,6 @@ class PrisonApiGateway(
         )
       }
     }
-  }
 
   fun getAddressesForPerson(id: String): Response<List<Address>> {
     val result =

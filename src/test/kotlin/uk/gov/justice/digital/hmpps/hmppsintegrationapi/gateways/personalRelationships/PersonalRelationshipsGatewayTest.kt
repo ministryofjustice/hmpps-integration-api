@@ -92,7 +92,7 @@ class PersonalRelationshipsGatewayTest(
       val response = personalRelationshipsGateway.getLinkedPrisoner(contactId)
       response.errors.shouldBeEmpty()
       response.data.shouldNotBeNull()
-      response.data!!
+      response.data
         .prisoners
         .first()
         .prisonerContactId
@@ -151,7 +151,7 @@ class PersonalRelationshipsGatewayTest(
       val response = personalRelationshipsGateway.getPrisonerContactRestrictions(prisonerContactId)
       response.errors.shouldBeEmpty()
       response.data.shouldNotBeNull()
-      response.data!!
+      response.data
         .prisonerContactRestrictions!!
         .first()
         .prisonerContactRestrictionId
@@ -316,12 +316,12 @@ class PersonalRelationshipsGatewayTest(
         val response = personalRelationshipsGateway.getContactByContactId(contactId)
         response.errors.shouldBeEmpty()
         response.data.shouldNotBeNull()
-        response.data!!
+        response.data
           .addresses
           .first()
           .contactId
           .shouldBe(123456)
-        response.data!!.genderCode.shouldBe("M")
+        response.data.genderCode.shouldBe("M")
       }
     }
 
@@ -352,7 +352,7 @@ class PersonalRelationshipsGatewayTest(
         val response = personalRelationshipsGateway.getNumberOfChildren(prisonerId)
         response.errors.shouldBeEmpty()
         response.data.shouldNotBeNull()
-        response.data!!.numberOfChildren.shouldBe("2")
+        response.data.numberOfChildren.shouldBe("2")
       }
 
       it("Returns a bad request error") {

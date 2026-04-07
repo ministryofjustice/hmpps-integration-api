@@ -66,7 +66,7 @@ data class PlanReviewSchedule(
   @Schema(example = "Alex Smith", required = true, description = "The display name of the person who created this resource.")
   @get:JsonProperty("createdByDisplayName", required = true) val createdByDisplayName: String,
   @Schema(example = "2023-06-19T09:39:44Z", required = true, description = "An ISO-8601 timestamp representing when this resource was created.")
-  @get:JsonProperty("createdAt", required = true) val createdAt: java.time.OffsetDateTime,
+  @get:JsonProperty("createdAt", required = true) val createdAt: OffsetDateTime,
   @Schema(example = "BXI", required = true, description = "The identifier of the prison that the prisoner was resident at when this resource was created.")
   @get:JsonProperty("createdAtPrison", required = true) val createdAtPrison: String,
   @Schema(example = "asmith_gen", required = true, description = "The DPS username of the person who last updated this resource.")

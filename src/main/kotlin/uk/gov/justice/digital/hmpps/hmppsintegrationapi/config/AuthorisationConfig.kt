@@ -93,7 +93,7 @@ class AuthorisationConfig {
     val consumerConfig: ConsumerConfig? = consumers[consumerName]
     val roles: List<Role>? =
       consumerConfig?.roles?.mapNotNull {
-        uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles[it]
+        roles[it]
       }
     return allFilters(consumerConfig, roles)
   }

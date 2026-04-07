@@ -58,8 +58,7 @@ class TransactionsController(
         content = [
           Content(
             schema =
-              io.swagger.v3.oas.annotations.media
-                .Schema(ref = "#/components/schemas/BadRequest"),
+              Schema(ref = "#/components/schemas/BadRequest"),
           ),
         ],
       ),
@@ -68,8 +67,7 @@ class TransactionsController(
         content = [
           Content(
             schema =
-              io.swagger.v3.oas.annotations.media
-                .Schema(ref = "#/components/schemas/PersonNotFound"),
+              Schema(ref = "#/components/schemas/PersonNotFound"),
           ),
         ],
       ),
@@ -78,8 +76,7 @@ class TransactionsController(
         content = [
           Content(
             schema =
-              io.swagger.v3.oas.annotations.media
-                .Schema(ref = "#/components/schemas/InternalServerError"),
+              Schema(ref = "#/components/schemas/InternalServerError"),
           ),
         ],
       ),
@@ -133,8 +130,7 @@ class TransactionsController(
         content = [
           Content(
             schema =
-              io.swagger.v3.oas.annotations.media
-                .Schema(ref = "#/components/schemas/BadRequest"),
+              Schema(ref = "#/components/schemas/BadRequest"),
           ),
         ],
       ),
@@ -143,8 +139,7 @@ class TransactionsController(
         content = [
           Content(
             schema =
-              io.swagger.v3.oas.annotations.media
-                .Schema(ref = "#/components/schemas/PersonNotFound"),
+              Schema(ref = "#/components/schemas/PersonNotFound"),
           ),
         ],
       ),
@@ -153,8 +148,7 @@ class TransactionsController(
         content = [
           Content(
             schema =
-              io.swagger.v3.oas.annotations.media
-                .Schema(ref = "#/components/schemas/InternalServerError"),
+              Schema(ref = "#/components/schemas/InternalServerError"),
           ),
         ],
       ),
@@ -192,8 +186,7 @@ class TransactionsController(
         content = [
           Content(
             schema =
-              io.swagger.v3.oas.annotations.media
-                .Schema(ref = "#/components/schemas/BadRequest"),
+              Schema(ref = "#/components/schemas/BadRequest"),
           ),
         ],
       ),
@@ -202,8 +195,7 @@ class TransactionsController(
         content = [
           Content(
             schema =
-              io.swagger.v3.oas.annotations.media
-                .Schema(ref = "#/components/schemas/PersonNotFound"),
+              Schema(ref = "#/components/schemas/PersonNotFound"),
           ),
         ],
       ),
@@ -212,8 +204,7 @@ class TransactionsController(
         content = [
           Content(
             schema =
-              io.swagger.v3.oas.annotations.media
-                .Schema(ref = "#/components/schemas/TransactionConflict"),
+              Schema(ref = "#/components/schemas/TransactionConflict"),
           ),
         ],
       ),
@@ -222,8 +213,7 @@ class TransactionsController(
         content = [
           Content(
             schema =
-              io.swagger.v3.oas.annotations.media
-                .Schema(ref = "#/components/schemas/InternalServerError"),
+              Schema(ref = "#/components/schemas/InternalServerError"),
           ),
         ],
       ),
@@ -267,8 +257,7 @@ class TransactionsController(
         content = [
           Content(
             schema =
-              io.swagger.v3.oas.annotations.media
-                .Schema(ref = "#/components/schemas/BadRequest"),
+              Schema(ref = "#/components/schemas/BadRequest"),
           ),
         ],
       ),
@@ -277,8 +266,7 @@ class TransactionsController(
         content = [
           Content(
             schema =
-              io.swagger.v3.oas.annotations.media
-                .Schema(ref = "#/components/schemas/PersonNotFound"),
+              Schema(ref = "#/components/schemas/PersonNotFound"),
           ),
         ],
       ),
@@ -287,8 +275,7 @@ class TransactionsController(
         content = [
           Content(
             schema =
-              io.swagger.v3.oas.annotations.media
-                .Schema(ref = "#/components/schemas/TransactionConflict"),
+              Schema(ref = "#/components/schemas/TransactionConflict"),
           ),
         ],
       ),
@@ -297,8 +284,7 @@ class TransactionsController(
         content = [
           Content(
             schema =
-              io.swagger.v3.oas.annotations.media
-                .Schema(ref = "#/components/schemas/InternalServerError"),
+              Schema(ref = "#/components/schemas/InternalServerError"),
           ),
         ],
       ),

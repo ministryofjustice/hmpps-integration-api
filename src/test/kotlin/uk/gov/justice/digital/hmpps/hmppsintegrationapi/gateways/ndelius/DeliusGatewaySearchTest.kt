@@ -31,14 +31,14 @@ class DeliusGatewaySearchTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
   private val nDeliusGateway: NDeliusGateway,
 ) : DescribeSpec({
-    val nDeliusMockServer = ApiMockServer.Companion.create(UpstreamApi.NDELIUS)
+    val nDeliusMockServer = ApiMockServer.create(UpstreamApi.NDELIUS)
     val path = "/search/probation-cases"
 
     beforeEach {
       nDeliusMockServer.start()
       Mockito.reset(hmppsAuthGateway)
 
-      whenever(hmppsAuthGateway.getClientToken("nDelius")).thenReturn(HmppsAuthMockServer.Companion.TOKEN)
+      whenever(hmppsAuthGateway.getClientToken("nDelius")).thenReturn(HmppsAuthMockServer.TOKEN)
     }
 
     afterTest {

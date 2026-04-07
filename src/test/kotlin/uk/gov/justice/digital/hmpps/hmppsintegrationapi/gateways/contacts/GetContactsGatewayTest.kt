@@ -109,8 +109,8 @@ class GetContactsGatewayTest(
 
         val response = personalRelationshipsGateway.getContacts(prisonerId, page, size)
         response.data.shouldNotBeNull()
-        response.data!!.contacts.shouldHaveSize(1)
-        response.data!!
+        response.data.contacts.shouldHaveSize(1)
+        response.data
           .contacts
           .first()
           .firstName

@@ -167,18 +167,18 @@ class LocationsInsidePrisonGatewayTest(
 
           val result = locationsInsidePrisonGateway.getLocationByKey(key)
           result.data.shouldNotBeNull()
-          result.data!!.id.shouldBe("2475f250-434a-4257-afe7-b911f1773a4d")
-          result.data!!
+          result.data.id.shouldBe("2475f250-434a-4257-afe7-b911f1773a4d")
+          result.data
             .usage
             .orEmpty()
             .size
             .shouldBe(1)
-          result.data!!
+          result.data
             .changeHistory
             .orEmpty()
             .size
             .shouldBe(1)
-          result.data!!
+          result.data
             .transactionHistory
             .orEmpty()
             .size
@@ -406,15 +406,15 @@ class LocationsInsidePrisonGatewayTest(
           val result = locationsInsidePrisonGateway.getResidentialSummary(prisonId, parentPathHierarchy)
 
           result.data.shouldNotBeNull()
-          result.data!!
+          result.data
             .prisonSummary!!
             .workingCapacity
             .shouldBe(1073741824)
-          result.data!!
+          result.data
             .subLocations.size
             .shouldBe(1)
-          result.data!!.parentLocation.shouldNotBeNull()
-          result.data!!.topLevelLocationType.shouldBe("Wings")
+          result.data.parentLocation.shouldNotBeNull()
+          result.data.topLevelLocationType.shouldBe("Wings")
         }
 
         it("should return bad request if bad request thrown") {
@@ -481,7 +481,7 @@ class LocationsInsidePrisonGatewayTest(
 
           val result = locationsInsidePrisonGateway.getResidentialHierarchy(prisonId)
           result.data.shouldNotBeNull()
-          val topLevelLocations = result.data.orEmpty()
+          val topLevelLocations = result.data
           topLevelLocations.size.shouldBe(1)
           topLevelLocations[0].locationId.shouldBe("01951953-2f87-7f26-a803-e8157a95e5b5")
           topLevelLocations[0].locationType.shouldBe("WING")

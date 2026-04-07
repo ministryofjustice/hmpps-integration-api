@@ -138,7 +138,7 @@ class CaseNotesGatewayTest(
           ?.content!!
           .count()
           .shouldBe(1)
-        response.data!!.content.shouldExist { it.caseNoteId == id }
+        response.data.content.shouldExist { it.caseNoteId == id }
       }
 
       it("requests specific caseNote types") {

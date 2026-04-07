@@ -58,7 +58,7 @@ class RedactionResponseBodyAdvice(
 
     val servletRequest =
       (request as ServletServerHttpRequest).servletRequest.apply {
-        (getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE) as? Map<String, String>)
+        (getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE) as? Map<*, *>)
           ?.get("hmppsId")
           ?.let { setAttribute("hmppsId", it) }
       }
