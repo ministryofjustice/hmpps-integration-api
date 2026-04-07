@@ -21,9 +21,9 @@ Consumers who want to receive Integration Events, [will need an SQS queue and Su
 
 This project has three asynchronous processes:
 
-#### 1. Update filter policies - Every hour
+#### 1. Update filter policies - On Deploy
 
-To restrict the events that a consumer receives, the SNS subscription filter policy for each queue is updated every hour. To do this, we
+To restrict the events that a consumer receives, the SNS subscription filter policy for each queue is updated every deploy of the code. To do this, we
 
 1. Call the Integration API's config method to receive the updated consumer configurations.
 2. Update the SNS subscription filter policy.
