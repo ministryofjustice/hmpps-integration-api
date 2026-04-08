@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.config
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.IntegrationEventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.normalisePath
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
@@ -61,6 +62,19 @@ class AuthorisationConfig {
       .mapNotNull { endpointMap[it]?.map { eventType -> eventType.name } }
       .flatten()
       .ifEmpty { listOf("default") }
+  }
+
+  /**
+   * Checks if the event is applicable to the consumer
+   */
+  fun isEventApplicable(
+    consumer: String,
+    event: EventNotification,
+  ): Boolean {
+    val consumerEvents = events(consumer)
+    val prisonIds = allFilters(consumer)?.prisons
+    val prisonCheck = prisonIds == null || (event.prisonId != null && prisonIds.contains(event.prisonId))
+    return consumerEvents.contains(event.eventType) && prisonCheck
   }
 
   /**

@@ -19,9 +19,12 @@ import software.amazon.awssdk.services.sns.SnsAsyncClient
 import software.amazon.awssdk.services.sns.model.MessageAttributeValue
 import software.amazon.awssdk.services.sns.model.PublishRequest
 import software.amazon.awssdk.services.sns.model.PublishResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.IntegrationEventStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.IntegrationEventTopicService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import uk.gov.justice.hmpps.sqs.HmppsTopic
@@ -36,16 +39,20 @@ class IntegrationEventTopicServiceTests(
   val hmppsQueueService: HmppsQueueService = mock()
   val hmppsEventSnsClient: SnsAsyncClient = mock()
   val mockQueue: HmppsQueue = mock()
+  val authorisationConfig: AuthorisationConfig = mock()
+  val featureFlagConfig: FeatureFlagConfig = mock()
+  val telemetryService: TelemetryService = mock()
   private lateinit var integrationEventTopicService: IntegrationEventTopicService
   val currentTime: LocalDateTime = LocalDateTime.now()
 
   @BeforeEach
   fun setUp() {
+    whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.DIRECT_SQS_NOTIFICATIONS)).thenReturn(false)
     whenever(hmppsQueueService.findByTopicId("integrationeventtopic"))
       .thenReturn(HmppsTopic("integrationeventtopic", "sometopicarn", hmppsEventSnsClient))
     whenever(hmppsQueueService.findByQueueId("mockQueue")).thenReturn(mockQueue)
     whenever(mockQueue.queueArn).thenReturn("mockARN")
-    integrationEventTopicService = IntegrationEventTopicService(hmppsQueueService, objectMapper)
+    integrationEventTopicService = IntegrationEventTopicService(hmppsQueueService, objectMapper, authorisationConfig, featureFlagConfig, telemetryService)
   }
 
   @Test

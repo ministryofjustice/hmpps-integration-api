@@ -13,3 +13,10 @@ data class SQSMessage(
   @JsonProperty("MessageId") val messageId: String,
   @JsonProperty("MessageAttributes") val messageAttributes: SQSMessageAttributes,
 )
+
+/**
+ * Message sent to consumer queues
+ */
+data class DirectSQSMessage(
+  @JsonProperty("Message") val message: String,
+)
