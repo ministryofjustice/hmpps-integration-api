@@ -76,7 +76,7 @@ class WebClientWrapper(
         val responseData =
           getResponseBodySpec(method, uri, headers, requestBody)
             .retrieve()
-            .bodyToMono(T::class.java)
+            .bodyToMono(T::class.java as Class<T & Any>)
             .block()!!
 
         WebClientWrapperResponse.Success(responseData)
@@ -104,7 +104,7 @@ class WebClientWrapper(
           .retrieve()
           .onStatus({ status -> status.value() in CREATE_TRANSACTION_RETRY_HTTP_CODES }) { response ->
             retryError(response, upstreamApi, method, uri)
-          }.bodyToMono(T::class.java)
+          }.bodyToMono(T::class.java as Class<T & Any>)
           .retryWhen(
             Retry
               .backoff(retryAttempts, initialBackOffDuration)
@@ -135,8 +135,7 @@ class WebClientWrapper(
         val responseData =
           getResponseBodySpec(method, uri, headers, requestBody)
             .retrieve()
-            .bodyToFlux(T::class.java)
-            .collectList()
+            .bodyToMono(T::class.java as Class<T & Any>)
             .block() as List<T>
 
         WebClientWrapperResponse.Success(responseData)
@@ -160,14 +159,13 @@ class WebClientWrapper(
           .retrieve()
           .onStatus({ status -> status.value() in CREATE_TRANSACTION_RETRY_HTTP_CODES }) { response ->
             retryError(response, upstreamApi, method, uri)
-          }.bodyToFlux(T::class.java)
+          }.bodyToMono(T::class.java as Class<T & Any>)
           .retryWhen(
             Retry
               .backoff(retryAttempts, initialBackOffDuration)
               .filter { throwable -> isSafeToRetry(throwable) }
               .onRetryExhaustedThrow { _, retrySignal -> throw ResponseException("External Service failed to process after ${retrySignal.totalRetries()} retries with ${retrySignal.failure().message}", HttpStatus.SERVICE_UNAVAILABLE.value(), retrySignal.failure().cause) },
-          ).collectList()
-          .block() as List<T>
+          ).block() as List<T>
 
       WebClientWrapperResponse.Success(responseData)
     } catch (exception: WebClientResponseException) {
