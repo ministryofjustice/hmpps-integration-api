@@ -20,7 +20,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.IntegrationEventStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.DirectSQSMessage
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.IntegrationEventTopicService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.EventNotificationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.objectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
@@ -37,7 +37,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
   val featureFlagConfig: FeatureFlagConfig = mock()
   val telemetryService: TelemetryService = mock()
 
-  private lateinit var integrationEventTopicService: IntegrationEventTopicService
+  private lateinit var eventNotificationService: EventNotificationService
   val currentTime: LocalDateTime = LocalDateTime.now()
 
   val event =
@@ -75,14 +75,14 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
     whenever(mockQueue.queueArn).thenReturn("mockARN2")
     whenever(mockQueue.sqsClient).thenReturn(sqsClient)
 
-    integrationEventTopicService = IntegrationEventTopicService(hmppsQueueService, objectMapper, authorisationConfig, featureFlagConfig, telemetryService)
+    eventNotificationService = EventNotificationService(hmppsQueueService, objectMapper, authorisationConfig, featureFlagConfig, telemetryService)
   }
 
   @Test
   fun `Publish Event to multiple queues is successful`() {
     whenever(sqsClient.sendMessage(any<SendMessageRequest>())).thenReturn(CompletableFuture.completedFuture(response))
     whenever(sqsClient.sendMessage(any<SendMessageRequest>())).thenReturn(CompletableFuture.completedFuture(response))
-    integrationEventTopicService.sendEvent(event)
+    eventNotificationService.sendEvent(event)
     argumentCaptor<SendMessageRequest>().apply {
       verify(sqsClient, times(2)).sendMessage(capture())
       val sqsMessage1 = objectMapper.readValue(firstValue.messageBody(), DirectSQSMessage::class.java)
@@ -105,7 +105,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
     whenever(sqsClient.sendMessage(any<SendMessageRequest>())).thenReturn(CompletableFuture.completedFuture(response))
     whenever(hmppsQueueService.findByQueueId("mockQueue1")).thenThrow(RuntimeException("cant find queue mockQueue1"))
 
-    integrationEventTopicService.sendEvent(event)
+    eventNotificationService.sendEvent(event)
     argumentCaptor<SendMessageRequest>().apply {
       verify(sqsClient, times(1)).sendMessage(capture())
       val sqsMessage = objectMapper.readValue(firstValue.messageBody(), DirectSQSMessage::class.java)
@@ -136,8 +136,8 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
         """.trimIndent(),
       )
 
-    integrationEventTopicService = IntegrationEventTopicService(hmppsQueueService, objectMapper, config, featureFlagConfig, telemetryService)
-    Assertions.assertTrue(integrationEventTopicService.isEventApplicable("tester", testEvent))
+    eventNotificationService = EventNotificationService(hmppsQueueService, objectMapper, config, featureFlagConfig, telemetryService)
+    Assertions.assertTrue(eventNotificationService.isEventApplicable("tester", testEvent))
   }
 
   @Test
@@ -152,8 +152,8 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
               - full-access
         """.trimIndent(),
       )
-    integrationEventTopicService = IntegrationEventTopicService(hmppsQueueService, objectMapper, config, featureFlagConfig, telemetryService)
-    Assertions.assertFalse(integrationEventTopicService.isEventApplicable("tester", testEvent))
+    eventNotificationService = EventNotificationService(hmppsQueueService, objectMapper, config, featureFlagConfig, telemetryService)
+    Assertions.assertFalse(eventNotificationService.isEventApplicable("tester", testEvent))
   }
 
   @Test
@@ -171,8 +171,8 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
                - MKI
         """.trimIndent(),
       )
-    integrationEventTopicService = IntegrationEventTopicService(hmppsQueueService, objectMapper, config, featureFlagConfig, telemetryService)
-    Assertions.assertTrue(integrationEventTopicService.isEventApplicable("tester", testEvent))
+    eventNotificationService = EventNotificationService(hmppsQueueService, objectMapper, config, featureFlagConfig, telemetryService)
+    Assertions.assertTrue(eventNotificationService.isEventApplicable("tester", testEvent))
   }
 
   @Test
@@ -190,7 +190,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
                 - MKI
         """.trimIndent(),
       )
-    integrationEventTopicService = IntegrationEventTopicService(hmppsQueueService, objectMapper, config, featureFlagConfig, telemetryService)
-    Assertions.assertFalse(integrationEventTopicService.isEventApplicable("tester", testEvent))
+    eventNotificationService = EventNotificationService(hmppsQueueService, objectMapper, config, featureFlagConfig, telemetryService)
+    Assertions.assertFalse(eventNotificationService.isEventApplicable("tester", testEvent))
   }
 }

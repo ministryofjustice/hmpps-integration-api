@@ -19,7 +19,7 @@ import uk.gov.justice.hmpps.sqs.HmppsQueueService
 
 @ConditionalOnProperty("feature-flag.${FeatureFlagConfig.ENABLE_PUBLISH_PENDING_EVENTS}", havingValue = "true")
 @Service
-class IntegrationEventTopicService(
+class EventNotificationService(
   private val hmppsQueueService: HmppsQueueService,
   private val objectMapper: ObjectMapper,
   private val authorisationConfig: AuthorisationConfig,
@@ -30,11 +30,15 @@ class IntegrationEventTopicService(
     private val log = LoggerFactory.getLogger(this::class.java)
   }
 
-  fun sendEvent(payload: EventNotification) {
+  fun sendEvent(event: EventNotification) {
     if (featureFlagConfig.isEnabled(FeatureFlagConfig.DIRECT_SQS_NOTIFICATIONS)) {
-      return sendEventToQueue(payload)
+      return sendEventToQueue(event)
     }
 
+    return sendEventToTopic(event)
+  }
+
+  fun sendEventToTopic(payload: EventNotification) {
     val hmppsEventTopic = hmppsQueueService.findByTopicId(INTEGRATION_EVENT_TOPIC)
     val topicArn = hmppsEventTopic!!.arn
     val hmppsEventsTopicSnsClient = hmppsEventTopic.snsClient
