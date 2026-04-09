@@ -73,7 +73,7 @@ class JdbcTemplateEventNotificationRepository(
 
   fun count(): Int {
     val countQuery = "select count(*) from event_notification"
-    return jdbcTemplate.queryForObject<Int>(countQuery) ?: 0
+    return jdbcTemplate.queryForObject<Int>(countQuery)!!
   }
 
   override fun setProcessed(eventId: Any): Int {
