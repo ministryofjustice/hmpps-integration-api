@@ -215,7 +215,7 @@ class PersonController(
     }
 
     auditService.createEvent("GET_PERSON_IMAGE", mapOf("hmppsId" to hmppsId))
-    return response.data.paginateWith(page, perPage) as PaginatedResponse<ImageMetadata>
+    return response.data.paginateWith(page, perPage)
   }
 
   @GetMapping("{hmppsId}/name")
