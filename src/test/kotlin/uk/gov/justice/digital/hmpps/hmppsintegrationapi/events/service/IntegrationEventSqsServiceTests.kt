@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.service
 
 import io.kotest.matchers.string.shouldContain
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
@@ -14,6 +15,7 @@ import software.amazon.awssdk.services.sqs.SqsAsyncClient
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest
 import software.amazon.awssdk.services.sqs.model.SendMessageResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ConfigTest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.IntegrationEventStatus
@@ -27,7 +29,7 @@ import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import java.time.LocalDateTime
 import java.util.concurrent.CompletableFuture
 
-class IntegrationEventSqsServiceTests {
+class IntegrationEventSqsServiceTests : ConfigTest() {
   val hmppsQueueService: HmppsQueueService = mock()
   val sqsClient: SqsAsyncClient = mock()
   val mockQueue: HmppsQueue = mock()
@@ -50,7 +52,7 @@ class IntegrationEventSqsServiceTests {
       claimId = null,
     )
 
-  val response =
+  val response: SendMessageResponse? =
     SendMessageResponse
       .builder()
       .messageId("123")
@@ -60,7 +62,7 @@ class IntegrationEventSqsServiceTests {
   fun setUp() {
     whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.DIRECT_SQS_NOTIFICATIONS)).thenReturn(true)
     whenever(authorisationConfig.consumersWithQueue()).thenReturn(setOf("mockConsumer1", "mockConsumer2"))
-    whenever(authorisationConfig.isEventApplicable(any(), any())).thenReturn(true)
+    whenever(authorisationConfig.events(any())).thenReturn(listOf(event.eventType))
     whenever(authorisationConfig.consumers).thenReturn(
       mapOf(
         "mockConsumer1" to ConsumerConfig(queueName = "mockQueue1"),
@@ -119,5 +121,76 @@ class IntegrationEventSqsServiceTests {
       verify(telemetryService, times(1)).captureException(capture())
       firstValue.message.shouldContain("cant find queue mockQueue1")
     }
+  }
+
+  @Test
+  fun `event is applicable to the consumer`() {
+    val testEvent = EventNotification(url = "url", eventType = "PERSON_STATUS_CHANGED")
+    val config =
+      parseConfig<AuthorisationConfig>(
+        """
+        consumers:
+          tester:
+            roles:
+              - full-access
+        """.trimIndent(),
+      )
+
+    integrationEventTopicService = IntegrationEventTopicService(hmppsQueueService, objectMapper, config, featureFlagConfig, telemetryService)
+    Assertions.assertTrue(integrationEventTopicService.isEventApplicable("tester", testEvent))
+  }
+
+  @Test
+  fun `event is NOT applicable to the consumer based on event type`() {
+    val testEvent = EventNotification(url = "url", eventType = "UNKNOWN_TYPE")
+    val config =
+      parseConfig<AuthorisationConfig>(
+        """
+        consumers:
+          tester:
+            roles:
+              - full-access
+        """.trimIndent(),
+      )
+    integrationEventTopicService = IntegrationEventTopicService(hmppsQueueService, objectMapper, config, featureFlagConfig, telemetryService)
+    Assertions.assertFalse(integrationEventTopicService.isEventApplicable("tester", testEvent))
+  }
+
+  @Test
+  fun `event is applicable to the consumer based on the prison id`() {
+    val testEvent = EventNotification(url = "url", eventType = "PERSON_ADDRESS_CHANGED", prisonId = "MKI")
+    val config =
+      parseConfig<AuthorisationConfig>(
+        """
+        consumers:
+          tester:
+            roles:
+              - private-prison
+            filters:
+              prisons:
+               - MKI
+        """.trimIndent(),
+      )
+    integrationEventTopicService = IntegrationEventTopicService(hmppsQueueService, objectMapper, config, featureFlagConfig, telemetryService)
+    Assertions.assertTrue(integrationEventTopicService.isEventApplicable("tester", testEvent))
+  }
+
+  @Test
+  fun `event is NOT applicable to the consumer based on the prison id`() {
+    val testEvent = EventNotification(url = "url", eventType = "PERSON_ADDRESS_CHANGED", prisonId = "MDI")
+    val config =
+      parseConfig<AuthorisationConfig>(
+        """
+        consumers:
+          tester:
+            roles:
+              - private-prison
+            filters:
+              prisons:
+                - MKI
+        """.trimIndent(),
+      )
+    integrationEventTopicService = IntegrationEventTopicService(hmppsQueueService, objectMapper, config, featureFlagConfig, telemetryService)
+    Assertions.assertFalse(integrationEventTopicService.isEventApplicable("tester", testEvent))
   }
 }

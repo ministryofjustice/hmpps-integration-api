@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.config
 import org.junit.jupiter.api.Test
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters.Companion.NO_FILTERS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
@@ -183,71 +182,5 @@ class AuthorisationConfigTest : ConfigTest() {
     assertFalse(filters.isPrisonsOnly())
     assertTrue(filters.hasPrisons())
     assertTrue(filters.hasProbation())
-  }
-
-  @Test
-  fun `event is applicable to the consumer`() {
-    val testEvent = EventNotification(url = "url", eventType = "PERSON_STATUS_CHANGED")
-    val config =
-      parseConfig<AuthorisationConfig>(
-        """
-        consumers:
-          tester:
-            roles:
-              - full-access
-        """.trimIndent(),
-      )
-    assertTrue(config.isEventApplicable("tester", testEvent))
-  }
-
-  @Test
-  fun `event is NOT applicable to the consumer based on event type`() {
-    val testEvent = EventNotification(url = "url", eventType = "UNKNOWN_TYPE")
-    val config =
-      parseConfig<AuthorisationConfig>(
-        """
-        consumers:
-          tester:
-            roles:
-              - full-access
-        """.trimIndent(),
-      )
-    assertFalse(config.isEventApplicable("tester", testEvent))
-  }
-
-  @Test
-  fun `event is applicable to the consumer based on the prison id`() {
-    val testEvent = EventNotification(url = "url", eventType = "PERSON_ADDRESS_CHANGED", prisonId = "MKI")
-    val config =
-      parseConfig<AuthorisationConfig>(
-        """
-        consumers:
-          tester:
-            roles:
-              - private-prison
-            filters:
-              prisons:
-               - MKI
-        """.trimIndent(),
-      )
-    assertTrue(config.isEventApplicable("tester", testEvent))
-  }
-
-  @Test
-  fun `event is NOT applicable to the consumer based on the prison id`() {
-    val testEvent = EventNotification(url = "url", eventType = "PERSON_ADDRESS_CHANGED", prisonId = "MDI")
-    val config =
-      parseConfig<AuthorisationConfig>(
-        """
-        consumers:
-          tester:
-            roles:
-              - private-prison
-            filters:
-              prisons:
-                - MKI
-        """.trimIndent(),
-      )
-    assertFalse(config.isEventApplicable("tester", testEvent))
   }
 }

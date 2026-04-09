@@ -70,8 +70,9 @@ class IntegrationEventTopicService(
    *
    */
   fun sendEventToQueue(event: EventNotification) {
+    var messagesSent = 0
     authorisationConfig.consumersWithQueue().forEach { consumer ->
-      if (authorisationConfig.isEventApplicable(consumer, event)) {
+      if (isEventApplicable(consumer, event)) {
         val queueName = authorisationConfig.consumers[consumer]?.queueName!!
         try {
           val message = DirectSQSMessage(objectMapper.writeValueAsString(event))
@@ -84,10 +85,27 @@ class IntegrationEventTopicService(
               .messageBody(objectMapper.writeValueAsString(message))
               .build()
           sqsClient.sendMessage(sendMessageRequest)
+          messagesSent++
+          log.info("Successfully published event ${event.eventType} to $queueName")
         } catch (ex: Exception) {
+          log.error("Error publishing event ${event.eventType} to $queueName. ${ex.message}")
           telemetryService.captureException(ex)
         }
       }
     }
+    log.info("Event ${event.eventType} successfully sent to $messagesSent queues")
+  }
+
+  /**
+   * Checks if the event is applicable to the consumer
+   */
+  fun isEventApplicable(
+    consumer: String,
+    event: EventNotification,
+  ): Boolean {
+    val consumerEvents = authorisationConfig.events(consumer)
+    val prisonIds = authorisationConfig.allFilters(consumer)?.prisons
+    val prisonCheck = prisonIds == null || (event.prisonId != null && prisonIds.contains(event.prisonId))
+    return consumerEvents.contains(event.eventType) && prisonCheck
   }
 }
