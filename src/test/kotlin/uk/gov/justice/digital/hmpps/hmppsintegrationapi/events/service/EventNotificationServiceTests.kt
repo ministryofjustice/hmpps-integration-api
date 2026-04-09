@@ -23,7 +23,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.IntegrationEventStatus
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.IntegrationEventTopicService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.EventNotificationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
@@ -33,7 +33,7 @@ import java.util.concurrent.CompletableFuture
 
 @ActiveProfiles("test")
 @JsonTest
-class IntegrationEventTopicServiceTests(
+class EventNotificationServiceTests(
   @Autowired private val objectMapper: ObjectMapper,
 ) {
   val hmppsQueueService: HmppsQueueService = mock()
@@ -42,7 +42,7 @@ class IntegrationEventTopicServiceTests(
   val authorisationConfig: AuthorisationConfig = mock()
   val featureFlagConfig: FeatureFlagConfig = mock()
   val telemetryService: TelemetryService = mock()
-  private lateinit var integrationEventTopicService: IntegrationEventTopicService
+  private lateinit var eventNotificationService: EventNotificationService
   val currentTime: LocalDateTime = LocalDateTime.now()
 
   @BeforeEach
@@ -52,7 +52,7 @@ class IntegrationEventTopicServiceTests(
       .thenReturn(HmppsTopic("integrationeventtopic", "sometopicarn", hmppsEventSnsClient))
     whenever(hmppsQueueService.findByQueueId("mockQueue")).thenReturn(mockQueue)
     whenever(mockQueue.queueArn).thenReturn("mockARN")
-    integrationEventTopicService = IntegrationEventTopicService(hmppsQueueService, objectMapper, authorisationConfig, featureFlagConfig, telemetryService)
+    eventNotificationService = EventNotificationService(hmppsQueueService, objectMapper, authorisationConfig, featureFlagConfig, telemetryService)
   }
 
   @Test
@@ -76,7 +76,7 @@ class IntegrationEventTopicServiceTests(
         .build()
 
     whenever(hmppsEventSnsClient.publish(any<PublishRequest>())).thenReturn(CompletableFuture.completedFuture(response))
-    integrationEventTopicService.sendEvent(event)
+    eventNotificationService.sendEvent(event)
 
     argumentCaptor<PublishRequest>().apply {
       verify(hmppsEventSnsClient, times(1)).publish(capture())
@@ -118,7 +118,7 @@ class IntegrationEventTopicServiceTests(
         .build()
 
     whenever(hmppsEventSnsClient.publish(any<PublishRequest>())).thenReturn(CompletableFuture.completedFuture(response))
-    integrationEventTopicService.sendEvent(event)
+    eventNotificationService.sendEvent(event)
 
     argumentCaptor<PublishRequest>().apply {
       verify(hmppsEventSnsClient, times(1)).publish(capture())
