@@ -12,6 +12,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.INTEGRATION_EVENT_TOPIC
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.DirectSQSMessage
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.EventType
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.SQSMessageAttributes
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 
@@ -75,7 +77,11 @@ class IntegrationEventTopicService(
       if (isEventApplicable(consumer, event)) {
         val queueName = authorisationConfig.consumers[consumer]?.queueName!!
         try {
-          val message = DirectSQSMessage(objectMapper.writeValueAsString(event))
+          val message =
+            DirectSQSMessage(
+              message = objectMapper.writeValueAsString(event),
+              messageAttributes = SQSMessageAttributes(EventType(event.eventType)),
+            )
           val queue = hmppsQueueService.findByQueueId(queueName)
           val sqsClient = queue?.sqsClient!!
           val sendMessageRequest =
