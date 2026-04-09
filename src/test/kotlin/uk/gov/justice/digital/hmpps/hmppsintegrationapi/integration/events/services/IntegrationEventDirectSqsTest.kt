@@ -29,7 +29,7 @@ import java.util.UUID
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 
-class IntegrationEventTest : IntegrationTestWithEventsQueueBase() {
+class IntegrationEventDirectSqsTest : IntegrationTestWithEventsQueueBase() {
   @Autowired
   private lateinit var stateEventNotifierService: SendEventsService
 
@@ -42,7 +42,7 @@ class IntegrationEventTest : IntegrationTestWithEventsQueueBase() {
   @BeforeEach
   fun purgeQueues() {
     Mockito.reset(integrationEventTopicService)
-    whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.DIRECT_SQS_NOTIFICATIONS)).thenReturn(false)
+    whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.DIRECT_SQS_NOTIFICATIONS)).thenReturn(true)
     integrationEventTestQueueSqsClient.purgeQueue(PurgeQueueRequest.builder().queueUrl(integrationEventTestQueueUrl).build()).get()
   }
 
@@ -61,12 +61,12 @@ class IntegrationEventTest : IntegrationTestWithEventsQueueBase() {
   @ParameterizedTest
   @NullSource
   @ValueSource(strings = ["MKI"])
-  @DisplayName("will publish Integration Event with no prison Id")
+  @DisplayName("will publish Integration Event direct to consumer queue")
   @Throws(
     ExecutionException::class,
     InterruptedException::class,
   )
-  fun willPublishPrisonEvent(prisonId: String?) {
+  fun willPublishDirectToQueue(prisonId: String?) {
     await.atMost(5, TimeUnit.SECONDS).untilAsserted {
       eventRepository.save(getEvent(prisonId, UUID.randomUUID().toString()))
       stateEventNotifierService.sentNotifications()
