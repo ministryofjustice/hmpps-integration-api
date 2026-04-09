@@ -22,14 +22,23 @@ data class SQSMessage(
  * Note. This is in the shape of a message that has resulted from an SNS notification to keep inline with consumers
  */
 data class DirectSQSMessage(
+  @Deprecated("Should not be used in any downstream processing")
   @JsonProperty("Type") val type: String = "Notification",
+  @Deprecated("Should not be used in any downstream processing")
   @JsonProperty("MessageId") val messageId: String = UUID.randomUUID().toString(),
+  @Deprecated("Should not be used in any downstream processing")
   @JsonProperty("TopicArn") val topicArn: String = "",
   @JsonProperty("Message") val message: String,
+  @Deprecated("Should not be used in any downstream processing")
   @JsonProperty("Timestamp") val timestamp: String = "${Instant.now()}",
+  @Deprecated("Should not be used in any downstream processing")
   @JsonProperty("SignatureVersion") val signatureVersion: String = "",
+  @Deprecated("Should not be used in any downstream processing")
   @JsonProperty("Signature") val signature: String = "",
+  @Deprecated("Should not be used in any downstream processing")
   @JsonProperty("SigningCertURL") val signingCertURL: String = "",
+  @Deprecated("Should not be used in any downstream processing")
   @JsonProperty("UnsubscribeURL") val unsubscribeURL: String = "",
+  @Deprecated("Should not be used in any downstream processing")
   @JsonProperty("MessageAttributes") val messageAttributes: SQSMessageAttributes,
 )
