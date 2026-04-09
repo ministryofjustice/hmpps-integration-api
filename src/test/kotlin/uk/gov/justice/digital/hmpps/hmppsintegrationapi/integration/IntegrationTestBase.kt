@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.mockito.kotlin.reset
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 import org.springframework.cache.CacheManager
@@ -89,7 +88,7 @@ abstract class IntegrationTestBase {
     reset(eventNotificationRepository)
 
     cacheManager.cacheNames.forEach {
-      cacheManager.getCache(it).clear()
+      cacheManager.getCache(it)?.clear()
     }
 
     prisonerOffenderSearchMockServer.stubForGet(

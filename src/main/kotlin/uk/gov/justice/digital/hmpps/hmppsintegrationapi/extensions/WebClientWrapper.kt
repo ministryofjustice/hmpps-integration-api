@@ -60,7 +60,7 @@ class WebClientWrapper(
     ) : WebClientWrapperResponse<Nothing>()
   }
 
-  inline fun <reified T> request(
+  inline fun <reified T : Any> request(
     method: HttpMethod,
     uri: String,
     headers: Map<String, String>,
@@ -76,7 +76,7 @@ class WebClientWrapper(
         val responseData =
           getResponseBodySpec(method, uri, headers, requestBody)
             .retrieve()
-            .bodyToMono(T::class.java as Class<T & Any>)
+            .bodyToMono(T::class.java)
             .block()!!
 
         WebClientWrapperResponse.Success(responseData)
@@ -89,7 +89,7 @@ class WebClientWrapper(
    * Warning: This function should only be used with IDEMPOTENT requests.
    * If your POST request is not idempotent then you should not use this function.
    */
-  inline fun <reified T> requestWithRetry(
+  inline fun <reified T : Any> requestWithRetry(
     method: HttpMethod,
     uri: String,
     headers: Map<String, String>,
@@ -104,7 +104,7 @@ class WebClientWrapper(
           .retrieve()
           .onStatus({ status -> status.value() in CREATE_TRANSACTION_RETRY_HTTP_CODES }) { response ->
             retryError(response, upstreamApi, method, uri)
-          }.bodyToMono(T::class.java as Class<T & Any>)
+          }.bodyToMono(T::class.java)
           .retryWhen(
             Retry
               .backoff(retryAttempts, initialBackOffDuration)
@@ -119,7 +119,7 @@ class WebClientWrapper(
 
   fun isSafeToRetry(throwable: Throwable) = throwable is ResponseException || throwable is WebClientRequestException
 
-  inline fun <reified T> requestList(
+  inline fun <reified T : Any> requestList(
     method: HttpMethod,
     uri: String,
     headers: Map<String, String>,
@@ -135,7 +135,8 @@ class WebClientWrapper(
         val responseData =
           getResponseBodySpec(method, uri, headers, requestBody)
             .retrieve()
-            .bodyToMono(T::class.java as Class<T & Any>)
+            .bodyToFlux(T::class.java)
+            .collectList()
             .block() as List<T>
 
         WebClientWrapperResponse.Success(responseData)
@@ -144,7 +145,7 @@ class WebClientWrapper(
       }
     }
 
-  inline fun <reified T> requestListWithRetry(
+  inline fun <reified T : Any> requestListWithRetry(
     method: HttpMethod,
     uri: String,
     headers: Map<String, String>,
@@ -159,13 +160,14 @@ class WebClientWrapper(
           .retrieve()
           .onStatus({ status -> status.value() in CREATE_TRANSACTION_RETRY_HTTP_CODES }) { response ->
             retryError(response, upstreamApi, method, uri)
-          }.bodyToMono(T::class.java as Class<T & Any>)
+          }.bodyToFlux(T::class.java)
           .retryWhen(
             Retry
               .backoff(retryAttempts, initialBackOffDuration)
               .filter { throwable -> isSafeToRetry(throwable) }
               .onRetryExhaustedThrow { _, retrySignal -> throw ResponseException("External Service failed to process after ${retrySignal.totalRetries()} retries with ${retrySignal.failure().message}", HttpStatus.SERVICE_UNAVAILABLE.value(), retrySignal.failure().cause) },
-          ).block() as List<T>
+          ).collectList()
+          .block() as List<T>
 
       WebClientWrapperResponse.Success(responseData)
     } catch (exception: WebClientResponseException) {
