@@ -89,7 +89,7 @@ abstract class IntegrationTestBase {
     reset(eventNotificationRepository)
 
     cacheManager.cacheNames.forEach {
-      cacheManager.getCache(it).clear()
+      cacheManager.getCache(it)?.clear()
     }
 
     prisonerOffenderSearchMockServer.stubForGet(

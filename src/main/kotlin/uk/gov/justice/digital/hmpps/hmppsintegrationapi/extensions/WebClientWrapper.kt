@@ -60,7 +60,7 @@ class WebClientWrapper(
     ) : WebClientWrapperResponse<Nothing>()
   }
 
-  inline fun <reified T> request(
+  inline fun <reified T : Any> request(
     method: HttpMethod,
     uri: String,
     headers: Map<String, String>,
@@ -89,7 +89,7 @@ class WebClientWrapper(
    * Warning: This function should only be used with IDEMPOTENT requests.
    * If your POST request is not idempotent then you should not use this function.
    */
-  inline fun <reified T> requestWithRetry(
+  inline fun <reified T : Any> requestWithRetry(
     method: HttpMethod,
     uri: String,
     headers: Map<String, String>,
@@ -119,7 +119,7 @@ class WebClientWrapper(
 
   fun isSafeToRetry(throwable: Throwable) = throwable is ResponseException || throwable is WebClientRequestException
 
-  inline fun <reified T> requestList(
+  inline fun <reified T : Any> requestList(
     method: HttpMethod,
     uri: String,
     headers: Map<String, String>,
@@ -145,7 +145,7 @@ class WebClientWrapper(
       }
     }
 
-  inline fun <reified T> requestListWithRetry(
+  inline fun <reified T : Any> requestListWithRetry(
     method: HttpMethod,
     uri: String,
     headers: Map<String, String>,
