@@ -178,7 +178,7 @@ class PersonController(
       is OffenderSearchRedirectionResult -> {
         ResponseEntity
           .status(HttpStatus.SEE_OTHER)
-          .header("Location", response.data.redirectUrl!!)
+          .header("Location", response.data.redirectUrl ?: "")
           .build()
       }
 

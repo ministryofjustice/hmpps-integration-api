@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component
 class HealthInfo(
   buildProperties: BuildProperties,
 ) : HealthIndicator {
-  private val version: String = buildProperties.version!!
+  private val version: String = buildProperties.version ?: ""
 
   override fun health(): Health = Health.up().withDetail("version", version).build()
 }
