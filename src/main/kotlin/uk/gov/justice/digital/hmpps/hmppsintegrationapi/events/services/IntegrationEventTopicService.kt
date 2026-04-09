@@ -86,7 +86,7 @@ class IntegrationEventTopicService(
               .build()
           sqsClient.sendMessage(sendMessageRequest)
           messagesSent++
-          log.info("Successfully published event ${event.eventType} to $queueName")
+          log.debug("Successfully published event ${event.eventType} to $queueName")
         } catch (ex: Exception) {
           log.error("Error publishing event ${event.eventType} to $queueName. ${ex.message}")
           telemetryService.captureException(ex)
