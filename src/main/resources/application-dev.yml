@@ -70,7 +70,7 @@ feature-flag:
   contact-events-notifications-enabled: true
   limited-access-notifications-enabled: true
   deduplicate-events: true
-  direct-sqs-notifications: false
+  direct-sqs-notifications: true
 
 authorisation:
   consumers:
