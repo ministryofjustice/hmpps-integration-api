@@ -11,28 +11,20 @@ import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import software.amazon.awssdk.services.sqs.SqsAsyncClient
-import software.amazon.awssdk.services.sqs.model.SendMessageRequest
-import software.amazon.awssdk.services.sqs.model.SendMessageResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ConfigTest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.IntegrationEventStatus
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.DirectSQSMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.EventNotificationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.objectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
-import uk.gov.justice.hmpps.sqs.HmppsQueue
-import uk.gov.justice.hmpps.sqs.HmppsQueueService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.TestSQSService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.TestSqsAsyncClient
 import java.time.LocalDateTime
-import java.util.concurrent.CompletableFuture
 
 class IntegrationEventSqsServiceTests : ConfigTest() {
-  val hmppsQueueService: HmppsQueueService = mock()
-  val sqsClient: SqsAsyncClient = mock()
-  val mockQueue: HmppsQueue = mock()
+  private lateinit var hmppsQueueService: TestSQSService
   val authorisationConfig: AuthorisationConfig = mock()
   val featureFlagConfig: FeatureFlagConfig = mock()
   val telemetryService: TelemetryService = mock()
@@ -47,19 +39,13 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
       eventType = "MAPPA_DETAIL_CHANGED",
       prisonId = "MKI",
       url = "mockUrl",
-      status = IntegrationEventStatus.PROCESSING.name,
       lastModifiedDatetime = currentTime,
       claimId = null,
     )
 
-  val response: SendMessageResponse? =
-    SendMessageResponse
-      .builder()
-      .messageId("123")
-      .build()
-
   @BeforeEach
   fun setUp() {
+    hmppsQueueService = TestSQSService(queues = listOf("mockQueue1, mockQueue2"))
     whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.DIRECT_SQS_NOTIFICATIONS)).thenReturn(true)
     whenever(authorisationConfig.consumersWithQueue()).thenReturn(setOf("mockConsumer1", "mockConsumer2"))
     whenever(authorisationConfig.events(any())).thenReturn(listOf(event.eventType))
@@ -69,54 +55,33 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
         "mockConsumer2" to ConsumerConfig(queueName = "mockQueue2"),
       ),
     )
-    whenever(hmppsQueueService.findByQueueId("mockQueue1")).thenReturn(mockQueue)
-    whenever(mockQueue.queueArn).thenReturn("mockARN1")
-    whenever(hmppsQueueService.findByQueueId("mockQueue2")).thenReturn(mockQueue)
-    whenever(mockQueue.queueArn).thenReturn("mockARN2")
-    whenever(mockQueue.sqsClient).thenReturn(sqsClient)
-
-    eventNotificationService = EventNotificationService(hmppsQueueService, objectMapper, authorisationConfig, featureFlagConfig, telemetryService)
   }
 
   @Test
   fun `Publish Event to multiple queues is successful`() {
-    whenever(sqsClient.sendMessage(any<SendMessageRequest>())).thenReturn(CompletableFuture.completedFuture(response))
-    whenever(sqsClient.sendMessage(any<SendMessageRequest>())).thenReturn(CompletableFuture.completedFuture(response))
+    // Setup both queues
+    hmppsQueueService = TestSQSService(queues = listOf("mockQueue1", "mockQueue2"))
+    eventNotificationService = EventNotificationService(hmppsQueueService, objectMapper, authorisationConfig, featureFlagConfig, telemetryService)
     eventNotificationService.sendEvent(event)
-    argumentCaptor<SendMessageRequest>().apply {
-      verify(sqsClient, times(2)).sendMessage(capture())
-      val sqsMessage1 = objectMapper.readValue(firstValue.messageBody(), DirectSQSMessage::class.java)
-      val message1 = objectMapper.readValue(sqsMessage1.message, EventNotification::class.java)
-      val sqsMessage2 = objectMapper.readValue(firstValue.messageBody(), DirectSQSMessage::class.java)
-      val message2 = objectMapper.readValue(sqsMessage2.message, EventNotification::class.java)
-      assertThat(message1.eventType).isEqualTo(event.eventType)
-      assertThat(message1.hmppsId).isEqualTo(event.hmppsId)
-      assertThat(message1.prisonId).isEqualTo(event.prisonId)
-      assertThat(message1.url).isEqualTo(event.url)
-      assertThat(message2.eventType).isEqualTo(event.eventType)
-      assertThat(message2.hmppsId).isEqualTo(event.hmppsId)
-      assertThat(message2.prisonId).isEqualTo(event.prisonId)
-      assertThat(message2.url).isEqualTo(event.url)
-    }
+    val queue1Messages = (hmppsQueueService.findByQueueId("mockQueue1").sqsClient as TestSqsAsyncClient).messagesOnQueue<EventNotification>()
+    val queue2Messages = (hmppsQueueService.findByQueueId("mockQueue2").sqsClient as TestSqsAsyncClient).messagesOnQueue<EventNotification>()
+
+    // Check queue
+    assertThat(queue1Messages[0]).isEqualTo(event)
+    assertThat(queue2Messages[0]).isEqualTo(event)
   }
 
   @Test
   fun `Publish Event to first queue is unsuccessful, but second queue is successful`() {
-    whenever(sqsClient.sendMessage(any<SendMessageRequest>())).thenReturn(CompletableFuture.completedFuture(response))
-    whenever(hmppsQueueService.findByQueueId("mockQueue1")).thenThrow(RuntimeException("cant find queue mockQueue1"))
-
+    // Only setup the test queue to have mockQueue2
+    hmppsQueueService = TestSQSService(queues = listOf("mockQueue2"))
+    eventNotificationService = EventNotificationService(hmppsQueueService, objectMapper, authorisationConfig, featureFlagConfig, telemetryService)
     eventNotificationService.sendEvent(event)
-    argumentCaptor<SendMessageRequest>().apply {
-      verify(sqsClient, times(1)).sendMessage(capture())
-      val sqsMessage = objectMapper.readValue(firstValue.messageBody(), DirectSQSMessage::class.java)
-      val message = objectMapper.readValue(sqsMessage.message, EventNotification::class.java)
 
-      assertThat(message.eventType).isEqualTo(event.eventType)
-      assertThat(message.hmppsId).isEqualTo(event.hmppsId)
-      assertThat(message.prisonId).isEqualTo(event.prisonId)
-      assertThat(message.url).isEqualTo(event.url)
-    }
+    val queue2Messages = (hmppsQueueService.findByQueueId("mockQueue2").sqsClient as TestSqsAsyncClient).messagesOnQueue<EventNotification>()
+    assertThat(queue2Messages[0]).isEqualTo(event)
 
+    // Check that an exception is thrown
     argumentCaptor<Throwable>().apply {
       verify(telemetryService, times(1)).captureException(capture())
       firstValue.message.shouldContain("cant find queue mockQueue1")

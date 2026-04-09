@@ -14,13 +14,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.INTEGRATION
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.DirectSQSMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.EventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.SQSMessageAttributes
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.sqs.SQSService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
-import uk.gov.justice.hmpps.sqs.HmppsQueueService
 
 @ConditionalOnProperty("feature-flag.${FeatureFlagConfig.ENABLE_PUBLISH_PENDING_EVENTS}", havingValue = "true")
 @Service
 class EventNotificationService(
-  private val hmppsQueueService: HmppsQueueService,
+  private val hmppsQueueService: SQSService,
   private val objectMapper: ObjectMapper,
   private val authorisationConfig: AuthorisationConfig,
   private val featureFlagConfig: FeatureFlagConfig,
