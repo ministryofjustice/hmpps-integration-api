@@ -19,12 +19,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.EventNot
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.objectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.TestSQSService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.TestSqsAsyncClient
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.TestQueueService
+import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import java.time.LocalDateTime
 
 class IntegrationEventSqsServiceTests : ConfigTest() {
-  private lateinit var hmppsQueueService: TestSQSService
+  val topicService: HmppsQueueService = mock()
+  private lateinit var queueService: TestQueueService
   val authorisationConfig: AuthorisationConfig = mock()
   val featureFlagConfig: FeatureFlagConfig = mock()
   val telemetryService: TelemetryService = mock()
@@ -45,7 +46,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
 
   @BeforeEach
   fun setUp() {
-    hmppsQueueService = TestSQSService(queues = listOf("mockQueue1, mockQueue2"))
+    queueService = TestQueueService(queues = listOf("mockQueue1, mockQueue2"))
     whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.DIRECT_SQS_NOTIFICATIONS)).thenReturn(true)
     whenever(authorisationConfig.consumersWithQueue()).thenReturn(setOf("mockConsumer1", "mockConsumer2"))
     whenever(authorisationConfig.events(any())).thenReturn(listOf(event.eventType))
@@ -60,11 +61,11 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
   @Test
   fun `Publish Event to multiple queues is successful`() {
     // Setup both queues
-    hmppsQueueService = TestSQSService(queues = listOf("mockQueue1", "mockQueue2"))
-    eventNotificationService = EventNotificationService(hmppsQueueService, objectMapper, authorisationConfig, featureFlagConfig, telemetryService)
+    queueService = TestQueueService(queues = listOf("mockQueue1", "mockQueue2"))
+    eventNotificationService = EventNotificationService(topicService, queueService, objectMapper, authorisationConfig, featureFlagConfig, telemetryService)
     eventNotificationService.sendEvent(event)
-    val queue1Messages = (hmppsQueueService.findByQueueId("mockQueue1").sqsClient as TestSqsAsyncClient).messagesOnQueue<EventNotification>()
-    val queue2Messages = (hmppsQueueService.findByQueueId("mockQueue2").sqsClient as TestSqsAsyncClient).messagesOnQueue<EventNotification>()
+    val queue1Messages = queueService.getMessagesFromQueue<EventNotification>("mockQueue1")
+    val queue2Messages = queueService.getMessagesFromQueue<EventNotification>("mockQueue2")
 
     // Check queue
     assertThat(queue1Messages[0]).isEqualTo(event)
@@ -74,17 +75,17 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
   @Test
   fun `Publish Event to first queue is unsuccessful, but second queue is successful`() {
     // Only setup the test queue to have mockQueue2
-    hmppsQueueService = TestSQSService(queues = listOf("mockQueue2"))
-    eventNotificationService = EventNotificationService(hmppsQueueService, objectMapper, authorisationConfig, featureFlagConfig, telemetryService)
+    queueService = TestQueueService(queues = listOf("mockQueue2"))
+    eventNotificationService = EventNotificationService(topicService, queueService, objectMapper, authorisationConfig, featureFlagConfig, telemetryService)
     eventNotificationService.sendEvent(event)
 
-    val queue2Messages = (hmppsQueueService.findByQueueId("mockQueue2").sqsClient as TestSqsAsyncClient).messagesOnQueue<EventNotification>()
+    val queue2Messages = queueService.getMessagesFromQueue<EventNotification>("mockQueue2")
     assertThat(queue2Messages[0]).isEqualTo(event)
 
     // Check that an exception is thrown
     argumentCaptor<Throwable>().apply {
       verify(telemetryService, times(1)).captureException(capture())
-      firstValue.message.shouldContain("cant find queue mockQueue1")
+      firstValue.message.shouldContain("Queue mockQueue1 not found")
     }
   }
 
@@ -101,7 +102,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
         """.trimIndent(),
       )
 
-    eventNotificationService = EventNotificationService(hmppsQueueService, objectMapper, config, featureFlagConfig, telemetryService)
+    eventNotificationService = EventNotificationService(topicService, queueService, objectMapper, config, featureFlagConfig, telemetryService)
     Assertions.assertTrue(eventNotificationService.isEventApplicable("tester", testEvent))
   }
 
@@ -117,7 +118,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
               - full-access
         """.trimIndent(),
       )
-    eventNotificationService = EventNotificationService(hmppsQueueService, objectMapper, config, featureFlagConfig, telemetryService)
+    eventNotificationService = EventNotificationService(topicService, queueService, objectMapper, config, featureFlagConfig, telemetryService)
     Assertions.assertFalse(eventNotificationService.isEventApplicable("tester", testEvent))
   }
 
@@ -136,7 +137,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
                - MKI
         """.trimIndent(),
       )
-    eventNotificationService = EventNotificationService(hmppsQueueService, objectMapper, config, featureFlagConfig, telemetryService)
+    eventNotificationService = EventNotificationService(topicService, queueService, objectMapper, config, featureFlagConfig, telemetryService)
     Assertions.assertTrue(eventNotificationService.isEventApplicable("tester", testEvent))
   }
 
@@ -155,7 +156,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
                 - MKI
         """.trimIndent(),
       )
-    eventNotificationService = EventNotificationService(hmppsQueueService, objectMapper, config, featureFlagConfig, telemetryService)
+    eventNotificationService = EventNotificationService(topicService, queueService, objectMapper, config, featureFlagConfig, telemetryService)
     Assertions.assertFalse(eventNotificationService.isEventApplicable("tester", testEvent))
   }
 }

@@ -24,9 +24,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.IntegrationEventStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.EventNotificationService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.sqs.SQSService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.sqs.QueueService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import uk.gov.justice.hmpps.sqs.HmppsQueue
+import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import uk.gov.justice.hmpps.sqs.HmppsTopic
 import java.time.LocalDateTime
 import java.util.concurrent.CompletableFuture
@@ -36,7 +37,8 @@ import java.util.concurrent.CompletableFuture
 class EventNotificationServiceTests(
   @Autowired private val objectMapper: ObjectMapper,
 ) {
-  val hmppsQueueService: SQSService = mock()
+  val queueService: QueueService = mock()
+  val hmppsQueueService: HmppsQueueService = mock()
   val hmppsEventSnsClient: SnsAsyncClient = mock()
   val mockQueue: HmppsQueue = mock()
   val authorisationConfig: AuthorisationConfig = mock()
@@ -52,7 +54,7 @@ class EventNotificationServiceTests(
       .thenReturn(HmppsTopic("integrationeventtopic", "sometopicarn", hmppsEventSnsClient))
     whenever(hmppsQueueService.findByQueueId("mockQueue")).thenReturn(mockQueue)
     whenever(mockQueue.queueArn).thenReturn("mockARN")
-    eventNotificationService = EventNotificationService(hmppsQueueService, objectMapper, authorisationConfig, featureFlagConfig, telemetryService)
+    eventNotificationService = EventNotificationService(hmppsQueueService, queueService, objectMapper, authorisationConfig, featureFlagConfig, telemetryService)
   }
 
   @Test
