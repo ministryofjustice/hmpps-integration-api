@@ -1,15 +1,9 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.sqs
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.messaging.sqs
 
 import org.springframework.stereotype.Component
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.messaging.QueueService
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
-
-interface QueueService {
-  fun sendMessageToQueue(
-    rawMessage: String,
-    queueName: String,
-  )
-}
 
 @Component
 class AwsQueueService(
