@@ -12,7 +12,9 @@ import software.amazon.awssdk.services.sqs.model.PurgeQueueRequest
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageResponse
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.messaging.QueueService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.TestQueueService
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import uk.gov.justice.hmpps.sqs.MissingQueueException
@@ -24,10 +26,14 @@ abstract class IntegrationTestWithEventsQueueBase : IntegrationTestBase() {
   protected lateinit var hmppsQueueService: HmppsQueueService
 
   @Autowired
+  protected lateinit var queueService: QueueService
+
+  @Autowired
   protected lateinit var objectMapper: ObjectMapper
 
   lateinit var webTestClient: WebTestClient
 
+  protected val testQueueService by lazy { queueService as TestQueueService }
   protected val domainEventsQueueConfig by lazy { hmppsQueueService.findByQueueId("hmppsdomainqueue") ?: throw MissingQueueException("HmppsQueue hmppsDomainQueue not found") }
   protected val domainEventsQueueSqsUrl by lazy { domainEventsQueueConfig.queueUrl }
   protected val domainEventsQueueSqsClient by lazy { domainEventsQueueConfig.sqsClient }

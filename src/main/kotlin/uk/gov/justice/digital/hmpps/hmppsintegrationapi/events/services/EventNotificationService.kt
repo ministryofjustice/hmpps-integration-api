@@ -10,7 +10,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.INTEGRATION_EVENT_TOPIC
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.messaging.sqs.QueueService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.messaging.QueueService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.DirectSQSMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.EventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.SQSMessageAttributes

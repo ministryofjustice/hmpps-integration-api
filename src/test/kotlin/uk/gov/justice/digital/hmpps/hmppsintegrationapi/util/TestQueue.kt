@@ -1,12 +1,16 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.util
 
+import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Import
+import org.springframework.context.annotation.Primary
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.messaging.QueueService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.objectMapper
 
 /**
  * Test implementation of the QueueService
  */
-
 class TestQueueService(
   queues: List<String> = emptyList(),
 ) : QueueService {
@@ -15,14 +19,13 @@ class TestQueueService(
   override fun sendMessageToQueue(
     rawMessage: String,
     queueName: String,
+    eventType: String?,
   ) {
     val queue = hmppsQueues.firstOrNull { it.queueName == queueName } ?: throw RuntimeException("Queue $queueName not found")
     queue.publish(rawMessage)
   }
 
   fun getQueue(queueName: String) = hmppsQueues.firstOrNull { it.queueName == queueName } ?: throw RuntimeException("Queue $queueName not found")
-
-  inline fun <reified T : Any> getMessagesFromQueue(queueName: String): List<T> = getQueue(queueName).messagesOnQueue<T>()
 }
 
 class TestQueue(
@@ -34,9 +37,29 @@ class TestQueue(
     messages.add(message)
   }
 
+  fun countMessagesOnQueue(): Int = messages.size
+
+  fun purge() {
+    messages.clear()
+  }
+
   inline fun <reified T : Any> messagesOnQueue(): List<T> =
     messages.map {
       val messageContent = objectMapper.readTree(it)
       objectMapper.readValue(messageContent.get("Message").textValue(), T::class.java)
     }
+}
+
+@TestConfiguration
+@Import(TestQueues::class)
+class TestQueueConfig {
+  @Bean
+  @Primary
+  fun testQueueService(testQueueConfig: TestQueues): QueueService = TestQueueService(testQueueConfig.queues.keys.map { it })
+}
+
+@TestConfiguration
+@ConfigurationProperties(prefix = "hmpps.sqs")
+class TestQueues {
+  var queues: Map<String, TestQueue> = emptyMap()
 }

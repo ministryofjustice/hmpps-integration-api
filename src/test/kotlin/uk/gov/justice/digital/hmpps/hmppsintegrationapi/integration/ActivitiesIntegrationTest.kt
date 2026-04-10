@@ -184,9 +184,9 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
           ),
         )
 
-      await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
+      await untilCallTo { getNumberOfMessagesOnQueue() } matches { it == 1 }
 
-      val queueMessages = getQueueMessages()
+      val queueMessages = getQueueMessagesNew()
       queueMessages.size.shouldBe(1)
 
       val messageJson = queueMessages[0].body()
@@ -317,9 +317,9 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
           ),
         )
 
-      await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
+      await untilCallTo { getNumberOfMessagesOnQueue() } matches { it == 1 }
 
-      val queueMessages = getQueueMessages()
+      val queueMessages = getQueueMessagesNew()
       queueMessages.size.shouldBe(1)
 
       val messageJson = queueMessages[0].body()
@@ -358,9 +358,9 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
           ),
         )
 
-      await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
+      await untilCallTo { getNumberOfMessagesOnQueue() } matches { it == 1 }
 
-      val queueMessages = getQueueMessages()
+      val queueMessages = getQueueMessagesNew()
       queueMessages.size.shouldBe(1)
 
       val messageJson = queueMessages[0].body()
@@ -550,9 +550,9 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
           ),
         )
 
-      await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
+      await untilCallTo { getNumberOfMessagesOnQueue() } matches { it == 1 }
 
-      val queueMessages = getQueueMessages()
+      val queueMessages = getQueueMessagesNew()
       queueMessages.size.shouldBe(1)
 
       val messageJson = queueMessages[0].body()
@@ -923,9 +923,9 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
           ),
         )
 
-      await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
+      await untilCallTo { getNumberOfMessagesOnQueue() } matches { it == 1 }
 
-      val queueMessages = getQueueMessages()
+      val queueMessages = getQueueMessagesNew()
       queueMessages.size.shouldBe(1)
 
       val messageJson = queueMessages[0].body()

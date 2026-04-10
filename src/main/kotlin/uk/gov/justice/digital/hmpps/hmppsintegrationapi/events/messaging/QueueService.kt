@@ -4,5 +4,6 @@ interface QueueService {
   fun sendMessageToQueue(
     rawMessage: String,
     queueName: String,
+    eventType: String? = null,
   )
 }

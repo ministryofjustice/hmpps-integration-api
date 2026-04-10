@@ -8,19 +8,23 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeTypeOf
 import org.mockito.Mockito
 import org.mockito.kotlin.any
-import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Import
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import software.amazon.awssdk.services.sqs.SqsAsyncClient
-import software.amazon.awssdk.services.sqs.model.SendMessageRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.messaging.QueueService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivity
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivityCategory
@@ -50,18 +54,25 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.WaitingListApplication
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.TestQueueConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.TestQueueService
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 
+@SpringBootTest
+@AutoConfigureMockMvc
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
   classes = [ActivitiesQueueService::class],
 )
+@ActiveProfiles("test")
+@Import(TestQueueConfig::class)
 class ActivitiesQueueServiceTest(
   private val activitiesQueueService: ActivitiesQueueService,
+  @Autowired private val queueService: QueueService,
   @MockitoBean val hmppsQueueService: HmppsQueueService,
   @MockitoBean val objectMapper: ObjectMapper,
   @MockitoBean val getPersonService: GetPersonService,
@@ -73,6 +84,7 @@ class ActivitiesQueueServiceTest(
   @MockitoBean private val activitiesGateway: ActivitiesGateway,
 ) : DescribeSpec(
     {
+      val testQueue = (queueService as TestQueueService).getQueue("activities")
       val mockSqsClient = mock<SqsAsyncClient>()
       val activitiesQueue =
         mock<HmppsQueue> {
@@ -97,7 +109,7 @@ class ActivitiesQueueServiceTest(
 
       beforeTest {
         reset(mockSqsClient, objectMapper, consumerPrisonAccessService)
-
+        testQueue.purge()
         whenever(hmppsQueueService.findByQueueId("activities")).thenReturn(activitiesQueue)
         whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessageResponse>(prisonId, filters))
           .thenReturn(Response(data = null, errors = emptyList()))
@@ -130,16 +142,13 @@ class ActivitiesQueueServiceTest(
           result.data.shouldBeTypeOf<HmppsMessageResponse>()
           result.data.message.shouldBe("Attendance update written to queue")
           result.errors.shouldBeEmpty()
-
-          verify(mockSqsClient).sendMessage(
-            argThat<SendMessageRequest> { request: SendMessageRequest? ->
-              request?.queueUrl() == "https://test-queue-url" &&
-                request.messageBody() == messageBody
-            },
-          )
+          testQueue.messages[0].shouldBe(messageBody)
         }
 
         it("should send attendance update test request") {
+          val messageBody = """{"messageId": "1", "eventType": "TestEvent", "messageAttributes": {}}"""
+          whenever(objectMapper.writeValueAsString(any<HmppsMessage>())).thenReturn(messageBody)
+
           val result = activitiesQueueService.sendAttendanceUpdateRequest(attendanceUpdateRequests.map { it.copy(status = "TestEvent") }, who, filters)
           result.data?.message.shouldBe("Attendance update written to queue")
           result.errors.shouldBeEmpty()
@@ -153,13 +162,7 @@ class ActivitiesQueueServiceTest(
 
           val result = activitiesQueueService.sendAttendanceUpdateRequest(attendanceUpdateRequests.map { it.copy(status = "TestEvent") }, who, filters)
           result.data.shouldBeTypeOf<HmppsMessageResponse>()
-
-          verify(mockSqsClient).sendMessage(
-            argThat<SendMessageRequest> { request: SendMessageRequest? ->
-              request?.queueUrl() == "https://test-queue-url" &&
-                request.messageBody() == messageBody
-            },
-          )
+          testQueue.messages[0].shouldBe(messageBody)
         }
 
         it("should return errors when consumer does not have access to the prison") {
@@ -301,12 +304,7 @@ class ActivitiesQueueServiceTest(
           result.data.message.shouldBe("Prisoner deallocation written to queue")
           result.errors.shouldBeEmpty()
 
-          verify(mockSqsClient).sendMessage(
-            argThat<SendMessageRequest> { request: SendMessageRequest? ->
-              request?.queueUrl() == "https://test-queue-url" &&
-                request.messageBody() == messageBody
-            },
-          )
+          testQueue.messages[0].shouldBe(messageBody)
         }
 
         it("successfully adds to message queue when the schedule does not have an end date") {
@@ -318,13 +316,7 @@ class ActivitiesQueueServiceTest(
           result.data.shouldBeTypeOf<HmppsMessageResponse>()
           result.data.message.shouldBe("Prisoner deallocation written to queue")
           result.errors.shouldBeEmpty()
-
-          verify(mockSqsClient).sendMessage(
-            argThat<SendMessageRequest> { request: SendMessageRequest? ->
-              request?.queueUrl() == "https://test-queue-url" &&
-                request.messageBody() == messageBody
-            },
-          )
+          testQueue.messages[0].shouldBe(messageBody)
         }
 
         it("successfully adds test message to message queue") {
@@ -333,13 +325,7 @@ class ActivitiesQueueServiceTest(
 
           val result = activitiesQueueService.sendPrisonerDeallocationRequest(scheduleId, prisonerDeallocationRequest.copy(reasonCode = "TestEvent"), who, filters)
           result.data.shouldBeTypeOf<HmppsMessageResponse>()
-
-          verify(mockSqsClient).sendMessage(
-            argThat<SendMessageRequest> { request: SendMessageRequest? ->
-              request?.queueUrl() == "https://test-queue-url" &&
-                request.messageBody() == messageBody
-            },
-          )
+          testQueue.messages[0].shouldBe(messageBody)
         }
 
         it("returns an error if getScheduleDetailsService has an error") {
@@ -944,12 +930,7 @@ class ActivitiesQueueServiceTest(
           result.data.message.shouldBe("Prisoner allocation written to queue")
           result.errors.shouldBeEmpty()
 
-          verify(mockSqsClient).sendMessage(
-            argThat<SendMessageRequest> { request: SendMessageRequest? ->
-              request?.queueUrl() == "https://test-queue-url" &&
-                request.messageBody() == messageBody
-            },
-          )
+          testQueue.messages[0].shouldBe(messageBody)
         }
 
         it("successfully adds to message queue when the schedule does not have an end date") {
@@ -964,12 +945,7 @@ class ActivitiesQueueServiceTest(
           result.data.message.shouldBe("Prisoner allocation written to queue")
           result.errors.shouldBeEmpty()
 
-          verify(mockSqsClient).sendMessage(
-            argThat<SendMessageRequest> { request: SendMessageRequest? ->
-              request?.queueUrl() == "https://test-queue-url" &&
-                request.messageBody() == messageBody
-            },
-          )
+          testQueue.messages[0].shouldBe(messageBody)
         }
 
         it("successfully adds test message to message queue") {
@@ -1003,12 +979,7 @@ class ActivitiesQueueServiceTest(
           val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
           result.data.shouldBeTypeOf<HmppsMessageResponse>()
 
-          verify(mockSqsClient).sendMessage(
-            argThat<SendMessageRequest> { request: SendMessageRequest? ->
-              request?.queueUrl() == "https://test-queue-url" &&
-                request.messageBody() == messageBody
-            },
-          )
+          testQueue.messages[0].shouldBe(messageBody)
         }
       }
     },

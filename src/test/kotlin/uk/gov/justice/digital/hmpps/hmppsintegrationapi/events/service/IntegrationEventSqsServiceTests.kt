@@ -64,8 +64,8 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
     queueService = TestQueueService(queues = listOf("mockQueue1", "mockQueue2"))
     eventNotificationService = EventNotificationService(topicService, queueService, objectMapper, authorisationConfig, featureFlagConfig, telemetryService)
     eventNotificationService.sendEvent(event)
-    val queue1Messages = queueService.getMessagesFromQueue<EventNotification>("mockQueue1")
-    val queue2Messages = queueService.getMessagesFromQueue<EventNotification>("mockQueue2")
+    val queue1Messages = queueService.getQueue("mockQueue1").messagesOnQueue<EventNotification>()
+    val queue2Messages = queueService.getQueue("mockQueue2").messagesOnQueue<EventNotification>()
 
     // Check queue
     assertThat(queue1Messages[0]).isEqualTo(event)
@@ -79,7 +79,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
     eventNotificationService = EventNotificationService(topicService, queueService, objectMapper, authorisationConfig, featureFlagConfig, telemetryService)
     eventNotificationService.sendEvent(event)
 
-    val queue2Messages = queueService.getMessagesFromQueue<EventNotification>("mockQueue2")
+    val queue2Messages = queueService.getQueue("mockQueue2").messagesOnQueue<EventNotification>()
     assertThat(queue2Messages[0]).isEqualTo(event)
 
     // Check that an exception is thrown
