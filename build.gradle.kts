@@ -115,7 +115,7 @@ dependencies {
 }
 
 java {
-  toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+  toolchain.languageVersion.set(JavaLanguageVersion.of(25))
 }
 
 repositories {
@@ -214,7 +214,7 @@ tasks {
 
   withType<KotlinCompile> {
     compilerOptions {
-      jvmTarget = JvmTarget.JVM_21
+      jvmTarget = JvmTarget.JVM_25
       freeCompilerArgs.add("-Xannotation-default-target=param-property")
     }
   }
