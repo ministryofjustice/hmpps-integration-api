@@ -9,9 +9,14 @@ plugins {
   id("org.jetbrains.kotlinx.kover") version "0.9.8"
 }
 
+configurations.register("koverCli") {
+  isCanBeConsumed = false
+  isTransitive = true
+  isCanBeResolved = true
+}
+
 configurations {
   testImplementation { exclude(group = "org.junit.vintage") }
-  testCompileOnly { isCanBeResolved = true }
   all {
     exclude(group = "dev.detekt", module = "detekt-report-checkstyle")
   }
@@ -59,9 +64,9 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-cache")
   implementation("org.springframework.boot:spring-boot-starter-jdbc")
-  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
-  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.37.1")
-  implementation("io.sentry:sentry-logback:8.37.1")
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
+  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.38.0")
+  implementation("io.sentry:sentry-logback:8.38.0")
   implementation("org.springframework.data:spring-data-commons")
   implementation("org.springframework:spring-aop")
   implementation("org.aspectj:aspectjweaver")
@@ -78,11 +83,11 @@ dependencies {
   implementation("com.jayway.jsonpath:json-path:2.10.0")
   implementation("com.github.ben-manes.caffeine:caffeine:3.2.3")
 
-  testImplementation("io.kotest:kotest-assertions-json-jvm:6.1.10")
-  testImplementation("io.kotest:kotest-runner-junit5-jvm:6.1.10")
-  testImplementation("io.kotest:kotest-assertions-core-jvm:6.1.10")
-  testImplementation("io.kotest:kotest-extensions-spring:6.1.10")
-  testCompileOnly("org.jetbrains.kotlinx:kover-cli:0.9.8")
+  testImplementation("io.kotest:kotest-assertions-json-jvm:6.1.11")
+  testImplementation("io.kotest:kotest-runner-junit5-jvm:6.1.11")
+  testImplementation("io.kotest:kotest-assertions-core-jvm:6.1.11")
+  testImplementation("io.kotest:kotest-extensions-spring:6.1.11")
+  add("koverCli", "org.jetbrains.kotlinx:kover-cli:0.9.8")
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
   testImplementation("org.mockito:mockito-core:5.23.0")
   testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.21.2")
@@ -99,10 +104,10 @@ dependencies {
   }
   // Explicitly add all necessary Jetty and Servlet dependencies
   testImplementation("javax.servlet:javax.servlet-api:4.0.1")
-  testImplementation("org.eclipse.jetty:jetty-util:12.1.7")
-  testImplementation("org.eclipse.jetty:jetty-server:12.1.7")
-  testImplementation("org.eclipse.jetty:jetty-http:12.1.7")
-  testImplementation("org.eclipse.jetty:jetty-io:12.1.7")
+  testImplementation("org.eclipse.jetty:jetty-util:12.1.8")
+  testImplementation("org.eclipse.jetty:jetty-server:12.1.8")
+  testImplementation("org.eclipse.jetty:jetty-http:12.1.8")
+  testImplementation("org.eclipse.jetty:jetty-io:12.1.8")
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
   testImplementation(kotlin("test"))
   testImplementation("io.mockk:mockk:1.14.9")
@@ -110,7 +115,7 @@ dependencies {
 }
 
 java {
-  toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+  toolchain.languageVersion.set(JavaLanguageVersion.of(25))
 }
 
 repositories {
@@ -177,7 +182,7 @@ tasks {
   }
 
   val koverCli by registering(Copy::class) {
-    from(configurations.testCompileOnly).include("kover-cli*.jar")
+    from(configurations.getByName("koverCli")).include("kover-cli*.jar")
     into("lib")
     rename("(.*).jar", "kover-cli.jar")
   }
@@ -192,6 +197,8 @@ tasks {
 
   register<Test>("unitTest") {
     group = "verification"
+    testClassesDirs = sourceSets["test"].output.classesDirs
+    classpath = sourceSets["main"].output + configurations["testRuntimeClasspath"] + sourceSets["test"].output
     filter {
       excludeTestsMatching("uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration*")
     }
@@ -209,7 +216,7 @@ tasks {
 
   withType<KotlinCompile> {
     compilerOptions {
-      jvmTarget = JvmTarget.JVM_21
+      jvmTarget = JvmTarget.JVM_25
       freeCompilerArgs.add("-Xannotation-default-target=param-property")
     }
   }
