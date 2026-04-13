@@ -87,7 +87,7 @@ dependencies {
   testImplementation("io.kotest:kotest-runner-junit5-jvm:6.1.10")
   testImplementation("io.kotest:kotest-assertions-core-jvm:6.1.10")
   testImplementation("io.kotest:kotest-extensions-spring:6.1.10")
-  add("koverCli", "org.jetbrains.kotlinx:kover-cli:0.9.7")
+  add("koverCli", "org.jetbrains.kotlinx:kover-cli:0.9.8")
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
   testImplementation("org.mockito:mockito-core:5.23.0")
   testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.21.2")
