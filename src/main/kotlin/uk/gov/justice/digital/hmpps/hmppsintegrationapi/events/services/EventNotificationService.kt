@@ -6,11 +6,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Service
 import software.amazon.awssdk.services.sns.model.MessageAttributeValue
 import software.amazon.awssdk.services.sns.model.PublishRequest
-import software.amazon.awssdk.services.sqs.model.SendMessageRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.INTEGRATION_EVENT_TOPIC
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.messaging.QueueService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.DirectSQSMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.EventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.SQSMessageAttributes
@@ -20,7 +20,8 @@ import uk.gov.justice.hmpps.sqs.HmppsQueueService
 @ConditionalOnProperty("feature-flag.${FeatureFlagConfig.ENABLE_PUBLISH_PENDING_EVENTS}", havingValue = "true")
 @Service
 class EventNotificationService(
-  private val hmppsQueueService: HmppsQueueService,
+  private val topicService: HmppsQueueService,
+  private val queueService: QueueService,
   private val objectMapper: ObjectMapper,
   private val authorisationConfig: AuthorisationConfig,
   private val featureFlagConfig: FeatureFlagConfig,
@@ -39,7 +40,7 @@ class EventNotificationService(
   }
 
   fun sendEventToTopic(payload: EventNotification) {
-    val hmppsEventTopic = hmppsQueueService.findByTopicId(INTEGRATION_EVENT_TOPIC)
+    val hmppsEventTopic = topicService.findByTopicId(INTEGRATION_EVENT_TOPIC)
     val topicArn = hmppsEventTopic!!.arn
     val hmppsEventsTopicSnsClient = hmppsEventTopic.snsClient
     val messageAttributes =
@@ -86,15 +87,7 @@ class EventNotificationService(
               message = objectMapper.writeValueAsString(event),
               messageAttributes = SQSMessageAttributes(EventType(event.eventType)),
             )
-          val queue = hmppsQueueService.findByQueueId(queueName)
-          val sqsClient = queue?.sqsClient!!
-          val sendMessageRequest =
-            SendMessageRequest
-              .builder()
-              .queueUrl(queue.queueUrl)
-              .messageBody(objectMapper.writeValueAsString(message))
-              .build()
-          sqsClient.sendMessage(sendMessageRequest)
+          queueService.sendMessageToQueue(objectMapper.writeValueAsString(message), queueName)
           messagesSent++
           log.debug("Successfully published event ${event.eventType} to $queueName")
         } catch (ex: Exception) {

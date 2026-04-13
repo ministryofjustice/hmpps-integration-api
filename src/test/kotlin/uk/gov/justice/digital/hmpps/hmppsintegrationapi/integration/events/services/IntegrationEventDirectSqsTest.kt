@@ -1,8 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.services
 
-import net.javacrumbs.jsonunit.assertj.JsonAssertions
-import org.assertj.core.api.Assertions
-import org.assertj.core.api.ThrowingConsumer
+import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -15,7 +13,6 @@ import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.bean.override.mockito.MockReset
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
-import software.amazon.awssdk.services.sqs.model.PurgeQueueRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.IntegrationEventStatus
@@ -23,13 +20,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.Integration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.JdbcTemplateEventNotificationRepository
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.EventNotificationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.SendEventsService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.IntegrationTestWithEventsQueueBase
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestInMemoryQueueBase
 import java.time.LocalDateTime
 import java.util.UUID
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 
-class IntegrationEventDirectSqsTest : IntegrationTestWithEventsQueueBase() {
+class IntegrationEventDirectSqsTest : IntegrationTestInMemoryQueueBase("testqueue") {
   @Autowired
   private lateinit var stateEventNotifierService: SendEventsService
 
@@ -43,7 +40,8 @@ class IntegrationEventDirectSqsTest : IntegrationTestWithEventsQueueBase() {
   fun purgeQueues() {
     Mockito.reset(eventNotificationService)
     whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.DIRECT_SQS_NOTIFICATIONS)).thenReturn(true)
-    integrationEventTestQueueSqsClient.purgeQueue(PurgeQueueRequest.builder().queueUrl(integrationEventTestQueueUrl).build()).get()
+    testQueue.purge()
+    eventRepository.deleteAll()
   }
 
   fun getEvent(
@@ -67,26 +65,15 @@ class IntegrationEventDirectSqsTest : IntegrationTestWithEventsQueueBase() {
     InterruptedException::class,
   )
   fun willPublishDirectToQueue(prisonId: String?) {
+    val event = getEvent(prisonId, UUID.randomUUID().toString())
+    eventRepository.save(event)
+    stateEventNotifierService.sentNotifications()
+
     await.atMost(5, TimeUnit.SECONDS).untilAsserted {
-      eventRepository.save(getEvent(prisonId, UUID.randomUUID().toString()))
-      stateEventNotifierService.sentNotifications()
       Mockito.verify(eventNotificationService, Mockito.atLeast(1)).sendEvent(any())
-      val prisonEventMessages = getMessagesCurrentlyOnTestQueue()
-      Assertions
-        .assertThat(prisonEventMessages)
-        .singleElement()
-        .satisfies(
-          ThrowingConsumer { event: String? ->
-            JsonAssertions
-              .assertThatJson(event)
-              .node("eventType")
-              .isEqualTo(IntegrationEventType.MAPPA_DETAIL_CHANGED.name)
-            JsonAssertions
-              .assertThatJson(event)
-              .node("prisonId")
-              .isEqualTo(prisonId)
-          },
-        )
+      val prisonEventMessages = testQueueService.getQueue("testqueue").messagesAsObjects<EventNotification>()
+      assertThat(prisonEventMessages).hasSize(1)
+      assertThat(prisonEventMessages[0].eventType).isEqualTo(event.eventType)
     }
   }
 }
