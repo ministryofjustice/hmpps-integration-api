@@ -9,9 +9,14 @@ plugins {
   id("org.jetbrains.kotlinx.kover") version "0.9.8"
 }
 
+configurations.register("koverCli") {
+  isCanBeConsumed = false
+  isTransitive = true
+  isCanBeResolved = true
+}
+
 configurations {
   testImplementation { exclude(group = "org.junit.vintage") }
-  testCompileOnly { isCanBeResolved = true }
   all {
     exclude(group = "dev.detekt", module = "detekt-report-checkstyle")
   }
@@ -82,7 +87,7 @@ dependencies {
   testImplementation("io.kotest:kotest-runner-junit5-jvm:6.1.10")
   testImplementation("io.kotest:kotest-assertions-core-jvm:6.1.10")
   testImplementation("io.kotest:kotest-extensions-spring:6.1.10")
-  testCompileOnly("org.jetbrains.kotlinx:kover-cli:0.9.8")
+  add("koverCli", "org.jetbrains.kotlinx:kover-cli:0.9.7")
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
   testImplementation("org.mockito:mockito-core:5.23.0")
   testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.21.2")
@@ -177,7 +182,7 @@ tasks {
   }
 
   val koverCli by registering(Copy::class) {
-    from(configurations.testCompileOnly).include("kover-cli*.jar")
+    from(configurations.getByName("koverCli")).include("kover-cli*.jar")
     into("lib")
     rename("(.*).jar", "kover-cli.jar")
   }
