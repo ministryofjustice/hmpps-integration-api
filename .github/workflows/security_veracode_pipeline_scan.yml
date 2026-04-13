@@ -12,7 +12,7 @@ jobs:
       upload-build-artifacts: true
       build-artifact-name: 'build-results'
       upload-test-artifacts: false
-      java-version: "21"
+      java-version: 25
     permissions:
       contents: read
       actions: read
