@@ -20,13 +20,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.Integration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.JdbcTemplateEventNotificationRepository
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.EventNotificationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.SendEventsService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.IntegrationTestWithEventsQueueBase
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestInMemoryQueueBase
 import java.time.LocalDateTime
 import java.util.UUID
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 
-class IntegrationEventDirectSqsTest : IntegrationTestWithEventsQueueBase() {
+class IntegrationEventDirectSqsTest : IntegrationTestInMemoryQueueBase("testqueue") {
   @Autowired
   private lateinit var stateEventNotifierService: SendEventsService
 
@@ -40,7 +40,7 @@ class IntegrationEventDirectSqsTest : IntegrationTestWithEventsQueueBase() {
   fun purgeQueues() {
     Mockito.reset(eventNotificationService)
     whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.DIRECT_SQS_NOTIFICATIONS)).thenReturn(true)
-    testQueueService.getQueue("testqueue").purge()
+    testQueue.purge()
     eventRepository.deleteAll()
   }
 
@@ -71,7 +71,7 @@ class IntegrationEventDirectSqsTest : IntegrationTestWithEventsQueueBase() {
 
     await.atMost(5, TimeUnit.SECONDS).untilAsserted {
       Mockito.verify(eventNotificationService, Mockito.atLeast(1)).sendEvent(any())
-      val prisonEventMessages = testQueueService.getQueue("testqueue").messagesOnQueue<EventNotification>()
+      val prisonEventMessages = testQueueService.getQueue("testqueue").messagesAsObjects<EventNotification>()
       assertThat(prisonEventMessages).hasSize(1)
       assertThat(prisonEventMessages[0].eventType).isEqualTo(event.eventType)
     }

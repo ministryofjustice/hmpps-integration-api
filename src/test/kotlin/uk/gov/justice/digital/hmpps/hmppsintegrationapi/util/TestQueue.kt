@@ -43,7 +43,7 @@ class TestQueue(
     messages.clear()
   }
 
-  inline fun <reified T : Any> messagesOnQueue(): List<T> =
+  inline fun <reified T : Any> messagesAsObjects(): List<T> =
     messages.map {
       val messageContent = objectMapper.readTree(it)
       objectMapper.readValue(messageContent.get("Message").textValue(), T::class.java)
