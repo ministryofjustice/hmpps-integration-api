@@ -53,6 +53,9 @@ class TestQueue(
 @TestConfiguration
 @Import(TestQueues::class)
 class TestQueueConfig {
+  /**
+   Creating a QueueService of TestQueueService initialising with the list of queues that are currently in the sqs config
+   */
   @Bean
   @Primary
   fun testQueueService(testQueueConfig: TestQueues): QueueService = TestQueueService(testQueueConfig.queues.keys.map { it })

@@ -22,12 +22,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Exclusion
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerAllocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerDeallocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.toHmppsMessage
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.toTestMessage
 import java.io.File
 import java.time.DayOfWeek
 import java.time.LocalDate
 
-class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
+class ActivitiesIntegrationTest : IntegrationTestInMemoryQueueBase("activities") {
   private val prisonCode = "MDI"
 
   @AfterEach
@@ -184,9 +183,9 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
           ),
         )
 
-      await untilCallTo { getNumberOfMessagesOnQueue() } matches { it == 1 }
+      await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
 
-      val queueMessages = getQueueMessagesNew()
+      val queueMessages = getQueueMessages()
       queueMessages.size.shouldBe(1)
 
       val messageJson = queueMessages[0].body()
@@ -317,9 +316,9 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
           ),
         )
 
-      await untilCallTo { getNumberOfMessagesOnQueue() } matches { it == 1 }
+      await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
 
-      val queueMessages = getQueueMessagesNew()
+      val queueMessages = getQueueMessages()
       queueMessages.size.shouldBe(1)
 
       val messageJson = queueMessages[0].body()
@@ -358,9 +357,9 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
           ),
         )
 
-      await untilCallTo { getNumberOfMessagesOnQueue() } matches { it == 1 }
+      await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
 
-      val queueMessages = getQueueMessagesNew()
+      val queueMessages = getQueueMessages()
       queueMessages.size.shouldBe(1)
 
       val messageJson = queueMessages[0].body()
@@ -550,9 +549,9 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
           ),
         )
 
-      await untilCallTo { getNumberOfMessagesOnQueue() } matches { it == 1 }
+      await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
 
-      val queueMessages = getQueueMessagesNew()
+      val queueMessages = getQueueMessages()
       queueMessages.size.shouldBe(1)
 
       val messageJson = queueMessages[0].body()
@@ -923,9 +922,9 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
           ),
         )
 
-      await untilCallTo { getNumberOfMessagesOnQueue() } matches { it == 1 }
+      await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
 
-      val queueMessages = getQueueMessagesNew()
+      val queueMessages = getQueueMessages()
       queueMessages.size.shouldBe(1)
 
       val messageJson = queueMessages[0].body()
