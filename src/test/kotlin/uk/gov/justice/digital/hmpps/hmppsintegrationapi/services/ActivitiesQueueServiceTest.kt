@@ -6,6 +6,7 @@ import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeTypeOf
+import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
@@ -14,6 +15,7 @@ import org.mockito.kotlin.reset
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivity
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivityCategory
@@ -916,6 +918,19 @@ class ActivitiesQueueServiceTest(
           result.errors.shouldBeEmpty()
 
           activitiesQueue.messages[0].shouldBe(messageBody)
+        }
+
+        it("fails to add message to the queue") {
+          val messageBody = """{"messageId": "1", "eventType": "AllocatePrisonerFromActivitySchedule", "messageAttributes": {}, who: "$who"}"""
+          whenever(objectMapper.writeValueAsString(any<HmppsMessage>())).thenThrow(RuntimeException("An error has occurred"))
+
+          val error =
+            assertThrows<MessageFailedException> {
+              activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+            }
+
+          activitiesQueue.messages.shouldBeEmpty()
+          error.message.shouldBe("Could not send prisoner allocation to queue")
         }
 
         it("successfully adds to message queue when the schedule does not have an end date") {
