@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.serv
 
 import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.params.ParameterizedTest
@@ -45,6 +46,11 @@ class IntegrationEventDirectSqsTest : IntegrationTestInMemoryQueueBase("testqueu
     whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.DIRECT_SQS_NOTIFICATIONS)).thenReturn(true)
     testQueue.purge()
     eventRepository.deleteAll()
+  }
+
+  @AfterEach
+  fun resetMocks() {
+    Mockito.reset(authorisationConfig)
   }
 
   fun getEvent(
