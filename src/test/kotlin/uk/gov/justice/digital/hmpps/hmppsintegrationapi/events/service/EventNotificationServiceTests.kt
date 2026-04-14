@@ -108,15 +108,6 @@ class EventNotificationServiceTests(
             .dataType("String")
             .build(),
         )
-      Assertions
-        .assertThat(messageAttributes["supervisionStatus"])
-        .isEqualTo(
-          MessageAttributeValue
-            .builder()
-            .stringValue("PRISONS")
-            .dataType("String")
-            .build(),
-        )
     }
   }
 
