@@ -12,7 +12,6 @@ import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.bean.override.mockito.MockReset
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import software.amazon.awssdk.services.sqs.model.PurgeQueueRequest
@@ -28,7 +27,6 @@ import java.util.UUID
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 
-@TestPropertySource(properties = ["feature-flag.direct-sqs-notifications=false"])
 class IntegrationEventTest : IntegrationTestWithEventsQueueBase() {
   @Autowired
   private lateinit var stateEventNotifierService: SendEventsService
