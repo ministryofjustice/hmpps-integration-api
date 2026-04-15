@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.bean.override.mockito.MockReset
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.Filters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.Metadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.IntegrationEventStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.IntegrationEventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.JdbcTemplateEventNotificationRepository
@@ -51,7 +51,7 @@ class IntegrationEventDirectSqsTest : IntegrationTestInMemoryQueueBase("testqueu
   fun getEvent(
     prisonId: String? = null,
     url: String,
-    filters: Filters? = null,
+    metadata: Metadata? = null,
     eventType: String = IntegrationEventType.MAPPA_DETAIL_CHANGED.name,
   ) = EventNotification(
     status = IntegrationEventStatus.PENDING.name,
@@ -60,7 +60,7 @@ class IntegrationEventDirectSqsTest : IntegrationTestInMemoryQueueBase("testqueu
     prisonId = prisonId,
     url = url,
     lastModifiedDatetime = LocalDateTime.now().minusMinutes(6),
-    filters = filters,
+    metadata = metadata,
   )
 
   @ParameterizedTest

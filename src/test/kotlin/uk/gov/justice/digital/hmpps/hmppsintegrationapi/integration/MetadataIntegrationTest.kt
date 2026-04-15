@@ -18,7 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory
 import kotlin.test.Test
 
 @AutoConfigureMockMvc
-class FiltersIntegrationTest : IntegrationTestBase() {
+class MetadataIntegrationTest : IntegrationTestBase() {
   val filtersCapture = ArgumentCaptor.forClass(ConsumerFilters::class.java)
   val mockRequest = mock(HttpServletRequest::class.java)
   val mockResponse = mock(HttpServletResponse::class.java)

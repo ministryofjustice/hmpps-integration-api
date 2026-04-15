@@ -113,10 +113,10 @@ class EventNotificationService(
     val prisonCheck = prisonIds == null || (event.prisonId != null && prisonIds.contains(event.prisonId))
     // Supervision Status check
     val supervisionStatuses = authorisationConfig.consumers[consumer]?.filters?.supervisionStatuses
-    val supervisionStatusCheck = supervisionStatuses == null || (event.filters?.supervisionStatus != null && supervisionStatuses.contains(event.filters.supervisionStatus))
+    val supervisionStatusCheck = supervisionStatuses == null || (event.metadata?.supervisionStatus != null && supervisionStatuses.contains(event.metadata.supervisionStatus))
 
     // Log custom event
-    if (event.filters?.supervisionStatus?.contains(SupervisionStatus.PRISONS.name) == true) {
+    if (event.metadata?.supervisionStatus?.contains(SupervisionStatus.PRISONS.name) == true) {
       telemetryService.trackEvent(
         "prisonSupervisionStatusEvents",
         mapOf(

@@ -117,12 +117,12 @@ class JdbcTemplateEventNotificationRepository(
 
   override fun insertOrUpdate(match: EventNotification) {
     val insertOrUpdateQuery = """
-      insert into event_notification (url, event_type, hmpps_id, prison_id, status, filters, last_modified_datetime)
+      insert into event_notification (url, event_type, hmpps_id, prison_id, status, metadata, last_modified_datetime)
         values (?,?,?,?,?,?,?)
       on conflict(url, event_type) where status = 'PENDING' or status = NULL
         do update set last_modified_datetime = ?
     """
-    jdbcTemplate.update(insertOrUpdateQuery, match.url, match.eventType, match.hmppsId, match.prisonId, match.status, conversionService.convert(match.filters, String::class.java), match.lastModifiedDatetime, match.lastModifiedDatetime)
+    jdbcTemplate.update(insertOrUpdateQuery, match.url, match.eventType, match.hmppsId, match.prisonId, match.status, conversionService.convert(match.metadata, String::class.java), match.lastModifiedDatetime, match.lastModifiedDatetime)
   }
 
   fun saveAll(events: List<EventNotification>): List<EventNotification> {
@@ -139,11 +139,11 @@ class JdbcTemplateEventNotificationRepository(
       prison_id,
       url,
       status,
-      filters,
+      metadata,
       last_modified_datetime
       ) values (?,?,?,?,?,?,?,?)
     """
-    return jdbcTemplate.update(insertQuery, makeEvent.hmppsId, makeEvent.claimId, makeEvent.eventType, makeEvent.prisonId, makeEvent.url, makeEvent.status, conversionService.convert(makeEvent.filters, String::class.java), makeEvent.lastModifiedDatetime)
+    return jdbcTemplate.update(insertQuery, makeEvent.hmppsId, makeEvent.claimId, makeEvent.eventType, makeEvent.prisonId, makeEvent.url, makeEvent.status, conversionService.convert(makeEvent.metadata, String::class.java), makeEvent.lastModifiedDatetime)
   }
 
   override fun deleteEvents(dateTime: LocalDateTime): Int {

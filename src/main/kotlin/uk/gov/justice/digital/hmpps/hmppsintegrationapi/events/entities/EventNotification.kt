@@ -14,10 +14,10 @@ data class EventNotification(
   val status: String? = "PENDING",
   @JsonProperty("lastModifiedDateTime")
   val lastModifiedDatetime: LocalDateTime? = null,
-  val filters: Filters? = null,
+  val metadata: Metadata? = null,
 )
 
-data class Filters(
+data class Metadata(
   val supervisionStatus: String? = null,
 )
 

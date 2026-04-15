@@ -17,7 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotifi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.IntegrationTestWithEventsQueueBase
 import kotlin.test.assertEquals
 
-class DomainEventFiltersIntegrationTest : IntegrationTestWithEventsQueueBase() {
+class DomainEventMetadataIntegrationTest : IntegrationTestWithEventsQueueBase() {
   @BeforeEach
   fun setup() {
     eventNotificationRepository.deleteAll()
@@ -35,7 +35,7 @@ class DomainEventFiltersIntegrationTest : IntegrationTestWithEventsQueueBase() {
       eventNotificationRepository.findAll().isNotEmpty()
       val savedEvents: List<EventNotification> = eventNotificationRepository.findByHmppsIdIsIn(listOf(crnNotActiveInProbation))
       savedEvents.shouldNotBeEmpty().shouldHaveSize(1)
-      assertEquals("PRISONS", savedEvents.first().filters?.supervisionStatus)
+      assertEquals("PRISONS", savedEvents.first().metadata?.supervisionStatus)
     }
   }
 
@@ -51,7 +51,7 @@ class DomainEventFiltersIntegrationTest : IntegrationTestWithEventsQueueBase() {
       eventNotificationRepository.findAll().isNotEmpty()
       val savedEvents: List<EventNotification> = eventNotificationRepository.findByHmppsIdIsIn(listOf(crnActiveInProbation))
       savedEvents.shouldNotBeEmpty().shouldHaveSize(1)
-      assertEquals("PROBATION", savedEvents.first().filters?.supervisionStatus)
+      assertEquals("PROBATION", savedEvents.first().metadata?.supervisionStatus)
     }
   }
 
@@ -67,7 +67,7 @@ class DomainEventFiltersIntegrationTest : IntegrationTestWithEventsQueueBase() {
       eventNotificationRepository.findAll().isNotEmpty()
       val savedEvents: List<EventNotification> = eventNotificationRepository.findByHmppsIdIsIn(listOf(crnActiveInProbation))
       savedEvents.shouldNotBeEmpty().shouldHaveSize(1)
-      assertEquals("PROBATION", savedEvents.first().filters?.supervisionStatus)
+      assertEquals("PROBATION", savedEvents.first().metadata?.supervisionStatus)
     }
   }
 
@@ -83,7 +83,7 @@ class DomainEventFiltersIntegrationTest : IntegrationTestWithEventsQueueBase() {
       eventNotificationRepository.findAll().isNotEmpty()
       val savedEvents: List<EventNotification> = eventNotificationRepository.findByHmppsIdIsIn(listOf(crnNotActiveInPrisonOrProb))
       savedEvents.shouldNotBeEmpty().shouldHaveSize(1)
-      assertEquals("NONE", savedEvents.first().filters?.supervisionStatus)
+      assertEquals("NONE", savedEvents.first().metadata?.supervisionStatus)
     }
   }
 
@@ -105,7 +105,7 @@ class DomainEventFiltersIntegrationTest : IntegrationTestWithEventsQueueBase() {
       eventNotificationRepository.findAll().isNotEmpty()
       val savedEvents: List<EventNotification> = eventNotificationRepository.findByHmppsIdIsIn(listOf(crnNotActiveInProbation))
       savedEvents.shouldNotBeEmpty().shouldHaveSize(1)
-      assertEquals("UNKNOWN", savedEvents.first().filters?.supervisionStatus)
+      assertEquals("UNKNOWN", savedEvents.first().metadata?.supervisionStatus)
     }
   }
 
@@ -121,7 +121,7 @@ class DomainEventFiltersIntegrationTest : IntegrationTestWithEventsQueueBase() {
       eventNotificationRepository.findAll().isNotEmpty()
       val savedEvents: List<EventNotification> = eventNotificationRepository.findByHmppsIdIsIn(listOf(crnUnknownInPrison))
       savedEvents.shouldNotBeEmpty().shouldHaveSize(1)
-      assertEquals("UNKNOWN", savedEvents.first().filters?.supervisionStatus)
+      assertEquals("UNKNOWN", savedEvents.first().metadata?.supervisionStatus)
     }
   }
 
@@ -162,7 +162,7 @@ class DomainEventFiltersIntegrationTest : IntegrationTestWithEventsQueueBase() {
       val event = argumentCaptor<EventNotification>()
       verify(eventNotificationRepository, atLeast(1)).insertOrUpdate(event.capture())
       val events = event.allValues
-      events.filter { it.filters == null && it.hmppsId == crn }.shouldNotBeEmpty()
+      events.filter { it.metadata == null && it.hmppsId == crn }.shouldNotBeEmpty()
     }
   }
 }
