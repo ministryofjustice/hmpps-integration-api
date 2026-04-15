@@ -10,10 +10,9 @@ import org.mockito.kotlin.reset
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
-import org.springframework.cache.CacheManager
 import org.springframework.http.HttpHeaders
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
@@ -40,6 +39,7 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
 @ActiveProfiles("integration-test")
+@TestPropertySource(properties = ["feature-flag.gateway-cache-enabled=false"])
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 abstract class IntegrationTestBase {
@@ -73,9 +73,6 @@ abstract class IntegrationTestBase {
   @Autowired
   lateinit var mockMvc: MockMvc
 
-  @Autowired
-  lateinit var cacheManager: CacheManager
-
   @BeforeEach
   fun evictAllCaches() {
     reset(alertsGateway)
@@ -87,10 +84,6 @@ abstract class IntegrationTestBase {
     reset(featureFlagConfig)
     reset(authorisationConfig)
     reset(eventNotificationRepository)
-
-    cacheManager.cacheNames.forEach {
-      cacheManager.getCache(it)?.clear()
-    }
 
     prisonerOffenderSearchMockServer.stubForGet(
       "/prisoner/${Companion.nomsId}",
@@ -155,6 +148,7 @@ abstract class IntegrationTestBase {
     val crnActiveInProbation = "A654321"
     val crnNotActiveInProbation = "A765432"
     val crnNotActiveInPrisonOrProb = "A876543"
+    val crnUnknownInPrison = "A987654"
 
     val certSerialNumber = "9572494320151578633330348943480876283449388176"
     val revokedSerialNumber = "8472494320151578633330348943480876283449388195"
@@ -286,6 +280,14 @@ abstract class IntegrationTestBase {
 
       nDeliusMockServer.stubForPost(
         "/search/probation-cases",
+        writeAsJson(mapOf("crn" to crnUnknownInPrison)),
+        File(
+          "$gatewaysFolder/ndelius/fixtures/GetOffenderResponseUnknownPrisonId.json",
+        ).readText(),
+      )
+
+      nDeliusMockServer.stubForPost(
+        "/search/probation-cases",
         writeAsJson(mapOf("nomsNumber" to nomsIdNotActiveInPrisonOrProb)),
         File(
           "$gatewaysFolder/ndelius/fixtures/GetOffenderResponseStatusNone.json",
@@ -341,6 +343,16 @@ abstract class IntegrationTestBase {
         """
               {
                   "crn": "$crnNotActiveInProbation",
+                  "existsInDelius": true
+              }
+              """,
+      )
+
+      nDeliusMockServer.stubForGet(
+        "/exists-in-delius/crn/$crnUnknownInPrison",
+        """
+              {
+                  "crn": "$crnUnknownInPrison",
                   "existsInDelius": true
               }
               """,

@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.domain
 
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
@@ -21,6 +22,10 @@ class DomainEventIdentitiesResolver(
   private val featureFlagService: FeatureFlagConfig,
   private val telemetryService: TelemetryService,
 ) {
+  companion object {
+    val log = LoggerFactory.getLogger(this::class.java)
+  }
+
   /**
    * The hmpps id is an id that the end client will use in ongoing processing.
    * In the future when we have a core person record it will be that id

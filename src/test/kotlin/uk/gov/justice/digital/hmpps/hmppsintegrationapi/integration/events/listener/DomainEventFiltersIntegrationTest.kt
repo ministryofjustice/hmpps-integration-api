@@ -2,42 +2,22 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.list
 
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.collections.shouldNotBeEmpty
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import org.awaitility.Awaitility
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.whenever
 import org.springframework.http.HttpStatus
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import org.springframework.test.context.TestPropertySource
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.writeAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.IntegrationTestWithEventsQueueBase
-import java.util.concurrent.TimeUnit
 import kotlin.test.assertEquals
 
 class DomainEventFiltersIntegrationTest : IntegrationTestWithEventsQueueBase() {
   @BeforeEach
   fun setup() {
     eventNotificationRepository.deleteAll()
-  }
-
-  @Test
-  fun `will create a message without the supervision status if feature flag is not set`() {
-    whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.INCLUDE_SUPERVISION_STATUS_ATTRIBUTE)).thenReturn(false)
-
-    val rawMessage =
-      SqsNotificationGeneratingHelper().generateRawHmppsDomainEvent(
-        identifiers = "[{\\\"type\\\":\\\"CRN\\\",\\\"value\\\":\\\"$crnNotActiveInProbation\\\"},{\\\"type\\\":\\\"NOMS\\\",\\\"value\\\":\\\"$nomsIdActiveInPrison\\\"}]",
-      )
-    sendDomainSqsMessage(rawMessage)
-
-    Awaitility.await().until {
-      eventNotificationRepository.findAll().isNotEmpty()
-    }
-    val savedEvents: List<EventNotification> = eventNotificationRepository.findByHmppsIdIsIn(listOf(crnNotActiveInProbation))
-    savedEvents.shouldNotBeEmpty().shouldHaveSize(1)
-    assertEquals(null, savedEvents.first().filters)
   }
 
   @Test
@@ -48,12 +28,12 @@ class DomainEventFiltersIntegrationTest : IntegrationTestWithEventsQueueBase() {
       )
     sendDomainSqsMessage(rawMessage)
 
-    Awaitility.await().timeout(1000, TimeUnit.SECONDS).until {
+    Awaitility.await().untilAsserted {
       eventNotificationRepository.findAll().isNotEmpty()
+      val savedEvents: List<EventNotification> = eventNotificationRepository.findByHmppsIdIsIn(listOf(crnNotActiveInProbation))
+      savedEvents.shouldNotBeEmpty().shouldHaveSize(1)
+      assertEquals("PRISONS", savedEvents.first().filters?.supervisionStatus)
     }
-    val savedEvents: List<EventNotification> = eventNotificationRepository.findByHmppsIdIsIn(listOf(crnNotActiveInProbation))
-    savedEvents.shouldNotBeEmpty().shouldHaveSize(1)
-    assertEquals("PRISONS", savedEvents.first().filters?.supervisionStatus)
   }
 
   @Test
@@ -64,12 +44,12 @@ class DomainEventFiltersIntegrationTest : IntegrationTestWithEventsQueueBase() {
       )
     sendDomainSqsMessage(rawMessage)
 
-    Awaitility.await().until {
+    Awaitility.await().untilAsserted {
       eventNotificationRepository.findAll().isNotEmpty()
+      val savedEvents: List<EventNotification> = eventNotificationRepository.findByHmppsIdIsIn(listOf(crnActiveInProbation))
+      savedEvents.shouldNotBeEmpty().shouldHaveSize(1)
+      assertEquals("PROBATION", savedEvents.first().filters?.supervisionStatus)
     }
-    val savedEvents: List<EventNotification> = eventNotificationRepository.findByHmppsIdIsIn(listOf(crnActiveInProbation))
-    savedEvents.shouldNotBeEmpty().shouldHaveSize(1)
-    assertEquals("PROBATION", savedEvents.first().filters?.supervisionStatus)
   }
 
   @Test
@@ -80,12 +60,12 @@ class DomainEventFiltersIntegrationTest : IntegrationTestWithEventsQueueBase() {
       )
     sendDomainSqsMessage(rawMessage)
 
-    Awaitility.await().until {
+    Awaitility.await().untilAsserted {
       eventNotificationRepository.findAll().isNotEmpty()
+      val savedEvents: List<EventNotification> = eventNotificationRepository.findByHmppsIdIsIn(listOf(crnActiveInProbation))
+      savedEvents.shouldNotBeEmpty().shouldHaveSize(1)
+      assertEquals("PROBATION", savedEvents.first().filters?.supervisionStatus)
     }
-    val savedEvents: List<EventNotification> = eventNotificationRepository.findByHmppsIdIsIn(listOf(crnActiveInProbation))
-    savedEvents.shouldNotBeEmpty().shouldHaveSize(1)
-    assertEquals("PROBATION", savedEvents.first().filters?.supervisionStatus)
   }
 
   @Test
@@ -96,12 +76,12 @@ class DomainEventFiltersIntegrationTest : IntegrationTestWithEventsQueueBase() {
       )
     sendDomainSqsMessage(rawMessage)
 
-    Awaitility.await().until {
+    Awaitility.await().untilAsserted {
       eventNotificationRepository.findAll().isNotEmpty()
+      val savedEvents: List<EventNotification> = eventNotificationRepository.findByHmppsIdIsIn(listOf(crnNotActiveInPrisonOrProb))
+      savedEvents.shouldNotBeEmpty().shouldHaveSize(1)
+      assertEquals("NONE", savedEvents.first().filters?.supervisionStatus)
     }
-    val savedEvents: List<EventNotification> = eventNotificationRepository.findByHmppsIdIsIn(listOf(crnNotActiveInPrisonOrProb))
-    savedEvents.shouldNotBeEmpty().shouldHaveSize(1)
-    assertEquals("NONE", savedEvents.first().filters?.supervisionStatus)
   }
 
   @Test
@@ -118,38 +98,33 @@ class DomainEventFiltersIntegrationTest : IntegrationTestWithEventsQueueBase() {
       )
     sendDomainSqsMessage(rawMessage)
 
-    Awaitility.await().until {
+    Awaitility.await().untilAsserted {
       eventNotificationRepository.findAll().isNotEmpty()
+      val savedEvents: List<EventNotification> = eventNotificationRepository.findByHmppsIdIsIn(listOf(crnNotActiveInProbation))
+      savedEvents.shouldNotBeEmpty().shouldHaveSize(1)
+      assertEquals("UNKNOWN", savedEvents.first().filters?.supervisionStatus)
     }
-    val savedEvents: List<EventNotification> = eventNotificationRepository.findByHmppsIdIsIn(listOf(crnNotActiveInProbation))
-    savedEvents.shouldNotBeEmpty().shouldHaveSize(1)
-    assertEquals("UNKNOWN", savedEvents.first().filters?.supervisionStatus)
   }
 
   @Test
   fun `will create a message containing supervision status of UNKNOWN when unable to resolve to a nomis number`() {
-    nDeliusMockServer.stubForPost(
-      "/search/probation-cases",
-      writeAsJson(mapOf("crn" to crnNotActiveInProbation)),
-      "",
-      HttpStatus.NOT_FOUND,
-    )
     val rawMessage =
       SqsNotificationGeneratingHelper().generateRawHmppsDomainEvent(
-        identifiers = "[{\\\"type\\\":\\\"CRN\\\",\\\"value\\\":\\\"$crnNotActiveInProbation\\\"}]",
+        identifiers = "[{\\\"type\\\":\\\"CRN\\\",\\\"value\\\":\\\"$crnUnknownInPrison\\\"}]",
       )
     sendDomainSqsMessage(rawMessage)
 
-    Awaitility.await().until {
+    Awaitility.await().untilAsserted {
       eventNotificationRepository.findAll().isNotEmpty()
+      val savedEvents: List<EventNotification> = eventNotificationRepository.findByHmppsIdIsIn(listOf(crnUnknownInPrison))
+      savedEvents.shouldNotBeEmpty().shouldHaveSize(1)
+      assertEquals("UNKNOWN", savedEvents.first().filters?.supervisionStatus)
     }
-    val savedEvents: List<EventNotification> = eventNotificationRepository.findByHmppsIdIsIn(listOf(crnNotActiveInProbation))
-    savedEvents.shouldNotBeEmpty().shouldHaveSize(1)
-    assertEquals("UNKNOWN", savedEvents.first().filters?.supervisionStatus)
   }
 
   @Test
   fun `will send the event to the DLQ prisoner offender search returns a 500`() {
+    // Clear cache
     prisonerOffenderSearchMockServer.stubForGet(
       "/prisoner/$nomsIdNotActiveInPrison",
       "",
@@ -169,5 +144,28 @@ class DomainEventFiltersIntegrationTest : IntegrationTestWithEventsQueueBase() {
     val deadLetterQueueMessage = geMessagesCurrentlyOnDomainEventsDeadLetterQueue()
     val message = deadLetterQueueMessage.messages().first()
     message.body().shouldBe(rawMessage)
+  }
+}
+
+@TestPropertySource(properties = ["feature-flag.include-supervision-status-attribute=false"])
+class WithoutSupervisionStatusFilter : IntegrationTestWithEventsQueueBase() {
+  @BeforeEach
+  fun setup() {
+    eventNotificationRepository.deleteAll()
+  }
+
+  @Test
+  fun `will create a message without the supervision status if feature flag is not set`() {
+    val rawMessage =
+      SqsNotificationGeneratingHelper().generateRawHmppsDomainEvent(
+        identifiers = "[{\\\"type\\\":\\\"CRN\\\",\\\"value\\\":\\\"$crn\\\"}]",
+      )
+    sendDomainSqsMessage(rawMessage)
+
+    Awaitility.await().untilAsserted {
+      val savedEvents: List<EventNotification> = eventNotificationRepository.findByHmppsIdIsIn(listOf(crn))
+      savedEvents.shouldNotBeEmpty().shouldHaveSize(1)
+      savedEvents.first().filters.shouldBeNull()
+    }
   }
 }

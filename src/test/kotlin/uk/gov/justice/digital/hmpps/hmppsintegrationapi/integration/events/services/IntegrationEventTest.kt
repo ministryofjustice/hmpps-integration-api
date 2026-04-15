@@ -11,12 +11,11 @@ import org.junit.jupiter.params.provider.NullSource
 import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.Mockito
 import org.mockito.kotlin.any
-import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.bean.override.mockito.MockReset
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import software.amazon.awssdk.services.sqs.model.PurgeQueueRequest
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.IntegrationEventStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.IntegrationEventType
@@ -29,6 +28,7 @@ import java.util.UUID
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 
+@TestPropertySource(properties = ["feature-flag.direct-sqs-notifications=false"])
 class IntegrationEventTest : IntegrationTestWithEventsQueueBase() {
   @Autowired
   private lateinit var stateEventNotifierService: SendEventsService
@@ -42,7 +42,6 @@ class IntegrationEventTest : IntegrationTestWithEventsQueueBase() {
   @BeforeEach
   fun purgeQueues() {
     Mockito.reset(eventNotificationService)
-    whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.DIRECT_SQS_NOTIFICATIONS)).thenReturn(false)
     integrationEventTestQueueSqsClient.purgeQueue(PurgeQueueRequest.builder().queueUrl(integrationEventTestQueueUrl).build()).get()
   }
 

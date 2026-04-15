@@ -5,6 +5,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
@@ -158,5 +161,133 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
       )
     eventNotificationService = EventNotificationService(topicService, queueService, objectMapper, config, featureFlagConfig, telemetryService)
     Assertions.assertFalse(eventNotificationService.isEventApplicable("tester", testEvent))
+  }
+
+  @ParameterizedTest(name = "{0}")
+  @MethodSource("events")
+  fun isEventApplicableTest(
+    display: String,
+    config: String,
+    messagePrisonId: String?,
+    shouldBeSent: Boolean,
+  ) {
+    val testEvent = EventNotification(url = "url", eventType = "PERSON_ADDRESS_CHANGED", prisonId = messagePrisonId)
+    val config = parseConfig<AuthorisationConfig>(config)
+    eventNotificationService = EventNotificationService(topicService, queueService, objectMapper, config, featureFlagConfig, telemetryService)
+
+    assertThat(eventNotificationService.isEventApplicable("tester", testEvent)).isEqualTo(shouldBeSent)
+  }
+
+  companion object {
+    @JvmStatic
+    private fun events() =
+      listOf(
+        Arguments.of(
+          "Consumer has a supervision status of prisons, but the message does not contain a supervision status - Will not send event",
+          """
+          consumers:
+            tester:
+              roles:
+                - private-prison
+              filters:
+                supervisionStatuses:
+                  - PRISONS
+          """.trimIndent(),
+          null,
+          false,
+        ),
+        Arguments.of(
+          "Consumer has a supervision status of prisons, but the message contains a probation supervision status - Will not send event",
+          """
+          consumers:
+            tester:
+              roles:
+                - private-prison
+              filters:
+                supervisionStatuses:
+                  - PROBATION
+          """.trimIndent(),
+          null,
+          false,
+        ),
+        Arguments.of(
+          "Consumer has a supervision status of prisons, and the message contains a prison supervision status - Will send the event",
+          """
+          consumers:
+            tester:
+              roles:
+                - private-prison
+              filters:
+                supervisionStatuses:
+                  - PRISONS
+          """.trimIndent(),
+          "MKI",
+          false,
+        ),
+        Arguments.of(
+          "Consumer has no supervision status and the message contains a probation supervision status - Will still send event",
+          """
+          consumers:
+            tester:
+              roles:
+                - private-prison
+          """.trimIndent(),
+          null,
+          true,
+        ),
+        Arguments.of(
+          "Consumer has a prison filter with MKI, but the message does not contain a prisonId - will not send event",
+          """
+          consumers:
+            tester:
+              roles:
+                - private-prison
+              filters:
+                prisons:
+                  - MKI
+          """.trimIndent(),
+          null,
+          false,
+        ),
+        Arguments.of(
+          "Consumer has a prison filter with MKI, but the message contains MDI - will not send event",
+          """
+          consumers:
+            tester:
+              roles:
+                - private-prison
+              filters:
+                prisons:
+                  - MKI
+          """.trimIndent(),
+          "MDI",
+          false,
+        ),
+        Arguments.of(
+          "Consumer has a prison filter with MKI, the message contains MKI - will send event",
+          """
+          consumers:
+            tester:
+              roles:
+                - private-prison
+              filters:
+                prisons:
+                  - MKI
+          """.trimIndent(),
+          "MKI",
+          true,
+        ),
+        Arguments.of(
+          "No prison or supervision status filter - Will still send event",
+          """
+          consumers:
+            tester:
+              roles:
+                - private-prison
+          """.trimIndent(),
+          "MKI",
+          true,
+        ),
+      )
   }
 }
