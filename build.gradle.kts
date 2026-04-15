@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.3.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.0.3"
   kotlin("plugin.spring") version "2.3.20"
   id("dev.detekt") version "2.0.0-alpha.2"
   id("org.jetbrains.kotlinx.kover") version "0.9.8"
@@ -23,34 +23,15 @@ configurations {
 }
 
 configurations.all {
+  resolutionStrategy {
+    force("com.fasterxml.jackson.core:jackson-databind:2.18.2")
+    force("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.2")
+    force("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.2")
+  }
   resolutionStrategy.eachDependency {
-    if (requested.group == "org.apache.logging.log4j") {
-      useVersion("2.25.3")
-      because("Fix CVE-2025-68161")
-    }
-    if (requested.group == "ch.qos.logback") {
-      useVersion("1.5.25")
-      because("Fix CVE-2026-1225")
-    }
-    if (requested.group == "org.apache.tomcat.embed") {
-      useVersion("10.1.52")
-      because("Fix CVE-2026-1225")
-    }
-    if (requested.group == "org.springframework") {
-      useVersion("6.2.17")
-      because("Fix CVE-2026-22737")
-    }
-    if (requested.group == "org.springframework.boot") {
-      useVersion("3.5.12")
-      because("Fix CVE-2026-22733")
-    }
-    if (requested.group == "org.webjars" && requested.name == "swagger-ui") {
-      useVersion("5.32.1")
-      because("Fix CVE-2026-0540")
-    }
-    if (requested.group == "io.netty") {
-      useVersion("4.1.132.Final")
-      because("Fix VE-2026-33870")
+    if (requested.group.startsWith("com.fasterxml.jackson")) {
+      useVersion("2.18.2")
+      because("Pinning Jackson 2 to avoid breaking changes during SB4 upgrade")
     }
   }
 }
@@ -64,13 +45,16 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-cache")
   implementation("org.springframework.boot:spring-boot-starter-jdbc")
+  implementation("org.springframework.boot:spring-boot-starter-flyway")
+  implementation("org.springframework.boot:spring-boot-health")
+  implementation("org.springframework.boot:spring-boot-starter-tomcat")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
   implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.38.0")
   implementation("io.sentry:sentry-logback:8.38.0")
   implementation("org.springframework.data:spring-data-commons")
   implementation("org.springframework:spring-aop")
   implementation("org.aspectj:aspectjweaver")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.6.3") {
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.0.1") {
     exclude("org.springframework.security", "spring-security-config")
     exclude("org.springframework.security", "spring-security-core")
     exclude("org.springframework.security", "spring-security-crypto")
@@ -83,6 +67,8 @@ dependencies {
   implementation("com.jayway.jsonpath:json-path:2.10.0")
   implementation("com.github.ben-manes.caffeine:caffeine:3.2.3")
 
+  testImplementation("org.springframework.boot:spring-boot-starter-test")
+  testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
   testImplementation("io.kotest:kotest-assertions-json-jvm:6.1.11")
   testImplementation("io.kotest:kotest-runner-junit5-jvm:6.1.11")
   testImplementation("io.kotest:kotest-assertions-core-jvm:6.1.11")

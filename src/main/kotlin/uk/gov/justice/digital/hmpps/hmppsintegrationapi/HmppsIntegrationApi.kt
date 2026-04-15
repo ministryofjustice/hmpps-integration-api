@@ -6,7 +6,9 @@ import org.springframework.boot.runApplication
 import org.springframework.cache.annotation.EnableCaching
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 
-@SpringBootApplication
+@SpringBootApplication(exclude = [
+  org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration::class
+])
 @EnableCaching
 @EnableConfigurationProperties(FeatureFlagConfig::class)
 class HmppsIntegrationApi
