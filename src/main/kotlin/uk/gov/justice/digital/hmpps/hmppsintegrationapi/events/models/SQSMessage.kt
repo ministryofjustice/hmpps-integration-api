@@ -3,8 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.Instant
-import java.util.UUID
-import kotlin.String
+import java.util.*
 
 /**
  * Message received from SQS Listener
@@ -25,7 +24,6 @@ data class DirectSQSMessage(
   @Deprecated("Should not be used in any downstream processing")
   @JsonProperty("Type")
   val type: String = "Notification",
-  @Deprecated("Should not be used in any downstream processing")
   @JsonProperty("MessageId")
   val messageId: String = UUID.randomUUID().toString(),
   @Deprecated("Should not be used in any downstream processing")
@@ -33,7 +31,6 @@ data class DirectSQSMessage(
   val topicArn: String = "",
   @JsonProperty("Message")
   val message: String,
-  @Deprecated("Should not be used in any downstream processing")
   @JsonProperty("Timestamp")
   val timestamp: String = "${Instant.now()}",
   @Deprecated("Should not be used in any downstream processing")

@@ -3,7 +3,7 @@ title: HMPPS Integration Events
 weight: 6
 owner_slack: "#hmpps-integration-api-alerts"
 last_reviewed_on: 2026-04-15
-review_in: 6 months
+review_in: 2 months
 ---
 
 # HMPPS External Events
@@ -15,15 +15,16 @@ Consumers who want to be notified of these events, will be provided with a dedic
 Email [hmpps-external-api@justice.gov.uk](mailto:hmpps-external-api@justice.gov.uk) to request access to this service.
 
 The notification message is wrapped in a JSON structure with the actual notification message content held in the Message attribute.
-Only the Message attribute should be used and the fields noted as deprecated should not be used by consumers.
+The fields noted as deprecated should not be used by consumers.
 
+For example:
 ```
 {
   "Type" : DEPRECATED,
-  "MessageId" : DEPRECATED,
+  "MessageId" : bbf92ab9-9540-5c0c-83b0-48e80e6f24d3,
   "TopicArn" : DEPRECATED,
   "Message" : "See notification message content below",
-  "Timestamp" : DEPRECATED,
+  "Timestamp" : "2026-04-09T12:17:51.384Z",
   "SignatureVersion" : DEPRECATED,
   "Signature" : DEPRECATED,
   "SigningCertURL" : DEPRECATED,
