@@ -2,12 +2,12 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.JsonDeserializer
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import io.swagger.v3.oas.annotations.media.Schema
+import tools.jackson.core.JsonParser
+import tools.jackson.databind.DeserializationContext
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.ValueDeserializer
+import tools.jackson.databind.annotation.JsonDeserialize
 import java.time.Instant
 import java.time.LocalDate
 
@@ -160,26 +160,26 @@ data class InductionSchedule(
   val version: Int? = null,
 )
 
-class InductionScheduleDeserializer : JsonDeserializer<InductionSchedule>() {
+class InductionScheduleDeserializer : ValueDeserializer<InductionSchedule>() {
   override fun deserialize(
     parser: JsonParser,
     ctxt: DeserializationContext,
   ): InductionSchedule {
-    val node = parser.codec.readTree<JsonNode>(parser)
-    val nomisNumber = node["prisonNumber"]?.asText()
-    val deadlineDate = node["deadlineDate"]?.asText()?.let { LocalDate.parse(it) }
-    val scheduleStatus = node["scheduleStatus"]?.asText()
-    val scheduleCalculationRule = node["scheduleCalculationRule"]?.asText()
-    val systemUpdatedBy = node["updatedByDisplayName"]?.asText()
-    val systemUpdatedAt = node["updatedAt"]?.asText()?.let { Instant.parse(it) }
-    val systemUpdatedAtPrison = node["updatedAtPrison"]?.asText()
-    val systemCreatedBy = node["createdByDisplayName"]?.asText()
-    val systemCreatedAt = node["createdAt"]?.asText()?.let { Instant.parse(it) }
-    val systemCreatedAtPrison = node["createdAtPrison"]?.asText()
-    val inductionPerformedBy = node["inductionPerformedBy"]?.takeUnless { it.isNull }?.asText()
-    val inductionPerformedAt = node["inductionPerformedAt"]?.takeUnless { it.isNull }?.asText()?.let { LocalDate.parse(it) }
-    val inductionPerformedByRole = node["inductionPerformedByRole"]?.takeUnless { it.isNull }?.asText()
-    val inductionPerformedAtPrison = node["inductionPerformedAtPrison"]?.takeUnless { it.isNull }?.asText()
+    val node = parser.objectReadContext().readTree<JsonNode>(parser)
+    val nomisNumber = node["prisonNumber"]?.asString()
+    val deadlineDate = node["deadlineDate"]?.asString()?.let { LocalDate.parse(it) }
+    val scheduleStatus = node["scheduleStatus"]?.asString()
+    val scheduleCalculationRule = node["scheduleCalculationRule"]?.asString()
+    val systemUpdatedBy = node["updatedByDisplayName"]?.asString()
+    val systemUpdatedAt = node["updatedAt"]?.asString()?.let { Instant.parse(it) }
+    val systemUpdatedAtPrison = node["updatedAtPrison"]?.asString()
+    val systemCreatedBy = node["createdByDisplayName"]?.asString()
+    val systemCreatedAt = node["createdAt"]?.asString()?.let { Instant.parse(it) }
+    val systemCreatedAtPrison = node["createdAtPrison"]?.asString()
+    val inductionPerformedBy = node["inductionPerformedBy"]?.takeUnless { it.isNull }?.asString()
+    val inductionPerformedAt = node["inductionPerformedAt"]?.takeUnless { it.isNull }?.asString()?.let { LocalDate.parse(it) }
+    val inductionPerformedByRole = node["inductionPerformedByRole"]?.takeUnless { it.isNull }?.asString()
+    val inductionPerformedAtPrison = node["inductionPerformedAtPrison"]?.takeUnless { it.isNull }?.asString()
     val version = node["version"]?.asInt()
     val exemptionReason = node["exemptionReason"]?.takeUnless { it.isNull }?.asText()
 
