@@ -1,27 +1,23 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.person
 
-import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
-import tools.jackson.databind.DeserializationFeature
-import tools.jackson.databind.json.JsonMapper
-import tools.jackson.module.kotlin.KotlinModule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.InductionSchedule
 import java.time.Instant
 import java.time.LocalDate
 
 class InductionScheduleTest {
   private val objectMapper =
-    JsonMapper
-      .builder()
-      .configureForJackson2()
-      .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-      .configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false)
-      .changeDefaultPropertyInclusion { it.withValueInclusion(JsonInclude.Include.NON_NULL) }
-      .changeDefaultPropertyInclusion { it.withContentInclusion(JsonInclude.Include.NON_NULL) }
-      .addModule(KotlinModule.Builder().build())
-      .build()
+    ObjectMapper().apply {
+      // Register the custom deserializer
+      registerModule(
+        com.fasterxml.jackson.module.kotlin.KotlinModule
+          .Builder()
+          .build(),
+      )
+    }
 
   @Test
   fun `should deserialize JSON into InductionSchedule object`() {
