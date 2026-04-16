@@ -19,24 +19,6 @@ spring:
       max-in-memory-size: 10MB
   jackson:
     date-format: "yyyy-MM-dd HH:mm:ss"
-#    use-jackson2-defaults: true
-#    default-leniency: true
-#    deserialization:
-#      fail-on-unknown-properties: false
-#      fail-on-missing-creator-properties: false
-#      fail-on-null-creator-properties: false
-#      fail-on-null-for-primitives: false
-#      fail-on-missing-external-type-id-property: false
-#      fail-on-unresolved-object-ids: false
-#    default-property-inclusion: always
-#  jackson2:
-#    date-format: "yyyy-MM-dd HH:mm:ss"
-#    deserialization:
-#      fail-on-unknown-properties: false
-#      fail-on-missing-creator-properties: false
-#      fail-on-null-creator-properties: false
-#      fail-on-null-for-primitives: false
-#    default-property-inclusion: always
   profiles:
     group:
       test:
