@@ -127,6 +127,11 @@ class EventNotificationService(
       )
     }
 
-    return consumerEvents.contains(event.eventType) && prisonCheck && supervisionStatusCheck
+    // Log supervisionStatusCheck info
+    val messageStatus = event.metadata?.supervisionStatus ?: "not defined"
+    val consumerStatuses = supervisionStatuses?.joinToString(",") ?: "not defined"
+    log.info("Supervision status on message is $messageStatus and the status for consumer $consumer is $consumerStatuses. The Supervision status applicability check returns: $supervisionStatusCheck")
+
+    return consumerEvents.contains(event.eventType) && prisonCheck
   }
 }

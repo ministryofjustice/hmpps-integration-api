@@ -94,21 +94,30 @@ class DomainEventIdentitiesResolver(
     val nomisId =
       hmppsId?.let {
         personService.convert(it, GetPersonService.IdentifierType.NOMS).data
-      } ?: return SupervisionStatus.UNKNOWN.name
+      }
 
-    return try {
-      personService.getPersonSupervisionStatus(nomisId)
-    } catch (ex: UpstreamApiException) {
-      when (ex.errorType) {
-        UpstreamApiError.Type.ENTITY_NOT_FOUND -> {
-          SupervisionStatus.UNKNOWN.name
-        }
-        else -> {
-          telemetryService.captureException(ex)
-          throw ex
+    if (nomisId == null) {
+      log.info("Cant determine supervision status for the message with hmppsId $hmppsId because a prison id cannot be found. Returning ${SupervisionStatus.UNKNOWN.name}")
+      return SupervisionStatus.UNKNOWN.name
+    }
+
+    val supervisionStatus =
+      try {
+        personService.getPersonSupervisionStatus(nomisId)
+      } catch (ex: UpstreamApiException) {
+        when (ex.errorType) {
+          UpstreamApiError.Type.ENTITY_NOT_FOUND -> {
+            SupervisionStatus.UNKNOWN.name
+          }
+          else -> {
+            log.error("An error occurred while determining the supervision status for the message with $nomisId")
+            telemetryService.captureException(ex)
+            throw ex
+          }
         }
       }
-    }
+    log.info("Supervision status of $supervisionStatus has been found for the message with $nomisId")
+    return supervisionStatus
   }
 
   private fun getNomisNumber(hmppsEvent: HmppsDomainEvent): String? {

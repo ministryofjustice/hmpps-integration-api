@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ConfigTest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.Metadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.EventNotificationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.objectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
@@ -169,9 +170,16 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
     display: String,
     config: String,
     messagePrisonId: String?,
+    messageSupervisionStatus: String?,
     shouldBeSent: Boolean,
   ) {
-    val testEvent = EventNotification(url = "url", eventType = "PERSON_ADDRESS_CHANGED", prisonId = messagePrisonId)
+    val testEvent =
+      EventNotification(
+        url = "url",
+        eventType = "PERSON_ADDRESS_CHANGED",
+        prisonId = messagePrisonId,
+        metadata = messageSupervisionStatus?.let { Metadata(it) },
+      )
     val config = parseConfig<AuthorisationConfig>(config)
     eventNotificationService = EventNotificationService(topicService, queueService, objectMapper, config, featureFlagConfig, telemetryService)
 
@@ -194,7 +202,8 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
                   - PRISONS
           """.trimIndent(),
           null,
-          false,
+          null,
+          true, // Set to false when supervision status check is included in the isEventApplicable function
         ),
         Arguments.of(
           "Consumer has a supervision status of prisons, but the message contains a probation supervision status - Will not send event",
@@ -205,10 +214,11 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
                 - private-prison
               filters:
                 supervisionStatuses:
-                  - PROBATION
+                  - PRISONS
           """.trimIndent(),
           null,
-          false,
+          "PROBATION",
+          true, // Set to false when supervision status check is included in the isEventApplicable function
         ),
         Arguments.of(
           "Consumer has a supervision status of prisons, and the message contains a prison supervision status - Will send the event",
@@ -222,7 +232,8 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
                   - PRISONS
           """.trimIndent(),
           "MKI",
-          false,
+          "PRISONS",
+          true,
         ),
         Arguments.of(
           "Consumer has no supervision status and the message contains a probation supervision status - Will still send event",
@@ -233,6 +244,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
                 - private-prison
           """.trimIndent(),
           null,
+          "PROBATION",
           true,
         ),
         Arguments.of(
@@ -247,8 +259,10 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
                   - MKI
           """.trimIndent(),
           null,
+          null,
           false,
         ),
+        // Should be set to false when supervision check in place
         Arguments.of(
           "Consumer has a prison filter with MKI, but the message contains MDI - will not send event",
           """
@@ -261,6 +275,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
                   - MKI
           """.trimIndent(),
           "MDI",
+          null,
           false,
         ),
         Arguments.of(
@@ -275,6 +290,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
                   - MKI
           """.trimIndent(),
           "MKI",
+          null,
           true,
         ),
         Arguments.of(
@@ -286,6 +302,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
                 - private-prison
           """.trimIndent(),
           "MKI",
+          null,
           true,
         ),
       )
