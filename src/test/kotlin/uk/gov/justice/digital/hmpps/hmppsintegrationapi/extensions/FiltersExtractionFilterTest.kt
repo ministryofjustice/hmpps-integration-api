@@ -19,7 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 
-class MetadataExtractionFilterTest {
+class FiltersExtractionFilterTest {
   private var authorisationConfig: AuthorisationConfig = AuthorisationConfig()
   private var filtersExtractionFilter: FiltersExtractionFilter =
     FiltersExtractionFilter(
