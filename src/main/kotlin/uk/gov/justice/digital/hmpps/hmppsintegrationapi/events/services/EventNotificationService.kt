@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.messaging.QueueSe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.DirectSQSMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.EventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.SQSMessageAttributes
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.SupervisionStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 
@@ -107,8 +108,30 @@ class EventNotificationService(
     event: EventNotification,
   ): Boolean {
     val consumerEvents = authorisationConfig.events(consumer)
+    // Prison Id check
     val prisonIds = authorisationConfig.allFilters(consumer)?.prisons
     val prisonCheck = prisonIds == null || (event.prisonId != null && prisonIds.contains(event.prisonId))
+    // Supervision Status check
+    val supervisionStatuses = authorisationConfig.consumers[consumer]?.filters?.supervisionStatuses
+    val supervisionStatusCheck = supervisionStatuses == null || (event.metadata?.supervisionStatus != null && supervisionStatuses.contains(event.metadata.supervisionStatus))
+
+    // Log custom event
+    if (event.metadata?.supervisionStatus?.contains(SupervisionStatus.PRISONS.name) == true) {
+      telemetryService.trackEvent(
+        "prisonSupervisionStatusEvents",
+        mapOf(
+          "consumer" to consumer,
+          "prisonId" to event.prisonId,
+          "eventType" to event.eventType,
+        ),
+      )
+    }
+
+    // Log supervisionStatusCheck info
+    val messageStatus = event.metadata?.supervisionStatus ?: "not defined"
+    val consumerStatuses = supervisionStatuses?.joinToString(",") ?: "not defined"
+    log.info("Supervision status on message is $messageStatus and the status for consumer $consumer is $consumerStatuses. The Supervision status applicability check returns: $supervisionStatusCheck")
+
     return consumerEvents.contains(event.eventType) && prisonCheck
   }
 }

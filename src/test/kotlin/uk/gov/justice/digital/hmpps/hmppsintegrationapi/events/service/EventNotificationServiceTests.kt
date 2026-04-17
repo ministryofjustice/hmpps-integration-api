@@ -23,6 +23,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.IntegrationEventStatus
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.Metadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.messaging.QueueService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.EventNotificationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
@@ -69,6 +70,7 @@ class EventNotificationServiceTests(
         status = IntegrationEventStatus.PROCESSING.name,
         lastModifiedDatetime = currentTime,
         claimId = null,
+        metadata = Metadata(supervisionStatus = "PRISONS"),
       )
 
     val response =
@@ -142,6 +144,7 @@ class EventNotificationServiceTests(
             .build(),
         )
       messageAttributes.shouldNotHaveKey("prisonId")
+      messageAttributes.shouldNotHaveKey("supervisionStatus")
     }
   }
 }

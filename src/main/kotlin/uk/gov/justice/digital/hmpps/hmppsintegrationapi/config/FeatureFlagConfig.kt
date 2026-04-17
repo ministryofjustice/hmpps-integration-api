@@ -42,6 +42,7 @@ data class FeatureFlagConfig(
     const val LIMITED_ACCESS_NOTIFICATIONS_ENABLED = "limited-access-notifications-enabled"
     const val DEDUPLICATE_EVENTS = "deduplicate-events"
     const val DIRECT_SQS_NOTIFICATIONS = "direct-sqs-notifications"
+    const val INCLUDE_SUPERVISION_STATUS_ATTRIBUTE = "include-supervision-status-attribute"
   }
 
   /**

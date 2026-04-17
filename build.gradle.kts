@@ -35,6 +35,7 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
   implementation("io.sentry:sentry-spring-boot-4-starter:8.38.0")
   implementation("io.sentry:sentry-logback:8.38.0")
+  implementation("org.springframework.data:spring-data-jdbc")
   implementation("org.springframework.data:spring-data-commons")
   implementation("org.springframework:spring-aop")
   implementation("org.aspectj:aspectjweaver")
