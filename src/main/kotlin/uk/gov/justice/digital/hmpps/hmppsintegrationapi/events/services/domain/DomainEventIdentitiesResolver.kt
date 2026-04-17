@@ -110,13 +110,13 @@ class DomainEventIdentitiesResolver(
             SupervisionStatus.UNKNOWN.name
           }
           else -> {
-            log.error("An error occurred while determining the supervision status for the message with $nomisId")
+            log.error("An error occurred while determining the supervision status for the message with hmppsId $hmppsId")
             telemetryService.captureException(ex)
             throw ex
           }
         }
       }
-    log.info("Supervision status of $supervisionStatus has been found for the message with $nomisId")
+    log.info("Supervision status of $supervisionStatus has been found for the message with hmppsId $hmppsId")
     return supervisionStatus
   }
 
