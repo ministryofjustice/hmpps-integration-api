@@ -1079,7 +1079,7 @@ internal class GetPersonServiceTest(
           result.shouldBe(SupervisionStatus.PROBATION)
         }
 
-        it("HmppsId resolves to a supervision status of PROBATION") {
+        it("HmppsId resolves to a supervision status of NONE") {
           whenever(deliusGateway.getOffender(any())).thenReturn(Response(data = Offender("Test", "Test", activeProbationManagedSentence = false, otherIds = OtherIds(crn = crnNumber, nomsNumber = nomsNumber))))
           val result = getPersonService.getSupervisionStatus(crnNumber)
           result.shouldBe(SupervisionStatus.NONE)
