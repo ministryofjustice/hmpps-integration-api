@@ -3,8 +3,8 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import software.amazon.awssdk.services.sqs.model.SendMessageRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.messaging.QueueService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivityScheduleDetailed
@@ -19,14 +19,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.toHmppsMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.toTestMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
-import uk.gov.justice.hmpps.sqs.HmppsQueue
-import uk.gov.justice.hmpps.sqs.HmppsQueueService
-import uk.gov.justice.hmpps.sqs.eventTypeMessageAttributes
 import java.time.LocalDate
 
 @Service
 class ActivitiesQueueService(
-  @Autowired private val hmppsQueueService: HmppsQueueService,
+  @Autowired private val hmppsQueueService: QueueService,
   @Autowired private val objectMapper: ObjectMapper,
   @Autowired private val getPersonService: GetPersonService,
   @Autowired private val consumerPrisonAccessService: ConsumerPrisonAccessService,
@@ -36,10 +33,6 @@ class ActivitiesQueueService(
   @Autowired private val getWaitingListApplicationsByScheduleIdService: GetWaitingListApplicationsByScheduleIdService,
   @Autowired val activitiesGateway: ActivitiesGateway,
 ) {
-  private val activitiesQueue by lazy { hmppsQueueService.findByQueueId("activities") as HmppsQueue }
-  private val activitiesQueueSqsClient by lazy { activitiesQueue.sqsClient }
-  private val activitiesQueueUrl by lazy { activitiesQueue.queueUrl }
-
   fun sendAttendanceUpdateRequest(
     attendanceUpdateRequests: List<AttendanceUpdateRequest>,
     who: String,
@@ -310,15 +303,7 @@ class ActivitiesQueueService(
   ) {
     try {
       val stringifiedMessage = objectMapper.writeValueAsString(hmppsMessage)
-      val sendMessageRequest =
-        SendMessageRequest
-          .builder()
-          .queueUrl(activitiesQueueUrl)
-          .messageBody(stringifiedMessage)
-          .eventTypeMessageAttributes(hmppsMessage.eventType.toString())
-          .build()
-
-      activitiesQueueSqsClient.sendMessage(sendMessageRequest)
+      hmppsQueueService.sendMessageToQueue(stringifiedMessage, "activities", hmppsMessage.eventType.toString())
     } catch (e: Exception) {
       throw MessageFailedException(exceptionMessage, e)
     }

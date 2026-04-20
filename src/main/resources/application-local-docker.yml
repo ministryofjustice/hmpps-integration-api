@@ -109,3 +109,5 @@ feature-flag:
   contact-events-notifications-enabled: true
   limited-access-notifications-enabled: true
   deduplicate-events: false
+  direct-sqs-notifications: true
+  include-supervision-status-attribute: true
