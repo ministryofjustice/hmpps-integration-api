@@ -12,4 +12,4 @@ interface IPaginatedObject<T> {
   val totalPages: Int
 }
 
-fun <T> IPaginatedObject<T>?.toPaginatedResponse(): PaginatedResponse<T> = PaginatedResponse.fromPaginatedObject(this)
+fun <T : Any> IPaginatedObject<T>?.toPaginatedResponse(): PaginatedResponse<T> = PaginatedResponse.fromPaginatedObject(this)

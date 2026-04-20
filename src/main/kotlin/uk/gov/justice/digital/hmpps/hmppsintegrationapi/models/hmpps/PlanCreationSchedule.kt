@@ -2,12 +2,12 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.JsonDeserializer
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import io.swagger.v3.oas.annotations.media.Schema
+import tools.jackson.core.JsonParser
+import tools.jackson.databind.DeserializationContext
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.ValueDeserializer
+import tools.jackson.databind.annotation.JsonDeserialize
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -69,35 +69,35 @@ data class PlanCreationSchedule(
   val version: Int? = null,
 )
 
-class PlanCreationScheduleDeserializer : JsonDeserializer<PlanCreationSchedule>() {
+class PlanCreationScheduleDeserializer : ValueDeserializer<PlanCreationSchedule>() {
   override fun deserialize(
     parser: JsonParser,
     ctxt: DeserializationContext,
   ): PlanCreationSchedule {
-    val node = parser.codec.readTree<JsonNode>(parser)
+    val node = parser.objectReadContext().readTree<JsonNode>(parser)
 
     return PlanCreationSchedule(
-      reference = UUID.fromString(node["reference"].asText()),
-      status = PlanCreationStatus.valueOf(node["status"].asText()),
-      createdBy = node["createdBy"].asText(),
-      createdByDisplayName = node["createdByDisplayName"].asText(),
-      createdAt = OffsetDateTime.parse(node["createdAt"].asText()),
-      createdAtPrison = node["createdAtPrison"].asText(),
-      updatedBy = node["updatedBy"].asText(),
-      updatedByDisplayName = node["updatedByDisplayName"].asText(),
-      updatedAt = OffsetDateTime.parse(node["updatedAt"].asText()),
-      updatedAtPrison = node["updatedAtPrison"].asText(),
-      deadlineDate = node["deadlineDate"]?.takeUnless { it.isNull }?.asText()?.let { LocalDate.parse(it) },
-      exemptionReason = node["exemptionReason"]?.takeUnless { it.isNull }?.asText(),
-      exemptionDetail = node["exemptionDetail"]?.takeUnless { it.isNull }?.asText(),
+      reference = UUID.fromString(node["reference"].asString()),
+      status = PlanCreationStatus.valueOf(node["status"].asString()),
+      createdBy = node["createdBy"].asString(),
+      createdByDisplayName = node["createdByDisplayName"].asString(),
+      createdAt = OffsetDateTime.parse(node["createdAt"].asString()),
+      createdAtPrison = node["createdAtPrison"].asString(),
+      updatedBy = node["updatedBy"].asString(),
+      updatedByDisplayName = node["updatedByDisplayName"].asString(),
+      updatedAt = OffsetDateTime.parse(node["updatedAt"].asString()),
+      updatedAtPrison = node["updatedAtPrison"].asString(),
+      deadlineDate = node["deadlineDate"]?.takeUnless { it.isNull }?.asString()?.let { LocalDate.parse(it) },
+      exemptionReason = node["exemptionReason"]?.takeUnless { it.isNull }?.asString(),
+      exemptionDetail = node["exemptionDetail"]?.takeUnless { it.isNull }?.asString(),
       needSources =
         node["needSources"]?.takeUnless { it.isNull }?.mapNotNull { ns ->
-          ns?.asText()?.let { NeedSource.valueOf(it) }
+          ns?.asString()?.let { NeedSource.valueOf(it) }
         },
-      planKeyedInBy = node["planKeyedInBy"]?.takeUnless { it.isNull }?.asText(),
-      planCompletedDate = node["planCompletedDate"]?.takeUnless { it.isNull }?.asText()?.let { LocalDate.parse(it) },
-      planCompletedBy = node["planCompletedBy"]?.takeUnless { it.isNull }?.asText(),
-      planCompletedByJobRole = node["planCompletedByJobRole"]?.takeUnless { it.isNull }?.asText(),
+      planKeyedInBy = node["planKeyedInBy"]?.takeUnless { it.isNull }?.asString(),
+      planCompletedDate = node["planCompletedDate"]?.takeUnless { it.isNull }?.asString()?.let { LocalDate.parse(it) },
+      planCompletedBy = node["planCompletedBy"]?.takeUnless { it.isNull }?.asString(),
+      planCompletedByJobRole = node["planCompletedByJobRole"]?.takeUnless { it.isNull }?.asString(),
       version = node["version"]?.takeUnless { it.isNull }?.asInt(),
     )
   }

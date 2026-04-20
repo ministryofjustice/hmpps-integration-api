@@ -8,12 +8,12 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.mockito.kotlin.reset
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
-import org.springframework.cache.CacheManager
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.http.HttpHeaders
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
@@ -40,6 +40,7 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
 @ActiveProfiles("integration-test")
+@TestPropertySource(properties = ["feature-flag.gateway-cache-enabled=false"])
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 abstract class IntegrationTestBase {
@@ -73,9 +74,6 @@ abstract class IntegrationTestBase {
   @Autowired
   lateinit var mockMvc: MockMvc
 
-  @Autowired
-  lateinit var cacheManager: CacheManager
-
   @BeforeEach
   fun evictAllCaches() {
     reset(alertsGateway)
@@ -88,10 +86,6 @@ abstract class IntegrationTestBase {
     reset(authorisationConfig)
     reset(eventNotificationRepository)
 
-    cacheManager.cacheNames.forEach {
-      cacheManager.getCache(it).clear()
-    }
-
     prisonerOffenderSearchMockServer.stubForGet(
       "/prisoner/${Companion.nomsId}",
       File(
@@ -103,6 +97,27 @@ abstract class IntegrationTestBase {
       "/prisoner/A1234AA",
       File(
         "$gatewaysFolder/prisoneroffendersearch/fixtures/PrisonerByIdResponseA1234AA.json",
+      ).readText(),
+    )
+
+    prisonerOffenderSearchMockServer.stubForGet(
+      "/prisoner/$nomsIdActiveInPrison",
+      File(
+        "$gatewaysFolder/prisoneroffendersearch/fixtures/ActivePrisonerByIdResponse.json",
+      ).readText(),
+    )
+
+    prisonerOffenderSearchMockServer.stubForGet(
+      "/prisoner/$nomsIdNotActiveInPrison",
+      File(
+        "$gatewaysFolder/prisoneroffendersearch/fixtures/InactivePrisonerByIdResponse.json",
+      ).readText(),
+    )
+
+    prisonerOffenderSearchMockServer.stubForGet(
+      "/prisoner/$nomsIdNotActiveInPrisonOrProb",
+      File(
+        "$gatewaysFolder/prisoneroffendersearch/fixtures/NoStatusPrisonerByIdResponse.json",
       ).readText(),
     )
   }
@@ -126,6 +141,15 @@ abstract class IntegrationTestBase {
     private val nomsId = "G2996UX"
     private val nomsIdFromProbation = "G5555TT"
     private val crn = DEFAULT_CRN
+
+    val nomsIdActiveInPrison = "A3646EA"
+    val nomsIdNotActiveInPrison = "A3646EB"
+    val nomsIdNotActiveInPrisonOrProb = "A3646EC"
+
+    val crnActiveInProbation = "A654321"
+    val crnNotActiveInProbation = "A765432"
+    val crnNotActiveInPrisonOrProb = "A876543"
+    val crnUnknownInPrison = "A987654"
 
     val certSerialNumber = "9572494320151578633330348943480876283449388176"
     val revokedSerialNumber = "8472494320151578633330348943480876283449388195"
@@ -217,9 +241,57 @@ abstract class IntegrationTestBase {
 
       nDeliusMockServer.stubForPost(
         "/search/probation-cases",
+        writeAsJson(mapOf("nomsNumber" to "$nomsIdNotActiveInPrison")),
+        File(
+          "$gatewaysFolder/ndelius/fixtures/GetOffenderResponse.json",
+        ).readText(),
+      )
+
+      nDeliusMockServer.stubForPost(
+        "/search/probation-cases",
         writeAsJson(mapOf("nomsNumber" to nomsIdFromProbation)),
         File(
           "$gatewaysFolder/ndelius/fixtures/GetOffenderResponse.json",
+        ).readText(),
+      )
+
+      nDeliusMockServer.stubForPost(
+        "/search/probation-cases",
+        writeAsJson(mapOf("crn" to crnActiveInProbation)),
+        File(
+          "$gatewaysFolder/ndelius/fixtures/GetOffenderResponseStatusActive.json",
+        ).readText(),
+      )
+
+      nDeliusMockServer.stubForPost(
+        "/search/probation-cases",
+        writeAsJson(mapOf("crn" to crnNotActiveInProbation)),
+        File(
+          "$gatewaysFolder/ndelius/fixtures/GetOffenderResponseStatusInactive.json",
+        ).readText(),
+      )
+
+      nDeliusMockServer.stubForPost(
+        "/search/probation-cases",
+        writeAsJson(mapOf("crn" to crnNotActiveInPrisonOrProb)),
+        File(
+          "$gatewaysFolder/ndelius/fixtures/GetOffenderResponseStatusNone.json",
+        ).readText(),
+      )
+
+      nDeliusMockServer.stubForPost(
+        "/search/probation-cases",
+        writeAsJson(mapOf("crn" to crnUnknownInPrison)),
+        File(
+          "$gatewaysFolder/ndelius/fixtures/GetOffenderResponseUnknownPrisonId.json",
+        ).readText(),
+      )
+
+      nDeliusMockServer.stubForPost(
+        "/search/probation-cases",
+        writeAsJson(mapOf("nomsNumber" to nomsIdNotActiveInPrisonOrProb)),
+        File(
+          "$gatewaysFolder/ndelius/fixtures/GetOffenderResponseStatusNone.json",
         ).readText(),
       )
 
@@ -252,6 +324,46 @@ abstract class IntegrationTestBase {
         """
                   {
                   "crn": "$crn",
+                  "existsInDelius": true
+              }
+              """,
+      )
+
+      nDeliusMockServer.stubForGet(
+        "/exists-in-delius/crn/$crnNotActiveInProbation",
+        """
+                  {
+                  "crn": "$crnActiveInProbation",
+                  "existsInDelius": true
+              }
+              """,
+      )
+
+      nDeliusMockServer.stubForGet(
+        "/exists-in-delius/crn/$crnActiveInProbation",
+        """
+              {
+                  "crn": "$crnNotActiveInProbation",
+                  "existsInDelius": true
+              }
+              """,
+      )
+
+      nDeliusMockServer.stubForGet(
+        "/exists-in-delius/crn/$crnUnknownInPrison",
+        """
+              {
+                  "crn": "$crnUnknownInPrison",
+                  "existsInDelius": true
+              }
+              """,
+      )
+
+      nDeliusMockServer.stubForGet(
+        "/exists-in-delius/crn/$crnNotActiveInPrisonOrProb",
+        """
+              {
+                  "crn": "$crnNotActiveInPrisonOrProb",
                   "existsInDelius": true
               }
               """,

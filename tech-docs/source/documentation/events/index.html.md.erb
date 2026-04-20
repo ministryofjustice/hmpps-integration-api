@@ -2,20 +2,39 @@
 title: HMPPS Integration Events
 weight: 6
 owner_slack: "#hmpps-integration-api-alerts"
-last_reviewed_on: 2025-10-13
-review_in: 6 months
+last_reviewed_on: 2026-04-15
+review_in: 2 months
 ---
 
 # HMPPS External Events
 
-HMPPS External Events (formerly HMPPS Integration Events) is an events based system which triggers SNS notifications by processing upstream MoJ domain events which are related to the information served by the API. This allows the clients of our API to be notified when a change occurs to a domain that is of interest to them.
+The HMPPS External API (formerly HMPPS Integration API) uses an events based system which processes upstream MoJ domain events related to the information served by the API endpoints. This allows the clients of our API to be notified when a change occurs to a domain that is of interest to them.
 
-Consumers who want to receive Integration Events, will be provided with a dedicated AWS SQS queue that automatically subscribes to notifications for the API endpoints they have access to.
+Consumers who want to be notified of these events, will be provided with a dedicated AWS SQS queue that will receive notifications for the API endpoints they have access to.
 
-Email [hmpps-external-api@justice.gov.uk](mailto:hmpps-external-api@justice.gov.uk) to request access to this Events service.
+Email [hmpps-external-api@justice.gov.uk](mailto:hmpps-external-api@justice.gov.uk) to request access to this service.
+
+The notification message is wrapped in a JSON structure with the actual notification message content held in the Message attribute.
+The fields noted as deprecated should not be used by consumers.
+
+For example:
+```
+{
+  "Type" : DEPRECATED,
+  "MessageId" : bbf92ab9-9540-5c0c-83b0-48e80e6f24d3,
+  "TopicArn" : DEPRECATED,
+  "Message" : "See notification message content below",
+  "Timestamp" : "2026-04-09T12:17:51.384Z",
+  "SignatureVersion" : DEPRECATED,
+  "Signature" : DEPRECATED,
+  "SigningCertURL" : DEPRECATED,
+  "UnsubscribeURL" : DEPRECATED,
+  "MessageAttributes" : DEPRECATED
+}
+```
 
 ## Notification Message Structure
-The notification message content is a JSON structure containing an event ID, an event type, the URL at which the updated data is available and potentially some additional metadata.
+The notification message content (held in the wrappers Message attribute) is a JSON structure containing an event ID, an event type, the URL at which the updated data is available and potentially some additional metadata.
 
 For example:
 
