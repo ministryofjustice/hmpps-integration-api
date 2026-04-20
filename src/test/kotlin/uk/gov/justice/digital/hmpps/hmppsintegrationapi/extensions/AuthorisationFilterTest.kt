@@ -199,17 +199,20 @@ class AuthorisationFilterTest {
   @Test
   fun `Forbidden if certificate serial number is in the certificate revocation list and feature flag is enabled`() {
     whenever(authorisationConfig.certificateRevocationList).thenReturn(listOf("TEST_SERIAL_NUMBER", "TEST_SERIAL_NUMBER_2"))
+    val resp = MockHttpServletResponse()
     val authorisationFilter = AuthorisationFilter(authorisationConfig, featureFlagConfig)
-    authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
-    verify(mockResponse, times(1)).sendError(403, "Certificate with serial number TEST_SERIAL_NUMBER has been revoked")
+    mockFilterChain(authorisationFilter).doFilter(mockRequest, resp)
+    assertThat(resp.status).isEqualTo(403)
+    assertThat(resp.errorMessage).isEqualTo("Certificate with serial number TEST_SERIAL_NUMBER has been revoked")
   }
 
   @Test
   fun `NOT Forbidden if certificate serial number is in the certificate revocation list and feature flag is enabled`() {
     whenever(authorisationConfig.certificateRevocationList).thenReturn(listOf("TEST_SERIAL_NUMBER_3", "TEST_SERIAL_NUMBER_4"))
+    val resp = MockHttpServletResponse()
     val authorisationFilter = AuthorisationFilter(authorisationConfig, featureFlagConfig)
-    authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
-    verify(mockResponse, times(0)).sendError(403, "Certificate with serial number TEST_SERIAL_NUMBER has been revoked")
+    mockFilterChain(authorisationFilter).doFilter(mockRequest, resp)
+    assertThat(resp.errorMessage).isNotEqualTo("Certificate with serial number TEST_SERIAL_NUMBER has been revoked")
   }
 
   @Test
