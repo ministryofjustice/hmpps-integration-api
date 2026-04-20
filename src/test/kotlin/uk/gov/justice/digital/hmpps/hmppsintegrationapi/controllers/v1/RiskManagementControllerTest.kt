@@ -32,7 +32,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithLaoRedactions
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetRiskManagementPlansForCrnService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetRiskManagementPlansService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [RiskManagementController::class])
@@ -40,7 +40,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 @ActiveProfiles("test")
 class RiskManagementControllerTest(
   @Autowired var springMockMvc: MockMvc,
-  @MockitoBean val getRiskManagementService: GetRiskManagementPlansForCrnService,
+  @MockitoBean val getRiskManagementService: GetRiskManagementPlansService,
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getCaseAccess: GetCaseAccess,
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
