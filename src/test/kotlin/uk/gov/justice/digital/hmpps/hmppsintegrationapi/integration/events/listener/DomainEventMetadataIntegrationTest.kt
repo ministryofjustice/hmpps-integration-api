@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.list
 
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.collections.shouldNotBeEmpty
-import io.kotest.matchers.shouldBe
 import org.awaitility.Awaitility
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -126,7 +125,7 @@ class DomainEventMetadataIntegrationTest : IntegrationTestWithEventsQueueBase() 
   }
 
   @Test
-  fun `will send the event to the DLQ prisoner offender search returns a 500`() {
+  fun `will create a message containing supervision status of UNKNOWN when prisoner offender search returns a 500`() {
     // Clear cache
     prisonerOffenderSearchMockServer.stubForGet(
       "/prisoner/$nomsIdNotActiveInPrison",
@@ -140,13 +139,12 @@ class DomainEventMetadataIntegrationTest : IntegrationTestWithEventsQueueBase() 
       )
     sendDomainSqsMessage(rawMessage)
 
-    Awaitility.await().until {
-      getNumberOfMessagesCurrentlyOndomainEventsDeadLetterQueue() > 0
+    Awaitility.await().untilAsserted {
+      eventNotificationRepository.findAll().isNotEmpty()
+      val savedEvents: List<EventNotification> = eventNotificationRepository.findByHmppsIdIsIn(listOf(crnActiveInProbation))
+      savedEvents.shouldNotBeEmpty().shouldHaveSize(1)
+      assertEquals("UNKNOWN", savedEvents.first().metadata?.supervisionStatus)
     }
-
-    val deadLetterQueueMessage = geMessagesCurrentlyOnDomainEventsDeadLetterQueue()
-    val message = deadLetterQueueMessage.messages().first()
-    message.body().shouldBe(rawMessage)
   }
 
   @Test

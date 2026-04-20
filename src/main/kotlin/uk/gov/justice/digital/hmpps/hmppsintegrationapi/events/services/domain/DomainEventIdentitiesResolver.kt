@@ -1,18 +1,13 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.domain
 
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.HmppsDomainEvent
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.GetPrisonIdService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.UpstreamApiException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.SupervisionStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
 @Service
 class DomainEventIdentitiesResolver(
@@ -20,12 +15,7 @@ class DomainEventIdentitiesResolver(
   @Autowired val getPrisonIdService: GetPrisonIdService,
   private val personService: GetPersonService,
   private val featureFlagService: FeatureFlagConfig,
-  private val telemetryService: TelemetryService,
 ) {
-  companion object {
-    val log = LoggerFactory.getLogger(this::class.java)
-  }
-
   /**
    * The hmpps id is an id that the end client will use in ongoing processing.
    * In the future when we have a core person record it will be that id
@@ -90,34 +80,7 @@ class DomainEventIdentitiesResolver(
     if (!featureFlagService.isEnabled(FeatureFlagConfig.INCLUDE_SUPERVISION_STATUS_ATTRIBUTE)) {
       return null
     }
-
-    val nomisId =
-      hmppsId?.let {
-        personService.convert(it, GetPersonService.IdentifierType.NOMS).data
-      }
-
-    if (nomisId == null) {
-      log.info("Cant determine supervision status for the message with hmppsId $hmppsId because a prison id cannot be found. Returning ${SupervisionStatus.UNKNOWN.name}")
-      return SupervisionStatus.UNKNOWN.name
-    }
-
-    val supervisionStatus =
-      try {
-        personService.getPersonSupervisionStatus(nomisId)
-      } catch (ex: UpstreamApiException) {
-        when (ex.errorType) {
-          UpstreamApiError.Type.ENTITY_NOT_FOUND -> {
-            SupervisionStatus.UNKNOWN.name
-          }
-          else -> {
-            log.error("An error occurred while determining the supervision status for the message with hmppsId $hmppsId")
-            telemetryService.captureException(ex)
-            throw ex
-          }
-        }
-      }
-    log.info("Supervision status of $supervisionStatus has been found for the message with hmppsId $hmppsId")
-    return supervisionStatus
+    return personService.getSupervisionStatus(hmppsId).name
   }
 
   private fun getNomisNumber(hmppsEvent: HmppsDomainEvent): String? {
