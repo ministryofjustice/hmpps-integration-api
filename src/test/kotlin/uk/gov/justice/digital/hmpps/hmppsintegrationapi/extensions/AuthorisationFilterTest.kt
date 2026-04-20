@@ -127,9 +127,11 @@ class AuthorisationFilterTest {
   fun `calls the onward chain when path found in roles (but not in includes)`() {
     whenever(authorisationConfig.consumers).thenReturn(mapOf(exampleConsumer to ConsumerConfig(include = emptyList(), filters = ConsumerFilters(prisons = null), roles = exampleRoles)))
     val authorisationFilter = AuthorisationFilter(authorisationConfig, featureFlagConfig)
-    authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
+    val finalFilter = mock(Filter::class.java)
 
-    verify(mockChain, times(1)).doFilter(mockRequest, mockResponse)
+    mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
+
+    verify(finalFilter, times(1)).doFilter(eq(mockRequest), eq(mockResponse), any())
   }
 
   @Test
@@ -138,9 +140,11 @@ class AuthorisationFilterTest {
     // invalid Role Config
     every { roles } returns mapOf(roleName to Role(permissions = emptyList(), filters = null))
     val authorisationFilter = AuthorisationFilter(authorisationConfig, featureFlagConfig)
-    authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
+    val finalFilter = mock(Filter::class.java)
 
-    verify(mockChain, times(1)).doFilter(mockRequest, mockResponse)
+    mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
+
+    verify(finalFilter, times(1)).doFilter(eq(mockRequest), eq(mockResponse), any())
   }
 
   @Test
