@@ -172,7 +172,7 @@ class NDeliusGateway(
 
   fun getCommunityOffenderManagerForPerson(crn: String): Response<CommunityOffenderManager?> {
     val result =
-      webClient.request<NDeliusSupervisions?>(
+      webClient.request<NDeliusSupervisions>(
         HttpMethod.GET,
         "/case/$crn/supervisions",
         authenticationHeader(),
@@ -217,7 +217,7 @@ class NDeliusGateway(
     eventNumber: Int,
   ): Response<CaseDetail?> {
     val result =
-      webClient.request<EPFCaseDetail?>(
+      webClient.request<EPFCaseDetail>(
         HttpMethod.GET,
         "/case-details/$id/$eventNumber",
         authenticationHeader(),
@@ -239,7 +239,7 @@ class NDeliusGateway(
 
   fun getAccessLimitations(crn: String): Response<LimitedAccess?> {
     val result =
-      webClient.request<LimitedAccess?>(
+      webClient.request<LimitedAccess>(
         HttpMethod.GET,
         "/case/$crn/access-limitations",
         authenticationHeader(),

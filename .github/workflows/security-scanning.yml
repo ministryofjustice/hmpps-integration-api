@@ -22,11 +22,11 @@ jobs:
         uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
         with:
           distribution: 'temurin'
-          java-version: '21'
+          java-version: 25
           cache: 'gradle'
 
       - name: Cache pre-commit environments
-        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
 
         with:
           path: ~/.cache/pre-commit

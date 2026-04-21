@@ -2,15 +2,19 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.domain
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.HmppsDomainEvent
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.GetPrisonIdService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 
 @Service
 class DomainEventIdentitiesResolver(
   @Autowired val probationIntegrationApiGateway: NDeliusGateway,
   @Autowired val getPrisonIdService: GetPrisonIdService,
+  private val personService: GetPersonService,
+  private val featureFlagService: FeatureFlagConfig,
 ) {
   /**
    * The hmpps id is an id that the end client will use in ongoing processing.
@@ -59,6 +63,24 @@ class DomainEventIdentitiesResolver(
       }
     }
     return null
+  }
+
+  /**
+   * Gets the supervision status of the person for the hmppsId
+   * If the hmppsId can not be resolved at all, then we cant determine the supervision status - return UNKNOWN
+   * The hmppsId will always be a CRN if no nomis number is present in the event
+   * If we only have a CRN at this stage we need to find a nomis number from which to check the prison status
+   * If we cant find a nomis number then we cant determine the supervision status - return UNKNOWN
+   * The person service getPersonSupervisionStatus function will continue to check the probation status in NDelius using the nomis number
+   *
+   * @param hmppsId
+   * @return The supervision status (one of PRISONS, PROBATION, NONE or UNKNOWN)
+   */
+  fun getSupervisionStatus(hmppsId: String?): String? {
+    if (!featureFlagService.isEnabled(FeatureFlagConfig.INCLUDE_SUPERVISION_STATUS_ATTRIBUTE)) {
+      return null
+    }
+    return personService.getSupervisionStatus(hmppsId).name
   }
 
   private fun getNomisNumber(hmppsEvent: HmppsDomainEvent): String? {
