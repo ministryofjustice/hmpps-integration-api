@@ -19,7 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNot
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.IntegrationEventStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.IntegrationEventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.JdbcTemplateEventNotificationRepository
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.IntegrationEventTopicService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.EventNotificationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.SendEventsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.IntegrationTestWithEventsQueueBase
 import java.time.LocalDateTime
@@ -35,11 +35,11 @@ class IntegrationEventTest : IntegrationTestWithEventsQueueBase() {
   private lateinit var eventRepository: JdbcTemplateEventNotificationRepository
 
   @MockitoSpyBean(reset = MockReset.BEFORE)
-  private lateinit var integrationEventTopicService: IntegrationEventTopicService
+  private lateinit var eventNotificationService: EventNotificationService
 
   @BeforeEach
   fun purgeQueues() {
-    Mockito.reset(integrationEventTopicService)
+    Mockito.reset(eventNotificationService)
     integrationEventTestQueueSqsClient.purgeQueue(PurgeQueueRequest.builder().queueUrl(integrationEventTestQueueUrl).build()).get()
   }
 
@@ -67,7 +67,7 @@ class IntegrationEventTest : IntegrationTestWithEventsQueueBase() {
     await.atMost(5, TimeUnit.SECONDS).untilAsserted {
       eventRepository.save(getEvent(prisonId, UUID.randomUUID().toString()))
       stateEventNotifierService.sentNotifications()
-      Mockito.verify(integrationEventTopicService, Mockito.atLeast(1)).sendEvent(any())
+      Mockito.verify(eventNotificationService, Mockito.atLeast(1)).sendEvent(any())
       val prisonEventMessages = getMessagesCurrentlyOnTestQueue()
       Assertions
         .assertThat(prisonEventMessages)

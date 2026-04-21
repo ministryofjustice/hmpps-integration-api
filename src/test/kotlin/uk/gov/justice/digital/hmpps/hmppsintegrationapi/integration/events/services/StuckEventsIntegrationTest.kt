@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.IntegrationEventStatus
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.IntegrationEventTopicService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.EventNotificationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.SendEventsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 import java.time.LocalDateTime
@@ -23,11 +23,11 @@ class StuckEventsIntegrationTest : IntegrationTestBase() {
   private lateinit var sendEventsService: SendEventsService
 
   @MockitoBean
-  private lateinit var integrationEventTopicService: IntegrationEventTopicService
+  private lateinit var eventNotificationService: EventNotificationService
 
   @BeforeEach
   fun setup() {
-    whenever(integrationEventTopicService.sendEvent(any())).thenAnswer(
+    whenever(eventNotificationService.sendEvent(any())).thenAnswer(
       AdditionalAnswers.answersWithDelay(
         300,
         { "SUCCESS" },

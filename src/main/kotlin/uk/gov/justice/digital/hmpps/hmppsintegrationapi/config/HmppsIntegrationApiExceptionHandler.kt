@@ -109,7 +109,7 @@ class HmppsIntegrationApiExceptionHandler {
   }
 
   @ExceptionHandler(HmppsAuthFailedException::class)
-  fun handleAuthenticationFailedException(e: HmppsAuthFailedException): ResponseEntity<ErrorResponse?>? {
+  fun handleAuthenticationFailedException(e: HmppsAuthFailedException): ResponseEntity<ErrorResponse> {
     logAndCapture("Authentication error in HMPPS Auth: {}", e)
     return ResponseEntity
       .status(BAD_GATEWAY)
@@ -123,7 +123,7 @@ class HmppsIntegrationApiExceptionHandler {
   }
 
   @ExceptionHandler(ForbiddenByUpstreamServiceException::class, LimitedAccessException::class)
-  fun handleAuthenticationFailedException(e: ForbiddenByUpstreamServiceException): ResponseEntity<ErrorResponse?>? {
+  fun handleAuthenticationFailedException(e: ForbiddenByUpstreamServiceException): ResponseEntity<ErrorResponse> {
     logAndCapture("Forbidden to complete action by upstream service: {}", e)
     return ResponseEntity
       .status(FORBIDDEN)
@@ -137,7 +137,7 @@ class HmppsIntegrationApiExceptionHandler {
   }
 
   @ExceptionHandler(FilterViolationException::class)
-  fun handleFilterViolationException(e: FilterViolationException): ResponseEntity<ErrorResponse?>? {
+  fun handleFilterViolationException(e: FilterViolationException): ResponseEntity<ErrorResponse> {
     logAndCapture("Access to requested resource restricted by consumer filter: ${e.message}", e)
     return ResponseEntity
       .status(NOT_FOUND)
@@ -151,7 +151,7 @@ class HmppsIntegrationApiExceptionHandler {
   }
 
   @ExceptionHandler(UpstreamApiException::class)
-  fun handleUpstreamApiException(e: UpstreamApiException): ResponseEntity<ErrorResponse?>? {
+  fun handleUpstreamApiException(e: UpstreamApiException): ResponseEntity<ErrorResponse> {
     // Find error to be returned
     val responseStatus =
       when (e.errorType) {
@@ -173,7 +173,7 @@ class HmppsIntegrationApiExceptionHandler {
   }
 
   @ExceptionHandler(java.lang.Exception::class)
-  fun handleException(e: java.lang.Exception): ResponseEntity<ErrorResponse?>? {
+  fun handleException(e: java.lang.Exception): ResponseEntity<ErrorResponse> {
     logAndCapture("Unexpected exception", e)
     return ResponseEntity
       .status(INTERNAL_SERVER_ERROR)
@@ -201,7 +201,7 @@ class HmppsIntegrationApiExceptionHandler {
   }
 
   @ExceptionHandler(WebClientResponseException::class)
-  fun handleWebClientResponseException(e: WebClientResponseException): ResponseEntity<ErrorResponse?>? {
+  fun handleWebClientResponseException(e: WebClientResponseException): ResponseEntity<ErrorResponse> {
     logAndCapture("Upstream service down: {}", e)
     return ResponseEntity
       .status(INTERNAL_SERVER_ERROR)
@@ -215,7 +215,7 @@ class HmppsIntegrationApiExceptionHandler {
   }
 
   @ExceptionHandler(MessageFailedException::class)
-  fun handleMessageFailedException(e: MessageFailedException): ResponseEntity<ErrorResponse?>? {
+  fun handleMessageFailedException(e: MessageFailedException): ResponseEntity<ErrorResponse> {
     logAndCapture("Message failed to be added to queue: {}", e)
     return ResponseEntity
       .status(INTERNAL_SERVER_ERROR)

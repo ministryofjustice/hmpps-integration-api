@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.core.convert.ConversionService
 import org.springframework.jdbc.core.DataClassRowMapper
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.queryForObject
@@ -16,6 +17,7 @@ const val EVENT_NOTIFICATION_BATCH_LIMIT = 1000
 @Repository
 class JdbcTemplateEventNotificationRepository(
   private val jdbcTemplate: JdbcTemplate,
+  private val conversionService: ConversionService,
 ) : EventNotificationRepository {
   override fun getStuckEvents(minusMinutes: LocalDateTime): List<StuckEvents> {
     val getStuckQuery = """
@@ -38,7 +40,7 @@ class JdbcTemplateEventNotificationRepository(
     val getAllQuery = """select * from event_notification"""
     return jdbcTemplate.query(
       getAllQuery,
-      DataClassRowMapper(EventNotification::class.java),
+      DataClassRowMapper.newInstance(EventNotification::class.java, conversionService),
     )
   }
 
@@ -55,7 +57,7 @@ class JdbcTemplateEventNotificationRepository(
     """
     return jdbcTemplate.query(
       findAllProcessingQuery,
-      DataClassRowMapper(EventNotification::class.java),
+      DataClassRowMapper.newInstance(EventNotification::class.java, conversionService),
       claimId,
     )
   }
@@ -66,14 +68,14 @@ class JdbcTemplateEventNotificationRepository(
     val getAllByHmppsIdQuery = "select * from event_notification where hmpps_id in ($paramAmount)"
     return jdbcTemplate.query(
       getAllByHmppsIdQuery,
-      DataClassRowMapper(EventNotification::class.java),
+      DataClassRowMapper.newInstance(EventNotification::class.java, conversionService),
       *listOf.toTypedArray(),
     )
   }
 
   fun count(): Int {
     val countQuery = "select count(*) from event_notification"
-    return jdbcTemplate.queryForObject<Int>(countQuery)
+    return jdbcTemplate.queryForObject<Int>(countQuery)!!
   }
 
   override fun setProcessed(eventId: Any): Int {
@@ -115,13 +117,12 @@ class JdbcTemplateEventNotificationRepository(
 
   override fun insertOrUpdate(match: EventNotification) {
     val insertOrUpdateQuery = """
-      insert into event_notification (url, event_type, hmpps_id, prison_id, status, last_modified_datetime)
-        values (?,?,?,?,?,?)
+      insert into event_notification (url, event_type, hmpps_id, prison_id, status, metadata, last_modified_datetime)
+        values (?,?,?,?,?,?,?)
       on conflict(url, event_type) where status = 'PENDING' or status = NULL
         do update set last_modified_datetime = ?
     """
-
-    jdbcTemplate.update(insertOrUpdateQuery, match.url, match.eventType, match.hmppsId, match.prisonId, match.status, match.lastModifiedDatetime, match.lastModifiedDatetime)
+    jdbcTemplate.update(insertOrUpdateQuery, match.url, match.eventType, match.hmppsId, match.prisonId, match.status, conversionService.convert(match.metadata, String::class.java), match.lastModifiedDatetime, match.lastModifiedDatetime)
   }
 
   fun saveAll(events: List<EventNotification>): List<EventNotification> {
@@ -138,10 +139,11 @@ class JdbcTemplateEventNotificationRepository(
       prison_id,
       url,
       status,
+      metadata,
       last_modified_datetime
-      ) values (?,?,?,?,?,?,?)
+      ) values (?,?,?,?,?,?,?,?)
     """
-    return jdbcTemplate.update(insertQuery, makeEvent.hmppsId, makeEvent.claimId, makeEvent.eventType, makeEvent.prisonId, makeEvent.url, makeEvent.status, makeEvent.lastModifiedDatetime)
+    return jdbcTemplate.update(insertQuery, makeEvent.hmppsId, makeEvent.claimId, makeEvent.eventType, makeEvent.prisonId, makeEvent.url, makeEvent.status, conversionService.convert(makeEvent.metadata, String::class.java), makeEvent.lastModifiedDatetime)
   }
 
   override fun deleteEvents(dateTime: LocalDateTime): Int {

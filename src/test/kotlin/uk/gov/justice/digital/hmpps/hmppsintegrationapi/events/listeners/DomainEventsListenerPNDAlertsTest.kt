@@ -112,6 +112,6 @@ class DomainEventsListenerPNDAlertsTest : DomainEventsListenerTestCase() {
         "SC",
       )
 
-    override fun provideArguments(context: ExtensionContext?): Stream<out Arguments?> = alertCodes.map { Arguments.of(it) }.stream()
+    override fun provideArguments(context: ExtensionContext): Stream<out Arguments> = alertCodes.map { Arguments.of(it) }.stream()
   }
 }
