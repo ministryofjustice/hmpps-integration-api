@@ -50,7 +50,7 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
   implementation("io.jsonwebtoken:jjwt-api:0.13.0")
-  implementation("com.jayway.jsonpath:json-path:2.10.0")
+  implementation("com.jayway.jsonpath:json-path:3.0.0")
   implementation("com.github.ben-manes.caffeine:caffeine:3.2.3")
 
   testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -82,7 +82,7 @@ dependencies {
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
   testImplementation(kotlin("test"))
   testImplementation("io.mockk:mockk:1.14.9")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:4.1.1")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:5.1.1")
 }
 
 java {
