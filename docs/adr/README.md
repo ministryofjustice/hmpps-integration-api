@@ -1,7 +1,7 @@
 # Architecture Decision Records (ADRs)
 
 | Status        | ADR No. | Title                                                                                                      |
-| ------------- | ------- | ---------------------------------------------------------------------------------------------------------- |
+| ------------- |---------|------------------------------------------------------------------------------------------------------------|
 | ✅ Accepted   | 0001    | [Use CircleCI](./0001-use-circleci.md)                                                                     |
 | ✅ Accepted   | 0002    | [Use PlantUML to create diagrams](./0002-plantuml-diagrams-as-code.md)                                     |
 | ⏭️ Superseded | 0003    | [Manually manage OpenAPI specification file](./0003-manually-manage-openapi-file.md)                       |
@@ -19,3 +19,4 @@
 | ✅ Accepted   | 0016    | [Service Name Change](./0016-service-name-change.md)                                                       |
 | ✅ Accepted   | 0017    | [Events Service Merge](./0017-events-service-merge.md)                                                     |
 | ✅ Accepted   | 0018    | [JdbcTemplate for Database Access](./0018-database-access.md)                                              |
+| ✅ Accepted   | 0019    | [On-behalf-of authorisation in HMPPS External API](./0019-obo-auth.md)                                     |
