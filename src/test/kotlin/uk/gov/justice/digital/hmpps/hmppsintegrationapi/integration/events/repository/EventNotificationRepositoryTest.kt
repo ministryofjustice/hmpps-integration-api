@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.Metadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.IntegrationEventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 import java.time.LocalDateTime
@@ -44,6 +45,7 @@ class EventNotificationRepositoryTest : IntegrationTestBase() {
         hmppsId = "MockId",
         prisonId = "MKI",
         url = "MockUrl",
+        metadata = Metadata(supervisionStatus = "PRISONS"),
         lastModifiedDatetime = LocalDateTime.now().minusMinutes(6),
       )
     eventNotificationRepository.insertOrUpdate(eventNotification)
@@ -57,5 +59,41 @@ class EventNotificationRepositoryTest : IntegrationTestBase() {
     val updatedEventNotifications = eventNotificationRepository.findAll()
     assertThat(updatedEventNotifications).hasSize(1)
     assertThat(updatedEventNotifications[0].lastModifiedDatetime?.truncatedTo(ChronoUnit.MINUTES)).isEqualTo(updatedEventNotification.lastModifiedDatetime?.truncatedTo(ChronoUnit.MINUTES))
+  }
+
+  @Test
+  fun `saves and returns the filters object with a supervision status`() {
+    val eventNotification =
+      EventNotification(
+        eventType = IntegrationEventType.MAPPA_DETAIL_CHANGED.name,
+        hmppsId = "MockId",
+        prisonId = "MKI",
+        url = "MockUrl",
+        metadata = Metadata(supervisionStatus = "PROBATION"),
+        lastModifiedDatetime = LocalDateTime.now().minusMinutes(6),
+      )
+    eventNotificationRepository.insertOrUpdate(eventNotification)
+    val notifications = eventNotificationRepository.findAll()
+    assertThat(notifications).hasSize(1)
+    val notification = notifications[0]
+    assertThat(notification.metadata).isEqualTo(Metadata(supervisionStatus = "PROBATION"))
+  }
+
+  @Test
+  fun `saves and returns no filters object when filters is null`() {
+    val eventNotification =
+      EventNotification(
+        eventType = IntegrationEventType.MAPPA_DETAIL_CHANGED.name,
+        hmppsId = "MockId",
+        prisonId = "MKI",
+        url = "MockUrl",
+        metadata = null,
+        lastModifiedDatetime = LocalDateTime.now().minusMinutes(6),
+      )
+    eventNotificationRepository.insertOrUpdate(eventNotification)
+    val notifications = eventNotificationRepository.findAll()
+    assertThat(notifications).hasSize(1)
+    val notification = notifications[0]
+    assertThat(notification.metadata).isEqualTo(null)
   }
 }

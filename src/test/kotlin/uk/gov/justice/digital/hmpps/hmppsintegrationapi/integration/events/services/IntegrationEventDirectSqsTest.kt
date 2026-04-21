@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.serv
 
 import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.params.ParameterizedTest
@@ -9,13 +10,12 @@ import org.junit.jupiter.params.provider.NullSource
 import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.Mockito
 import org.mockito.kotlin.any
-import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.bean.override.mockito.MockReset
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.IntegrationEventStatus
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.Metadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.IntegrationEventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.JdbcTemplateEventNotificationRepository
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.EventNotificationService
@@ -39,21 +39,28 @@ class IntegrationEventDirectSqsTest : IntegrationTestInMemoryQueueBase("testqueu
   @BeforeEach
   fun purgeQueues() {
     Mockito.reset(eventNotificationService)
-    whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.DIRECT_SQS_NOTIFICATIONS)).thenReturn(true)
     testQueue.purge()
     eventRepository.deleteAll()
+  }
+
+  @AfterEach
+  fun resetMocks() {
+    Mockito.reset(authorisationConfig)
   }
 
   fun getEvent(
     prisonId: String? = null,
     url: String,
+    metadata: Metadata? = null,
+    eventType: String = IntegrationEventType.MAPPA_DETAIL_CHANGED.name,
   ) = EventNotification(
     status = IntegrationEventStatus.PENDING.name,
-    eventType = IntegrationEventType.MAPPA_DETAIL_CHANGED.name,
+    eventType = eventType,
     hmppsId = "MockId",
     prisonId = prisonId,
     url = url,
     lastModifiedDatetime = LocalDateTime.now().minusMinutes(6),
+    metadata = metadata,
   )
 
   @ParameterizedTest
