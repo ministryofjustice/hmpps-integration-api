@@ -114,7 +114,7 @@ class PersonalRelationshipsGateway(
     emergencyOrNextOfKin: Boolean? = false,
   ): Response<PRPaginatedPrisonerContacts?> {
     val result =
-      webClient.request<PRPaginatedPrisonerContacts?>(
+      webClient.request<PRPaginatedPrisonerContacts>(
         HttpMethod.GET,
         "/prisoner/$prisonerId/contact?page=${page - 1}&size=$size${uriEmergencyOrNOK(emergencyOrNextOfKin)}",
         authenticationHeader(),
@@ -141,7 +141,7 @@ class PersonalRelationshipsGateway(
 
   fun getNumberOfChildren(prisonerId: String): Response<PRNumberOfChildren?> {
     val result =
-      webClient.request<PRNumberOfChildren?>(
+      webClient.request<PRNumberOfChildren>(
         HttpMethod.GET,
         "/prisoner/$prisonerId/number-of-children",
         authenticationHeader(),

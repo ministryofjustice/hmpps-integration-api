@@ -8,7 +8,7 @@ import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
@@ -49,7 +49,6 @@ internal class ImageControllerTest(
           Mockito.reset(auditService)
 
           whenever(getImageService.getById(id)).thenReturn(Response(data = image))
-          whenever(featureFlag.isEnabled(FeatureFlagConfig.NORMALISED_PATH_MATCHING)).thenReturn(true)
         }
 
         it("returns a 200 OK status code") {
@@ -111,7 +110,6 @@ internal class ImageControllerTest(
           whenever(getImageService.execute(id, hmppsId, filter)).thenReturn(Response(data = image))
           Mockito.reset(auditService)
           Mockito.reset(featureFlag)
-          whenever(featureFlag.isEnabled(FeatureFlagConfig.NORMALISED_PATH_MATCHING)).thenReturn(true)
         }
 
         it("returns a 200 OK status code") {

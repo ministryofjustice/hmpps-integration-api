@@ -16,14 +16,14 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.IntegrationEventStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.DeleteProcessedEventsService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.IntegrationEventTopicService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.EventNotificationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.SendEventsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 import java.time.LocalDateTime
 
 class SendEventsIntegrationTest : IntegrationTestBase() {
   @MockitoBean
-  private lateinit var integrationEventTopicService: IntegrationEventTopicService
+  private lateinit var eventNotificationService: EventNotificationService
 
   @Autowired
   private lateinit var sendEventsService: SendEventsService
@@ -75,13 +75,13 @@ class SendEventsIntegrationTest : IntegrationTestBase() {
   @Test
   fun `Concurrent Event Notifier services reads the DB records and processes them with exceptions`() {
     // Run a claim with exceptions
-    whenever(integrationEventTopicService.sendEvent(argThat<EventNotification> { url == "MockUrl2" || url == "MockUrl4" })).thenThrow(
+    whenever(eventNotificationService.sendEvent(argThat<EventNotification> { url == "MockUrl2" || url == "MockUrl4" })).thenThrow(
       RuntimeException("Some AWS exception"),
     )
     sendEventsService.sentNotifications()
 
     // Run a claim without exceptions
-    whenever(integrationEventTopicService.sendEvent(any())).thenAnswer(
+    whenever(eventNotificationService.sendEvent(any())).thenAnswer(
       AdditionalAnswers.answersWithDelay(
         300,
       ) { "SUCCESS" },

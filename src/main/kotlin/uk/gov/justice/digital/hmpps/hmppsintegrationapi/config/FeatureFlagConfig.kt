@@ -28,7 +28,6 @@ data class FeatureFlagConfig(
     const val EPF_GATEWAY_DISABLED = "epf-gateway-disabled"
     const val CPR_ENABLED = "cpr-enabled"
     const val GATEWAY_CACHE_ENABLED = "gateway-cache-enabled"
-    const val NORMALISED_PATH_MATCHING = "normalised-path-matching"
     const val USE_WEBCLIENT_WRAPPER_FOR_HMPPS_AUTH = "use-webclient-wrapper-for-hmpps-auth"
 
     // Events feature flags
@@ -42,6 +41,8 @@ data class FeatureFlagConfig(
     const val CONTACT_EVENTS_NOTIFICATIONS_ENABLED = "contact-events-notifications-enabled"
     const val LIMITED_ACCESS_NOTIFICATIONS_ENABLED = "limited-access-notifications-enabled"
     const val DEDUPLICATE_EVENTS = "deduplicate-events"
+    const val DIRECT_SQS_NOTIFICATIONS = "direct-sqs-notifications"
+    const val INCLUDE_SUPERVISION_STATUS_ATTRIBUTE = "include-supervision-status-attribute"
   }
 
   /**

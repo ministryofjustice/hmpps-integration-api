@@ -8,13 +8,14 @@ import io.kotest.matchers.string.shouldContain
 import io.mockk.every
 import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
+import net.javacrumbs.jsonunit.assertj.JsonAssertions
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory.times
 import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
@@ -108,7 +109,6 @@ internal class PersonControllerTest(
       fun <T> notFoundErrorResponseEmptyList(vararg upstreamApi: UpstreamApi) = Response<List<T>>(data = emptyList(), errors = notFoundErrors(*upstreamApi))
 
       beforeTest {
-        whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.NORMALISED_PATH_MATCHING)).thenReturn(true)
       }
 
       describe("GET $basePath") {
@@ -381,7 +381,8 @@ internal class PersonControllerTest(
 
         it("returns a person with the matching ID") {
           val result = mockMvc.performAuthorised("$basePath/$hmppsId")
-          result.response.contentAsString.shouldBe(
+
+          JsonAssertions.assertThatJson(result.response.contentAsString).isEqualTo(
             """
              {
                "data": {
@@ -791,7 +792,8 @@ internal class PersonControllerTest(
         it("returns a 200 OK status code with data") {
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.OK.value())
-          result.response.contentAsString.shouldBe(
+
+          JsonAssertions.assertThatJson(result.response.contentAsString).isEqualTo(
             """
             {
               "data":{

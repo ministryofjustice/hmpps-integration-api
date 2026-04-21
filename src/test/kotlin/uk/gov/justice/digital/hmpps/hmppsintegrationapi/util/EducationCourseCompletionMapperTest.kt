@@ -52,7 +52,6 @@ class EducationCourseCompletionMapperTest :
       courseName: String = "Intro to litter picking",
       courseType: String = "Digital",
       provider: String = "Acme Learning",
-      completionDate: LocalDate = LocalDate.of(2021, 1, 1),
       completionDateTime: OffsetDateTime = OffsetDateTime.of(2021, 1, 1, 10, 0, 0, 0, ZoneOffset.ofHours(0)),
       status: String = "Completed",
       totalTimeMinutes: Long = 150,
@@ -62,7 +61,6 @@ class EducationCourseCompletionMapperTest :
       courseName,
       courseType,
       provider,
-      completionDate,
       completionDateTime,
       status,
       totalTimeMinutes,
@@ -158,7 +156,6 @@ class EducationCourseCompletionMapperTest :
             courseName = "Health & Safety",
             courseType = "Compliance",
             provider = "Gov Academy",
-            completionDate = LocalDate.of(2023, 12, 31),
             completionDateTime = OffsetDateTime.of(2023, 12, 31, 10, 0, 0, 0, ZoneOffset.ofHours(0)),
             status = "Completed",
             totalTimeMinutes = 150,
@@ -182,9 +179,8 @@ class EducationCourseCompletionMapperTest :
                 "courseType" to course.courseType,
                 "pdu" to person.pdu,
                 "provider" to course.provider,
-                "completionDate" to course.completionDate.toString(),
                 "completionDateTime" to
-                  course.completionDateTime!!
+                  course.completionDateTime
                     .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")),
                 "status" to course.status,
                 "totalTimeMinutes" to course.totalTimeMinutes,
@@ -208,7 +204,6 @@ class EducationCourseCompletionMapperTest :
             "courseName" to "Health & Safety",
             "courseType" to "Compliance",
             "provider" to "Gov Academy",
-            "completionDate" to "2023-12-31",
             "completionDateTime" to "2023-12-31T10:00:00.000Z",
             "status" to "Completed",
             "totalTimeMinutes" to 150,
