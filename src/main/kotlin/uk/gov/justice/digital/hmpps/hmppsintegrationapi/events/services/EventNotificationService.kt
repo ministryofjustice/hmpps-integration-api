@@ -112,7 +112,7 @@ class EventNotificationService(
     val prisonIds = authorisationConfig.allFilters(consumer)?.prisons
     val prisonCheck = prisonIds == null || (event.prisonId != null && prisonIds.contains(event.prisonId))
     // Supervision Status check
-    val supervisionStatuses = authorisationConfig.consumers[consumer]?.filters?.supervisionStatuses
+    val supervisionStatuses = authorisationConfig.allFilters(consumer)?.supervisionStatuses
     val supervisionStatusCheck = supervisionStatuses == null || (event.metadata?.supervisionStatus != null && supervisionStatuses.contains(event.metadata.supervisionStatus))
 
     // Log custom event

@@ -17,15 +17,18 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [GetRiskManagementPlansForCrnService::class],
+  classes = [GetRiskManagementPlansService::class],
 )
-class GetRiskManagementPlansForCrnServiceTest(
+class GetRiskManagementPlansServiceTest(
   @MockitoBean val riskManagementGateway: RiskManagementGateway,
-  private val serviceUnderTest: GetRiskManagementPlansForCrnService,
+  @MockitoBean val getPersonService: GetPersonService,
+  private val serviceUnderTest: GetRiskManagementPlansService,
 ) : DescribeSpec({
 
     val crn = "D1974X"
     val badCrn = "Not a real CRN"
+    val nomisWithCrn = "A1234AA"
+    val nomisNoCrn = "A1234AB"
     val testPlan =
       CrnRiskManagementPlans(
         crn = crn,
@@ -104,6 +107,22 @@ class GetRiskManagementPlansForCrnServiceTest(
       whenever(riskManagementGateway.getRiskManagementPlansForCrn(badCrn)).thenReturn(
         Response(data = null, errors = testErrors),
       )
+
+      whenever(getPersonService.convert(crn, GetPersonService.IdentifierType.CRN)).thenReturn(
+        Response(data = crn, errors = emptyList()),
+      )
+
+      whenever(getPersonService.convert(badCrn, GetPersonService.IdentifierType.CRN)).thenReturn(
+        Response(data = null, errors = testErrors),
+      )
+
+      whenever(getPersonService.convert(nomisWithCrn, GetPersonService.IdentifierType.CRN)).thenReturn(
+        Response(data = crn, errors = emptyList()),
+      )
+
+      whenever(getPersonService.convert(nomisNoCrn, GetPersonService.IdentifierType.CRN)).thenReturn(
+        Response(data = null, errors = testErrors),
+      )
     }
 
     describe("Get risk management") {
@@ -116,7 +135,20 @@ class GetRiskManagementPlansForCrnServiceTest(
 
       it("Returns error without valid CRN") {
         val result = serviceUnderTest.execute(badCrn)
-        verify(riskManagementGateway, VerificationModeFactory.times(1)).getRiskManagementPlansForCrn(badCrn)
+        verify(getPersonService, VerificationModeFactory.times(1)).convert(badCrn, GetPersonService.IdentifierType.CRN)
+        result.data?.isEmpty()?.let { assert(it) }
+        assert(result.errors.isNotEmpty())
+      }
+
+      it("Converts nomis to valid CRN") {
+        val result = serviceUnderTest.execute(nomisWithCrn)
+        verify(getPersonService, VerificationModeFactory.times(1)).convert(nomisWithCrn, GetPersonService.IdentifierType.CRN)
+        assert(result.data?.size == 2)
+      }
+
+      it("Cannot convert nomis to valid CRN") {
+        val result = serviceUnderTest.execute(nomisNoCrn)
+        verify(getPersonService, VerificationModeFactory.times(1)).convert(nomisNoCrn, GetPersonService.IdentifierType.CRN)
         result.data?.isEmpty()?.let { assert(it) }
         assert(result.errors.isNotEmpty())
       }
