@@ -19,12 +19,16 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
+import org.springframework.context.annotation.Import
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.CPR_ENABLED
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagTestConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FilterViolationException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
@@ -64,16 +68,19 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryServi
   initializers = [ConfigDataApplicationContextInitializer::class],
   classes = [GetPersonService::class],
 )
+@Import(FeatureFlagTestConfig::class)
 internal class GetPersonServiceTest(
   @MockitoBean val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
   @MockitoBean val consumerPrisonAccessService: ConsumerPrisonAccessService,
   @MockitoBean val deliusGateway: NDeliusGateway,
   @MockitoBean val corePersonRecordGateway: CorePersonRecordGateway,
-  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
+  @Autowired val featureFlagConfig: FeatureFlagConfig,
   @MockitoBean val telemetryService: TelemetryService,
   private val getPersonService: GetPersonService,
+  @MockitoSpyBean val featureFlagSpy: FeatureFlagConfig,
 ) : DescribeSpec(
     {
+
       val invalidNomsNumber = "N1234PSX"
       val prisonId = "ABC"
       val wrongPrisonId = "XYZ"
@@ -899,9 +906,7 @@ internal class GetPersonServiceTest(
       describe("Use CPR to retrieve Nomis number") {
         beforeEach {
           Mockito.reset(corePersonRecordGateway)
-          Mockito.reset(featureFlagConfig)
           val cpr = CorePersonRecord(identifiers = Identifiers(crns = listOf(crnNumber), prisonNumbers = listOf(nomsNumber)))
-          whenever(featureFlagConfig.isEnabled(CPR_ENABLED)).thenReturn(true)
           whenever(corePersonRecordGateway.corePersonRecordFor(IdentifierType.CRN, crnNumber)).thenReturn(cpr)
           whenever(corePersonRecordGateway.corePersonRecordFor(IdentifierType.NOMS, nomsNumber)).thenReturn(cpr)
         }
@@ -1002,9 +1007,7 @@ internal class GetPersonServiceTest(
       describe("get Identifier with CPR") {
         beforeEach {
           Mockito.reset(corePersonRecordGateway)
-          Mockito.reset(featureFlagConfig)
           val cpr = CorePersonRecord(identifiers = Identifiers(crns = listOf(crnNumber), prisonNumbers = listOf(nomsNumber)))
-          whenever(featureFlagConfig.isEnabled(CPR_ENABLED)).thenReturn(true)
           whenever(corePersonRecordGateway.corePersonRecordFor(IdentifierType.CRN, crnNumber)).thenReturn(cpr)
           whenever(corePersonRecordGateway.corePersonRecordFor(IdentifierType.NOMS, nomsNumber)).thenReturn(cpr)
         }
@@ -1036,8 +1039,7 @@ internal class GetPersonServiceTest(
 
       describe("get Identifier without CPR") {
         beforeEach {
-          Mockito.reset(featureFlagConfig)
-          whenever(featureFlagConfig.isEnabled(CPR_ENABLED)).thenReturn(false)
+          whenever(featureFlagSpy.isEnabled(CPR_ENABLED)).thenReturn(false)
           whenever(deliusGateway.getOffender(any())).thenReturn(Response(data = Offender("Test", "Test", otherIds = OtherIds(crn = crnNumber, nomsNumber = nomsNumber))))
         }
 

@@ -84,7 +84,7 @@ internal class PersonControllerTest(
   @MockitoBean val getCareNeedsForPersonService: GetCareNeedsForPersonService,
   @MockitoBean val getLanguagesForPersonService: GetLanguagesForPersonService,
   @MockitoBean val getPrisonerEducationService: GetPrisonerEducationService,
-  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
+  @Autowired val featureFlagConfig: FeatureFlagConfig,
 ) : DescribeSpec(
     {
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)

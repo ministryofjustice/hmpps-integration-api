@@ -8,6 +8,7 @@ import org.mockito.Mockito
 import org.mockito.Mockito.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
@@ -36,7 +37,7 @@ import java.time.LocalDate
 @ActiveProfiles("test")
 class EducationAssessmentsControllerTest(
   private val springMockMvc: MockMvc,
-  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
+  @Autowired val featureFlagConfig: FeatureFlagConfig,
   @MockitoBean val educationAssessmentService: EducationAssessmentService,
   @MockitoBean val auditService: AuditService,
 ) : DescribeSpec(
@@ -48,10 +49,6 @@ class EducationAssessmentsControllerTest(
       val invalidHmppsId = "C1234BC"
 
       fun apiPath(hmppsId: String = validHmppsId) = "/v1/persons/$hmppsId/education/assessments/status"
-
-      beforeTest {
-        Mockito.reset(featureFlagConfig)
-      }
 
       describe("Notify that a given person/offender has had a change of status to their Education Assessments") {
         it("should return 200 given a valid request body") {
@@ -208,7 +205,7 @@ class EducationAssessmentsControllerTest(
 
       describe("Get a persons education assessment summary") {
         beforeEach {
-          Mockito.reset(featureFlagConfig, educationAssessmentService, auditService)
+          Mockito.reset(educationAssessmentService, auditService)
         }
 
         val path = "/v1/persons/$validHmppsId/education/assessments"

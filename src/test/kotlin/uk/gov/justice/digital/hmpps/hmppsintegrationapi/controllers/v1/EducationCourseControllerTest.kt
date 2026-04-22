@@ -5,11 +5,13 @@ import io.kotest.matchers.shouldBe
 import org.mockito.kotlin.any
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
@@ -29,7 +31,8 @@ import java.time.OffsetDateTime
 @ActiveProfiles("test")
 class EducationCourseControllerTest(
   private val springMockMvc: MockMvc,
-  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
+  @Autowired val featureFlagConfig: FeatureFlagConfig,
+  @MockitoSpyBean val featureFlagSpy: FeatureFlagConfig,
   @MockitoBean val educationCourseCompletionService: EducationCourseCompletionService,
   @MockitoBean val auditService: AuditService,
 ) : DescribeSpec(
@@ -66,7 +69,7 @@ class EducationCourseControllerTest(
             ),
         )
 
-      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.COURSE_COMPLETION_EVENT)).thenReturn(true)
+      whenever(featureFlagSpy.isEnabled(FeatureFlagConfig.COURSE_COMPLETION_EVENT)).thenReturn(true)
 
       describe("Notify that a given person/offender has completed all relevant education assessments") {
         it("returns 202 Accepted and calls the service") {

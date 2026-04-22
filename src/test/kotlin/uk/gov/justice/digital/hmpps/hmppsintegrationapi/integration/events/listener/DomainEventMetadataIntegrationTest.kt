@@ -149,7 +149,7 @@ class DomainEventMetadataIntegrationTest : IntegrationTestWithEventsQueueBase() 
 
   @Test
   fun `will create a message without the supervision status if feature flag is not set`() {
-    whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.INCLUDE_SUPERVISION_STATUS_ATTRIBUTE)).thenReturn(false)
+    whenever(featureFlagSpy.isEnabled(FeatureFlagConfig.INCLUDE_SUPERVISION_STATUS_ATTRIBUTE)).thenReturn(false)
     val rawMessage =
       SqsNotificationGeneratingHelper().generateRawHmppsDomainEvent(
         identifiers = "[{\\\"type\\\":\\\"CRN\\\",\\\"value\\\":\\\"$crn\\\"}]",

@@ -45,7 +45,7 @@ internal class StatusInformationControllerTest(
   @MockitoBean val getStatusInformationForPersonService: GetStatusInformationForPersonService,
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getCaseAccess: GetCaseAccess,
-  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
+  @Autowired val featureFlagConfig: FeatureFlagConfig,
 ) : DescribeSpec(
     {
       val hmppsId = "A8888AA"

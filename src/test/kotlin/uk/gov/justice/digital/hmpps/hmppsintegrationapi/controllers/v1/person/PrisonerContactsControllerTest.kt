@@ -37,7 +37,7 @@ internal class PrisonerContactsControllerTest(
   @MockitoBean val getPersonService: GetPersonService,
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getPrisonerContactsService: GetPrisonerContactsService,
-  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
+  @Autowired val featureFlagConfig: FeatureFlagConfig,
 ) : DescribeSpec(
     {
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)

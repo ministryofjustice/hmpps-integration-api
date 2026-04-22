@@ -18,6 +18,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagTestConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
@@ -32,14 +33,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 import java.time.LocalDate
 
 @WebMvcTest(controllers = [AlertsController::class])
-@Import(WebMvcTestConfiguration::class)
+@Import(WebMvcTestConfiguration::class, FeatureFlagTestConfig::class)
 @ActiveProfiles("test")
 internal class AlertsControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getPersonService: GetPersonService,
   @MockitoBean val getAlertsForPersonService: GetAlertsForPersonService,
   @MockitoBean val auditService: AuditService,
-  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
+  @Autowired val featureFlagConfig: FeatureFlagConfig,
 ) : DescribeSpec(
     {
       val hmppsId = "A1234AA"
@@ -79,7 +80,6 @@ internal class AlertsControllerTest(
         beforeTest {
           Mockito.reset(getAlertsForPersonService)
           Mockito.reset(auditService)
-          Mockito.reset(featureFlagConfig)
 
           whenever(getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)).thenReturn(
             Response(
@@ -187,7 +187,6 @@ internal class AlertsControllerTest(
         beforeTest {
           Mockito.reset(getAlertsForPersonService)
           Mockito.reset(auditService)
-          Mockito.reset(featureFlagConfig)
 
           whenever(getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage, activeOnly = true)).thenReturn(
             Response(
@@ -296,7 +295,6 @@ internal class AlertsControllerTest(
 
           Mockito.reset(getAlertsForPersonService)
           Mockito.reset(auditService)
-          Mockito.reset(featureFlagConfig)
 
           whenever(getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)).thenReturn(
             Response(
@@ -328,7 +326,6 @@ internal class AlertsControllerTest(
         beforeTest {
           Mockito.reset(getAlertsForPersonService)
           Mockito.reset(auditService)
-          Mockito.reset(featureFlagConfig)
 
           whenever(getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)).thenReturn(
             Response(

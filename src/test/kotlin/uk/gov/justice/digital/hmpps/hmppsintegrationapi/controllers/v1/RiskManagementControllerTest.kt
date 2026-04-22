@@ -43,7 +43,7 @@ class RiskManagementControllerTest(
   @MockitoBean val getRiskManagementService: GetRiskManagementPlansService,
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getCaseAccess: GetCaseAccess,
-  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
+  @Autowired val featureFlagConfig: FeatureFlagConfig,
 ) : DescribeSpec({
     val hmppsId = "D1974X"
     val basePath = "/v1/persons/hmppsId/risk-management-plan"

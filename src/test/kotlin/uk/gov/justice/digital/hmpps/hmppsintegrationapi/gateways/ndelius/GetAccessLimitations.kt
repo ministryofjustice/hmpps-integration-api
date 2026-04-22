@@ -6,11 +6,14 @@ import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
+import org.springframework.context.annotation.Import
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagTestConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
@@ -24,9 +27,10 @@ import java.io.File
   initializers = [ConfigDataApplicationContextInitializer::class],
   classes = [NDeliusGateway::class],
 )
+@Import(FeatureFlagTestConfig::class)
 class GetAccessLimitations(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
-  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
+  @Autowired val featureFlagConfig: FeatureFlagConfig,
   val deliusGateway: NDeliusGateway,
 ) : DescribeSpec(
     {
@@ -44,7 +48,6 @@ class GetAccessLimitations(
         )
 
         Mockito.reset(hmppsAuthGateway)
-        Mockito.reset(featureFlagConfig)
         whenever(hmppsAuthGateway.getClientToken("nDelius")).thenReturn(HmppsAuthMockServer.TOKEN)
       }
 

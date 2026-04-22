@@ -52,7 +52,7 @@ internal class RiskPredictorScoresControllerTest(
   @MockitoBean val getRiskPredictorScoresForPersonService: GetRiskPredictorScoresForPersonService,
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getCaseAccess: GetCaseAccess,
-  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
+  @Autowired val featureFlagConfig: FeatureFlagConfig,
   @MockitoBean val telemetryService: TelemetryService,
 ) : DescribeSpec(
     {

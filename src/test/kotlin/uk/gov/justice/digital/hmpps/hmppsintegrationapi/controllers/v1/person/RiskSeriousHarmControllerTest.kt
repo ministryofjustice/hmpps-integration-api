@@ -48,7 +48,7 @@ internal class RiskSeriousHarmControllerTest(
   @MockitoBean val getRiskSeriousHarmForPersonService: GetRiskSeriousHarmForPersonService,
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getCaseAccess: GetCaseAccess,
-  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
+  @Autowired val featureFlagConfig: FeatureFlagConfig,
 ) : DescribeSpec(
     {
       val hmppsId = "A1234AA"

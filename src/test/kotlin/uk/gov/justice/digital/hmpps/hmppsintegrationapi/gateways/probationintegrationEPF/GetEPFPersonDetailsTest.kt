@@ -6,12 +6,16 @@ import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
+import org.springframework.context.annotation.Import
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.EPF_ENDPOINT_INCLUDES_LAO
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagTestConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationIntegrationEPFGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateCaseDetail
@@ -25,9 +29,11 @@ import java.io.File
   initializers = [ConfigDataApplicationContextInitializer::class],
   classes = [ProbationIntegrationEPFGateway::class],
 )
+@Import(FeatureFlagTestConfig::class)
 class GetEPFPersonDetailsTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
-  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
+  @Autowired val featureFlagConfig: FeatureFlagConfig,
+  @MockitoSpyBean val featureFlagSpy: FeatureFlagConfig,
   val probationIntegrationEPFGateway: ProbationIntegrationEPFGateway,
 ) : DescribeSpec(
     {
@@ -68,7 +74,7 @@ class GetEPFPersonDetailsTest(
       }
 
       it("returns limited access information when the feature flag is enabled") {
-        whenever(featureFlagConfig.isEnabled(EPF_ENDPOINT_INCLUDES_LAO)).thenReturn(true)
+        whenever(featureFlagSpy.isEnabled(EPF_ENDPOINT_INCLUDES_LAO)).thenReturn(true)
         val response = probationIntegrationEPFGateway.getCaseDetailForPerson(hmppsId, eventNumber)
 
         response.data.shouldBe(

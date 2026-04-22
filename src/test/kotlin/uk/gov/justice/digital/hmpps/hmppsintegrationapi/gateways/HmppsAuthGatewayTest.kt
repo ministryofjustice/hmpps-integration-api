@@ -8,11 +8,15 @@ import org.mockito.Mockito
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
+import org.springframework.context.annotation.Import
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagTestConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.HmppsAuthFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
@@ -22,9 +26,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryServi
   initializers = [ConfigDataApplicationContextInitializer::class],
   classes = [(HmppsAuthGateway::class)],
 )
+@Import(FeatureFlagTestConfig::class)
 class HmppsAuthGatewayTest(
   hmppsAuthGateway: HmppsAuthGateway,
-  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
+  @Autowired val featureFlagConfig: FeatureFlagConfig,
+  @MockitoSpyBean val featureFlagSpy: FeatureFlagConfig,
   @MockitoBean val telemetryService: TelemetryService,
 ) : DescribeSpec({
     val hmppsAuthMockServer = HmppsAuthMockServer()
@@ -33,7 +39,6 @@ class HmppsAuthGatewayTest(
       hmppsAuthMockServer.start()
       Mockito.reset(telemetryService)
       hmppsAuthMockServer.stubGetOAuthToken("username", "password")
-      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.USE_WEBCLIENT_WRAPPER_FOR_HMPPS_AUTH)).thenReturn(false)
     }
 
     afterTest {
@@ -106,7 +111,7 @@ class HmppsAuthGatewayTest(
     }
 
     it("throws an exception if connection is refused with webclient wrapper") {
-      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.USE_WEBCLIENT_WRAPPER_FOR_HMPPS_AUTH)).thenReturn(true)
+      whenever(featureFlagSpy.isEnabled(FeatureFlagConfig.USE_WEBCLIENT_WRAPPER_FOR_HMPPS_AUTH)).thenReturn(true)
       hmppsAuthMockServer.stop()
 
       val exception =
@@ -118,7 +123,7 @@ class HmppsAuthGatewayTest(
     }
 
     it("throws an exception if auth service is unavailable with webclient wrapper") {
-      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.USE_WEBCLIENT_WRAPPER_FOR_HMPPS_AUTH)).thenReturn(true)
+      whenever(featureFlagSpy.isEnabled(FeatureFlagConfig.USE_WEBCLIENT_WRAPPER_FOR_HMPPS_AUTH)).thenReturn(true)
       hmppsAuthMockServer.stubServiceUnavailableForGetOAuthToken()
 
       val exception =
@@ -130,7 +135,7 @@ class HmppsAuthGatewayTest(
     }
 
     it("throws an exception if credentials are invalid with webclient wrapper") {
-      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.USE_WEBCLIENT_WRAPPER_FOR_HMPPS_AUTH)).thenReturn(true)
+      whenever(featureFlagSpy.isEnabled(FeatureFlagConfig.USE_WEBCLIENT_WRAPPER_FOR_HMPPS_AUTH)).thenReturn(true)
       hmppsAuthMockServer.stubUnauthorizedForGetOAAuthToken()
 
       val exception =
@@ -142,7 +147,7 @@ class HmppsAuthGatewayTest(
     }
 
     it("re-uses the existing access token if it is still valid with webclient wrapper") {
-      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.USE_WEBCLIENT_WRAPPER_FOR_HMPPS_AUTH)).thenReturn(true)
+      whenever(featureFlagSpy.isEnabled(FeatureFlagConfig.USE_WEBCLIENT_WRAPPER_FOR_HMPPS_AUTH)).thenReturn(true)
       val firstMockedToken = hmppsAuthMockServer.getToken()
       hmppsAuthMockServer.stubGetOAuthToken("client", "client-secret", firstMockedToken)
       val firstToken = hmppsAuthGateway.getClientToken("NOMIS")
@@ -159,7 +164,7 @@ class HmppsAuthGatewayTest(
     }
 
     it("asks for new token if the existing access token is not valid with webclient wrapper") {
-      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.USE_WEBCLIENT_WRAPPER_FOR_HMPPS_AUTH)).thenReturn(true)
+      whenever(featureFlagSpy.isEnabled(FeatureFlagConfig.USE_WEBCLIENT_WRAPPER_FOR_HMPPS_AUTH)).thenReturn(true)
       val firstMockedToken = hmppsAuthMockServer.getToken(expiresInMinutes = 0)
       hmppsAuthMockServer.stubGetOAuthToken("client", "client-secret", firstMockedToken)
       val firstToken = hmppsAuthGateway.getClientToken("NOMIS")

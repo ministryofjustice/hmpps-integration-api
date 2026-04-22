@@ -41,7 +41,7 @@ internal class MappaDetailControllerTest(
   @MockitoBean val getMappaDetailForPersonService: GetMappaDetailForPersonService,
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getCaseAccess: GetCaseAccess,
-  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
+  @Autowired val featureFlagConfig: FeatureFlagConfig,
 ) : DescribeSpec(
     {
       val hmppsId = "A1234AA"

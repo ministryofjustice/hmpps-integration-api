@@ -13,7 +13,6 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
@@ -41,7 +40,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsServi
 internal class GetPersonsServiceTest(
   @MockitoBean val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
   @MockitoBean val deliusGateway: NDeliusGateway,
-  @MockitoBean val featureFlag: FeatureFlagConfig,
   private val getPersonsService: GetPersonsService,
 ) : DescribeSpec({
     val firstName = personInProbationAndNomisPersona.firstName
@@ -89,7 +87,6 @@ internal class GetPersonsServiceTest(
     beforeEach {
       Mockito.reset(prisonerOffenderSearchGateway)
       Mockito.reset(deliusGateway)
-      Mockito.reset(featureFlag)
 
       whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName, dateOfBirth)).thenReturn(Response(data = emptyList()))
       whenever(deliusGateway.getPersons(firstName, lastName, null, dateOfBirth)).thenReturn(Response(data = emptyList()))

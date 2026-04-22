@@ -47,7 +47,7 @@ internal class DynamicRisksControllerTest(
   @MockitoBean val getDynamicRisksForPersonService: GetDynamicRisksForPersonService,
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getCaseAccess: GetCaseAccess,
-  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
+  @Autowired val featureFlagConfig: FeatureFlagConfig,
   @MockitoBean val telemetryService: TelemetryService,
 ) : DescribeSpec(
     {
