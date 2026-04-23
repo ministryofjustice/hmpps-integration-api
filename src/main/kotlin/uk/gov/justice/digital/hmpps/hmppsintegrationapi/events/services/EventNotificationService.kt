@@ -112,7 +112,6 @@ class EventNotificationService(
     val prisonIds = authorisationConfig.allFilters(consumer)?.prisons
     val prisonCheck = prisonIds == null || (event.prisonId != null && prisonIds.contains(event.prisonId))
     // Supervision Status check
-
     val supervisionStatuses = authorisationConfig.allFilters(consumer)?.supervisionStatuses
     val supervisionStatusCheck = supervisionStatuses == null || (event.metadata?.supervisionStatus != null && supervisionStatuses.contains(event.metadata.supervisionStatus))
 
