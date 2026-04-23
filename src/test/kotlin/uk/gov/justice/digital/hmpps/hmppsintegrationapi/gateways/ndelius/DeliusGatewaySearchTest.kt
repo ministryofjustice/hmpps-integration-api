@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import java.io.File
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -331,6 +332,13 @@ class DeliusGatewaySearchTest(
           .first()
           .lastName
           .shouldBe("Tano")
+      }
+
+      it("returns error with invalid search") {
+        val response = nDeliusGateway.getPersons(null, null, null, null)
+
+        response.data.shouldBe(listOf())
+        response.errors.shouldBe(listOf(UpstreamApiError(causedBy = UpstreamApi.NDELIUS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND, description = null)))
       }
     }
 
