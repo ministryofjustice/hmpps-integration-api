@@ -62,12 +62,12 @@ service teams.
 
 #### 2c) Create a new user-level access control service
 
-This option has has most of the drawbacks and benefits of option 2a, but increases the likelihood of internal reuse of
+This option has most of the drawbacks and benefits of option 2a, but increases the likelihood of internal reuse of
 the access control functionality in exchange for increased technical complexity.
 
 ## Decision
 
-On 21st April 2026 the HMPPS Digital Principle Technical Architects selected options 1b and 2a.
+On 21st April 2026 the HMPPS Digital Principal Technical Architects selected options 1b and 2a.
 
 ## Consequences
 
