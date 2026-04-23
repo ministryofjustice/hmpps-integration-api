@@ -1105,6 +1105,11 @@ internal class GetPersonServiceTest(
           result.shouldBe(SupervisionStatus.UNKNOWN)
         }
 
+        it("HmppsId resolves to a supervision status of UNKNOWN when the hmppsId is null") {
+          val result = getPersonService.getSupervisionStatus(null)
+          result.shouldBe(SupervisionStatus.UNKNOWN)
+        }
+
         it("HmppsId resolves to a supervision status of UNKNOWN when there is a nomis in delius but it is not found by prison offender search") {
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(any())).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))))
           val result = getPersonService.getSupervisionStatus(crnNumber)

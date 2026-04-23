@@ -279,6 +279,11 @@ class GetPersonService(
   }
 
   fun getSupervisionStatus(hmppsId: String?): SupervisionStatus {
+    if (hmppsId == null) {
+      logger.info("Cant determine supervision from NDelius because the hmppsId is null. Returning ${SupervisionStatus.UNKNOWN.name}")
+      return SupervisionStatus.UNKNOWN
+    }
+
     val offender =
       try {
         getPersonFromDelius(hmppsId, true).data!!
@@ -287,22 +292,15 @@ class GetPersonService(
         null
       }
 
-    // If the offender is found in delius, then use the nomis number held in delius for the prison search
     val nomisNumber =
-      when (offender) {
-        null -> {
-          // If the offender cannot be found in delius, then use the hmppsId for the prison search if it is a NOMIS otherwise return UNKNOWN
-          if (hmppsId?.let { identifyHmppsId(it) } == IdentifierType.NOMS) {
-            logger.info("The hmppsId is a nomis id - trying prisoner search")
-            hmppsId
-          } else {
-            logger.info("The hmppsId is a CRN - cant determine supervision status from prisoner search. Returning ${SupervisionStatus.UNKNOWN.name}")
-            return SupervisionStatus.UNKNOWN
-          }
-        }
-        else -> {
-          offender.identifiers.nomisNumber
-        }
+      if (identifyHmppsId(hmppsId) == IdentifierType.NOMS) {
+        logger.info("The hmppsId is a nomis id - trying prisoner search")
+        hmppsId
+      } else if (offender == null) {
+        logger.info("The hmppsId is a CRN - cant determine supervision status from prisoner search. Returning ${SupervisionStatus.UNKNOWN.name}")
+        return SupervisionStatus.UNKNOWN
+      } else {
+        offender.identifiers.nomisNumber
       }
 
     val posPrisoner =
