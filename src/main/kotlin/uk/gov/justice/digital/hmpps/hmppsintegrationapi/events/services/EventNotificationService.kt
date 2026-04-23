@@ -112,6 +112,7 @@ class EventNotificationService(
     val prisonIds = authorisationConfig.allFilters(consumer)?.prisons
     val prisonCheck = prisonIds == null || (event.prisonId != null && prisonIds.contains(event.prisonId))
     // Supervision Status check
+
     val supervisionStatuses = authorisationConfig.allFilters(consumer)?.supervisionStatuses
     val supervisionStatusCheck = supervisionStatuses == null || (event.metadata?.supervisionStatus != null && supervisionStatuses.contains(event.metadata.supervisionStatus))
 
@@ -131,6 +132,8 @@ class EventNotificationService(
     val messageStatus = event.metadata?.supervisionStatus ?: "not defined"
     val consumerStatuses = supervisionStatuses?.joinToString(",") ?: "not defined"
     log.info("Supervision status on message is $messageStatus and the status for consumer $consumer is $consumerStatuses. The Supervision status applicability check returns: $supervisionStatusCheck")
+
+    // ToDo Include supervisionStatusCheck in return value when ready
 
     return consumerEvents.contains(event.eventType) && prisonCheck
   }
