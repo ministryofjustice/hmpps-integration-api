@@ -1,12 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 
-import io.mockk.every
-import io.mockk.mockkStatic
-import io.mockk.unmockkStatic
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
@@ -17,7 +13,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 
 class FiltersExtractionFilterTest {
   private var authorisationConfig: AuthorisationConfig = AuthorisationConfig()
@@ -28,12 +23,9 @@ class FiltersExtractionFilterTest {
 
   @BeforeEach
   fun setUp() {
-    mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-  }
-
-  @AfterEach
-  fun after() {
-    unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
+    val testRole = Role(permissions = null, filters = ConsumerFilters(prisons = listOf("filter-1", "filter-2")))
+    authorisationConfig.definedRoles =
+      listOf(testRole).associateBy { it.name }
   }
 
   @Test
@@ -66,7 +58,7 @@ class FiltersExtractionFilterTest {
     val expectedFilters = ConsumerFilters(prisons = listOf("filter-1", "filter-2"))
     val testRole = Role(permissions = null, filters = expectedFilters)
     authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, filters = ConsumerFilters(prisons = null), roles = listOf("test-role")))
-    every { roles } returns mapOf("test-role" to testRole)
+    authorisationConfig.definedRoles = mapOf("test-role" to testRole)
 
     // Act
     filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)
@@ -87,7 +79,7 @@ class FiltersExtractionFilterTest {
     val expectedFilters = ConsumerFilters(prisons = listOf("filter-1", "filter-2"))
     val testRole = Role(permissions = null, filters = expectedFilters)
     authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, filters = ConsumerFilters(prisons = null), roles = listOf("test-role")))
-    every { roles } returns mapOf("test-role" to testRole)
+    authorisationConfig.definedRoles = mapOf("test-role" to testRole)
 
     // Act
     filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)
@@ -108,7 +100,7 @@ class FiltersExtractionFilterTest {
     val expectedFilters = ConsumerFilters(prisons = listOf("consumer-filter", "role-filter"))
     val testRole = Role(permissions = null, filters = ConsumerFilters(prisons = listOf("role-filter")))
     authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, filters = ConsumerFilters(prisons = listOf("consumer-filter")), roles = listOf("test-role")))
-    every { roles } returns mapOf("test-role" to testRole)
+    authorisationConfig.definedRoles = mapOf("test-role" to testRole)
 
     // Act
     filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)
@@ -147,8 +139,8 @@ class FiltersExtractionFilterTest {
 
     val expectedFilters = ConsumerFilters(prisons = null, caseNotes = listOf("filter-1", "filter-2"))
     val testRole = Role(permissions = null, filters = expectedFilters)
+    authorisationConfig.definedRoles = mapOf("test-role" to testRole)
     authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, filters = ConsumerFilters(prisons = null), roles = listOf("test-role")))
-    every { roles } returns mapOf("test-role" to testRole)
 
     // Act
     filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)
@@ -169,7 +161,7 @@ class FiltersExtractionFilterTest {
     val expectedFilters = ConsumerFilters(prisons = null, caseNotes = listOf("consumer-filter", "role-filter"))
     val testRole = Role(permissions = null, filters = ConsumerFilters(prisons = null, caseNotes = listOf("role-filter")))
     authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, filters = ConsumerFilters(prisons = null, caseNotes = listOf("consumer-filter")), roles = listOf("test-role")))
-    every { roles } returns mapOf("test-role" to testRole)
+    authorisationConfig.definedRoles = mapOf("test-role" to testRole)
 
     // Act
     filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)
@@ -190,7 +182,7 @@ class FiltersExtractionFilterTest {
     val expectedFilters = ConsumerFilters(prisons = listOf("consumer-filter", "role-filter"), caseNotes = listOf("consumer-filter", "role-filter"))
     val testRole = Role(permissions = null, filters = ConsumerFilters(prisons = listOf("role-filter"), caseNotes = listOf("role-filter")))
     authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, filters = ConsumerFilters(prisons = listOf("consumer-filter"), caseNotes = listOf("consumer-filter")), roles = listOf("test-role")))
-    every { roles } returns mapOf("test-role" to testRole)
+    authorisationConfig.definedRoles = mapOf("test-role" to testRole)
 
     // Act
     filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)

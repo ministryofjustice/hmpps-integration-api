@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.fullAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithLaoRedactions
@@ -28,13 +29,15 @@ class AlertsIntegrationTest : IntegrationTestBase() {
 
     @BeforeEach
     fun setup() {
-      mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-      every { roles.get(any()) } returns fullAccess
+//      mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
+//      every { roles.get(any()) } returns fullAccess
+//      authorisationConfig.definedRoles = mapOf("automated-test-client" to fullAccess)
     }
 
     @AfterEach
     fun tearDown() {
-      unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
+//      unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
+      authorisationConfig.definedRoles = roles
     }
 
     @Test
@@ -57,7 +60,8 @@ class AlertsIntegrationTest : IntegrationTestBase() {
 
     @Test
     fun `returns alerts for a person with alert filters`() {
-      every { roles.get(any()) } returns testRoleWithPndAlerts
+      authorisationConfig.definedRoles = listOf(testRoleWithPndAlerts).associateBy { it.name }
+      authorisationConfig.consumers = mapOf("automated-test-client" to ConsumerConfig(roles = listOf(testRoleWithPndAlerts.name!!)))
       callApi(path)
         .andExpect(status().isOk)
         .andExpect(content().json(getExpectedResponse("person-alerts")))

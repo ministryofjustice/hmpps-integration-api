@@ -5,8 +5,6 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
-import io.mockk.every
-import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
 import net.javacrumbs.jsonunit.assertj.JsonAssertions
 import org.mockito.Mockito
@@ -22,6 +20,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
@@ -85,6 +84,7 @@ internal class PersonControllerTest(
   @MockitoBean val getLanguagesForPersonService: GetLanguagesForPersonService,
   @MockitoBean val getPrisonerEducationService: GetPrisonerEducationService,
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
+  @Autowired val authorisationConfig: AuthorisationConfig,
 ) : DescribeSpec(
     {
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
@@ -172,28 +172,31 @@ internal class PersonControllerTest(
         }
 
         it("calls attribute search when prisons filter is present and pnc number in search") {
-          mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-          every { roles[any()] } returns testRoleWithPrisonFilters
+          authorisationConfig.definedRoles = mapOf("full-access" to testRoleWithPrisonFilters)
           mockMvc.performAuthorised("$basePath?first_name=$firstName&pnc_number=$pncNumber")
           verify(getPersonsService, times(1)).personAttributeSearch(firstName, null, pncNumber, null, consumerFilters = testRoleWithPrisonFilters.filters)
+          authorisationConfig.definedRoles = roles
         }
 
         it("calls attribute search when prisons filter is present and pnc number in search") {
-          mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-          every { roles[any()] } returns testRoleWithPrisonFilters
+          authorisationConfig.definedRoles = mapOf("full-access" to testRoleWithPrisonFilters)
           mockMvc.performAuthorised("$basePath?first_name=$firstName&pnc_number=$pncNumber")
           verify(getPersonsService, times(1)).personAttributeSearch(firstName, null, pncNumber, null, consumerFilters = testRoleWithPrisonFilters.filters)
+          authorisationConfig.definedRoles = roles
         }
 
         it("passes supervision status filters from consumer config to service") {
-          mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-          every { roles[any()] } returns role("test-role") { permissions { -fullAccess.permissions!! } }
+          authorisationConfig.definedRoles = mapOf("test-role" to role("test-role") { permissions { -fullAccess.permissions!! } })
+          mockMvc.performAuthorised("$basePath?first_name=$firstName&pnc_number=$pncNumber")
+
           val expectedFilters = ConsumerFilters(supervisionStatuses = listOf("PRISONS"))
           whenever(getPersonsService.personAttributeSearch(firstName, null, pncNumber, null, false, expectedFilters)).thenReturn(Response(data = emptyList()))
 
           mockMvc.performAuthorisedWithCN("$basePath?first_name=$firstName&pnc_number=$pncNumber", "supervision-status-prison-only")
 
           verify(getPersonsService, times(1)).personAttributeSearch(firstName, null, pncNumber, null, false, expectedFilters)
+
+          authorisationConfig.definedRoles = roles
         }
 
         it("gets a person with matching search criteria") {
