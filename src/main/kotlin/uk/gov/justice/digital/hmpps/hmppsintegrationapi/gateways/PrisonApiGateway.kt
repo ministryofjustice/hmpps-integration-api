@@ -25,6 +25,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.NomisOf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.NomisTransactionTransferResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiAccounts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiAddress
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiAssessmentSummary
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiBooking
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiImageDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiInmateDetail
@@ -476,6 +477,29 @@ class PrisonApiGateway(
         badRequestAsError = true,
       )
 
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getCsraAssessmentsForPerson(nomisNumber: String?): Response<List<PrisonApiAssessmentSummary>?> {
+    val result =
+      webClient.requestList<PrisonApiAssessmentSummary>(
+        HttpMethod.GET,
+        "/api/offender-assessments/csra/$nomisNumber",
+        authenticationHeader(),
+        UpstreamApi.PRISON_API,
+        badRequestAsError = true,
+      )
     return when (result) {
       is WebClientWrapperResponse.Success -> {
         Response(data = result.data)
