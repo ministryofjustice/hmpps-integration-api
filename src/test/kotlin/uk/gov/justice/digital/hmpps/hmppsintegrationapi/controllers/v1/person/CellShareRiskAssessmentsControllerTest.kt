@@ -76,7 +76,7 @@ internal class CellShareRiskAssessmentsControllerTest(
           verify(
             auditService,
             VerificationModeFactory.times(1),
-          ).createEvent("GET_PERSON_CONTACT_EVENTS", mapOf("hmppsId" to hmppsId))
+          ).createEvent("GET_PERSON_CSRA", mapOf("hmppsId" to hmppsId))
         }
 
         it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
