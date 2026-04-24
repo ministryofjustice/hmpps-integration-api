@@ -17,7 +17,6 @@ import org.mockito.Mockito.mock
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.any
 import org.mockito.kotlin.never
-import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -59,16 +58,19 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.SupervisionSta
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService.IdentifierType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
-internal class GetPersonServiceTest(
-  val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway = mock(),
-  val consumerPrisonAccessService: ConsumerPrisonAccessService = mock(),
-  val deliusGateway: NDeliusGateway = mock(),
-  val corePersonRecordGateway: CorePersonRecordGateway = mock(),
-  val featureFlagConfig: FeatureFlagConfig = spy<FeatureFlagConfig>(),
-  val telemetryService: TelemetryService = mock(),
-  val getPersonService: GetPersonService = GetPersonService(prisonerOffenderSearchGateway, consumerPrisonAccessService, corePersonRecordGateway, featureFlagConfig, telemetryService, deliusGateway),
-) : DescribeSpec(
+internal class GetPersonServiceTest :
+  DescribeSpec(
     {
+      val featureFlagConfig = FeatureFlagConfig()
+
+      val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway = mock()
+      val consumerPrisonAccessService: ConsumerPrisonAccessService = mock()
+      val deliusGateway: NDeliusGateway = mock()
+      val corePersonRecordGateway: CorePersonRecordGateway = mock()
+      val telemetryService: TelemetryService = mock()
+
+      var getPersonService = GetPersonService(prisonerOffenderSearchGateway, consumerPrisonAccessService, corePersonRecordGateway, featureFlagConfig, telemetryService, deliusGateway)
+
       val invalidNomsNumber = "N1234PSX"
       val prisonId = "ABC"
       val wrongPrisonId = "XYZ"
@@ -1026,8 +1028,14 @@ internal class GetPersonServiceTest(
 
       describe("get Identifier without CPR") {
         beforeEach {
-          whenever(featureFlagConfig.isNotDisabled(CPR_ENABLED)).thenReturn(false)
+          val featureFlagConfigCPR = FeatureFlagConfig(mapOf(CPR_ENABLED to false))
+          getPersonService = GetPersonService(prisonerOffenderSearchGateway, consumerPrisonAccessService, corePersonRecordGateway, featureFlagConfigCPR, telemetryService, deliusGateway)
           whenever(deliusGateway.getOffender(any())).thenReturn(Response(data = Offender("Test", "Test", otherIds = OtherIds(crn = crnNumber, nomsNumber = nomsNumber))))
+        }
+
+        afterEach {
+          getPersonService = GetPersonService(prisonerOffenderSearchGateway, consumerPrisonAccessService, corePersonRecordGateway, featureFlagConfig, telemetryService, deliusGateway)
+          Mockito.reset(deliusGateway)
         }
 
         it("Crn is provided, Nomis number is required") {
