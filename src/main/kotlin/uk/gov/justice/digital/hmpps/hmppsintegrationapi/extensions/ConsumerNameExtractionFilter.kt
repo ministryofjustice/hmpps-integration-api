@@ -26,9 +26,11 @@ class ConsumerNameExtractionFilter : Filter {
     response as HttpServletResponse
     val subjectDistinguishedName = req.getHeader("subject-distinguished-name")
     val certificateSerialNumber = extractCertificateSerialNumber(req.getHeader("cert-serial-number"))
+    val onBehalfOf = req.getHeader("X-On-Behalf-Of")
     val extractedConsumerName = extractConsumerName(subjectDistinguishedName)
     req.setAttribute("clientName", extractedConsumerName)
     req.setAttribute("certificateSerialNumber", certificateSerialNumber)
+    req.setAttribute("onBehalfOf", onBehalfOf)
     chain.doFilter(request, response)
   }
 

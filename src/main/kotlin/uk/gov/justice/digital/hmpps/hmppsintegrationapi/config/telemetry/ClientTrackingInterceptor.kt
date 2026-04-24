@@ -40,6 +40,12 @@ class ClientTrackingInterceptor : HandlerInterceptor {
       runCatching { Span.current().setAttribute("certSerialNumber", it) }
     }
 
+    // Set X-On-Behalf-Of in app insights
+    val onBehalfOf = request.getAttribute("onBehalfOf") as String?
+    onBehalfOf?.let {
+      runCatching { Span.current().setAttribute("onBehalfOf", it) }
+    }
+
     return true
   }
 }

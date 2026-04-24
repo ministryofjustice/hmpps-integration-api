@@ -7,6 +7,7 @@ import jakarta.servlet.ServletRequest
 import jakarta.servlet.ServletResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.core.annotation.Order
@@ -32,6 +33,8 @@ class AuthorisationFilter(
     response: ServletResponse?,
     chain: FilterChain,
   ) {
+    val log = LoggerFactory.getLogger(this::class.java)
+
     val req = request as HttpServletRequest
     val res = response as HttpServletResponse
 
@@ -39,6 +42,11 @@ class AuthorisationFilter(
     if (subjectDistinguishedName == null) {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "No subject-distinguished-name header provided for authorisation")
       return
+    }
+
+    val onBehalfOf = req.getAttribute("onBehalfOf") as String?
+    if (onBehalfOf != null) {
+      log.info("Header found with X-On-Behalf-Of with the value '$onBehalfOf'")
     }
 
     val certificateSerialNumber = req.getAttribute("certificateSerialNumber") as String?
