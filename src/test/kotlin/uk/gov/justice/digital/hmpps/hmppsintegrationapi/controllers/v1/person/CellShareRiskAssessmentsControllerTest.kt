@@ -14,18 +14,15 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.ContactEventHelper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactEvents
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiAssessmentSummary
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ContactEventService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCsraForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
-@WebMvcTest(controllers = [ContactEventsController::class])
+@WebMvcTest(controllers = [CellShareRiskAssessmentController::class])
 @Import(WebMvcTestConfiguration::class)
 @ActiveProfiles("test")
 internal class CellShareRiskAssessmentsControllerTest(
