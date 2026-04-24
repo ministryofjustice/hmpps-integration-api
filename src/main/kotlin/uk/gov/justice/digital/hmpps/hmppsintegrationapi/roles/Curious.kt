@@ -9,7 +9,6 @@ val curious =
       -"/v1/persons/{hmppsId}/plp-induction-schedule"
       -"/v1/persons/{hmppsId}/plp-induction-schedule/history"
       -"/v1/persons/{hmppsId}/plp-review-schedule"
-      -"/v1/persons/{hmppsId}/expression-of-interest/jobs/{jobId}"
       -"/v1/hmpps/id/by-nomis-number/{nomisNumber}"
       -"/v1/hmpps/id/nomis-number/by-hmpps-id/{hmppsId}"
       -"/v1/persons/{hmppsId}/education/assessments/status"

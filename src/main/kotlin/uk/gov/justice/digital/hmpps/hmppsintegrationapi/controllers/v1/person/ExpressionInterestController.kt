@@ -10,34 +10,28 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.DeprecatedApiException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.PutExpressionInterestService
 
 @RestController
 @RequestMapping("/v1/persons")
 @Tag(name = "Persons")
-class ExpressionInterestController(
-  private val putExpressionInterestService: PutExpressionInterestService,
-) {
+class ExpressionInterestController {
   /**
    * API endpoint to notify that a given person/offender has expressed an interest in a job.
    */
-  @PutMapping("{hmppsId}/expression-of-interest/jobs/{jobid}")
+  @Deprecated(message = "This API has been deprecated.", level = DeprecationLevel.ERROR)
+  @PutMapping("{hmppsId}/expression-of-interest/jobs/{jobId}")
   @Operation(
+    deprecated = true,
     summary = "Notify that a person has expressed an interest in a particular job.",
     responses = [
-      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully submitted an expression of interest"),
-      ApiResponse(responseCode = "400", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
       ApiResponse(responseCode = "403", content = [Content(schema = Schema(ref = "#/components/schemas/ForbiddenResponse"))]),
-      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
+      ApiResponse(responseCode = "410", content = [Content(schema = Schema(ref = "#/components/schemas/DeprecatedApiError"))]),
     ],
   )
   fun submitExpressionOfInterest(
     @Parameter(description = "A HMPPS identifier", example = "A1234AA") @PathVariable hmppsId: String,
-    @Parameter(description = "A job identifier") @PathVariable jobid: String,
-  ): Response<Unit> {
-    putExpressionInterestService.sendExpressionOfInterest(hmppsId, jobid)
-
-    return Response(data = Unit, errors = emptyList())
-  }
+    @Parameter(description = "A job identifier") @PathVariable jobId: String,
+  ): Response<Unit> = throw DeprecatedApiException()
 }

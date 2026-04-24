@@ -124,6 +124,15 @@ class OpenAPIConfig {
                 "timestamp" to Schema<String>().type("string").example("2025-07-03T10:00:00Z"),
               ),
             ),
+          ).addSchemas(
+            "DeprecatedApiError",
+            Schema<ErrorResponse>().description("The API has been deprecated.").properties(
+              mapOf(
+                "status" to Schema<Int>().type("number").example(410),
+                "userMessage" to Schema<String>().type("string").example("The API has been deprecated."),
+                "developerMessage" to Schema<String>().type("string").example("The API has been deprecated."),
+              ),
+            ),
           )
       }
     }
