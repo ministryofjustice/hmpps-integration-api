@@ -1,5 +1,3 @@
-@file:Suppress("ktlint:standard:no-wildcard-imports")
-
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import io.kotest.core.spec.style.DescribeSpec
@@ -15,13 +13,11 @@ import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
-import org.springframework.test.context.ContextConfiguration
-import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.CPR_ENABLED
@@ -60,18 +56,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.SupervisionSta
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService.IdentifierType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
-@ContextConfiguration(
-  initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [GetPersonService::class],
-)
 internal class GetPersonServiceTest(
-  @MockitoBean val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
-  @MockitoBean val consumerPrisonAccessService: ConsumerPrisonAccessService,
-  @MockitoBean val deliusGateway: NDeliusGateway,
-  @MockitoBean val corePersonRecordGateway: CorePersonRecordGateway,
-  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
-  @MockitoBean val telemetryService: TelemetryService,
-  private val getPersonService: GetPersonService,
+  val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway = mock(),
+  val consumerPrisonAccessService: ConsumerPrisonAccessService = mock(),
+  val deliusGateway: NDeliusGateway = mock(),
+  val corePersonRecordGateway: CorePersonRecordGateway = mock(),
+  val featureFlagConfig: FeatureFlagConfig = mock(),
+  val telemetryService: TelemetryService = mock(),
+  val getPersonService: GetPersonService = GetPersonService(prisonerOffenderSearchGateway, consumerPrisonAccessService, corePersonRecordGateway, featureFlagConfig, telemetryService, deliusGateway),
 ) : DescribeSpec(
     {
       val invalidNomsNumber = "N1234PSX"
