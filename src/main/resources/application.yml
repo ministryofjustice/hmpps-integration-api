@@ -26,6 +26,10 @@ spring:
 
 springdoc:
   default-produces-media-type: application/json
+  # /v3/api-docs
+  api-docs.enabled: false
+  # /swagger-ui.html and /swagger-ui/index.html
+  swagger-ui.enabled: false
 
 server:
   port: 8080

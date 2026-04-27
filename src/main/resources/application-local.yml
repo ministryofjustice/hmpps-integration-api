@@ -9,6 +9,12 @@ spring:
     enabled: true
     baselineOnMigrate: true
 
+springdoc:
+  # /v3/api-docs endpoint
+  api-docs.enabled: true
+  # /swagger-ui.html and /swagger-ui/index.html endpoints
+  swagger-ui.enabled: true
+
 # Use ports >= 4010
 services:
   int-api.base-url: https://localhost:8443

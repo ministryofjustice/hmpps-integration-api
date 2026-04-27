@@ -44,6 +44,7 @@ private val pathPlaceholders =
 fun normalisePath(pathPattern: String): String =
   when (pathPattern) {
     "/.*" -> pathPattern // Wildcard at start of path is not a parameter placeholder
+    "/swagger-ui/.*" -> pathPattern // special case for Swagger UI on local
     else ->
       pathPattern
         .normalisePathPlaceholders()
