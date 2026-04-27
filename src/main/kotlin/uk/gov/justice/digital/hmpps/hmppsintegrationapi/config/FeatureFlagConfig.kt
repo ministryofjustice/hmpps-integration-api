@@ -42,7 +42,6 @@ data class FeatureFlagConfig(
     const val LIMITED_ACCESS_NOTIFICATIONS_ENABLED = "limited-access-notifications-enabled"
     const val DEDUPLICATE_EVENTS = "deduplicate-events"
     const val DIRECT_SQS_NOTIFICATIONS = "direct-sqs-notifications"
-    const val INCLUDE_SUPERVISION_STATUS_ATTRIBUTE = "include-supervision-status-attribute"
   }
 
   /**
@@ -51,9 +50,14 @@ data class FeatureFlagConfig(
   fun getConfigFlagValue(feature: String): Boolean? = flags[feature]
 
   /**
-   * Returns true if the  feature flag is defined and set to true.
+   * Returns true if the feature flag is defined and set to true. Returns false by default
    */
   fun isEnabled(feature: String): Boolean = flags.getOrDefault(feature, false)
+
+  /**
+   * Returns true if the feature flag is defined and set to true. Returns true by default
+   */
+  fun isNotDisabled(feature: String): Boolean = flags.getOrDefault(feature, true)
 
   /**
    * Throws a [FeatureNotEnabledException] if the feature is not enabled.

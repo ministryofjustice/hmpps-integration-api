@@ -1,18 +1,13 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.domain
 
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.HmppsDomainEvent
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.GetPrisonIdService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.UpstreamApiException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.SupervisionStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
 @Service
 class DomainEventIdentitiesResolver(
@@ -20,12 +15,7 @@ class DomainEventIdentitiesResolver(
   @Autowired val getPrisonIdService: GetPrisonIdService,
   private val personService: GetPersonService,
   private val featureFlagService: FeatureFlagConfig,
-  private val telemetryService: TelemetryService,
 ) {
-  companion object {
-    val log = LoggerFactory.getLogger(this::class.java)
-  }
-
   /**
    * The hmpps id is an id that the end client will use in ongoing processing.
    * In the future when we have a core person record it will be that id
@@ -77,48 +67,11 @@ class DomainEventIdentitiesResolver(
 
   /**
    * Gets the supervision status of the person for the hmppsId
-   * If the hmppsId can not be resolved at all, then we cant determine the supervision status - return UNKNOWN
-   * The hmppsId will always be a CRN if no nomis number is present in the event
-   * If we only have a CRN at this stage we need to find a nomis number from which to check the prison status
-   * If we cant find a nomis number then we cant determine the supervision status - return UNKNOWN
-   * The person service getPersonSupervisionStatus function will continue to check the probation status in NDelius using the nomis number
    *
    * @param hmppsId
    * @return The supervision status (one of PRISONS, PROBATION, NONE or UNKNOWN)
    */
-  fun getSupervisionStatus(hmppsId: String?): String? {
-    if (!featureFlagService.isEnabled(FeatureFlagConfig.INCLUDE_SUPERVISION_STATUS_ATTRIBUTE)) {
-      return null
-    }
-
-    val nomisId =
-      hmppsId?.let {
-        personService.convert(it, GetPersonService.IdentifierType.NOMS).data
-      }
-
-    if (nomisId == null) {
-      log.info("Cant determine supervision status for the message with hmppsId $hmppsId because a prison id cannot be found. Returning ${SupervisionStatus.UNKNOWN.name}")
-      return SupervisionStatus.UNKNOWN.name
-    }
-
-    val supervisionStatus =
-      try {
-        personService.getPersonSupervisionStatus(nomisId)
-      } catch (ex: UpstreamApiException) {
-        when (ex.errorType) {
-          UpstreamApiError.Type.ENTITY_NOT_FOUND -> {
-            SupervisionStatus.UNKNOWN.name
-          }
-          else -> {
-            log.error("An error occurred while determining the supervision status for the message with hmppsId $hmppsId")
-            telemetryService.captureException(ex)
-            throw ex
-          }
-        }
-      }
-    log.info("Supervision status of $supervisionStatus has been found for the message with hmppsId $hmppsId")
-    return supervisionStatus
-  }
+  fun getSupervisionStatus(hmppsId: String?): String? = personService.getSupervisionStatus(hmppsId).name
 
   private fun getNomisNumber(hmppsEvent: HmppsDomainEvent): String? {
     val nomsNumber =

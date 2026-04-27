@@ -2,16 +2,10 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.list
 
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.collections.shouldNotBeEmpty
-import io.kotest.matchers.shouldBe
 import org.awaitility.Awaitility
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.argumentCaptor
-import org.mockito.kotlin.atLeast
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import org.springframework.http.HttpStatus
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.IntegrationTestWithEventsQueueBase
@@ -126,7 +120,7 @@ class DomainEventMetadataIntegrationTest : IntegrationTestWithEventsQueueBase() 
   }
 
   @Test
-  fun `will send the event to the DLQ prisoner offender search returns a 500`() {
+  fun `will create a message containing supervision status of UNKNOWN when prisoner offender search returns a 500`() {
     // Clear cache
     prisonerOffenderSearchMockServer.stubForGet(
       "/prisoner/$nomsIdNotActiveInPrison",
@@ -140,29 +134,11 @@ class DomainEventMetadataIntegrationTest : IntegrationTestWithEventsQueueBase() 
       )
     sendDomainSqsMessage(rawMessage)
 
-    Awaitility.await().until {
-      getNumberOfMessagesCurrentlyOndomainEventsDeadLetterQueue() > 0
-    }
-
-    val deadLetterQueueMessage = geMessagesCurrentlyOnDomainEventsDeadLetterQueue()
-    val message = deadLetterQueueMessage.messages().first()
-    message.body().shouldBe(rawMessage)
-  }
-
-  @Test
-  fun `will create a message without the supervision status if feature flag is not set`() {
-    whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.INCLUDE_SUPERVISION_STATUS_ATTRIBUTE)).thenReturn(false)
-    val rawMessage =
-      SqsNotificationGeneratingHelper().generateRawHmppsDomainEvent(
-        identifiers = "[{\\\"type\\\":\\\"CRN\\\",\\\"value\\\":\\\"$crn\\\"}]",
-      )
-    sendDomainSqsMessage(rawMessage)
-
     Awaitility.await().untilAsserted {
-      val event = argumentCaptor<EventNotification>()
-      verify(eventNotificationRepository, atLeast(1)).insertOrUpdate(event.capture())
-      val events = event.allValues
-      events.filter { it.metadata == null && it.hmppsId == crn }.shouldNotBeEmpty()
+      eventNotificationRepository.findAll().isNotEmpty()
+      val savedEvents: List<EventNotification> = eventNotificationRepository.findByHmppsIdIsIn(listOf(crnActiveInProbation))
+      savedEvents.shouldNotBeEmpty().shouldHaveSize(1)
+      assertEquals("UNKNOWN", savedEvents.first().metadata?.supervisionStatus)
     }
   }
 }

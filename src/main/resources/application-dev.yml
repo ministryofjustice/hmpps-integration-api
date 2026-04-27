@@ -71,7 +71,6 @@ feature-flag:
   limited-access-notifications-enabled: true
   deduplicate-events: true
   direct-sqs-notifications: true
-  include-supervision-status-attribute: true
 
 authorisation:
   consumers:
