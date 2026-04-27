@@ -40,6 +40,7 @@ const httpParams = {
   headers: {
     'Content-Type': 'application/json',
     'x-api-key': api_key,
+    'X-On-Behalf-Of': 'smoketest'
   },
 };
 
