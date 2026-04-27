@@ -34,11 +34,12 @@ class ClientTrackingInterceptor(
     // Set the certificate serial number in app insights
     val certificateSerialNumber = request.getAttribute("certificateSerialNumber") as String?
     certificateSerialNumber?.let {
-      runCatching { telemetryService.setSpanAttribute("certSerialNumber", it) }
+      telemetryService.setSpanAttribute("certSerialNumber", it)
     }
+    // Set on behalf off in app insights
     val onBehalfOff = request.getHeader("X-On-Behalf-Of")
     onBehalfOff?.let {
-      runCatching { telemetryService.setSpanAttribute("certOnBehalfOff", it) }
+      telemetryService.setSpanAttribute("certOnBehalfOff", it)
     }
     return true
   }

@@ -36,7 +36,7 @@ export const options = (cert === "") ? {} : {
   ],
 };
 
-const httpParams = {
+let httpParams = {
   headers: {
     'Content-Type': 'application/json',
     'x-api-key': api_key,
@@ -654,6 +654,18 @@ function verify_prisoner_contacts(hmppsId) {
   validate_get_request(`/v1/contacts/${contactId}`);
 }
 
+function verify_headers() {
+  //Tests to add headers too for app insights
+  httpParams = {
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': api_key,
+      'X-On-Behalf-Of': 'Test-Behalf-Of'
+    },
+  };
+  let res = validate_get_request(`/v1/ping`)
+}
+
 /**
  * The primary smoke test for the External API.
  **
@@ -692,6 +704,8 @@ function structured_verification_test(hmppsId) {
   verify_pnd_alerts(hmppsId);
 
   verify_education_san(hmppsId);
+
+  verify_ping()
 }
 /************************************************************************/
 

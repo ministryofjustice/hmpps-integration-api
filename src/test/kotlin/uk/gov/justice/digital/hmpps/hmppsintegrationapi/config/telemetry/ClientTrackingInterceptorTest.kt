@@ -6,11 +6,13 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.whenever
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
 class ClientTrackingInterceptorTest {
   private val request: HttpServletRequest = mock(HttpServletRequest::class.java)
   private val response: HttpServletResponse = mock(HttpServletResponse::class.java)
-  private val interceptor = ClientTrackingInterceptor()
+  private val telemetryService = mock(TelemetryService::class.java)
+  private val interceptor = ClientTrackingInterceptor(telemetryService)
 
   @Test
   fun `handles missing clientName attribute`() {
@@ -29,6 +31,20 @@ class ClientTrackingInterceptorTest {
   @Test
   fun `handles a NULL certificate serial number header`() {
     whenever(request.getHeader("certificateSerialNumber")).thenReturn(null)
+    val result = interceptor.preHandle(request, response, "")
+    assertTrue(result)
+  }
+
+  @Test
+  fun `handles a on behalf of header`() {
+    whenever(request.getHeader("X-On-Behalf-Of")).thenReturn("TEST_BEHALF_OF")
+    val result = interceptor.preHandle(request, response, "")
+    assertTrue(result)
+  }
+
+  @Test
+  fun `handles a NULL on behalf of header`() {
+    whenever(request.getHeader("X-On-Behalf-Of")).thenReturn(null)
     val result = interceptor.preHandle(request, response, "")
     assertTrue(result)
   }
