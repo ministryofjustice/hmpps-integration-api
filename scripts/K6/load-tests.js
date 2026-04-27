@@ -67,7 +67,6 @@ function call_status_endpoint(path) {
     headers: {
       'Content-Type': 'application/json',
       'x-api-key': api_key,
-      'X-On-Behalf-Of': 'smoketest'
     },
   });
 }
