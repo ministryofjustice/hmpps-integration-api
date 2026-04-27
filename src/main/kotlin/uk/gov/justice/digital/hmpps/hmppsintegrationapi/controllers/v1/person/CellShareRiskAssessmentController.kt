@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_CSRA_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -30,6 +32,7 @@ class CellShareRiskAssessmentController(
   @Autowired val getCsraForPersonService: GetCsraForPersonService,
   @Autowired val auditService: AuditService,
 ) {
+  @FeatureFlag(name = USE_CSRA_ENDPOINT)
   @GetMapping("/persons/{hmppsId}/csra")
   @Tags(value = [Tag("Reception")])
   @Operation(
