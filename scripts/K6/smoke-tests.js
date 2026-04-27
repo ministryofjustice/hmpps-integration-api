@@ -664,6 +664,14 @@ function verify_headers() {
     },
   };
   let res = validate_get_request(`/v1/ping`)
+
+  // Reset headers for future tests
+  httpParams = {
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': api_key,
+    },
+  };
 }
 
 /**
