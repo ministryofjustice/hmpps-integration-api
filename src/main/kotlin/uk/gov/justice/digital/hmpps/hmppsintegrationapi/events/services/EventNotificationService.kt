@@ -132,8 +132,6 @@ class EventNotificationService(
     val consumerStatuses = supervisionStatuses?.joinToString(",") ?: "not defined"
     log.info("Supervision status on message is $messageStatus and the status for consumer $consumer is $consumerStatuses. The Supervision status applicability check returns: $supervisionStatusCheck")
 
-    // ToDo Include supervisionStatusCheck in return value when ready
-
-    return consumerEvents.contains(event.eventType) && prisonCheck
+    return consumerEvents.contains(event.eventType) && prisonCheck && supervisionStatusCheck
   }
 }
