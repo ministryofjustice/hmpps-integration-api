@@ -73,7 +73,7 @@ class GetCsraForPersonServiceTest(
           ),
         )
 
-        val result =  getCsraForPersonService.getCsraAssessments(hmppsId, filters)
+        val result = getCsraForPersonService.getCsraAssessments(hmppsId, filters)
         result.errors.shouldBe(errors)
       }
 
@@ -84,7 +84,7 @@ class GetCsraForPersonServiceTest(
           ),
         )
 
-        val result =  getCsraForPersonService.getCsraAssessments(hmppsId, filters)
+        val result = getCsraForPersonService.getCsraAssessments(hmppsId, filters)
         result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
       }
 
@@ -104,7 +104,7 @@ class GetCsraForPersonServiceTest(
           ),
         )
 
-        val result =  getCsraForPersonService.getCsraAssessments(hmppsId, filters)
+        val result = getCsraForPersonService.getCsraAssessments(hmppsId, filters)
         result.errors.shouldBe(errors)
       }
     },
