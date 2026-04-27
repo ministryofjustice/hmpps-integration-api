@@ -41,7 +41,8 @@ internal class CellShareRiskAssessmentsControllerTest(
           Mockito.reset(csraService)
           whenever(csraService.getCsraAssessments(hmppsId, filters)).thenReturn(
             Response(
-              listOf(PrisonApiAssessmentSummary(
+              listOf(
+                PrisonApiAssessmentSummary(
                   bookingId = null,
                   assessmentSeq = null,
                   offenderNo = hmppsId,
@@ -52,10 +53,10 @@ internal class CellShareRiskAssessmentsControllerTest(
                   assessmentAgencyId = null,
                   assessmentComment = null,
                   assessorUser = null,
-                  nextReviewDate = null
+                  nextReviewDate = null,
+                ),
               ),
             ),
-          )
           )
           Mockito.reset(auditService)
         }
@@ -99,7 +100,7 @@ internal class CellShareRiskAssessmentsControllerTest(
         }
 
         it("returns a 400 BAD REQUEST status code when a bad request is sent to the upstream API") {
-          whenever(csraService.getCsraAssessments(hmppsId,  filters)).thenReturn(
+          whenever(csraService.getCsraAssessments(hmppsId, filters)).thenReturn(
             Response(
               data = null,
               errors =
