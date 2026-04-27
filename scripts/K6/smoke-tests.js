@@ -705,7 +705,7 @@ function structured_verification_test(hmppsId) {
 
   verify_education_san(hmppsId);
 
-  verify_ping()
+  verify_headers()
 }
 /************************************************************************/
 
