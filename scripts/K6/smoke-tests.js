@@ -36,7 +36,7 @@ export const options = (cert === "") ? {} : {
   ],
 };
 
-let httpParams = {
+const httpParams = {
   headers: {
     'Content-Type': 'application/json',
     'x-api-key': api_key,
@@ -656,22 +656,20 @@ function verify_prisoner_contacts(hmppsId) {
 
 function verify_headers() {
   //Tests to add headers too for app insights
-  httpParams = {
+  const httpHeaderParams = {
     headers: {
       'Content-Type': 'application/json',
       'x-api-key': api_key,
       'X-On-Behalf-Of': 'Test-Behalf-Of'
     },
   };
-  let res = validate_get_request(`/v1/ping`)
 
-  // Reset headers for future tests
-  httpParams = {
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': api_key,
-    },
-  };
+  const res = http.get(`/v1/status`, httpHeaderParams);
+    if (!check(res, {
+      [`Successful sent api call with extended headers.`]: (r) => r.status < 400,
+    })) {
+      exec.test.fail(`Failed to use headers in api call.`);
+    }
 }
 
 /**
