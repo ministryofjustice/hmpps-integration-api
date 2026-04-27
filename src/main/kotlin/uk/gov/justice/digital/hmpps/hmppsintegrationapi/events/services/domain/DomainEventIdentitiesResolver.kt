@@ -67,21 +67,11 @@ class DomainEventIdentitiesResolver(
 
   /**
    * Gets the supervision status of the person for the hmppsId
-   * If the hmppsId can not be resolved at all, then we cant determine the supervision status - return UNKNOWN
-   * The hmppsId will always be a CRN if no nomis number is present in the event
-   * If we only have a CRN at this stage we need to find a nomis number from which to check the prison status
-   * If we cant find a nomis number then we cant determine the supervision status - return UNKNOWN
-   * The person service getPersonSupervisionStatus function will continue to check the probation status in NDelius using the nomis number
    *
    * @param hmppsId
    * @return The supervision status (one of PRISONS, PROBATION, NONE or UNKNOWN)
    */
-  fun getSupervisionStatus(hmppsId: String?): String? {
-    if (!featureFlagService.isEnabled(FeatureFlagConfig.INCLUDE_SUPERVISION_STATUS_ATTRIBUTE)) {
-      return null
-    }
-    return personService.getSupervisionStatus(hmppsId).name
-  }
+  fun getSupervisionStatus(hmppsId: String?): String? = personService.getSupervisionStatus(hmppsId).name
 
   private fun getNomisNumber(hmppsEvent: HmppsDomainEvent): String? {
     val nomsNumber =

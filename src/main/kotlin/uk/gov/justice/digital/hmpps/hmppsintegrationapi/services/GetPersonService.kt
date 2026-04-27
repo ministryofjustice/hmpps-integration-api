@@ -279,22 +279,37 @@ class GetPersonService(
   }
 
   fun getSupervisionStatus(hmppsId: String?): SupervisionStatus {
-    // If the hmppsId is not found (or encounters an error) in NDelius (even if it is either a nomis or crn), then return UNKNOWN
+    if (hmppsId == null) {
+      logger.info("Cant determine supervision from NDelius because the hmppsId is null. Returning ${SupervisionStatus.UNKNOWN.name}")
+      return SupervisionStatus.UNKNOWN
+    }
+
     val offender =
       try {
         getPersonFromDelius(hmppsId, true).data!!
       } catch (ex: Exception) {
-        logger.info("Cant determine supervision status for the hmppsId $hmppsId because NDelius encountered the following error: ${ex.message}. Returning ${SupervisionStatus.UNKNOWN.name}")
+        logger.info("Cant determine supervision from NDelius for the hmppsId $hmppsId because NDelius encountered the following error: ${ex.message}.")
+        null
+      }
+
+    val nomisNumber =
+      if (identifyHmppsId(hmppsId) == IdentifierType.NOMS) {
+        logger.info("The hmppsId is a nomis id - trying prisoner search")
+        hmppsId
+      } else if (offender == null) {
+        logger.info("The hmppsId is a CRN - cant determine supervision status from prisoner search. Returning ${SupervisionStatus.UNKNOWN.name}")
         return SupervisionStatus.UNKNOWN
+      } else {
+        offender.identifiers.nomisNumber
       }
 
     val posPrisoner =
-      offender.identifiers.nomisNumber?.let { nomisNumber ->
+      nomisNumber?.let { nomisNumber ->
         // if there is a nomis id in delius and the call to get the nomis number from prisoner offender search is not found (or returns an error) then return UNKNOWN
         try {
           getPersonFromPrisonerOffenderSearch(nomisNumber)
         } catch (ex: Exception) {
-          logger.info("Cant determine supervision status for hmppsId $hmppsId because prisoner search encountered the following error for nomis id $nomisNumber: ${ex.message}. Returning ${SupervisionStatus.UNKNOWN.name}")
+          logger.info("Cant determine supervision status from prisoner search for the hmppsId $hmppsId because prisoner search encountered the following error for nomis id $nomisNumber: ${ex.message}. Returning ${SupervisionStatus.UNKNOWN.name}")
           return SupervisionStatus.UNKNOWN
         }
       }
@@ -302,6 +317,8 @@ class GetPersonService(
     val supervisionStatus =
       if (posPrisoner != null && posPrisoner.status?.startsWith("ACTIVE") == true) {
         SupervisionStatus.PRISONS
+      } else if (offender == null) {
+        SupervisionStatus.UNKNOWN
       } else if (offender.underActiveSupervision) {
         SupervisionStatus.PROBATION
       } else {

@@ -203,7 +203,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
           """.trimIndent(),
           null,
           null,
-          true, // Set to false when supervision status check is included in the isEventApplicable function
+          false,
         ),
         Arguments.of(
           "Consumer has a supervision status of prisons, but the message contains a probation supervision status - Will not send event",
@@ -218,7 +218,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
           """.trimIndent(),
           null,
           "PROBATION",
-          true, // Set to false when supervision status check is included in the isEventApplicable function
+          false,
         ),
         Arguments.of(
           "Consumer has a supervision status of prisons, and the message contains a prison supervision status - Will send the event",

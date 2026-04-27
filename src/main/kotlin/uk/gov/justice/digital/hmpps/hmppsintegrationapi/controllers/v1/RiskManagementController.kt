@@ -16,9 +16,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskManagementPlan
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetRiskManagementPlansForCrnService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetRiskManagementPlansService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
@@ -27,7 +26,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
 @EnableConfigurationProperties(AuthorisationConfig::class)
 @Tag(name = "Risks")
 class RiskManagementController(
-  @Autowired val getRiskManagementPlansForCrnService: GetRiskManagementPlansForCrnService,
+  @Autowired val getRiskManagementPlansService: GetRiskManagementPlansService,
   @Autowired val auditService: AuditService,
 ) {
   @GetMapping("/v1/persons/{hmppsId}/risk-management-plan")
@@ -46,13 +45,13 @@ class RiskManagementController(
     @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
   ): PaginatedResponse<RiskManagementPlan> {
-    val response = getRiskManagementPlansForCrnService.execute(hmppsId)
+    val response = getRiskManagementPlansService.execute(hmppsId)
 
-    if (response.hasErrorCausedBy(UpstreamApiError.Type.ENTITY_NOT_FOUND, causedBy = UpstreamApi.RISK_MANAGEMENT_PLAN)) {
+    if (response.hasErrorCausedBy(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
 
-    if (response.hasErrorCausedBy(UpstreamApiError.Type.FORBIDDEN, causedBy = UpstreamApi.RISK_MANAGEMENT_PLAN)) {
+    if (response.hasErrorCausedBy(UpstreamApiError.Type.FORBIDDEN)) {
       throw ForbiddenByUpstreamServiceException("Upstream API service returned a forbidden error")
     }
 

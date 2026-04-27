@@ -1091,6 +1091,25 @@ internal class GetPersonServiceTest(
           result.shouldBe(SupervisionStatus.PRISONS)
         }
 
+        it("HmppsId resolves to a supervision status of PRISONS when the hmppsId is not found in delius but is ACTIVE in prisons") {
+          whenever(deliusGateway.getOffender(any())).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NDELIUS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))))
+          whenever(prisonerOffenderSearchGateway.getPrisonOffender(any())).thenReturn(Response(data = prisonerWithPrisonId, errors = emptyList()))
+          val result = getPersonService.getSupervisionStatus(nomsNumber)
+          result.shouldBe(SupervisionStatus.PRISONS)
+        }
+
+        it("HmppsId resolves to a supervision status of UNKNOWN when the hmppsId is not found in delius and is NOT ACTIVE in prisons") {
+          whenever(deliusGateway.getOffender(any())).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NDELIUS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))))
+          whenever(prisonerOffenderSearchGateway.getPrisonOffender(any())).thenReturn(Response(data = prisonerInactiveOut, errors = emptyList()))
+          val result = getPersonService.getSupervisionStatus(nomsNumber)
+          result.shouldBe(SupervisionStatus.UNKNOWN)
+        }
+
+        it("HmppsId resolves to a supervision status of UNKNOWN when the hmppsId is null") {
+          val result = getPersonService.getSupervisionStatus(null)
+          result.shouldBe(SupervisionStatus.UNKNOWN)
+        }
+
         it("HmppsId resolves to a supervision status of UNKNOWN when there is a nomis in delius but it is not found by prison offender search") {
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(any())).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))))
           val result = getPersonService.getSupervisionStatus(crnNumber)
