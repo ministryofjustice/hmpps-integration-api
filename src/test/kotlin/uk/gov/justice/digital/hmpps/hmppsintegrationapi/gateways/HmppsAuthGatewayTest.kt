@@ -33,7 +33,6 @@ class HmppsAuthGatewayTest(
       hmppsAuthMockServer.start()
       Mockito.reset(telemetryService)
       hmppsAuthMockServer.stubGetOAuthToken("username", "password")
-      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.USE_WEBCLIENT_WRAPPER_FOR_HMPPS_AUTH)).thenReturn(false)
     }
 
     afterTest {

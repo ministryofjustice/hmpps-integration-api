@@ -555,7 +555,7 @@ class GetPersonService(
     requiredType: IdentifierType,
   ): Response<String?> {
     var cprFailureException: Exception? = null
-    if (featureFlagConfig.isEnabled(CPR_ENABLED)) {
+    if (featureFlagConfig.isNotDisabled(CPR_ENABLED)) {
       try {
         val cpr = corePersonRecordGateway.corePersonRecordFor(thisIdType, hmppsId)
         val id = cpr.getIdentifier(requiredType, hmppsId)

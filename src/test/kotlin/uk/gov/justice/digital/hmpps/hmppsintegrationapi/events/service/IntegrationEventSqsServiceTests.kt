@@ -31,7 +31,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
   val topicService: HmppsQueueService = mock()
   private lateinit var queueService: TestQueueService
   val authorisationConfig: AuthorisationConfig = mock()
-  val featureFlagConfig: FeatureFlagConfig = mock()
+  val featureFlagConfig: FeatureFlagConfig = FeatureFlagConfig()
   val telemetryService: TelemetryService = mock()
 
   private lateinit var eventNotificationService: EventNotificationService
@@ -51,7 +51,6 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
   @BeforeEach
   fun setUp() {
     queueService = TestQueueService(queues = listOf("mockQueue1, mockQueue2"))
-    whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.DIRECT_SQS_NOTIFICATIONS)).thenReturn(true)
     whenever(authorisationConfig.consumersWithQueue()).thenReturn(setOf("mockConsumer1", "mockConsumer2"))
     whenever(authorisationConfig.events(any())).thenReturn(listOf(event.eventType))
     whenever(authorisationConfig.consumers).thenReturn(
