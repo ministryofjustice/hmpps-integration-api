@@ -9,7 +9,7 @@ val prisonerEscortCustodyService =
       -"/v1/persons/{hmppsId}/active-alerts"
       -"/v1/persons/{hmppsId}/addresses"
       -"/v1/persons/{hmppsId}/case-notes"
-      -"/v1/persons/{hmppsId}/csra"
+      -"/v1/persons/{hmppsId}/cell-share-risk-assessments"
       -"/v1/persons/{hmppsId}/emergency-contacts"
       -"/v1/persons/{hmppsId}/health-and-diet"
       -"/v1/persons/{hmppsId}/iep-level"

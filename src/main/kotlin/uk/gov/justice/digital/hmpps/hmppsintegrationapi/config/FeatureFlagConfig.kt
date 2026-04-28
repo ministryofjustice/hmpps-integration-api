@@ -23,7 +23,7 @@ data class FeatureFlagConfig(
     const val COURSE_COMPLETION_EVENT = "course-completion-event-enabled"
     const val USE_ACTIVE_ALERTS_ENDPOINT = "use-active-alerts-endpoint"
     const val USE_CONTACT_EVENTS_ENDPOINT = "use-contact-events-endpoint"
-    const val USE_CSRA_ENDPOINT = "use-csra-endpoint"
+    const val CSRA_ENDPOINT = "csra-endpoint"
     const val USE_EMERGENCY_CONTACTS_ENDPOINT = "use-emergency-contacts-endpoint"
     const val EPF_ENDPOINT_INCLUDES_LAO = "epf-endpoint-includes-lao"
     const val EPF_GATEWAY_DISABLED = "epf-gateway-disabled"

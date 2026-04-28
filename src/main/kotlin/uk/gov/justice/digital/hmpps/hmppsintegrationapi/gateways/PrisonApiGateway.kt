@@ -491,7 +491,7 @@ class PrisonApiGateway(
     }
   }
 
-  fun getCsraAssessmentsForPerson(nomisNumber: String?): Response<List<PrisonApiAssessmentSummary>?> {
+  fun getCsraAssessmentsForPerson(nomisNumber: String): Response<List<PrisonApiAssessmentSummary>> {
     val result =
       webClient.requestList<PrisonApiAssessmentSummary>(
         HttpMethod.GET,
@@ -507,7 +507,7 @@ class PrisonApiGateway(
 
       is WebClientWrapperResponse.Error -> {
         Response(
-          data = null,
+          data = emptyList(),
           errors = result.errors,
         )
       }

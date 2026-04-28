@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_CSRA_ENDPOINT
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.CSRA_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
@@ -27,13 +27,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 
 @RestController
 @RequestMapping("/v1")
-@Tags(Tag(name = "Persons"), Tag(name = "CSRA"))
+@Tags(Tag(name = "Persons"))
 class CellShareRiskAssessmentController(
   @Autowired val getCsraForPersonService: GetCsraForPersonService,
   @Autowired val auditService: AuditService,
 ) {
-  @FeatureFlag(name = USE_CSRA_ENDPOINT)
-  @GetMapping("/persons/{hmppsId}/csra")
+  @FeatureFlag(name = CSRA_ENDPOINT)
+  @GetMapping("/persons/{hmppsId}/cell-share-risk-assessments")
   @Tags(value = [Tag("Reception")])
   @Operation(
     summary = "Returns CSRAs associated with a prisoner, sorted by dateCreated (newest first).",

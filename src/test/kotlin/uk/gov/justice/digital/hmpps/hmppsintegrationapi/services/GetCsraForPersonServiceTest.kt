@@ -99,7 +99,7 @@ class GetCsraForPersonServiceTest(
           )
         whenever(prisonApiGateway.getCsraAssessmentsForPerson(nomisNumber)).thenReturn(
           Response(
-            data = null,
+            data = emptyList(),
             errors = errors,
           ),
         )

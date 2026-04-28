@@ -97,7 +97,7 @@ feature-flag:
   course-completion-event-enabled: true
   use-active-alerts-endpoint: false
   use-contact-events-endpoint: true
-  use-csra-endpoint: false
+  csra-endpoint: false
   use-emergency-contacts-endpoint: false
   epf-endpoint-includes-lao: true
   cpr-enabled: true

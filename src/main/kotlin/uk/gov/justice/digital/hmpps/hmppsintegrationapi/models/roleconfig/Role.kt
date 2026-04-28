@@ -70,7 +70,7 @@ val roleConstants =
       -"/v1/persons/{hmppsId}/contact-events"
       -"/v1/persons/{hmppsId}/contact-events/{contactEventId}"
       -"/v1/persons/{hmppsId}/contacts"
-      -"/v1/persons/{hmppsId}/csra"
+      -"/v1/persons/{hmppsId}/cell-share-risk-assessments"
       -"/v1/persons/{hmppsId}/emergency-contacts"
       -"/v1/persons/{hmppsId}/education"
       -"/v1/persons/{hmppsId}/education/aln-assessment"

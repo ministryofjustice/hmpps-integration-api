@@ -113,7 +113,7 @@ feature-flag:
   use-active-alerts-endpoint: true
   use-contact-events-endpoint: true
   use-emergency-contacts-endpoint: true
-  use-csra-endpoint: true
+  csra-endpoint: true
   epf-endpoint-includes-lao: true
   cpr-enabled: true
   gateway-cache-enabled: true

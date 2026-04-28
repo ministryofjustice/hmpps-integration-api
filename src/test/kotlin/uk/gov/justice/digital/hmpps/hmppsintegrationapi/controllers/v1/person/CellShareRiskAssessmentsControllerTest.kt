@@ -32,7 +32,7 @@ internal class CellShareRiskAssessmentsControllerTest(
 ) : DescribeSpec(
     {
       val hmppsId = "A123456"
-      val path = "/v1/persons/$hmppsId/csra"
+      val path = "/v1/persons/$hmppsId/cell-share-risk-assessments"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
       val filters = null
 

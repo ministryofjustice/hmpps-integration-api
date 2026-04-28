@@ -607,6 +607,7 @@ function verify_get_basic_details(hmppsId) {
     validate_get_request(`/v1/persons/${hmppsId}/languages`);
     validate_get_request(`/v1/persons/${hmppsId}/iep-level`);
     validate_get_request(`/v1/persons/${hmppsId}/sentences/latest-key-dates-and-adjustments`);
+    validate_get_request(`/v1/persons/${hmppsId}/cell-share-risk-assessments`);
 
     let res = validate_get_request(`/v1/persons/${hmppsId}/needs`);
     validate_response_attribute_not_empty(res, "assessedOn", "Needs assessment found");
