@@ -213,7 +213,7 @@ detekt {
 configurations.matching { it.name == "detekt" }.all {
   resolutionStrategy.eachDependency {
     if (requested.group == "org.jetbrains.kotlin") {
-      useVersion("2.3.0")
+      useVersion("2.3.21")
     }
   }
 }
