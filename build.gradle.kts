@@ -3,46 +3,22 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.3.0"
-  kotlin("plugin.spring") version "2.3.20"
-  id("dev.detekt") version "2.0.0-alpha.2"
-  id("org.jetbrains.kotlinx.kover") version "0.9.7"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.2.1"
+  kotlin("plugin.spring") version "2.3.21"
+  id("dev.detekt") version "2.0.0-alpha.3"
+  id("org.jetbrains.kotlinx.kover") version "0.9.8"
+}
+
+configurations.register("koverCli") {
+  isCanBeConsumed = false
+  isTransitive = true
+  isCanBeResolved = true
 }
 
 configurations {
   testImplementation { exclude(group = "org.junit.vintage") }
-  testCompileOnly { isCanBeResolved = true }
   all {
     exclude(group = "dev.detekt", module = "detekt-report-checkstyle")
-  }
-}
-
-configurations.all {
-  resolutionStrategy.eachDependency {
-    if (requested.group == "org.apache.logging.log4j") {
-      useVersion("2.25.3")
-      because("Fix CVE-2025-68161")
-    }
-    if (requested.group == "ch.qos.logback") {
-      useVersion("1.5.25")
-      because("Fix CVE-2026-1225")
-    }
-    if (requested.group == "org.apache.tomcat.embed") {
-      useVersion("10.1.52")
-      because("Fix CVE-2026-1225")
-    }
-    if (requested.group == "org.springframework") {
-      useVersion("6.2.17")
-      because("Fix CVE-2026-22737")
-    }
-    if (requested.group == "org.springframework.boot") {
-      useVersion("3.5.12")
-      because("Fix CVE-2026-22733")
-    }
-    if (requested.group == "org.webjars" && requested.name == "swagger-ui") {
-      useVersion("5.32.1")
-      because("Fix CVE-2026-0540")
-    }
   }
 }
 
@@ -55,35 +31,39 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-cache")
   implementation("org.springframework.boot:spring-boot-starter-jdbc")
-  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
-  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.35.0")
-  implementation("io.sentry:sentry-logback:8.35.0")
+  runtimeOnly("org.springframework.boot:spring-boot-starter-flyway")
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
+  implementation("io.sentry:sentry-spring-boot-4-starter:8.40.0")
+  implementation("io.sentry:sentry-logback:8.40.0")
+  implementation("org.springframework.data:spring-data-jdbc")
   implementation("org.springframework.data:spring-data-commons")
   implementation("org.springframework:spring-aop")
   implementation("org.aspectj:aspectjweaver")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.6.3") {
+  implementation("tools.jackson.module:jackson-module-kotlin:3.1.2")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.3.0") {
     exclude("org.springframework.security", "spring-security-config")
     exclude("org.springframework.security", "spring-security-core")
     exclude("org.springframework.security", "spring-security-crypto")
     exclude("org.springframework.security", "spring-security-web")
   }
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
   implementation("io.jsonwebtoken:jjwt-api:0.13.0")
-  implementation("com.jayway.jsonpath:json-path:2.10.0")
+  implementation("com.jayway.jsonpath:json-path:3.0.0")
   implementation("com.github.ben-manes.caffeine:caffeine:3.2.3")
 
-  testImplementation("io.kotest:kotest-assertions-json-jvm:6.1.7")
-  testImplementation("io.kotest:kotest-runner-junit5-jvm:6.1.7")
-  testImplementation("io.kotest:kotest-assertions-core-jvm:6.1.7")
-  testImplementation("io.kotest:kotest-extensions-spring:6.1.7")
-  testCompileOnly("org.jetbrains.kotlinx:kover-cli:0.9.7")
+  testImplementation("org.springframework.boot:spring-boot-starter-test")
+  testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+  testImplementation("io.kotest:kotest-assertions-json-jvm:6.1.11")
+  testImplementation("io.kotest:kotest-runner-junit5-jvm:6.1.11")
+  testImplementation("io.kotest:kotest-assertions-core-jvm:6.1.11")
+  testImplementation("io.kotest:kotest-extensions-spring:6.1.11")
+  add("koverCli", "org.jetbrains.kotlinx:kover-cli:0.9.8")
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
   testImplementation("org.mockito:mockito-core:5.23.0")
-  testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.21.1")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
-  testImplementation("com.atlassian.oai:swagger-request-validator-wiremock:2.46.0") {
+  testImplementation("com.atlassian.oai:swagger-request-validator-wiremock:2.46.1") {
     // Exclude WireMock artifacts
     exclude(group = "com.github.tomakehurst", module = "wiremock")
     exclude(group = "com.github.tomakehurst", module = "wiremock-jre8")
@@ -95,18 +75,18 @@ dependencies {
   }
   // Explicitly add all necessary Jetty and Servlet dependencies
   testImplementation("javax.servlet:javax.servlet-api:4.0.1")
-  testImplementation("org.eclipse.jetty:jetty-util:12.1.7")
-  testImplementation("org.eclipse.jetty:jetty-server:12.1.7")
-  testImplementation("org.eclipse.jetty:jetty-http:12.1.7")
-  testImplementation("org.eclipse.jetty:jetty-io:12.1.7")
+  testImplementation("org.eclipse.jetty:jetty-util:12.1.8")
+  testImplementation("org.eclipse.jetty:jetty-server:12.1.8")
+  testImplementation("org.eclipse.jetty:jetty-http:12.1.8")
+  testImplementation("org.eclipse.jetty:jetty-io:12.1.8")
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
   testImplementation(kotlin("test"))
   testImplementation("io.mockk:mockk:1.14.9")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:4.1.1")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:5.1.1")
 }
 
 java {
-  toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+  toolchain.languageVersion.set(JavaLanguageVersion.of(25))
 }
 
 repositories {
@@ -173,7 +153,7 @@ tasks {
   }
 
   val koverCli by registering(Copy::class) {
-    from(configurations.testCompileOnly).include("kover-cli*.jar")
+    from(configurations.getByName("koverCli")).include("kover-cli*.jar")
     into("lib")
     rename("(.*).jar", "kover-cli.jar")
   }
@@ -188,6 +168,8 @@ tasks {
 
   register<Test>("unitTest") {
     group = "verification"
+    testClassesDirs = sourceSets["test"].output.classesDirs
+    classpath = sourceSets["main"].output + configurations["testRuntimeClasspath"] + sourceSets["test"].output
     filter {
       excludeTestsMatching("uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration*")
     }
@@ -205,7 +187,7 @@ tasks {
 
   withType<KotlinCompile> {
     compilerOptions {
-      jvmTarget = JvmTarget.JVM_21
+      jvmTarget = JvmTarget.JVM_25
       freeCompilerArgs.add("-Xannotation-default-target=param-property")
     }
   }

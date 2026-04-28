@@ -4,12 +4,12 @@ import io.swagger.v3.oas.annotations.media.Schema
 import org.springframework.data.domain.Page
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.interfaces.IPaginatedObject
 
-data class PaginatedResponse<T>(
+data class PaginatedResponse<T : Any>(
   val data: List<T>,
   val pagination: Pagination,
 ) {
   companion object {
-    fun <T> fromPageableResponse(pageableResponse: Page<T>): PaginatedResponse<T> {
+    fun <T : Any> fromPageableResponse(pageableResponse: Page<T>): PaginatedResponse<T> {
       val data: List<T> = pageableResponse.content
       val pagination =
         Pagination(
@@ -23,7 +23,7 @@ data class PaginatedResponse<T>(
       return PaginatedResponse(data, pagination)
     }
 
-    fun <T> fromPaginatedObject(paginatedObject: IPaginatedObject<T>?): PaginatedResponse<T> {
+    fun <T : Any> fromPaginatedObject(paginatedObject: IPaginatedObject<T>?): PaginatedResponse<T> {
       if (paginatedObject == null) {
         return PaginatedResponse(
           emptyList(),

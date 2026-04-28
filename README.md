@@ -1,8 +1,8 @@
 # HMPPS External API <!-- omit in toc -->
 
-[![CircleCI](https://circleci.com/gh/ministryofjustice/hmpps-integration-api/tree/main.svg?style=svg)](https://circleci.com/gh/ministryofjustice/hmpps-integration-api)
+[![Ministry of Justice Repository Compliance Badge](https://github-community.service.justice.gov.uk/repository-standards/api/hmpps-integration-api/badge?style=flat)](https://github-community.service.justice.gov.uk/repository-standards/hmpps-integration-api)
+[![Pipeline](https://github.com/ministryofjustice/hmpps-integration-api/actions/workflows/pipeline.yml/badge.svg?branch=main)](https://github.com/ministryofjustice/hmpps-integration-api/actions/workflows/pipeline.yml)
 [![API docs](https://img.shields.io/badge/API_docs_-view-85EA2D.svg?logo=swagger)](https://ministryofjustice.github.io/hmpps-integration-api)
-[![repo standards badge](https://img.shields.io/badge/dynamic/json?color=blue&style=flat&logo=github&label=MOJ%20Compliant&query=%24.result&url=https%3A%2F%2Foperations-engineering-reports.cloud-platform.service.justice.gov.uk%2Fapi%2Fv1%2Fcompliant_public_repositories%2Fhmpps-integration-api)](https://operations-engineering-reports.cloud-platform.service.justice.gov.uk/public-github-repositories.html#hmpps-integration-api "Link to report")
 
 ## Contents <!-- omit in toc -->
 
@@ -311,10 +311,10 @@ Note, this will only specifically enable the `RequestLogger`.
 
 ## Related repositories
 
-| Name                                                                                                   | Purpose                                                                |
-| ------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------- |
-| [HMPPS Integration Events](https://github.com/ministryofjustice/hmpps-integration-events)              | Creates integration events triggered by upstream MoJ domain events.    |
-| [HMPPS Integration API Documentation](https://github.com/ministryofjustice/hmpps-integration-api-docs) | Previously provided documentation for API consumers. No longer in use. |
+| Name                                                                                                   | Purpose                                                                                          |
+| ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| [HMPPS Integration Events](https://github.com/ministryofjustice/hmpps-integration-events)              | Creates integration events triggered by upstream MoJ domain events. (Archived, no longer in use) |
+| [HMPPS Integration API Documentation](https://github.com/ministryofjustice/hmpps-integration-api-docs) | Previously provided documentation for API consumers. No longer in use.                           |
 
 ## License
 

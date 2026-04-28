@@ -5,7 +5,7 @@ import io.kotest.matchers.shouldBe
 import org.mockito.kotlin.any
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
@@ -66,7 +66,6 @@ class EducationCourseControllerTest(
             ),
         )
 
-      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.NORMALISED_PATH_MATCHING)).thenReturn(true)
       whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.COURSE_COMPLETION_EVENT)).thenReturn(true)
 
       describe("Notify that a given person/offender has completed all relevant education assessments") {

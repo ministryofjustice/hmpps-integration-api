@@ -8,7 +8,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
       with:
         repository: ${{ github.repository }}
 
@@ -78,7 +78,7 @@ runs:
         fi
       shell: bash
 
-    - uses: ruby/setup-ruby@v1
+    - uses: ruby/setup-ruby@3ff19f5e2baf30647122352b96108b1fbe250c64 # v1
 
     - name: Install dependencies
       run: |

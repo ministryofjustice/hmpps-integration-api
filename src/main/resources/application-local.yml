@@ -76,7 +76,6 @@ feature-flag:
   epf-endpoint-includes-lao: true
   cpr-enabled: true
   gateway-cache-enabled: true
-  normalised-path-matching: true
   use-webclient-wrapper-for-hmpps-auth: true
   # Events Config
   enable-delete-processed-events: false
@@ -89,6 +88,7 @@ feature-flag:
   contact-events-notifications-enabled: true
   limited-access-notifications-enabled: true
   deduplicate-events: false
+  direct-sqs-notifications: true
 
 authorisation:
   consumers:

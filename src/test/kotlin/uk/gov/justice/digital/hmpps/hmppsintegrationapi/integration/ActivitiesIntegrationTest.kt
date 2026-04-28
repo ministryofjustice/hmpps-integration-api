@@ -22,12 +22,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Exclusion
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerAllocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerDeallocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.toHmppsMessage
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.toTestMessage
 import java.io.File
 import java.time.DayOfWeek
 import java.time.LocalDate
 
-class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
+class ActivitiesIntegrationTest : IntegrationTestInMemoryQueueBase("activities") {
   private val prisonCode = "MDI"
 
   @AfterEach

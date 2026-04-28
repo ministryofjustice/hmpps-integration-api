@@ -16,7 +16,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.fixedClock
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.IntegrationEventStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.JdbcTemplateEventNotificationRepository
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.IntegrationEventTopicService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.EventNotificationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.SendEventsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.objectMapper
@@ -26,7 +26,7 @@ import java.time.LocalDateTime
 class SendEventServiceTest {
   private lateinit var sendEventsService: SendEventsService
 
-  private val integrationEventTopicService: IntegrationEventTopicService = mock()
+  private val eventNotificationService: EventNotificationService = mock()
   private val eventRepository: JdbcTemplateEventNotificationRepository = mock()
   private val telemetryService: TelemetryService = mock()
   private val fixedClock = fixedClock()
@@ -35,14 +35,14 @@ class SendEventServiceTest {
   fun setUp() {
     Mockito.reset(eventRepository)
 
-    sendEventsService = SendEventsService(integrationEventTopicService, eventRepository, telemetryService, fixedClock)
+    sendEventsService = SendEventsService(eventNotificationService, eventRepository, telemetryService, fixedClock)
   }
 
   @Test
   fun `No event published when repository return no event notifications`() {
     whenever(eventRepository.findAllWithLastModifiedDateTimeBefore(any())).thenReturn(emptyList())
     sendEventsService.sentNotifications()
-    verifyNoInteractions(integrationEventTopicService)
+    verifyNoInteractions(eventNotificationService)
   }
 
   @Test
@@ -62,7 +62,7 @@ class SendEventServiceTest {
     sendEventsService.sentNotifications()
 
     argumentCaptor<EventNotification>().apply {
-      verify(integrationEventTopicService, times(1)).sendEvent(capture())
+      verify(eventNotificationService, times(1)).sendEvent(capture())
       Assertions.assertThat(firstValue).isEqualTo(event)
     }
   }
@@ -108,7 +108,7 @@ class SendEventServiceTest {
         lastModifiedDatetime = LocalDateTime.now(fixedClock),
       )
     whenever(eventRepository.findAllWithLastModifiedDateTimeBefore(any())).thenReturn(listOf(event))
-    whenever(integrationEventTopicService.sendEvent(event)).thenThrow(RuntimeException("error"))
+    whenever(eventNotificationService.sendEvent(event)).thenThrow(RuntimeException("error"))
     sendEventsService.sentNotifications()
     verify(eventRepository, times(0)).deleteById(123)
   }

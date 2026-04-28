@@ -28,7 +28,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNot
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.IntegrationEventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.listener.DomainEventsListener
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.IntegrationEventTopicService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.EventNotificationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.domain.DirectDomainEventService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.domain.DomainEventIdentitiesResolver
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
@@ -137,7 +137,7 @@ class DirectDomainEventsListenerTest : DirectDomainEventsListenerTestCase() {
 
     assertThrows<JsonParseException> { domainEventsListener.onDomainEvent(rawMessage) }
 
-    verifyNoInteractions(integrationEventTopicService)
+    verifyNoInteractions(eventNotificationService)
   }
 
   @Test
@@ -231,7 +231,7 @@ class DirectDomainEventsListenerTest : DirectDomainEventsListenerTestCase() {
 
     argumentCaptor<EventNotification>().apply {
       org.mockito.kotlin
-        .verify(integrationEventTopicService, atLeast(1))
+        .verify(eventNotificationService, atLeast(1))
         .sendEvent(capture())
       Assertions.assertThat(firstValue.eventType).isEqualTo(expectedEvent)
     }
@@ -252,7 +252,7 @@ abstract class DirectDomainEventsListenerTestCase {
     )
   }
 
-  protected val integrationEventTopicService: IntegrationEventTopicService = mock()
+  protected val eventNotificationService: EventNotificationService = mock()
   protected val domainEventIdentitiesResolver = mockk<DomainEventIdentitiesResolver>()
   protected val telemetryService = mockk<TelemetryService>()
   protected val featureFlagTestConfig = FeatureFlagTestConfig()
@@ -263,7 +263,7 @@ abstract class DirectDomainEventsListenerTestCase {
       baseUrl,
       testClock,
       featureFlagTestConfig.featureFlagConfig,
-      integrationEventTopicService,
+      eventNotificationService,
     )
   protected val domainEventsListener = DomainEventsListener(directDomainEventService, telemetryService)
 
@@ -304,7 +304,7 @@ abstract class DirectDomainEventsListenerTestCase {
     // Assert
     argumentCaptor<EventNotification>().apply {
       org.mockito.kotlin
-        .verify(integrationEventTopicService, atLeast(1))
+        .verify(eventNotificationService, atLeast(1))
         .sendEvent(capture())
       Assertions.assertThat(firstValue.eventType).isEqualTo(expectedNotificationType.first())
     }
@@ -315,7 +315,7 @@ abstract class DirectDomainEventsListenerTestCase {
     domainEventsListener.onDomainEvent(hmppsEventRawMessage)
 
     // Assert
-    verifyNoInteractions(integrationEventTopicService)
+    verifyNoInteractions(eventNotificationService)
   }
 
   protected fun assumeIdentities(
@@ -324,5 +324,6 @@ abstract class DirectDomainEventsListenerTestCase {
   ) {
     every { domainEventIdentitiesResolver.getHmppsId(any()) } returns hmppsId
     every { domainEventIdentitiesResolver.getPrisonId(any()) } returns prisonId
+    every { domainEventIdentitiesResolver.getSupervisionStatus(any()) } returns "PRISONS"
   }
 }

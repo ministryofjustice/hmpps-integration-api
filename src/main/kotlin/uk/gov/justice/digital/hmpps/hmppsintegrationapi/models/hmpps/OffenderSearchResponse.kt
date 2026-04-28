@@ -12,5 +12,5 @@ data class OffenderSearchResult(
 data class OffenderSearchRedirectionResult(
   val prisonerNumber: String? = null,
   val removedPrisonerNumber: String? = null,
-  @JsonIgnore val redirectUrl: String? = null,
+  @JsonIgnore val redirectUrl: String,
 ) : OffenderSearchResponse

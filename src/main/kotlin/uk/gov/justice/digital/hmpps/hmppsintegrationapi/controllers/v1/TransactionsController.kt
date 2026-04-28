@@ -95,7 +95,7 @@ class TransactionsController(
     @Parameter(description = "To date for transactions (defaults to today if not supplied)") @RequestParam(required = false, name = "to_date") toDate: String?,
     @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
-  ): PaginatedResponse<Transaction?> {
+  ): PaginatedResponse<Transaction> {
     var startDate = LocalDate.now().toString()
     var endDate = LocalDate.now().toString()
 

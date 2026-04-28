@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.config.FeatureFlagTestConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.Metadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.IntegrationEventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.HmppsDomainEvent
 
@@ -177,6 +178,7 @@ class DomainEventServiceFeatureFlagTest : DomainEventsListenerTestCase() {
     hmppsId = hmppsId,
     prisonId = prisonId,
     lastModifiedDatetime = currentTime,
+    metadata = Metadata(supervisionStatus = "PRISONS"),
   )
 
   private fun hmppsDomainEvent(domainEventType: String) = sqsNotificationHelper.createHmppsDomainEvent(domainEventType)

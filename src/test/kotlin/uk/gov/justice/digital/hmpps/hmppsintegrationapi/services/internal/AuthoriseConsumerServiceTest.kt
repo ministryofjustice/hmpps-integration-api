@@ -70,8 +70,7 @@ internal class AuthoriseConsumerServiceTest(
 
       describe("verifyNormalisedPathParameters") {
         it("works with normalised path parameters") {
-          val features = FeatureFlagConfig(mapOf(FeatureFlagConfig.NORMALISED_PATH_MATCHING to true))
-          AuthoriseConsumerService(features).matches("/v1/persons/123", "/v1/persons/{hmppsId}") shouldBe true
+          AuthoriseConsumerService().matches("/v1/persons/123", "/v1/persons/{hmppsId}") shouldBe true
         }
       }
     },

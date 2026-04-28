@@ -14,6 +14,8 @@ data class Response<T>(
     type: UpstreamApiError.Type,
     causedBy: UpstreamApi,
   ): Boolean = this.errors.any { it.type == type && it.causedBy == causedBy }
+
+  fun hasErrorCausedBy(type: UpstreamApiError.Type): Boolean = this.errors.any { it.type == type }
 }
 
 data class DataResponse<T>(

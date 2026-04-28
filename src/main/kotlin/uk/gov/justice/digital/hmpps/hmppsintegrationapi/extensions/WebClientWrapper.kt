@@ -1,9 +1,11 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import io.netty.channel.ChannelOption
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
+import org.springframework.http.codec.json.JacksonJsonDecoder
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeStrategies
@@ -13,6 +15,9 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import reactor.core.publisher.Mono
 import reactor.netty.http.client.HttpClient
 import reactor.util.retry.Retry
+import tools.jackson.databind.DeserializationFeature
+import tools.jackson.databind.json.JsonMapper
+import tools.jackson.module.kotlin.KotlinModule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -35,20 +40,34 @@ class WebClientWrapper(
       .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectTimeoutMillis)
       .responseTimeout(Duration.ofSeconds(responseTimeoutSeconds))
 
+  val mapper: JsonMapper =
+    JsonMapper
+      .builder()
+      .configureForJackson2()
+      .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+      .configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false)
+      .changeDefaultPropertyInclusion { it.withValueInclusion(JsonInclude.Include.NON_NULL) }
+      .changeDefaultPropertyInclusion { it.withContentInclusion(JsonInclude.Include.NON_NULL) }
+      .addModule(KotlinModule.Builder().build())
+      .build()
+
+  val strategies =
+    ExchangeStrategies
+      .builder()
+      .codecs { configurer ->
+        configurer
+          .defaultCodecs()
+          .jacksonJsonDecoder(JacksonJsonDecoder(mapper))
+        configurer.defaultCodecs().maxInMemorySize(-1)
+      }.build()
+
   val client: WebClient =
     WebClient
       .builder()
       .baseUrl(baseUrl)
       .clientConnector(ReactorClientHttpConnector(httpClient))
-      .exchangeStrategies(
-        ExchangeStrategies
-          .builder()
-          .codecs { configurer ->
-            configurer
-              .defaultCodecs()
-              .maxInMemorySize(-1)
-          }.build(),
-      ).build()
+      .exchangeStrategies(strategies)
+      .build()
 
   sealed class WebClientWrapperResponse<out T> {
     data class Success<T>(
@@ -60,7 +79,7 @@ class WebClientWrapper(
     ) : WebClientWrapperResponse<Nothing>()
   }
 
-  inline fun <reified T> request(
+  inline fun <reified T : Any> request(
     method: HttpMethod,
     uri: String,
     headers: Map<String, String>,
@@ -89,7 +108,7 @@ class WebClientWrapper(
    * Warning: This function should only be used with IDEMPOTENT requests.
    * If your POST request is not idempotent then you should not use this function.
    */
-  inline fun <reified T> requestWithRetry(
+  inline fun <reified T : Any> requestWithRetry(
     method: HttpMethod,
     uri: String,
     headers: Map<String, String>,
@@ -119,7 +138,7 @@ class WebClientWrapper(
 
   fun isSafeToRetry(throwable: Throwable) = throwable is ResponseException || throwable is WebClientRequestException
 
-  inline fun <reified T> requestList(
+  inline fun <reified T : Any> requestList(
     method: HttpMethod,
     uri: String,
     headers: Map<String, String>,
@@ -145,7 +164,7 @@ class WebClientWrapper(
       }
     }
 
-  inline fun <reified T> requestListWithRetry(
+  inline fun <reified T : Any> requestListWithRetry(
     method: HttpMethod,
     uri: String,
     headers: Map<String, String>,

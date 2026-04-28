@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
@@ -30,6 +32,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffenders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationintegrationepf.LimitedAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.SupervisionStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
 @Service
@@ -41,6 +44,10 @@ class GetPersonService(
   @Autowired val telemetryService: TelemetryService,
   private val deliusGateway: NDeliusGateway,
 ) {
+  companion object {
+    private val logger: Logger = LoggerFactory.getLogger(this::class.java)
+  }
+
   fun execute(hmppsId: String): Response<Person?> {
     val probationResponse = getProbationResponse(hmppsId)
     if (identifyHmppsId(hmppsId) == IdentifierType.NOMS && probationResponse.data == null) {
@@ -271,7 +278,57 @@ class GetPersonService(
     }
   }
 
-  private fun getPersonSupervisionStatus(nomisId: String): String {
+  fun getSupervisionStatus(hmppsId: String?): SupervisionStatus {
+    if (hmppsId == null) {
+      logger.info("Cant determine supervision from NDelius because the hmppsId is null. Returning ${SupervisionStatus.UNKNOWN.name}")
+      return SupervisionStatus.UNKNOWN
+    }
+
+    val offender =
+      try {
+        getPersonFromDelius(hmppsId, true).data!!
+      } catch (ex: Exception) {
+        logger.info("Cant determine supervision from NDelius for the hmppsId $hmppsId because NDelius encountered the following error: ${ex.message}.")
+        null
+      }
+
+    val nomisNumber =
+      if (identifyHmppsId(hmppsId) == IdentifierType.NOMS) {
+        logger.info("The hmppsId is a nomis id - trying prisoner search")
+        hmppsId
+      } else if (offender == null) {
+        logger.info("The hmppsId is a CRN - cant determine supervision status from prisoner search. Returning ${SupervisionStatus.UNKNOWN.name}")
+        return SupervisionStatus.UNKNOWN
+      } else {
+        offender.identifiers.nomisNumber
+      }
+
+    val posPrisoner =
+      nomisNumber?.let { nomisNumber ->
+        // if there is a nomis id in delius and the call to get the nomis number from prisoner offender search is not found (or returns an error) then return UNKNOWN
+        try {
+          getPersonFromPrisonerOffenderSearch(nomisNumber)
+        } catch (ex: Exception) {
+          logger.info("Cant determine supervision status from prisoner search for the hmppsId $hmppsId because prisoner search encountered the following error for nomis id $nomisNumber: ${ex.message}. Returning ${SupervisionStatus.UNKNOWN.name}")
+          return SupervisionStatus.UNKNOWN
+        }
+      }
+
+    val supervisionStatus =
+      if (posPrisoner != null && posPrisoner.status?.startsWith("ACTIVE") == true) {
+        SupervisionStatus.PRISONS
+      } else if (offender == null) {
+        SupervisionStatus.UNKNOWN
+      } else if (offender.underActiveSupervision) {
+        SupervisionStatus.PROBATION
+      } else {
+        SupervisionStatus.NONE
+      }
+    logger.info("Supervision status of $supervisionStatus has been found for hmppsId $hmppsId")
+    return supervisionStatus
+  }
+
+  fun getPersonSupervisionStatus(nomisId: String): String {
     val status = getPersonFromPrisonerOffenderSearch(nomisId)?.status ?: return "UNKNOWN"
 
     if (status.startsWith("ACTIVE")) {
@@ -498,7 +555,7 @@ class GetPersonService(
     requiredType: IdentifierType,
   ): Response<String?> {
     var cprFailureException: Exception? = null
-    if (featureFlagConfig.isEnabled(CPR_ENABLED)) {
+    if (featureFlagConfig.isNotDisabled(CPR_ENABLED)) {
       try {
         val cpr = corePersonRecordGateway.corePersonRecordFor(thisIdType, hmppsId)
         val id = cpr.getIdentifier(requiredType, hmppsId)

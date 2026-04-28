@@ -10,6 +10,7 @@ import org.springframework.cache.caffeine.CaffeineCache
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
+@TestPropertySource(properties = ["feature-flag.gateway-cache-enabled=true"])
 class CacheIntegrationTest : IntegrationTestBase() {
   private final val nomsPath = "/v1/persons/$nomsId"
   private final val crnPath = "/v1/persons/$crn"
@@ -50,7 +51,6 @@ class CacheIntegrationTest : IntegrationTestBase() {
   }
 }
 
-@TestPropertySource(properties = ["feature-flag.gateway-cache-enabled=false"])
 class CacheDisabledIntegrationTest : IntegrationTestBase() {
   private final val nomsPath = "/v1/persons/$nomsId"
   private final val crnPath = "/v1/persons/$crn"

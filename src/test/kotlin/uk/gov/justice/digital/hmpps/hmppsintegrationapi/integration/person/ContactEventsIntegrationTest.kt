@@ -4,12 +4,13 @@ import com.jayway.jsonpath.JsonPath
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.ArgumentMatchers.anyList
+import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
 import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ErrorResponse
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.NORMALISED_PATH_MATCHING
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_CONTACT_EVENTS_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.writeAsJson
@@ -21,6 +22,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusCommunityManager
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusMappaDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusSupervisions
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 import java.io.File
 import java.nio.charset.Charset
@@ -37,7 +40,7 @@ class ContactEventsIntegrationTest : IntegrationTestBase() {
   fun resetMocks() {
     nDeliusMockServer.resetAll()
     whenever(featureFlagConfig.getConfigFlagValue(USE_CONTACT_EVENTS_ENDPOINT)).thenReturn(true)
-    whenever(featureFlagConfig.isEnabled(NORMALISED_PATH_MATCHING)).thenReturn(true)
+    whenever(authorisationConfig.allFilters(any(), anyList())).thenReturn(ConsumerFilters(mappaCategories = listOf(MappaCategory.CAT4)))
     prisonerOffenderSearchMockServer.stubForGet(
       "/prisoner/$nomsId",
       File(

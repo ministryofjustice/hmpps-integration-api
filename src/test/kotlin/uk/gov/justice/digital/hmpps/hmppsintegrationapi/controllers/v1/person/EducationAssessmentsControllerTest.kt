@@ -8,7 +8,7 @@ import org.mockito.Mockito
 import org.mockito.Mockito.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
@@ -51,7 +51,6 @@ class EducationAssessmentsControllerTest(
 
       beforeTest {
         Mockito.reset(featureFlagConfig)
-        whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.NORMALISED_PATH_MATCHING)).thenReturn(true)
       }
 
       describe("Notify that a given person/offender has had a change of status to their Education Assessments") {

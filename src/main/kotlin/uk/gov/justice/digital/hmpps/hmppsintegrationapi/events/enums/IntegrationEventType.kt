@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.Metadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.RegisterTypes.CHILD_CONCERNS_CODE
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.RegisterTypes.CHILD_PROTECTION_CODE
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.RegisterTypes.HIGH_ROSH_CODE
@@ -623,10 +624,11 @@ enum class IntegrationEventType(
       prisonId: String?,
       additionalInformation: AdditionalInformation?,
       currentTime: LocalDateTime,
+      metadata: Metadata?,
     ): EventNotification {
       val removedNomisNumber = additionalInformation?.removedNomsNumber ?: throw IllegalStateException("removedNomsNumber is required for PRISONER_MERGED event")
 
-      return super.getNotification(baseUrl, removedNomisNumber, prisonId, additionalInformation, currentTime)
+      return super.getNotification(baseUrl, removedNomisNumber, prisonId, additionalInformation, currentTime, metadata)
     }
   },
   PERSON_ACCESS_LIMITATIONS_CHANGED(
@@ -642,6 +644,7 @@ enum class IntegrationEventType(
     prisonId: String?,
     additionalInformation: AdditionalInformation?,
     currentTime: LocalDateTime,
+    metadata: Metadata?,
   ): EventNotification =
     EventNotification(
       eventType = this.toString(),
@@ -649,6 +652,7 @@ enum class IntegrationEventType(
       prisonId = prisonId,
       url = "$baseUrl/${path(hmppsId, prisonId, additionalInformation)}",
       lastModifiedDatetime = currentTime,
+      metadata = metadata,
     )
 
   protected fun path(

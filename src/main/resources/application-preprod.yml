@@ -56,7 +56,6 @@ feature-flag:
   epf-gateway-disabled: true
   cpr-enabled: true
   gateway-cache-enabled: true
-  normalised-path-matching: true
   use-webclient-wrapper-for-hmpps-auth: false
   # Events Config
   enable-delete-processed-events: true
@@ -69,6 +68,7 @@ feature-flag:
   contact-events-notifications-enabled: false
   limited-access-notifications-enabled: true
   deduplicate-events: true
+  direct-sqs-notifications: true
 
 authorisation:
   consumers:

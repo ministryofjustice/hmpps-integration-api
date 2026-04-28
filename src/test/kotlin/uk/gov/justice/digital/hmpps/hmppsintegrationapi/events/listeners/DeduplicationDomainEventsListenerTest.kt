@@ -349,5 +349,6 @@ abstract class DomainEventsListenerTestCase {
   ) {
     every { domainEventIdentitiesResolver.getHmppsId(any()) } returns hmppsId
     every { domainEventIdentitiesResolver.getPrisonId(any()) } returns prisonId
+    every { domainEventIdentitiesResolver.getSupervisionStatus(any()) } returns "PRISONS"
   }
 }

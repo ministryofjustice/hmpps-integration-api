@@ -16,7 +16,7 @@ import java.util.UUID
 @Component
 @Configuration
 class SendEventsService(
-  private val integrationEventTopicService: IntegrationEventTopicService,
+  private val eventNotificationService: EventNotificationService,
   private val eventRepository: EventNotificationRepository,
   private val telemetryService: TelemetryService,
   private val clock: Clock,
@@ -45,7 +45,7 @@ class SendEventsService(
     var sentEvents = 0
     events.forEach {
       try {
-        integrationEventTopicService.sendEvent(it)
+        eventNotificationService.sendEvent(it)
         eventRepository.setProcessed(it.eventId!!)
         sentEvents++
       } catch (e: Exception) {

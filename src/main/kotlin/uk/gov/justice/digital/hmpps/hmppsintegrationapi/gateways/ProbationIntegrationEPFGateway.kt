@@ -36,7 +36,7 @@ class ProbationIntegrationEPFGateway(
     eventNumber: Int,
   ): Response<CaseDetail?> {
     val result =
-      webClient.request<EPFCaseDetail?>(
+      webClient.request<EPFCaseDetail>(
         HttpMethod.GET,
         "/case-details/$id/$eventNumber",
         authenticationHeader(),

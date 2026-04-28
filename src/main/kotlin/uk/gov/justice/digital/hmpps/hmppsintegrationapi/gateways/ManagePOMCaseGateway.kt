@@ -30,7 +30,7 @@ class ManagePOMCaseGateway(
 
   fun getPrimaryPOMForNomisNumber(nomsNumber: String): Response<PrisonOffenderManager?> {
     val result =
-      webClient.request<AllocationPrimaryPOM?>(
+      webClient.request<AllocationPrimaryPOM>(
         HttpMethod.GET,
         "/api/allocation/$nomsNumber/primary_pom",
         authenticationHeader(),

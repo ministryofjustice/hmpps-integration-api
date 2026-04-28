@@ -3,13 +3,13 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.JsonDeserializer
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.Valid
+import tools.jackson.core.JsonParser
+import tools.jackson.databind.DeserializationContext
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.ValueDeserializer
+import tools.jackson.databind.annotation.JsonDeserialize
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -92,30 +92,30 @@ data class PlanReviewSchedule(
   @get:JsonProperty("version") val version: Int? = null,
 )
 
-class ReviewScheduleDeserializer : JsonDeserializer<PlanReviewSchedule>() {
+class ReviewScheduleDeserializer : ValueDeserializer<PlanReviewSchedule>() {
   override fun deserialize(
     parser: JsonParser,
     ctxt: DeserializationContext,
   ): PlanReviewSchedule {
-    val node = parser.codec.readTree<JsonNode>(parser)
+    val node = parser.objectReadContext().readTree<JsonNode>(parser)
 
     return PlanReviewSchedule(
-      reference = UUID.fromString(node["reference"].asText()),
-      status = PlanReviewScheduleStatus.valueOf(node["status"].asText()),
-      createdBy = node["createdBy"].asText(),
-      createdByDisplayName = node["createdByDisplayName"].asText(),
-      createdAt = OffsetDateTime.parse(node["createdAt"].asText()),
-      createdAtPrison = node["createdAtPrison"].asText(),
-      updatedBy = node["updatedBy"].asText(),
-      updatedByDisplayName = node["updatedByDisplayName"].asText(),
-      updatedAt = OffsetDateTime.parse(node["updatedAt"].asText()),
-      updatedAtPrison = node["updatedAtPrison"].asText(),
-      deadlineDate = node["deadlineDate"]?.takeUnless { it.isNull }?.asText()?.let { LocalDate.parse(it) },
-      exemptionReason = node["exemptionReason"]?.takeUnless { it.isNull }?.asText(),
-      reviewKeyedInBy = node["reviewKeyedInBy"]?.takeUnless { it.isNull }?.asText(),
-      reviewCompletedDate = node["reviewCompletedDate"]?.takeUnless { it.isNull }?.asText()?.let { LocalDate.parse(it) },
-      reviewCompletedBy = node["reviewCompletedBy"]?.takeUnless { it.isNull }?.asText(),
-      reviewCompletedByJobRole = node["reviewCompletedByJobRole"]?.takeUnless { it.isNull }?.asText(),
+      reference = UUID.fromString(node["reference"].asString()),
+      status = PlanReviewScheduleStatus.valueOf(node["status"].asString()),
+      createdBy = node["createdBy"].asString(),
+      createdByDisplayName = node["createdByDisplayName"].asString(),
+      createdAt = OffsetDateTime.parse(node["createdAt"].asString()),
+      createdAtPrison = node["createdAtPrison"].asString(),
+      updatedBy = node["updatedBy"].asString(),
+      updatedByDisplayName = node["updatedByDisplayName"].asString(),
+      updatedAt = OffsetDateTime.parse(node["updatedAt"].asString()),
+      updatedAtPrison = node["updatedAtPrison"].asString(),
+      deadlineDate = node["deadlineDate"]?.takeUnless { it.isNull }?.asString()?.let { LocalDate.parse(it) },
+      exemptionReason = node["exemptionReason"]?.takeUnless { it.isNull }?.asString(),
+      reviewKeyedInBy = node["reviewKeyedInBy"]?.takeUnless { it.isNull }?.asString(),
+      reviewCompletedDate = node["reviewCompletedDate"]?.takeUnless { it.isNull }?.asString()?.let { LocalDate.parse(it) },
+      reviewCompletedBy = node["reviewCompletedBy"]?.takeUnless { it.isNull }?.asString(),
+      reviewCompletedByJobRole = node["reviewCompletedByJobRole"]?.takeUnless { it.isNull }?.asString(),
       version = node["version"]?.takeUnless { it.isNull }?.asInt(),
     )
   }

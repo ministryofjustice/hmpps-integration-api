@@ -2,15 +2,19 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.domain
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.HmppsDomainEvent
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.GetPrisonIdService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 
 @Service
 class DomainEventIdentitiesResolver(
   @Autowired val probationIntegrationApiGateway: NDeliusGateway,
   @Autowired val getPrisonIdService: GetPrisonIdService,
+  private val personService: GetPersonService,
+  private val featureFlagService: FeatureFlagConfig,
 ) {
   /**
    * The hmpps id is an id that the end client will use in ongoing processing.
@@ -60,6 +64,14 @@ class DomainEventIdentitiesResolver(
     }
     return null
   }
+
+  /**
+   * Gets the supervision status of the person for the hmppsId
+   *
+   * @param hmppsId
+   * @return The supervision status (one of PRISONS, PROBATION, NONE or UNKNOWN)
+   */
+  fun getSupervisionStatus(hmppsId: String?): String? = personService.getSupervisionStatus(hmppsId).name
 
   private fun getNomisNumber(hmppsEvent: HmppsDomainEvent): String? {
     val nomsNumber =
