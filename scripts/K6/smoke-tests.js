@@ -664,7 +664,7 @@ function verify_headers() {
     },
   };
 
-  const res = http.get(`/v1/status`, httpHeaderParams);
+  const res = http.get(`${baseUrl}/v1/status`, httpHeaderParams);
     if (!check(res, {
       [`Successful sent api call with extended headers.`]: (r) => r.status < 400,
     })) {
