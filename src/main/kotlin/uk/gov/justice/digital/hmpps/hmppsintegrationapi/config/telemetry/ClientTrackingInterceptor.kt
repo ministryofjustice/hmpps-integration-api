@@ -39,7 +39,7 @@ class ClientTrackingInterceptor(
     // Set on behalf off in app insights
     val onBehalfOf = request.getHeader("X-On-Behalf-Of")
     onBehalfOf?.let {
-      telemetryService.setSpanAttribute("certOnBehalfOff", it)
+      telemetryService.setSpanAttribute("onBehalfOf", it)
     }
     return true
   }

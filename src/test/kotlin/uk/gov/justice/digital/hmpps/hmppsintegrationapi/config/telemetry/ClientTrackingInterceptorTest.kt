@@ -53,7 +53,7 @@ class ClientTrackingInterceptorTest {
     whenever(request.getHeader("X-On-Behalf-Of")).thenReturn("TEST_BEHALF_OF")
     val result = interceptor.preHandle(request, response, "")
     assertTrue(result)
-    verify(telemetryService, times(1)).setSpanAttribute("certOnBehalfOff", "TEST_BEHALF_OF")
+    verify(telemetryService, times(1)).setSpanAttribute("onBehalfOf", "TEST_BEHALF_OF")
   }
 
   @Test
@@ -61,6 +61,6 @@ class ClientTrackingInterceptorTest {
     whenever(request.getHeader("X-On-Behalf-Of")).thenReturn(null)
     val result = interceptor.preHandle(request, response, "")
     assertTrue(result)
-    verify(telemetryService, times(0)).setSpanAttribute("certOnBehalfOff", "TEST_BEHALF_OF")
+    verify(telemetryService, times(0)).setSpanAttribute("onBehalfOf", "TEST_BEHALF_OF")
   }
 }
