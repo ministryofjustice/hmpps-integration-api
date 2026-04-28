@@ -25,20 +25,13 @@ class EventNotificationService(
   private val queueService: QueueService,
   private val objectMapper: ObjectMapper,
   private val authorisationConfig: AuthorisationConfig,
-  private val featureFlagConfig: FeatureFlagConfig,
   private val telemetryService: TelemetryService,
 ) {
   companion object {
     private val log = LoggerFactory.getLogger(this::class.java)
   }
 
-  fun sendEvent(event: EventNotification) {
-    if (featureFlagConfig.isNotDisabled(FeatureFlagConfig.DIRECT_SQS_NOTIFICATIONS)) {
-      return sendEventToQueue(event)
-    }
-
-    return sendEventToTopic(event)
-  }
+  fun sendEvent(event: EventNotification) = sendEventToQueue(event)
 
   fun sendEventToTopic(payload: EventNotification) {
     val hmppsEventTopic = topicService.findByTopicId(INTEGRATION_EVENT_TOPIC)
