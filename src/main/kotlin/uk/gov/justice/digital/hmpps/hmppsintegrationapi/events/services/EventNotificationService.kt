@@ -33,7 +33,7 @@ class EventNotificationService(
   }
 
   fun sendEvent(event: EventNotification) {
-    if (featureFlagConfig.isEnabled(FeatureFlagConfig.DIRECT_SQS_NOTIFICATIONS)) {
+    if (featureFlagConfig.isNotDisabled(FeatureFlagConfig.DIRECT_SQS_NOTIFICATIONS)) {
       return sendEventToQueue(event)
     }
 
