@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry
 
 import com.microsoft.applicationinsights.TelemetryClient
+import io.opentelemetry.api.trace.Span
 import io.sentry.Sentry
 import org.jetbrains.annotations.NotNull
 import org.springframework.scheduling.annotation.Async
@@ -31,5 +32,16 @@ class TelemetryService(
 
   fun captureMessage(message: String) {
     Sentry.captureMessage(message)
+  }
+
+  fun setSpanAttribute(
+    key: String,
+    value: String,
+  ) {
+    try {
+      Span.current().setAttribute(key, value)
+    } catch (ignored: Exception) {
+      // Do nothing - don't create span
+    }
   }
 }

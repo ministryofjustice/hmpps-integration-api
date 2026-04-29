@@ -607,6 +607,7 @@ function verify_get_basic_details(hmppsId) {
     validate_get_request(`/v1/persons/${hmppsId}/languages`);
     validate_get_request(`/v1/persons/${hmppsId}/iep-level`);
     validate_get_request(`/v1/persons/${hmppsId}/sentences/latest-key-dates-and-adjustments`);
+    validate_get_request(`/v1/persons/${hmppsId}/cell-share-risk-assessments`);
 
     let res = validate_get_request(`/v1/persons/${hmppsId}/needs`);
     validate_response_attribute_not_empty(res, "assessedOn", "Needs assessment found");
@@ -654,6 +655,24 @@ function verify_prisoner_contacts(hmppsId) {
   validate_get_request(`/v1/contacts/${contactId}`);
 }
 
+function verify_headers() {
+  //Tests to add headers too for app insights
+  const httpHeaderParams = {
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': api_key,
+      'X-On-Behalf-Of': 'Test-Behalf-Of'
+    },
+  };
+
+  const res = http.get(`${baseUrl}/v1/status`, httpHeaderParams);
+    if (!check(res, {
+      [`Successful sent api call with extended headers.`]: (r) => r.status < 400,
+    })) {
+      exec.test.fail(`Failed to use headers in api call.`);
+    }
+}
+
 /**
  * The primary smoke test for the External API.
  **
@@ -692,6 +711,8 @@ function structured_verification_test(hmppsId) {
   verify_pnd_alerts(hmppsId);
 
   verify_education_san(hmppsId);
+
+  verify_headers()
 }
 /************************************************************************/
 

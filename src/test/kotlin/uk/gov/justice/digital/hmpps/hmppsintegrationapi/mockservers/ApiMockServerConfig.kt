@@ -4,4 +4,5 @@ data class ApiMockServerConfig(
   val port: Int,
   val configPath: String? = null,
   val overrideBindType: Boolean = false,
+  val lenientDateValidation: Boolean = false,
 )

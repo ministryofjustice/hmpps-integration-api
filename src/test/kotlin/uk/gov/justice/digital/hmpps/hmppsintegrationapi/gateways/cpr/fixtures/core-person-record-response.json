@@ -22,26 +22,37 @@
   },
   "aliases": [
     {
+      "sex": {
+        "code": "M",
+        "description": "Male"
+      },
       "firstName": "Jon",
       "lastName": "do",
       "middleNames": "Morgain",
       "title": {
         "code": "Mr",
         "description": "Mr"
+      },
+      "sex": {
+        "code": "M",
+        "description": "Male"
       }
     }
   ],
   "nationalities": [
     {
       "code": "GB",
-      "description": "GB",
-      "startDate": "2000-01-01",
-      "endDate": "2025-08-12",
-      "notes": "Example notes"
+      "description": "GB"
     }
   ],
   "addresses": [
     {
+      "cprAddressId": "1",
+      "status": {
+        "code": "M",
+        "description": "Main"
+      },
+      "usages": [],
       "noFixedAbode": false,
       "startDate": "2020-02-26",
       "endDate": "2023-07-15",
@@ -53,7 +64,10 @@
       "dependentLocality": "Westminster",
       "postTown": "London",
       "county": "Greater London",
-      "country": "United Kingdom",
+      "country": {
+        "code": "GB",
+        "description": "Great Britain"
+      },
       "uprn": "100120991537"
     }
   ],
@@ -67,5 +81,9 @@
     "nationalInsuranceNumbers": ["QQ123456B"],
     "driverLicenseNumbers": ["SMITH840325J912"],
     "arrestSummonsNumbers": ["0700000000000002536Y"]
+  },
+  "sexualOrientation": {
+    "code": "HET",
+    "description": "Hetrosexual"
   }
 }
