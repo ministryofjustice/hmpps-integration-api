@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.2.1"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.2.2"
   kotlin("plugin.spring") version "2.3.21"
   id("dev.detekt") version "2.0.0-alpha.3"
   id("org.jetbrains.kotlinx.kover") version "0.9.8"
