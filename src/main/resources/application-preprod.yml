@@ -122,7 +122,7 @@ authorisation:
     community-campus:
       notes: "See client list in Confluence"
       roles:
-        - "community-payback"
+        - "status-only"
 
 hmpps.sqs:
   queues:
