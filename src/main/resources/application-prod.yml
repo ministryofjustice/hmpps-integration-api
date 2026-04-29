@@ -51,6 +51,7 @@ feature-flag:
   course-completion-event-enabled: false
   use-active-alerts-endpoint: false
   use-contact-events-endpoint: false
+  csra-endpoint: false
   use-emergency-contacts-endpoint: false
   epf-endpoint-includes-lao: true
   epf-gateway-disabled: true
@@ -68,7 +69,6 @@ feature-flag:
   contact-events-notifications-enabled: false
   limited-access-notifications-enabled: true
   deduplicate-events: true
-  direct-sqs-notifications: true
 
 authorisation:
   consumers:

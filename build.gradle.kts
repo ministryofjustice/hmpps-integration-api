@@ -4,8 +4,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.2.1"
-  kotlin("plugin.spring") version "2.3.20"
-  id("dev.detekt") version "2.0.0-alpha.2"
+  kotlin("plugin.spring") version "2.3.21"
+  id("dev.detekt") version "2.0.0-alpha.3"
   id("org.jetbrains.kotlinx.kover") version "0.9.8"
 }
 
@@ -33,8 +33,8 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-jdbc")
   runtimeOnly("org.springframework.boot:spring-boot-starter-flyway")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
-  implementation("io.sentry:sentry-spring-boot-4-starter:8.39.1")
-  implementation("io.sentry:sentry-logback:8.39.1")
+  implementation("io.sentry:sentry-spring-boot-4-starter:8.40.0")
+  implementation("io.sentry:sentry-logback:8.40.0")
   implementation("org.springframework.data:spring-data-jdbc")
   implementation("org.springframework.data:spring-data-commons")
   implementation("org.springframework:spring-aop")
@@ -213,7 +213,7 @@ detekt {
 configurations.matching { it.name == "detekt" }.all {
   resolutionStrategy.eachDependency {
     if (requested.group == "org.jetbrains.kotlin") {
-      useVersion("2.3.0")
+      useVersion("2.3.21")
     }
   }
 }
