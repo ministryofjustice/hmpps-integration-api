@@ -24,11 +24,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtens
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.TestQueueService
-import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import java.time.LocalDateTime
 
 class IntegrationEventSqsServiceTests : ConfigTest() {
-  val topicService: HmppsQueueService = mock()
   private lateinit var queueService: TestQueueService
   val authorisationConfig: AuthorisationConfig = mock()
   val featureFlagConfig: FeatureFlagConfig = FeatureFlagConfig()
@@ -65,7 +63,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
   fun `Publish Event to multiple queues is successful`() {
     // Setup both queues
     queueService = TestQueueService(queues = listOf("mockQueue1", "mockQueue2"))
-    eventNotificationService = EventNotificationService(topicService, queueService, objectMapper, authorisationConfig, featureFlagConfig, telemetryService)
+    eventNotificationService = EventNotificationService(queueService, objectMapper, authorisationConfig, telemetryService)
     eventNotificationService.sendEvent(event)
     val queue1Messages = queueService.getQueue("mockQueue1").messagesAsObjects<EventNotification>()
     val queue2Messages = queueService.getQueue("mockQueue2").messagesAsObjects<EventNotification>()
@@ -79,7 +77,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
   fun `Publish Event to first queue is unsuccessful, but second queue is successful`() {
     // Only setup the test queue to have mockQueue2
     queueService = TestQueueService(queues = listOf("mockQueue2"))
-    eventNotificationService = EventNotificationService(topicService, queueService, objectMapper, authorisationConfig, featureFlagConfig, telemetryService)
+    eventNotificationService = EventNotificationService(queueService, objectMapper, authorisationConfig, telemetryService)
     eventNotificationService.sendEvent(event)
 
     val queue2Messages = queueService.getQueue("mockQueue2").messagesAsObjects<EventNotification>()
@@ -105,7 +103,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
         """.trimIndent(),
       )
 
-    eventNotificationService = EventNotificationService(topicService, queueService, objectMapper, config, featureFlagConfig, telemetryService)
+    eventNotificationService = EventNotificationService(queueService, objectMapper, config, telemetryService)
     Assertions.assertTrue(eventNotificationService.isEventApplicable("tester", testEvent))
   }
 
@@ -121,7 +119,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
               - full-access
         """.trimIndent(),
       )
-    eventNotificationService = EventNotificationService(topicService, queueService, objectMapper, config, featureFlagConfig, telemetryService)
+    eventNotificationService = EventNotificationService(queueService, objectMapper, config, telemetryService)
     Assertions.assertFalse(eventNotificationService.isEventApplicable("tester", testEvent))
   }
 
@@ -140,7 +138,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
                - MKI
         """.trimIndent(),
       )
-    eventNotificationService = EventNotificationService(topicService, queueService, objectMapper, config, featureFlagConfig, telemetryService)
+    eventNotificationService = EventNotificationService(queueService, objectMapper, config, telemetryService)
     Assertions.assertTrue(eventNotificationService.isEventApplicable("tester", testEvent))
   }
 
@@ -159,7 +157,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
                 - MKI
         """.trimIndent(),
       )
-    eventNotificationService = EventNotificationService(topicService, queueService, objectMapper, config, featureFlagConfig, telemetryService)
+    eventNotificationService = EventNotificationService(queueService, objectMapper, config, telemetryService)
     Assertions.assertFalse(eventNotificationService.isEventApplicable("tester", testEvent))
   }
 
@@ -180,7 +178,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
         metadata = messageSupervisionStatus?.let { Metadata(it) },
       )
     val config = parseConfig<AuthorisationConfig>(config)
-    eventNotificationService = EventNotificationService(topicService, queueService, objectMapper, config, featureFlagConfig, telemetryService)
+    eventNotificationService = EventNotificationService(queueService, objectMapper, config, telemetryService)
 
     assertThat(eventNotificationService.isEventApplicable("tester", testEvent)).isEqualTo(shouldBeSent)
   }
