@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus.BAD_GATEWAY
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.CONFLICT
 import org.springframework.http.HttpStatus.FORBIDDEN
+import org.springframework.http.HttpStatus.GONE
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
 import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE
@@ -22,6 +23,7 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ConflictFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.DeprecatedApiException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FilterViolationException
@@ -265,6 +267,20 @@ class HmppsIntegrationApiExceptionHandler {
         ErrorResponse(
           status = INTERNAL_SERVER_ERROR,
           developerMessage = e.message,
+          userMessage = e.message,
+        ),
+      )
+  }
+
+  @ExceptionHandler(DeprecatedApiException::class)
+  fun handleDeprecatedApiException(e: DeprecatedApiException): ResponseEntity<ErrorResponse> {
+    logAndCapture("Deprecated API exception: {}", e)
+    return ResponseEntity
+      .status(GONE)
+      .body(
+        ErrorResponse(
+          status = GONE,
+          developerMessage = "The API has been deprecated.",
           userMessage = e.message,
         ),
       )

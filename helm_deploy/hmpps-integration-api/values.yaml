@@ -57,8 +57,6 @@ generic-service:
       HMPPS_SQS_TOPICS_DOMAINEVENTS_ARN: "topic_arn"
     sqs-hmpps-audit-secret:
       HMPPS_SQS_QUEUES_AUDIT_QUEUE_NAME: "sqs_queue_name"
-    sqs-hmpps-jobs-board-integration-secret:
-      HMPPS_SQS_QUEUES_JOBSBOARDINTEGRATION_QUEUE_NAME: "integrationqueue"
     sqs-hmpps-prison-visits-write-events-secret:
       HMPPS_SQS_QUEUES_VISITS_QUEUE_NAME: "sqs_queue_name"
     eawp-assessment-events-secret:
