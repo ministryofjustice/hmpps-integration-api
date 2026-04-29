@@ -8,6 +8,14 @@ import com.github.fge.msgsimple.bundle.MessageBundle
 import java.time.format.DateTimeFormatterBuilder
 import java.time.temporal.ChronoField
 
+/**
+ * This can be used by the mock server validator to provide a more lenient date-time check
+ * There are instances where date-times are not in the RFC3339 format where they do not contain a Z or an offset
+ *  e.g
+ *  2026-01-26T15:32:45 IS NOT RFC3339 compliant
+ *  2026-04-29T10:30:00Z IS RFC3339 compliant
+ *  2026-04-29T10:30:00+00:00 IS RFC3339 compliant
+ */
 class LenientDateTimeAttribute : AbstractFormatAttribute("date-time", NodeType.STRING) {
   private val formats =
     listOf(

@@ -9,7 +9,7 @@ updateOpenApiSpec() {
   to=$2
 
   echo $from
-  curl -k $from | jq . > $to
+  curl -k $from > $to
 }
 
 updateOpenApiSpec "https://prisoner-search-dev.prison.service.justice.gov.uk/v3/api-docs" "../src/test/resources/openapi-specs/prisoner-search.json"

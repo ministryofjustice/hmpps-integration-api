@@ -92,6 +92,7 @@ class ApiMockServer(
                 .build()
             }
           } else if (apiMockerServerConfig.lenientDateValidation) {
+            // Build a validator that is able to validate RFC3339 noncompliant date-times
             OpenApiInteractionValidator
               .createFor(specPath)
               .withLenientDateValidation(specPath)
@@ -264,6 +265,10 @@ inline fun <reified T> withBindTypeSet(block: () -> T): T {
   }
   return result
 }
+
+/**
+ * This can be used with the OpenApiInteractionValidator to provide a more lenient date-time check
+ */
 
 fun OpenApiInteractionValidator.Builder.withLenientDateValidation(specPath: String): OpenApiInteractionValidator.Builder =
   this.withSchemaFactorySupplier {
