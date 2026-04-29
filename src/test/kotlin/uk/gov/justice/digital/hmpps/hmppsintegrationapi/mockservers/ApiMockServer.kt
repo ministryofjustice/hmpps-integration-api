@@ -87,18 +87,13 @@ class ApiMockServer(
             withBindTypeSet {
               OpenApiInteractionValidator
                 .Builder()
+                .withCustomOverrides(apiMockerServerConfig, specPath)
                 .withWhitelist(whitelist)
                 .withApi(OpenAPIV3Parser().readLocation(specPath, null, null).openAPI)
                 .build()
             }
-          } else if (apiMockerServerConfig.lenientDateValidation) {
-            // Build a validator that is able to validate RFC3339 noncompliant date-times
-            OpenApiInteractionValidator
-              .createFor(specPath)
-              .withLenientDateValidation(specPath)
-              .build()
           } else {
-            OpenApiInteractionValidator.createFor(specPath).build()
+            OpenApiInteractionValidator.createFor(specPath).withCustomOverrides(apiMockerServerConfig, specPath).build()
           }
         val validationListener = BindTypeValidationListener(openApiInteractionValidator, apiMockerServerConfig.overrideBindType)
         return ApiMockServer(wireMockConfig.extensions(ResetValidationEventListener(validationListener)), validationListener)
@@ -267,25 +262,34 @@ inline fun <reified T> withBindTypeSet(block: () -> T): T {
 }
 
 /**
- * This can be used with the OpenApiInteractionValidator to provide a more lenient date-time check
+ * This can be used with the OpenApiInteractionValidator to override validation attributes.
+ * e.g using a more lenient date time validation
  */
 
-fun OpenApiInteractionValidator.Builder.withLenientDateValidation(specPath: String): OpenApiInteractionValidator.Builder =
-  this.withSchemaFactorySupplier {
-    val absoluteSchemaPath = File(specPath).absolutePath
-    val library =
-      DraftV4Library
-        .get()
-        .thaw()
-        .addFormatAttribute("date-time", LenientDateTimeAttribute())
-        .freeze()
-    val cfg =
-      ValidationConfiguration
+fun OpenApiInteractionValidator.Builder.withCustomOverrides(
+  config: ApiMockServerConfig,
+  specPath: String,
+): OpenApiInteractionValidator.Builder {
+  val builder = this
+  if (config.lenientDateValidation) {
+    builder.withSchemaFactorySupplier {
+      val absoluteSchemaPath = File(specPath).absolutePath
+      val library =
+        DraftV4Library
+          .get()
+          .thaw()
+          .addFormatAttribute("date-time", LenientDateTimeAttribute())
+          .freeze()
+      val cfg =
+        ValidationConfiguration
+          .newBuilder()
+          .setDefaultLibrary("file://$absoluteSchemaPath", library)
+          .freeze()
+      JsonSchemaFactory
         .newBuilder()
-        .setDefaultLibrary("file://$absoluteSchemaPath", library)
+        .setValidationConfiguration(cfg)
         .freeze()
-    JsonSchemaFactory
-      .newBuilder()
-      .setValidationConfiguration(cfg)
-      .freeze()
+    }
   }
+  return builder
+}
