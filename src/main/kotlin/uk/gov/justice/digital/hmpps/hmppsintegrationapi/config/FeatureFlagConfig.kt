@@ -35,7 +35,6 @@ data class FeatureFlagConfig(
     const val ENABLE_DELETE_PROCESSED_EVENTS = "enable-delete-processed-events"
     const val ENABLE_PUBLISH_PENDING_EVENTS = "enable-publish-pending-events"
     const val ENABLE_DOMAIN_EVENTS_QUEUE_LISTENER = "enable-domain-events-queue-listener"
-    const val ENABLE_SUBSCRIPTION_FILTER_POLICY_UPDATER = "enable-subscription-filter-policy-updater"
     const val PERSON_LANGUAGES_CHANGED_NOTIFICATIONS_ENABLED = "person-languages-changed-notifications-enabled"
     const val PRISONER_BASE_LOCATION_CHANGED_NOTIFICATIONS_ENABLED = "prisoner-base-location-changed-notifications-enabled"
     const val PRISONER_MERGED_NOTIFICATIONS_ENABLED = "prisoner-merge-notifications-enabled"

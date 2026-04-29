@@ -107,7 +107,6 @@ feature-flag:
   enable-delete-processed-events: false
   enable-publish-pending-events: false
   enable-domain-events-queue-listener: false
-  enable-subscription-filter-policy-updater: false
   person-languages-changed-notifications-enabled: true
   prisoner-merge-notifications-enabled: true
   prisoner-base-location-changed-notifications-enabled: true
