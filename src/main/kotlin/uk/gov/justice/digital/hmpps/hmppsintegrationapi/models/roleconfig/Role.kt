@@ -139,6 +139,9 @@ val roleConstants =
       -"/v1/visit/{visitReference}/cancel"
       -"/v2/config/authorisation"
       -"/v3/api-docs"
+      -"/v3/api-docs/swagger-config"
+      -"/swagger-ui.html"
+      -"/swagger-ui/.*"
     }
   }
 

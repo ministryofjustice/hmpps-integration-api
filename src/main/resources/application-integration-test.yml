@@ -9,6 +9,10 @@ spring:
     enabled: true
     baselineOnMigrate: true
 
+springdoc:
+  api-docs.enabled: true
+  swagger-ui.enabled: true
+
 server:
   shutdown: immediate
 
