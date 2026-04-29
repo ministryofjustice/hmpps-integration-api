@@ -36,6 +36,7 @@
     "createdTime": "2025-06-12T08:03:06.917Z",
     "updatedTime": "2025-06-12T08:03:06.917Z",
     "cancelledTime": "2025-06-12T08:03:06.917Z",
-    "cancelledBy": "AAA01U"
+    "cancelledBy": "AAA01U",
+    "isDeleted": false
   }
 ]
