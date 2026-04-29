@@ -119,6 +119,10 @@ authorisation:
       notes: "See client list in Confluence"
       roles:
         - "enhanced-reception-checks"
+    community-campus:
+      notes: "See client list in Confluence"
+      roles:
+        - "community-payback"
 
 hmpps.sqs:
   queues:

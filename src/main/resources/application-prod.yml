@@ -111,6 +111,10 @@ authorisation:
       notes: "See client list in Confluence"
       roles:
         - "moj-prisoner-facing"
+    community-campus:
+      notes: "See client list in Confluence"
+      roles:
+        - "community-payback"
 
 hmpps.sqs:
   queues:
