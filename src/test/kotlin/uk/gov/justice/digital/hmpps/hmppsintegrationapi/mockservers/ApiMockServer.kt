@@ -4,6 +4,9 @@ import com.atlassian.oai.validator.OpenApiInteractionValidator
 import com.atlassian.oai.validator.whitelist.ValidationErrorsWhitelist
 import com.atlassian.oai.validator.whitelist.rule.WhitelistRules
 import com.atlassian.oai.validator.wiremock.OpenApiValidationListener
+import com.github.fge.jsonschema.cfg.ValidationConfiguration
+import com.github.fge.jsonschema.library.DraftV4Library
+import com.github.fge.jsonschema.main.JsonSchemaFactory
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.equalToJson
@@ -16,6 +19,8 @@ import com.github.tomakehurst.wiremock.stubbing.Scenario
 import io.swagger.v3.parser.OpenAPIV3Parser
 import org.springframework.http.HttpStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.LenientDateTimeAttribute
+import java.io.File
 
 class ApiMockServer(
   config: WireMockConfiguration,
@@ -27,15 +32,15 @@ class ApiMockServer(
       val apiMockerServerConfig =
         when (upstreamApi) {
           UpstreamApi.PRISONER_OFFENDER_SEARCH -> ApiMockServerConfig(4000, "prisoner-search.json", true)
-          UpstreamApi.HEALTH_AND_MEDICATION -> ApiMockServerConfig(4001, "health-and-medication.json")
+          UpstreamApi.HEALTH_AND_MEDICATION -> ApiMockServerConfig(4001, "health-and-medication.json", true)
           UpstreamApi.MANAGE_POM_CASE -> ApiMockServerConfig(4002, "manage-POM.json")
           UpstreamApi.PLP -> ApiMockServerConfig(4003, "plp.json")
-          UpstreamApi.ACTIVITIES -> ApiMockServerConfig(4004, "activities.json")
+          UpstreamApi.ACTIVITIES -> ApiMockServerConfig(4004, "activities.json", true)
           UpstreamApi.TEST -> ApiMockServerConfig(4005, "test.json")
           UpstreamApi.NDELIUS_INTEGRATION_TEST -> ApiMockServerConfig(4201, "ndelius.json")
-          UpstreamApi.PRISONER_BASE_LOCATION -> ApiMockServerConfig(4030, "prisoner-base-location.json")
-          UpstreamApi.CORE_PERSON_RECORD -> ApiMockServerConfig(4031, "core-person-record.json")
-          UpstreamApi.ARNS_INTEGRATION_TEST -> ApiMockServerConfig(4032, "assess-risks-and-needs.json")
+          UpstreamApi.PRISONER_BASE_LOCATION -> ApiMockServerConfig(4030, "prisoner-base-location.json", true)
+          UpstreamApi.CORE_PERSON_RECORD -> ApiMockServerConfig(4031, "core-person-record.json", true)
+          UpstreamApi.ARNS_INTEGRATION_TEST -> ApiMockServerConfig(4032, "assess-risks-and-needs.json", overrideBindType = false, lenientDateValidation = true)
           // USE PRISM
           UpstreamApi.PRISON_API -> ApiMockServerConfig(4000)
           UpstreamApi.NDELIUS -> ApiMockServerConfig(4003)
@@ -86,6 +91,11 @@ class ApiMockServer(
                 .withApi(OpenAPIV3Parser().readLocation(specPath, null, null).openAPI)
                 .build()
             }
+          } else if (apiMockerServerConfig.lenientDateValidation) {
+            OpenApiInteractionValidator
+              .createFor(specPath)
+              .withLenientDateValidation(specPath)
+              .build()
           } else {
             OpenApiInteractionValidator.createFor(specPath).build()
           }
@@ -254,3 +264,23 @@ inline fun <reified T> withBindTypeSet(block: () -> T): T {
   }
   return result
 }
+
+fun OpenApiInteractionValidator.Builder.withLenientDateValidation(specPath: String): OpenApiInteractionValidator.Builder =
+  this.withSchemaFactorySupplier {
+    val absoluteSchemaPath = File(specPath).absolutePath
+    val library =
+      DraftV4Library
+        .get()
+        .thaw()
+        .addFormatAttribute("date-time", LenientDateTimeAttribute())
+        .freeze()
+    val cfg =
+      ValidationConfiguration
+        .newBuilder()
+        .setDefaultLibrary("file://$absoluteSchemaPath", library)
+        .freeze()
+    JsonSchemaFactory
+      .newBuilder()
+      .setValidationConfiguration(cfg)
+      .freeze()
+  }
