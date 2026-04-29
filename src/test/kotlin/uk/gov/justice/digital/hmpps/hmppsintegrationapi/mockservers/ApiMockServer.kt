@@ -32,14 +32,14 @@ class ApiMockServer(
       val apiMockerServerConfig =
         when (upstreamApi) {
           UpstreamApi.PRISONER_OFFENDER_SEARCH -> ApiMockServerConfig(4000, "prisoner-search.json", true)
-          UpstreamApi.HEALTH_AND_MEDICATION -> ApiMockServerConfig(4001, "health-and-medication.json", true)
+          UpstreamApi.HEALTH_AND_MEDICATION -> ApiMockServerConfig(4001, "health-and-medication.json")
           UpstreamApi.MANAGE_POM_CASE -> ApiMockServerConfig(4002, "manage-POM.json")
           UpstreamApi.PLP -> ApiMockServerConfig(4003, "plp.json")
           UpstreamApi.ACTIVITIES -> ApiMockServerConfig(4004, "activities.json", true)
           UpstreamApi.TEST -> ApiMockServerConfig(4005, "test.json")
           UpstreamApi.NDELIUS_INTEGRATION_TEST -> ApiMockServerConfig(4201, "ndelius.json")
-          UpstreamApi.PRISONER_BASE_LOCATION -> ApiMockServerConfig(4030, "prisoner-base-location.json", true)
-          UpstreamApi.CORE_PERSON_RECORD -> ApiMockServerConfig(4031, "core-person-record.json", true)
+          UpstreamApi.PRISONER_BASE_LOCATION -> ApiMockServerConfig(4030, "prisoner-base-location.json")
+          UpstreamApi.CORE_PERSON_RECORD -> ApiMockServerConfig(4031, "core-person-record.json")
           UpstreamApi.ARNS_INTEGRATION_TEST -> ApiMockServerConfig(4032, "assess-risks-and-needs.json", overrideBindType = false, lenientDateValidation = true)
           // USE PRISM
           UpstreamApi.PRISON_API -> ApiMockServerConfig(4000)

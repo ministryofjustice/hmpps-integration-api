@@ -35,7 +35,7 @@ class LenientDateTimeAttribute : AbstractFormatAttribute("date-time", NodeType.S
         .optionalEnd()
         .toFormatter()
 
-    val value = data.instance.getNode().textValue()
+    val value = data.instance.node.textValue()
     try {
       formatter.parse(value)
     } catch (_: IllegalArgumentException) {
