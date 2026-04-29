@@ -73,6 +73,7 @@ feature-flag:
   use-active-alerts-endpoint: true
   use-contact-events-endpoint: true
   use-emergency-contacts-endpoint: true
+  csra-endpoint: true
   epf-endpoint-includes-lao: true
   cpr-enabled: true
   gateway-cache-enabled: true
@@ -88,7 +89,6 @@ feature-flag:
   contact-events-notifications-enabled: true
   limited-access-notifications-enabled: true
   deduplicate-events: false
-  direct-sqs-notifications: true
 
 authorisation:
   consumers:

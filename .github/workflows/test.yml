@@ -181,7 +181,7 @@ jobs:
         run: ./gradlew createCoverageReport
       - name: Add coverage report to PR
         id: kover
-        uses: mi-kas/kover-report@5f58465b6f395c8fa3adc2665e27250bad87de50 # v1.9
+        uses: mi-kas/kover-report@e44de7f5f7a878ba9d0070c86aa5c470efd5e2d1 # v2.2
         with:
           path: |
             ${{ github.workspace }}/coverage/report.xml

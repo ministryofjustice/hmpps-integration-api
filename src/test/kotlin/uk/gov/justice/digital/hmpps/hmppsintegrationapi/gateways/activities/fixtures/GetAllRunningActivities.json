@@ -12,6 +12,7 @@
     "allocated": 0,
     "waitlisted": 0,
     "createdTime": "2022-09-01T09:01:02Z",
+    "outsideWork": false,
     "activityState": "LIVE"
   }
 ]
