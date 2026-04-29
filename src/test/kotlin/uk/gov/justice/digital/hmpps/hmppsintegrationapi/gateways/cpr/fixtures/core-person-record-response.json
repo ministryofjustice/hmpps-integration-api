@@ -22,6 +22,10 @@
   },
   "aliases": [
     {
+      "sex": {
+        "code": "M",
+        "description": "Male"
+      },
       "firstName": "Jon",
       "lastName": "do",
       "middleNames": "Morgain",
