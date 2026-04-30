@@ -35,6 +35,7 @@ class DeleteProcessedIntegrationTest : IntegrationTestBase() {
           url = "URL",
           status = IntegrationEventStatus.PROCESSED.name,
           lastModifiedDatetime = moreThan24HoursAgo(),
+          firstReceivedDatetime = moreThan24HoursAgo(),
         ),
         EventNotification(
           claimId = "ID",
@@ -44,6 +45,7 @@ class DeleteProcessedIntegrationTest : IntegrationTestBase() {
           url = "URL",
           status = IntegrationEventStatus.PROCESSED.name,
           lastModifiedDatetime = lessThan24HoursAgo(),
+          firstReceivedDatetime = lessThan24HoursAgo(),
         ),
         EventNotification(
           claimId = "ID",
@@ -53,6 +55,7 @@ class DeleteProcessedIntegrationTest : IntegrationTestBase() {
           url = "URL",
           status = IntegrationEventStatus.PROCESSED.name,
           lastModifiedDatetime = moreThan24HoursAgo(),
+          firstReceivedDatetime = moreThan24HoursAgo(),
         ),
         EventNotification(
           claimId = "ID",
@@ -62,6 +65,7 @@ class DeleteProcessedIntegrationTest : IntegrationTestBase() {
           url = "URL",
           status = IntegrationEventStatus.PROCESSED.name,
           lastModifiedDatetime = lessThan24HoursAgo(),
+          firstReceivedDatetime = lessThan24HoursAgo(),
         ),
         EventNotification(
           claimId = "ID",
@@ -71,6 +75,7 @@ class DeleteProcessedIntegrationTest : IntegrationTestBase() {
           url = "URL",
           status = IntegrationEventStatus.PENDING.name,
           lastModifiedDatetime = moreThan24HoursAgo(),
+          firstReceivedDatetime = moreThan24HoursAgo(),
         ),
         EventNotification(
           claimId = "ID",
@@ -80,6 +85,7 @@ class DeleteProcessedIntegrationTest : IntegrationTestBase() {
           url = "URL",
           status = IntegrationEventStatus.PROCESSED.name,
           lastModifiedDatetime = lessThan24HoursAgo(),
+          firstReceivedDatetime = lessThan24HoursAgo(),
         ),
       )
     eventNotificationRepository.saveAll(events)

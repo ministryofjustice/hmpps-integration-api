@@ -61,6 +61,7 @@ class IntegrationEventDirectSqsTest : IntegrationTestInMemoryQueueBase("testqueu
     url = url,
     lastModifiedDatetime = LocalDateTime.now().minusMinutes(6),
     metadata = metadata,
+    firstReceivedDatetime = LocalDateTime.now().minusMinutes(6),
   )
 
   @ParameterizedTest

@@ -18,6 +18,7 @@ class DatabaseConstraintTest : IntegrationTestBase() {
       prisonId = "MKI",
       url = url,
       lastModifiedDatetime = LocalDateTime.now().minusHours(25),
+      firstReceivedDatetime = LocalDateTime.now().minusHours(50),
     )
 
   @BeforeEach

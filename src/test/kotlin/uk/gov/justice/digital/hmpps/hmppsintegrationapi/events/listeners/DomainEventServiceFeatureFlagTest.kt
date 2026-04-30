@@ -179,6 +179,7 @@ class DomainEventServiceFeatureFlagTest : DomainEventsListenerTestCase() {
     prisonId = prisonId,
     lastModifiedDatetime = currentTime,
     metadata = Metadata(supervisionStatus = "PRISONS"),
+    firstReceivedDatetime = currentTime,
   )
 
   private fun hmppsDomainEvent(domainEventType: String) = sqsNotificationHelper.createHmppsDomainEvent(domainEventType)

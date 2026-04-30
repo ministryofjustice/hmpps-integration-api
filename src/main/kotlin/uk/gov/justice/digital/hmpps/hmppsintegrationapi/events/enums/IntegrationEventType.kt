@@ -653,6 +653,7 @@ enum class IntegrationEventType(
       url = "$baseUrl/${path(hmppsId, prisonId, additionalInformation)}",
       lastModifiedDatetime = currentTime,
       metadata = metadata,
+      firstReceivedDatetime = currentTime,
     )
 
   protected fun path(

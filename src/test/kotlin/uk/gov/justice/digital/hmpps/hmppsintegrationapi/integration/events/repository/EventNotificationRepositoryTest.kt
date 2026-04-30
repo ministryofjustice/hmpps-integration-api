@@ -25,6 +25,7 @@ class EventNotificationRepositoryTest : IntegrationTestBase() {
         prisonId = "MKI",
         url = "MockUrl",
         lastModifiedDatetime = LocalDateTime.now().minusMinutes(6),
+        firstReceivedDatetime = LocalDateTime.now().minusMinutes(10),
       )
     eventNotificationRepository.insertOrUpdate(eventNotification)
 
@@ -35,6 +36,7 @@ class EventNotificationRepositoryTest : IntegrationTestBase() {
     assertThat(eventNotifications[0].prisonId).isEqualTo(eventNotification.prisonId)
     assertThat(eventNotifications[0].url).isEqualTo(eventNotification.url)
     assertThat(eventNotifications[0].lastModifiedDatetime?.truncatedTo(ChronoUnit.MINUTES)).isEqualTo(eventNotification.lastModifiedDatetime?.truncatedTo(ChronoUnit.MINUTES))
+    assertThat(eventNotifications[0].firstReceivedDatetime?.truncatedTo(ChronoUnit.MINUTES)).isEqualTo(eventNotification.firstReceivedDatetime?.truncatedTo(ChronoUnit.MINUTES))
   }
 
   @Test
@@ -47,6 +49,7 @@ class EventNotificationRepositoryTest : IntegrationTestBase() {
         url = "MockUrl",
         metadata = Metadata(supervisionStatus = "PRISONS"),
         lastModifiedDatetime = LocalDateTime.now().minusMinutes(6),
+        firstReceivedDatetime = LocalDateTime.now().minusMinutes(10),
       )
     eventNotificationRepository.insertOrUpdate(eventNotification)
 
@@ -71,6 +74,7 @@ class EventNotificationRepositoryTest : IntegrationTestBase() {
         url = "MockUrl",
         metadata = Metadata(supervisionStatus = "PROBATION"),
         lastModifiedDatetime = LocalDateTime.now().minusMinutes(6),
+        firstReceivedDatetime = LocalDateTime.now().minusMinutes(10),
       )
     eventNotificationRepository.insertOrUpdate(eventNotification)
     val notifications = eventNotificationRepository.findAll()
@@ -89,6 +93,7 @@ class EventNotificationRepositoryTest : IntegrationTestBase() {
         url = "MockUrl",
         metadata = null,
         lastModifiedDatetime = LocalDateTime.now().minusMinutes(6),
+        firstReceivedDatetime = LocalDateTime.now().minusMinutes(10),
       )
     eventNotificationRepository.insertOrUpdate(eventNotification)
     val notifications = eventNotificationRepository.findAll()

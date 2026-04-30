@@ -53,6 +53,7 @@ class IntegrationEventTest : IntegrationTestWithEventsQueueBase() {
     prisonId = prisonId,
     url = url,
     lastModifiedDatetime = LocalDateTime.now().minusMinutes(6),
+    firstReceivedDatetime = LocalDateTime.now().minusMinutes(6),
   )
 
   @ParameterizedTest

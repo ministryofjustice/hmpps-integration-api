@@ -15,6 +15,7 @@ data class EventNotification(
   @JsonProperty("lastModifiedDateTime")
   val lastModifiedDatetime: LocalDateTime? = null,
   val metadata: Metadata? = null,
+  val firstReceivedDatetime: LocalDateTime? = null,
 )
 
 data class Metadata(

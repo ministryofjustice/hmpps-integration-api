@@ -49,6 +49,7 @@ class SendEventsIntegrationTest : IntegrationTestBase() {
       url = url,
       status = IntegrationEventStatus.PENDING.name,
       lastModifiedDatetime = LocalDateTime.now().minusMinutes(7),
+      firstReceivedDatetime = LocalDateTime.now().minusMinutes(7),
     )
 
   @Test

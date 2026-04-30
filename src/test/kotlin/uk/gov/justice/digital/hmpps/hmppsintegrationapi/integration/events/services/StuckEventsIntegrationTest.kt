@@ -58,6 +58,7 @@ class StuckEventsIntegrationTest : IntegrationTestBase() {
       url = url,
       status = status,
       lastModifiedDatetime = lastModifiedDateTime,
+      firstReceivedDatetime = lastModifiedDateTime,
     )
 
   @Test
