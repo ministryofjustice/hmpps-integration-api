@@ -38,7 +38,7 @@ class EventNotificationRepositoryTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `updates timestamp on an existing record`() {
+  fun `on a conflict with a duplicate event, it does not update the timestamp on the existing record`() {
     val eventNotification =
       EventNotification(
         eventType = IntegrationEventType.MAPPA_DETAIL_CHANGED.name,
@@ -53,12 +53,12 @@ class EventNotificationRepositoryTest : IntegrationTestBase() {
     val eventNotifications = eventNotificationRepository.findAll()
     assertThat(eventNotifications).hasSize(1)
 
-    val updatedEventNotification = eventNotification.copy(lastModifiedDatetime = LocalDateTime.now())
-    eventNotificationRepository.insertOrUpdate(updatedEventNotification)
+    val duplicatedEventNotification = eventNotification.copy(lastModifiedDatetime = LocalDateTime.now())
+    eventNotificationRepository.insertOrUpdate(duplicatedEventNotification)
 
     val updatedEventNotifications = eventNotificationRepository.findAll()
     assertThat(updatedEventNotifications).hasSize(1)
-    assertThat(updatedEventNotifications[0].lastModifiedDatetime?.truncatedTo(ChronoUnit.MINUTES)).isEqualTo(updatedEventNotification.lastModifiedDatetime?.truncatedTo(ChronoUnit.MINUTES))
+    assertThat(updatedEventNotifications[0].lastModifiedDatetime).isEqualTo(eventNotification.lastModifiedDatetime)
   }
 
   @Test

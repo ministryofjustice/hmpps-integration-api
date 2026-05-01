@@ -120,9 +120,9 @@ class JdbcTemplateEventNotificationRepository(
       insert into event_notification (url, event_type, hmpps_id, prison_id, status, metadata, last_modified_datetime)
         values (?,?,?,?,?,?,?)
       on conflict(url, event_type) where status = 'PENDING' or status = NULL
-        do update set last_modified_datetime = ?
+        do nothing
     """
-    jdbcTemplate.update(insertOrUpdateQuery, match.url, match.eventType, match.hmppsId, match.prisonId, match.status, conversionService.convert(match.metadata, String::class.java), match.lastModifiedDatetime, match.lastModifiedDatetime)
+    jdbcTemplate.update(insertOrUpdateQuery, match.url, match.eventType, match.hmppsId, match.prisonId, match.status, conversionService.convert(match.metadata, String::class.java), match.lastModifiedDatetime)
   }
 
   fun saveAll(events: List<EventNotification>): List<EventNotification> {
