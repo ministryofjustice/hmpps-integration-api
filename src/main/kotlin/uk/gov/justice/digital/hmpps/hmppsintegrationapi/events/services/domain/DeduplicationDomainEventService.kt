@@ -52,7 +52,7 @@ class DeduplicationDomainEventService(
               supervisionStatus?.let { Metadata(supervisionStatus = supervisionStatus) },
             )
 
-          eventNotificationRepository.insert(eventNotification)
+          eventNotificationRepository.insertOrUpdate(eventNotification)
         } catch (ume: UnmappableUrlException) {
           log.warn(ume.message)
         }

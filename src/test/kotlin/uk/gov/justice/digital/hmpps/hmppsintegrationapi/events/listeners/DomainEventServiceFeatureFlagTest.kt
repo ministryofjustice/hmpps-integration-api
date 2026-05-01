@@ -133,7 +133,7 @@ class DomainEventServiceFeatureFlagTest : DomainEventsListenerTestCase() {
 
       // Assert (expected events)
       expectedNotificationTypes.forEach { expectedNotificationType ->
-        verify(exactly = 1) { eventNotificationRepository.insert(match { it.eventType == expectedNotificationType.toString() }) }
+        verify(exactly = 1) { eventNotificationRepository.insertOrUpdate(match { it.eventType == expectedNotificationType.toString() }) }
       }
     }
 
@@ -163,7 +163,7 @@ class DomainEventServiceFeatureFlagTest : DomainEventsListenerTestCase() {
     // Assert
     // Verify no unexpected event notifications persisted via repository
     unexpectedNotificationTypes.forEach { unexpectedNotificationType ->
-      verify(exactly = 0) { eventNotificationRepository.insert(match { it.eventType == unexpectedNotificationType.toString() }) }
+      verify(exactly = 0) { eventNotificationRepository.insertOrUpdate(match { it.eventType == unexpectedNotificationType.toString() }) }
     }
   }
 

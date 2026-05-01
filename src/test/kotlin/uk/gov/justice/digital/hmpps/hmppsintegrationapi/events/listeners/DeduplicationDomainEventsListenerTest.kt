@@ -227,7 +227,7 @@ class DeduplicationDomainEventsListenerTest : DomainEventsListenerTestCase() {
 
     domainEventsListener.onDomainEvent(rawMessage)
 
-    verify(exactly = 1) { eventNotificationRepository.insert(match { it.eventType == expectedEvent }) }
+    verify(exactly = 1) { eventNotificationRepository.insertOrUpdate(match { it.eventType == expectedEvent }) }
   }
 }
 
@@ -276,7 +276,7 @@ abstract class DomainEventsListenerTestCase {
 
     featureFlagTestConfig.assumeFeatureFlag(FeatureFlagConfig.DEDUPLICATE_EVENTS, true)
 
-    every { eventNotificationRepository.insert(any()) } returnsArgument 0
+    every { eventNotificationRepository.insertOrUpdate(any()) } returnsArgument 0
 
     every { telemetryService.captureException(any()) } just Runs
   }
@@ -309,7 +309,7 @@ abstract class DomainEventsListenerTestCase {
 
     // Assert
     expectedNotificationType.forEach { expectedEventType ->
-      verify(exactly = 1) { eventNotificationRepository.insert(match { it.eventType == expectedEventType }) }
+      verify(exactly = 1) { eventNotificationRepository.insertOrUpdate(match { it.eventType == expectedEventType }) }
     }
   }
 
@@ -331,7 +331,7 @@ abstract class DomainEventsListenerTestCase {
     // Assert
     expectedEventNotifications.forEach { expectedNotification ->
       // Verify all expected event notifications persisted via repository
-      verify(exactly = 1) { eventNotificationRepository.insert(expectedNotification) }
+      verify(exactly = 1) { eventNotificationRepository.insertOrUpdate(expectedNotification) }
     }
   }
 
