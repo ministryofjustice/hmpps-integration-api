@@ -26,7 +26,7 @@ class EventNotificationRepositoryTest : IntegrationTestBase() {
         url = "MockUrl",
         lastModifiedDatetime = LocalDateTime.now().minusMinutes(6),
       )
-    eventNotificationRepository.insertOrUpdate(eventNotification)
+    eventNotificationRepository.insert(eventNotification)
 
     val eventNotifications = eventNotificationRepository.findAll()
     assertThat(eventNotifications).hasSize(1)
@@ -48,13 +48,13 @@ class EventNotificationRepositoryTest : IntegrationTestBase() {
         metadata = Metadata(supervisionStatus = "PRISONS"),
         lastModifiedDatetime = LocalDateTime.now().minusMinutes(6),
       )
-    eventNotificationRepository.insertOrUpdate(eventNotification)
+    eventNotificationRepository.insert(eventNotification)
 
     val eventNotifications = eventNotificationRepository.findAll()
     assertThat(eventNotifications).hasSize(1)
 
     val duplicatedEventNotification = eventNotification.copy(lastModifiedDatetime = LocalDateTime.now())
-    eventNotificationRepository.insertOrUpdate(duplicatedEventNotification)
+    eventNotificationRepository.insert(duplicatedEventNotification)
 
     val updatedEventNotifications = eventNotificationRepository.findAll()
     assertThat(updatedEventNotifications).hasSize(1)
@@ -72,7 +72,7 @@ class EventNotificationRepositoryTest : IntegrationTestBase() {
         metadata = Metadata(supervisionStatus = "PROBATION"),
         lastModifiedDatetime = LocalDateTime.now().minusMinutes(6),
       )
-    eventNotificationRepository.insertOrUpdate(eventNotification)
+    eventNotificationRepository.insert(eventNotification)
     val notifications = eventNotificationRepository.findAll()
     assertThat(notifications).hasSize(1)
     val notification = notifications[0]
@@ -90,7 +90,7 @@ class EventNotificationRepositoryTest : IntegrationTestBase() {
         metadata = null,
         lastModifiedDatetime = LocalDateTime.now().minusMinutes(6),
       )
-    eventNotificationRepository.insertOrUpdate(eventNotification)
+    eventNotificationRepository.insert(eventNotification)
     val notifications = eventNotificationRepository.findAll()
     assertThat(notifications).hasSize(1)
     val notification = notifications[0]

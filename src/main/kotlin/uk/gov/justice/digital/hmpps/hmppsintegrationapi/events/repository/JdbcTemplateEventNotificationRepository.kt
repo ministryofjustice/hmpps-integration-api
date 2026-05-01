@@ -115,14 +115,14 @@ class JdbcTemplateEventNotificationRepository(
     return jdbcTemplate.update(setProcessingQuery, claimId, fiveMinutesAgo, EVENT_NOTIFICATION_BATCH_LIMIT)
   }
 
-  override fun insertOrUpdate(event: EventNotification) {
-    val insertOrUpdateQuery = """
+  override fun insert(event: EventNotification) {
+    val insertQuery = """
       insert into event_notification (url, event_type, hmpps_id, prison_id, status, metadata, last_modified_datetime)
         select ?,?,?,?,?,?,?
         where not exists (select 1 from event_notification where url = ? and event_type = ? and (status = 'PENDING' or status = NULL))
     """
     jdbcTemplate.update(
-      insertOrUpdateQuery,
+      insertQuery,
       event.url,
       event.eventType,
       event.hmppsId,
