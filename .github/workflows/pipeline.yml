@@ -84,7 +84,8 @@ jobs:
     name: Deploy to production environment
     needs:
       - build
-      - preprod-smoke-tests
+      - deploy_dev
+      - dev-smoke-tests
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
     secrets: inherit
     with:
