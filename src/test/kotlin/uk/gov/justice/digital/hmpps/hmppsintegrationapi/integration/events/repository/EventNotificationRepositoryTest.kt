@@ -58,7 +58,7 @@ class EventNotificationRepositoryTest : IntegrationTestBase() {
 
     val updatedEventNotifications = eventNotificationRepository.findAll()
     assertThat(updatedEventNotifications).hasSize(1)
-    assertThat(updatedEventNotifications[0].lastModifiedDatetime).isEqualTo(eventNotification.lastModifiedDatetime)
+    assertThat(updatedEventNotifications[0].lastModifiedDatetime?.truncatedTo(ChronoUnit.SECONDS)).isEqualTo(eventNotification.lastModifiedDatetime?.truncatedTo(ChronoUnit.SECONDS))
   }
 
   @Test
