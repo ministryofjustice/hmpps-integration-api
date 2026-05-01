@@ -24,7 +24,7 @@ interface EventNotificationRepository {
     claimId: String,
   ): Int
 
-  fun insert(event: EventNotification)
+  fun insertOrUpdate(match: EventNotification)
 
   // Delete
   fun deleteEvents(dateTime: LocalDateTime): Int

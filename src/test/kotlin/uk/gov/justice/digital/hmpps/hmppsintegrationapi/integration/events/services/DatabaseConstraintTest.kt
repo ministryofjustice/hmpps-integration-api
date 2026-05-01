@@ -28,9 +28,9 @@ class DatabaseConstraintTest : IntegrationTestBase() {
   @Test
   fun `does not create a new record when url, event type and status are all the same and all records are pending`() {
     Assertions.assertThat(eventNotificationRepository.count()).isEqualTo(0)
-    eventNotificationRepository.insert(makeEvent("MockUrl1"))
+    eventNotificationRepository.insertOrUpdate(makeEvent("MockUrl1"))
     Assertions.assertThat(eventNotificationRepository.count()).isEqualTo(1)
-    eventNotificationRepository.insert(makeEvent("MockUrl1"))
+    eventNotificationRepository.insertOrUpdate(makeEvent("MockUrl1"))
     Assertions.assertThat(eventNotificationRepository.count()).isEqualTo(1)
   }
 
@@ -38,11 +38,11 @@ class DatabaseConstraintTest : IntegrationTestBase() {
   fun `creates a new record when url, event type are same, but status is different`() {
     Assertions.assertThat(eventNotificationRepository.count()).isEqualTo(0)
     val claimId = UUID.randomUUID().toString()
-    eventNotificationRepository.insert(makeEvent("MockUrl1"))
+    eventNotificationRepository.insertOrUpdate(makeEvent("MockUrl1"))
     Assertions.assertThat(eventNotificationRepository.count()).isEqualTo(1)
     // Move status to processing
     eventNotificationRepository.setProcessing(LocalDateTime.now().minusMinutes(5), claimId)
-    eventNotificationRepository.insert(makeEvent("MockUrl1"))
+    eventNotificationRepository.insertOrUpdate(makeEvent("MockUrl1"))
     Assertions.assertThat(eventNotificationRepository.count()).isEqualTo(2)
   }
 
@@ -50,12 +50,12 @@ class DatabaseConstraintTest : IntegrationTestBase() {
   fun `allows another record with the same url and event type to be set to PROCESSING`() {
     // Put an event in the processing state
     val claimId1 = UUID.randomUUID().toString()
-    eventNotificationRepository.insert(makeEvent("MockUrl1"))
+    eventNotificationRepository.insertOrUpdate(makeEvent("MockUrl1"))
     eventNotificationRepository.setProcessing(LocalDateTime.now().minusMinutes(5), claimId1)
 
     // Put an event in the processing state
     val claimId2 = UUID.randomUUID().toString()
-    eventNotificationRepository.insert(makeEvent("MockUrl1"))
+    eventNotificationRepository.insertOrUpdate(makeEvent("MockUrl1"))
     eventNotificationRepository.setProcessing(LocalDateTime.now().minusMinutes(5), claimId2)
 
     val events = eventNotificationRepository.findAll()

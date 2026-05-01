@@ -26,7 +26,7 @@ class EventNotificationRepositoryTest : IntegrationTestBase() {
         url = "MockUrl",
         lastModifiedDatetime = LocalDateTime.now().minusMinutes(6),
       )
-    eventNotificationRepository.insert(eventNotification)
+    eventNotificationRepository.insertOrUpdate(eventNotification)
 
     val eventNotifications = eventNotificationRepository.findAll()
     assertThat(eventNotifications).hasSize(1)
@@ -38,7 +38,7 @@ class EventNotificationRepositoryTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `on a conflict with a duplicate event, it does not update the timestamp on the existing record`() {
+  fun `updates timestamp on an existing record`() {
     val eventNotification =
       EventNotification(
         eventType = IntegrationEventType.MAPPA_DETAIL_CHANGED.name,
@@ -48,17 +48,17 @@ class EventNotificationRepositoryTest : IntegrationTestBase() {
         metadata = Metadata(supervisionStatus = "PRISONS"),
         lastModifiedDatetime = LocalDateTime.now().minusMinutes(6),
       )
-    eventNotificationRepository.insert(eventNotification)
+    eventNotificationRepository.insertOrUpdate(eventNotification)
 
     val eventNotifications = eventNotificationRepository.findAll()
     assertThat(eventNotifications).hasSize(1)
 
-    val duplicatedEventNotification = eventNotification.copy(lastModifiedDatetime = LocalDateTime.now())
-    eventNotificationRepository.insert(duplicatedEventNotification)
+    val updatedEventNotification = eventNotification.copy(lastModifiedDatetime = LocalDateTime.now())
+    eventNotificationRepository.insertOrUpdate(updatedEventNotification)
 
     val updatedEventNotifications = eventNotificationRepository.findAll()
     assertThat(updatedEventNotifications).hasSize(1)
-    assertThat(updatedEventNotifications[0].lastModifiedDatetime?.truncatedTo(ChronoUnit.SECONDS)).isEqualTo(eventNotification.lastModifiedDatetime?.truncatedTo(ChronoUnit.SECONDS))
+    assertThat(updatedEventNotifications[0].lastModifiedDatetime?.truncatedTo(ChronoUnit.MINUTES)).isEqualTo(updatedEventNotification.lastModifiedDatetime?.truncatedTo(ChronoUnit.MINUTES))
   }
 
   @Test
@@ -72,7 +72,7 @@ class EventNotificationRepositoryTest : IntegrationTestBase() {
         metadata = Metadata(supervisionStatus = "PROBATION"),
         lastModifiedDatetime = LocalDateTime.now().minusMinutes(6),
       )
-    eventNotificationRepository.insert(eventNotification)
+    eventNotificationRepository.insertOrUpdate(eventNotification)
     val notifications = eventNotificationRepository.findAll()
     assertThat(notifications).hasSize(1)
     val notification = notifications[0]
@@ -90,7 +90,7 @@ class EventNotificationRepositoryTest : IntegrationTestBase() {
         metadata = null,
         lastModifiedDatetime = LocalDateTime.now().minusMinutes(6),
       )
-    eventNotificationRepository.insert(eventNotification)
+    eventNotificationRepository.insertOrUpdate(eventNotification)
     val notifications = eventNotificationRepository.findAll()
     assertThat(notifications).hasSize(1)
     val notification = notifications[0]
