@@ -63,6 +63,15 @@ object DomainEventName {
     object Restriction {
       const val UPDATED = "probation-case.restriction.updated"
     }
+
+    object Sentence {
+      const val CREATED = "probation-case.sentence.created"
+      const val AMENDED = "probation-case.sentence.amended"
+      const val TERMINATED = "probation-case.sentence.terminated"
+      const val UNTERMINATED = "probation-case.sentence.unterminated"
+      const val DELETED = "probation-case.sentence.deleted"
+      const val MOVED = "probation-case.sentence.moved"
+    }
   }
 
   object Probation {
