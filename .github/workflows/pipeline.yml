@@ -61,6 +61,7 @@ jobs:
       cancel-in-progress: false
     name: Deploy to pre-production environment
     needs:
+      - build
       - dev-smoke-tests
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
     secrets: inherit
@@ -80,6 +81,7 @@ jobs:
       cancel-in-progress: false
     name: Deploy to production environment
     needs:
+      - build
       - dev-smoke-tests
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
     secrets: inherit
