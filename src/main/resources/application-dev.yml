@@ -228,6 +228,10 @@ authorisation:
       notes: "See client list in Confluence"
       roles:
         - "synalogik"
+    jaiu-onboarding-optimisation:
+      notes: "See client list in Confluence"
+      roles:
+        - "jaiu-onboarding-optimisation"
 
 hmpps.sqs:
   queues:
