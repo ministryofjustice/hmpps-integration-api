@@ -27,8 +27,6 @@ jobs:
     name: Build docker image from hmpps-github-actions
     if: github.ref == 'refs/heads/main'
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/docker_build.yml@v2 # WORKFLOW_VERSION
-    needs:
-      - test
     with:
       docker_registry: 'ghcr.io'
       registry_org: 'ministryofjustice'
@@ -43,6 +41,7 @@ jobs:
     name: Deploy to the development environment
     needs:
       - build
+      - test
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
     secrets: inherit
     with:
