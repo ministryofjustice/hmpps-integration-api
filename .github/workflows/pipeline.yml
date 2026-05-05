@@ -53,7 +53,6 @@ jobs:
     uses: ./.github/workflows/smoke-test-dev.yml
     secrets: inherit
     needs:
-      - build
       - deploy_dev
   deploy_preprod:
     concurrency:
