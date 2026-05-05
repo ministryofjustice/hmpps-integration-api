@@ -118,8 +118,9 @@ class JdbcTemplateEventNotificationRepository(
   override fun insert(event: EventNotification) {
     val insertQuery = """
       insert into event_notification (url, event_type, hmpps_id, prison_id, status, metadata, last_modified_datetime)
-        select ?,?,?,?,?,?,?
-        where not exists (select 1 from event_notification where url = ? and event_type = ? and (status = 'PENDING' or status = NULL))
+        values (?,?,?,?,?,?,?)
+      on conflict(url, event_type) where status = 'PENDING' or status = NULL
+        do nothing
     """
     jdbcTemplate.update(
       insertQuery,
@@ -130,8 +131,6 @@ class JdbcTemplateEventNotificationRepository(
       event.status,
       conversionService.convert(event.metadata, String::class.java),
       event.lastModifiedDatetime,
-      event.url,
-      event.eventType,
     )
   }
 
