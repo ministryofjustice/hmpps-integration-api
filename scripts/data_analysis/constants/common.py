@@ -28,7 +28,7 @@ URLS = [
     "https://hmpps-allocations-dev.hmpps.service.justice.gov.uk/v3/api-docs",
     "https://probation-teams-dev.prison.service.justice.gov.uk/v3/api-docs",
     "https://hmpps-interventions-service-dev.apps.live-1.cloud-platform.service.justice.gov.uk/v3/api-docs",
-    "https://restricted-patients-api-dev.hmpps.service.justice.gov.uk/v3/api-docs",
+    "https://restricted-patients-api-dev.prison.service.justice.gov.uk/v3/api-docs",
     "https://hmpps-staff-lookup-service-dev.hmpps.service.justice.gov.uk/v3/api-docs",
     "https://hmpps-tier-dev.hmpps.service.justice.gov.uk/v3/api-docs",
     "https://token-verification-api-dev.prison.service.justice.gov.uk/v3/api-docs",
