@@ -63,6 +63,12 @@ val PERSON_EVENTS =
     DomainEventName.PrisonerOffenderSearch.Prisoner.UPDATED,
     DomainEventName.PrisonerOffenderSearch.Prisoner.RECEIVED,
     DomainEventName.PrisonOffenderEvents.Prisoner.MERGED,
+    DomainEventName.ProbabtionCase.Sentence.CREATED,
+    DomainEventName.ProbabtionCase.Sentence.AMENDED,
+    DomainEventName.ProbabtionCase.Sentence.TERMINATED,
+    DomainEventName.ProbabtionCase.Sentence.UNTERMINATED,
+    DomainEventName.ProbabtionCase.Sentence.DELETED,
+    DomainEventName.ProbabtionCase.Sentence.MOVED,
   )
 
 val PRISONER_EVENTS =
