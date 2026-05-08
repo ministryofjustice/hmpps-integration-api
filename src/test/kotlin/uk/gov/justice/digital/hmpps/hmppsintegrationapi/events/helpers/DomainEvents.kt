@@ -15,6 +15,36 @@ object DomainEvents {
     {\"eventType\":\"probation-case.registration.updated\",\"version\":1,\"occurredAt\":\"$occuredAt\",\"description\":\"A registration has been updated on the probation case\",\"additionalInformation\":{\"registrationLevelDescription\":\"\",\"registerTypeDescription\":\"Victim Contact\",\"registrationCategoryCode\":\"\",\"registrationId\":\"1506296709\",\"registerTypeCode\":\"INVI\",\"updatedDateAndTime\":\"Fri Aug 09 12:24:08 BST 2024\",\"registrationCategoryDescription\":\"\",\"registrationLevelCode\":\"\"},\"personReference\":{\"identifiers\":[{\"type\":\"CRN\",\"value\":\"$crn\"},{\"type\":\"NOMS\",\"value\":\"$nomsNumber\"}]}}
     """.trimIndent()
 
+  val PROBATION_SENTENCE_CREATED_MESSAGE =
+    """
+    {\"eventType\":\"probation-case.engagement.created\",\"version\":1,\"detailUrl\":\"https://domain-events-and-delius.hmpps.service.justice.gov.uk/probation-case.sentence.created/$crn\",\"occurredAt\":\"$occuredAt\",\"description\":\"A probation case record for a person has been created in Delius\",\"additionalInformation\":{},\"personReference\":{\"identifiers\":[{\"type\":\"CRN\",\"value\":\"$crn\"}]}}
+    """.trimIndent()
+
+  val PROBATION_SENTENCE_AMENDED_MESSAGE =
+    """
+    {\"additionalInformation\":{\"nomsNumber\":\"$nomsNumber\",\"categoriesChanged\":[\"IDENTIFIERS\"]},\"occurredAt\":\"$occuredAt\",\"eventType\":\"probation-case.sentence.amended\",\"version\":1,\"description\":\"A prisoner record has been updated\",\"detailUrl\":\"https://prisoner-search.prison.service.justice.gov.uk/prisoner/$nomsNumber\"}
+    """.trimIndent()
+
+  val PROBATION_SENTENCE_TERMINATED_MESSAGE =
+    """
+    {\"additionalInformation\":{\"nomsNumber\":\"$nomsNumber\",\"categoriesChanged\":[\"IDENTIFIERS\"]},\"occurredAt\":\"$occuredAt\",\"eventType\":\"probation-case.sentence.terminated\",\"version\":1,\"description\":\"A prisoner record has been updated\",\"detailUrl\":\"https://prisoner-search.prison.service.justice.gov.uk/prisoner/$nomsNumber\"}
+    """.trimIndent()
+
+  val PROBATION_SENTENCE_UNTERMINATED_MESSAGE =
+    """
+    {\"additionalInformation\":{\"nomsNumber\":\"$nomsNumber\",\"categoriesChanged\":[\"IDENTIFIERS\"]},\"occurredAt\":\"$occuredAt\",\"eventType\":\"probation-case.sentence.unterminated\",\"version\":1,\"description\":\"A prisoner record has been updated\",\"detailUrl\":\"https://prisoner-search.prison.service.justice.gov.uk/prisoner/$nomsNumber\"}
+    """.trimIndent()
+
+  val PROBATION_SENTENCE_DELETED_MESSAGE =
+    """
+    {\"additionalInformation\":{\"nomsNumber\":\"$nomsNumber\",\"categoriesChanged\":[\"IDENTIFIERS\"]},\"occurredAt\":\"$occuredAt\",\"eventType\":\"probation-case.sentence.deleted\",\"version\":1,\"description\":\"A prisoner record has been updated\",\"detailUrl\":\"https://prisoner-search.prison.service.justice.gov.uk/prisoner/$nomsNumber\"}
+    """.trimIndent()
+
+  val PROBATION_SENTENCE_MOVED_MESSAGE =
+    """
+    {\"additionalInformation\":{\"nomsNumber\":\"$nomsNumber\",\"categoriesChanged\":[\"IDENTIFIERS\"]},\"occurredAt\":\"$occuredAt\",\"eventType\":\"probation-case.sentence.moved\",\"version\":1,\"description\":\"A prisoner record has been updated\",\"detailUrl\":\"https://prisoner-search.prison.service.justice.gov.uk/prisoner/$nomsNumber\"}
+    """.trimIndent()
+
   val PROBATION_CASE_PRISON_IDENTIFIER_ADDED =
     """
     {\"eventType\":\"probation-case.prison-identifier.added\",\"version\":1,\"occurredAt\":\"$occuredAt\",\"description\":\"A probation case has been matched with a booking in the prison system. The prisoner and booking identifiers have been added to the probation case.\",\"additionalInformation\":{\"bookingNumber\":\"81702E\"},\"personReference\":{\"identifiers\":[{\"type\":\"CRN\",\"value\":\"$crn\"},{\"type\":\"NOMS\",\"value\":\"$nomsNumber\"}]}}

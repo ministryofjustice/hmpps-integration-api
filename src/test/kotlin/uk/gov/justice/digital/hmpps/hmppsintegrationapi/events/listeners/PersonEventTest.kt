@@ -10,6 +10,12 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEve
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents.PRISONER_OFFENDER_SEARCH_PRISONER_UPDATED
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents.PROBATION_CASE_ENGAGEMENT_CREATED_MESSAGE
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents.PROBATION_CASE_PRISON_IDENTIFIER_ADDED
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents.PROBATION_SENTENCE_AMENDED_MESSAGE
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents.PROBATION_SENTENCE_CREATED_MESSAGE
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents.PROBATION_SENTENCE_DELETED_MESSAGE
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents.PROBATION_SENTENCE_MOVED_MESSAGE
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents.PROBATION_SENTENCE_TERMINATED_MESSAGE
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents.PROBATION_SENTENCE_UNTERMINATED_MESSAGE
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents.generateDomainEvent
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.DomainEventName
 
@@ -29,6 +35,12 @@ class PersonEventTest : DomainEventsListenerTestCase() {
       DomainEventName.PrisonerOffenderSearch.Prisoner.CREATED,
       DomainEventName.PrisonerOffenderSearch.Prisoner.UPDATED,
       DomainEventName.PrisonerOffenderSearch.Prisoner.RECEIVED,
+      DomainEventName.ProbabtionCase.Sentence.CREATED,
+      DomainEventName.ProbabtionCase.Sentence.AMENDED,
+      DomainEventName.ProbabtionCase.Sentence.TERMINATED,
+      DomainEventName.ProbabtionCase.Sentence.UNTERMINATED,
+      DomainEventName.ProbabtionCase.Sentence.DELETED,
+      DomainEventName.ProbabtionCase.Sentence.MOVED,
     ],
   )
   fun `process person events`(eventType: String) {
@@ -40,6 +52,12 @@ class PersonEventTest : DomainEventsListenerTestCase() {
         DomainEventName.PrisonerOffenderSearch.Prisoner.CREATED -> PRISONER_OFFENDER_SEARCH_PRISONER_CREATED
         DomainEventName.PrisonerOffenderSearch.Prisoner.UPDATED -> PRISONER_OFFENDER_SEARCH_PRISONER_UPDATED
         DomainEventName.PrisonerOffenderSearch.Prisoner.RECEIVED -> PRISONER_OFFENDER_SEARCH_PRISONER_RECEIVED
+        DomainEventName.ProbabtionCase.Sentence.CREATED -> PROBATION_SENTENCE_CREATED_MESSAGE
+        DomainEventName.ProbabtionCase.Sentence.AMENDED -> PROBATION_SENTENCE_AMENDED_MESSAGE
+        DomainEventName.ProbabtionCase.Sentence.TERMINATED -> PROBATION_SENTENCE_TERMINATED_MESSAGE
+        DomainEventName.ProbabtionCase.Sentence.UNTERMINATED -> PROBATION_SENTENCE_UNTERMINATED_MESSAGE
+        DomainEventName.ProbabtionCase.Sentence.DELETED -> PROBATION_SENTENCE_DELETED_MESSAGE
+        DomainEventName.ProbabtionCase.Sentence.MOVED -> PROBATION_SENTENCE_MOVED_MESSAGE
         else -> throw RuntimeException("Unexpected event type: $eventType")
       }
 
@@ -59,6 +77,7 @@ class PersonEventTest : DomainEventsListenerTestCase() {
       DomainEventName.ProbabtionCase.PrisonIdentifier.ADDED,
       DomainEventName.PrisonerOffenderSearch.Prisoner.CREATED,
       DomainEventName.PrisonerOffenderSearch.Prisoner.RECEIVED,
+      DomainEventName.ProbabtionCase.Sentence.CREATED,
     ],
   )
   fun `process new person events`(eventType: String) {
@@ -69,6 +88,7 @@ class PersonEventTest : DomainEventsListenerTestCase() {
         DomainEventName.ProbabtionCase.PrisonIdentifier.ADDED -> PROBATION_CASE_PRISON_IDENTIFIER_ADDED
         DomainEventName.PrisonerOffenderSearch.Prisoner.CREATED -> PRISONER_OFFENDER_SEARCH_PRISONER_CREATED
         DomainEventName.PrisonerOffenderSearch.Prisoner.RECEIVED -> PRISONER_OFFENDER_SEARCH_PRISONER_RECEIVED
+        DomainEventName.ProbabtionCase.Sentence.CREATED -> PROBATION_SENTENCE_CREATED_MESSAGE
         else -> throw RuntimeException("Unexpected event type: $eventType")
       }
 
