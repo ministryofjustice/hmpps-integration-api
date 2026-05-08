@@ -59,8 +59,6 @@ hmpps.sqs:
   queues:
     audit:
       queueName: "audit"
-    jobsboardintegration:
-      queueName: "jobsboard-integration"
     visits:
       queueName: "visits"
     assessmentevents:
@@ -93,6 +91,7 @@ feature-flag:
   course-completion-event-enabled: true
   use-active-alerts-endpoint: true
   use-contact-events-endpoint: true
+  csra-endpoint: true
   use-emergency-contacts-endpoint: true
   epf-endpoint-includes-lao: true
   cpr-enabled: true
@@ -102,11 +101,9 @@ feature-flag:
   enable-delete-processed-events: false
   enable-publish-pending-events: false
   enable-domain-events-queue-listener: false
-  enable-subscription-filter-policy-updater: false
   person-languages-changed-notifications-enabled: true
   prisoner-base-location-changed-notifications-enabled: true
   prisoner-merge-notifications-enabled: true
   contact-events-notifications-enabled: true
   limited-access-notifications-enabled: true
   deduplicate-events: false
-  direct-sqs-notifications: true

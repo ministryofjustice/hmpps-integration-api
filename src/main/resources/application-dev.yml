@@ -54,6 +54,7 @@ feature-flag:
   use-active-alerts-endpoint: true
   use-emergency-contacts-endpoint: true
   use-contact-events-endpoint: true
+  csra-endpoint: true
   epf-endpoint-includes-lao: true
   epf-gateway-disabled: true
   cpr-enabled: true
@@ -63,14 +64,12 @@ feature-flag:
   enable-delete-processed-events: true
   enable-publish-pending-events: true
   enable-domain-events-queue-listener: true
-  enable-subscription-filter-policy-updater: true
   person-languages-changed-notifications-enabled: false
   prisoner-base-location-changed-notifications-enabled: true
   prisoner-merge-notifications-enabled: true
   contact-events-notifications-enabled: true
   limited-access-notifications-enabled: true
   deduplicate-events: true
-  direct-sqs-notifications: true
 
 authorisation:
   consumers:
@@ -229,6 +228,10 @@ authorisation:
       notes: "See client list in Confluence"
       roles:
         - "synalogik"
+    jaiu-onboarding-optimisation:
+      notes: "See client list in Confluence"
+      roles:
+        - "status-only"
 
 hmpps.sqs:
   queues:

@@ -23,6 +23,7 @@ data class FeatureFlagConfig(
     const val COURSE_COMPLETION_EVENT = "course-completion-event-enabled"
     const val USE_ACTIVE_ALERTS_ENDPOINT = "use-active-alerts-endpoint"
     const val USE_CONTACT_EVENTS_ENDPOINT = "use-contact-events-endpoint"
+    const val CSRA_ENDPOINT = "csra-endpoint"
     const val USE_EMERGENCY_CONTACTS_ENDPOINT = "use-emergency-contacts-endpoint"
     const val EPF_ENDPOINT_INCLUDES_LAO = "epf-endpoint-includes-lao"
     const val EPF_GATEWAY_DISABLED = "epf-gateway-disabled"
@@ -34,14 +35,12 @@ data class FeatureFlagConfig(
     const val ENABLE_DELETE_PROCESSED_EVENTS = "enable-delete-processed-events"
     const val ENABLE_PUBLISH_PENDING_EVENTS = "enable-publish-pending-events"
     const val ENABLE_DOMAIN_EVENTS_QUEUE_LISTENER = "enable-domain-events-queue-listener"
-    const val ENABLE_SUBSCRIPTION_FILTER_POLICY_UPDATER = "enable-subscription-filter-policy-updater"
     const val PERSON_LANGUAGES_CHANGED_NOTIFICATIONS_ENABLED = "person-languages-changed-notifications-enabled"
     const val PRISONER_BASE_LOCATION_CHANGED_NOTIFICATIONS_ENABLED = "prisoner-base-location-changed-notifications-enabled"
     const val PRISONER_MERGED_NOTIFICATIONS_ENABLED = "prisoner-merge-notifications-enabled"
     const val CONTACT_EVENTS_NOTIFICATIONS_ENABLED = "contact-events-notifications-enabled"
     const val LIMITED_ACCESS_NOTIFICATIONS_ENABLED = "limited-access-notifications-enabled"
     const val DEDUPLICATE_EVENTS = "deduplicate-events"
-    const val DIRECT_SQS_NOTIFICATIONS = "direct-sqs-notifications"
   }
 
   /**

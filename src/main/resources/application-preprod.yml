@@ -51,6 +51,7 @@ feature-flag:
   course-completion-event-enabled: false
   use-active-alerts-endpoint: false
   use-contact-events-endpoint: false
+  csra-endpoint: false
   use-emergency-contacts-endpoint: false
   epf-endpoint-includes-lao: true
   epf-gateway-disabled: true
@@ -61,14 +62,12 @@ feature-flag:
   enable-delete-processed-events: true
   enable-publish-pending-events: true
   enable-domain-events-queue-listener: true
-  enable-subscription-filter-policy-updater: true
   person-languages-changed-notifications-enabled: true
   prisoner-base-location-changed-notifications-enabled: true
   prisoner-merge-notifications-enabled: false
   contact-events-notifications-enabled: false
   limited-access-notifications-enabled: true
   deduplicate-events: true
-  direct-sqs-notifications: true
 
 authorisation:
   consumers:
@@ -119,6 +118,10 @@ authorisation:
       notes: "See client list in Confluence"
       roles:
         - "enhanced-reception-checks"
+    community-campus:
+      notes: "See client list in Confluence"
+      roles:
+        - "status-only"
 
 hmpps.sqs:
   queues:

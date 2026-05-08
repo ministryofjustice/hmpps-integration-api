@@ -23,13 +23,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFound
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CorePersonRecordGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase.Companion.gatewaysFolder
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.CorePersonRecord
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService.IdentifierType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.TestConstants.DEFAULT_CRN
+import java.io.File
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -52,8 +52,20 @@ class CorePersonRecordGatewayTest(
         whenever(hmppsAuthGateway.getClientToken("CORE_PERSON_RECORD")).thenReturn(
           HmppsAuthMockServer.Companion.TOKEN,
         )
-        cprMockServer.stubForGet("/person/probation/$crn", objectMapper.writeValueAsString(CorePersonRecord(identifiers = Identifiers(prisonNumbers = listOf(nomsId)))), HttpStatus.OK)
-        cprMockServer.stubForGet("/person/prison/$nomsId", objectMapper.writeValueAsString(CorePersonRecord(identifiers = Identifiers(crns = listOf(crn)))), HttpStatus.OK)
+        cprMockServer.stubForGet(
+          "/person/probation/$crn",
+          File(
+            "$gatewaysFolder/cpr/fixtures/core-person-record-response.json",
+          ).readText(),
+          HttpStatus.OK,
+        )
+        cprMockServer.stubForGet(
+          "/person/prison/$nomsId",
+          File(
+            "$gatewaysFolder/cpr/fixtures/core-person-record-response.json",
+          ).readText(),
+          HttpStatus.OK,
+        )
       }
 
       afterTest {

@@ -12,11 +12,6 @@ enum class HmppsMessageEventType(
     eventTypeCode = "TestEvent",
     description = "Test Event",
   ),
-  EXPRESSION_OF_INTEREST_CREATED(
-    type = "mjma-jobs-board.job.expression-of-interest.created",
-    eventTypeCode = "ExpressionOfInterestCreated",
-    description = "An expression of interest has been created",
-  ),
   VISIT_CREATED(
     type = "visit-someone-in-prison.visit.created",
     eventTypeCode = "VisitCreated",
