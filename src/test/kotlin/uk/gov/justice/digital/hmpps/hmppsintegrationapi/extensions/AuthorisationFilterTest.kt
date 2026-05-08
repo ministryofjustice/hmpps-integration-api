@@ -31,6 +31,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 
+private const val CERT_SERIAL_RAW = "9572494320151578633330348943480876283449388176"
+private const val CERT_SERIAL_FORMATTED = "01:AD:3E:D8:7D:D5:AA:84:F5:2D:83:E7:87:E9:90:E4:84:C5:2C:90"
+
 class AuthorisationFilterTest {
   private val examplePath: String = "/v1/persons"
   private val roleName = "private-prison"
@@ -220,7 +223,7 @@ class AuthorisationFilterTest {
     // From ConsumerNameExtractionFilterTest
     val resp = MockHttpServletResponse()
     val finalFilter = mock(Filter::class.java)
-    val req = mockRequest("GET", examplePath, "O=test,CN=sam", "9572494320151578633330348943480876283449388176")
+    val req = mockRequest("GET", examplePath, "O=test,CN=sam", CERT_SERIAL_RAW)
 
     val chain =
       mockFilterChain(
@@ -237,14 +240,14 @@ class AuthorisationFilterTest {
   fun `can get subject distinguished name from request and set as consumer name `() {
     // From ConsumerNameExtractionFilterTest
     val resp = MockHttpServletResponse()
-    val req = mockRequest("GET", examplePath, "O=test,CN=sam", "9572494320151578633330348943480876283449388176")
+    val req = mockRequest("GET", examplePath, "O=test,CN=sam", CERT_SERIAL_RAW)
 
     val chain = fullMockFilterChain(authorisationConfig)
 
     chain.doFilter(req, resp)
 
     assertThat(req.getAttribute("clientName")).isEqualTo("sam")
-    assertThat(req.getAttribute("certificateSerialNumber")).isEqualTo("01:AD:3E:D8:7D:D5:AA:84:F5:2D:83:E7:87:E9:90:E4:84:C5:2C:90")
+    assertThat(req.getAttribute("certificateSerialNumber")).isEqualTo(CERT_SERIAL_FORMATTED)
   }
 
   @Test
@@ -346,14 +349,14 @@ class AuthorisationFilterTest {
     val resp = MockHttpServletResponse()
     val finalFilter = mock(Filter::class.java)
     val authConfig = mockAuthConfig("sam")
-    val req = mockRequest("GET", examplePath, "O=test,CN=sam", "9572494320151578633330348943480876283449388176")
+    val req = mockRequest("GET", examplePath, "O=test,CN=sam", CERT_SERIAL_RAW)
 
     val chain = fullMockFilterChain(authConfig, finalFilter)
 
     chain.doFilter(req, resp)
 
     assertThat(req.getAttribute("clientName")).isEqualTo("sam")
-    assertThat(req.getAttribute("certificateSerialNumber")).isEqualTo("01:AD:3E:D8:7D:D5:AA:84:F5:2D:83:E7:87:E9:90:E4:84:C5:2C:90")
+    assertThat(req.getAttribute("certificateSerialNumber")).isEqualTo(CERT_SERIAL_FORMATTED)
     assertThat(req.getAttribute("filters")).isEqualTo(ConsumerFilters(prisons = listOf("MDI")))
     assertThat(resp.status).isEqualTo(200)
     verify(finalFilter, times(1)).doFilter(eq(req), eq(resp), any())
