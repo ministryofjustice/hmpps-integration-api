@@ -58,6 +58,7 @@ class AuthorisationFilterTest {
     whenever(mockRequest.requestURI).thenReturn(examplePath)
     whenever(mockRequest.getHeader("subject-distinguished-name")).thenReturn(exampleSubjectDistinguishedName)
     whenever(mockRequest.getHeader("cert-serial-number")).thenReturn(CERT_SERIAL_RAW)
+    whenever(mockRequest.getHeader("X-On-Behalf-Of")).thenReturn("TEST_BEHALF_OF")
     whenever(mockRoleService.getRoles()).thenReturn(mapOf(roleName to Role(name = "test", permissions = mutableListOf(examplePath), filters = null)))
   }
 
@@ -304,5 +305,58 @@ class AuthorisationFilterTest {
     assertThat(req.getAttribute("filters")).isEqualTo(ConsumerFilters(prisons = listOf("MDI")))
     assertThat(resp.status).isEqualTo(200)
     verify(finalFilter, times(1)).doFilter(eq(req), eq(resp), any())
+  }
+
+  // App insights request span attribute tests
+
+  @Test
+  fun `handles clientName attribute`() {
+    val authorisationFilter = AuthorisationFilter(authorisationConfig, mockTelemetryService, mockRoleService)
+    val finalFilter = mock(Filter::class.java)
+    mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
+    verify(mockTelemetryService, times(1)).setSpanAttribute("clientId", exampleConsumer)
+  }
+
+  @Test
+  fun `handles missing clientName attribute`() {
+    whenever(mockRequest.getHeader("subject-distinguished-name")).thenReturn(null)
+    val authorisationFilter = AuthorisationFilter(authorisationConfig, mockTelemetryService, mockRoleService)
+    val finalFilter = mock(Filter::class.java)
+    mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
+    verify(mockTelemetryService, times(0)).setSpanAttribute("clientId", exampleConsumer)
+  }
+
+  @Test
+  fun `handles a certificate serial number header`() {
+    val authorisationFilter = AuthorisationFilter(authorisationConfig, mockTelemetryService, mockRoleService)
+    val finalFilter = mock(Filter::class.java)
+    mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
+    verify(mockTelemetryService, times(1)).setSpanAttribute("certSerialNumber", CERT_SERIAL_FORMATTED)
+  }
+
+  @Test
+  fun `handles a NULL certificate serial number header`() {
+    whenever(mockRequest.getHeader("cert-serial-number")).thenReturn(null)
+    val authorisationFilter = AuthorisationFilter(authorisationConfig, mockTelemetryService, mockRoleService)
+    val finalFilter = mock(Filter::class.java)
+    mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
+    verify(mockTelemetryService, times(0)).setSpanAttribute("certSerialNumber", CERT_SERIAL_FORMATTED)
+  }
+
+  @Test
+  fun `handles a on behalf of header`() {
+    val authorisationFilter = AuthorisationFilter(authorisationConfig, mockTelemetryService, mockRoleService)
+    val finalFilter = mock(Filter::class.java)
+    mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
+    verify(mockTelemetryService, times(1)).setSpanAttribute("onBehalfOf", "TEST_BEHALF_OF")
+  }
+
+  @Test
+  fun `handles a NULL on behalf of header`() {
+    whenever(mockRequest.getHeader("X-On-Behalf-Of")).thenReturn(null)
+    val authorisationFilter = AuthorisationFilter(authorisationConfig, mockTelemetryService, mockRoleService)
+    val finalFilter = mock(Filter::class.java)
+    mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
+    verify(mockTelemetryService, times(0)).setSpanAttribute("onBehalfOf", "TEST_BEHALF_OF")
   }
 }
