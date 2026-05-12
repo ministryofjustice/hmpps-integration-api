@@ -20,12 +20,12 @@ import org.springframework.mock.web.MockFilterChain
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.Config
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.RoleService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
@@ -42,10 +42,10 @@ class AuthorisationFilterTest {
   private val mockRequest = mock(HttpServletRequest::class.java)
   private val mockResponse = mock(HttpServletResponse::class.java)
   private val mockChain = mock(FilterChain::class.java)
-  private val authorisationConfig = mock(AuthorisationConfig::class.java)
+  private val authorisationService = mock(AuthorisationService::class.java)
   private val featureFlagConfig = mock(FeatureFlagConfig::class.java)
   private val mockRoleService = mock(RoleService::class.java)
-  val mockTelemetryService = mock(TelemetryService::class.java)
+  private val mockTelemetryService = mock(TelemetryService::class.java)
 
   private val roleConfig = ConsumerConfig(roles = listOf("private-prison"), filters = ConsumerFilters(prisons = listOf("MDI")))
 
@@ -74,12 +74,12 @@ class AuthorisationFilterTest {
     return req
   }
 
-  fun mockAuthConfig(
+  fun mockAuthService(
     consumerName: String,
     certificateRevocationList: List<String> = emptyList(),
-  ): AuthorisationConfig {
-    val authConfig = AuthorisationConfig(mockRoleService, Config(mapOf(consumerName to roleConfig), certificateRevocationList))
-    return authConfig
+  ): AuthorisationService {
+    val authService = AuthorisationService(mockRoleService, AuthorisationConfig(mapOf(consumerName to roleConfig), certificateRevocationList))
+    return authService
   }
 
   fun mockFilterChain(vararg filters: Filter): MockFilterChain =
@@ -89,11 +89,11 @@ class AuthorisationFilterTest {
     )
 
   fun fullMockFilterChain(
-    authConfig: AuthorisationConfig,
+    authService: AuthorisationService,
     finalFilter: Filter = mock(Filter::class.java),
   ): MockFilterChain =
     mockFilterChain(
-      AuthorisationFilter(authConfig, mockTelemetryService, mockRoleService),
+      AuthorisationFilter(authService, mockTelemetryService, mockRoleService),
       finalFilter,
     )
 
@@ -101,13 +101,13 @@ class AuthorisationFilterTest {
   fun `calls the onward chain when path found in either`() {
     val resp = MockHttpServletResponse()
     val finalFilter = mock(Filter::class.java)
-    val authConfig = mockAuthConfig(exampleConsumer)
+    val authService = mockAuthService(exampleConsumer)
     val req = mockRequest("GET", "/v1/persons")
     req.setAttribute("clientName", exampleConsumer)
 
     val chain =
       mockFilterChain(
-        AuthorisationFilter(authConfig, mockTelemetryService, mockRoleService),
+        AuthorisationFilter(authService, mockTelemetryService, mockRoleService),
         finalFilter,
       )
 
@@ -118,8 +118,8 @@ class AuthorisationFilterTest {
 
   @Test
   fun `calls the onward chain when path found in roles (but not in includes)`() {
-    whenever(authorisationConfig.consumers).thenReturn(mapOf(exampleConsumer to ConsumerConfig(include = emptyList(), filters = ConsumerFilters(prisons = null), roles = exampleRoles)))
-    val authorisationFilter = AuthorisationFilter(authorisationConfig, mockTelemetryService, mockRoleService)
+    whenever(authorisationService.consumers()).thenReturn(mapOf(exampleConsumer to ConsumerConfig(include = emptyList(), filters = ConsumerFilters(prisons = null), roles = exampleRoles)))
+    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, mockRoleService)
     val finalFilter = mock(Filter::class.java)
 
     mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
@@ -129,10 +129,10 @@ class AuthorisationFilterTest {
 
   @Test
   fun `calls the onward chain when path not found in roles, but found in includes`() {
-    whenever(authorisationConfig.consumers).thenReturn(mapOf(exampleConsumer to ConsumerConfig(include = listOf(examplePath), filters = ConsumerFilters(prisons = null), roles = listOf())))
+    whenever(authorisationService.consumers()).thenReturn(mapOf(exampleConsumer to ConsumerConfig(include = listOf(examplePath), filters = ConsumerFilters(prisons = null), roles = listOf())))
     // invalid Role Config
     whenever(mockRoleService.getRoles()).thenReturn(mapOf(roleName to Role(permissions = emptyList(), filters = null)))
-    val authorisationFilter = AuthorisationFilter(authorisationConfig, mockTelemetryService, mockRoleService)
+    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, mockRoleService)
     val finalFilter = mock(Filter::class.java)
 
     mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
@@ -143,12 +143,12 @@ class AuthorisationFilterTest {
   @Test
   fun `returns error when the roles or consumer includes do not contain the path`() {
     val invalidPath = "v1/invalid"
-    val authConfig = mockAuthConfig(exampleConsumer, emptyList())
+    val authService = mockAuthService(exampleConsumer, emptyList())
     val resp = MockHttpServletResponse()
     val req = mockRequest("GET", invalidPath)
     req.setAttribute("clientName", exampleConsumer)
 
-    val chain = mockFilterChain(AuthorisationFilter(authConfig, mockTelemetryService, mockRoleService))
+    val chain = mockFilterChain(AuthorisationFilter(authService, mockTelemetryService, mockRoleService))
 
     chain.doFilter(req, resp)
 
@@ -159,7 +159,7 @@ class AuthorisationFilterTest {
   @Test
   fun `generates error when subject distinguished name is null in the request`() {
     whenever(mockRequest.getHeader("subject-distinguished-name")).thenReturn(null)
-    val authorisationFilter = AuthorisationFilter(authorisationConfig, mockTelemetryService, mockRoleService)
+    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, mockRoleService)
     authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
 
     verify(mockResponse, times(1)).sendError(403, "No subject-distinguished-name header provided for authorisation")
@@ -167,10 +167,10 @@ class AuthorisationFilterTest {
 
   @Test
   fun `Forbidden if limited access caused by error for path not found in roles, but found in includes`() {
-    whenever(authorisationConfig.consumers).thenReturn(mapOf(exampleConsumer to ConsumerConfig(include = listOf(examplePath), filters = ConsumerFilters(prisons = null), roles = listOf())))
+    whenever(authorisationService.consumers()).thenReturn(mapOf(exampleConsumer to ConsumerConfig(include = listOf(examplePath), filters = ConsumerFilters(prisons = null), roles = listOf())))
     // invalid Role Config
     whenever(mockRoleService.getRoles()).thenReturn(mapOf(roleName to Role(permissions = emptyList(), filters = null)))
-    val authorisationFilter = AuthorisationFilter(authorisationConfig, mockTelemetryService, mockRoleService)
+    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, mockRoleService)
     whenever(mockChain.doFilter(mockRequest, mockResponse)).thenThrow(ServletException(LimitedAccessException()))
 
     authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
@@ -180,8 +180,8 @@ class AuthorisationFilterTest {
 
   @Test
   fun `Forbidden if limited access caused by error for path found in roles (but not in includes)`() {
-    whenever(authorisationConfig.consumers).thenReturn(mapOf(exampleConsumer to ConsumerConfig(include = emptyList(), filters = ConsumerFilters(prisons = null), roles = exampleRoles)))
-    val authorisationFilter = AuthorisationFilter(authorisationConfig, mockTelemetryService, mockRoleService)
+    whenever(authorisationService.consumers()).thenReturn(mapOf(exampleConsumer to ConsumerConfig(include = emptyList(), filters = ConsumerFilters(prisons = null), roles = exampleRoles)))
+    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, mockRoleService)
     whenever(mockChain.doFilter(mockRequest, mockResponse)).thenThrow(ServletException(LimitedAccessException()))
 
     authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
@@ -191,10 +191,10 @@ class AuthorisationFilterTest {
 
   @Test
   fun `Forbidden if certificate serial number is in the certificate revocation list and feature flag is enabled`() {
-    whenever(authorisationConfig.certificateRevocationList).thenReturn(listOf(CERT_SERIAL_FORMATTED, "TEST_SERIAL_NUMBER_2"))
-    whenever(authorisationConfig.consumers).thenReturn(mapOf(exampleConsumer to ConsumerConfig(include = emptyList(), filters = ConsumerFilters(prisons = null), roles = exampleRoles)))
+    whenever(authorisationService.certificateRevocationList()).thenReturn(listOf(CERT_SERIAL_FORMATTED, "TEST_SERIAL_NUMBER_2"))
+    whenever(authorisationService.consumers()).thenReturn(mapOf(exampleConsumer to ConsumerConfig(include = emptyList(), filters = ConsumerFilters(prisons = null), roles = exampleRoles)))
     val resp = MockHttpServletResponse()
-    val authorisationFilter = AuthorisationFilter(authorisationConfig, mockTelemetryService, mockRoleService)
+    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, mockRoleService)
     mockFilterChain(authorisationFilter).doFilter(mockRequest, resp)
     assertThat(resp.status).isEqualTo(403)
     assertThat(resp.errorMessage).isEqualTo("Certificate with serial number 01:AD:3E:D8:7D:D5:AA:84:F5:2D:83:E7:87:E9:90:E4:84:C5:2C:90 has been revoked")
@@ -202,9 +202,9 @@ class AuthorisationFilterTest {
 
   @Test
   fun `NOT Forbidden if certificate serial number is in the certificate revocation list and feature flag is enabled`() {
-    whenever(authorisationConfig.certificateRevocationList).thenReturn(listOf("TEST_SERIAL_NUMBER_3", "TEST_SERIAL_NUMBER_4"))
+    whenever(authorisationService.certificateRevocationList()).thenReturn(listOf("TEST_SERIAL_NUMBER_3", "TEST_SERIAL_NUMBER_4"))
     val resp = MockHttpServletResponse()
-    val authorisationFilter = AuthorisationFilter(authorisationConfig, mockTelemetryService, mockRoleService)
+    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, mockRoleService)
     mockFilterChain(authorisationFilter).doFilter(mockRequest, resp)
     assertThat(resp.errorMessage).isNotEqualTo("Certificate with serial number 01:AD:3E:D8:7D:D5:AA:84:F5:2D:83:E7:87:E9:90:E4:84:C5:2C:90 has been revoked")
   }
@@ -215,7 +215,7 @@ class AuthorisationFilterTest {
     val resp = MockHttpServletResponse()
     val req = mockRequest("GET", examplePath, "O=test,CN=sam", CERT_SERIAL_RAW)
 
-    val chain = fullMockFilterChain(authorisationConfig)
+    val chain = fullMockFilterChain(authorisationService)
 
     chain.doFilter(req, resp)
 
@@ -228,7 +228,7 @@ class AuthorisationFilterTest {
     val resp = MockHttpServletResponse()
     val req = mockRequest("GET", examplePath, "CN=consumer-name")
 
-    val chain = fullMockFilterChain(authorisationConfig)
+    val chain = fullMockFilterChain(authorisationService)
 
     chain.doFilter(req, resp)
 
@@ -241,11 +241,11 @@ class AuthorisationFilterTest {
     val resp = MockHttpServletResponse()
 
     val config = ConsumerConfig(include = null, filters = ConsumerFilters(prisons = listOf("A", "B")), roles = listOf())
-    val authConfig = AuthorisationConfig(mockRoleService, Config(mapOf("consumer-name" to config)))
+    val authorisationService = AuthorisationService(mockRoleService, AuthorisationConfig(mapOf("consumer-name" to config)))
 
     val req = mockRequest("GET", examplePath, "O=test,CN=consumer-name")
 
-    val chain = fullMockFilterChain(authConfig)
+    val chain = fullMockFilterChain(authorisationService)
 
     chain.doFilter(req, resp)
 
@@ -261,11 +261,11 @@ class AuthorisationFilterTest {
     val resp = MockHttpServletResponse()
 
     val consumerConfig = ConsumerConfig(include = null, filters = null, roles = listOf("test-role"))
-    val authConfig = AuthorisationConfig(mockRoleService, Config(mapOf("consumer-name" to consumerConfig)))
+    val authorisationService = AuthorisationService(mockRoleService, AuthorisationConfig(mapOf("consumer-name" to consumerConfig)))
 
     val req = mockRequest("GET", examplePath, "O=test,CN=consumer-name")
 
-    val chain = fullMockFilterChain(authConfig)
+    val chain = fullMockFilterChain(authorisationService)
 
     chain.doFilter(req, resp)
 
@@ -279,11 +279,11 @@ class AuthorisationFilterTest {
     whenever(mockRoleService.getRoles()).thenReturn(mapOf("test-role" to testRole))
 
     val resp = MockHttpServletResponse()
-    val authConfig = AuthorisationConfig(mockRoleService, Config(mapOf("consumer-name" to ConsumerConfig(include = null, filters = ConsumerFilters(prisons = listOf("MDI")), roles = listOf("test-role")))))
+    val authorisationService = AuthorisationService(mockRoleService, AuthorisationConfig(mapOf("consumer-name" to ConsumerConfig(include = null, filters = ConsumerFilters(prisons = listOf("MDI")), roles = listOf("test-role")))))
 
     val req = mockRequest("GET", examplePath, "O=test,CN=consumer-name")
 
-    val chain = fullMockFilterChain(authConfig)
+    val chain = fullMockFilterChain(authorisationService)
 
     chain.doFilter(req, resp)
 
@@ -294,10 +294,10 @@ class AuthorisationFilterTest {
   fun `auth filter chain test`() {
     val resp = MockHttpServletResponse()
     val finalFilter = mock(Filter::class.java)
-    val authConfig = mockAuthConfig("sam")
+    val authService = mockAuthService("sam")
     val req = mockRequest("GET", examplePath, "O=test,CN=sam", CERT_SERIAL_RAW)
 
-    val chain = fullMockFilterChain(authConfig, finalFilter)
+    val chain = fullMockFilterChain(authService, finalFilter)
 
     chain.doFilter(req, resp)
 
@@ -311,7 +311,7 @@ class AuthorisationFilterTest {
 
   @Test
   fun `handles clientName attribute`() {
-    val authorisationFilter = AuthorisationFilter(authorisationConfig, mockTelemetryService, mockRoleService)
+    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, mockRoleService)
     val finalFilter = mock(Filter::class.java)
     mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
     verify(mockTelemetryService, times(1)).setSpanAttribute("clientId", exampleConsumer)
@@ -320,7 +320,7 @@ class AuthorisationFilterTest {
   @Test
   fun `handles missing clientName attribute`() {
     whenever(mockRequest.getHeader("subject-distinguished-name")).thenReturn(null)
-    val authorisationFilter = AuthorisationFilter(authorisationConfig, mockTelemetryService, mockRoleService)
+    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, mockRoleService)
     val finalFilter = mock(Filter::class.java)
     mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
     verify(mockTelemetryService, times(0)).setSpanAttribute("clientId", exampleConsumer)
@@ -328,7 +328,7 @@ class AuthorisationFilterTest {
 
   @Test
   fun `handles a certificate serial number header`() {
-    val authorisationFilter = AuthorisationFilter(authorisationConfig, mockTelemetryService, mockRoleService)
+    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, mockRoleService)
     val finalFilter = mock(Filter::class.java)
     mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
     verify(mockTelemetryService, times(1)).setSpanAttribute("certSerialNumber", CERT_SERIAL_FORMATTED)
@@ -337,7 +337,7 @@ class AuthorisationFilterTest {
   @Test
   fun `handles a NULL certificate serial number header`() {
     whenever(mockRequest.getHeader("cert-serial-number")).thenReturn(null)
-    val authorisationFilter = AuthorisationFilter(authorisationConfig, mockTelemetryService, mockRoleService)
+    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, mockRoleService)
     val finalFilter = mock(Filter::class.java)
     mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
     verify(mockTelemetryService, times(0)).setSpanAttribute("certSerialNumber", CERT_SERIAL_FORMATTED)
@@ -345,7 +345,7 @@ class AuthorisationFilterTest {
 
   @Test
   fun `handles a on behalf of header`() {
-    val authorisationFilter = AuthorisationFilter(authorisationConfig, mockTelemetryService, mockRoleService)
+    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, mockRoleService)
     val finalFilter = mock(Filter::class.java)
     mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
     verify(mockTelemetryService, times(1)).setSpanAttribute("onBehalfOf", "TEST_BEHALF_OF")
@@ -354,7 +354,7 @@ class AuthorisationFilterTest {
   @Test
   fun `handles a NULL on behalf of header`() {
     whenever(mockRequest.getHeader("X-On-Behalf-Of")).thenReturn(null)
-    val authorisationFilter = AuthorisationFilter(authorisationConfig, mockTelemetryService, mockRoleService)
+    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, mockRoleService)
     val finalFilter = mock(Filter::class.java)
     mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
     verify(mockTelemetryService, times(0)).setSpanAttribute("onBehalfOf", "TEST_BEHALF_OF")

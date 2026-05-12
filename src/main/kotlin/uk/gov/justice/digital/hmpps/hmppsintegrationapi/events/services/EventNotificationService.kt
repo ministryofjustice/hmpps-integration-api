@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.messaging.QueueService
@@ -12,6 +11,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.DirectSQSM
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.EventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.SQSMessageAttributes
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.SupervisionStatus
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
 @ConditionalOnProperty("feature-flag.${FeatureFlagConfig.ENABLE_PUBLISH_PENDING_EVENTS}", havingValue = "true")
@@ -19,7 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryServi
 class EventNotificationService(
   private val queueService: QueueService,
   private val objectMapper: ObjectMapper,
-  private val authorisationConfig: AuthorisationConfig,
+  private val authorisationService: AuthorisationService,
   private val telemetryService: TelemetryService,
 ) {
   companion object {
@@ -34,9 +34,9 @@ class EventNotificationService(
    */
   fun sendEventToQueue(event: EventNotification) {
     var messagesSent = 0
-    authorisationConfig.consumersWithQueue().forEach { consumer ->
+    authorisationService.consumersWithQueue().forEach { consumer ->
       if (isEventApplicable(consumer, event)) {
-        val queueName = authorisationConfig.consumers[consumer]?.queueName!!
+        val queueName = authorisationService.consumers()[consumer]?.queueName!!
         try {
           val message =
             DirectSQSMessage(
@@ -62,12 +62,12 @@ class EventNotificationService(
     consumer: String,
     event: EventNotification,
   ): Boolean {
-    val consumerEvents = authorisationConfig.events(consumer)
+    val consumerEvents = authorisationService.events(consumer)
     // Prison Id check
-    val prisonIds = authorisationConfig.allFilters(consumer)?.prisons
+    val prisonIds = authorisationService.allFilters(consumer)?.prisons
     val prisonCheck = prisonIds == null || (event.prisonId != null && prisonIds.contains(event.prisonId))
     // Supervision Status check
-    val supervisionStatuses = authorisationConfig.allFilters(consumer)?.supervisionStatuses
+    val supervisionStatuses = authorisationService.allFilters(consumer)?.supervisionStatuses
     val supervisionStatusCheck = supervisionStatuses == null || (event.metadata?.supervisionStatus != null && supervisionStatuses.contains(event.metadata.supervisionStatus))
 
     // Log custom event

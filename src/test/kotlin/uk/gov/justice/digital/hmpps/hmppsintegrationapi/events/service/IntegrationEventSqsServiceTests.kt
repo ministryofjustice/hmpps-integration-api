@@ -14,7 +14,6 @@ import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ConfigTest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
@@ -22,13 +21,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.Metadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.EventNotificationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.objectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.TestQueueService
 import java.time.LocalDateTime
 
 class IntegrationEventSqsServiceTests : ConfigTest() {
   private lateinit var queueService: TestQueueService
-  val authorisationConfig: AuthorisationConfig = mock()
+  val authorisationService: AuthorisationService = mock()
   val featureFlagConfig: FeatureFlagConfig = FeatureFlagConfig()
   val telemetryService: TelemetryService = mock()
 
@@ -49,9 +49,9 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
   @BeforeEach
   fun setUp() {
     queueService = TestQueueService(queues = listOf("mockQueue1, mockQueue2"))
-    whenever(authorisationConfig.consumersWithQueue()).thenReturn(setOf("mockConsumer1", "mockConsumer2"))
-    whenever(authorisationConfig.events(any())).thenReturn(listOf(event.eventType))
-    whenever(authorisationConfig.consumers).thenReturn(
+    whenever(authorisationService.consumersWithQueue()).thenReturn(setOf("mockConsumer1", "mockConsumer2"))
+    whenever(authorisationService.events(any())).thenReturn(listOf(event.eventType))
+    whenever(authorisationService.consumers()).thenReturn(
       mapOf(
         "mockConsumer1" to ConsumerConfig(queueName = "mockQueue1"),
         "mockConsumer2" to ConsumerConfig(queueName = "mockQueue2"),
@@ -63,7 +63,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
   fun `Publish Event to multiple queues is successful`() {
     // Setup both queues
     queueService = TestQueueService(queues = listOf("mockQueue1", "mockQueue2"))
-    eventNotificationService = EventNotificationService(queueService, objectMapper, authorisationConfig, telemetryService)
+    eventNotificationService = EventNotificationService(queueService, objectMapper, authorisationService, telemetryService)
     eventNotificationService.sendEvent(event)
     val queue1Messages = queueService.getQueue("mockQueue1").messagesAsObjects<EventNotification>()
     val queue2Messages = queueService.getQueue("mockQueue2").messagesAsObjects<EventNotification>()
@@ -77,7 +77,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
   fun `Publish Event to first queue is unsuccessful, but second queue is successful`() {
     // Only setup the test queue to have mockQueue2
     queueService = TestQueueService(queues = listOf("mockQueue2"))
-    eventNotificationService = EventNotificationService(queueService, objectMapper, authorisationConfig, telemetryService)
+    eventNotificationService = EventNotificationService(queueService, objectMapper, authorisationService, telemetryService)
     eventNotificationService.sendEvent(event)
 
     val queue2Messages = queueService.getQueue("mockQueue2").messagesAsObjects<EventNotification>()

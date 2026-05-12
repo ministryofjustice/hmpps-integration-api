@@ -34,7 +34,7 @@ class FiltersIntegrationTest : IntegrationTestBase() {
     whenever(mockRequest.requestURI).thenReturn("/v1/persons/$crn")
     filtersExtractionFilter =
       AuthorisationFilter(
-        authorisationConfig,
+        authorisationService,
         mockTelemetryService,
         RoleService(),
       )

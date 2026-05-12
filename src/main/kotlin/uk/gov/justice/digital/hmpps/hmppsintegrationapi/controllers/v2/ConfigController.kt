@@ -4,21 +4,21 @@ import io.swagger.v3.oas.annotations.Hidden
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ConfigAuthorisation
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
 
 @Hidden
 @RestController("ConfigControllerV2")
 @RequestMapping("/v2/config")
 class ConfigController(
-  var authorisationConfig: AuthorisationConfig,
+  var authorisationService: AuthorisationService,
 ) {
   @GetMapping("authorisation")
-  fun getAuthorisation(): Map<String, ConfigAuthorisation> = authorisationConfig.consumers.entries.associate { it.key to mapConsumerToIncludesAndFilters(it.key) }
+  fun getAuthorisation(): Map<String, ConfigAuthorisation> = authorisationService.consumers().entries.associate { it.key to mapConsumerToIncludesAndFilters(it.key) }
 
   private fun mapConsumerToIncludesAndFilters(consumerName: String): ConfigAuthorisation =
     ConfigAuthorisation(
-      endpoints = authorisationConfig.allPermissions(consumerName),
-      filters = authorisationConfig.allFilters(consumerName),
+      endpoints = authorisationService.allPermissions(consumerName),
+      filters = authorisationService.allFilters(consumerName),
     )
 }

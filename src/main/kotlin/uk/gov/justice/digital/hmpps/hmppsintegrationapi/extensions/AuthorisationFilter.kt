@@ -10,18 +10,18 @@ import jakarta.servlet.http.HttpServletResponse
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.Config
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuthoriseConsumerService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.RoleService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import java.io.IOException
 
 @Component
-@EnableConfigurationProperties(Config::class)
+@EnableConfigurationProperties(AuthorisationConfig::class)
 class AuthorisationFilter(
-  private val authorisationConfig: AuthorisationConfig,
+  private val authorisationService: AuthorisationService,
   private val telemetryService: TelemetryService,
   private val roleService: RoleService,
 ) : Filter {
@@ -47,7 +47,7 @@ class AuthorisationFilter(
 
     // Get the cert serial number
     val certificateSerialNumber = extractCertificateSerialNumber(req.getHeader("cert-serial-number"))
-    if (certificateSerialNumber != null && certificateRevoked(authorisationConfig, certificateSerialNumber, clientName)) {
+    if (certificateSerialNumber != null && certificateRevoked(authorisationService.certificateRevocationList(), certificateSerialNumber, clientName)) {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Certificate with serial number $certificateSerialNumber has been revoked")
       return
     }
@@ -64,7 +64,7 @@ class AuthorisationFilter(
     setSpanAttributes(clientName, certificateSerialNumber, onBehalfOf)
 
     // Set filters
-    val consumerConfig: ConsumerConfig? = authorisationConfig.consumers[clientName]
+    val consumerConfig: ConsumerConfig? = authorisationService.consumers()[clientName]
 
     if (consumerConfig == null) {
       response.sendError(HttpServletResponse.SC_FORBIDDEN, "No consumer authorisation config found for $clientName")
@@ -73,7 +73,7 @@ class AuthorisationFilter(
 
     // Authorise request
 
-    val filters = authorisationConfig.allFilters(clientName)
+    val filters = authorisationService.allFilters(clientName)
     request.setAttribute("filters", filters)
 
     val authoriseConsumerService = AuthoriseConsumerService()
@@ -140,11 +140,11 @@ class AuthorisationFilter(
    * The first entry would apply globally. The second entry would only apply to a consumer with name a-consumer
    */
   fun certificateRevoked(
-    authorisationConfig: AuthorisationConfig,
+    certificateRevocationList: List<String>,
     certificateSerialNumber: String,
     consumerName: String,
   ): Boolean {
-    authorisationConfig.certificateRevocationList.forEach {
+    certificateRevocationList.forEach {
       val entry = it.split("/")
       val serialNumber = entry[0]
       val thisConsumerOnly = if (entry.size > 1) entry[1] else null
@@ -166,7 +166,7 @@ class AuthorisationFilter(
     consumerName: String?,
     requestedPath: String,
   ): Boolean {
-    val consumerConfig: ConsumerConfig? = authorisationConfig.consumers[consumerName]
+    val consumerConfig: ConsumerConfig? = authorisationService.consumers()[consumerName]
     val consumersRoles = consumerConfig?.roles
     val rolesInclude =
       buildList {
@@ -183,7 +183,7 @@ class AuthorisationFilter(
     authoriseConsumerService: AuthoriseConsumerService,
     consumerName: String?,
     requestedPath: String,
-  ) = authoriseConsumerService.doesConsumerHaveIncludesAccess(authorisationConfig.consumers[consumerName], requestedPath)
+  ) = authoriseConsumerService.doesConsumerHaveIncludesAccess(authorisationService.consumers()[consumerName], requestedPath)
 
   private fun setSpanAttributes(
     clientId: String,
