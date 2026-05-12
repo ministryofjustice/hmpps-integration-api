@@ -5,7 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.FileManager
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.Config
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.RoleService
 
 /**
  * Class to get a Map containing the Authorisation Config for all consumers
@@ -20,10 +21,13 @@ class AuthorisationConfigReader(
    * @return Map<String, AuthorisationConfig> A Map of consumers to their associated Authorisation config
    */
   fun read(environment: String): AuthorisationConfig {
-    val yamlMapper = ObjectMapper(YAMLFactory()).registerKotlinModule().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+    val yamlMapper =
+      ObjectMapper(YAMLFactory())
+        .registerKotlinModule()
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     val configFile = fileManager.readFileFromResourcesFolder("application-$environment.yml")
     val config = yamlMapper.readTree(configFile)
-    val authConfig = yamlMapper.treeToValue(config.at("/authorisation"), AuthorisationConfig::class.java)
-    return authConfig
+    val authConfig = yamlMapper.treeToValue(config.at("/authorisation"), Config::class.java)
+    return AuthorisationConfig(RoleService(), authConfig)
   }
 }

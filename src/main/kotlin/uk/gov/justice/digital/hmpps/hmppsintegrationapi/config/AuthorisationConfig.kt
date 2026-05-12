@@ -9,17 +9,25 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters.Companion.NO_FILTERS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory
-import kotlin.collections.ifEmpty
-import kotlin.collections.map
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.RoleService
 
 @Configuration
 @Component
 @ConfigurationProperties(prefix = "authorisation")
-class AuthorisationConfig {
-  var consumers: Map<String, ConsumerConfig?> = emptyMap()
-  var certificateRevocationList: List<String> = emptyList()
+class Config(
+  var consumers: Map<String, ConsumerConfig?> = emptyMap(),
+  var certificateRevocationList: List<String> = emptyList(),
+)
+
+@Configuration
+@Component
+class AuthorisationConfig(
+  private val roleService: RoleService,
+  config: Config,
+) {
+  var consumers: Map<String, ConsumerConfig?> = config.consumers
+  var certificateRevocationList: List<String> = config.certificateRevocationList
 
   /**
    * Returns true if the consumer has access to the endpoint.
@@ -46,7 +54,7 @@ class AuthorisationConfig {
     val merged = mutableSetOf<String>()
     merged.addAll(consumers[consumerName]?.permissions().orEmpty())
     for (roleName in consumers[consumerName]?.roles ?: emptyList()) {
-      merged.addAll(roles[roleName]?.permissions.orEmpty())
+      merged.addAll(roleService.getRoles()[roleName]?.permissions.orEmpty())
     }
     return merged.toList().sorted()
   }
@@ -93,7 +101,7 @@ class AuthorisationConfig {
     val consumerConfig: ConsumerConfig? = consumers[consumerName]
     val roles: List<Role>? =
       consumerConfig?.roles?.mapNotNull {
-        uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles[it]
+        roleService.getRoles()[it]
       }
     return allFilters(consumerConfig, roles)
   }

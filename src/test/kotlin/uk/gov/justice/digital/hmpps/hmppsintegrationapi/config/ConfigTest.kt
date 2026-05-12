@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.springframework.core.io.ClassPathResource
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.RoleService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.AuthorisationConfigReader
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.FileManager
 import java.io.File
@@ -31,10 +32,10 @@ abstract class ConfigTest {
     return mapper.convertValue(featureConfig, object : TypeReference<Map<String, Boolean>>() {})
   }
 
-  /**
-   * Parses the specified config text as a particular config class.
-   */
-  inline fun <reified T> parseConfig(config: String): T = mapper.readValue(config, T::class.java)
+  fun parseAuthorisationConfig(config: String): AuthorisationConfig {
+    val conf = mapper.readValue(config, Config::class.java)
+    return AuthorisationConfig(RoleService(), conf)
+  }
 
   /**
    * Returns a list of all the configured environments.

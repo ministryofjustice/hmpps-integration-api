@@ -94,7 +94,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
   fun `event is applicable to the consumer`() {
     val testEvent = EventNotification(url = "url", eventType = "PERSON_STATUS_CHANGED")
     val config =
-      parseConfig<AuthorisationConfig>(
+      parseAuthorisationConfig(
         """
         consumers:
           tester:
@@ -111,7 +111,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
   fun `event is NOT applicable to the consumer based on event type`() {
     val testEvent = EventNotification(url = "url", eventType = "UNKNOWN_TYPE")
     val config =
-      parseConfig<AuthorisationConfig>(
+      parseAuthorisationConfig(
         """
         consumers:
           tester:
@@ -127,7 +127,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
   fun `event is applicable to the consumer based on the prison id`() {
     val testEvent = EventNotification(url = "url", eventType = "PERSON_ADDRESS_CHANGED", prisonId = "MKI")
     val config =
-      parseConfig<AuthorisationConfig>(
+      parseAuthorisationConfig(
         """
         consumers:
           tester:
@@ -146,7 +146,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
   fun `event is NOT applicable to the consumer based on the prison id`() {
     val testEvent = EventNotification(url = "url", eventType = "PERSON_ADDRESS_CHANGED", prisonId = "MDI")
     val config =
-      parseConfig<AuthorisationConfig>(
+      parseAuthorisationConfig(
         """
         consumers:
           tester:
@@ -177,7 +177,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
         prisonId = messagePrisonId,
         metadata = messageSupervisionStatus?.let { Metadata(it) },
       )
-    val config = parseConfig<AuthorisationConfig>(config)
+    val config = parseAuthorisationConfig(config)
     eventNotificationService = EventNotificationService(queueService, objectMapper, config, telemetryService)
 
     assertThat(eventNotificationService.isEventApplicable("tester", testEvent)).isEqualTo(shouldBeSent)

@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters.Companion.NO_FILTERS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.RoleService
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -65,12 +66,16 @@ class AuthorisationConfigTest : ConfigTest() {
 
   @Test
   fun `validate core endpoint matching with synthetic data`() {
-    val authConfig = AuthorisationConfig()
-    authConfig.consumers =
-      mapOf(
-        "c1" to ConsumerConfig(include = listOf("/tester"), filters = null, roles = listOf()),
-        "c2" to ConsumerConfig(include = listOf("/tester", "/other"), filters = null, roles = listOf()),
-        "c3" to ConsumerConfig(include = listOf("/other"), filters = null, roles = listOf()),
+    val authConfig =
+      AuthorisationConfig(
+        RoleService(),
+        Config(
+          mapOf(
+            "c1" to ConsumerConfig(include = listOf("/tester"), filters = null, roles = listOf()),
+            "c2" to ConsumerConfig(include = listOf("/tester", "/other"), filters = null, roles = listOf()),
+            "c3" to ConsumerConfig(include = listOf("/other"), filters = null, roles = listOf()),
+          ),
+        ),
       )
 
     val matches = authConfig.consumersWithAccess("/tester")
@@ -83,7 +88,7 @@ class AuthorisationConfigTest : ConfigTest() {
   @Test
   fun `compare missing and empty lists in ConsumerConfig`() {
     val missingConfig =
-      parseConfig<AuthorisationConfig>(
+      parseAuthorisationConfig(
         """
         consumers:
           tester:
@@ -93,7 +98,7 @@ class AuthorisationConfigTest : ConfigTest() {
       )
 
     val emptyConfig =
-      parseConfig<AuthorisationConfig>(
+      parseAuthorisationConfig(
         """
         consumers:
           tester:
@@ -113,7 +118,7 @@ class AuthorisationConfigTest : ConfigTest() {
     val consumer = ConsumerConfig(roles = listOf("testing"))
     val role = role("testing") {}
 
-    val filters = AuthorisationConfig().allFilters(consumer, listOf(role))
+    val filters = AuthorisationConfig(RoleService(), Config()).allFilters(consumer, listOf(role))
 
     assertTrue(filters == NO_FILTERS)
   }
@@ -131,7 +136,7 @@ class AuthorisationConfigTest : ConfigTest() {
         }
       }
 
-    val filters = AuthorisationConfig().allFilters(consumer, listOf(role))
+    val filters = AuthorisationConfig(RoleService(), Config()).allFilters(consumer, listOf(role))
 
     assertFalse(filters == NO_FILTERS)
     assertTrue(filters.hasSupervisionStatusesFilter())
@@ -152,7 +157,7 @@ class AuthorisationConfigTest : ConfigTest() {
         }
       }
 
-    val filters = AuthorisationConfig().allFilters(consumer, listOf(role))
+    val filters = AuthorisationConfig(RoleService(), Config()).allFilters(consumer, listOf(role))
 
     assertFalse(filters == NO_FILTERS)
     assertTrue(filters.hasSupervisionStatusesFilter())
@@ -174,7 +179,7 @@ class AuthorisationConfigTest : ConfigTest() {
         }
       }
 
-    val filters = AuthorisationConfig().allFilters(consumer, listOf(role))
+    val filters = AuthorisationConfig(RoleService(), Config()).allFilters(consumer, listOf(role))
 
     assertFalse(filters == NO_FILTERS)
     assertTrue(filters.hasSupervisionStatusesFilter())
