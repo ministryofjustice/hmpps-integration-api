@@ -6,36 +6,38 @@ import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters.Companion.NO_FILTERS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.RoleService
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
-class AuthorisationConfigTest : ConfigTest() {
+class AuthorisationServiceTest : ConfigTest() {
   companion object {
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
   }
 
   @Test
   fun `has permission`() {
-    assertTrue(getAuthConfig("dev").hasAccess("smoke-test-full-access", "/v1/status"))
+    assertTrue(getAuthService("dev").hasAccess("smoke-test-full-access", "/v1/status"))
   }
 
   @Test
   fun `has permission to specific path`() {
-    assertTrue(getAuthConfig("dev").hasAccess("smoke-test-full-access", "/v1/persons/ABC123"))
+    assertTrue(getAuthService("dev").hasAccess("smoke-test-full-access", "/v1/persons/ABC123"))
   }
 
   @Test
   fun `does not have permission`() {
-    assertFalse(getAuthConfig("dev").hasAccess("smoke-test-limited-access", "/v9/status"))
+    assertFalse(getAuthService("dev").hasAccess("smoke-test-limited-access", "/v9/status"))
   }
 
   @Test
   fun `multiple matching consumers`() {
     for (env in listOf("dev", "preprod", "prod")) {
-      val matches = getAuthConfig(env).consumersWithAccess("/v1/status")
+      val matches = getAuthService(env).consumersWithAccess("/v1/status")
       assertNotEquals(0, matches.size)
       assertContains(matches, "event-service")
       assertContains(matches, "kubernetes-health-check-client")
@@ -46,7 +48,7 @@ class AuthorisationConfigTest : ConfigTest() {
     environment: String,
     endpoint: String,
   ): List<String> {
-    val matches = getAuthConfig(environment).consumersWithAccess(endpoint)
+    val matches = getAuthService(environment).consumersWithAccess(endpoint)
     logger.info("Consumers with access to {} in {} : {}", endpoint, environment, matches)
     return matches
   }
@@ -65,15 +67,19 @@ class AuthorisationConfigTest : ConfigTest() {
 
   @Test
   fun `validate core endpoint matching with synthetic data`() {
-    val authConfig = AuthorisationConfig()
-    authConfig.consumers =
-      mapOf(
-        "c1" to ConsumerConfig(include = listOf("/tester"), filters = null, roles = listOf()),
-        "c2" to ConsumerConfig(include = listOf("/tester", "/other"), filters = null, roles = listOf()),
-        "c3" to ConsumerConfig(include = listOf("/other"), filters = null, roles = listOf()),
+    val authorisationService =
+      AuthorisationService(
+        RoleService(),
+        AuthorisationConfig(
+          mapOf(
+            "c1" to ConsumerConfig(include = listOf("/tester"), filters = null, roles = listOf()),
+            "c2" to ConsumerConfig(include = listOf("/tester", "/other"), filters = null, roles = listOf()),
+            "c3" to ConsumerConfig(include = listOf("/other"), filters = null, roles = listOf()),
+          ),
+        ),
       )
 
-    val matches = authConfig.consumersWithAccess("/tester")
+    val matches = authorisationService.consumersWithAccess("/tester")
 
     assertEquals(2, matches.size)
     assertContains(matches, "c1")
@@ -83,7 +89,7 @@ class AuthorisationConfigTest : ConfigTest() {
   @Test
   fun `compare missing and empty lists in ConsumerConfig`() {
     val missingConfig =
-      parseConfig<AuthorisationConfig>(
+      parseAuthorisationConfig(
         """
         consumers:
           tester:
@@ -93,7 +99,7 @@ class AuthorisationConfigTest : ConfigTest() {
       )
 
     val emptyConfig =
-      parseConfig<AuthorisationConfig>(
+      parseAuthorisationConfig(
         """
         consumers:
           tester:
@@ -104,8 +110,8 @@ class AuthorisationConfigTest : ConfigTest() {
         """.trimIndent(),
       )
 
-    assertEquals(missingConfig.consumers["tester"]?.permissions(), emptyConfig.consumers["tester"]?.permissions())
-    assertEquals(missingConfig.consumers["tester"]?.filters, emptyConfig.consumers["tester"]?.filters)
+    assertEquals(missingConfig.consumers()["tester"]?.permissions(), emptyConfig.consumers()["tester"]?.permissions())
+    assertEquals(missingConfig.consumers()["tester"]?.filters, emptyConfig.consumers()["tester"]?.filters)
   }
 
   @Test
@@ -113,9 +119,9 @@ class AuthorisationConfigTest : ConfigTest() {
     val consumer = ConsumerConfig(roles = listOf("testing"))
     val role = role("testing") {}
 
-    val filters = AuthorisationConfig().allFilters(consumer, listOf(role))
+    val filters = AuthorisationService(RoleService(), AuthorisationConfig()).allFilters(consumer, listOf(role))
 
-    assertTrue(filters == NO_FILTERS)
+    assertEquals(filters, NO_FILTERS)
   }
 
   @Test
@@ -131,7 +137,7 @@ class AuthorisationConfigTest : ConfigTest() {
         }
       }
 
-    val filters = AuthorisationConfig().allFilters(consumer, listOf(role))
+    val filters = AuthorisationService(RoleService(), AuthorisationConfig()).allFilters(consumer, listOf(role))
 
     assertFalse(filters == NO_FILTERS)
     assertTrue(filters.hasSupervisionStatusesFilter())
@@ -152,7 +158,7 @@ class AuthorisationConfigTest : ConfigTest() {
         }
       }
 
-    val filters = AuthorisationConfig().allFilters(consumer, listOf(role))
+    val filters = AuthorisationService(RoleService(), AuthorisationConfig()).allFilters(consumer, listOf(role))
 
     assertFalse(filters == NO_FILTERS)
     assertTrue(filters.hasSupervisionStatusesFilter())
@@ -174,7 +180,7 @@ class AuthorisationConfigTest : ConfigTest() {
         }
       }
 
-    val filters = AuthorisationConfig().allFilters(consumer, listOf(role))
+    val filters = AuthorisationService(RoleService(), AuthorisationConfig()).allFilters(consumer, listOf(role))
 
     assertFalse(filters == NO_FILTERS)
     assertTrue(filters.hasSupervisionStatusesFilter())

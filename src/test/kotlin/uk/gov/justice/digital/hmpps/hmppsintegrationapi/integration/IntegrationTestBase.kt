@@ -20,7 +20,6 @@ import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.JdbcTemplateEventNotificationRepository
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.writeAsJson
@@ -33,6 +32,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffende
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.TestConstants.DEFAULT_CRN
 import java.io.File
@@ -66,7 +66,7 @@ abstract class IntegrationTestBase {
   lateinit var nDeliusGateway: NDeliusGateway
 
   @MockitoSpyBean
-  lateinit var authorisationConfig: AuthorisationConfig
+  lateinit var authorisationService: AuthorisationService
 
   @MockitoSpyBean
   lateinit var eventNotificationRepository: JdbcTemplateEventNotificationRepository
@@ -83,7 +83,7 @@ abstract class IntegrationTestBase {
     reset(corePersonRecordGateway)
     reset(nDeliusGateway)
     reset(featureFlagConfig)
-    reset(authorisationConfig)
+    reset(authorisationService)
     reset(eventNotificationRepository)
 
     prisonerOffenderSearchMockServer.stubForGet(
