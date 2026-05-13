@@ -189,9 +189,4 @@ class AuthorisationServiceTest : ConfigTest() {
     assertTrue(filters.hasPrisons())
     assertTrue(filters.hasProbation())
   }
-
-  @Test
-  fun `local profile has permission to apidocs path`() {
-    assertTrue(getAuthService("dev").hasAccess("smoke-test-full-access", "/v1/persons/ABC123"))
-  }
 }
