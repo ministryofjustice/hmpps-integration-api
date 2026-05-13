@@ -48,7 +48,7 @@ services:
 
 feature-flag:
   # API Config
-  course-completion-event-enabled: false
+  course-completion-event-enabled: true
   use-active-alerts-endpoint: false
   use-contact-events-endpoint: false
   csra-endpoint: false
