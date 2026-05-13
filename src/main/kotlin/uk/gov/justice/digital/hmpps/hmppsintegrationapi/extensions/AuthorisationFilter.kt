@@ -8,6 +8,7 @@ import jakarta.servlet.ServletResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.boot.context.properties.EnableConfigurationProperties
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
@@ -20,6 +21,7 @@ import java.io.IOException
 
 @Component
 @EnableConfigurationProperties(AuthorisationConfig::class)
+@Profile("!local")
 class AuthorisationFilter(
   private val authorisationService: AuthorisationService,
   private val telemetryService: TelemetryService,
@@ -193,5 +195,17 @@ class AuthorisationFilter(
     telemetryService.setSpanAttribute("certSerialNumber", certSerialNumber)
     telemetryService.setSpanAttribute("clientId", clientId)
     onBehalfOf?.let { telemetryService.setSpanAttribute("onBehalfOf", it) }
+  }
+}
+
+@Component
+@Profile("local")
+class LocalAuthorisationFilter : Filter {
+  override fun doFilter(
+    request: ServletRequest,
+    response: ServletResponse?,
+    chain: FilterChain,
+  ) {
+    chain.doFilter(request.apply { setAttribute("clientName", "all-access") }, response)
   }
 }
