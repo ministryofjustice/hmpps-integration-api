@@ -22,10 +22,6 @@ import org.springframework.mock.web.MockHttpServletResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.AuthorisationFilter.Companion.CERT_EXPIRY_DATE_HEADER
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.AuthorisationFilter.Companion.CERT_SERIAL_NUMBER_HEADER
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.AuthorisationFilter.Companion.OBO_HEADER
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.AuthorisationFilter.Companion.SDN_HEADER
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
@@ -60,9 +56,9 @@ class AuthorisationFilterTest {
     reset(mockChain)
     reset(featureFlagConfig)
     whenever(mockRequest.requestURI).thenReturn(examplePath)
-    whenever(mockRequest.getHeader(SDN_HEADER)).thenReturn(exampleSubjectDistinguishedName)
-    whenever(mockRequest.getHeader(CERT_SERIAL_NUMBER_HEADER)).thenReturn(CERT_SERIAL_RAW)
-    whenever(mockRequest.getHeader(OBO_HEADER)).thenReturn("TEST_BEHALF_OF")
+    whenever(mockRequest.getHeader("subject-distinguished-name")).thenReturn(exampleSubjectDistinguishedName)
+    whenever(mockRequest.getHeader("cert-serial-number")).thenReturn(CERT_SERIAL_RAW)
+    whenever(mockRequest.getHeader("X-On-Behalf-Of")).thenReturn("TEST_BEHALF_OF")
     whenever(mockRoleService.getRoles()).thenReturn(mapOf(roleName to Role(name = "test", permissions = mutableListOf(examplePath), filters = null)))
   }
 
@@ -73,8 +69,8 @@ class AuthorisationFilterTest {
     certificateSerialNumber: String = CERT_SERIAL_RAW,
   ): HttpServletRequest {
     val req = MockHttpServletRequest(method, path)
-    req.addHeader(SDN_HEADER, subjectDistinguishedName)
-    req.addHeader(CERT_SERIAL_NUMBER_HEADER, certificateSerialNumber)
+    req.addHeader("subject-distinguished-name", subjectDistinguishedName)
+    req.addHeader("cert-serial-number", certificateSerialNumber)
     return req
   }
 
@@ -162,7 +158,7 @@ class AuthorisationFilterTest {
 
   @Test
   fun `generates error when subject distinguished name is null in the request`() {
-    whenever(mockRequest.getHeader(SDN_HEADER)).thenReturn(null)
+    whenever(mockRequest.getHeader("subject-distinguished-name")).thenReturn(null)
     val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, mockRoleService)
     authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
 
@@ -323,7 +319,7 @@ class AuthorisationFilterTest {
 
   @Test
   fun `handles missing clientName attribute`() {
-    whenever(mockRequest.getHeader(SDN_HEADER)).thenReturn(null)
+    whenever(mockRequest.getHeader("subject-distinguished-name")).thenReturn(null)
     val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, mockRoleService)
     val finalFilter = mock(Filter::class.java)
     mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
@@ -340,7 +336,7 @@ class AuthorisationFilterTest {
 
   @Test
   fun `handles a NULL certificate serial number header`() {
-    whenever(mockRequest.getHeader(CERT_SERIAL_NUMBER_HEADER)).thenReturn(null)
+    whenever(mockRequest.getHeader("cert-serial-number")).thenReturn(null)
     val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, mockRoleService)
     val finalFilter = mock(Filter::class.java)
     mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
@@ -357,7 +353,7 @@ class AuthorisationFilterTest {
 
   @Test
   fun `handles a NULL on behalf of header`() {
-    whenever(mockRequest.getHeader(OBO_HEADER)).thenReturn(null)
+    whenever(mockRequest.getHeader("X-On-Behalf-Of")).thenReturn(null)
     val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, mockRoleService)
     val finalFilter = mock(Filter::class.java)
     mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
@@ -366,7 +362,7 @@ class AuthorisationFilterTest {
 
   @Test
   fun `returns the default consumer name when there is a default consumer name and no subject distinguished name`() {
-    whenever(mockRequest.getHeader(SDN_HEADER)).thenReturn(null)
+    whenever(mockRequest.getHeader("subject-distinguished-name")).thenReturn(null)
     whenever(authorisationService.defaultConsumerName()).thenReturn("defaultConsumerName")
     val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, mockRoleService)
     val finalFilter = mock(Filter::class.java)
@@ -376,7 +372,7 @@ class AuthorisationFilterTest {
 
   @Test
   fun `handles a cert-expiry-date header `() {
-    whenever(mockRequest.getHeader(CERT_EXPIRY_DATE_HEADER)).thenReturn("Aug 5 00:28:21 2026 GMT")
+    whenever(mockRequest.getHeader("cert-expiry-date")).thenReturn("Aug 5 00:28:21 2026 GMT")
     val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, mockRoleService)
     val finalFilter = mock(Filter::class.java)
     mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
@@ -385,7 +381,7 @@ class AuthorisationFilterTest {
 
   @Test
   fun `handles a null cert-expiry-date header `() {
-    whenever(mockRequest.getHeader(CERT_EXPIRY_DATE_HEADER)).thenReturn(null)
+    whenever(mockRequest.getHeader("cert-expiry-date")).thenReturn(null)
     val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, mockRoleService)
     val finalFilter = mock(Filter::class.java)
     mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
