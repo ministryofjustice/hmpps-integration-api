@@ -54,11 +54,6 @@ class AuthorisationFilter(
       return
     }
 
-    if (certificateSerialNumber == null) {
-      res.sendError(HttpServletResponse.SC_FORBIDDEN, "No cert-serial-number header provided")
-      return
-    }
-
     // Get the on behalf of token
     val onBehalfOf = req.getHeader("X-On-Behalf-Of")
 
@@ -189,11 +184,11 @@ class AuthorisationFilter(
 
   private fun setSpanAttributes(
     clientId: String,
-    certSerialNumber: String,
+    certSerialNumber: String?,
     onBehalfOf: String?,
   ) {
-    telemetryService.setSpanAttribute("certSerialNumber", certSerialNumber)
     telemetryService.setSpanAttribute("clientId", clientId)
+    certSerialNumber?.let { telemetryService.setSpanAttribute("certSerialNumber", certSerialNumber) }
     onBehalfOf?.let { telemetryService.setSpanAttribute("onBehalfOf", it) }
   }
 }
