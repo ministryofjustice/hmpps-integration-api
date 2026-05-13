@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.OboService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuthoriseConsumerService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.RoleService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
@@ -24,6 +25,7 @@ class AuthorisationFilter(
   private val authorisationService: AuthorisationService,
   private val telemetryService: TelemetryService,
   private val roleService: RoleService,
+  private val oboService: OboService,
 ) : Filter {
   @Throws(IOException::class, ServletException::class)
   override fun doFilter(
@@ -55,8 +57,23 @@ class AuthorisationFilter(
     // Get the on behalf of token
     val onBehalfOf = req.getHeader("X-On-Behalf-Of")
 
+    val decodedJwt = oboService.decodeJwt(onBehalfOf)
+
+    // capture token if decoded
+    if (decodedJwt != null) {
+      telemetryService.captureMessage(
+        "Token found with iss:${decodedJwt["iss"]}, " +
+          "appId:${decodedJwt["appid"]}, " +
+          "unique_name:${decodedJwt["unique_name"]}, " +
+          "kid:${decodedJwt["kid"]}, " +
+          "nbf:${decodedJwt["nbf"]}, " +
+          "exp:${decodedJwt["exp"]}, " +
+          "aud:${decodedJwt["aud"]}",
+      )
+    }
+
     // Set App insights request attributes
-    setSpanAttributes(clientName, certificateSerialNumber, onBehalfOf)
+    setSpanAttributes(clientName, certificateSerialNumber, onBehalfOf, decodedJwt?.get("unique_name") as String?)
 
     // Set filters
     val consumerConfig: ConsumerConfig? = authorisationService.consumers()[clientName]
@@ -186,9 +203,11 @@ class AuthorisationFilter(
     clientId: String,
     certSerialNumber: String?,
     onBehalfOf: String?,
+    uniqueName: String?,
   ) {
     telemetryService.setSpanAttribute("clientId", clientId)
     certSerialNumber?.let { telemetryService.setSpanAttribute("certSerialNumber", certSerialNumber) }
     onBehalfOf?.let { telemetryService.setSpanAttribute("onBehalfOf", it) }
+    uniqueName?.let { telemetryService.setSpanAttribute("uniqueName", it) }
   }
 }
