@@ -5,8 +5,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.RoleService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
 @TestConfiguration
@@ -18,16 +16,4 @@ class WebMvcTestConfiguration {
   @Bean
   @ConditionalOnMissingBean
   fun telemetryService(): TelemetryService = Mockito.mock(TelemetryService::class.java)
-
-  @Bean
-  @ConditionalOnMissingBean
-  fun roleService(): RoleService = RoleService()
-
-  @Bean
-  @ConditionalOnMissingBean
-  fun config(): AuthorisationConfig = AuthorisationConfig()
-
-  @Bean
-  @ConditionalOnMissingBean
-  fun authorisationService(): AuthorisationService = AuthorisationService(roleService(), config())
 }
