@@ -12,9 +12,11 @@ import org.mockito.Mockito.verify
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.whenever
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.FiltersExtractionFilter
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.AuthorisationFilter
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.RoleService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import kotlin.test.Test
 
 @AutoConfigureMockMvc
@@ -23,15 +25,20 @@ class FiltersIntegrationTest : IntegrationTestBase() {
   val mockRequest = mock(HttpServletRequest::class.java)
   val mockResponse = mock(HttpServletResponse::class.java)
   val mockChain = mock(FilterChain::class.java)
+  val mockTelemetryService = mock(TelemetryService::class.java)
 
-  lateinit var filtersExtractionFilter: FiltersExtractionFilter
+  lateinit var filtersExtractionFilter: AuthorisationFilter
 
   @BeforeEach
   fun setup() {
+    whenever(mockRequest.requestURI).thenReturn("/v1/persons/$crn")
     filtersExtractionFilter =
-      FiltersExtractionFilter(
-        authorisationConfig,
+      AuthorisationFilter(
+        authorisationService,
+        mockTelemetryService,
+        RoleService(),
       )
+    whenever(mockRequest.getHeader("cert-serial-number")).thenReturn(certSerialNumber)
   }
 
   @Test
@@ -44,7 +51,7 @@ class FiltersIntegrationTest : IntegrationTestBase() {
     //      filters:
     //        mappa-categories:
     //          - "*"
-    whenever(mockRequest.getAttribute("clientName")).thenReturn("automated-test-client-mappa")
+    whenever(mockRequest.getHeader("subject-distinguished-name")).thenReturn("C=GB,ST=London,L=London,O=Home Office,CN=automated-test-client-mappa")
     filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)
     verify(mockRequest, times(1)).setAttribute(eq("filters"), filtersCapture.capture())
     val mappaCategories = filtersCapture.value?.mappaCategories
@@ -60,7 +67,7 @@ class FiltersIntegrationTest : IntegrationTestBase() {
     //    filters:
     //      mappa-categories:
     //        - CAT1
-    whenever(mockRequest.getAttribute("clientName")).thenReturn("automated-test-client-mappa-2")
+    whenever(mockRequest.getHeader("subject-distinguished-name")).thenReturn("C=GB,ST=London,L=London,O=Home Office,CN=automated-test-client-mappa-2")
     filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)
     verify(mockRequest, times(1)).setAttribute(eq("filters"), filtersCapture.capture())
     val mappaCategories = filtersCapture.value.mappaCategories

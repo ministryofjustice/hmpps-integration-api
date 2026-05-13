@@ -27,7 +27,6 @@ import org.springframework.http.server.ServerHttpRequest
 import org.springframework.http.server.ServerHttpResponse
 import org.springframework.http.server.ServletServerHttpRequest
 import org.springframework.http.server.ServletServerHttpResponse
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
@@ -40,11 +39,12 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.redactionPolicy
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
 class RedactionResponseBodyAdviceTest {
   private lateinit var objectMapper: ObjectMapper
-  private lateinit var authorisationConfig: AuthorisationConfig
+  private lateinit var authorisationService: AuthorisationService
   private lateinit var accessFor: GetCaseAccess
   private lateinit var telemetryService: TelemetryService
   private lateinit var advice: RedactionResponseBodyAdvice
@@ -56,7 +56,7 @@ class RedactionResponseBodyAdviceTest {
   @BeforeEach
   fun setup() {
     objectMapper = ObjectMapper().registerKotlinModule()
-    authorisationConfig = mock(AuthorisationConfig::class.java)
+    authorisationService = mock(AuthorisationService::class.java)
 
     // Mock global redactions
     val redaction = mock(ResponseRedaction::class.java)
@@ -84,7 +84,7 @@ class RedactionResponseBodyAdviceTest {
           ),
       )
 
-    advice = RedactionResponseBodyAdvice(authorisationConfig, accessFor, telemetryService)
+    advice = RedactionResponseBodyAdvice(authorisationService, accessFor, telemetryService)
   }
 
   @AfterEach
@@ -165,7 +165,7 @@ class RedactionResponseBodyAdviceTest {
     val servletRequest = ServletServerHttpRequest(serverHttpRequest)
 
     val consumerConfig = ConsumerConfig(emptyList(), null, listOf(roleName))
-    whenever(authorisationConfig.consumers).thenReturn(mapOf("clientA" to consumerConfig))
+    whenever(authorisationService.consumers()).thenReturn(mapOf("clientA" to consumerConfig))
 
     // Create a spy redaction to verify that it's invoked
     val redaction = mock(ResponseRedaction::class.java)
@@ -213,7 +213,7 @@ class RedactionResponseBodyAdviceTest {
     whenever(serverHttpRequest.requestURI).thenReturn(examplePath)
 
     val servletRequest = ServletServerHttpRequest(serverHttpRequest)
-    whenever(authorisationConfig.consumers).thenReturn(emptyMap())
+    whenever(authorisationService.consumers()).thenReturn(emptyMap())
 
     val body = mapOf("field" to "value")
 
@@ -297,7 +297,7 @@ class RedactionResponseBodyAdviceTest {
     whenever(serverHttpRequest.getAttribute("clientName")).thenReturn("clientA")
     whenever(serverHttpRequest.getAttribute("hmppsId")).thenReturn(crn)
     val consumerConfig = ConsumerConfig(emptyList(), null, listOf(roleName))
-    whenever(authorisationConfig.consumers).thenReturn(mapOf("clientA" to consumerConfig))
+    whenever(authorisationService.consumers()).thenReturn(mapOf("clientA" to consumerConfig))
     val body = DataResponse(mapOf("test" to "unmaskedValue"))
 
     fun callFunction(): Any? =
