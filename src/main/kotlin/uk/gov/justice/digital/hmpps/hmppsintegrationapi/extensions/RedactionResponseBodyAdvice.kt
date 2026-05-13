@@ -14,16 +14,16 @@ import org.springframework.http.server.ServletServerHttpResponse
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.servlet.HandlerMapping
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionContext
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
 @ControllerAdvice
 class RedactionResponseBodyAdvice(
-  val authorisationConfig: AuthorisationConfig,
+  val authorisationService: AuthorisationService,
   val accessFor: GetCaseAccess,
   val telemetryService: TelemetryService,
 ) : ResponseBodyAdvice<Any> {
@@ -86,7 +86,7 @@ class RedactionResponseBodyAdvice(
 
   private fun getRedactionPoliciesFromRoles(subjectDistinguishedName: String?): List<RedactionPolicy> =
     buildList {
-      val consumerRoles = authorisationConfig.consumers[subjectDistinguishedName]?.roles.orEmpty()
+      val consumerRoles = authorisationService.consumers()[subjectDistinguishedName]?.roles.orEmpty()
       consumerRoles.forEach { role ->
         addAll(roles[role]?.redactionPolicies.orEmpty())
       }

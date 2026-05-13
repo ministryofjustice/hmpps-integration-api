@@ -45,7 +45,7 @@ class IntegrationEventDirectSqsTest : IntegrationTestInMemoryQueueBase("testqueu
 
   @AfterEach
   fun resetMocks() {
-    Mockito.reset(authorisationConfig)
+    Mockito.reset(authorisationService)
   }
 
   fun getEvent(
