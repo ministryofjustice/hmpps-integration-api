@@ -359,4 +359,14 @@ class AuthorisationFilterTest {
     mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
     verify(mockTelemetryService, times(0)).setSpanAttribute("onBehalfOf", "TEST_BEHALF_OF")
   }
+
+  @Test
+  fun `returns the default consumer name when there is a default consumer name and no subject distinguished name`() {
+    whenever(mockRequest.getHeader("subject-distinguished-name")).thenReturn(null)
+    whenever(authorisationService.defaultConsumerName()).thenReturn("defaultConsumerName")
+    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, mockRoleService)
+    val finalFilter = mock(Filter::class.java)
+    mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
+    verify(mockTelemetryService, times(1)).setSpanAttribute("clientId", "defaultConsumerName")
+  }
 }

@@ -78,6 +78,8 @@ class AuthorisationService(
 
   fun certificateRevocationList() = authorisationConfig.certificateRevocationList
 
+  fun defaultConsumerName() = authorisationConfig.defaultConsumerName
+
   /**
    * Returns true if the endpoint matches any of the patterns.
    */

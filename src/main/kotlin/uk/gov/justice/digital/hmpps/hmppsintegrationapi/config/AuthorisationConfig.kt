@@ -11,4 +11,5 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 class AuthorisationConfig(
   var consumers: Map<String, ConsumerConfig?> = emptyMap(),
   var certificateRevocationList: List<String> = emptyList(),
+  var defaultConsumerName: String? = null,
 )

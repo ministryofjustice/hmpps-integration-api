@@ -8,7 +8,6 @@ import jakarta.servlet.ServletResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.boot.context.properties.EnableConfigurationProperties
-import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
@@ -21,7 +20,6 @@ import java.io.IOException
 
 @Component
 @EnableConfigurationProperties(AuthorisationConfig::class)
-@Profile("!local")
 class AuthorisationFilter(
   private val authorisationService: AuthorisationService,
   private val telemetryService: TelemetryService,
@@ -97,7 +95,9 @@ class AuthorisationFilter(
 
   fun extractConsumerName(subjectDistinguishedName: String?): String? {
     if (subjectDistinguishedName.isNullOrEmpty()) {
-      return null
+      // Return the profiles default consumer name or return null
+      // Default consumer name should only be set for the local profile
+      return authorisationService.defaultConsumerName()
     }
     val match = Regex("^.*,CN=(.*)$").find(subjectDistinguishedName)
 
@@ -190,17 +190,5 @@ class AuthorisationFilter(
     telemetryService.setSpanAttribute("clientId", clientId)
     certSerialNumber?.let { telemetryService.setSpanAttribute("certSerialNumber", certSerialNumber) }
     onBehalfOf?.let { telemetryService.setSpanAttribute("onBehalfOf", it) }
-  }
-}
-
-@Component
-@Profile("local")
-class LocalAuthorisationFilter : Filter {
-  override fun doFilter(
-    request: ServletRequest,
-    response: ServletResponse?,
-    chain: FilterChain,
-  ) {
-    chain.doFilter(request.apply { setAttribute("clientName", "all-access") }, response)
   }
 }

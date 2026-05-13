@@ -51,6 +51,7 @@ authorisation:
       roles:
         - "full-access"
       filters:
+  default-consumer-name: "all-access"
 
 hmpps.sqs:
   provider: localstack

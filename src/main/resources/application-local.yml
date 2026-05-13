@@ -102,3 +102,4 @@ authorisation:
     all-access:
       roles:
         - "full-access"
+  default-consumer-name: "all-access"
