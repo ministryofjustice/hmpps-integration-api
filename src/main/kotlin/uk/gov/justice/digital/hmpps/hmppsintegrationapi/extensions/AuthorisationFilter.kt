@@ -25,6 +25,13 @@ class AuthorisationFilter(
   private val telemetryService: TelemetryService,
   private val roleService: RoleService,
 ) : Filter {
+  companion object {
+    const val SDN_HEADER = "subject-distinguished-name"
+    const val CERT_SERIAL_NUMBER_HEADER = "cert-serial-number"
+    const val CERT_EXPIRY_DATE_HEADER = "cert-expiry-date"
+    const val OBO_HEADER = "X-On-Behalf-Of"
+  }
+
   @Throws(IOException::class, ServletException::class)
   override fun doFilter(
     request: ServletRequest,
@@ -35,7 +42,7 @@ class AuthorisationFilter(
     val res = response as HttpServletResponse
 
     // Get the consumer Name from the SDN
-    val subjectDistinguishedName = req.getHeader("subject-distinguished-name")
+    val subjectDistinguishedName = req.getHeader(SDN_HEADER)
     val clientName = extractConsumerName(subjectDistinguishedName)
 
     if (clientName == null) {
@@ -46,17 +53,20 @@ class AuthorisationFilter(
     req.setAttribute("clientName", clientName)
 
     // Get the cert serial number
-    val certificateSerialNumber = extractCertificateSerialNumber(req.getHeader("cert-serial-number"))
+    val certificateSerialNumber = extractCertificateSerialNumber(req.getHeader(CERT_SERIAL_NUMBER_HEADER))
     if (certificateSerialNumber != null && certificateRevoked(authorisationService.certificateRevocationList(), certificateSerialNumber, clientName)) {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Certificate with serial number $certificateSerialNumber has been revoked")
       return
     }
 
+    // Get certificate expiry date
+    val certificateExpiryDate = req.getHeader(CERT_EXPIRY_DATE_HEADER)
+
     // Get the on behalf of token
-    val onBehalfOf = req.getHeader("X-On-Behalf-Of")
+    val onBehalfOf = req.getHeader(OBO_HEADER)
 
     // Set App insights request attributes
-    setSpanAttributes(clientName, certificateSerialNumber, onBehalfOf)
+    setSpanAttributes(clientName, certificateSerialNumber, onBehalfOf, certificateExpiryDate)
 
     // Set filters
     val consumerConfig: ConsumerConfig? = authorisationService.consumers()[clientName]
@@ -186,9 +196,11 @@ class AuthorisationFilter(
     clientId: String,
     certSerialNumber: String?,
     onBehalfOf: String?,
+    certExpiryDate: String?,
   ) {
     telemetryService.setSpanAttribute("clientId", clientId)
     certSerialNumber?.let { telemetryService.setSpanAttribute("certSerialNumber", certSerialNumber) }
+    certExpiryDate?.let { telemetryService.setSpanAttribute("certExpiryDate", certExpiryDate) }
     onBehalfOf?.let { telemetryService.setSpanAttribute("onBehalfOf", it) }
   }
 }
