@@ -5,14 +5,17 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ReferenceData
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ReferenceDataService
 
 @RestController
+@EnableConfigurationProperties(AuthorisationConfig::class)
 @RequestMapping("/v1/hmpps/reference-data")
 @Tag(name = "Reference Data")
 class ReferenceDataController(

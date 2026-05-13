@@ -30,7 +30,7 @@ class AddressIntegrationTest : IntegrationTestBase() {
 
   @BeforeEach
   fun setup() {
-    reset(authorisationService)
+    reset(authorisationConfig)
     corePersonRecordMockServer.stubForGet(
       "/person/prison/$nomsId",
       File(
@@ -131,7 +131,7 @@ class AddressIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `returns probation addresses only when only PROBATION supervision status`() {
-    whenever(authorisationService.allFilters(any(), anyList())).thenReturn(ConsumerFilters(supervisionStatuses = listOf(SupervisionStatus.PROBATION.name)))
+    whenever(authorisationConfig.allFilters(any(), anyList())).thenReturn(ConsumerFilters(supervisionStatuses = listOf(SupervisionStatus.PROBATION.name)))
 
     val response =
       callApi(path)
@@ -144,7 +144,7 @@ class AddressIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `returns prison addresses only when only PRISON supervision status`() {
-    whenever(authorisationService.allFilters(any(), anyList())).thenReturn(ConsumerFilters(supervisionStatuses = listOf(SupervisionStatus.PRISONS.name)))
+    whenever(authorisationConfig.allFilters(any(), anyList())).thenReturn(ConsumerFilters(supervisionStatuses = listOf(SupervisionStatus.PRISONS.name)))
     val response =
       callApi(path)
         .andExpect(status().isOk)
@@ -156,7 +156,7 @@ class AddressIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `returns probation and prison addresses when PRISON and PROBATION supervision status`() {
-    whenever(authorisationService.allFilters(any(), anyList())).thenReturn(ConsumerFilters(supervisionStatuses = listOf(SupervisionStatus.PRISONS.name, SupervisionStatus.PROBATION.name)))
+    whenever(authorisationConfig.allFilters(any(), anyList())).thenReturn(ConsumerFilters(supervisionStatuses = listOf(SupervisionStatus.PRISONS.name, SupervisionStatus.PROBATION.name)))
     val response =
       callApi(path)
         .andExpect(status().isOk)

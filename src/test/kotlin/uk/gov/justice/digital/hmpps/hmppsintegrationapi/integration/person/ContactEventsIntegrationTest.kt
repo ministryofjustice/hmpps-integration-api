@@ -40,7 +40,7 @@ class ContactEventsIntegrationTest : IntegrationTestBase() {
   fun resetMocks() {
     nDeliusMockServer.resetAll()
     whenever(featureFlagConfig.getConfigFlagValue(USE_CONTACT_EVENTS_ENDPOINT)).thenReturn(true)
-    whenever(authorisationService.allFilters(any(), anyList())).thenReturn(ConsumerFilters(mappaCategories = listOf(MappaCategory.CAT4)))
+    whenever(authorisationConfig.allFilters(any(), anyList())).thenReturn(ConsumerFilters(mappaCategories = listOf(MappaCategory.CAT4)))
     prisonerOffenderSearchMockServer.stubForGet(
       "/prisoner/$nomsId",
       File(
