@@ -76,7 +76,7 @@ class AuthorisationFilter(
     }
 
     // Set App insights request attributes
-    setSpanAttributes(clientName, certificateSerialNumber, onBehalfOf, certificateExpiryDate)
+    setSpanAttributes(clientName, certificateSerialNumber, onBehalfOf, decodedJwt?.get("unique_name") as String?, certificateExpiryDate)
 
     // Set filters
     val consumerConfig: ConsumerConfig? = authorisationService.consumers()[clientName]

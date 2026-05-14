@@ -6,7 +6,6 @@ data class ConsumerConfig(
   val roles: List<String>? = null,
   val notes: String? = null,
   val queueName: String? = null,
-  val oboConfig: String? = null,
 ) {
   fun permissions(): List<String>? = include
 }
