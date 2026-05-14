@@ -23,8 +23,6 @@ generic-service:
     other-services:
       APPINSIGHTS_INSTRUMENTATIONKEY: "azure-app-insights"
       SENTRY_DSN: "sentry"
-    cp-course-completion-events-secret:
-      HMPPS_SQS_QUEUES_EDUCATIONCOURSECOMPLETIONEVENTS_QUEUE_NAME: "sqs_queue_name"
     event-test-client-queue:
       TEST_CLIENT_QUEUE_NAME: "sqs_name"
       TEST_CLIENT_QUEUE_ARN: "sqs_arn"
