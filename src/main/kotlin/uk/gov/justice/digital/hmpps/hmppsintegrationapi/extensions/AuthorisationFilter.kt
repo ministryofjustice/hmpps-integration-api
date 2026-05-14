@@ -15,6 +15,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import java.io.IOException
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @Component
 @EnableConfigurationProperties(AuthorisationConfig::class)
@@ -50,7 +53,15 @@ class AuthorisationFilter(
     }
 
     // Get certificate expiry date
-    val certificateExpiryDate = req.getHeader("cert-expiry-date")
+    val certificateExpiryDate =
+      req.getHeader("cert-expiry-date")?.let {
+        try {
+          ZonedDateTime.parse(it, DateTimeFormatter.ofPattern("MMM d HH:mm:ss yyyy zzz", Locale.ENGLISH)).toInstant().toString()
+        } catch (ex: Exception) {
+          telemetryService.captureException(RuntimeException("Failed to parse certificate expiry date $it. ${ex.message}"))
+          null
+        }
+      }
 
     // Get the on behalf of token
     val onBehalfOf = req.getHeader("X-On-Behalf-Of")

@@ -13,6 +13,7 @@ import org.mockito.Mockito.mock
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.whenever
@@ -399,12 +400,33 @@ class AuthorisationFilterTest {
   }
 
   @Test
-  fun `handles a cert-expiry-date header `() {
+  fun `handles a 1 digit day cert-expiry-date header `() {
     whenever(mockRequest.getHeader("cert-expiry-date")).thenReturn("Aug 5 00:28:21 2026 GMT")
     val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService)
     val finalFilter = mock(Filter::class.java)
     mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
-    verify(mockTelemetryService, times(1)).setSpanAttribute("certExpiryDate", "Aug 5 00:28:21 2026 GMT")
+    verify(mockTelemetryService, times(1)).setSpanAttribute("certExpiryDate", "2026-08-05T00:28:21Z")
+  }
+
+  @Test
+  fun `handles a 2 digit day cert-expiry-date header `() {
+    whenever(mockRequest.getHeader("cert-expiry-date")).thenReturn("Jan 15 15:28:21 2026 GMT")
+    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, mockRoleService)
+    val finalFilter = mock(Filter::class.java)
+    mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
+    verify(mockTelemetryService, times(1)).setSpanAttribute("certExpiryDate", "2026-01-15T15:28:21Z")
+  }
+
+  @Test
+  fun `handles an invalid format cert-expiry-date header and logs to sentry`() {
+    whenever(mockRequest.getHeader("cert-expiry-date")).thenReturn("Wrong format")
+    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, mockRoleService)
+    val finalFilter = mock(Filter::class.java)
+    mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
+    verify(mockTelemetryService, times(0)).setSpanAttribute(eq("certExpiryDate"), any())
+    val exception = argumentCaptor<Throwable>()
+    verify(mockTelemetryService, times(1)).captureException(exception.capture())
+    assertThat(exception.firstValue.message).contains("Failed to parse certificate expiry date")
   }
 
   @Test
