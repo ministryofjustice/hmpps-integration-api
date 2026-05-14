@@ -369,4 +369,22 @@ class AuthorisationFilterTest {
     mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
     verify(mockTelemetryService, times(1)).setSpanAttribute("clientId", "defaultConsumerName")
   }
+
+  @Test
+  fun `handles a cert-expiry-date header `() {
+    whenever(mockRequest.getHeader("cert-expiry-date")).thenReturn("Aug 5 00:28:21 2026 GMT")
+    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, mockRoleService)
+    val finalFilter = mock(Filter::class.java)
+    mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
+    verify(mockTelemetryService, times(1)).setSpanAttribute("certExpiryDate", "Aug 5 00:28:21 2026 GMT")
+  }
+
+  @Test
+  fun `handles a null cert-expiry-date header `() {
+    whenever(mockRequest.getHeader("cert-expiry-date")).thenReturn(null)
+    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, mockRoleService)
+    val finalFilter = mock(Filter::class.java)
+    mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
+    verify(mockTelemetryService, times(0)).setSpanAttribute(eq("certExpiryDate"), any())
+  }
 }
