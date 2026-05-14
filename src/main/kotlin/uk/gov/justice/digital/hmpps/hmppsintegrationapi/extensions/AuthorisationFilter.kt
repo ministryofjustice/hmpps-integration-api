@@ -54,6 +54,9 @@ class AuthorisationFilter(
       return
     }
 
+    // Get certificate expiry date
+    val certificateExpiryDate = req.getHeader("cert-expiry-date")
+
     // Get the on behalf of token
     val onBehalfOf = req.getHeader("X-On-Behalf-Of")
 
@@ -73,7 +76,7 @@ class AuthorisationFilter(
     }
 
     // Set App insights request attributes
-    setSpanAttributes(clientName, certificateSerialNumber, onBehalfOf, decodedJwt?.get("unique_name") as String?)
+    setSpanAttributes(clientName, certificateSerialNumber, onBehalfOf, certificateExpiryDate)
 
     // Set filters
     val consumerConfig: ConsumerConfig? = authorisationService.consumers()[clientName]
@@ -204,9 +207,11 @@ class AuthorisationFilter(
     certSerialNumber: String?,
     onBehalfOf: String?,
     uniqueName: String?,
+    certExpiryDate: String?,
   ) {
     telemetryService.setSpanAttribute("clientId", clientId)
     certSerialNumber?.let { telemetryService.setSpanAttribute("certSerialNumber", certSerialNumber) }
+    certExpiryDate?.let { telemetryService.setSpanAttribute("certExpiryDate", certExpiryDate) }
     onBehalfOf?.let { telemetryService.setSpanAttribute("onBehalfOf", it) }
     uniqueName?.let { telemetryService.setSpanAttribute("uniqueName", it) }
   }
