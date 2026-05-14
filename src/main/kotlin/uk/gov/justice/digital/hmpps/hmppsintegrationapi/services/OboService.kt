@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import io.jsonwebtoken.Claims
-import io.jsonwebtoken.Jws
 import io.jsonwebtoken.Jwts
 import org.springframework.stereotype.Component
 
@@ -13,8 +12,8 @@ class OboService {
         Jwts
           .parser()
           .build()
-          .parse(jwtToken) as Jws<Claims>
-      jwtDecoded.payload["kid"] = jwtDecoded.header["kid"] // Add kid value as thats in the header not playload
+          .parseUnsecuredClaims(jwtToken)
+      jwtDecoded.payload["kid"] = jwtDecoded.header["kid"] // Add kid value as that's in the header not payload
       jwtDecoded.payload
     } catch (e: Exception) {
       null // return null as it fails decode passed in token
