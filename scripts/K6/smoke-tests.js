@@ -661,7 +661,24 @@ function verify_headers() {
     headers: {
       'Content-Type': 'application/json',
       'x-api-key': api_key,
-      'X-On-Behalf-Of': 'Test-Behalf-Of'
+// Test jwt, decoded as follows
+      //      {
+      //        "header": {
+      //          "alg":"none"
+      //          "kid":"testKid"
+      //        }
+      //        "payload":{
+      //          "sub":"1234567890"
+      //          "name":"John Doe"
+      //          "admin":true
+      //          "iat":1516239022
+      //          "aud":"testAud"
+      //          "iss":"testIss"
+      //          "appid":"testId"
+      //          "unique_name":"testName"
+      //        }
+      //      }
+      'X-On-Behalf-Of': "eyJhbGciOiJub25lIiwia2lkIjoidGVzdEtpZCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMiwiYXVkIjoidGVzdEF1ZCIsImlzcyI6InRlc3RJc3MiLCJhcHBpZCI6InRlc3RJZCIsInVuaXF1ZV9uYW1lIjoidGVzdE5hbWUifQ."
     },
   };
 

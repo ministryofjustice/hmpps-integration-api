@@ -58,8 +58,14 @@ class AuthorisationFilter(
     // Get the on behalf of token
     val onBehalfOf = req.getHeader("X-On-Behalf-Of")
 
+    val oboUsername =
+      onBehalfOf?.let {
+        val oboService = authorisationService.oboService(clientName)
+        oboService?.extractUsername(it)
+      }
+
     // Set App insights request attributes
-    setSpanAttributes(clientName, certificateSerialNumber, onBehalfOf, certificateExpiryDate)
+    setSpanAttributes(clientName, certificateSerialNumber, oboUsername, certificateExpiryDate)
 
     // Set filters
     val consumerConfig: ConsumerConfig? = authorisationService.consumers()[clientName]
@@ -194,6 +200,6 @@ class AuthorisationFilter(
     telemetryService.setSpanAttribute("clientId", clientId)
     certSerialNumber?.let { telemetryService.setSpanAttribute("certSerialNumber", certSerialNumber) }
     certExpiryDate?.let { telemetryService.setSpanAttribute("certExpiryDate", certExpiryDate) }
-    onBehalfOf?.let { telemetryService.setSpanAttribute("onBehalfOf", it) }
+    onBehalfOf?.let { telemetryService.setSpanAttribute("onBehalfOf", onBehalfOf) }
   }
 }

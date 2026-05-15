@@ -27,10 +27,12 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.RoleService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.EntraJwtOboService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
 private const val CERT_SERIAL_RAW = "9572494320151578633330348943480876283449388176"
 private const val CERT_SERIAL_FORMATTED = "01:AD:3E:D8:7D:D5:AA:84:F5:2D:83:E7:87:E9:90:E4:84:C5:2C:90"
+private const val OBO_TEST_JWT = "eyJhbGciOiJub25lIiwia2lkIjoidGVzdEtpZCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMiwiYXVkIjoidGVzdEF1ZCIsImlzcyI6InRlc3RJc3MiLCJhcHBpZCI6InRlc3RJZCIsInVuaXF1ZV9uYW1lIjoidGVzdE5hbWUifQ."
 
 class AuthorisationFilterTest {
   private val examplePath: String = "/v1/persons"
@@ -58,8 +60,9 @@ class AuthorisationFilterTest {
     whenever(mockRequest.requestURI).thenReturn(examplePath)
     whenever(mockRequest.getHeader("subject-distinguished-name")).thenReturn(exampleSubjectDistinguishedName)
     whenever(mockRequest.getHeader("cert-serial-number")).thenReturn(CERT_SERIAL_RAW)
-    whenever(mockRequest.getHeader("X-On-Behalf-Of")).thenReturn("TEST_BEHALF_OF")
+    whenever(mockRequest.getHeader("X-On-Behalf-Of")).thenReturn(OBO_TEST_JWT)
     whenever(mockRoleService.getRoles()).thenReturn(mapOf(roleName to Role(name = "test", permissions = mutableListOf(examplePath), filters = null)))
+    whenever(authorisationService.oboService("consumer-name")).thenReturn(EntraJwtOboService())
   }
 
   fun mockRequest(
@@ -348,7 +351,7 @@ class AuthorisationFilterTest {
     val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, mockRoleService)
     val finalFilter = mock(Filter::class.java)
     mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
-    verify(mockTelemetryService, times(1)).setSpanAttribute("onBehalfOf", "TEST_BEHALF_OF")
+    verify(mockTelemetryService, times(1)).setSpanAttribute("onBehalfOf", "testName")
   }
 
   @Test
@@ -357,7 +360,7 @@ class AuthorisationFilterTest {
     val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, mockRoleService)
     val finalFilter = mock(Filter::class.java)
     mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
-    verify(mockTelemetryService, times(0)).setSpanAttribute("onBehalfOf", "TEST_BEHALF_OF")
+    verify(mockTelemetryService, times(0)).setSpanAttribute("onBehalfOf", "testName")
   }
 
   @Test
