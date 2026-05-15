@@ -3,6 +3,8 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.maps.shouldContain
 import io.kotest.matchers.nulls.shouldBeNull
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onBehalfOf.EntraJwtOboService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onBehalfOf.OboService
 
 class OboServiceTest :
   DescribeSpec(
@@ -30,7 +32,7 @@ class OboServiceTest :
       //      }
       val testJwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InRlc3RLaWQifQ.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMiwiYXVkIjoidGVzdEF1ZCIsImlzcyI6InRlc3RJc3MiLCJuYmYiOjE3NzgwODMyNTMsImV4cCI6MTk3ODA4NzI2MywiYXBwaWQiOiJ0ZXN0SWQiLCJ1bmlxdWVfbmFtZSI6InRlc3ROYW1lIn0.bppq2M56ruzzxwfEWK408np-22hAJ2vwrHlbHGuWDq0"
 
-      val oboService: OboService = OboService()
+      val oboService: OboService = EntraJwtOboService()
 
       it("decodes and reads values from jwt") {
         val result = oboService.decodeJwt(testJwt)
@@ -45,7 +47,7 @@ class OboServiceTest :
       }
 
       it("returns null if jwt is empty") {
-        val result = oboService.decodeJwt(null)
+        val result = oboService.decodeJwt("")
 
         result.shouldBeNull()
       }

@@ -7,15 +7,17 @@ import jakarta.servlet.ServletRequest
 import jakarta.servlet.ServletResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.OboService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuthoriseConsumerService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.RoleService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onBehalfOf.OboService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import java.io.IOException
 
@@ -33,6 +35,7 @@ class AuthorisationFilter(
     response: ServletResponse?,
     chain: FilterChain,
   ) {
+    val log: Logger = LoggerFactory.getLogger(this::class.java)
     val req = request as HttpServletRequest
     val res = response as HttpServletResponse
 
@@ -64,15 +67,7 @@ class AuthorisationFilter(
 
     // capture token if decoded
     if (decodedJwt != null) {
-      telemetryService.captureMessage(
-        "Token found with iss:${decodedJwt["iss"]}, " +
-          "appId:${decodedJwt["appid"]}, " +
-          "unique_name:${decodedJwt["unique_name"]}, " +
-          "kid:${decodedJwt["kid"]}, " +
-          "nbf:${decodedJwt["nbf"]}, " +
-          "exp:${decodedJwt["exp"]}, " +
-          "aud:${decodedJwt["aud"]}",
-      )
+      log.info("Token found :$decodedJwt")
     }
 
     // Set App insights request attributes

@@ -1,12 +1,10 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onBehalfOf
 
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
-import org.springframework.stereotype.Component
 
-@Component
-class OboService {
-  fun decodeJwt(jwtToken: String?): Claims? =
+class EntraJwtOboService : OboService {
+  override fun decodeJwt(jwtToken: String): Claims? =
     try {
       val jwtDecoded =
         Jwts

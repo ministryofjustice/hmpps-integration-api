@@ -26,8 +26,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.OboService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.RoleService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onBehalfOf.OboService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
 private const val CERT_SERIAL_RAW = "9572494320151578633330348943480876283449388176"
