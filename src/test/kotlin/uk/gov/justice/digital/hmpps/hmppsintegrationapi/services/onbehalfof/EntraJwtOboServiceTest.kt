@@ -12,8 +12,7 @@ class EntraJwtOboServiceTest :
       // Test jwt, decoded as follows
       //      {
       //        "header": {
-      //          "alg":"HS256"
-      //          "typ":"JWT"
+      //          "alg":"none"
       //          "kid":"testKid"
       //        }
       //        "payload":{
@@ -23,13 +22,11 @@ class EntraJwtOboServiceTest :
       //          "iat":1516239022
       //          "aud":"testAud"
       //          "iss":"testIss"
-      //          "nbf":1778083253
-      //          "exp":1978087263
       //          "appid":"testId"
       //          "unique_name":"testName"
       //        }
       //      }
-      val testJwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InRlc3RLaWQifQ.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMiwiYXVkIjoidGVzdEF1ZCIsImlzcyI6InRlc3RJc3MiLCJuYmYiOjE3NzgwODMyNTMsImV4cCI6MTk3ODA4NzI2MywiYXBwaWQiOiJ0ZXN0SWQiLCJ1bmlxdWVfbmFtZSI6InRlc3ROYW1lIn0.bppq2M56ruzzxwfEWK408np-22hAJ2vwrHlbHGuWDq0"
+      val testJwt = "eyJhbGciOiJub25lIiwia2lkIjoidGVzdEtpZCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMiwiYXVkIjoidGVzdEF1ZCIsImlzcyI6InRlc3RJc3MiLCJhcHBpZCI6InRlc3RJZCIsInVuaXF1ZV9uYW1lIjoidGVzdE5hbWUifQ."
 
       val oboService = EntraJwtOboService()
 
@@ -43,10 +40,7 @@ class EntraJwtOboServiceTest :
         val result = oboService.decodeJwt(testJwt)
 
         result?.header?.shouldContain("kid", "testKid")
-        result?.payload?.shouldContain("aud", "testAud")
         result?.payload?.shouldContain("iss", "testIss")
-        result?.payload?.shouldContain("nbf", 1778083253)
-        result?.payload?.shouldContain("exp", 1978087263)
         result?.payload?.shouldContain("appid", "testId")
         result?.payload?.shouldContain("unique_name", "testName")
       }

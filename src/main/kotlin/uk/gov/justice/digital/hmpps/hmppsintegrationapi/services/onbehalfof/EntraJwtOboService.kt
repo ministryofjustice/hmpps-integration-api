@@ -27,6 +27,7 @@ class EntraJwtOboService : OboService {
   fun decodeJwt(token: String): Jwt<Header?, Claims?>? =
     Jwts
       .parser()
+      .unsecured()
       .build()
       .parseUnsecuredClaims(token)
 }
