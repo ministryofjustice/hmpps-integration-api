@@ -65,7 +65,7 @@ class AuthorisationFilter(
       }
 
     // Set App insights request attributes
-    setSpanAttributes(clientName, certificateSerialNumber, onBehalfOf, oboUsername, certificateExpiryDate)
+    setSpanAttributes(clientName, certificateSerialNumber, oboUsername, certificateExpiryDate)
 
     // Set filters
     val consumerConfig: ConsumerConfig? = authorisationService.consumers()[clientName]
@@ -195,13 +195,11 @@ class AuthorisationFilter(
     clientId: String,
     certSerialNumber: String?,
     onBehalfOf: String?,
-    uniqueName: String?,
     certExpiryDate: String?,
   ) {
     telemetryService.setSpanAttribute("clientId", clientId)
     certSerialNumber?.let { telemetryService.setSpanAttribute("certSerialNumber", certSerialNumber) }
     certExpiryDate?.let { telemetryService.setSpanAttribute("certExpiryDate", certExpiryDate) }
-    onBehalfOf?.let { telemetryService.setSpanAttribute("onBehalfOf", it) }
-    uniqueName?.let { telemetryService.setSpanAttribute("uniqueName", it) }
+    onBehalfOf?.let { telemetryService.setSpanAttribute("onBehalfOf", onBehalfOf) }
   }
 }
