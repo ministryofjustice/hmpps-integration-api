@@ -7,8 +7,6 @@ import jakarta.servlet.ServletRequest
 import jakarta.servlet.ServletResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
@@ -17,7 +15,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuthoriseConsumerService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.RoleService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onBehalfOf.OboService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import java.io.IOException
 
@@ -27,7 +24,6 @@ class AuthorisationFilter(
   private val authorisationService: AuthorisationService,
   private val telemetryService: TelemetryService,
   private val roleService: RoleService,
-  private val oboService: OboService,
 ) : Filter {
   @Throws(IOException::class, ServletException::class)
   override fun doFilter(
@@ -35,7 +31,6 @@ class AuthorisationFilter(
     response: ServletResponse?,
     chain: FilterChain,
   ) {
-    val log: Logger = LoggerFactory.getLogger(this::class.java)
     val req = request as HttpServletRequest
     val res = response as HttpServletResponse
 
@@ -63,15 +58,14 @@ class AuthorisationFilter(
     // Get the on behalf of token
     val onBehalfOf = req.getHeader("X-On-Behalf-Of")
 
-    val decodedJwt = oboService.decodeJwt(onBehalfOf)
-
-    // capture token if decoded
-    if (decodedJwt != null) {
-      log.info("Token found :$decodedJwt")
-    }
+    val oboUsername =
+      onBehalfOf?.let {
+        val oboService = authorisationService.oboService(clientName)
+        oboService?.extractUsername(it)
+      }
 
     // Set App insights request attributes
-    setSpanAttributes(clientName, certificateSerialNumber, onBehalfOf, decodedJwt?.get("unique_name") as String?, certificateExpiryDate)
+    setSpanAttributes(clientName, certificateSerialNumber, onBehalfOf, oboUsername, certificateExpiryDate)
 
     // Set filters
     val consumerConfig: ConsumerConfig? = authorisationService.consumers()[clientName]
