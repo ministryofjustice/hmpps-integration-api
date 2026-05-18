@@ -611,9 +611,10 @@ function verify_get_basic_details(hmppsId) {
 
     let res = validate_get_request(`/v1/persons/${hmppsId}/needs`);
     validate_response_attribute_not_empty(res, "assessedOn", "Needs assessment found");
-    for (const need in res.json()["data"]["identifiedNeeds"]) {
+    let data = res.json()["data"]
+    data["identifiedNeeds"].forEach(need =>
       console.log(`Found identified need ` + need)
-    }
+    )
     for (const need in res.json()["data"]["notIdentifiedNeeds"]) {
       console.log(`Found not-identified need ` + need)
     }
