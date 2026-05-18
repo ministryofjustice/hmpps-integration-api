@@ -1,21 +1,15 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
-import io.mockk.every
-import io.mockk.mockkStatic
-import io.mockk.unmockkStatic
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.fullAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithLaoRedactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithPndAlerts
 import java.io.File
@@ -25,17 +19,6 @@ class AlertsIntegrationTest : IntegrationTestBase() {
   inner class GetAlerts {
     val path = "$basePath/$nomsId/alerts"
     val activeOnlyPath = "$basePath/$nomsId/active-alerts"
-
-    @BeforeEach
-    fun setup() {
-      mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-      every { roles.get(any()) } returns fullAccess
-    }
-
-    @AfterEach
-    fun tearDown() {
-      unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-    }
 
     @Test
     fun `returns all alerts for a person`() {
@@ -57,7 +40,7 @@ class AlertsIntegrationTest : IntegrationTestBase() {
 
     @Test
     fun `returns alerts for a person with alert filters`() {
-      every { roles.get(any()) } returns testRoleWithPndAlerts
+      whenever(authorisationConfig.roles).thenReturn(mapOf("full-access" to testRoleWithPndAlerts))
       callApi(path)
         .andExpect(status().isOk)
         .andExpect(content().json(getExpectedResponse("person-alerts")))
@@ -73,14 +56,12 @@ class AlertsIntegrationTest : IntegrationTestBase() {
 
     @Test
     fun `return a 404 for person in wrong prison`() {
-      unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
       callApiWithCN(path, limitedPrisonsCn)
         .andExpect(status().isNotFound)
     }
 
     @Test
     fun `return a 404 when no prisons in filter`() {
-      unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
       callApiWithCN(path, noPrisonsCn)
         .andExpect(status().isNotFound)
     }
@@ -146,9 +127,7 @@ class AlertsIntegrationTest : IntegrationTestBase() {
         }
         """.trimIndent(),
       )
-
-      mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-      every { roles[any()] } returns testRoleWithLaoRedactions
+      whenever(authorisationConfig.roles).thenReturn(mapOf("full-access" to testRoleWithLaoRedactions))
       callApi(path)
         .andExpect(status().isOk)
         .andExpect(jsonPath("$.data[*].offenderNo").exists())

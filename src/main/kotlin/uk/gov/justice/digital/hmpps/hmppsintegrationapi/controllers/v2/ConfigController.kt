@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ConfigAuthorisation
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuthorisationService
 
 @Hidden
 @RestController("ConfigControllerV2")

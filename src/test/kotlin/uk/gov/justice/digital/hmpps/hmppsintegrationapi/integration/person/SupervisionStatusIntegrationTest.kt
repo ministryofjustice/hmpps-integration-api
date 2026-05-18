@@ -1,12 +1,10 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
 import io.kotest.matchers.shouldBe
-import io.mockk.every
-import io.mockk.mockkStatic
-import io.mockk.unmockkStatic
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.whenever
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ErrorResponse
@@ -53,16 +51,9 @@ class SupervisionStatusIntegrationTest : IntegrationTestBase() {
     )
   }
 
-  @AfterEach
-  fun tearDown() {
-    unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-    nDeliusMockServer.resetAll()
-  }
-
   @Test
   fun `throws a 403 if probation record is NOT an active supervision and ONLY PROBATION exists in the filter`() {
-    mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-    every { roles[any()] } returns testRoleWithProbationOnlySupervisionFilters
+    whenever(authorisationConfig.roles).thenReturn(mapOf("full-access" to testRoleWithProbationOnlySupervisionFilters))
     nDeliusMockServer.stubForPost(
       "/search/probation-cases",
       writeAsJson(mapOf("crn" to crn)),
@@ -79,8 +70,7 @@ class SupervisionStatusIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `ONLY probation data and no prisons data is returned when probation record is an active supervision and only PROBATION exists in the filter`() {
-    mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-    every { roles[any()] } returns testRoleWithProbationOnlySupervisionFilters
+    whenever(authorisationConfig.roles).thenReturn(mapOf("full-access" to testRoleWithProbationOnlySupervisionFilters))
     callApi(path)
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.data.prisonerOffenderSearch").doesNotExist())
@@ -89,8 +79,7 @@ class SupervisionStatusIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `BOTH probation data and prisons data is returned if probation record found with active supervision with BOTH PRISONS and PROBATION exists in the filter`() {
-    mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-    every { roles[any()] } returns testRoleWithPrisonAndProbationSupervisionFilters
+    whenever(authorisationConfig.roles).thenReturn(mapOf("full-access" to testRoleWithPrisonAndProbationSupervisionFilters))
     callApi(path)
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.data.prisonerOffenderSearch").exists())
@@ -99,8 +88,7 @@ class SupervisionStatusIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `BOTH probation data and prisons data is returned if probation record in not an active supervision and only PRISONS exists in filter`() {
-    mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-    every { roles[any()] } returns testRoleWithPrisonOnlySupervisionFilters
+    whenever(authorisationConfig.roles).thenReturn(mapOf("full-access" to testRoleWithPrisonOnlySupervisionFilters))
     callApi(path)
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.data.prisonerOffenderSearch").exists())

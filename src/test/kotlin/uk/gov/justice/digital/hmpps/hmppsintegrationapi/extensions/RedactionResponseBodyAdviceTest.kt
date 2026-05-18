@@ -39,7 +39,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.redactionPolicy
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuthorisationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
 class RedactionResponseBodyAdviceTest {

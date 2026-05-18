@@ -3,9 +3,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.person
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
-import io.mockk.every
-import io.mockk.mockkStatic
-import io.mockk.unmockkStatic
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.any
@@ -20,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
@@ -34,7 +32,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Risks
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithLaoRedactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetRiskSeriousHarmForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
@@ -49,6 +46,7 @@ internal class RiskSeriousHarmControllerTest(
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getCaseAccess: GetCaseAccess,
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
+  @Autowired private val authorisationConfig: AuthorisationConfig,
 ) : DescribeSpec(
     {
       val hmppsId = "A1234AA"
@@ -59,8 +57,7 @@ internal class RiskSeriousHarmControllerTest(
 
       describe("GET $path") {
         beforeTest {
-          mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-          every { roles["full-access"] } returns testRoleWithLaoRedactions
+          whenever(authorisationConfig.roles).thenReturn(mapOf("full-access" to testRoleWithLaoRedactions))
           Mockito.reset(getRiskSeriousHarmForPersonService)
           whenever(getCaseAccess.getAccessFor(any())).thenReturn(CaseAccess(laoOkCrn, false, false, "", ""))
           whenever(getCaseAccess.getAccessFor("R754321")).thenReturn(null)
@@ -115,10 +112,6 @@ internal class RiskSeriousHarmControllerTest(
             ),
           )
           Mockito.reset(auditService)
-        }
-
-        afterTest {
-          unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
         }
 
         it("returns a 200 OK status code") {

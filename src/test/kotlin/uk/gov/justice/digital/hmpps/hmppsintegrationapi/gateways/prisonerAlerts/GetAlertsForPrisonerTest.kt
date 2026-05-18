@@ -4,9 +4,6 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.ints.shouldBeGreaterThan
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
-import io.mockk.every
-import io.mockk.mockkStatic
-import io.mockk.unmockkStatic
 import org.mockito.Mockito
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -23,8 +20,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithPndAlerts
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -102,7 +97,7 @@ class GetAlertsForPrisonerTest(
 
       fun generateStubForAlertCodeParams() {
         val uuid = "9ff5babb-b859-4d2c-b42f-4d054df19e91"
-        val pathWithCodes = "$path&alertCode=${testRoleWithPndAlerts.filters?.alertCodes?.joinToString(",")}"
+        val pathWithCodes = "$path&alertCode=HA,HA2"
         apiMockServer.stubForGet(
           pathWithCodes,
           responseJson(uuid),
@@ -111,8 +106,9 @@ class GetAlertsForPrisonerTest(
 
       beforeEach {
 
-        mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-        every { roles["full-access"] } returns testRoleWithPndAlerts
+// //        mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
+// //        every { roles["full-access"] } returns testRoleWithPndAlerts
+//        val x = testRoleWithPndAlerts
 
         apiMockServer.start()
         apiMockServer.stubForGet(
@@ -126,7 +122,7 @@ class GetAlertsForPrisonerTest(
 
       afterTest {
         apiMockServer.stop()
-        unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
+        // unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
       }
 
       it("authenticates using HMPPS Auth with credentials") {
@@ -158,7 +154,7 @@ class GetAlertsForPrisonerTest(
       it("should request for alerts with codes in query params when the code list is present") {
         // Create a stub with the expected path with a distinct uuid
         generateStubForAlertCodeParams()
-        val response = prisonerAlertsGateway.getPrisonerAlertsForCodes(prisonerNumber, page, size, testRoleWithPndAlerts.filters?.alertCodes!!)
+        val response = prisonerAlertsGateway.getPrisonerAlertsForCodes(prisonerNumber, page, size, listOf("HA", "HA2"))
         // If the path has resolved to a stub and returned the json with the uuid, the request has used the path without codes
         response.data.shouldNotBeNull()
         response.data!!

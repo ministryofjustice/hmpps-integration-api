@@ -21,7 +21,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.Metadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.EventNotificationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.objectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuthorisationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.TestQueueService
 import java.time.LocalDateTime
@@ -94,7 +94,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
   fun `event is applicable to the consumer`() {
     val testEvent = EventNotification(url = "url", eventType = "PERSON_STATUS_CHANGED")
     val config =
-      parseAuthorisationConfig(
+      parseAuthorisationService(
         """
         consumers:
           tester:
@@ -111,7 +111,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
   fun `event is NOT applicable to the consumer based on event type`() {
     val testEvent = EventNotification(url = "url", eventType = "UNKNOWN_TYPE")
     val config =
-      parseAuthorisationConfig(
+      parseAuthorisationService(
         """
         consumers:
           tester:
@@ -127,7 +127,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
   fun `event is applicable to the consumer based on the prison id`() {
     val testEvent = EventNotification(url = "url", eventType = "PERSON_ADDRESS_CHANGED", prisonId = "MKI")
     val config =
-      parseAuthorisationConfig(
+      parseAuthorisationService(
         """
         consumers:
           tester:
@@ -146,7 +146,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
   fun `event is NOT applicable to the consumer based on the prison id`() {
     val testEvent = EventNotification(url = "url", eventType = "PERSON_ADDRESS_CHANGED", prisonId = "MDI")
     val config =
-      parseAuthorisationConfig(
+      parseAuthorisationService(
         """
         consumers:
           tester:
@@ -177,7 +177,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
         prisonId = messagePrisonId,
         metadata = messageSupervisionStatus?.let { Metadata(it) },
       )
-    val config = parseAuthorisationConfig(config)
+    val config = parseAuthorisationService(config)
     eventNotificationService = EventNotificationService(queueService, objectMapper, config, telemetryService)
 
     assertThat(eventNotificationService.isEventApplicable("tester", testEvent)).isEqualTo(shouldBeSent)
