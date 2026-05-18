@@ -612,13 +612,13 @@ function verify_get_basic_details(hmppsId) {
     let res = validate_get_request(`/v1/persons/${hmppsId}/needs`);
     validate_response_attribute_not_empty(res, "assessedOn", "Needs assessment found");
     for (const need in res.json()["data"]["identifiedNeeds"]) {
-      console.log(`Found identified need ` + need["type"])
+      console.log(`Found identified need ` + need)
     }
     for (const need in res.json()["data"]["notIdentifiedNeeds"]) {
-      console.log(`Found not-identified need ` + need["type"])
+      console.log(`Found not-identified need ` + need)
     }
     for (const need in res.json()["data"]["unansweredNeeds"]) {
-      console.log(`Found unanswered need ` + need["type"])
+      console.log(`Found unanswered need ` + need)
     }
   })
 }
