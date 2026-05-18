@@ -10,7 +10,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
@@ -40,7 +39,7 @@ internal class MappaDetailControllerTest(
   @MockitoBean val getMappaDetailForPersonService: GetMappaDetailForPersonService,
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getCaseAccess: GetCaseAccess,
-  @Qualifier("authorisationConfig") @MockitoBean val authorisationConfig: AuthorisationConfig,
+  @MockitoBean val authorisationConfig: AuthorisationConfig,
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
 ) : DescribeSpec(
     {
