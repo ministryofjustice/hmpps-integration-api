@@ -4,78 +4,19 @@ import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.IntegrationEventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.normalisePath
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.EntraJwtOboService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.OboService
+import kotlin.collections.orEmpty
 
 @Component
 class AuthorisationService(
   private val authorisationConfig: AuthorisationConfig,
 ) {
-//  fun authorised(
-//    consumerName: String,
-//    requestedPath: String,
-//  ): Boolean =
-//    authorisedThroughIncludes(consumerName, requestedPath) ||
-//      authorisedThroughRole(consumerName, requestedPath)
-
-//  fun matches(
-//    path: String,
-//    pathTemplate: String,
-//  ): Boolean =
-//    Regex(
-//      normalisePath(pathTemplate),
-//    ).matches(path)
-
-//  fun doesConsumerHaveIncludesAccess(
-//    consumerConfig: ConsumerConfig?,
-//    requestedPath: String,
-//  ): Boolean {
-//    consumerConfig?.permissions()?.forEach {
-//      if (matches(requestedPath, it)) {
-//        return true
-//      }
-//    }
-//    return false
-//  }
-
-//  fun doesConsumerHaveRoleAccess(
-//    consumerRolesInclude: List<String>,
-//    requestPath: String,
-//  ): Boolean {
-//    consumerRolesInclude.forEach {
-//      if (matches(requestPath, it)) {
-//        return true
-//      }
-//    }
-//    return false
-//  }
-//
-//  private fun authorisedThroughRole(
-//    consumerName: String?,
-//    requestedPath: String,
-//  ): Boolean {
-//    val consumerConfig: ConsumerConfig? = consumers()[consumerName]
-//    val consumersRoles = consumerConfig?.roles
-//    val rolesInclude =
-//      buildList {
-//        for (consumerRole in consumersRoles.orEmpty()) {
-//          addAll(authorisationConfig.roles[consumerRole]?.permissions.orEmpty())
-//        }
-//      }
-//    val roleResult =
-//      doesConsumerHaveRoleAccess(rolesInclude, requestedPath)
-//    return roleResult
-//  }
-//
-//  private fun authorisedThroughIncludes(
-//    consumerName: String?,
-//    requestedPath: String,
-//  ) = doesConsumerHaveIncludesAccess(consumers()[consumerName], requestedPath)
-
   /**
    * Returns true if the consumer has access to the endpoint.
    */
@@ -139,7 +80,10 @@ class AuthorisationService(
 
   fun defaultConsumerName() = authorisationConfig.defaultConsumerName
 
-  fun getRole(roleName: String) = authorisationConfig.roles[roleName]
+  fun redactionPolicies(consumerName: String): List<RedactionPolicy> =
+    authorisationConfig.consumers[consumerName]?.roles?.flatMap {
+      authorisationConfig.roles[it]?.redactionPolicies ?: emptyList()
+    } ?: emptyList()
 
   /**
    * Returns true if the endpoint matches any of the patterns.

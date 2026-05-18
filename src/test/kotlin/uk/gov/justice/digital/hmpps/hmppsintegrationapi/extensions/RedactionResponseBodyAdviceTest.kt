@@ -31,7 +31,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.R
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionType.MASK
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.ResponseRedaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.redactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
@@ -67,12 +66,8 @@ class RedactionResponseBodyAdviceTest {
     telemetryService = mock(TelemetryService::class.java)
 
     redactionContext = RedactionContext(examplePath, accessFor, telemetryService)
-    whenever(authorisationService.getRole(any())).thenReturn(
-      Role(
-        name = roleName,
-        permissions = mutableListOf(examplePath),
-        redactionPolicies = listOf(globalPolicy),
-      ),
+    whenever(authorisationService.redactionPolicies("clientA")).thenReturn(
+      listOf(globalPolicy),
     )
 
     advice = RedactionResponseBodyAdvice(authorisationService, accessFor, telemetryService)
@@ -161,13 +156,7 @@ class RedactionResponseBodyAdviceTest {
 
     val rolePolicy = RedactionPolicy("role-policy", listOf(redaction))
 
-    whenever(authorisationService.getRole(any())).thenReturn(
-      Role(
-        name = roleName,
-        permissions = mutableListOf(examplePath),
-        redactionPolicies = listOf(rolePolicy),
-      ),
-    )
+    whenever(authorisationService.redactionPolicies(any())).thenReturn(listOf(rolePolicy))
 
     val body = DataResponse(mapOf("field" to "value"))
 
@@ -243,28 +232,23 @@ class RedactionResponseBodyAdviceTest {
     expected: String,
     expectLaoException: Boolean = false,
   ) {
-    whenever(authorisationService.getRole(any())).thenReturn(
-      Role(
-        name = roleName,
-        permissions = mutableListOf(examplePath),
-        redactionPolicies =
-          listOf(
-            redactionPolicy(
-              "lao-redactions",
-            ) {
-              responseRedactions {
-                jsonPath {
-                  laoOnly(policyIsLao)
-                  endpoints {
-                    -examplePath
-                  }
-                  redactions {
-                    -("$..test" to MASK)
-                  }
-                }
+    whenever(authorisationService.redactionPolicies(any())).thenReturn(
+      listOf(
+        redactionPolicy(
+          "lao-redactions",
+        ) {
+          responseRedactions {
+            jsonPath {
+              laoOnly(policyIsLao)
+              endpoints {
+                -examplePath
               }
-            },
-          ),
+              redactions {
+                -("$..test" to MASK)
+              }
+            }
+          }
+        },
       ),
     )
     val servletResponse = mock(HttpServletResponse::class.java)

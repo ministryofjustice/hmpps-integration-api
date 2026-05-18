@@ -7,6 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ConfigTest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.laoRedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -23,6 +24,9 @@ class AuthorisationServiceTest : ConfigTest() {
     role("test-role") {
       permissions {
         -"/persons/123"
+      }
+      redactionPolicies {
+        -laoRedactionPolicy
       }
     }
 
@@ -246,5 +250,22 @@ class AuthorisationServiceTest : ConfigTest() {
     assertFalse(filters.isPrisonsOnly())
     assertTrue(filters.hasPrisons())
     assertTrue(filters.hasProbation())
+  }
+
+  @Test
+  fun `returns redaction policies`() {
+    val service =
+      AuthorisationService(
+        AuthorisationConfig(
+          mapOf(
+            "consumer-name" to
+              ConsumerConfig(
+                roles = listOf("test-role"),
+              ),
+          ),
+          roles = mapOf("test-role" to testRole),
+        ),
+      )
+    assertEquals(listOf(laoRedactionPolicy), service.redactionPolicies("consumer-name"))
   }
 }
