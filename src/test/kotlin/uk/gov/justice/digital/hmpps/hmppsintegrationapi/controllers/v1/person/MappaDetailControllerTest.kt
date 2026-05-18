@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.person
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
-import io.mockk.unmockkStatic
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.any
@@ -17,7 +16,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfigurationRedactions
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
@@ -30,7 +29,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetMappaDetailF
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [MappaDetailController::class])
-@Import(value = [WebMvcTestConfigurationRedactions::class])
+@Import(value = [WebMvcTestConfiguration::class])
 @ActiveProfiles("test")
 internal class MappaDetailControllerTest(
   @Autowired var springMockMvc: MockMvc,
@@ -68,23 +67,19 @@ internal class MappaDetailControllerTest(
           Mockito.reset(auditService)
         }
 
-        afterTest {
-          unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-        }
-
         it("returns a 200 OK status code") {
-          val result = mockMvc.performAuthorised(path)
+          val result = mockMvc.performAuthorisedWithCN(path, "consumer-with-lao-redactions")
 
           result.response.status.shouldBe(HttpStatus.OK.value())
         }
 
         it("gets the mappa detail for a person with the matching ID") {
-          mockMvc.performAuthorised(path)
+          mockMvc.performAuthorisedWithCN(path, "consumer-with-lao-redactions")
           verify(getMappaDetailForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
         }
 
         it("logs audit") {
-          mockMvc.performAuthorised(path)
+          mockMvc.performAuthorisedWithCN(path, "consumer-with-lao-redactions")
 
           verify(
             auditService,
@@ -93,7 +88,7 @@ internal class MappaDetailControllerTest(
         }
 
         it("returns the risk categories for a person with the matching ID") {
-          val result = mockMvc.performAuthorised(path)
+          val result = mockMvc.performAuthorisedWithCN(path, "consumer-with-lao-redactions")
 
           result.response.contentAsString.shouldContain(
             """
@@ -128,7 +123,7 @@ internal class MappaDetailControllerTest(
             ),
           )
 
-          val result = mockMvc.performAuthorised("/v1/persons/$laoCrn/risks/mappadetail")
+          val result = mockMvc.performAuthorisedWithCN("/v1/persons/$laoCrn/risks/mappadetail", "consumer-with-lao-redactions")
 
           result.response.contentAsString.shouldContain(
             """
@@ -159,7 +154,7 @@ internal class MappaDetailControllerTest(
             ),
           )
 
-          val result = mockMvc.performAuthorised(path)
+          val result = mockMvc.performAuthorisedWithCN(path, "consumer-with-lao-redactions")
 
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
         }
@@ -178,7 +173,7 @@ internal class MappaDetailControllerTest(
             ),
           )
 
-          val result = mockMvc.performAuthorised(path)
+          val result = mockMvc.performAuthorisedWithCN(path, "consumer-with-lao-redactions")
 
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
         }
@@ -197,7 +192,7 @@ internal class MappaDetailControllerTest(
             ),
           )
 
-          val result = mockMvc.performAuthorised(path)
+          val result = mockMvc.performAuthorisedWithCN(path, "consumer-with-lao-redactions")
 
           result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
         }
@@ -217,7 +212,7 @@ internal class MappaDetailControllerTest(
             ),
           )
 
-          val response = mockMvc.performAuthorised("/v1/persons/$laoFailureCrn/risks/mappadetail")
+          val response = mockMvc.performAuthorisedWithCN("/v1/persons/$laoFailureCrn/risks/mappadetail", "consumer-with-lao-redactions")
 
           assert(response.response.status == 500)
           assert(

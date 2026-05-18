@@ -18,7 +18,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfigurationRedactions
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
@@ -36,7 +36,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 import java.time.LocalDateTime
 
 @WebMvcTest(controllers = [RiskSeriousHarmController::class])
-@Import(value = [WebMvcTestConfigurationRedactions::class])
+@Import(value = [WebMvcTestConfiguration::class])
 @ActiveProfiles("test")
 internal class RiskSeriousHarmControllerTest(
   @Autowired var springMockMvc: MockMvc,
@@ -111,19 +111,19 @@ internal class RiskSeriousHarmControllerTest(
         }
 
         it("returns a 200 OK status code") {
-          val result = mockMvc.performAuthorised(path)
+          val result = mockMvc.performAuthorisedWithCN(path, "consumer-with-lao-redactions")
 
           result.response.status.shouldBe(HttpStatus.OK.value())
         }
 
         it("gets the risks for a person with the matching ID") {
-          mockMvc.performAuthorised(path)
+          mockMvc.performAuthorisedWithCN(path, "consumer-with-lao-redactions")
 
           verify(getRiskSeriousHarmForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
         }
 
         it("returns the risks for a person with the matching ID") {
-          val result = mockMvc.performAuthorised(path)
+          val result = mockMvc.performAuthorisedWithCN(path, "consumer-with-lao-redactions")
 
           result.response.contentAsString.shouldContain(
             """
@@ -202,12 +202,12 @@ internal class RiskSeriousHarmControllerTest(
         it("Returns 403 Forbidden for LAO case") {
           val laoCrn = "B123456"
           whenever(getCaseAccess.getAccessFor(laoCrn)).thenReturn(CaseAccess(laoCrn, true, false, "Exclusion Message"))
-          val result = mockMvc.performAuthorised("/v1/persons/$laoCrn/risks/serious-harm")
+          val result = mockMvc.performAuthorisedWithCN("/v1/persons/$laoCrn/risks/serious-harm", "consumer-with-lao-redactions")
           result.response.status.shouldBe(HttpStatus.FORBIDDEN.value())
         }
 
         it("logs audit") {
-          mockMvc.performAuthorised(path)
+          mockMvc.performAuthorisedWithCN(path, "consumer-with-lao-redactions")
 
           verify(
             auditService,
@@ -221,7 +221,7 @@ internal class RiskSeriousHarmControllerTest(
 
           whenever(getRiskSeriousHarmForPersonService.execute(hmppsIdForPersonWithNoRisks)).thenReturn(Response(data = null))
 
-          val result = mockMvc.performAuthorised(pathForPersonWithNoRisks)
+          val result = mockMvc.performAuthorisedWithCN(pathForPersonWithNoRisks, "consumer-with-lao-redactions")
 
           result.response.contentAsString.shouldContain("\"data\":null")
         }
@@ -240,7 +240,7 @@ internal class RiskSeriousHarmControllerTest(
             ),
           )
 
-          val result = mockMvc.performAuthorised(path)
+          val result = mockMvc.performAuthorisedWithCN(path, "consumer-with-lao-redactions")
 
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
         }
@@ -251,7 +251,7 @@ internal class RiskSeriousHarmControllerTest(
             WebClientResponseException(500, "MockError", null, null, null, null),
           )
 
-          val result = mockMvc.performAuthorised(path)
+          val result = mockMvc.performAuthorisedWithCN(path, "consumer-with-lao-redactions")
           assert(result.response.status == 500)
           assert(
             result.response.contentAsString.equals(
@@ -261,7 +261,7 @@ internal class RiskSeriousHarmControllerTest(
         }
 
         it("fails with the appropriate error when LAO context has failed to be retrieved") {
-          val response = mockMvc.performAuthorised("/v1/persons/$laoFailureCrn/risks/serious-harm")
+          val response = mockMvc.performAuthorisedWithCN("/v1/persons/$laoFailureCrn/risks/serious-harm", "consumer-with-lao-redactions")
 
           assert(response.response.status == 500)
           assert(

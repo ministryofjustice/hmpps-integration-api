@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.person
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
-import io.mockk.unmockkStatic
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.any
@@ -19,7 +18,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfigurationRedactions
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
@@ -34,7 +33,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetLicenceCondi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [LicenceConditionController::class])
-@Import(value = [WebMvcTestConfigurationRedactions::class, FeatureFlagConfig::class])
+@Import(value = [WebMvcTestConfiguration::class, FeatureFlagConfig::class])
 @ActiveProfiles("test")
 class LicenceConditionControllerTests(
   @Autowired var springMockMvc: MockMvc,
@@ -73,10 +72,6 @@ class LicenceConditionControllerTests(
           )
         }
 
-        afterTest {
-          unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-        }
-
         it("throws exception when no person found") {
           whenever(getLicenceConditionService.execute(hmppsId = "notfound")).thenReturn(
             Response<PersonLicences>(
@@ -91,12 +86,12 @@ class LicenceConditionControllerTests(
             ),
           )
           val noFoundPath = "/v1/persons/notfound/licences/conditions"
-          val result = mockMvc.performAuthorised(noFoundPath)
+          val result = mockMvc.performAuthorisedWithCN(noFoundPath, "consumer-with-lao-redactions")
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
         }
 
         it("logs audit for licence condition") {
-          mockMvc.performAuthorised(path)
+          mockMvc.performAuthorisedWithCN(path, "consumer-with-lao-redactions")
 
           verify(
             auditService,
@@ -106,7 +101,7 @@ class LicenceConditionControllerTests(
 
         it("returns licence condition results") {
 
-          val result = mockMvc.performAuthorised(path)
+          val result = mockMvc.performAuthorisedWithCN(path, "consumer-with-lao-redactions")
           result.response.contentAsString.shouldContain(
             """
            "data":{
@@ -153,7 +148,7 @@ class LicenceConditionControllerTests(
             ),
           )
 
-          val result = mockMvc.performAuthorised("/v1/persons/$laoCrn/licences/conditions")
+          val result = mockMvc.performAuthorisedWithCN("/v1/persons/$laoCrn/licences/conditions", "consumer-with-lao-redactions")
           result.response.contentAsString.shouldContain(
             """
            "data":{
@@ -185,7 +180,7 @@ class LicenceConditionControllerTests(
             WebClientResponseException(500, "MockError", null, null, null, null),
           )
 
-          val response = mockMvc.performAuthorised(path)
+          val response = mockMvc.performAuthorisedWithCN(path, "consumer-with-lao-redactions")
 
           assert(response.response.status == 500)
           assert(
@@ -213,7 +208,7 @@ class LicenceConditionControllerTests(
             ),
           )
 
-          val response = mockMvc.performAuthorised("/v1/persons/$laoFailureCrn/licences/conditions")
+          val response = mockMvc.performAuthorisedWithCN("/v1/persons/$laoFailureCrn/licences/conditions", "consumer-with-lao-redactions")
 
           assert(response.response.status == 500)
           assert(

@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
-import io.mockk.unmockkStatic
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -12,7 +11,6 @@ class PrisonerContactsIntegrationTest : IntegrationTestBase() {
   @AfterEach
   fun resetValidators() {
     prisonerOffenderSearchMockServer.resetValidator()
-    unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
   }
 
   @Nested
