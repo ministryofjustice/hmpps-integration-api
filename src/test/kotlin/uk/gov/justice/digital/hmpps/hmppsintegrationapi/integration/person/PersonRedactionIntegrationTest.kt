@@ -1,9 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import io.mockk.every
-import io.mockk.mockkStatic
-import io.mockk.unmockkStatic
 import org.hamcrest.Matchers.aMapWithSize
 import org.hamcrest.core.IsEqual
 import org.hamcrest.core.IsNot
@@ -15,6 +12,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.mockito.verification.VerificationMode
 import org.springframework.test.web.servlet.result.JsonPathResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
@@ -23,7 +21,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.writeAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithIdOnlyRedaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithLaoRedactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService.Companion.attributeSearchRequest
@@ -179,8 +176,7 @@ class PersonRedactionIntegrationTest : IntegrationTestBase() {
           ).readText(),
         )
 
-        mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-        every { roles["test-role"] } returns testRoleWithLaoRedactions
+        whenever(authorisationConfig.roles).thenReturn(mapOf("test-role" to testRoleWithLaoRedactions))
       }
 
       @Test
@@ -274,9 +270,7 @@ class PersonRedactionIntegrationTest : IntegrationTestBase() {
             "$gatewaysFolder/ndelius/fixtures/GetOffenderResponseLao.json",
           ).readText(),
         )
-
-        mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-        every { roles[any()] } returns testRoleWithIdOnlyRedaction
+        whenever(authorisationConfig.roles).thenReturn(mapOf("test-role" to testRoleWithIdOnlyRedaction))
       }
 
       @Test
@@ -338,12 +332,6 @@ class PersonRedactionIntegrationTest : IntegrationTestBase() {
           .andExpect(jsonPath("$.data[2].hmppsId").exists())
           .andExpect(jsonPath("$.data[2].hmppsId").value(DEFAULT_CRN))
       }
-    }
-
-    @AfterEach
-    fun tearDown() {
-      unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-      nDeliusMockServer.resetAll()
     }
   }
 }

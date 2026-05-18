@@ -105,11 +105,6 @@ class GetAlertsForPrisonerTest(
       }
 
       beforeEach {
-
-// //        mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-// //        every { roles["full-access"] } returns testRoleWithPndAlerts
-//        val x = testRoleWithPndAlerts
-
         apiMockServer.start()
         apiMockServer.stubForGet(
           path,
