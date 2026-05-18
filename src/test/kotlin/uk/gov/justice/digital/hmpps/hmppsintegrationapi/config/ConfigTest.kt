@@ -32,11 +32,6 @@ abstract class ConfigTest {
     return mapper.convertValue(featureConfig, object : TypeReference<Map<String, Boolean>>() {})
   }
 
-  fun parseAuthorisationService(config: String): AuthorisationService {
-    val conf = mapper.readValue(config, AuthorisationConfig::class.java)
-    return AuthorisationService(conf)
-  }
-
   fun parseAuthorisationConfig(config: String): AuthorisationConfig = mapper.readValue(config, AuthorisationConfig::class.java)
 
   /**

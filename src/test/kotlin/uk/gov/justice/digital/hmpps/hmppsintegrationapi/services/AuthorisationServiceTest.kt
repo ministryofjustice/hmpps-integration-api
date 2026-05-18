@@ -99,25 +99,29 @@ class AuthorisationServiceTest : ConfigTest() {
   @Test
   fun `compare missing and empty lists in ConsumerConfig`() {
     val missingConfig =
-      parseAuthorisationService(
-        """
-        consumers:
-          tester:
-            roles:
-              - full-access
-        """.trimIndent(),
+      AuthorisationService(
+        parseAuthorisationConfig(
+          """
+          consumers:
+            tester:
+              roles:
+                - full-access
+          """.trimIndent(),
+        ),
       )
 
     val emptyConfig =
-      parseAuthorisationService(
-        """
-        consumers:
-          tester:
-            include:
-            filters:
-            roles:
-              - full-access
-        """.trimIndent(),
+      AuthorisationService(
+        parseAuthorisationConfig(
+          """
+          consumers:
+            tester:
+              include:
+              filters:
+              roles:
+                - full-access
+          """.trimIndent(),
+        ),
       )
 
     assertEquals(missingConfig.consumers()["tester"]?.permissions(), emptyConfig.consumers()["tester"]?.permissions())
