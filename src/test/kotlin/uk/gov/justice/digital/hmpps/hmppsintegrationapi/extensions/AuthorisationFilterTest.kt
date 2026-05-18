@@ -27,7 +27,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.RoleService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.EntraJwtOboService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.UnsignedJwtOboService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
 private const val CERT_SERIAL_RAW = "9572494320151578633330348943480876283449388176"
@@ -62,7 +62,7 @@ class AuthorisationFilterTest {
     whenever(mockRequest.getHeader("cert-serial-number")).thenReturn(CERT_SERIAL_RAW)
     whenever(mockRequest.getHeader("X-On-Behalf-Of")).thenReturn(OBO_TEST_JWT)
     whenever(mockRoleService.getRoles()).thenReturn(mapOf(roleName to Role(name = "test", permissions = mutableListOf(examplePath), filters = null)))
-    whenever(authorisationService.oboService("consumer-name")).thenReturn(EntraJwtOboService())
+    whenever(authorisationService.oboService("consumer-name")).thenReturn(UnsignedJwtOboService())
   }
 
   fun mockRequest(

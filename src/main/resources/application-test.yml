@@ -171,3 +171,8 @@ authorisation:
         supervisionStatuses:
           - PROBATION
       queueName: "testqueue"
+    obo-unsigned:
+      roles:
+        - "all-endpoints"
+      oboConfig:
+        - "unsigned"
