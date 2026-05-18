@@ -11,7 +11,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.DirectSQSM
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.EventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models.SQSMessageAttributes
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.SupervisionStatus
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuthorisationService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
 @ConditionalOnProperty("feature-flag.${FeatureFlagConfig.ENABLE_PUBLISH_PENDING_EVENTS}", havingValue = "true")

@@ -21,7 +21,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.Metadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.EventNotificationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.objectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuthorisationService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.TestQueueService
 import java.time.LocalDateTime

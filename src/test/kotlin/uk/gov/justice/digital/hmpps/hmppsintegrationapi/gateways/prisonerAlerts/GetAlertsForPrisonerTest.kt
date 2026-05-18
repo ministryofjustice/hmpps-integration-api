@@ -117,7 +117,6 @@ class GetAlertsForPrisonerTest(
 
       afterTest {
         apiMockServer.stop()
-        // unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
       }
 
       it("authenticates using HMPPS Auth with credentials") {

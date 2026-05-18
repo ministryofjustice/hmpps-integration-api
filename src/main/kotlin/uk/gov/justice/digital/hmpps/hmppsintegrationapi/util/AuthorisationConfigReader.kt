@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuthorisationService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
 
 /**
  * Class to get a Map containing the Authorisation Config for all consumers

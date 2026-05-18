@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
@@ -15,66 +15,66 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.OboS
 class AuthorisationService(
   private val authorisationConfig: AuthorisationConfig,
 ) {
-  fun authorised(
-    consumerName: String,
-    requestedPath: String,
-  ): Boolean =
-    authorisedThroughIncludes(consumerName, requestedPath) ||
-      authorisedThroughRole(consumerName, requestedPath)
+//  fun authorised(
+//    consumerName: String,
+//    requestedPath: String,
+//  ): Boolean =
+//    authorisedThroughIncludes(consumerName, requestedPath) ||
+//      authorisedThroughRole(consumerName, requestedPath)
 
-  fun matches(
-    path: String,
-    pathTemplate: String,
-  ): Boolean =
-    Regex(
-      normalisePath(pathTemplate),
-    ).matches(path)
+//  fun matches(
+//    path: String,
+//    pathTemplate: String,
+//  ): Boolean =
+//    Regex(
+//      normalisePath(pathTemplate),
+//    ).matches(path)
 
-  fun doesConsumerHaveIncludesAccess(
-    consumerConfig: ConsumerConfig?,
-    requestedPath: String,
-  ): Boolean {
-    consumerConfig?.permissions()?.forEach {
-      if (matches(requestedPath, it)) {
-        return true
-      }
-    }
-    return false
-  }
+//  fun doesConsumerHaveIncludesAccess(
+//    consumerConfig: ConsumerConfig?,
+//    requestedPath: String,
+//  ): Boolean {
+//    consumerConfig?.permissions()?.forEach {
+//      if (matches(requestedPath, it)) {
+//        return true
+//      }
+//    }
+//    return false
+//  }
 
-  fun doesConsumerHaveRoleAccess(
-    consumerRolesInclude: List<String>,
-    requestPath: String,
-  ): Boolean {
-    consumerRolesInclude.forEach {
-      if (matches(requestPath, it)) {
-        return true
-      }
-    }
-    return false
-  }
-
-  private fun authorisedThroughRole(
-    consumerName: String?,
-    requestedPath: String,
-  ): Boolean {
-    val consumerConfig: ConsumerConfig? = consumers()[consumerName]
-    val consumersRoles = consumerConfig?.roles
-    val rolesInclude =
-      buildList {
-        for (consumerRole in consumersRoles.orEmpty()) {
-          addAll(authorisationConfig.roles[consumerRole]?.permissions.orEmpty())
-        }
-      }
-    val roleResult =
-      doesConsumerHaveRoleAccess(rolesInclude, requestedPath)
-    return roleResult
-  }
-
-  private fun authorisedThroughIncludes(
-    consumerName: String?,
-    requestedPath: String,
-  ) = doesConsumerHaveIncludesAccess(consumers()[consumerName], requestedPath)
+//  fun doesConsumerHaveRoleAccess(
+//    consumerRolesInclude: List<String>,
+//    requestPath: String,
+//  ): Boolean {
+//    consumerRolesInclude.forEach {
+//      if (matches(requestPath, it)) {
+//        return true
+//      }
+//    }
+//    return false
+//  }
+//
+//  private fun authorisedThroughRole(
+//    consumerName: String?,
+//    requestedPath: String,
+//  ): Boolean {
+//    val consumerConfig: ConsumerConfig? = consumers()[consumerName]
+//    val consumersRoles = consumerConfig?.roles
+//    val rolesInclude =
+//      buildList {
+//        for (consumerRole in consumersRoles.orEmpty()) {
+//          addAll(authorisationConfig.roles[consumerRole]?.permissions.orEmpty())
+//        }
+//      }
+//    val roleResult =
+//      doesConsumerHaveRoleAccess(rolesInclude, requestedPath)
+//    return roleResult
+//  }
+//
+//  private fun authorisedThroughIncludes(
+//    consumerName: String?,
+//    requestedPath: String,
+//  ) = doesConsumerHaveIncludesAccess(consumers()[consumerName], requestedPath)
 
   /**
    * Returns true if the consumer has access to the endpoint.

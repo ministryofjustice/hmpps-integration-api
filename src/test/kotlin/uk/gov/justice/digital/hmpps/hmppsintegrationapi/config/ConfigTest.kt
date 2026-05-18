@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.springframework.core.io.ClassPathResource
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuthorisationService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.AuthorisationConfigReader
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.FileManager
 import java.io.File

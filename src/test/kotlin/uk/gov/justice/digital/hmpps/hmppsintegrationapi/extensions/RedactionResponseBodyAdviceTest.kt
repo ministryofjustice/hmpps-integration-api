@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.kotest.matchers.shouldBe
-import io.mockk.mockkStatic
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.junit.jupiter.api.BeforeEach
@@ -35,7 +34,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.redactionPolicy
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuthorisationService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
 class RedactionResponseBodyAdviceTest {
@@ -244,7 +243,6 @@ class RedactionResponseBodyAdviceTest {
     expected: String,
     expectLaoException: Boolean = false,
   ) {
-    mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
     whenever(authorisationService.getRole(any())).thenReturn(
       Role(
         name = roleName,

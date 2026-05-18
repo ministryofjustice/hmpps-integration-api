@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuthorisationService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import java.io.IOException
 
@@ -79,7 +79,7 @@ class AuthorisationFilter(
 
     val requestedPath = req.requestURI
 
-    if (authorisationService.authorised(clientName, requestedPath)) {
+    if (authorisationService.hasAccess(clientName, requestedPath)) {
       try {
         chain.doFilter(request, response)
       } catch (e: Throwable) {
