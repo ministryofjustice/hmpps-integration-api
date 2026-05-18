@@ -615,12 +615,12 @@ function verify_get_basic_details(hmppsId) {
     data["identifiedNeeds"].forEach(need =>
       console.log(`Found identified need ` + need["type"])
     )
-    for (const need in res.json()["data"]["notIdentifiedNeeds"]) {
-      console.log(`Found not-identified need ` + need)
-    }
-    for (const need in res.json()["data"]["unansweredNeeds"]) {
-      console.log(`Found unanswered need ` + need)
-    }
+    data["notIdentifiedNeeds"].forEach(need =>
+      console.log(`Found not-identified need ` + need["type"])
+    )
+    data["unansweredNeeds"].forEach(need =>
+      console.log(`Found unanswered need ` + need["type"])
+    )
   })
 }
 
