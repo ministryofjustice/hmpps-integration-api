@@ -3,9 +3,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
 import io.kotest.assertions.json.shouldContainJsonKeyValue
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
-import io.mockk.every
-import io.mockk.mockkStatic
-import io.mockk.unmockkStatic
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.any
@@ -30,8 +27,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskManagem
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithLaoRedactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetRiskManagementPlansService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
@@ -53,8 +48,6 @@ class RiskManagementControllerTest(
 
     describe("GET $basePath") {
       beforeTest {
-        mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-        every { roles["full-access"] } returns testRoleWithLaoRedactions
         Mockito.reset(getRiskManagementService)
         Mockito.reset(auditService)
 
@@ -101,12 +94,8 @@ class RiskManagementControllerTest(
         )
       }
 
-      afterTest {
-        unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-      }
-
       it("Returns 200 OK") {
-        val result = mockMvc.performAuthorised("/v1/persons/$hmppsId/risk-management-plan")
+        val result = mockMvc.performAuthorisedWithCN("/v1/persons/$hmppsId/risk-management-plan", "consumer-with-lao-redactions")
         result.response.status.shouldBe(HttpStatus.OK.value())
       }
 
@@ -114,12 +103,12 @@ class RiskManagementControllerTest(
         val laoHmppsId = "R1234MP"
         val laoCrn = "A817237"
         whenever(getCaseAccess.getAccessFor(laoHmppsId)).thenReturn(CaseAccess(laoCrn, false, true, null, "Restriction Message"))
-        val result = mockMvc.performAuthorised("/v1/persons/$laoHmppsId/risk-management-plan")
+        val result = mockMvc.performAuthorisedWithCN("/v1/persons/$laoHmppsId/risk-management-plan", "consumer-with-lao-redactions")
         result.response.status.shouldBe(HttpStatus.FORBIDDEN.value())
       }
 
       it("Gets a risk management plan") {
-        mockMvc.performAuthorised("/v1/persons/$hmppsId/risk-management-plan")
+        mockMvc.performAuthorisedWithCN("/v1/persons/$hmppsId/risk-management-plan", "consumer-with-lao-redactions")
         verify(getRiskManagementService, times(1)).execute(hmppsId)
       }
 
@@ -138,7 +127,7 @@ class RiskManagementControllerTest(
           ),
         )
 
-        val result = mockMvc.performAuthorised("/v1/persons/$hmppsId/risk-management-plan")
+        val result = mockMvc.performAuthorisedWithCN("/v1/persons/$hmppsId/risk-management-plan", "consumer-with-lao-redactions")
         verify(getRiskManagementService, times(1)).execute(hmppsId)
         result.response.status.shouldBe(HttpStatus.FORBIDDEN.value())
       }
@@ -159,13 +148,13 @@ class RiskManagementControllerTest(
           ),
         )
 
-        val result = mockMvc.performAuthorised("/v1/persons/$badHmppsId/risk-management-plan")
+        val result = mockMvc.performAuthorisedWithCN("/v1/persons/$badHmppsId/risk-management-plan", "consumer-with-lao-redactions")
         verify(getRiskManagementService, times(1)).execute(badHmppsId)
         assert(result.response.status == 404)
       }
 
       it("logs audit") {
-        mockMvc.performAuthorised("/v1/persons/$hmppsId/risk-management-plan")
+        mockMvc.performAuthorisedWithCN("/v1/persons/$hmppsId/risk-management-plan", "consumer-with-lao-redactions")
         verify(
           auditService,
           VerificationModeFactory.times(1),
@@ -176,7 +165,7 @@ class RiskManagementControllerTest(
       }
 
       it("returns paginated result") {
-        val result = mockMvc.performAuthorised("/v1/persons/$hmppsId/risk-management-plan")
+        val result = mockMvc.performAuthorisedWithCN("/v1/persons/$hmppsId/risk-management-plan", "consumer-with-lao-redactions")
 
         result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.page", 1)
         result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.totalPages", 1)
@@ -188,8 +177,9 @@ class RiskManagementControllerTest(
         )
 
         val response =
-          mockMvc.performAuthorised(
+          mockMvc.performAuthorisedWithCN(
             "/v1/persons/$hmppsId/risk-management-plan",
+            "consumer-with-lao-redactions",
           )
 
         assert(response.response.status == 500)
@@ -201,7 +191,7 @@ class RiskManagementControllerTest(
       }
 
       it("fails with the appropriate error when LAO context has failed to be retrieved") {
-        val response = mockMvc.performAuthorised("/v1/persons/$laoFailureCrn/risk-management-plan")
+        val response = mockMvc.performAuthorisedWithCN("/v1/persons/$laoFailureCrn/risk-management-plan", "consumer-with-lao-redactions")
 
         assert(response.response.status == 500)
         assert(

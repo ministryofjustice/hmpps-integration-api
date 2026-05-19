@@ -6,30 +6,20 @@ import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.post
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching
-import io.mockk.every
-import io.mockk.mockkStatic
-import io.mockk.unmockkStatic
 import org.hamcrest.Matchers
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.whenever
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithPrisonFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService.Companion.attributeSearchRequest
 import java.io.File
 
 class PersonIntegrationTest : IntegrationTestBase() {
-  @AfterEach
-  fun resetValidators() {
-    prisonerOffenderSearchMockServer.resetValidator()
-    unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-  }
-
   @Nested
   inner class GetPerson {
     @Test
@@ -57,8 +47,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
 
     @Test
     fun `returns a list of persons using pnc number search with consumer filters`() {
-      mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-      every { roles[any()] } returns testRoleWithPrisonFilters
+      whenever(authorisationConfig.roles).thenReturn(mapOf("full-access" to testRoleWithPrisonFilters))
 
       val firstName = "Robert"
       val lastName = "Larsen"

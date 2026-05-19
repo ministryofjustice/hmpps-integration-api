@@ -171,3 +171,6 @@ authorisation:
         supervisionStatuses:
           - PROBATION
       queueName: "testqueue"
+    consumer-with-lao-redactions:
+      roles:
+        - "test-role"

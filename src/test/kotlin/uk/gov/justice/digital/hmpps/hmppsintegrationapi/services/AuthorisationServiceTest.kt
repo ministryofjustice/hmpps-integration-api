@@ -1,13 +1,14 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.config
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.junit.jupiter.api.Test
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ConfigTest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters.Companion.NO_FILTERS
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.laoRedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.RoleService
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -18,6 +19,16 @@ class AuthorisationServiceTest : ConfigTest() {
   companion object {
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
   }
+
+  val testRole =
+    role("test-role") {
+      permissions {
+        -"/persons/123"
+      }
+      redactionPolicies {
+        -laoRedactionPolicy
+      }
+    }
 
   @Test
   fun `has permission`() {
@@ -69,7 +80,6 @@ class AuthorisationServiceTest : ConfigTest() {
   fun `validate core endpoint matching with synthetic data`() {
     val authorisationService =
       AuthorisationService(
-        RoleService(),
         AuthorisationConfig(
           mapOf(
             "c1" to ConsumerConfig(include = listOf("/tester"), filters = null, roles = listOf()),
@@ -89,25 +99,29 @@ class AuthorisationServiceTest : ConfigTest() {
   @Test
   fun `compare missing and empty lists in ConsumerConfig`() {
     val missingConfig =
-      parseAuthorisationConfig(
-        """
-        consumers:
-          tester:
-            roles:
-              - full-access
-        """.trimIndent(),
+      AuthorisationService(
+        parseAuthorisationConfig(
+          """
+          consumers:
+            tester:
+              roles:
+                - full-access
+          """.trimIndent(),
+        ),
       )
 
     val emptyConfig =
-      parseAuthorisationConfig(
-        """
-        consumers:
-          tester:
-            include:
-            filters:
-            roles:
-              - full-access
-        """.trimIndent(),
+      AuthorisationService(
+        parseAuthorisationConfig(
+          """
+          consumers:
+            tester:
+              include:
+              filters:
+              roles:
+                - full-access
+          """.trimIndent(),
+        ),
       )
 
     assertEquals(missingConfig.consumers()["tester"]?.permissions(), emptyConfig.consumers()["tester"]?.permissions())
@@ -119,9 +133,22 @@ class AuthorisationServiceTest : ConfigTest() {
     val consumer = ConsumerConfig(roles = listOf("testing"))
     val role = role("testing") {}
 
-    val filters = AuthorisationService(RoleService(), AuthorisationConfig()).allFilters(consumer, listOf(role))
+    val filters =
+      AuthorisationService(
+        AuthorisationConfig(
+          mapOf(
+            "consumer-name" to
+              ConsumerConfig(
+                include = null,
+                filters = ConsumerFilters(prisons = listOf("MDI")),
+                roles = listOf("test-role"),
+              ),
+          ),
+          roles = mapOf("test-role" to testRole),
+        ),
+      ).allFilters(consumer, listOf(role))
 
-    assertEquals(filters, NO_FILTERS)
+    assertEquals(filters, ConsumerFilters.Companion.NO_FILTERS)
   }
 
   @Test
@@ -137,9 +164,22 @@ class AuthorisationServiceTest : ConfigTest() {
         }
       }
 
-    val filters = AuthorisationService(RoleService(), AuthorisationConfig()).allFilters(consumer, listOf(role))
+    val filters =
+      AuthorisationService(
+        AuthorisationConfig(
+          mapOf(
+            "consumer-name" to
+              ConsumerConfig(
+                include = null,
+                filters = ConsumerFilters(prisons = listOf("MDI")),
+                roles = listOf("test-role"),
+              ),
+          ),
+          roles = mapOf("test-role" to testRole),
+        ),
+      ).allFilters(consumer, listOf(role))
 
-    assertFalse(filters == NO_FILTERS)
+    assertFalse(filters == ConsumerFilters.Companion.NO_FILTERS)
     assertTrue(filters.hasSupervisionStatusesFilter())
     assertTrue(filters.isPrisonsOnly())
     assertFalse(filters.isProbationOnly())
@@ -158,9 +198,22 @@ class AuthorisationServiceTest : ConfigTest() {
         }
       }
 
-    val filters = AuthorisationService(RoleService(), AuthorisationConfig()).allFilters(consumer, listOf(role))
+    val filters =
+      AuthorisationService(
+        AuthorisationConfig(
+          mapOf(
+            "consumer-name" to
+              ConsumerConfig(
+                include = null,
+                filters = ConsumerFilters(prisons = listOf("MDI")),
+                roles = listOf("test-role"),
+              ),
+          ),
+          roles = mapOf("test-role" to testRole),
+        ),
+      ).allFilters(consumer, listOf(role))
 
-    assertFalse(filters == NO_FILTERS)
+    assertFalse(filters == ConsumerFilters.Companion.NO_FILTERS)
     assertTrue(filters.hasSupervisionStatusesFilter())
     assertTrue(filters.isProbationOnly())
     assertFalse(filters.isPrisonsOnly())
@@ -180,13 +233,43 @@ class AuthorisationServiceTest : ConfigTest() {
         }
       }
 
-    val filters = AuthorisationService(RoleService(), AuthorisationConfig()).allFilters(consumer, listOf(role))
+    val filters =
+      AuthorisationService(
+        AuthorisationConfig(
+          mapOf(
+            "consumer-name" to
+              ConsumerConfig(
+                include = null,
+                filters = ConsumerFilters(prisons = listOf("MDI")),
+                roles = listOf("test-role"),
+              ),
+          ),
+          roles = mapOf("test-role" to testRole),
+        ),
+      ).allFilters(consumer, listOf(role))
 
-    assertFalse(filters == NO_FILTERS)
+    assertFalse(filters == ConsumerFilters.Companion.NO_FILTERS)
     assertTrue(filters.hasSupervisionStatusesFilter())
     assertFalse(filters.isProbationOnly())
     assertFalse(filters.isPrisonsOnly())
     assertTrue(filters.hasPrisons())
     assertTrue(filters.hasProbation())
+  }
+
+  @Test
+  fun `returns redaction policies`() {
+    val service =
+      AuthorisationService(
+        AuthorisationConfig(
+          mapOf(
+            "consumer-name" to
+              ConsumerConfig(
+                roles = listOf("test-role"),
+              ),
+          ),
+          roles = mapOf("test-role" to testRole),
+        ),
+      )
+    assertEquals(listOf(laoRedactionPolicy), service.redactionPolicies("consumer-name"))
   }
 }

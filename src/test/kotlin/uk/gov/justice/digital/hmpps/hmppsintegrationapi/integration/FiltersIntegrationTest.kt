@@ -15,7 +15,6 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.AuthorisationFilter
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.RoleService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import kotlin.test.Test
 
@@ -36,7 +35,6 @@ class FiltersIntegrationTest : IntegrationTestBase() {
       AuthorisationFilter(
         authorisationService,
         mockTelemetryService,
-        RoleService(),
       )
     whenever(mockRequest.getHeader("cert-serial-number")).thenReturn(certSerialNumber)
   }

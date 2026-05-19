@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.JdbcTemplateEventNotificationRepository
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.writeAsJson
@@ -67,6 +68,9 @@ abstract class IntegrationTestBase {
 
   @MockitoSpyBean
   lateinit var authorisationService: AuthorisationService
+
+  @MockitoSpyBean
+  lateinit var authorisationConfig: AuthorisationConfig
 
   @MockitoSpyBean
   lateinit var eventNotificationRepository: JdbcTemplateEventNotificationRepository

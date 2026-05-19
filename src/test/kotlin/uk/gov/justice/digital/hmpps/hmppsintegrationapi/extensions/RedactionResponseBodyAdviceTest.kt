@@ -3,12 +3,8 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.kotest.matchers.shouldBe
-import io.mockk.every
-import io.mockk.mockkStatic
-import io.mockk.unmockkStatic
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -35,8 +31,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.R
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionType.MASK
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.ResponseRedaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.redactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
@@ -72,24 +66,11 @@ class RedactionResponseBodyAdviceTest {
     telemetryService = mock(TelemetryService::class.java)
 
     redactionContext = RedactionContext(examplePath, accessFor, telemetryService)
-    // mock the roles registry globally
-    mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-    every { roles } returns
-      mapOf(
-        roleName to
-          Role(
-            name = roleName,
-            permissions = mutableListOf(examplePath),
-            redactionPolicies = listOf(globalPolicy),
-          ),
-      )
+    whenever(authorisationService.redactionPolicies("clientA")).thenReturn(
+      listOf(globalPolicy),
+    )
 
     advice = RedactionResponseBodyAdvice(authorisationService, accessFor, telemetryService)
-  }
-
-  @AfterEach
-  fun cleanup() {
-    unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
   }
 
   // -------------------------------------------------------------
@@ -175,15 +156,7 @@ class RedactionResponseBodyAdviceTest {
 
     val rolePolicy = RedactionPolicy("role-policy", listOf(redaction))
 
-    every { roles } returns
-      mapOf(
-        roleName to
-          Role(
-            name = roleName,
-            permissions = mutableListOf(examplePath),
-            redactionPolicies = listOf(rolePolicy),
-          ),
-      )
+    whenever(authorisationService.redactionPolicies(any())).thenReturn(listOf(rolePolicy))
 
     val body = DataResponse(mapOf("field" to "value"))
 
@@ -259,34 +232,25 @@ class RedactionResponseBodyAdviceTest {
     expected: String,
     expectLaoException: Boolean = false,
   ) {
-    mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-    every { roles } returns
-      mapOf(
-        roleName to
-          Role(
-            name = roleName,
-            permissions = mutableListOf(examplePath),
-            redactionPolicies =
-              listOf(
-                redactionPolicy(
-                  "lao-redactions",
-                ) {
-                  responseRedactions {
-                    jsonPath {
-                      laoOnly(policyIsLao)
-                      endpoints {
-                        -examplePath
-                      }
-                      redactions {
-                        -("$..test" to MASK)
-                      }
-                    }
-                  }
-                },
-              ),
-          ),
-      )
-
+    whenever(authorisationService.redactionPolicies(any())).thenReturn(
+      listOf(
+        redactionPolicy(
+          "lao-redactions",
+        ) {
+          responseRedactions {
+            jsonPath {
+              laoOnly(policyIsLao)
+              endpoints {
+                -examplePath
+              }
+              redactions {
+                -("$..test" to MASK)
+              }
+            }
+          }
+        },
+      ),
+    )
     val servletResponse = mock(HttpServletResponse::class.java)
     whenever(servletResponse.status).thenReturn(HttpServletResponse.SC_OK)
     val response = ServletServerHttpResponse(servletResponse)

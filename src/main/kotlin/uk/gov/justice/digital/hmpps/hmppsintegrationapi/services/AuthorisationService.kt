@@ -1,22 +1,20 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
-import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.IntegrationEventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.normalisePath
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.RoleService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.EntraJwtOboService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.OboService
+import kotlin.collections.orEmpty
 
-@Configuration
 @Component
 class AuthorisationService(
-  private val roleService: RoleService,
   private val authorisationConfig: AuthorisationConfig,
 ) {
   /**
@@ -44,7 +42,7 @@ class AuthorisationService(
     val merged = mutableSetOf<String>()
     merged.addAll(authorisationConfig.consumers[consumerName]?.permissions().orEmpty())
     for (roleName in authorisationConfig.consumers[consumerName]?.roles ?: emptyList()) {
-      merged.addAll(roleService.getRoles()[roleName]?.permissions.orEmpty())
+      merged.addAll(authorisationConfig.roles[roleName]?.permissions.orEmpty())
     }
     return merged.toList().sorted()
   }
@@ -82,6 +80,11 @@ class AuthorisationService(
 
   fun defaultConsumerName() = authorisationConfig.defaultConsumerName
 
+  fun redactionPolicies(consumerName: String): List<RedactionPolicy> =
+    authorisationConfig.consumers[consumerName]?.roles?.flatMap {
+      authorisationConfig.roles[it]?.redactionPolicies ?: emptyList()
+    } ?: emptyList()
+
   /**
    * Returns true if the endpoint matches any of the patterns.
    */
@@ -97,7 +100,7 @@ class AuthorisationService(
     val consumerConfig: ConsumerConfig? = authorisationConfig.consumers[consumerName]
     val roles: List<Role>? =
       consumerConfig?.roles?.mapNotNull {
-        roleService.getRoles()[it]
+        authorisationConfig.roles[it]
       }
     return allFilters(consumerConfig, roles)
   }

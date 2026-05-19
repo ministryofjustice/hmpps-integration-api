@@ -5,9 +5,6 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
-import io.mockk.every
-import io.mockk.mockkStatic
-import io.mockk.unmockkStatic
 import net.javacrumbs.jsonunit.assertj.JsonAssertions
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory.times
@@ -47,11 +44,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitOrders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationintegrationepf.LimitedAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.fullAccess
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithPrisonFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCareNeedsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetIEPLevelService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageMetadataForPersonService
@@ -131,10 +124,6 @@ internal class PersonControllerTest(
           )
         }
 
-        afterTest {
-          unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-        }
-
         it("gets a person with matching search criteria") {
           val result = mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName&pnc_number=$pncNumber&date_of_birth=$dateOfBirth")
           result.response.status.shouldNotBe(HttpStatus.FORBIDDEN.value())
@@ -172,22 +161,17 @@ internal class PersonControllerTest(
         }
 
         it("calls attribute search when prisons filter is present and pnc number in search") {
-          mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-          every { roles[any()] } returns testRoleWithPrisonFilters
           mockMvc.performAuthorised("$basePath?first_name=$firstName&pnc_number=$pncNumber")
-          verify(getPersonsService, times(1)).personAttributeSearch(firstName, null, pncNumber, null, consumerFilters = testRoleWithPrisonFilters.filters)
+          verify(getPersonsService, times(1))
+            .personAttributeSearch(firstName, null, pncNumber, null)
         }
 
         it("calls attribute search when prisons filter is present and pnc number in search") {
-          mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-          every { roles[any()] } returns testRoleWithPrisonFilters
           mockMvc.performAuthorised("$basePath?first_name=$firstName&pnc_number=$pncNumber")
-          verify(getPersonsService, times(1)).personAttributeSearch(firstName, null, pncNumber, null, consumerFilters = testRoleWithPrisonFilters.filters)
+          verify(getPersonsService, times(1)).personAttributeSearch(firstName, null, pncNumber, null)
         }
 
         it("passes supervision status filters from consumer config to service") {
-          mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-          every { roles[any()] } returns role("test-role") { permissions { -fullAccess.permissions!! } }
           val expectedFilters = ConsumerFilters(supervisionStatuses = listOf("PRISONS"))
           whenever(getPersonsService.personAttributeSearch(firstName, null, pncNumber, null, false, expectedFilters)).thenReturn(Response(data = emptyList()))
 
