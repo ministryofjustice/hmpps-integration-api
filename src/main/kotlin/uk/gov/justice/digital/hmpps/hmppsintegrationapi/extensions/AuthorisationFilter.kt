@@ -15,8 +15,12 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import java.io.IOException
+import java.time.Clock
+import java.time.Instant
+import java.time.LocalDate
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import java.util.Locale
 
 @Component
@@ -24,6 +28,7 @@ import java.util.Locale
 class AuthorisationFilter(
   private val authorisationService: AuthorisationService,
   private val telemetryService: TelemetryService,
+  private val clock: Clock,
 ) : Filter {
   @Throws(IOException::class, ServletException::class)
   override fun doFilter(
@@ -54,12 +59,11 @@ class AuthorisationFilter(
 
     // Get certificate expiry date
     val certificateExpiryDate =
-      req.getHeader("cert-expiry-date")?.let {
-        try {
-          ZonedDateTime.parse(it, DateTimeFormatter.ofPattern("MMM d HH:mm:ss yyyy zzz", Locale.ENGLISH)).toInstant().toString()
-        } catch (ex: Exception) {
-          telemetryService.captureException(RuntimeException("Failed to parse certificate expiry date $it. ${ex.message}"))
-          null
+      req.getHeader("cert-expiry-date")?.let { headerString ->
+        val instant = parseCertExpiryDate(headerString)
+        instant?.let {
+          checkExpiry(clientName, instant, headerString)
+          instant.toString()
         }
       }
 
@@ -187,5 +191,28 @@ class AuthorisationFilter(
     certSerialNumber?.let { telemetryService.setSpanAttribute("certSerialNumber", certSerialNumber) }
     certExpiryDate?.let { telemetryService.setSpanAttribute("certExpiryDate", certExpiryDate) }
     onBehalfOf?.let { telemetryService.setSpanAttribute("onBehalfOf", onBehalfOf) }
+  }
+
+  private fun parseCertExpiryDate(certExpiryDate: String): Instant? =
+    try {
+      ZonedDateTime
+        .parse(certExpiryDate, DateTimeFormatter.ofPattern("MMM d HH:mm:ss yyyy zzz", Locale.ENGLISH))
+        .toInstant()
+    } catch (ex: Exception) {
+      telemetryService.captureException(RuntimeException("Failed to parse certificate expiry date $certExpiryDate. ${ex.message}"))
+      null
+    }
+
+  private fun checkExpiry(
+    consumerName: String,
+    certExpiryDate: Instant,
+    certExpiryFormated: String,
+  ) {
+    val today = LocalDate.ofInstant(clock.instant(), clock.zone)
+    val expires = LocalDate.ofInstant(certExpiryDate, clock.zone)
+    val days = ChronoUnit.DAYS.between(today, expires)
+    if (days in 1..30) {
+      telemetryService.captureMessage("The certificate for $consumerName will expire on $certExpiryFormated (in $days ${if (days > 1L) "days" else "day" })")
+    }
   }
 }

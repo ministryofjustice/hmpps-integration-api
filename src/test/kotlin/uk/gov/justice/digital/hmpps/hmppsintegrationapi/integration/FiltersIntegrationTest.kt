@@ -12,6 +12,7 @@ import org.mockito.Mockito.verify
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.whenever
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.fixedClock
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.AuthorisationFilter
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory
@@ -35,6 +36,7 @@ class FiltersIntegrationTest : IntegrationTestBase() {
       AuthorisationFilter(
         authorisationService,
         mockTelemetryService,
+        fixedClock(),
       )
     whenever(mockRequest.getHeader("cert-serial-number")).thenReturn(certSerialNumber)
   }
