@@ -5,8 +5,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithLaoRedactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.RoleService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
 @TestConfiguration
@@ -21,13 +21,16 @@ class WebMvcTestConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
-  fun roleService(): RoleService = RoleService()
+  fun config(): AuthorisationConfig {
+    val config = AuthorisationConfig()
+    val roles = config.roles
+    // Adding further test roles to the test config
+    val testRole = mapOf(testRoleWithLaoRedactions.name to testRoleWithLaoRedactions)
+    config.roles = roles + testRole
+    return config
+  }
 
   @Bean
   @ConditionalOnMissingBean
-  fun config(): AuthorisationConfig = AuthorisationConfig()
-
-  @Bean
-  @ConditionalOnMissingBean
-  fun authorisationService(): AuthorisationService = AuthorisationService(roleService(), config())
+  fun authorisationService(): AuthorisationService = AuthorisationService(config())
 }

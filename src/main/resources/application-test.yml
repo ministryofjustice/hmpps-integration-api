@@ -176,3 +176,6 @@ authorisation:
         - "all-endpoints"
       oboConfig:
         - "unsigned"
+    consumer-with-lao-redactions:
+      roles:
+        - "test-role"

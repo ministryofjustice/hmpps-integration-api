@@ -1,15 +1,11 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
-import io.mockk.every
-import io.mockk.mockkStatic
-import io.mockk.unmockkStatic
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.whenever
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithLaoRedactions
 import java.io.File
 
@@ -25,11 +21,6 @@ class SentencesIntegrationTest : IntegrationTestBase() {
         "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/ndelius/fixtures/GetSupervisionsResponse.json",
       ).readText(),
     )
-  }
-
-  @AfterEach
-  fun tearDown() {
-    unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
   }
 
   @Test
@@ -85,8 +76,7 @@ class SentencesIntegrationTest : IntegrationTestBase() {
   @Test
   fun `sentences returns forbidden for an LAO person when redaction policy is present`() {
     setToLao()
-    mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-    every { roles[any()] } returns testRoleWithLaoRedactions
+    whenever(authorisationConfig.roles).thenReturn(mapOf("full-access" to testRoleWithLaoRedactions))
     callApi(path)
       .andExpect(status().isForbidden)
   }
@@ -94,8 +84,7 @@ class SentencesIntegrationTest : IntegrationTestBase() {
   @Test
   fun `returns latest sentence key dates and adjustments for an LAO person when redaction policy is present`() {
     setToLao()
-    mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-    every { roles[any()] } returns testRoleWithLaoRedactions
+    whenever(authorisationConfig.roles).thenReturn(mapOf("full-access" to testRoleWithLaoRedactions))
     callApi("$path/latest-key-dates-and-adjustments")
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("person-sentence-key-dates")))

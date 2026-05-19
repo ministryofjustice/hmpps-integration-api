@@ -2,9 +2,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
-import io.mockk.every
-import io.mockk.mockkStatic
-import io.mockk.unmockkStatic
 import org.mockito.Mockito
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -23,7 +20,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonerAlerts.PA
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonerAlerts.PAPaginatedAlerts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonerAlerts.PASort
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithPndAlerts
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -115,9 +111,6 @@ internal class GetAlertsForPersonServiceTest(
 
       beforeEach {
 
-        mockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
-        every { roles["full-access"] } returns testRoleWithPndAlerts
-
         Mockito.reset(prisonerAlertsGateway)
         Mockito.reset(personService)
 
@@ -132,10 +125,6 @@ internal class GetAlertsForPersonServiceTest(
             data = paginatedAlerts,
           ),
         )
-      }
-
-      afterEach {
-        unmockkStatic("uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.RoleKt")
       }
 
       it("gets a nomis number from getPersonService") {

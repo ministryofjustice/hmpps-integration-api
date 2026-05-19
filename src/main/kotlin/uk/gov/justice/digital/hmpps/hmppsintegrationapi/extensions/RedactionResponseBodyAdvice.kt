@@ -16,7 +16,6 @@ import org.springframework.web.servlet.HandlerMapping
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionPolicy
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
@@ -58,15 +57,15 @@ class RedactionResponseBodyAdvice(
 
     val servletRequest =
       (request as ServletServerHttpRequest).servletRequest.apply {
-        (getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE) as? Map<String, String>)
+        (getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE) as? Map<*, *>)
           ?.get("hmppsId")
           ?.let { setAttribute("hmppsId", it) }
       }
     val requestUri = servletRequest.requestURI
-    val subjectDistinguishedName = servletRequest.getAttribute("clientName") as? String
-    val redactionPolicies = getRedactionPoliciesFromRoles(subjectDistinguishedName)
+    val consumerName = servletRequest.getAttribute("clientName") as? String
+    val redactionPolicies = authorisationService.redactionPolicies(consumerName!!)
     val hmppsId = servletRequest.getAttribute("hmppsId") as? String
-    val redactionContext = RedactionContext(requestUri, accessFor, telemetryService, hmppsId, subjectDistinguishedName)
+    val redactionContext = RedactionContext(requestUri, accessFor, telemetryService, hmppsId, consumerName)
     return applyPolicies(redactionContext, body, redactionPolicies)
   }
 
@@ -83,12 +82,4 @@ class RedactionResponseBodyAdvice(
     }
     return redactedBody
   }
-
-  private fun getRedactionPoliciesFromRoles(subjectDistinguishedName: String?): List<RedactionPolicy> =
-    buildList {
-      val consumerRoles = authorisationService.consumers()[subjectDistinguishedName]?.roles.orEmpty()
-      consumerRoles.forEach { role ->
-        addAll(roles[role]?.redactionPolicies.orEmpty())
-      }
-    }
 }

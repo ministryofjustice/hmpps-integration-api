@@ -13,8 +13,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuthoriseConsumerService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.RoleService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import java.io.IOException
 
@@ -23,7 +21,6 @@ import java.io.IOException
 class AuthorisationFilter(
   private val authorisationService: AuthorisationService,
   private val telemetryService: TelemetryService,
-  private val roleService: RoleService,
 ) : Filter {
   @Throws(IOException::class, ServletException::class)
   override fun doFilter(
@@ -80,12 +77,9 @@ class AuthorisationFilter(
     val filters = authorisationService.allFilters(clientName)
     request.setAttribute("filters", filters)
 
-    val authoriseConsumerService = AuthoriseConsumerService()
     val requestedPath = req.requestURI
 
-    if (authorisedThroughIncludes(authoriseConsumerService, clientName, requestedPath) ||
-      authorisedThroughRole(authoriseConsumerService, clientName, requestedPath)
-    ) {
+    if (authorisationService.hasAccess(clientName, requestedPath)) {
       try {
         chain.doFilter(request, response)
       } catch (e: Throwable) {
@@ -166,30 +160,6 @@ class AuthorisationFilter(
     }
     return false
   }
-
-  private fun authorisedThroughRole(
-    authoriseConsumerService: AuthoriseConsumerService,
-    consumerName: String?,
-    requestedPath: String,
-  ): Boolean {
-    val consumerConfig: ConsumerConfig? = authorisationService.consumers()[consumerName]
-    val consumersRoles = consumerConfig?.roles
-    val rolesInclude =
-      buildList {
-        for (consumerRole in consumersRoles.orEmpty()) {
-          addAll(roleService.getRoles()[consumerRole]?.permissions.orEmpty())
-        }
-      }
-    val roleResult =
-      authoriseConsumerService.doesConsumerHaveRoleAccess(rolesInclude, requestedPath)
-    return roleResult
-  }
-
-  private fun authorisedThroughIncludes(
-    authoriseConsumerService: AuthoriseConsumerService,
-    consumerName: String?,
-    requestedPath: String,
-  ) = authoriseConsumerService.doesConsumerHaveIncludesAccess(authorisationService.consumers()[consumerName], requestedPath)
 
   private fun setSpanAttributes(
     clientId: String,
