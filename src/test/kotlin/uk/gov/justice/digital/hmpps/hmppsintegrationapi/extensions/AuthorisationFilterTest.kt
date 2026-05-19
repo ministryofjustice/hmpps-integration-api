@@ -22,12 +22,11 @@ import org.springframework.mock.web.MockHttpServletResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.oboconfig.OboConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.RoleService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.UnsignedJwtOboService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
@@ -49,7 +48,7 @@ class AuthorisationFilterTest {
   private val featureFlagConfig = mock(FeatureFlagConfig::class.java)
   private val mockTelemetryService = mock(TelemetryService::class.java)
 
-  private val roleConfig = ConsumerConfig(roles = listOf("private-prison"), filters = ConsumerFilters(prisons = listOf("MDI")))
+  private val roleConfig = ConsumerConfig(roles = listOf("private-prison"), filters = ConsumerFilters(prisons = listOf("MDI")), oboConfig = OboConfig("unsigned"))
 
   @BeforeEach
   fun setup() {
@@ -61,8 +60,7 @@ class AuthorisationFilterTest {
     whenever(mockRequest.getHeader("subject-distinguished-name")).thenReturn(exampleSubjectDistinguishedName)
     whenever(mockRequest.getHeader("cert-serial-number")).thenReturn(CERT_SERIAL_RAW)
     whenever(mockRequest.getHeader("X-On-Behalf-Of")).thenReturn(OBO_TEST_JWT)
-    whenever(mockRoleService.getRoles()).thenReturn(mapOf(roleName to Role(name = "test", permissions = mutableListOf(examplePath), filters = null)))
-    whenever(authorisationService.oboService("consumer-name")).thenReturn(UnsignedJwtOboService())
+    whenever(authorisationService.oboService(exampleConsumer)).thenReturn(UnsignedJwtOboService())
   }
 
   fun mockRequest(

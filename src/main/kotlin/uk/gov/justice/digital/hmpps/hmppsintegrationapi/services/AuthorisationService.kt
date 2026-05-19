@@ -9,7 +9,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.EntraJwtOboService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.OboService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.UnsignedJwtOboService
 import kotlin.collections.orEmpty
@@ -168,10 +167,10 @@ class AuthorisationService(
   fun allNull(vararg values: List<Any>?) = values.all { it == null }
 
   fun oboService(consumerName: String): OboService? {
-    val oboServiceName = authorisationConfig.consumers[consumerName]?.oboConfig
+    val oboServiceName = authorisationConfig.consumers[consumerName]?.oboConfig?.strategy
     return when (oboServiceName) {
       "unsigned" -> UnsignedJwtOboService()
-      "entra" -> EntraJwtOboService()
+      "entra" -> null // EntraJwtOboService()
       else -> null
     }
   }

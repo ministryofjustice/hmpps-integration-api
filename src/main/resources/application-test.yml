@@ -175,7 +175,8 @@ authorisation:
       roles:
         - "all-endpoints"
       oboConfig:
-        - "unsigned"
+        strategy:
+          - "unsigned"
     consumer-with-lao-redactions:
       roles:
         - "test-role"
