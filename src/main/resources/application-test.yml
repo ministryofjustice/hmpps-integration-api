@@ -171,12 +171,6 @@ authorisation:
         supervisionStatuses:
           - PROBATION
       queueName: "testqueue"
-    obo-unsigned:
-      roles:
-        - "all-endpoints"
-      oboConfig:
-        strategy:
-          - "unsigned"
     consumer-with-lao-redactions:
       roles:
         - "test-role"

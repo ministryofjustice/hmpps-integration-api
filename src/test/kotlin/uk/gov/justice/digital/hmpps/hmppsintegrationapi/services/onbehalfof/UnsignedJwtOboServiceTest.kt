@@ -41,7 +41,7 @@ class UnsignedJwtOboServiceTest :
     },
   )
 
-private fun createUnassignedJwy(): String {
+fun createUnassignedJwy(): String {
   val now = Date()
 
   return Jwts

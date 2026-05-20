@@ -292,6 +292,27 @@ authorisation:
     synalogik:
       roles:
         - "synalogik"
+    obo-unsigned:
+      roles:
+        - "all-endpoints"
+      oboConfig:
+        strategy:
+          - "unsigned"
+    obo-invalid:
+      roles:
+        - "all-endpoints"
+      oboConfig:
+        strategy:
+          - "invalid"
+    obo-entra:
+      roles:
+        - "all-endpoints"
+      oboConfig:
+        strategy:
+          - "entra"
+    obo-empty:
+      roles:
+        - "all-endpoints"
 
   certificate-revocation-list:
     - 01:7b:eb:77:06:db:11:f5:2e:b6:f7:37:7b:a9:e0:e4:84:c5:2c:a3
