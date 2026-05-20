@@ -14,7 +14,6 @@ class RolesAuthenticationIntegrationTest : IntegrationTestBase() {
     val allRoles = roles
     val responses =
       allRoles
-        .filter { it.key == "synalogik" }
         .filter { !(it.value.permissions!!.any { r -> r.contains(".*") || r.contains("[^/]") }) }
         .flatMap { role ->
           val roleEndpoints = role.value.permissions!!
