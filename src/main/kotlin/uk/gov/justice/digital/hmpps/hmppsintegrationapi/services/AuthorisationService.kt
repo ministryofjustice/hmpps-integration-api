@@ -21,6 +21,7 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Locale
 import kotlin.collections.orEmpty
+import kotlin.math.ceil
 import kotlin.ranges.contains
 
 @Component
@@ -227,11 +228,32 @@ class AuthorisationService(
     val today = LocalDate.ofInstant(clock.instant(), clock.zone)
     val expires = LocalDate.ofInstant(expiryDateTime, clock.zone)
     val days = ChronoUnit.DAYS.between(today, expires)
-    if (days < 0) {
-      throw RuntimeException("Certificate with expiry date $certExpiryDateString has expired")
+
+    val expiryWarningMessage = expiryWarningMessage(days, certExpiryDateString, consumerName)
+
+    if (expiryWarningMessage != null) {
+      telemetryService.captureMessage(expiryWarningMessage)
     }
-    if ((days in 0..7 || listOf<Long>(30, 21, 14).contains(days))) {
-      telemetryService.captureMessage("The certificate for $consumerName will expire on $certExpiryDateString (in $days ${if (days == 1L) "day" else "days" })")
+  }
+
+  fun expiryWarningMessage(
+    days: Long,
+    expiryDateTime: String,
+    consumerName: String,
+  ): String? {
+    val durationMessage =
+      when {
+        (days < 0) -> throw RuntimeException("The certificate for $consumerName with expiry date $expiryDateTime has expired")
+        (days <= 7) -> "in $days ${if (days == 1L) "day" else "days"}"
+        (days <= 28) -> {
+          val weeks = ceil(days / 7.0).toInt()
+          "in under $weeks ${if (weeks == 1) "week" else "weeks"}"
+        }
+        (days <= 30) -> "in under 30 days"
+        else -> null
+      }
+    return durationMessage?.let {
+      "The certificate for $consumerName will expire on $expiryDateTime ($durationMessage)"
     }
   }
 

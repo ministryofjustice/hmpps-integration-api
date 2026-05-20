@@ -5,6 +5,8 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.times
@@ -408,35 +410,35 @@ class AuthorisationServiceTest : ConfigTest() {
     fun `alerts a 2 digit day cert-expiry-date that expires in 30 days`() {
       val dateString = authorisationService.processCertificateExpiryDate("Jun 7 12:30:10 2026 GMT", "consumer-name")
       assertEquals("2026-06-07T12:30:10Z", dateString)
-      verify(mockTelemetryService, times(1)).captureMessage("The certificate for consumer-name will expire on Jun 7 12:30:10 2026 GMT (in 30 days)")
+      verify(mockTelemetryService, times(1)).captureMessage("The certificate for consumer-name will expire on Jun 7 12:30:10 2026 GMT (in under 30 days)")
     }
 
     @Test
     fun `alerts a cert-expiry-date that expires in 21 days`() {
       val dateString = authorisationService.processCertificateExpiryDate("May 29 00:30:10 2026 GMT", "consumer-name")
       assertEquals("2026-05-29T00:30:10Z", dateString)
-      verify(mockTelemetryService, times(1)).captureMessage("The certificate for consumer-name will expire on May 29 00:30:10 2026 GMT (in 21 days)")
+      verify(mockTelemetryService, times(1)).captureMessage("The certificate for consumer-name will expire on May 29 00:30:10 2026 GMT (in under 3 weeks)")
     }
 
     @Test
-    fun `does not alert for a cert-expiry-date that expires in 20 days`() {
+    fun `alerts for a cert-expiry-date that expires in 20 days`() {
       val dateString = authorisationService.processCertificateExpiryDate("May 28 00:30:10 2026 GMT", "consumer-name")
       assertEquals("2026-05-28T00:30:10Z", dateString)
-      verify(mockTelemetryService, times(0)).captureMessage(any())
+      verify(mockTelemetryService, times(1)).captureMessage("The certificate for consumer-name will expire on May 28 00:30:10 2026 GMT (in under 3 weeks)")
     }
 
     @Test
     fun `alerts for a cert-expiry-date that expires in 14 days`() {
       val dateString = authorisationService.processCertificateExpiryDate("May 22 00:30:10 2026 GMT", "consumer-name")
       assertEquals("2026-05-22T00:30:10Z", dateString)
-      verify(mockTelemetryService, times(1)).captureMessage("The certificate for consumer-name will expire on May 22 00:30:10 2026 GMT (in 14 days)")
+      verify(mockTelemetryService, times(1)).captureMessage("The certificate for consumer-name will expire on May 22 00:30:10 2026 GMT (in under 2 weeks)")
     }
 
     @Test
     fun `does not alert for a cert-expiry-date that expires in 12 days`() {
       val dateString = authorisationService.processCertificateExpiryDate("May 20 00:30:10 2026 GMT", "consumer-name")
       assertEquals("2026-05-20T00:30:10Z", dateString)
-      verify(mockTelemetryService, times(0)).captureMessage(any())
+      verify(mockTelemetryService, times(1)).captureMessage("The certificate for consumer-name will expire on May 20 00:30:10 2026 GMT (in under 2 weeks)")
     }
 
     @Test
@@ -466,7 +468,7 @@ class AuthorisationServiceTest : ConfigTest() {
         assertThrows<RuntimeException> {
           authorisationService.processCertificateExpiryDate("May 7 00:30:10 2026 GMT", "consumer-name")
         }
-      assertEquals(exception.message, "Certificate with expiry date May 7 00:30:10 2026 GMT has expired")
+      assertThat(exception.message).isEqualTo("The certificate for consumer-name with expiry date May 7 00:30:10 2026 GMT has expired")
     }
 
     @Test
@@ -476,6 +478,85 @@ class AuthorisationServiceTest : ConfigTest() {
       val exception = argumentCaptor<Throwable>()
       verify(mockTelemetryService, times(1)).captureException(exception.capture())
       assertThat(exception.firstValue.message).contains("Failed to parse certificate expiry date")
+    }
+
+    @ParameterizedTest
+    @ValueSource(
+      longs = [
+        29, 30,
+      ],
+    )
+    fun `creates the same messages for days in the under 30 days category`(days: Long) {
+      val warningMessage = authorisationService.expiryWarningMessage(days, "May 7 00:30:10 2026 GMT", "consumer-name")
+      assertThat(warningMessage).isEqualTo("The certificate for consumer-name will expire on May 7 00:30:10 2026 GMT (in under 30 days)")
+    }
+
+    @ParameterizedTest
+    @ValueSource(
+      longs = [
+        22, 23, 24, 25, 26, 27, 28,
+      ],
+    )
+    fun `creates the same messages for days in the under 4 weeks category`(days: Long) {
+      val warningMessage = authorisationService.expiryWarningMessage(days, "May 7 00:30:10 2026 GMT", "consumer-name")
+      assertThat(warningMessage).isEqualTo("The certificate for consumer-name will expire on May 7 00:30:10 2026 GMT (in under 4 weeks)")
+    }
+
+    @ParameterizedTest
+    @ValueSource(
+      longs = [
+        15, 16, 17, 18, 19, 20, 21,
+      ],
+    )
+    fun `creates the same messages for days in the under 3 weeks category`(days: Long) {
+      val warningMessage = authorisationService.expiryWarningMessage(days, "May 7 00:30:10 2026 GMT", "consumer-name")
+      assertThat(warningMessage).isEqualTo("The certificate for consumer-name will expire on May 7 00:30:10 2026 GMT (in under 3 weeks)")
+    }
+
+    @ParameterizedTest
+    @ValueSource(
+      longs = [
+        8, 9, 10, 11, 12, 13, 14,
+      ],
+    )
+    fun `creates the same messages for days in the under 2 weeks category`(days: Long) {
+      val warningMessage = authorisationService.expiryWarningMessage(days, "May 7 00:30:10 2026 GMT", "consumer-name")
+      assertThat(warningMessage).isEqualTo("The certificate for consumer-name will expire on May 7 00:30:10 2026 GMT (in under 2 weeks)")
+    }
+
+    @ParameterizedTest
+    @ValueSource(
+      longs = [
+        0, 1, 2, 3, 4, 5, 6, 7,
+      ],
+    )
+    fun `creates different messages for days in the under 1 week category`(days: Long) {
+      val warningMessage = authorisationService.expiryWarningMessage(days, "May 7 00:30:10 2026 GMT", "consumer-name")
+      assertThat(warningMessage).isEqualTo("The certificate for consumer-name will expire on May 7 00:30:10 2026 GMT (in $days ${if (days == 1L) "day" else "days"})")
+    }
+
+    @Test
+    fun `does not create a message for days over 30`() {
+      val warningMessage = authorisationService.expiryWarningMessage(31, "May 7 00:30:10 2026 GMT", "consumer-name")
+      assertThat(warningMessage).isEqualTo(null)
+    }
+
+    @Test
+    fun `throws an exception when days are negative`() {
+      val exception =
+        assertThrows<RuntimeException> {
+          authorisationService.expiryWarningMessage(-1, "May 7 00:30:10 2026 GMT", "consumer-name")
+        }
+      assertThat(exception.message).isEqualTo("The certificate for consumer-name with expiry date May 7 00:30:10 2026 GMT has expired")
+    }
+
+    @Test
+    fun `creates the correct message`() {
+      val exception =
+        assertThrows<RuntimeException> {
+          authorisationService.expiryWarningMessage(-1, "May 7 00:30:10 2026 GMT", "consumer-name")
+        }
+      assertThat(exception.message).isEqualTo("The certificate for consumer-name with expiry date May 7 00:30:10 2026 GMT has expired")
     }
   }
 }
