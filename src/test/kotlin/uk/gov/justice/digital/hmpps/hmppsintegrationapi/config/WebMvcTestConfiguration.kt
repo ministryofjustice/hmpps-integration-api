@@ -37,5 +37,5 @@ class WebMvcTestConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
-  fun authorisationService(): AuthorisationService = AuthorisationService(config())
+  fun authorisationService(): AuthorisationService = AuthorisationService(config(), telemetryService(), clock())
 }

@@ -16,6 +16,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ConfigTest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.fixedClock
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.Metadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.EventNotificationService
@@ -103,6 +104,8 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
                 - full-access
           """.trimIndent(),
         ),
+        telemetryService,
+        fixedClock(),
       )
 
     eventNotificationService = EventNotificationService(queueService, objectMapper, authService, telemetryService)
@@ -122,6 +125,8 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
                 - full-access
           """.trimIndent(),
         ),
+        telemetryService,
+        fixedClock(),
       )
     eventNotificationService = EventNotificationService(queueService, objectMapper, authService, telemetryService)
     Assertions.assertFalse(eventNotificationService.isEventApplicable("tester", testEvent))
@@ -143,6 +148,8 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
                  - MKI
           """.trimIndent(),
         ),
+        telemetryService,
+        fixedClock(),
       )
     eventNotificationService = EventNotificationService(queueService, objectMapper, authService, telemetryService)
     Assertions.assertTrue(eventNotificationService.isEventApplicable("tester", testEvent))
@@ -164,6 +171,8 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
                   - MKI
           """.trimIndent(),
         ),
+        telemetryService,
+        fixedClock(),
       )
     eventNotificationService = EventNotificationService(queueService, objectMapper, authService, telemetryService)
     Assertions.assertFalse(eventNotificationService.isEventApplicable("tester", testEvent))
@@ -185,7 +194,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
         prisonId = messagePrisonId,
         metadata = messageSupervisionStatus?.let { Metadata(it) },
       )
-    val authService = AuthorisationService(parseAuthorisationConfig(config))
+    val authService = AuthorisationService(parseAuthorisationConfig(config), telemetryService, fixedClock())
     eventNotificationService = EventNotificationService(queueService, objectMapper, authService, telemetryService)
 
     assertThat(eventNotificationService.isEventApplicable("tester", testEvent)).isEqualTo(shouldBeSent)

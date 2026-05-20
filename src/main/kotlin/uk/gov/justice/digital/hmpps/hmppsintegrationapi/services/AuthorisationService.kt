@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.fixedClock
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.IntegrationEventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.normalisePath
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionPolicy
@@ -11,11 +12,22 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.OboService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.UnsignedJwtOboService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
+import java.time.Clock
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
+import java.util.Locale
 import kotlin.collections.orEmpty
+import kotlin.ranges.contains
 
 @Component
 class AuthorisationService(
   private val authorisationConfig: AuthorisationConfig,
+  private val telemetryService: TelemetryService,
+  private val clock: Clock = fixedClock(),
 ) {
   /**
    * Returns true if the consumer has access to the endpoint.
@@ -176,6 +188,52 @@ class AuthorisationService(
   }
 
   fun requiresObo(consumerName: String): Boolean = authorisationConfig.consumers[consumerName]?.oboConfig != null
+
+  /**
+   * Converts a certificate expiry date in the OpenSSL format to an ISO-6801 format
+   * Creates a sentry alert if the number of days to expiry is in the range 30, 21, 14, 7..0
+   * If the date is not in the OpenSSL format, will capture exception and return null
+   * Throws a RuntimeException if the certificate has already expired
+   *
+   * @param certExpiryDate The certificate expiry date in the OpenSSL format e.g Jun 7 12:30:10 2026 GMT
+   * @param consumerName The consumer name
+   * @return The certificate expiry date in ISO-8601 format
+   */
+
+  fun processCertificateExpiryDate(
+    certExpiryDate: String,
+    consumerName: String,
+  ): String? {
+    val expiryDateTime =
+      try {
+        ZonedDateTime
+          .parse(certExpiryDate, DateTimeFormatter.ofPattern("MMM d HH:mm:ss yyyy zzz", Locale.ENGLISH))
+          .toInstant()
+      } catch (ex: Exception) {
+        telemetryService.captureException(RuntimeException("Failed to parse certificate expiry date $certExpiryDate. ${ex.message}"))
+        null
+      }
+    return expiryDateTime?.let {
+      checkExpiryDate(expiryDateTime, certExpiryDate, consumerName)
+      expiryDateTime.toString()
+    }
+  }
+
+  fun checkExpiryDate(
+    expiryDateTime: Instant,
+    certExpiryDateString: String,
+    consumerName: String,
+  ) {
+    val today = LocalDate.ofInstant(clock.instant(), clock.zone)
+    val expires = LocalDate.ofInstant(expiryDateTime, clock.zone)
+    val days = ChronoUnit.DAYS.between(today, expires)
+    if (days < 0) {
+      throw RuntimeException("Certificate with expiry date $certExpiryDateString has expired")
+    }
+    if ((days in 0..7 || listOf<Long>(30, 21, 14).contains(days))) {
+      telemetryService.captureMessage("The certificate for $consumerName will expire on $certExpiryDateString (in $days ${if (days == 1L) "day" else "days" })")
+    }
+  }
 
   /**
    * Reduces a list of list<Any> (mixed) type to a flattened list of specified Enum type

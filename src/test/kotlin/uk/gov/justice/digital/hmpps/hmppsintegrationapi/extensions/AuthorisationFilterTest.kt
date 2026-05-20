@@ -13,7 +13,6 @@ import org.mockito.Mockito.mock
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.kotlin.any
-import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.whenever
@@ -52,7 +51,7 @@ class AuthorisationFilterTest {
   private val fixedClock: Clock = Clock.fixed(LocalDateTime.of(2026, 5, 8, 12, 30, 10).toInstant(ZoneOffset.UTC), ZoneId.systemDefault())
 
   private val roleConfig = ConsumerConfig(roles = listOf("private-prison"), filters = ConsumerFilters(prisons = listOf("MDI")))
-  private val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, fixedClock)
+  private val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService)
 
   @BeforeEach
   fun setup() {
@@ -88,6 +87,8 @@ class AuthorisationFilterTest {
           certificateRevocationList,
           roles = mapOf(roleName to Role(name = "test", permissions = mutableListOf(examplePath), filters = null)),
         ),
+        mockTelemetryService,
+        fixedClock,
       )
     return authService
   }
@@ -103,7 +104,7 @@ class AuthorisationFilterTest {
     finalFilter: Filter = mock(Filter::class.java),
   ): MockFilterChain =
     mockFilterChain(
-      AuthorisationFilter(authService, mockTelemetryService, fixedClock),
+      AuthorisationFilter(authService, mockTelemetryService),
       finalFilter,
     )
 
@@ -117,7 +118,7 @@ class AuthorisationFilterTest {
 
     val chain =
       mockFilterChain(
-        AuthorisationFilter(authService, mockTelemetryService, fixedClock),
+        AuthorisationFilter(authService, mockTelemetryService),
         finalFilter,
       )
 
@@ -134,8 +135,10 @@ class AuthorisationFilterTest {
           mapOf(exampleConsumer to ConsumerConfig(include = emptyList(), filters = ConsumerFilters(prisons = null), roles = exampleRoles)),
           roles = mapOf(roleName to Role(name = "test", permissions = mutableListOf(examplePath), filters = null)),
         ),
+        mockTelemetryService,
+        fixedClock,
       )
-    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, fixedClock)
+    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService)
     val finalFilter = mock(Filter::class.java)
 
     mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
@@ -151,9 +154,11 @@ class AuthorisationFilterTest {
           mapOf(exampleConsumer to ConsumerConfig(include = emptyList(), filters = ConsumerFilters(prisons = null), roles = exampleRoles)),
           roles = mapOf(roleName to Role(name = "test", permissions = mutableListOf(examplePath), filters = null)),
         ),
+        mockTelemetryService,
+        fixedClock,
       )
     // invalid Role Config
-    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, fixedClock)
+    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService)
     val finalFilter = mock(Filter::class.java)
 
     mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
@@ -169,7 +174,7 @@ class AuthorisationFilterTest {
     val req = mockRequest("GET", invalidPath)
     req.setAttribute("clientName", exampleConsumer)
 
-    val chain = mockFilterChain(AuthorisationFilter(authService, mockTelemetryService, fixedClock))
+    val chain = mockFilterChain(AuthorisationFilter(authService, mockTelemetryService))
 
     chain.doFilter(req, resp)
 
@@ -180,7 +185,7 @@ class AuthorisationFilterTest {
   @Test
   fun `generates error when subject distinguished name is null in the request`() {
     whenever(mockRequest.getHeader("subject-distinguished-name")).thenReturn(null)
-    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, fixedClock)
+    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService)
     authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
 
     verify(mockResponse, times(1)).sendError(403, "No subject-distinguished-name header provided for authorisation")
@@ -194,9 +199,11 @@ class AuthorisationFilterTest {
           mapOf(exampleConsumer to ConsumerConfig(include = emptyList(), filters = ConsumerFilters(prisons = null), roles = exampleRoles)),
           roles = mapOf(roleName to Role(name = "test", permissions = mutableListOf(examplePath), filters = null)),
         ),
+        mockTelemetryService,
+        fixedClock,
       )
     // invalid Role Config
-    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, fixedClock)
+    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService)
     whenever(mockChain.doFilter(mockRequest, mockResponse)).thenThrow(ServletException(LimitedAccessException()))
 
     authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
@@ -212,8 +219,10 @@ class AuthorisationFilterTest {
           mapOf(exampleConsumer to ConsumerConfig(include = emptyList(), filters = ConsumerFilters(prisons = null), roles = exampleRoles)),
           roles = mapOf(roleName to Role(name = "test", permissions = mutableListOf(examplePath), filters = null)),
         ),
+        mockTelemetryService,
+        fixedClock,
       )
-    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, fixedClock)
+    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService)
     whenever(mockChain.doFilter(mockRequest, mockResponse)).thenThrow(ServletException(LimitedAccessException()))
 
     authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
@@ -226,7 +235,7 @@ class AuthorisationFilterTest {
     whenever(authorisationService.certificateRevocationList()).thenReturn(listOf(CERT_SERIAL_FORMATTED, "TEST_SERIAL_NUMBER_2"))
     whenever(authorisationService.consumers()).thenReturn(mapOf(exampleConsumer to ConsumerConfig(include = emptyList(), filters = ConsumerFilters(prisons = null), roles = exampleRoles)))
     val resp = MockHttpServletResponse()
-    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, fixedClock)
+    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService)
     mockFilterChain(authorisationFilter).doFilter(mockRequest, resp)
     assertThat(resp.status).isEqualTo(403)
     assertThat(resp.errorMessage).isEqualTo("Certificate with serial number 01:AD:3E:D8:7D:D5:AA:84:F5:2D:83:E7:87:E9:90:E4:84:C5:2C:90 has been revoked")
@@ -272,7 +281,12 @@ class AuthorisationFilterTest {
     val resp = MockHttpServletResponse()
 
     val config = ConsumerConfig(include = null, filters = ConsumerFilters(prisons = listOf("A", "B")), roles = listOf())
-    val authorisationService = AuthorisationService(AuthorisationConfig(mapOf("consumer-name" to config)))
+    val authorisationService =
+      AuthorisationService(
+        AuthorisationConfig(mapOf("consumer-name" to config)),
+        mockTelemetryService,
+        fixedClock,
+      )
 
     val req = mockRequest("GET", examplePath, "O=test,CN=consumer-name")
 
@@ -297,6 +311,8 @@ class AuthorisationFilterTest {
           mapOf("consumer-name" to consumerConfig),
           roles = mapOf("test-role" to testRole),
         ),
+        mockTelemetryService,
+        fixedClock,
       )
 
     val req = mockRequest("GET", examplePath, "O=test,CN=consumer-name")
@@ -320,6 +336,8 @@ class AuthorisationFilterTest {
           mapOf("consumer-name" to ConsumerConfig(include = null, filters = ConsumerFilters(prisons = listOf("MDI")), roles = listOf("test-role"))),
           roles = mapOf("test-role" to testRole),
         ),
+        mockTelemetryService,
+        fixedClock,
       )
 
     val req = mockRequest("GET", examplePath, "O=test,CN=consumer-name")
@@ -406,44 +424,12 @@ class AuthorisationFilterTest {
   }
 
   @Test
-  fun `handles a 1 digit day cert-expiry-date header that expires in over 30 days`() {
-    // test clock is 8th May 2026 - + 31 days
-    whenever(mockRequest.getHeader("cert-expiry-date")).thenReturn("Jun 8 12:30:10 2026 GMT")
-    val finalFilter = mock(Filter::class.java)
-    mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
-    verify(mockTelemetryService, times(1)).setSpanAttribute("certExpiryDate", "2026-06-08T12:30:10Z")
-    verify(mockTelemetryService, times(0)).captureMessage(any())
-  }
-
-  @Test
-  fun `handles a 2 digit day cert-expiry-date header that expires in 30 days`() {
-    // test clock is 8th May 2026 + 30 days
-    whenever(mockRequest.getHeader("cert-expiry-date")).thenReturn("Jun 7 12:30:10 2026 GMT")
-    val finalFilter = mock(Filter::class.java)
-    mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
-    verify(mockTelemetryService, times(1)).setSpanAttribute("certExpiryDate", "2026-06-07T12:30:10Z")
-    verify(mockTelemetryService, times(1)).captureMessage("The certificate for $exampleConsumer will expire on Jun 7 12:30:10 2026 GMT (in 30 days)")
-  }
-
-  @Test
-  fun `handles a cert-expiry-date header that expires in 1 day`() {
-    // test clock is 8th May 2026 + 1 day
+  fun `handles a cert-expiry-date header `() {
     whenever(mockRequest.getHeader("cert-expiry-date")).thenReturn("May 9 00:30:10 2026 GMT")
+    whenever(authorisationService.processCertificateExpiryDate(any(), any())).thenReturn("2026-05-09T00:30:10Z")
     val finalFilter = mock(Filter::class.java)
     mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
     verify(mockTelemetryService, times(1)).setSpanAttribute("certExpiryDate", "2026-05-09T00:30:10Z")
-    verify(mockTelemetryService, times(1)).captureMessage("The certificate for $exampleConsumer will expire on May 9 00:30:10 2026 GMT (in 1 day)")
-  }
-
-  @Test
-  fun `handles an invalid format cert-expiry-date header and logs to sentry`() {
-    whenever(mockRequest.getHeader("cert-expiry-date")).thenReturn("Wrong format")
-    val finalFilter = mock(Filter::class.java)
-    mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
-    verify(mockTelemetryService, times(0)).setSpanAttribute(eq("certExpiryDate"), any())
-    val exception = argumentCaptor<Throwable>()
-    verify(mockTelemetryService, times(1)).captureException(exception.capture())
-    assertThat(exception.firstValue.message).contains("Failed to parse certificate expiry date")
   }
 
   @Test
