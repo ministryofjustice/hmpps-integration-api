@@ -26,10 +26,12 @@ class JwksOboServiceTest :
 
       it("loads the JWKS") {
         service.keyCount() shouldBe 0
+        service.keyStatus() shouldBe JwksOboService.KeyStatus.NEW
 
         service.loadJwks()
 
         service.keyCount() shouldBe 1
+        service.keyStatus() shouldBe JwksOboService.KeyStatus.LOADED
       }
 
       it("parses a JWT using JWKS") {
@@ -53,8 +55,11 @@ class JwksOboServiceTest :
       it("doesn't crash on JWKS loading error") {
         val badUri = URI.create("http://localhost:98765/").toURL()
         val badService = JwksOboService(badUri, "subject")
+
         badService.loadJwks()
+
         badService.keyCount() shouldBe 0
+        badService.keyStatus() shouldBe JwksOboService.KeyStatus.FAILED
       }
     },
   )

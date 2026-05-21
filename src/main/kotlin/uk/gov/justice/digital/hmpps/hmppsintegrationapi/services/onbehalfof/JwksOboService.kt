@@ -20,6 +20,12 @@ class JwksOboService(
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 
+  enum class KeyStatus {
+    NEW, LOADED, FAILED,
+  }
+
+  private var keyStatus: KeyStatus = KeyStatus.NEW
+
   private val keyCache: MutableMap<String, Key> = mutableMapOf()
 
   override fun extractUsername(token: String): String? {
@@ -41,7 +47,7 @@ class JwksOboService(
   }
 
   fun loadJwks() {
-    if (!keyCache.isEmpty()) {
+    if (keyStatus() == KeyStatus.LOADED) {
       log.debug("Using cached JWKS")
       return
     }
@@ -56,6 +62,7 @@ class JwksOboService(
           jacksonObjectMapper().readTree(reader)
         }
     } catch (e: Exception) {
+      keyStatus = KeyStatus.FAILED
       log.error("Unable to load and parse JWKs from ${jwks}", e)
       return
     }
@@ -68,8 +75,11 @@ class JwksOboService(
       },
     )
 
+    keyStatus = KeyStatus.LOADED
     log.info("Loaded {} public keys from {}}", keyCache.size, jwks.toString())
   }
 
   fun keyCount() = keyCache.size
+
+  fun keyStatus() = keyStatus
 }
