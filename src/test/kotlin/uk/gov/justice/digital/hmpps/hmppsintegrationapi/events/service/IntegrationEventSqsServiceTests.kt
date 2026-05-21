@@ -103,6 +103,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
                 - full-access
           """.trimIndent(),
         ),
+        telemetryService,
       )
 
     eventNotificationService = EventNotificationService(queueService, objectMapper, authService, telemetryService)
@@ -122,6 +123,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
                 - full-access
           """.trimIndent(),
         ),
+        telemetryService,
       )
     eventNotificationService = EventNotificationService(queueService, objectMapper, authService, telemetryService)
     Assertions.assertFalse(eventNotificationService.isEventApplicable("tester", testEvent))
@@ -143,6 +145,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
                  - MKI
           """.trimIndent(),
         ),
+        telemetryService,
       )
     eventNotificationService = EventNotificationService(queueService, objectMapper, authService, telemetryService)
     Assertions.assertTrue(eventNotificationService.isEventApplicable("tester", testEvent))
@@ -164,6 +167,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
                   - MKI
           """.trimIndent(),
         ),
+        telemetryService,
       )
     eventNotificationService = EventNotificationService(queueService, objectMapper, authService, telemetryService)
     Assertions.assertFalse(eventNotificationService.isEventApplicable("tester", testEvent))
@@ -185,7 +189,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
         prisonId = messagePrisonId,
         metadata = messageSupervisionStatus?.let { Metadata(it) },
       )
-    val authService = AuthorisationService(parseAuthorisationConfig(config))
+    val authService = AuthorisationService(parseAuthorisationConfig(config), telemetryService)
     eventNotificationService = EventNotificationService(queueService, objectMapper, authService, telemetryService)
 
     assertThat(eventNotificationService.isEventApplicable("tester", testEvent)).isEqualTo(shouldBeSent)

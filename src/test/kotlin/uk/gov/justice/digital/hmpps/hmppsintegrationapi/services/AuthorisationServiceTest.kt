@@ -1,6 +1,21 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
+import io.kotest.matchers.collections.shouldHaveSize
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.reset
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
@@ -11,6 +26,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.laoRedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.UnsignedJwtOboService
+import java.time.Clock
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZoneOffset
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -20,6 +39,16 @@ import kotlin.test.assertTrue
 class AuthorisationServiceTest : ConfigTest() {
   companion object {
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
+
+    @JvmStatic
+    fun expiryBandTestArgs() =
+      listOf(
+        Arguments.of(listOf<Long>(0, 1, 2, 3, 4, 5, 6, 7), 8),
+        Arguments.of(listOf<Long>(8, 9, 10, 11, 12, 13, 14), 1),
+        Arguments.of(listOf<Long>(15, 16, 17, 18, 19, 20, 21), 1),
+        Arguments.of(listOf<Long>(22, 23, 24, 25, 26, 27, 28), 1),
+        Arguments.of(listOf<Long>(29, 30), 1),
+      )
   }
 
   val testRole =
@@ -89,6 +118,7 @@ class AuthorisationServiceTest : ConfigTest() {
             "c3" to ConsumerConfig(include = listOf("/other"), filters = null, roles = listOf()),
           ),
         ),
+        mockTelemetryService,
       )
 
     val matches = authorisationService.consumersWithAccess("/tester")
@@ -110,6 +140,7 @@ class AuthorisationServiceTest : ConfigTest() {
                 - full-access
           """.trimIndent(),
         ),
+        mockTelemetryService,
       )
 
     val emptyConfig =
@@ -124,6 +155,7 @@ class AuthorisationServiceTest : ConfigTest() {
                 - full-access
           """.trimIndent(),
         ),
+        mockTelemetryService,
       )
 
     assertEquals(missingConfig.consumers()["tester"]?.permissions(), emptyConfig.consumers()["tester"]?.permissions())
@@ -148,6 +180,7 @@ class AuthorisationServiceTest : ConfigTest() {
           ),
           roles = mapOf("test-role" to testRole),
         ),
+        mockTelemetryService,
       ).allFilters(consumer, listOf(role))
 
     assertEquals(filters, ConsumerFilters.Companion.NO_FILTERS)
@@ -179,6 +212,7 @@ class AuthorisationServiceTest : ConfigTest() {
           ),
           roles = mapOf("test-role" to testRole),
         ),
+        mockTelemetryService,
       ).allFilters(consumer, listOf(role))
 
     assertFalse(filters == ConsumerFilters.Companion.NO_FILTERS)
@@ -213,6 +247,7 @@ class AuthorisationServiceTest : ConfigTest() {
           ),
           roles = mapOf("test-role" to testRole),
         ),
+        mockTelemetryService,
       ).allFilters(consumer, listOf(role))
 
     assertFalse(filters == ConsumerFilters.Companion.NO_FILTERS)
@@ -248,6 +283,7 @@ class AuthorisationServiceTest : ConfigTest() {
           ),
           roles = mapOf("test-role" to testRole),
         ),
+        mockTelemetryService,
       ).allFilters(consumer, listOf(role))
 
     assertFalse(filters == ConsumerFilters.Companion.NO_FILTERS)
@@ -271,6 +307,7 @@ class AuthorisationServiceTest : ConfigTest() {
           ),
           roles = mapOf("test-role" to testRole),
         ),
+        mockTelemetryService,
       )
     assertEquals(listOf(laoRedactionPolicy), service.redactionPolicies("consumer-name"))
   }
@@ -285,6 +322,7 @@ class AuthorisationServiceTest : ConfigTest() {
               ConsumerConfig(),
           ),
         ),
+        mockTelemetryService,
       )
     assertEquals(null, service.oboService("consumer-name"))
   }
@@ -301,6 +339,7 @@ class AuthorisationServiceTest : ConfigTest() {
               ),
           ),
         ),
+        mockTelemetryService,
       )
     assertEquals(UnsignedJwtOboService()::class::java, service.oboService("consumer-name")!!::class::java)
   }
@@ -317,6 +356,7 @@ class AuthorisationServiceTest : ConfigTest() {
               ),
           ),
         ),
+        mockTelemetryService,
       )
     assertEquals(null, service.oboService("consumer-name"))
   }
@@ -333,6 +373,7 @@ class AuthorisationServiceTest : ConfigTest() {
               ),
           ),
         ),
+        mockTelemetryService,
       )
     assertEquals(true, service.requiresObo("consumer-name"))
   }
@@ -347,7 +388,134 @@ class AuthorisationServiceTest : ConfigTest() {
               ConsumerConfig(),
           ),
         ),
+        mockTelemetryService,
       )
     assertEquals(false, service.requiresObo("consumer-name"))
+  }
+
+  @DisplayName("Handle certificate expiry date")
+  @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+  @Nested
+  inner class TestCertificateExpiry {
+    private val fixedClock: Clock = Clock.fixed(LocalDateTime.of(2026, 5, 8, 12, 30, 10).toInstant(ZoneOffset.UTC), ZoneId.systemDefault())
+
+    val authorisationService =
+      AuthorisationService(
+        AuthorisationConfig(),
+        mockTelemetryService,
+        fixedClock,
+      )
+
+    @BeforeEach
+    fun setUp() {
+      reset(mockTelemetryService)
+    }
+
+    @Test
+    fun `does not alert for a 1 digit day cert-expiry-date that expires in over 30 days`() {
+      val dateString = authorisationService.processCertificateExpiryDate("Jun 8 12:30:10 2026 GMT", "consumer-name")
+      assertEquals("2026-06-08T12:30:10Z", dateString)
+      verify(mockTelemetryService, times(0)).captureMessage(any())
+    }
+
+    @Test
+    fun `alerts a 2 digit day cert-expiry-date that expires in 30 days`() {
+      val dateString = authorisationService.processCertificateExpiryDate("Jun 7 12:30:10 2026 GMT", "consumer-name")
+      assertEquals("2026-06-07T12:30:10Z", dateString)
+      verify(mockTelemetryService, times(1)).captureMessage("The certificate for consumer-name will expire in under 30 days (Jun 7 12:30:10 2026 GMT)")
+    }
+
+    @Test
+    fun `alerts a cert-expiry-date that expires in 21 days`() {
+      val dateString = authorisationService.processCertificateExpiryDate("May 29 00:30:10 2026 GMT", "consumer-name")
+      assertEquals("2026-05-29T00:30:10Z", dateString)
+      verify(mockTelemetryService, times(1)).captureMessage("The certificate for consumer-name will expire in under 3 weeks (May 29 00:30:10 2026 GMT)")
+    }
+
+    @Test
+    fun `alerts for a cert-expiry-date that expires in 20 days`() {
+      val dateString = authorisationService.processCertificateExpiryDate("May 28 00:30:10 2026 GMT", "consumer-name")
+      assertEquals("2026-05-28T00:30:10Z", dateString)
+      verify(mockTelemetryService, times(1)).captureMessage("The certificate for consumer-name will expire in under 3 weeks (May 28 00:30:10 2026 GMT)")
+    }
+
+    @Test
+    fun `alerts for a cert-expiry-date that expires in 14 days`() {
+      val dateString = authorisationService.processCertificateExpiryDate("May 22 00:30:10 2026 GMT", "consumer-name")
+      assertEquals("2026-05-22T00:30:10Z", dateString)
+      verify(mockTelemetryService, times(1)).captureMessage("The certificate for consumer-name will expire in under 2 weeks (May 22 00:30:10 2026 GMT)")
+    }
+
+    @Test
+    fun `does not alert for a cert-expiry-date that expires in 12 days`() {
+      val dateString = authorisationService.processCertificateExpiryDate("May 20 00:30:10 2026 GMT", "consumer-name")
+      assertEquals("2026-05-20T00:30:10Z", dateString)
+      verify(mockTelemetryService, times(1)).captureMessage("The certificate for consumer-name will expire in under 2 weeks (May 20 00:30:10 2026 GMT)")
+    }
+
+    @Test
+    fun `alerts for a cert-expiry-date that expires in 7 days`() {
+      val dateString = authorisationService.processCertificateExpiryDate("May 15 00:30:10 2026 GMT", "consumer-name")
+      assertEquals("2026-05-15T00:30:10Z", dateString)
+      verify(mockTelemetryService, times(1)).captureMessage("The certificate for consumer-name will expire in 7 days (May 15 00:30:10 2026 GMT)")
+    }
+
+    @Test
+    fun `alerts for a cert-expiry-date header that expires in 1 day`() {
+      val dateString = authorisationService.processCertificateExpiryDate("May 9 00:30:10 2026 GMT", "consumer-name")
+      assertEquals("2026-05-09T00:30:10Z", dateString)
+      verify(mockTelemetryService, times(1)).captureMessage("The certificate for consumer-name will expire in 1 day (May 9 00:30:10 2026 GMT)")
+    }
+
+    @Test
+    fun `alerts for a cert-expiry-date header that expires in 0 days`() {
+      val dateString = authorisationService.processCertificateExpiryDate("May 8 00:30:10 2026 GMT", "consumer-name")
+      assertEquals("2026-05-08T00:30:10Z", dateString)
+      verify(mockTelemetryService, times(1)).captureMessage("The certificate for consumer-name will expire in 0 days (May 8 00:30:10 2026 GMT)")
+    }
+
+    @Test
+    fun `throws an exception if already expired`() {
+      val exception =
+        assertThrows<RuntimeException> {
+          authorisationService.processCertificateExpiryDate("May 7 00:30:10 2026 GMT", "consumer-name")
+        }
+      assertThat(exception.message).isEqualTo("The certificate for consumer-name with expiry date May 7 00:30:10 2026 GMT has expired")
+    }
+
+    @Test
+    fun `handles an invalid format cert-expiry-date header and logs to sentry`() {
+      val dateString = authorisationService.processCertificateExpiryDate("Wrong format", "consumer-name")
+      assertEquals(null, dateString)
+      val exception = argumentCaptor<Throwable>()
+      verify(mockTelemetryService, times(1)).captureException(exception.capture())
+      assertThat(exception.firstValue.message).contains("Failed to parse certificate expiry date")
+    }
+
+    @Test
+    fun `does not create a message for days over 30`() {
+      val warningMessage = authorisationService.expiryWarningMessage(31, "May 7 00:30:10 2026 GMT", "consumer-name")
+      assertThat(warningMessage).isEqualTo(null)
+    }
+
+    @ParameterizedTest
+    @MethodSource("uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationServiceTest#expiryBandTestArgs")
+    fun `creates the same message for each band`(
+      days: List<Long>,
+      expectedNumberOfDistinctMessages: Int,
+    ) {
+      val certificateExpiry = "May 7 00:30:10 2026 GMT"
+      val messages = days.map { days -> authorisationService.expiryWarningMessage(days, certificateExpiry, "consumer-name") }
+      messages.toSet().shouldHaveSize(expectedNumberOfDistinctMessages)
+    }
+
+    @Test
+    fun `throws an exception when days are negative`() {
+      val exception =
+        assertThrows<RuntimeException> {
+          authorisationService.expiryWarningMessage(-1, "May 7 00:30:10 2026 GMT", "consumer-name")
+        }
+      assertThat(exception.message).isEqualTo("The certificate for consumer-name with expiry date May 7 00:30:10 2026 GMT has expired")
+    }
   }
 }

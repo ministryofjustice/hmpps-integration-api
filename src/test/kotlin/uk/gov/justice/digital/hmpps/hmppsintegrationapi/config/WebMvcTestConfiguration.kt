@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAcc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithLaoRedactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
+import java.time.Clock
 
 @TestConfiguration
 class WebMvcTestConfiguration {
@@ -32,5 +33,9 @@ class WebMvcTestConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
-  fun authorisationService(): AuthorisationService = AuthorisationService(config())
+  fun clock(): Clock = Clock.systemDefaultZone()
+
+  @Bean
+  @ConditionalOnMissingBean
+  fun authorisationService(): AuthorisationService = AuthorisationService(config(), telemetryService(), clock())
 }
