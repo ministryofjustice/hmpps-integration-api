@@ -48,7 +48,7 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `if oboConfig is invalid, and a Jwt is provided, return ok`() {
+  fun `if oboConfig is invalid, and a Jwt is provided, return unauthorized`() {
     callApiWithCN("/v1/status", "obo-invalid", oboValue = createUnsignedJwt())
       .andExpect(MockMvcResultMatchers.status().isUnauthorized)
   }
