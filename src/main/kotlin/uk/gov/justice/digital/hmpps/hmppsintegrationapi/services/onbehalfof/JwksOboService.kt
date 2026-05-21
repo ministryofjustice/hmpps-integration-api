@@ -6,13 +6,15 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Jwks
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.net.URI
 import java.net.URL
 import java.security.Key
 
+/**
+ * An on-behalf-of service implementation that validates JWTs using JWKS.
+ */
 class JwksOboService(
-  val jwks: URL = URI.create("https://login.microsoftonline.com/common/discovery/v2.0/keys").toURL(),
-  val usernameClaim: String = "unique_name",
+  val jwks: URL,
+  val usernameClaim: String,
 ) : OboService {
   private companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)

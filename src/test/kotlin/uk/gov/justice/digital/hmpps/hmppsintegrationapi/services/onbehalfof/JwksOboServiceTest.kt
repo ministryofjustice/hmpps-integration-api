@@ -21,7 +21,7 @@ class JwksOboServiceTest :
 
       val keyPair = generateKeyPair()
       val jwksUri = buildJwks(keyPair, kid)
-      val service = JwksOboService(jwksUri)
+      val service = JwksOboService(jwksUri, "subject")
 
       it("loads the JWKS") {
         service.loadJwks()
@@ -60,7 +60,7 @@ private fun makeJwt(
     .subject(username)
     .issuedAt(Date.from(Instant.now()))
     .expiration(Date.from(Instant.now().plusSeconds(3600)))
-    .claim("unique_name", username)
+    .claim("subject", username)
     .signWith(signingKey)
     .compact()!!
 
