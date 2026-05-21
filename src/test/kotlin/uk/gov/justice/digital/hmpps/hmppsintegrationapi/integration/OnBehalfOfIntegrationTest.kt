@@ -21,12 +21,12 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
   val mockChain = mock(FilterChain::class.java)
   val mockTelemetryService = mock(TelemetryService::class.java)
 
-  lateinit var filtersExtractionFilter: AuthorisationFilter
+  lateinit var authorisationFilter: AuthorisationFilter
 
   @BeforeEach
   fun setup() {
     whenever(mockRequest.requestURI).thenReturn("/v1/persons/$crn")
-    filtersExtractionFilter =
+    authorisationFilter =
       AuthorisationFilter(
         authorisationService,
         mockTelemetryService,
@@ -38,28 +38,28 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
   @Test
   fun `if oboConfig is empty, do not call any obo service`() {
     whenever(mockRequest.getHeader("subject-distinguished-name")).thenReturn("C=GB,ST=London,L=London,O=Home Office,CN=obo-empty")
-    filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)
+    authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
     verify(authorisationService, times(1)).oboService("obo-empty")
   }
 
   @Test
-  fun `if oboConfig is unassigned, call the unassigned obo service`() {
+  fun `if oboConfig is unsigned, call the unsigned obo service`() {
     whenever(mockRequest.getHeader("subject-distinguished-name")).thenReturn("C=GB,ST=London,L=London,O=Home Office,CN=obo-unsigned")
-    filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)
+    authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
     verify(authorisationService, times(1)).oboService("obo-unsigned")
   }
 
   @Test
   fun `if oboConfig is entra, do not call any obo service`() {
     whenever(mockRequest.getHeader("subject-distinguished-name")).thenReturn("C=GB,ST=London,L=London,O=Home Office,CN=obo-entra")
-    filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)
+    authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
     verify(authorisationService, times(1)).oboService("obo-entra")
   }
 
   @Test
   fun `if oboConfig is invalid, do not call any obo service`() {
     whenever(mockRequest.getHeader("subject-distinguished-name")).thenReturn("C=GB,ST=London,L=London,O=Home Office,CN=obo-invalid")
-    filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)
+    authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
     verify(authorisationService, times(1)).oboService("obo-invalid")
   }
 }
