@@ -7,8 +7,6 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import org.junit.jupiter.api.assertInstanceOf
-import org.junit.jupiter.api.assertNotNull
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -28,7 +26,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.laoRedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.JwksOboService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.JwksOboServiceTest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.UnsignedJwtOboService
 import java.time.Clock
 import java.time.LocalDateTime
