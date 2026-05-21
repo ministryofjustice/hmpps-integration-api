@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.UnsupportedJwtException
 import io.jsonwebtoken.security.Jwks
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -22,14 +23,19 @@ class JwksOboService(
   override fun extractUsername(token: String): String? {
     loadJwks()
 
-    val jwt =
-      Jwts
-        .parser()
-        .keyLocator { header -> keyCache[header["kid"]] }
-        .build()
-        .parseSignedClaims(token)
+    try {
+      val jwt =
+        Jwts
+          .parser()
+          .keyLocator { header -> keyCache[header["kid"]] }
+          .build()
+          .parseSignedClaims(token)
 
-    return jwt?.payload[usernameClaim]?.toString()
+      return jwt?.payload[usernameClaim]?.toString()
+    } catch (e: UnsupportedJwtException) {
+      log.error("Unable to parse JWT", e)
+      return null
+    }
   }
 
   fun loadJwks() {

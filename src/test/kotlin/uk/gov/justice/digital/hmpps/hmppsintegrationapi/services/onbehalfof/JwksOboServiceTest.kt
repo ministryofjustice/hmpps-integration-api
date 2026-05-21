@@ -20,7 +20,6 @@ class JwksOboServiceTest :
   DescribeSpec(
     {
       val kid = "ABC-123"
-      val username = "tester1"
 
       val keyPair = generateKeyPair()
       val jwksUri = buildJwks(keyPair, kid)
@@ -31,13 +30,13 @@ class JwksOboServiceTest :
       }
 
       it("parses a JWT using JWKS") {
-        val jwt = makeJwt(kid, username, keyPair.private)!!
+        val jwt = makeJwt(kid, "tester1", keyPair.private)
         val jwtUser = service.extractUsername(jwt)
-        jwtUser shouldBe username
+        jwtUser shouldBe "tester1"
       }
 
       it("fails if KID not found") {
-        val jwt = makeJwt("XYZ-987", username, keyPair.private)!!
+        val jwt = makeJwt("XYZ-987", "tester2", keyPair.private)
         shouldThrow<UnsupportedJwtException> {
           service.extractUsername(jwt)
         }
@@ -83,7 +82,6 @@ private fun DescribeSpec.buildJwks(
 
   val wrapper = mapOf("keys" to listOf(jwk))
   val jwksText = ObjectMapper().writeValueAsString(wrapper)
-  println(jwksText)
   val jwksFile = tempfile("testing", "jwks")
   jwksFile.deleteOnExit()
   jwksFile.writeText(jwksText)
