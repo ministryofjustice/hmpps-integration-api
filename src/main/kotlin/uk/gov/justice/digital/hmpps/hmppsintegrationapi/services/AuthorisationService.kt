@@ -252,7 +252,7 @@ class AuthorisationService(
         else -> null
       }
     return durationMessage?.let {
-      "The certificate for $consumerName will expire on $expiryDateTime ($durationMessage)"
+      "The certificate for $consumerName will expire $durationMessage ($expiryDateTime)"
     }
   }
 
