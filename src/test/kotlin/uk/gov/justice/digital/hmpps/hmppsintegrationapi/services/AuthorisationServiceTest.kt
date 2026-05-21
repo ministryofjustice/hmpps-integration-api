@@ -1,14 +1,19 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
+import io.kotest.matchers.collections.shouldHaveSize
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.ValueSource
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.reset
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.slf4j.Logger
@@ -16,7 +21,6 @@ import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ConfigTest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.oboconfig.OboConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.fixedClock
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.laoRedactionPolicy
@@ -35,6 +39,16 @@ import kotlin.test.assertTrue
 class AuthorisationServiceTest : ConfigTest() {
   companion object {
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
+
+    @JvmStatic
+    fun expiryBandTestArgs() =
+      listOf(
+        Arguments.of(listOf<Long>(0, 1, 2, 3, 4, 5, 6, 7), 8),
+        Arguments.of(listOf<Long>(8, 9, 10, 11, 12, 13, 14), 1),
+        Arguments.of(listOf<Long>(15, 16, 17, 18, 19, 20, 21), 1),
+        Arguments.of(listOf<Long>(22, 23, 24, 25, 26, 27, 28), 1),
+        Arguments.of(listOf<Long>(29, 30), 1),
+      )
   }
 
   val testRole =
@@ -105,7 +119,6 @@ class AuthorisationServiceTest : ConfigTest() {
           ),
         ),
         mockTelemetryService,
-        fixedClock(),
       )
 
     val matches = authorisationService.consumersWithAccess("/tester")
@@ -128,7 +141,6 @@ class AuthorisationServiceTest : ConfigTest() {
           """.trimIndent(),
         ),
         mockTelemetryService,
-        fixedClock(),
       )
 
     val emptyConfig =
@@ -144,7 +156,6 @@ class AuthorisationServiceTest : ConfigTest() {
           """.trimIndent(),
         ),
         mockTelemetryService,
-        fixedClock(),
       )
 
     assertEquals(missingConfig.consumers()["tester"]?.permissions(), emptyConfig.consumers()["tester"]?.permissions())
@@ -170,7 +181,6 @@ class AuthorisationServiceTest : ConfigTest() {
           roles = mapOf("test-role" to testRole),
         ),
         mockTelemetryService,
-        fixedClock(),
       ).allFilters(consumer, listOf(role))
 
     assertEquals(filters, ConsumerFilters.Companion.NO_FILTERS)
@@ -203,7 +213,6 @@ class AuthorisationServiceTest : ConfigTest() {
           roles = mapOf("test-role" to testRole),
         ),
         mockTelemetryService,
-        fixedClock(),
       ).allFilters(consumer, listOf(role))
 
     assertFalse(filters == ConsumerFilters.Companion.NO_FILTERS)
@@ -239,7 +248,6 @@ class AuthorisationServiceTest : ConfigTest() {
           roles = mapOf("test-role" to testRole),
         ),
         mockTelemetryService,
-        fixedClock(),
       ).allFilters(consumer, listOf(role))
 
     assertFalse(filters == ConsumerFilters.Companion.NO_FILTERS)
@@ -276,7 +284,6 @@ class AuthorisationServiceTest : ConfigTest() {
           roles = mapOf("test-role" to testRole),
         ),
         mockTelemetryService,
-        fixedClock(),
       ).allFilters(consumer, listOf(role))
 
     assertFalse(filters == ConsumerFilters.Companion.NO_FILTERS)
@@ -301,7 +308,6 @@ class AuthorisationServiceTest : ConfigTest() {
           roles = mapOf("test-role" to testRole),
         ),
         mockTelemetryService,
-        fixedClock(),
       )
     assertEquals(listOf(laoRedactionPolicy), service.redactionPolicies("consumer-name"))
   }
@@ -388,6 +394,7 @@ class AuthorisationServiceTest : ConfigTest() {
   }
 
   @DisplayName("Handle certificate expiry date")
+  @TestInstance(TestInstance.Lifecycle.PER_CLASS)
   @Nested
   inner class TestCertificateExpiry {
     private val fixedClock: Clock = Clock.fixed(LocalDateTime.of(2026, 5, 8, 12, 30, 10).toInstant(ZoneOffset.UTC), ZoneId.systemDefault())
@@ -398,6 +405,11 @@ class AuthorisationServiceTest : ConfigTest() {
         mockTelemetryService,
         fixedClock,
       )
+
+    @BeforeEach
+    fun setUp() {
+      reset(mockTelemetryService)
+    }
 
     @Test
     fun `does not alert for a 1 digit day cert-expiry-date that expires in over 30 days`() {
@@ -480,78 +492,25 @@ class AuthorisationServiceTest : ConfigTest() {
       assertThat(exception.firstValue.message).contains("Failed to parse certificate expiry date")
     }
 
-    @ParameterizedTest
-    @ValueSource(
-      longs = [
-        29, 30,
-      ],
-    )
-    fun `creates the same messages for days in the under 30 days category`(days: Long) {
-      val warningMessage = authorisationService.expiryWarningMessage(days, "May 7 00:30:10 2026 GMT", "consumer-name")
-      assertThat(warningMessage).isEqualTo("The certificate for consumer-name will expire on May 7 00:30:10 2026 GMT (in under 30 days)")
-    }
-
-    @ParameterizedTest
-    @ValueSource(
-      longs = [
-        22, 23, 24, 25, 26, 27, 28,
-      ],
-    )
-    fun `creates the same messages for days in the under 4 weeks category`(days: Long) {
-      val warningMessage = authorisationService.expiryWarningMessage(days, "May 7 00:30:10 2026 GMT", "consumer-name")
-      assertThat(warningMessage).isEqualTo("The certificate for consumer-name will expire on May 7 00:30:10 2026 GMT (in under 4 weeks)")
-    }
-
-    @ParameterizedTest
-    @ValueSource(
-      longs = [
-        15, 16, 17, 18, 19, 20, 21,
-      ],
-    )
-    fun `creates the same messages for days in the under 3 weeks category`(days: Long) {
-      val warningMessage = authorisationService.expiryWarningMessage(days, "May 7 00:30:10 2026 GMT", "consumer-name")
-      assertThat(warningMessage).isEqualTo("The certificate for consumer-name will expire on May 7 00:30:10 2026 GMT (in under 3 weeks)")
-    }
-
-    @ParameterizedTest
-    @ValueSource(
-      longs = [
-        8, 9, 10, 11, 12, 13, 14,
-      ],
-    )
-    fun `creates the same messages for days in the under 2 weeks category`(days: Long) {
-      val warningMessage = authorisationService.expiryWarningMessage(days, "May 7 00:30:10 2026 GMT", "consumer-name")
-      assertThat(warningMessage).isEqualTo("The certificate for consumer-name will expire on May 7 00:30:10 2026 GMT (in under 2 weeks)")
-    }
-
-    @ParameterizedTest
-    @ValueSource(
-      longs = [
-        0, 1, 2, 3, 4, 5, 6, 7,
-      ],
-    )
-    fun `creates different messages for days in the under 1 week category`(days: Long) {
-      val warningMessage = authorisationService.expiryWarningMessage(days, "May 7 00:30:10 2026 GMT", "consumer-name")
-      assertThat(warningMessage).isEqualTo("The certificate for consumer-name will expire on May 7 00:30:10 2026 GMT (in $days ${if (days == 1L) "day" else "days"})")
-    }
-
     @Test
     fun `does not create a message for days over 30`() {
       val warningMessage = authorisationService.expiryWarningMessage(31, "May 7 00:30:10 2026 GMT", "consumer-name")
       assertThat(warningMessage).isEqualTo(null)
     }
 
-    @Test
-    fun `throws an exception when days are negative`() {
-      val exception =
-        assertThrows<RuntimeException> {
-          authorisationService.expiryWarningMessage(-1, "May 7 00:30:10 2026 GMT", "consumer-name")
-        }
-      assertThat(exception.message).isEqualTo("The certificate for consumer-name with expiry date May 7 00:30:10 2026 GMT has expired")
+    @ParameterizedTest
+    @MethodSource("uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationServiceTest#expiryBandTestArgs")
+    fun `creates the same message for each band`(
+      days: List<Long>,
+      expectedNumberOfDistinctMessages: Int,
+    ) {
+      val certificateExpiry = "May 7 00:30:10 2026 GMT"
+      val messages = days.map { days -> authorisationService.expiryWarningMessage(days, certificateExpiry, "consumer-name") }
+      messages.toSet().shouldHaveSize(expectedNumberOfDistinctMessages)
     }
 
     @Test
-    fun `creates the correct message`() {
+    fun `throws an exception when days are negative`() {
       val exception =
         assertThrows<RuntimeException> {
           authorisationService.expiryWarningMessage(-1, "May 7 00:30:10 2026 GMT", "consumer-name")

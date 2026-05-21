@@ -27,10 +27,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
-import java.time.Clock
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.ZoneOffset
 
 private const val CERT_SERIAL_RAW = "9572494320151578633330348943480876283449388176"
 private const val CERT_SERIAL_FORMATTED = "01:AD:3E:D8:7D:D5:AA:84:F5:2D:83:E7:87:E9:90:E4:84:C5:2C:90"
@@ -48,8 +44,6 @@ class AuthorisationFilterTest {
   private val authorisationService = mock(AuthorisationService::class.java)
   private val featureFlagConfig = mock(FeatureFlagConfig::class.java)
   private val mockTelemetryService = mock(TelemetryService::class.java)
-  private val fixedClock: Clock = Clock.fixed(LocalDateTime.of(2026, 5, 8, 12, 30, 10).toInstant(ZoneOffset.UTC), ZoneId.systemDefault())
-
   private val roleConfig = ConsumerConfig(roles = listOf("private-prison"), filters = ConsumerFilters(prisons = listOf("MDI")))
   private val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService)
 
@@ -88,7 +82,6 @@ class AuthorisationFilterTest {
           roles = mapOf(roleName to Role(name = "test", permissions = mutableListOf(examplePath), filters = null)),
         ),
         mockTelemetryService,
-        fixedClock,
       )
     return authService
   }
@@ -136,7 +129,6 @@ class AuthorisationFilterTest {
           roles = mapOf(roleName to Role(name = "test", permissions = mutableListOf(examplePath), filters = null)),
         ),
         mockTelemetryService,
-        fixedClock,
       )
     val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService)
     val finalFilter = mock(Filter::class.java)
@@ -155,7 +147,6 @@ class AuthorisationFilterTest {
           roles = mapOf(roleName to Role(name = "test", permissions = mutableListOf(examplePath), filters = null)),
         ),
         mockTelemetryService,
-        fixedClock,
       )
     // invalid Role Config
     val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService)
@@ -200,7 +191,6 @@ class AuthorisationFilterTest {
           roles = mapOf(roleName to Role(name = "test", permissions = mutableListOf(examplePath), filters = null)),
         ),
         mockTelemetryService,
-        fixedClock,
       )
     // invalid Role Config
     val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService)
@@ -220,7 +210,6 @@ class AuthorisationFilterTest {
           roles = mapOf(roleName to Role(name = "test", permissions = mutableListOf(examplePath), filters = null)),
         ),
         mockTelemetryService,
-        fixedClock,
       )
     val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService)
     whenever(mockChain.doFilter(mockRequest, mockResponse)).thenThrow(ServletException(LimitedAccessException()))
@@ -285,7 +274,6 @@ class AuthorisationFilterTest {
       AuthorisationService(
         AuthorisationConfig(mapOf("consumer-name" to config)),
         mockTelemetryService,
-        fixedClock,
       )
 
     val req = mockRequest("GET", examplePath, "O=test,CN=consumer-name")
@@ -312,7 +300,6 @@ class AuthorisationFilterTest {
           roles = mapOf("test-role" to testRole),
         ),
         mockTelemetryService,
-        fixedClock,
       )
 
     val req = mockRequest("GET", examplePath, "O=test,CN=consumer-name")
@@ -337,7 +324,6 @@ class AuthorisationFilterTest {
           roles = mapOf("test-role" to testRole),
         ),
         mockTelemetryService,
-        fixedClock,
       )
 
     val req = mockRequest("GET", examplePath, "O=test,CN=consumer-name")
