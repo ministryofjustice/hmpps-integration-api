@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.TestPropertySource
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import kotlin.test.assertTrue
 
@@ -14,7 +13,6 @@ class RolesAuthenticationIntegrationTest : IntegrationTestBase() {
     val allRoles = roles
     val responses =
       allRoles
-        .filter { it.key == "synalogik" }
         .filter { !(it.value.permissions!!.any { r -> r.contains(".*") || r.contains("[^/]") }) }
         .flatMap { role ->
           val roleEndpoints = role.value.permissions!!
