@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.JwksOboService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.OboService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.UnsignedJwtOboService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
@@ -182,7 +183,7 @@ class AuthorisationService(
     val oboServiceName = authorisationConfig.consumers[consumerName]?.oboConfig?.strategy
     return when (oboServiceName) {
       "unsigned" -> UnsignedJwtOboService()
-      "entra" -> null // EntraJwtOboService()
+      "entra" -> JwksOboService()
       else -> null
     }
   }

@@ -232,6 +232,8 @@ authorisation:
       notes: "See client list in Confluence"
       roles:
         - "status-only"
+      oboConfig:
+        strategy: "entra"
 
 hmpps.sqs:
   queues:
