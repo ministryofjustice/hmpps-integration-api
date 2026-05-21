@@ -21,7 +21,9 @@ class JwksOboService(
   }
 
   enum class KeyStatus {
-    NEW, LOADED, FAILED,
+    NEW,
+    LOADED,
+    FAILED,
   }
 
   private var keyStatus: KeyStatus = KeyStatus.NEW
@@ -54,18 +56,19 @@ class JwksOboService(
 
     val jwkParser = Jwks.parser().build()
 
-    val jsonContent = try {
-      jwks
-        .openStream()
-        .bufferedReader()
-        .use { reader ->
-          jacksonObjectMapper().readTree(reader)
-        }
-    } catch (e: Exception) {
-      keyStatus = KeyStatus.FAILED
-      log.error("Unable to load and parse JWKs from ${jwks}", e)
-      return
-    }
+    val jsonContent =
+      try {
+        jwks
+          .openStream()
+          .bufferedReader()
+          .use { reader ->
+            jacksonObjectMapper().readTree(reader)
+          }
+      } catch (e: Exception) {
+        keyStatus = KeyStatus.FAILED
+        log.error("Unable to load and parse JWKs from $jwks", e)
+        return
+      }
 
     log.debug(jsonContent.toString())
 
