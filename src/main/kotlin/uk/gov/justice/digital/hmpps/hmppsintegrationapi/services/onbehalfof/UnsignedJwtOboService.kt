@@ -7,7 +7,7 @@ import io.jsonwebtoken.Jwts
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class EntraJwtOboService : OboService {
+class UnsignedJwtOboService : OboService {
   private companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
@@ -20,7 +20,7 @@ class EntraJwtOboService : OboService {
       )
       jwtDecoded?.payload?.get("unique_name").toString()
     } catch (e: Exception) {
-      log.warn("Token failed to decode token :$token with error:${e.message}")
+      log.warn("Token failed to decode unsigned token :$token with error:${e.message}")
       null // return null as it fails decode passed in token
     }
 

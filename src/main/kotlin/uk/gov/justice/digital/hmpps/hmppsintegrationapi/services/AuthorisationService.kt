@@ -9,8 +9,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.EntraJwtOboService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.OboService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.UnsignedJwtOboService
 import kotlin.collections.orEmpty
 
 @Component
@@ -166,7 +166,16 @@ class AuthorisationService(
 
   fun allNull(vararg values: List<Any>?) = values.all { it == null }
 
-  fun oboService(consumerName: String): OboService? = EntraJwtOboService()
+  fun oboService(consumerName: String): OboService? {
+    val oboServiceName = authorisationConfig.consumers[consumerName]?.oboConfig?.strategy
+    return when (oboServiceName) {
+      "unsigned" -> UnsignedJwtOboService()
+      "entra" -> null // EntraJwtOboService()
+      else -> null
+    }
+  }
+
+  fun requiresObo(consumerName: String): Boolean = authorisationConfig.consumers[consumerName]?.oboConfig != null
 
   /**
    * Reduces a list of list<Any> (mixed) type to a flattened list of specified Enum type

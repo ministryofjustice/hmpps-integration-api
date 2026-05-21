@@ -421,10 +421,14 @@ abstract class IntegrationTestBase {
   fun getAuthHeader(
     cn: String = defaultCn,
     serialNumber: String? = null,
+    oboValue: String? = null,
   ): HttpHeaders {
     val headers = HttpHeaders()
     headers.set("subject-distinguished-name", "C=GB,ST=London,L=London,O=Home Office,CN=$cn")
     headers.set("cert-serial-number", serialNumber ?: certSerialNumber)
+    if (oboValue != null) {
+      headers.set("X-On-Behalf-Of", oboValue)
+    }
     return headers
   }
 
@@ -436,7 +440,8 @@ abstract class IntegrationTestBase {
     path: String,
     cn: String,
     serialNumber: String? = null,
-  ): ResultActions = mockMvc.perform(get(path).headers(getAuthHeader(cn, serialNumber)))
+    oboValue: String? = null,
+  ): ResultActions = mockMvc.perform(get(path).headers(getAuthHeader(cn, serialNumber, oboValue)))
 
   fun postToApi(
     path: String,
