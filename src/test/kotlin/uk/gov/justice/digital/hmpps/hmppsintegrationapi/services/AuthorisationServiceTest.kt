@@ -5,10 +5,12 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ConfigTest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.oboconfig.OboConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.laoRedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.UnsignedJwtOboService
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -271,5 +273,81 @@ class AuthorisationServiceTest : ConfigTest() {
         ),
       )
     assertEquals(listOf(laoRedactionPolicy), service.redactionPolicies("consumer-name"))
+  }
+
+  @Test
+  fun `returns null for no oboConfig`() {
+    val service =
+      AuthorisationService(
+        AuthorisationConfig(
+          mapOf(
+            "consumer-name" to
+              ConsumerConfig(),
+          ),
+        ),
+      )
+    assertEquals(null, service.oboService("consumer-name"))
+  }
+
+  @Test
+  fun `returns UnsignedJwtOboService for unsigned oboConfig`() {
+    val service =
+      AuthorisationService(
+        AuthorisationConfig(
+          mapOf(
+            "consumer-name" to
+              ConsumerConfig(
+                oboConfig = OboConfig("unsigned"),
+              ),
+          ),
+        ),
+      )
+    assertEquals(UnsignedJwtOboService()::class::java, service.oboService("consumer-name")!!::class::java)
+  }
+
+  @Test
+  fun `returns null for entra oboConfig`() {
+    val service =
+      AuthorisationService(
+        AuthorisationConfig(
+          mapOf(
+            "consumer-name" to
+              ConsumerConfig(
+                oboConfig = OboConfig("entra"),
+              ),
+          ),
+        ),
+      )
+    assertEquals(null, service.oboService("consumer-name"))
+  }
+
+  @Test
+  fun `returns true if oboConfig has a value`() {
+    val service =
+      AuthorisationService(
+        AuthorisationConfig(
+          mapOf(
+            "consumer-name" to
+              ConsumerConfig(
+                oboConfig = OboConfig("entra"),
+              ),
+          ),
+        ),
+      )
+    assertEquals(true, service.requiresObo("consumer-name"))
+  }
+
+  @Test
+  fun `returns false if oboConfig has a value`() {
+    val service =
+      AuthorisationService(
+        AuthorisationConfig(
+          mapOf(
+            "consumer-name" to
+              ConsumerConfig(),
+          ),
+        ),
+      )
+    assertEquals(false, service.requiresObo("consumer-name"))
   }
 }

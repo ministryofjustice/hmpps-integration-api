@@ -10,7 +10,7 @@ import java.util.Date
 class UnsignedJwtOboServiceTest :
   DescribeSpec(
     {
-      val testJwt = createUnassignedJwy()
+      val testJwt = createUnsignedJwt()
 
       val oboService = UnsignedJwtOboService()
 
@@ -41,7 +41,7 @@ class UnsignedJwtOboServiceTest :
     },
   )
 
-fun createUnassignedJwy(): String {
+fun createUnsignedJwt(): String {
   val now = Date()
 
   return Jwts

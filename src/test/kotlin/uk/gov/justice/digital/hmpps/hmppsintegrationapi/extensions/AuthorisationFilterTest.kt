@@ -22,17 +22,14 @@ import org.springframework.mock.web.MockHttpServletResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.oboconfig.OboConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.UnsignedJwtOboService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
 private const val CERT_SERIAL_RAW = "9572494320151578633330348943480876283449388176"
 private const val CERT_SERIAL_FORMATTED = "01:AD:3E:D8:7D:D5:AA:84:F5:2D:83:E7:87:E9:90:E4:84:C5:2C:90"
-private const val OBO_TEST_JWT = "eyJhbGciOiJub25lIiwia2lkIjoidGVzdEtpZCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMiwiYXVkIjoidGVzdEF1ZCIsImlzcyI6InRlc3RJc3MiLCJhcHBpZCI6InRlc3RJZCIsInVuaXF1ZV9uYW1lIjoidGVzdE5hbWUifQ."
 
 class AuthorisationFilterTest {
   private val examplePath: String = "/v1/persons"
@@ -48,7 +45,7 @@ class AuthorisationFilterTest {
   private val featureFlagConfig = mock(FeatureFlagConfig::class.java)
   private val mockTelemetryService = mock(TelemetryService::class.java)
 
-  private val roleConfig = ConsumerConfig(roles = listOf("private-prison"), filters = ConsumerFilters(prisons = listOf("MDI")), oboConfig = OboConfig("unsigned"))
+  private val roleConfig = ConsumerConfig(roles = listOf("private-prison"), filters = ConsumerFilters(prisons = listOf("MDI")))
 
   @BeforeEach
   fun setup() {
@@ -59,8 +56,6 @@ class AuthorisationFilterTest {
     whenever(mockRequest.requestURI).thenReturn(examplePath)
     whenever(mockRequest.getHeader("subject-distinguished-name")).thenReturn(exampleSubjectDistinguishedName)
     whenever(mockRequest.getHeader("cert-serial-number")).thenReturn(CERT_SERIAL_RAW)
-    whenever(mockRequest.getHeader("X-On-Behalf-Of")).thenReturn(OBO_TEST_JWT)
-    whenever(authorisationService.oboService(exampleConsumer)).thenReturn(UnsignedJwtOboService())
   }
 
   fun mockRequest(
@@ -382,14 +377,6 @@ class AuthorisationFilterTest {
     val finalFilter = mock(Filter::class.java)
     mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
     verify(mockTelemetryService, times(0)).setSpanAttribute("certSerialNumber", CERT_SERIAL_FORMATTED)
-  }
-
-  @Test
-  fun `handles a on behalf of header`() {
-    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService)
-    val finalFilter = mock(Filter::class.java)
-    mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
-    verify(mockTelemetryService, times(1)).setSpanAttribute("onBehalfOf", "testName")
   }
 
   @Test
