@@ -2,9 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.UnsupportedJwtException
 import io.jsonwebtoken.security.Jwks
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.engine.spec.tempfile
 import io.kotest.matchers.shouldBe
@@ -37,9 +35,8 @@ class JwksOboServiceTest :
 
       it("fails if KID not found") {
         val jwt = makeJwt("XYZ-987", "tester2", keyPair.private)
-        shouldThrow<UnsupportedJwtException> {
-          service.extractUsername(jwt)
-        }
+        val jwtUser = service.extractUsername(jwt)
+        jwtUser shouldBe null
       }
     },
   )
