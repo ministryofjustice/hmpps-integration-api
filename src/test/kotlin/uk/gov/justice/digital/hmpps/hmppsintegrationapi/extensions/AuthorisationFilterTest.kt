@@ -385,7 +385,6 @@ class AuthorisationFilterTest {
   }
 
   @Test
-
   fun `handles a on behalf of header`() {
     val finalFilter = mock(Filter::class.java)
     mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)

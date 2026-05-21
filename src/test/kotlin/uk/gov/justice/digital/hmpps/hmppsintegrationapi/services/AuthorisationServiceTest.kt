@@ -322,7 +322,7 @@ class AuthorisationServiceTest : ConfigTest() {
               ConsumerConfig(),
           ),
         ),
-        mockTelemetryService
+        mockTelemetryService,
       )
     assertEquals(null, service.oboService("consumer-name"))
   }
@@ -339,7 +339,7 @@ class AuthorisationServiceTest : ConfigTest() {
               ),
           ),
         ),
-        mockTelemetryService
+        mockTelemetryService,
       )
     assertEquals(UnsignedJwtOboService()::class::java, service.oboService("consumer-name")!!::class::java)
   }
@@ -356,7 +356,7 @@ class AuthorisationServiceTest : ConfigTest() {
               ),
           ),
         ),
-        mockTelemetryService
+        mockTelemetryService,
       )
     assertEquals(null, service.oboService("consumer-name"))
   }
@@ -373,7 +373,7 @@ class AuthorisationServiceTest : ConfigTest() {
               ),
           ),
         ),
-        mockTelemetryService
+        mockTelemetryService,
       )
     assertEquals(true, service.requiresObo("consumer-name"))
   }
@@ -388,7 +388,7 @@ class AuthorisationServiceTest : ConfigTest() {
               ConsumerConfig(),
           ),
         ),
-        mockTelemetryService
+        mockTelemetryService,
       )
     assertEquals(false, service.requiresObo("consumer-name"))
   }
