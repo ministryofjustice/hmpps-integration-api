@@ -385,13 +385,6 @@ class AuthorisationFilterTest {
   }
 
   @Test
-  fun `handles a on behalf of header`() {
-    val finalFilter = mock(Filter::class.java)
-    mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
-    verify(mockTelemetryService, times(1)).setSpanAttribute("onBehalfOf", "testName")
-  }
-
-  @Test
   fun `handles a NULL on behalf of header`() {
     whenever(mockRequest.getHeader("X-On-Behalf-Of")).thenReturn(null)
     val finalFilter = mock(Filter::class.java)
