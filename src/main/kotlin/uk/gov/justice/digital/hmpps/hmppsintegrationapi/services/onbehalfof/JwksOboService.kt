@@ -1,8 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import io.jsonwebtoken.JwtException
 import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.UnsupportedJwtException
 import io.jsonwebtoken.security.Jwks
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -32,7 +32,7 @@ class JwksOboService(
           .parseSignedClaims(token)
 
       return jwt?.payload[usernameClaim]?.toString()
-    } catch (e: UnsupportedJwtException) {
+    } catch (e: JwtException) {
       log.error("Unable to parse JWT", e)
       return null
     }
@@ -54,7 +54,7 @@ class JwksOboService(
           jacksonObjectMapper().readTree(reader)
         }
 
-    log.info(jsonContent.toString())
+    log.debug(jsonContent.toString())
 
     keyCache.putAll(
       jsonContent["keys"].associate {

@@ -38,6 +38,12 @@ class JwksOboServiceTest :
         val jwtUser = service.extractUsername(jwt)
         jwtUser shouldBe null
       }
+
+      it("fails if incorrect key used") {
+        val jwt = makeJwt(kid, "tester3", generateKeyPair().private)
+        val jwtUser = service.extractUsername(jwt)
+        jwtUser shouldBe null
+      }
     },
   )
 
@@ -82,7 +88,6 @@ private fun DescribeSpec.buildJwks(
   val jwksFile = tempfile("testing", "jwks")
   jwksFile.deleteOnExit()
   jwksFile.writeText(jwksText)
-  val uri = jwksFile.toURI().toURL()
 
-  return uri
+  return jwksFile.toURI().toURL()
 }
