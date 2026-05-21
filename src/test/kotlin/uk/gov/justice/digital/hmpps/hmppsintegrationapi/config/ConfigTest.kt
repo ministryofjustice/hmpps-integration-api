@@ -28,7 +28,7 @@ abstract class ConfigTest {
   /**
    * Loads the configuration for a specified environment.
    */
-  fun getAuthService(environment: String): AuthorisationService = AuthorisationService(configReader.read(environment), mockTelemetryService, fixedClock())
+  fun getAuthService(environment: String): AuthorisationService = AuthorisationService(configReader.read(environment), mockTelemetryService)
 
   fun getFeatureConfig(environment: String): Map<String, Boolean> {
     val featureConfig = getConfigPath(environment, "feature-flag")
