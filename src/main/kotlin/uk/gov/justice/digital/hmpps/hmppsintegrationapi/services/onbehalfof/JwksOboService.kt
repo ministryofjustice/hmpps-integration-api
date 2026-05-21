@@ -20,7 +20,7 @@ class JwksOboService(
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 
-  val keyCache: MutableMap<String?, Key?> = mutableMapOf()
+  private val keyCache: MutableMap<String, Key> = mutableMapOf()
 
   override fun extractUsername(token: String): String? {
     loadJwks()
@@ -48,13 +48,17 @@ class JwksOboService(
 
     val jwkParser = Jwks.parser().build()
 
-    val jsonContent =
+    val jsonContent = try {
       jwks
         .openStream()
         .bufferedReader()
         .use { reader ->
           jacksonObjectMapper().readTree(reader)
         }
+    } catch (e: Exception) {
+      log.error("Unable to load and parse JWKs from ${jwks}", e)
+      return
+    }
 
     log.debug(jsonContent.toString())
 
@@ -66,4 +70,6 @@ class JwksOboService(
 
     log.info("Loaded {} public keys from {}}", keyCache.size, jwks.toString())
   }
+
+  fun keyCount() = keyCache.size
 }

@@ -6,6 +6,7 @@ import io.jsonwebtoken.security.Jwks
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.engine.spec.tempfile
 import io.kotest.matchers.shouldBe
+import java.net.URI
 import java.net.URL
 import java.security.KeyPair
 import java.security.KeyPairGenerator
@@ -24,7 +25,11 @@ class JwksOboServiceTest :
       val service = JwksOboService(jwksUri, "subject")
 
       it("loads the JWKS") {
+        service.keyCount() shouldBe 0
+
         service.loadJwks()
+
+        service.keyCount() shouldBe 1
       }
 
       it("parses a JWT using JWKS") {
@@ -34,7 +39,7 @@ class JwksOboServiceTest :
       }
 
       it("fails if KID not found") {
-        val jwt = makeJwt("XYZ-987", "tester2", keyPair.private)
+        val jwt = makeJwt("BAD-KID", "tester2", keyPair.private)
         val jwtUser = service.extractUsername(jwt)
         jwtUser shouldBe null
       }
@@ -43,6 +48,13 @@ class JwksOboServiceTest :
         val jwt = makeJwt(kid, "tester3", generateKeyPair().private)
         val jwtUser = service.extractUsername(jwt)
         jwtUser shouldBe null
+      }
+
+      it("doesn't crash on JWKS loading error") {
+        val badUri = URI.create("http://localhost:98765/").toURL()
+        val badService = JwksOboService(badUri, "subject")
+        badService.loadJwks()
+        badService.keyCount() shouldBe 0
       }
     },
   )
