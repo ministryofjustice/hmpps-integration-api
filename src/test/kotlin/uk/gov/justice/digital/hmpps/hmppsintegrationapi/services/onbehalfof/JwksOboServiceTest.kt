@@ -49,17 +49,18 @@ private fun makeJwt(
   kid: String,
   username: String,
   signingKey: PrivateKey,
-): String = Jwts
-  .builder()
-  .header()
-  .keyId(kid)
-  .and()
-  .subject(username)
-  .issuedAt(Date.from(Instant.now()))
-  .expiration(Date.from(Instant.now().plusSeconds(3600)))
-  .claim("unique_name", username)
-  .signWith(signingKey)
-  .compact()!!
+): String =
+  Jwts
+    .builder()
+    .header()
+    .keyId(kid)
+    .and()
+    .subject(username)
+    .issuedAt(Date.from(Instant.now()))
+    .expiration(Date.from(Instant.now().plusSeconds(3600)))
+    .claim("unique_name", username)
+    .signWith(signingKey)
+    .compact()!!
 
 private fun generateKeyPair(): KeyPair {
   val keyGenerator = KeyPairGenerator.getInstance("RSA")
@@ -68,8 +69,17 @@ private fun generateKeyPair(): KeyPair {
   return keyPair!!
 }
 
-private fun DescribeSpec.buildJwks(keyPair: KeyPair, kid: String): URL {
-  val jwk = Jwks.builder().key(keyPair.public as RSAPublicKey).id(kid).algorithm("RS256").build()
+private fun DescribeSpec.buildJwks(
+  keyPair: KeyPair,
+  kid: String,
+): URL {
+  val jwk =
+    Jwks
+      .builder()
+      .key(keyPair.public as RSAPublicKey)
+      .id(kid)
+      .algorithm("RS256")
+      .build()
 
   val wrapper = mapOf("keys" to listOf(jwk))
   val jwksText = ObjectMapper().writeValueAsString(wrapper)
@@ -81,5 +91,3 @@ private fun DescribeSpec.buildJwks(keyPair: KeyPair, kid: String): URL {
 
   return uri
 }
-
-

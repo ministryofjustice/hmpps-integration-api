@@ -40,9 +40,13 @@ class JwksOboService(
 
     val jwkParser = Jwks.parser().build()
 
-    val jsonContent = jwks.openStream().bufferedReader().use { reader ->
-      jacksonObjectMapper().readTree(reader)
-    }
+    val jsonContent =
+      jwks
+        .openStream()
+        .bufferedReader()
+        .use { reader ->
+          jacksonObjectMapper().readTree(reader)
+        }
 
     log.info(jsonContent.toString())
 
