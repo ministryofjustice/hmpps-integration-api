@@ -484,6 +484,12 @@ class AuthorisationServiceTest : ConfigTest() {
     }
 
     @Test
+    fun `handles an SSL single digit day date with multiple spaces`() {
+      val dateString = authorisationService.processCertificateExpiryDate("Jan  8 11:23:46 2027 GMT", "consumer-name")
+      assertEquals("2027-01-08T11:23:46Z", dateString)
+    }
+
+    @Test
     fun `handles an invalid format cert-expiry-date header and logs to sentry`() {
       val dateString = authorisationService.processCertificateExpiryDate("Wrong format", "consumer-name")
       assertEquals(null, dateString)

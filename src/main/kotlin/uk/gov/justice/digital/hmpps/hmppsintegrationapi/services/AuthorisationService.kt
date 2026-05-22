@@ -206,8 +206,10 @@ class AuthorisationService(
   ): String? {
     val expiryDateTime =
       try {
+        // OpenSSL notAfter date still uses 2 characters for a single digit day (with the first blank). eg Jan  8 12:30:10 2026 GMT
+        // Therefore we strip any double whitespaces
         ZonedDateTime
-          .parse(certExpiryDate, DateTimeFormatter.ofPattern("MMM d HH:mm:ss yyyy zzz", Locale.ENGLISH))
+          .parse(certExpiryDate.replace("\\s{2,}".toRegex(), " "), DateTimeFormatter.ofPattern("MMM d HH:mm:ss yyyy zzz", Locale.ENGLISH))
           .toInstant()
       } catch (ex: Exception) {
         telemetryService.captureException(RuntimeException("Failed to parse certificate expiry date $certExpiryDate. ${ex.message}"))
