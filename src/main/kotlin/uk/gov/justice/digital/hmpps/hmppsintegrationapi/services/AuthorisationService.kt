@@ -10,9 +10,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.JwksOboService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.OboService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.UnsignedJwtOboService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
+import java.net.URI
 import java.time.Clock
 import java.time.Instant
 import java.time.LocalDate
@@ -178,11 +180,14 @@ class AuthorisationService(
 
   fun allNull(vararg values: List<Any>?) = values.all { it == null }
 
+  private val entraJwksUrl = URI.create("https://login.microsoftonline.com/common/discovery/v2.0/keys").toURL()
+  private val entraOboService = JwksOboService(entraJwksUrl, "unique_name")
+
   fun oboService(consumerName: String): OboService? {
     val oboServiceName = authorisationConfig.consumers[consumerName]?.oboConfig?.strategy
     return when (oboServiceName) {
       "unsigned" -> UnsignedJwtOboService()
-      "entra" -> null // EntraJwtOboService()
+      "entra" -> entraOboService // reuse the same instance to benefit from JWKS caching
       else -> null
     }
   }

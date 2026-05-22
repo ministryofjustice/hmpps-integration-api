@@ -25,6 +25,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.laoRedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.JwksOboService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.UnsignedJwtOboService
 import java.time.Clock
 import java.time.LocalDateTime
@@ -345,7 +346,7 @@ class AuthorisationServiceTest : ConfigTest() {
   }
 
   @Test
-  fun `returns null for entra oboConfig`() {
+  fun `returns valid entra oboConfig`() {
     val service =
       AuthorisationService(
         AuthorisationConfig(
@@ -358,7 +359,7 @@ class AuthorisationServiceTest : ConfigTest() {
         ),
         mockTelemetryService,
       )
-    assertEquals(null, service.oboService("consumer-name"))
+    assertEquals(JwksOboService::class, service.oboService("consumer-name")!!::class)
   }
 
   @Test
