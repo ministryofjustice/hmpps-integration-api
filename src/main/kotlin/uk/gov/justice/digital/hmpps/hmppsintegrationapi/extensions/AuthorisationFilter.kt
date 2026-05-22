@@ -61,8 +61,8 @@ class AuthorisationFilter(
         oboService?.extractUsername(it)
       }
 
-    if (authorisationService.requiresObo(clientName) && oboUsername == null) {
-      res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "On Behalf username unavailable for $clientName")
+    if (authorisationService.requiresObo(clientName) && oboUsername.isNullOrEmpty()) {
+      res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "On Behalf Of username unavailable for $clientName")
       return
     }
 

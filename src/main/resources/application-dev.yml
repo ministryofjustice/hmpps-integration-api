@@ -142,6 +142,9 @@ authorisation:
       notes: "Automated post-deployment smoke tests (happy path)"
       roles:
         - "full-access"
+      oboConfig:
+        strategy: "unsigned"
+        required: false
     smoke-test-limited-access:
       notes: "Automated post-deployment smoke tests (some access denied)"
       roles:
@@ -234,6 +237,7 @@ authorisation:
         - "status-only"
       oboConfig:
         strategy: "entra"
+        required: true
 
 hmpps.sqs:
   queues:
