@@ -192,7 +192,7 @@ class AuthorisationService(
     }
   }
 
-  fun requiresObo(consumerName: String): Boolean = authorisationConfig.consumers[consumerName]?.oboConfig != null
+  fun requiresObo(consumerName: String): Boolean = authorisationConfig.consumers[consumerName]?.oboConfig?.required == true
 
   /**
    * Converts a certificate expiry date in the OpenSSL format to an ISO-6801 format
