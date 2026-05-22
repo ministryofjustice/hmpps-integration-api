@@ -28,6 +28,23 @@ To make an authenticated data request to the API using the client-specific TLS c
 ```sh
 curl --cert <client-cert-file> --key <client-key-file> -X GET https://<environment>.integration-api.hmpps.service.justice.gov.uk/v1/persons/X802678/risks/scores -H 'x-api-key: <api-key>'
 ```
+## On-behalf-of access
+
+External API consumers will identify themselves, as a service, using the common name in their client certificate, but it
+is also possible to identify the individual that the service is acting on behalf of.
+
+This is done by sending a JWT with the end user details in the optional `X-On-Behalf-Of` HTTP request header. Contact
+the External API support team to agree the configuration for these JWTs, including JWT signature verification.
+
+The exact content of the JWT will be agreed on a case-by-case basis, but would typically include an email
+address known to the MoJ authorisation systems and user directories.
+
+It is possible for a consumer to allow, but not require, an OBO identity. If OBO user details are supplied then they
+can be used to expand the base permissions assigned based on the client certificate. If no OBO user details are provided
+then those base permissions (which may be "none") will be used.
+
+IMPORTANT - any information provided in response to a request with an OBO user identity can only be shared with that
+specific individual. Storing this information and/or sharing it with other users may result in revocation of API access.
 
 ## Interacting with an HMPPS SQS Queue
 
