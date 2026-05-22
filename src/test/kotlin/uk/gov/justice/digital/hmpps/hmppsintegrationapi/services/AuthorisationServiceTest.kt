@@ -363,7 +363,7 @@ class AuthorisationServiceTest : ConfigTest() {
   }
 
   @Test
-  fun `returns true if oboConfig has a value`() {
+  fun `returns true if oboConfig has a value and required is set to true`() {
     val service =
       AuthorisationService(
         AuthorisationConfig(
@@ -377,6 +377,23 @@ class AuthorisationServiceTest : ConfigTest() {
         mockTelemetryService,
       )
     assertEquals(true, service.requiresObo("consumer-name"))
+  }
+
+  @Test
+  fun `returns false if oboConfig has a value and required is set to false`() {
+    val service =
+      AuthorisationService(
+        AuthorisationConfig(
+          mapOf(
+            "consumer-name" to
+              ConsumerConfig(
+                oboConfig = OboConfig("entra", required = false),
+              ),
+          ),
+        ),
+        mockTelemetryService,
+      )
+    assertEquals(false, service.requiresObo("consumer-name"))
   }
 
   @Test

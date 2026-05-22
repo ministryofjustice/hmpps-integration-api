@@ -26,6 +26,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.OboService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
 private const val CERT_SERIAL_RAW = "9572494320151578633330348943480876283449388176"
@@ -385,11 +386,47 @@ class AuthorisationFilterTest {
   }
 
   @Test
+  fun `handles an on behalf of header when not required`() {
+    whenever(mockRequest.getHeader("X-On-Behalf-Of")).thenReturn("TEST")
+    val mockOboService = mock(OboService::class.java)
+    whenever(mockOboService.extractUsername(any())).thenReturn("testName")
+    whenever(authorisationService.oboService(any())).thenReturn(mockOboService)
+    whenever(authorisationService.requiresObo(any())).thenReturn(false)
+    val finalFilter = mock(Filter::class.java)
+    mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
+    verify(mockTelemetryService, times(1)).setSpanAttribute("onBehalfOf", "testName")
+  }
+
+  @Test
+  fun `handles an invalid on behalf of header when required`() {
+    whenever(mockRequest.getHeader("X-On-Behalf-Of")).thenReturn("TEST")
+    val mockOboService = mock(OboService::class.java)
+    whenever(mockOboService.extractUsername(any())).thenReturn(null)
+    whenever(authorisationService.oboService(any())).thenReturn(mockOboService)
+    whenever(authorisationService.requiresObo(any())).thenReturn(true)
+    val finalFilter = mock(Filter::class.java)
+    mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
+    verify(mockResponse, times(1)).sendError(401, "On Behalf Of username unavailable for consumer-name")
+  }
+
+  @Test
+  fun `handles an invalid on behalf of header when not required`() {
+    whenever(mockRequest.getHeader("X-On-Behalf-Of")).thenReturn("TEST")
+    val mockOboService = mock(OboService::class.java)
+    whenever(mockOboService.extractUsername(any())).thenReturn(null)
+    whenever(authorisationService.oboService(any())).thenReturn(mockOboService)
+    whenever(authorisationService.requiresObo(any())).thenReturn(false)
+    val finalFilter = mock(Filter::class.java)
+    mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
+    verify(mockTelemetryService, times(0)).setSpanAttribute(eq("onBehalfOf"), any())
+  }
+
+  @Test
   fun `handles a NULL on behalf of header`() {
     whenever(mockRequest.getHeader("X-On-Behalf-Of")).thenReturn(null)
     val finalFilter = mock(Filter::class.java)
     mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
-    verify(mockTelemetryService, times(0)).setSpanAttribute("onBehalfOf", "testName")
+    verify(mockTelemetryService, times(0)).setSpanAttribute(eq("onBehalfOf"), any())
   }
 
   @Test
