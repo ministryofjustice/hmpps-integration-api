@@ -410,6 +410,18 @@ class AuthorisationFilterTest {
   }
 
   @Test
+  fun `handles an invalid on behalf of header that resolves to an empty string when required`() {
+    whenever(mockRequest.getHeader("X-On-Behalf-Of")).thenReturn("TEST")
+    val mockOboService = mock(OboService::class.java)
+    whenever(mockOboService.extractUsername(any())).thenReturn("")
+    whenever(authorisationService.oboService(any())).thenReturn(mockOboService)
+    whenever(authorisationService.requiresObo(any())).thenReturn(true)
+    val finalFilter = mock(Filter::class.java)
+    mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
+    verify(mockResponse, times(1)).sendError(401, "On Behalf Of username unavailable for consumer-name")
+  }
+
+  @Test
   fun `handles an invalid on behalf of header when not required`() {
     whenever(mockRequest.getHeader("X-On-Behalf-Of")).thenReturn("TEST")
     val mockOboService = mock(OboService::class.java)
