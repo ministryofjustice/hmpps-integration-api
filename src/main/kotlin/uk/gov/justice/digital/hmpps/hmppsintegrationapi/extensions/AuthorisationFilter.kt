@@ -86,7 +86,7 @@ class AuthorisationFilter(
 
     val requestedPath = req.requestURI
 
-    val context = RequestContext(clientName, consumerConfig, features, onBehalfOf)
+    val context = RequestContext(clientName, consumerConfig, filters, features, onBehalfOf)
     request.setAttribute("requestContext", context)
 
     if (authorisationService.hasAccess(clientName, requestedPath)) {

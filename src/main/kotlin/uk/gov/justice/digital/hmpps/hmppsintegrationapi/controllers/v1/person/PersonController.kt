@@ -135,7 +135,7 @@ class PersonController(
       throw ValidationException("Invalid date format. Please use yyyy-MM-dd.")
     }
 
-    val response = getPersonsService.personAttributeSearch(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases, requestContext?.consumerConfig?.filters)
+    val response = getPersonsService.personAttributeSearch(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases, requestContext?.filters)
 
     auditService.createEvent(
       "SEARCH_PERSON",

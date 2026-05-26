@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 /**
  * Context information for an API request.
@@ -15,6 +16,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 data class RequestContext(
   val consumerId: String,
   val consumerConfig: ConsumerConfig,
+  val filters: ConsumerFilters?,
   val featureFlags: FeatureFlagConfig,
   val oboUserName: String? = null,
 )
