@@ -12,6 +12,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_WEBCLIENT_WRAPPER_FOR_HMPPS_AUTH
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.HmppsAuthFailedException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Credentials
@@ -70,7 +71,10 @@ class HmppsAuthGateway(
     existingAccessToken = null
   }
 
-  override fun getClientToken(service: String): String {
+  override fun getClientToken(
+    service: String,
+    requestContext: RequestContext?,
+  ): String {
     existingAccessToken?.let {
       if (checkTokenValid(it)) {
         telemetryService.trackEvent("AuthTokenCache")
@@ -80,8 +84,7 @@ class HmppsAuthGateway(
 
     telemetryService.trackEvent("AuthTokenRequest")
     val credentials = Credentials(username, password)
-    val uri = "/auth/oauth/token?grant_type=client_credentials"
-
+    val uri = "/auth/oauth/token?grant_type=client_credentials${requestContext?.oboUserName?.let {"&username=${requestContext.oboUserName}"} ?: ""}"
     return try {
       var response: String?
       if (featureFlag.isEnabled(USE_WEBCLIENT_WRAPPER_FOR_HMPPS_AUTH)) {

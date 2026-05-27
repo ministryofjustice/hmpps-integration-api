@@ -162,9 +162,9 @@ class PersonController(
   fun getPerson(
     @Parameter(description = "A HMPPS identifier", example = "X00001")
     @PathVariable("hmppsId") hmppsId: String,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
   ): ResponseEntity<DataResponse<OffenderSearchResponse>> {
-    val response = getPersonService.getCombinedDataForPerson(hmppsId, filters)
+    val response = getPersonService.getCombinedDataForPerson(hmppsId, requestContext)
 
     if (response.data == null && response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
