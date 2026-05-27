@@ -12,6 +12,7 @@ import org.mockito.Mockito.verify
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.whenever
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.AuthorisationFilter
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory
@@ -25,6 +26,7 @@ class FiltersIntegrationTest : IntegrationTestBase() {
   val mockResponse = mock(HttpServletResponse::class.java)
   val mockChain = mock(FilterChain::class.java)
   val mockTelemetryService = mock(TelemetryService::class.java)
+  val features: FeatureFlagConfig = mock()
 
   lateinit var filtersExtractionFilter: AuthorisationFilter
 
@@ -35,6 +37,7 @@ class FiltersIntegrationTest : IntegrationTestBase() {
       AuthorisationFilter(
         authorisationService,
         mockTelemetryService,
+        features,
       )
     whenever(mockRequest.getHeader("cert-serial-number")).thenReturn(certSerialNumber)
   }

@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
@@ -21,6 +22,7 @@ import java.io.IOException
 class AuthorisationFilter(
   private val authorisationService: AuthorisationService,
   private val telemetryService: TelemetryService,
+  private val features: FeatureFlagConfig,
 ) : Filter {
   @Throws(IOException::class, ServletException::class)
   override fun doFilter(
@@ -83,6 +85,9 @@ class AuthorisationFilter(
     request.setAttribute("filters", filters)
 
     val requestedPath = req.requestURI
+
+    val context = RequestContext(clientName, consumerConfig, filters, features, onBehalfOf)
+    request.setAttribute("requestContext", context)
 
     if (authorisationService.hasAccess(clientName, requestedPath)) {
       try {
