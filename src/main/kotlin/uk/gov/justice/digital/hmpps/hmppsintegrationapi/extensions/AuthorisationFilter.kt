@@ -63,13 +63,13 @@ class AuthorisationFilter(
         oboService?.extractUsername(it)
       }
 
+    // Set App insights request attributes
+    setSpanAttributes(clientName, certificateSerialNumber, oboUsername ?: onBehalfOf, certificateExpiryDate)
+
     if (authorisationService.requiresObo(clientName) && oboUsername.isNullOrEmpty()) {
       res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "On Behalf Of username unavailable for $clientName")
       return
     }
-
-    // Set App insights request attributes
-    setSpanAttributes(clientName, certificateSerialNumber, oboUsername, certificateExpiryDate)
 
     // Set filters
     val consumerConfig: ConsumerConfig? = authorisationService.consumers()[clientName]
