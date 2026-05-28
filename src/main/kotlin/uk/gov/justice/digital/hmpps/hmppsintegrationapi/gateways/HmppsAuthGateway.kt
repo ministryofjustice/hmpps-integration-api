@@ -1,14 +1,15 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 
-import io.sentry.Sentry
 import org.apache.tomcat.util.json.JSONParser
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientRequestException
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Companion.GATEWAY_CACHE
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_WEBCLIENT_WRAPPER_FOR_HMPPS_AUTH
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.HmppsAuthFailedException
@@ -19,9 +20,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Credentials
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
-import java.nio.charset.StandardCharsets
-import java.time.Instant
-import java.util.Base64
 
 @Component
 class HmppsAuthGateway(
@@ -53,35 +51,11 @@ class HmppsAuthGateway(
   @Autowired
   private lateinit var telemetryService: TelemetryService
 
-  private var existingAccessToken: String? = null
-
-  private fun checkTokenValid(token: String): Boolean =
-    try {
-      val encodedPayload = token.split(".")[1]
-      val decodedToken = String(Base64.getDecoder().decode(encodedPayload), StandardCharsets.UTF_8)
-      val now = Instant.now().epochSecond
-      val expiration = JSONParser(decodedToken).parseObject()["exp"].toString().toLong()
-      (now < (expiration - 5))
-    } catch (e: Exception) {
-      Sentry.captureException(e)
-      false
-    }
-
-  fun reset() {
-    existingAccessToken = null
-  }
-
+  @Cacheable(GATEWAY_CACHE, keyGenerator = "gatewayKeyGenerator", condition = "@gatewayCacheEnabled")
   override fun getClientToken(
     service: String,
     requestContext: RequestContext?,
   ): String {
-    existingAccessToken?.let {
-      if (checkTokenValid(it)) {
-        telemetryService.trackEvent("AuthTokenCache")
-        return it
-      }
-    }
-
     telemetryService.trackEvent("AuthTokenRequest")
     val credentials = Credentials(username, password)
     val uri = "/auth/oauth/token?grant_type=client_credentials${requestContext?.oboUserName?.let {"&username=${requestContext.oboUserName}"} ?: ""}"
@@ -121,7 +95,6 @@ class HmppsAuthGateway(
       }
 
       val accessToken = JSONParser(response).parseObject()["access_token"].toString()
-      this.existingAccessToken = accessToken
       accessToken
     } catch (exception: WebClientRequestException) {
       throw HmppsAuthFailedException("Connection to ${exception.uri.authority} failed for $service.")
