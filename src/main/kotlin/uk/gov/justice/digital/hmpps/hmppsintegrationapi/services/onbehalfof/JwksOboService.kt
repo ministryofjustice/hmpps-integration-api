@@ -42,7 +42,12 @@ class JwksOboService(
           .parseSignedClaims(token)
 
       log.info("Parsed signed JWT")
-      return jwt?.payload[usernameClaim]?.toString()
+
+      if (!jwt.payload.contains(usernameClaim)) {
+        log.warn("Valid JWT does not have required claim: $usernameClaim")
+        return null
+      }
+      return jwt.payload[usernameClaim].toString()
     } catch (e: JwtException) {
       log.error("Unable to parse JWT: " + e.message)
       return null
