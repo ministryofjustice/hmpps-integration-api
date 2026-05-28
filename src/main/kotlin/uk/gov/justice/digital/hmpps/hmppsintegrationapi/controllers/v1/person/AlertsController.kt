@@ -108,7 +108,7 @@ class AlertsController(
     @RequestAttribute requestContext: RequestContext?,
   ): PaginatedResponse<Alert> =
     // This endpoint is deprecated - implementation is now identical to getPersonAlerts
-    getPersonAlerts(hmppsId, page, perPage, requestContext?.filters as RequestContext?)
+    getPersonAlerts(hmppsId, page, perPage, requestContext)
 }
 
 private fun ensureResponse(
