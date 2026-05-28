@@ -41,9 +41,10 @@ class JwksOboService(
           .build()
           .parseSignedClaims(token)
 
+      log.info("Parsed signed JWT")
       return jwt?.payload[usernameClaim]?.toString()
     } catch (e: JwtException) {
-      log.error("Unable to parse JWT", e)
+      log.error("Unable to parse JWT: " + e.message)
       return null
     }
   }

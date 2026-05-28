@@ -430,7 +430,7 @@ class AuthorisationFilterTest {
     whenever(authorisationService.requiresObo(any())).thenReturn(false)
     val finalFilter = mock(Filter::class.java)
     mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
-    verify(mockTelemetryService, times(0)).setSpanAttribute(eq("onBehalfOf"), any())
+    verify(mockTelemetryService, times(1)).setSpanAttribute(eq("onBehalfOf"), eq("TEST"))
   }
 
   @Test
