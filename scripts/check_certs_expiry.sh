@@ -1,5 +1,7 @@
 #!/bin/bash
 
+ignore="dev/sleach5 dev/bmadley"
+
 configure_aws_credentials() {
     local environment="$1"
     access_key_id=$(echo $AWS_CREDS | jq -r '."access-credentials"."access-key-id"')
@@ -102,12 +104,29 @@ check_certificate_expiry() {
     fi
 }
 
+ignore_cert() {
+  environment="$1"
+  certificate_name="$2"
+
+  check_value="$environment/$certificate_name"
+
+  if [[ $ignore =~ $check_value ]]; then
+    echo "ignore"
+  else
+    echo "check"
+  fi
+}
+
 enhanced_expiry_check() {
   expiry_time="$1"
   current_time="$2"
   environment="$3"
   certificate_name="$4"
   expiry_date="$5"
+
+  if [[ $(ignore_cert $environment $certificate_name) == "ignore" ]]; then
+    return
+  fi
 
   expires_in_seconds=$((expiry_time - current_time))
 
@@ -137,8 +156,8 @@ test_expiry_check() {
 
   current_time="$(convert_date_to_seconds 'Oct 09 09:32:00 2025 BST')"
   expiry_time="$(convert_date_to_seconds 'Oct 23 10:32:00 2025 BST')"
-  message=$(enhanced_expiry_check $expiry_time $current_time "dev" "tester")
-  if [ "$message" != "**ALERT ACTION REQUIRED** The certificate for tester in dev will expire in 14 days." ]; then
+  message=$(enhanced_expiry_check $expiry_time $current_time "dev" "tester" "Oct 23 10:32:00 2025 BST")
+  if [ "$message" != "**ALERT ACTION REQUIRED** The certificate for tester in dev will expire on Oct 23 10:32:00 2025 BST (in 14 days)." ]; then
     echo "!!! enhanced_expiry_check (warning day) $expiry_time $current_time returned $message"
   fi
 
@@ -155,12 +174,36 @@ test_expiry_check() {
   if [ "$message" != "" ]; then
     echo "!!! enhanced_expiry_check (expired) $expiry_time $current_time returned $message"
   fi
+
+  current_time="$(convert_date_to_seconds 'Oct 09 09:32:00 2025 BST')"
+  expiry_time="$(convert_date_to_seconds 'Oct 23 10:32:00 2025 BST')"
+  message=$(enhanced_expiry_check $expiry_time $current_time "dev" "sleach5")
+  if [ "$message" != "" ]; then
+    echo "!!! enhanced_expiry_check (ignored) $expiry_time $current_time returned $message"
+  fi
+}
+
+test_ignore_list() {
+  echo "Testing ignore list"
+
+  expected="ignore"
+  actual="$(ignore_cert 'dev' 'sleach5')"
+  if [ "$actual" != "$expected" ]; then
+    echo "!!! dev/sleach5 should be $expected, was $actual"
+  fi
+
+  expected="check"
+  actual="$(ignore_cert 'prod' 'liveone')"
+  if [ "$actual" != "$expected" ]; then
+    echo "!!! prod/liveone should be $expected, was $actual"
+  fi
 }
 
 test_suite() {
   echo "=== Testing ==="
   test_date_conversion
   test_expiry_check
+  test_ignore_list
   echo "=== Testing complete ==="
 }
 
