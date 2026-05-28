@@ -39,7 +39,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitOrders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationintegrationepf.LimitedAccess
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCareNeedsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetIEPLevelService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageMetadataForPersonService
@@ -162,9 +161,9 @@ class PersonController(
   fun getPerson(
     @Parameter(description = "A HMPPS identifier", example = "X00001")
     @PathVariable("hmppsId") hmppsId: String,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
   ): ResponseEntity<DataResponse<OffenderSearchResponse>> {
-    val response = getPersonService.getCombinedDataForPerson(hmppsId, filters)
+    val response = getPersonService.getCombinedDataForPerson(hmppsId, requestContext?.filters)
 
     if (response.data == null && response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
@@ -201,11 +200,11 @@ class PersonController(
   )
   fun getPersonImages(
     @Parameter(description = "A HMPPS identifier", example = "A1234AA") @PathVariable hmppsId: String,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
     @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
   ): PaginatedResponse<ImageMetadata> {
-    val response = getImageMetadataForPersonService.execute(hmppsId, filters)
+    val response = getImageMetadataForPersonService.execute(hmppsId, requestContext?.filters)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
@@ -232,9 +231,9 @@ class PersonController(
   )
   fun getPersonName(
     @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<PersonName?> {
-    val response = getNameForPersonService.execute(hmppsId, filters)
+    val response = getNameForPersonService.execute(hmppsId, requestContext?.filters)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
@@ -261,9 +260,9 @@ class PersonController(
   )
   fun getPrisonersIEPLevel(
     @Parameter(description = "The HMPPS ID of the prisoner") @PathVariable hmppsId: String,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<IEPLevel?> {
-    val response = getIEPLevelService.execute(hmppsId, filters)
+    val response = getIEPLevelService.execute(hmppsId, requestContext?.filters)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
@@ -290,9 +289,9 @@ class PersonController(
   )
   fun getPrisonersVisitOrders(
     @Parameter(description = "The HMPPS ID of the prisoner") @PathVariable hmppsId: String,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<VisitOrders?> {
-    val response = getVisitOrdersForPersonService.execute(hmppsId, filters)
+    val response = getVisitOrdersForPersonService.execute(hmppsId, requestContext?.filters)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
@@ -321,9 +320,9 @@ class PersonController(
   )
   fun getPrisonersNumberofChildren(
     @Parameter(description = "The HMPPS ID of the prisoner") @PathVariable hmppsId: String,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<NumberOfChildren?> {
-    val response = getNumberOfChildrenForPersonService.execute(hmppsId, filters)
+    val response = getNumberOfChildrenForPersonService.execute(hmppsId, requestContext?.filters)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
@@ -352,9 +351,9 @@ class PersonController(
   )
   fun getPhysicalCharacteristicsForPerson(
     @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<PhysicalCharacteristics?> {
-    val response = getPhysicalCharacteristicsForPersonService.execute(hmppsId, filters = filters)
+    val response = getPhysicalCharacteristicsForPersonService.execute(hmppsId, filters = requestContext?.filters)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Bad request from upstream ${response.errors.first().description}")
@@ -381,9 +380,9 @@ class PersonController(
   )
   fun getCareNeedsForPerson(
     @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<List<PersonalCareNeed>?> {
-    val response = getCareNeedsForPersonService.execute(hmppsId, filters = filters)
+    val response = getCareNeedsForPersonService.execute(hmppsId, filters = requestContext?.filters)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Bad request from upstream ${response.errors.first().description}")
@@ -410,9 +409,9 @@ class PersonController(
   )
   fun getLanguagesForPerson(
     @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<List<Language>?> {
-    val response = getLanguagesForPersonService.execute(hmppsId, filters = filters)
+    val response = getLanguagesForPersonService.execute(hmppsId, filters = requestContext?.filters)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Bad request from upstream ${response.errors.first().description}")
@@ -439,9 +438,9 @@ class PersonController(
   )
   fun getEducationForPerson(
     @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<PrisonerEducation?> {
-    val response = getPrisonerEducationService.execute(hmppsId, filters = filters)
+    val response = getPrisonerEducationService.execute(hmppsId, filters = requestContext?.filters)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Bad request from upstream ${response.errors.first().description}")

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CancelVisitRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CreateVisitRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
@@ -25,7 +26,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpdateVisit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitReferences
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitInformationByReferenceService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitReferencesByClientReferenceService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.VisitQueueService
@@ -70,9 +70,9 @@ class VisitsController(
   @GetMapping("/{visitReference}")
   fun getVisitInformationByReference(
     @Parameter(description = "The visit reference number relating to the visit.") @PathVariable visitReference: String,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<Visit?> {
-    val response = getVisitInformationByReferenceService.execute(visitReference, filters)
+    val response = getVisitInformationByReferenceService.execute(visitReference, requestContext?.filters)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find visit information for visit reference: $visitReference")
@@ -128,9 +128,9 @@ class VisitsController(
   fun postVisit(
     @Valid @RequestBody createVisitRequest: CreateVisitRequest,
     @RequestAttribute clientName: String?,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<HmppsMessageResponse?> {
-    val response = visitQueueService.sendCreateVisit(createVisitRequest, clientName.orEmpty(), filters)
+    val response = visitQueueService.sendCreateVisit(createVisitRequest, clientName.orEmpty(), requestContext?.filters)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException(response.errors[0].description ?: "Could not find information for a given visit.")
@@ -190,9 +190,9 @@ class VisitsController(
     @Valid @RequestBody updateVisitRequest: UpdateVisitRequest,
     @Parameter(description = "The visit reference number relating to the visit.") @PathVariable visitReference: String,
     @RequestAttribute clientName: String?,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<HmppsMessageResponse?> {
-    val response = visitQueueService.sendUpdateVisit(visitReference, updateVisitRequest, clientName.orEmpty(), filters)
+    val response = visitQueueService.sendUpdateVisit(visitReference, updateVisitRequest, clientName.orEmpty(), requestContext?.filters)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException(response.errors[0].description ?: "Could not find information for a given visit.")
@@ -249,9 +249,9 @@ class VisitsController(
     @Valid @RequestBody cancelVisitRequest: CancelVisitRequest,
     @Parameter(description = "The visit reference number relating to the visit.") @PathVariable visitReference: String,
     @RequestAttribute clientName: String?,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<HmppsMessageResponse?> {
-    val response = visitQueueService.sendCancelVisit(visitReference, cancelVisitRequest, clientName.orEmpty(), filters)
+    val response = visitQueueService.sendCancelVisit(visitReference, cancelVisitRequest, clientName.orEmpty(), requestContext?.filters)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find prisoner")
@@ -297,9 +297,9 @@ class VisitsController(
   fun getVisitReferencesByClientReference(
     @Parameter(description = "The visit reference number relating to the visit.")
     @PathVariable clientReference: String,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<VisitReferences?> {
-    val response = getVisitReferencesByClientReferenceService.execute(clientReference, filters)
+    val response = getVisitReferencesByClientReferenceService.execute(clientReference, requestContext?.filters)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find visit references for client reference: $clientReference")

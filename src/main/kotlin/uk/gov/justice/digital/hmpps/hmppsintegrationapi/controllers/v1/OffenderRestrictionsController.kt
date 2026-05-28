@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.ENTITY_NOT_FOUND
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nonAssociation.NonAssociations
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersNonAssociationsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
@@ -49,13 +49,13 @@ class OffenderRestrictionsController(
     @Parameter(description = "The prison ID of the prisoner") @PathVariable prisonId: String,
     @Parameter(description = "") @RequestParam(required = false, name = "includeOpen", defaultValue = "true") includeOpen: Boolean?,
     @Parameter(description = "") @RequestParam(required = false, name = "includeClosed", defaultValue = "false") includeClosed: Boolean?,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<NonAssociations?> {
     if (includeOpen == null && includeClosed == null || includeOpen == false && includeClosed == false) {
       throw ValidationException("includeOpen or includeClosed must be provided.")
     }
 
-    val response = getPrisonersNonAssociationsService.execute(hmppsId, prisonId, includeOpen.toString(), includeClosed.toString(), filters)
+    val response = getPrisonersNonAssociationsService.execute(hmppsId, prisonId, includeOpen.toString(), includeClosed.toString(), requestContext?.filters)
 
     if (response.hasErrorCausedBy(ENTITY_NOT_FOUND, causedBy = UpstreamApi.NON_ASSOCIATIONS)) {
       throw EntityNotFoundException("Could not find prisoner with hmppsId: $hmppsId")

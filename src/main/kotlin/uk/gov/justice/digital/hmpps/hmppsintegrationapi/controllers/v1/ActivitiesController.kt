@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ConflictFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivitySchedule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivityScheduleDetailed
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AttendanceUpdateRequest
@@ -32,7 +33,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ReasonForAt
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SuitabilityCriteria
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.WaitingListApplication
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ActivitiesQueueService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetActivitiesScheduleService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetActivitiesSuitabilityCriteriaService
@@ -81,9 +81,9 @@ class ActivitiesController(
   )
   fun getActivitySchedules(
     @Parameter(description = "The ID of the activity") @PathVariable activityId: Long,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<List<ActivitySchedule>?> {
-    val response = getActivitiesScheduleService.execute(activityId, filters)
+    val response = getActivitiesScheduleService.execute(activityId, requestContext?.filters)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Invalid query parameters.")
@@ -132,9 +132,9 @@ class ActivitiesController(
   )
   fun getScheduleDetails(
     @Parameter(description = "The ID of the schedule") @PathVariable scheduleId: Long,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<ActivityScheduleDetailed?> {
-    val response = getScheduleDetailsService.execute(scheduleId, filters)
+    val response = getScheduleDetailsService.execute(scheduleId, requestContext?.filters)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Invalid query parameters.")
@@ -183,9 +183,9 @@ class ActivitiesController(
   )
   fun getActivityScheduleSuitabilityCriteria(
     @Parameter(description = "The ID of the schedule") @PathVariable scheduleId: Long,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<SuitabilityCriteria?> {
-    val response = getActivitiesSuitabilityCriteriaService.execute(scheduleId, filters)
+    val response = getActivitiesSuitabilityCriteriaService.execute(scheduleId, requestContext?.filters)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Invalid query parameters.")
@@ -233,11 +233,11 @@ class ActivitiesController(
     ],
   )
   fun putAttendance(
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
     @RequestAttribute clientName: String,
     @RequestBody @Valid attendanceUpdateRequests: List<AttendanceUpdateRequest>,
   ): DataResponse<HmppsMessageResponse?> {
-    val response = activitiesQueueService.sendAttendanceUpdateRequest(attendanceUpdateRequests, clientName, filters)
+    val response = activitiesQueueService.sendAttendanceUpdateRequest(attendanceUpdateRequests, clientName, requestContext?.filters)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Invalid query parameters.")
@@ -322,11 +322,11 @@ class ActivitiesController(
   )
   fun putDeallocateFromSchedule(
     @Parameter(description = "The ID of the schedule") @PathVariable scheduleId: Long,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
     @RequestAttribute clientName: String,
     @RequestBody @Valid prisonerDeallocationRequest: PrisonerDeallocationRequest,
   ): DataResponse<HmppsMessageResponse?> {
-    val response = activitiesQueueService.sendPrisonerDeallocationRequest(scheduleId, prisonerDeallocationRequest, clientName, filters)
+    val response = activitiesQueueService.sendPrisonerDeallocationRequest(scheduleId, prisonerDeallocationRequest, clientName, requestContext?.filters)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Bad request: ${response.errors[0].description}")
@@ -415,11 +415,11 @@ class ActivitiesController(
   )
   fun postAllocationEndpoint(
     @Parameter(description = "The ID of the schedule") @PathVariable scheduleId: Long,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
     @RequestAttribute clientName: String,
     @RequestBody @Valid prisonerAllocationRequest: PrisonerAllocationRequest,
   ): DataResponse<HmppsMessageResponse?> {
-    val response = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, prisonerAllocationRequest, clientName, filters)
+    val response = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, prisonerAllocationRequest, clientName, requestContext?.filters)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Invalid query parameters: ${response.errors[0].description}")
@@ -471,9 +471,9 @@ class ActivitiesController(
   )
   fun getWaitingListApplicationsByScheduleId(
     @Parameter(description = "The ID of the schedule") @PathVariable scheduleId: Long,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<List<WaitingListApplication>?> {
-    val response = getWaitingListApplicationsByScheduleIdService.execute(scheduleId, filters)
+    val response = getWaitingListApplicationsByScheduleIdService.execute(scheduleId, requestContext?.filters)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Invalid query parameters.")
