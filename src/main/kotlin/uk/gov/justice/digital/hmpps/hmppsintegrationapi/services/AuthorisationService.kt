@@ -181,7 +181,7 @@ class AuthorisationService(
   fun allNull(vararg values: List<Any>?) = values.all { it == null }
 
   private val entraJwksUrl = URI.create("https://login.microsoftonline.com/common/discovery/v2.0/keys").toURL()
-  private val entraOboService = JwksOboService(entraJwksUrl, "unique_name")
+  private val entraOboService = JwksOboService(entraJwksUrl, "email")
 
   fun oboService(consumerName: String): OboService? {
     val oboServiceName = authorisationConfig.consumers[consumerName]?.oboConfig?.strategy
