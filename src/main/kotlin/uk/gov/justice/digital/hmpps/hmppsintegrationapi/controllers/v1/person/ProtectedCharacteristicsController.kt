@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonProtectedCharacteristics
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetProtectedCharacteristicsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
@@ -42,9 +42,9 @@ class ProtectedCharacteristicsController(
   )
   fun getProtectedCharacteristics(
     @Parameter(description = "The HMPPS ID of the person", example = "G2996UX") @PathVariable hmppsId: String,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<PersonProtectedCharacteristics?> {
-    val response = getProtectedCharacteristicsService.execute(hmppsId, filters)
+    val response = getProtectedCharacteristicsService.execute(hmppsId, requestContext?.filters)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")

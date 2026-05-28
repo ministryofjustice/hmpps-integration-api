@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Balance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Balances
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetBalancesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
@@ -48,9 +48,9 @@ class BalancesController(
   fun getBalancesForPerson(
     @PathVariable hmppsId: String,
     @PathVariable prisonId: String,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<Balances?> {
-    val response = getBalancesForPersonService.execute(prisonId, hmppsId, filters = filters)
+    val response = getBalancesForPersonService.execute(prisonId, hmppsId, filters = requestContext?.filters)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
@@ -83,9 +83,9 @@ class BalancesController(
     @PathVariable hmppsId: String,
     @PathVariable prisonId: String,
     @PathVariable accountCode: String,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<Balance?> {
-    val response = getBalancesForPersonService.getBalance(prisonId, hmppsId, accountCode, filters = filters)
+    val response = getBalancesForPersonService.getBalance(prisonId, hmppsId, accountCode, filters = requestContext?.filters)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")

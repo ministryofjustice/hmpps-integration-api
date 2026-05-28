@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivityScheduledInstanceForPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AppointmentDetails
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AppointmentSearchRequest
@@ -26,7 +27,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HistoricalA
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RunningActivity
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.BAD_REQUEST
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.ENTITY_NOT_FOUND
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetHistoricalAttendancesService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonActivitiesService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetScheduledInstancesForPrisonerService
@@ -56,9 +56,9 @@ class PrisonActivitiesController(
   )
   fun getPrisonActivities(
     @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<List<RunningActivity>?> {
-    val response = getPrisonActivitiesService.execute(prisonId, filters)
+    val response = getPrisonActivitiesService.execute(prisonId, requestContext?.filters)
 
     if (response.hasError(BAD_REQUEST)) {
       throw ValidationException("Invalid query parameters.")
@@ -113,9 +113,9 @@ class PrisonActivitiesController(
     @RequestParam endDate: String,
     @Parameter(description = "Optional time slot filter", required = false)
     @RequestParam(required = false) slot: String? = null,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<List<ActivityScheduledInstanceForPrisoner>?> {
-    val response = getScheduledInstancesForPrisonerService.execute(prisonId, hmppsId, startDate, endDate, slot, filters)
+    val response = getScheduledInstancesForPrisonerService.execute(prisonId, hmppsId, startDate, endDate, slot, requestContext?.filters)
 
     if (response.hasError(BAD_REQUEST)) {
       throw ValidationException("Invalid query parameters.")
@@ -147,10 +147,10 @@ class PrisonActivitiesController(
   )
   fun searchAppointments(
     @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
     @Valid @RequestBody request: AppointmentSearchRequest,
   ): DataResponse<List<AppointmentDetails>?> {
-    val response = searchAppointmentsService.execute(prisonId, request, filters)
+    val response = searchAppointmentsService.execute(prisonId, request, requestContext?.filters)
 
     if (response.hasError(BAD_REQUEST)) {
       throw ValidationException("Invalid query parameters.")
@@ -185,9 +185,9 @@ class PrisonActivitiesController(
     @RequestParam startDate: String,
     @RequestParam endDate: String,
     @RequestParam prisonId: String?,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<List<HistoricalAttendance>?> {
-    val response = getHistoricalAttendancesService.execute(hmppsId, startDate, endDate, prisonId, filters)
+    val response = getHistoricalAttendancesService.execute(hmppsId, startDate, endDate, prisonId, requestContext?.filters)
 
     if (response.hasError(BAD_REQUEST)) {
       throw ValidationException("Invalid query parameters.")

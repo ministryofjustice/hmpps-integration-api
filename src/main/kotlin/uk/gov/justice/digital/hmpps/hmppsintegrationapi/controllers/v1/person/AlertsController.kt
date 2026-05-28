@@ -17,13 +17,13 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_ACTIVE_ALERTS_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Alert
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedAlerts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.interfaces.toPaginatedResponse
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAlertsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
@@ -51,9 +51,9 @@ class AlertsController(
     @Parameter(description = "The HMPPS ID of the person", example = "A1234AA") @PathVariable hmppsId: String,
     @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
   ): PaginatedResponse<Alert> {
-    val response = getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)
+    val response = getAlertsForPersonService.getAlerts(hmppsId, requestContext?.filters, page, perPage)
     ensureResponse(hmppsId, response)
 
     auditService.createEvent("GET_PERSON_ALERTS", mapOf("hmppsId" to hmppsId))
@@ -78,9 +78,9 @@ class AlertsController(
     @Parameter(description = "The HMPPS ID of the person", example = "A1234AA") @PathVariable hmppsId: String,
     @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
   ): PaginatedResponse<Alert> {
-    val response = getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage, true)
+    val response = getAlertsForPersonService.getAlerts(hmppsId, requestContext?.filters, page, perPage, true)
 
     ensureResponse(hmppsId, response)
 
@@ -105,10 +105,10 @@ class AlertsController(
     @Parameter(description = "The HMPPS ID of the person", example = "A1234AA") @PathVariable hmppsId: String,
     @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
   ): PaginatedResponse<Alert> =
     // This endpoint is deprecated - implementation is now identical to getPersonAlerts
-    getPersonAlerts(hmppsId, page, perPage, filters)
+    getPersonAlerts(hmppsId, page, perPage, requestContext)
 }
 
 private fun ensureResponse(

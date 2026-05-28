@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsId
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetHmppsIdService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
@@ -40,9 +40,9 @@ class HmppsIdController(
   )
   fun getHmppsIdByNomisNumber(
     @PathVariable nomisNumber: String,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<HmppsId?> {
-    val response = getHmppsIdService.execute(nomisNumber, filters)
+    val response = getHmppsIdService.execute(nomisNumber, requestContext?.filters)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Invalid Nomis number: $nomisNumber")
@@ -69,9 +69,9 @@ class HmppsIdController(
   )
   fun getNomisNumberByHMPPSID(
     @PathVariable hmppsId: String,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<NomisNumber?> {
-    val response = getPersonService.getNomisNumber(hmppsId, filters)
+    val response = getPersonService.getNomisNumber(hmppsId, requestContext?.filters)
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find nomis number for HMPPS ID: $hmppsId")
     }

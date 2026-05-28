@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonVisitRestriction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContactRestrictions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitRestrictionsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitorRestrictionsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
@@ -45,9 +45,9 @@ class VisitRestrictionsController(
   )
   fun getRestrictionsForPerson(
     @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<List<PersonVisitRestriction>?> {
-    val response = getVisitRestrictionsForPersonService.execute(hmppsId, filters = filters)
+    val response = getVisitRestrictionsForPersonService.execute(hmppsId, filters = requestContext?.filters)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Bad request from upstream ${response.errors.first().description}")
@@ -74,10 +74,10 @@ class VisitRestrictionsController(
   fun getVisitorRestrictions(
     @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
     @Parameter(description = "A contact ID") @PathVariable contactId: String,
-    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<PrisonerContactRestrictions?> {
     val stringifiedContactId = contactId.toLongOrNull() ?: throw ValidationException("Invalid contact ID")
-    val response = getVisitorRestrictionsService.execute(hmppsId, stringifiedContactId, filters)
+    val response = getVisitorRestrictionsService.execute(hmppsId, stringifiedContactId, requestContext?.filters)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Bad request from upstream ${response.errors.first().description}")
