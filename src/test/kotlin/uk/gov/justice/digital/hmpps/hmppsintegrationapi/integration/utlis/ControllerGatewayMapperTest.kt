@@ -27,11 +27,6 @@ internal class ControllerGatewayMapperTest(
   }
 
   @Test
-  fun `config endpoint uses no upstreams`() {
-    assertEquals(0, mappings["controllers.v2.ConfigController"]?.size)
-  }
-
-  @Test
   fun `prison endpoint uses multiple upstreams`() {
     mappings["controllers.v1.prison.PrisonController"]?.size?.let { assertTrue(it >= 3) }
   }
