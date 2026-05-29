@@ -292,6 +292,9 @@ authorisation:
     synalogik:
       roles:
         - "synalogik"
+    person-lookup:
+      roles:
+        - "person-lookup"
     obo-unsigned:
       roles:
         - "all-endpoints"

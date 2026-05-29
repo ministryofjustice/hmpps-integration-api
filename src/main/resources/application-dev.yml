@@ -234,7 +234,7 @@ authorisation:
     jaiu-onboarding-optimisation:
       notes: "See client list in Confluence"
       roles:
-        - "status-only"
+        - "person-lookup"
       oboConfig:
         strategy: "entra"
         required: true
