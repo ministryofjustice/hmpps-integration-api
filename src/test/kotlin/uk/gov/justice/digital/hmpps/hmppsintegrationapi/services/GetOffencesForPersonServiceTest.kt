@@ -10,6 +10,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestOffence
@@ -128,13 +129,23 @@ internal class GetOffencesForPersonServiceTest(
       }
 
       it("returns only offences from Nomis when prison filters present ") {
-        val populatedFilters = ConsumerFilters(listOf("ABC"))
+        val populatedFilters = buildRequestContext(filters = ConsumerFilters(listOf("ABC")))
         whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, populatedFilters)).thenReturn(
           Response(
             data = personFromProbationOffenderSearch,
           ),
         )
 
+        whenever(prisonApiGateway.getOffencesForPerson(nomisNumber, populatedFilters)).thenReturn(
+          Response(
+            data =
+              listOf(
+                prisonOffence1,
+                prisonOffence2,
+                prisonOffence3,
+              ),
+          ),
+        )
         val response = getOffencesForPersonService.execute(hmppsId, populatedFilters)
         response.data.shouldBe(
           listOf(

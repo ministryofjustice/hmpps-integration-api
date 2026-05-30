@@ -12,6 +12,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HomeDetentionCurfewDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
@@ -42,7 +43,7 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
     {
       val hmppsId = "A1234AA"
       val nomisNumber = "abc123"
-      val filters = ConsumerFilters(null)
+      val filters = buildRequestContext(filters = ConsumerFilters(null))
       val person = Person(firstName = "Test", lastName = "Name", hmppsId = hmppsId, identifiers = Identifiers(nomisNumber = nomisNumber))
 
       beforeEach {
@@ -461,9 +462,9 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
       }
 
       it("returns null when latest key dates and adjustments are queried and the consumer doesnt have access to the persons prison") {
-        val consumerFilters = ConsumerFilters(prisons = listOf("XYZ"))
+        val requestContext = buildRequestContext(filters = ConsumerFilters(prisons = listOf("XYZ")))
 
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, consumerFilters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, requestContext)).thenReturn(
           Response(
             data = null,
             errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")),
@@ -472,7 +473,7 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
         val result =
           getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(
             hmppsId,
-            consumerFilters,
+            requestContext,
           )
 
         result.data.shouldBe(null)
@@ -480,8 +481,8 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
       }
 
       it("returns latest key dates and adjustments when the consumer does have access to the persons prison") {
-        val consumerFilters = ConsumerFilters(prisons = listOf("MDI"))
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, consumerFilters)).thenReturn(
+        val requestContext = buildRequestContext(filters = ConsumerFilters(prisons = listOf("MDI")))
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, requestContext)).thenReturn(
           Response(
             data = person,
             errors = emptyList(),
@@ -490,7 +491,7 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
         val result =
           getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(
             hmppsId,
-            consumerFilters,
+            requestContext,
           )
 
         result.data.shouldNotBeNull()

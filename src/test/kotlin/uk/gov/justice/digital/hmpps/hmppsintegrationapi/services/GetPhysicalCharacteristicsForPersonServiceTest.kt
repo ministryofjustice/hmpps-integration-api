@@ -31,7 +31,7 @@ internal class GetPhysicalCharacteristicsForPersonServiceTest(
     {
       val hmppsId = "A1234AA"
       val nomisNumber = NomisNumber(hmppsId)
-      val filters = null
+      val requestContext = null
 
       val posPrisoner =
         POSPrisoner(
@@ -88,17 +88,17 @@ internal class GetPhysicalCharacteristicsForPersonServiceTest(
         Mockito.reset(getPersonService)
         Mockito.reset(prisonerOffenderSearchGateway)
 
-        whenever(getPersonService.getNomisNumber(hmppsId = hmppsId, filters = filters)).thenReturn(Response(nomisNumber))
+        whenever(getPersonService.getNomisNumber(hmppsId = hmppsId, requestContext = requestContext)).thenReturn(Response(nomisNumber))
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(hmppsId)).thenReturn(Response(posPrisoner))
       }
 
       it("performs a search according to hmpps Id") {
-        getPhysicalCharacteristicsForPersonService.execute(hmppsId, filters)
-        verify(getPersonService, times(1)).getNomisNumber(hmppsId = hmppsId, filters = filters)
+        getPhysicalCharacteristicsForPersonService.execute(hmppsId, requestContext)
+        verify(getPersonService, times(1)).getNomisNumber(hmppsId = hmppsId, requestContext = requestContext)
       }
 
       it("should return physical charactertistics from gateway") {
-        val result = getPhysicalCharacteristicsForPersonService.execute(hmppsId, filters)
+        val result = getPhysicalCharacteristicsForPersonService.execute(hmppsId, requestContext)
         result.data.shouldBe(physicalCharacteristics)
         result.errors.count().shouldBe(0)
       }
@@ -111,14 +111,14 @@ internal class GetPhysicalCharacteristicsForPersonServiceTest(
               type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
             ),
           )
-        whenever(getPersonService.getNomisNumber(hmppsId = "notfound", filters = filters)).thenReturn(
+        whenever(getPersonService.getNomisNumber(hmppsId = "notfound", requestContext = requestContext)).thenReturn(
           Response(
             data = null,
             errors = errors,
           ),
         )
 
-        val result = getPhysicalCharacteristicsForPersonService.execute(hmppsId = "notfound", filters)
+        val result = getPhysicalCharacteristicsForPersonService.execute(hmppsId = "notfound", requestContext)
         result.data.shouldBe(null)
         result.errors.shouldBe(errors)
       }
@@ -131,14 +131,14 @@ internal class GetPhysicalCharacteristicsForPersonServiceTest(
               type = UpstreamApiError.Type.BAD_REQUEST,
             ),
           )
-        whenever(getPersonService.getNomisNumber(hmppsId = "badRequest", filters = filters)).thenReturn(
+        whenever(getPersonService.getNomisNumber(hmppsId = "badRequest", requestContext = requestContext)).thenReturn(
           Response(
             data = null,
             errors = errors,
           ),
         )
 
-        val result = getPhysicalCharacteristicsForPersonService.execute(hmppsId = "badRequest", filters)
+        val result = getPhysicalCharacteristicsForPersonService.execute(hmppsId = "badRequest", requestContext)
         result.data.shouldBe(null)
         result.errors.shouldBe(errors)
       }
@@ -158,7 +158,7 @@ internal class GetPhysicalCharacteristicsForPersonServiceTest(
           ),
         )
 
-        val result = getPhysicalCharacteristicsForPersonService.execute(hmppsId, filters)
+        val result = getPhysicalCharacteristicsForPersonService.execute(hmppsId, requestContext)
         result.data.shouldBe(null)
         result.errors.shouldBe(errors)
       }

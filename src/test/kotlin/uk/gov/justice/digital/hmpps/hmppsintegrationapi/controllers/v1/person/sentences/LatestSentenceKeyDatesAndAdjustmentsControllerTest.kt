@@ -5,7 +5,9 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doThrow
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.person.SentencesController
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HomeDetentionCurfewDate
@@ -53,7 +56,7 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
 
       beforeTest {
         Mockito.reset(getLatestSentenceKeyDatesAndAdjustmentsForPersonService)
-        whenever(getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId, null)).thenReturn(
+        whenever(getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(eq(hmppsId), any<RequestContext>())).thenReturn(
           Response(
             data =
               LatestSentenceKeyDatesAndAdjustments(
@@ -150,7 +153,7 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
       it("gets the latest sentence key dates and adjustments for a person with the matching ID") {
         mockMvc.performAuthorised(path)
 
-        verify(getLatestSentenceKeyDatesAndAdjustmentsForPersonService, VerificationModeFactory.times(1)).execute(hmppsId, null)
+        verify(getLatestSentenceKeyDatesAndAdjustmentsForPersonService, VerificationModeFactory.times(1)).execute(eq(hmppsId), any<RequestContext>())
       }
 
       it("returns the latest sentence key dates and adjustments for a person with the matching ID") {
@@ -269,7 +272,7 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
       }
 
       it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
-        whenever(getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId, null)).thenReturn(
+        whenever(getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(eq(hmppsId), any<RequestContext>())).thenReturn(
           Response(
             data = null,
             errors =
@@ -289,7 +292,7 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
 
       it("returns a 500 INTERNAL SERVER ERROR status code when upstream api return expected error") {
 
-        whenever(getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId, null)).doThrow(
+        whenever(getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(eq(hmppsId), any<RequestContext>())).doThrow(
           WebClientResponseException(500, "MockError", null, null, null, null),
         )
 

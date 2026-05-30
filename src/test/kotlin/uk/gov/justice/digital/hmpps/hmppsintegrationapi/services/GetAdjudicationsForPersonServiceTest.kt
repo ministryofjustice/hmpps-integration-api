@@ -33,19 +33,19 @@ internal class GetAdjudicationsForPersonServiceTest(
       val hmppsId = prisonerNumber
       val person = Person(firstName = persona.firstName, lastName = persona.lastName, identifiers = persona.identifiers)
       val adjudications = listOf(Adjudication(incidentDetails = IncidentDetailsDto(dateTimeOfIncident = "MockDate")))
-      val filters = null
+      val requestContext = null
 
       beforeEach {
         Mockito.reset(getPersonService)
         Mockito.reset(adjudicationsGateway)
 
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filters)).thenReturn(Response(person))
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, requestContext)).thenReturn(Response(person))
         whenever(adjudicationsGateway.getReportedAdjudicationsForPerson(id = prisonerNumber)).thenReturn(Response(adjudications))
       }
 
       it("performs a search according to hmpps Id") {
-        getAdjudicationsForPersonService.execute(hmppsId, filters)
-        verify(getPersonService, times(1)).getPersonWithPrisonFilter(hmppsId, filters)
+        getAdjudicationsForPersonService.execute(hmppsId, requestContext)
+        verify(getPersonService, times(1)).getPersonWithPrisonFilter(hmppsId, requestContext)
       }
 
       it("should return a list of errors if person not found") {
@@ -56,14 +56,14 @@ internal class GetAdjudicationsForPersonServiceTest(
               type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
             ),
           )
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = "notfound", filters = filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = "notfound", requestContext = requestContext)).thenReturn(
           Response(
             data = null,
             errors = errors,
           ),
         )
 
-        val result = getAdjudicationsForPersonService.execute(hmppsId = "notfound", filters)
+        val result = getAdjudicationsForPersonService.execute(hmppsId = "notfound", requestContext)
         result.data.shouldBe(emptyList())
         result.errors.shouldBe(errors)
       }
@@ -83,13 +83,13 @@ internal class GetAdjudicationsForPersonServiceTest(
           ),
         )
 
-        val result = getAdjudicationsForPersonService.execute(hmppsId, filters)
+        val result = getAdjudicationsForPersonService.execute(hmppsId, requestContext)
         result.data.shouldBe(emptyList())
         result.errors.shouldBe(errors)
       }
 
       it("should return adjudications from gateway") {
-        val result = getAdjudicationsForPersonService.execute(hmppsId, filters)
+        val result = getAdjudicationsForPersonService.execute(hmppsId, requestContext)
         result.data
           .first()
           .incidentDetails

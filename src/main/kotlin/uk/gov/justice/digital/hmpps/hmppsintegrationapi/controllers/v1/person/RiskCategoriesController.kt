@@ -44,7 +44,7 @@ class RiskCategoriesController(
     @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<RiskCategory?> {
-    val response = getRiskCategoriesForPersonService.execute(hmppsId, requestContext?.filters)
+    val response = getRiskCategoriesForPersonService.execute(hmppsId, requestContext)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")

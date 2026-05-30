@@ -11,6 +11,7 @@ import org.springframework.data.web.PagedModel.PageMetadata
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContactRestrictions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -38,7 +39,7 @@ class GetVisitorRestrictionsServiceTest(
       val hmppsId = "A1234AA"
       val prisonId = "ABC"
       val contactId = 123456L
-      val filters = ConsumerFilters(null)
+      val requestContext = buildRequestContext(filters = ConsumerFilters(null))
       val posPrisoner = POSPrisoner(firstName = "Test", lastName = "Person", prisonId = prisonId, prisonerNumber = hmppsId, youthOffender = false)
       val listOfLinkedPrisoners =
         PRLinkedPrisoners(
@@ -108,41 +109,41 @@ class GetVisitorRestrictionsServiceTest(
         Mockito.reset(personalRelationshipsGateway)
         Mockito.reset(getPersonService)
 
-        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Any>(prisonId, filters)).thenReturn(
+        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Any>(prisonId, requestContext.filters)).thenReturn(
           Response(data = null),
         )
 
-        whenever(getPersonService.getPrisoner(hmppsId, filters)).thenReturn(Response(data = posPrisoner.toPersonInPrison(), errors = emptyList()))
+        whenever(getPersonService.getPrisoner(hmppsId, requestContext)).thenReturn(Response(data = posPrisoner.toPersonInPrison(), errors = emptyList()))
       }
 
       it("gets a person using a Hmpps ID") {
         whenever(personalRelationshipsGateway.getLinkedPrisoner(contactId)).thenReturn(Response(data = listOfLinkedPrisoners, errors = emptyList()))
         whenever(personalRelationshipsGateway.getPrisonerContactRestrictions(contactId)).thenReturn(Response(data = prisonerContactRestrictions, errors = emptyList()))
 
-        getVisitorRestrictionsService.execute(hmppsId, contactId, filters)
-        verify(getPersonService, VerificationModeFactory.times(1)).getPrisoner(hmppsId = hmppsId, filters = filters)
+        getVisitorRestrictionsService.execute(hmppsId, contactId, requestContext)
+        verify(getPersonService, VerificationModeFactory.times(1)).getPrisoner(hmppsId = hmppsId, requestContext = requestContext)
       }
 
       it("returns an error from person service when prisoner is not found") {
         val errors = listOf(UpstreamApiError(type = UpstreamApiError.Type.ENTITY_NOT_FOUND, causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH, description = "not found."))
-        whenever(getPersonService.getPrisoner(hmppsId, filters)).thenReturn(Response(data = null, errors = errors))
+        whenever(getPersonService.getPrisoner(hmppsId, requestContext)).thenReturn(Response(data = null, errors = errors))
 
-        val result = getVisitorRestrictionsService.execute(hmppsId, contactId, filters)
+        val result = getVisitorRestrictionsService.execute(hmppsId, contactId, requestContext)
         result.data.shouldBe(null)
         result.errors.shouldBe(errors)
       }
 
       it("returns null when a person in an unapproved prison") {
-        val consumerFilters = ConsumerFilters(prisons = listOf("XYZ"))
+        val requestContext = buildRequestContext(filters = ConsumerFilters(prisons = listOf("XYZ")))
         val wrongPrisonId = "ABC"
 
-        whenever(getPersonService.getPrisoner(hmppsId, consumerFilters)).thenReturn(Response(data = posPrisoner.toPersonInPrison(), errors = emptyList()))
+        whenever(getPersonService.getPrisoner(hmppsId, requestContext)).thenReturn(Response(data = posPrisoner.toPersonInPrison(), errors = emptyList()))
 
-        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<List<PrisonerContactRestrictions>>(wrongPrisonId, consumerFilters)).thenReturn(
+        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<List<PrisonerContactRestrictions>>(wrongPrisonId, requestContext.filters)).thenReturn(
           Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))),
         )
 
-        val response = getVisitorRestrictionsService.execute(hmppsId, contactId, consumerFilters)
+        val response = getVisitorRestrictionsService.execute(hmppsId, contactId, requestContext)
 
         response.data.shouldBe(null)
         response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
@@ -153,7 +154,7 @@ class GetVisitorRestrictionsServiceTest(
 
         whenever(personalRelationshipsGateway.getLinkedPrisoner(contactId)).thenReturn(Response(data = null, errors = errors))
 
-        val response = getVisitorRestrictionsService.execute(hmppsId, contactId, filters)
+        val response = getVisitorRestrictionsService.execute(hmppsId, contactId, requestContext)
 
         response.data.shouldBe(null)
         response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PERSONAL_RELATIONSHIPS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
@@ -169,7 +170,7 @@ class GetVisitorRestrictionsServiceTest(
             contactGlobalRestrictions = contactGlobalRestrictionsResponse.map { it.toContactRestriction() },
           )
 
-        val response = getVisitorRestrictionsService.execute(hmppsId, contactId, filters)
+        val response = getVisitorRestrictionsService.execute(hmppsId, contactId, requestContext)
 
         response.data.shouldBe(expectedMappedResponse)
       }
@@ -189,7 +190,7 @@ class GetVisitorRestrictionsServiceTest(
         whenever(personalRelationshipsGateway.getPrisonerContactRestrictions(contactId)).thenReturn(Response(data = prisonerContactRestrictions, errors = emptyList()))
         whenever(personalRelationshipsGateway.getPrisonerContactRestrictions(scopedPrisonerContactId)).thenReturn(Response(data = prisonerContactRestrictions, errors = emptyList()))
 
-        getVisitorRestrictionsService.execute(hmppsId, contactId, filters)
+        getVisitorRestrictionsService.execute(hmppsId, contactId, requestContext)
         verify(personalRelationshipsGateway, VerificationModeFactory.times(2)).getPrisonerContactRestrictions(Mockito.anyLong())
       }
     },

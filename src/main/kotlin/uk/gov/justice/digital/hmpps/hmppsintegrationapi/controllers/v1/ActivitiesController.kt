@@ -237,7 +237,7 @@ class ActivitiesController(
     @RequestAttribute clientName: String,
     @RequestBody @Valid attendanceUpdateRequests: List<AttendanceUpdateRequest>,
   ): DataResponse<HmppsMessageResponse?> {
-    val response = activitiesQueueService.sendAttendanceUpdateRequest(attendanceUpdateRequests, clientName, requestContext?.filters)
+    val response = activitiesQueueService.sendAttendanceUpdateRequest(attendanceUpdateRequests, clientName, requestContext)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Invalid query parameters.")
@@ -419,7 +419,7 @@ class ActivitiesController(
     @RequestAttribute clientName: String,
     @RequestBody @Valid prisonerAllocationRequest: PrisonerAllocationRequest,
   ): DataResponse<HmppsMessageResponse?> {
-    val response = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, prisonerAllocationRequest, clientName, requestContext?.filters)
+    val response = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, prisonerAllocationRequest, clientName, requestContext)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Invalid query parameters: ${response.errors[0].description}")

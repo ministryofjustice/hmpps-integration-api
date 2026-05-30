@@ -4,12 +4,12 @@ import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetTransactionsForPersonService(
@@ -23,8 +23,9 @@ class GetTransactionsForPersonService(
     accountCode: String,
     startDate: String,
     endDate: String,
-    filters: ConsumerFilters? = null,
+    requestContext: RequestContext? = null,
   ): Response<List<Transaction>?> {
+    val filters = requestContext?.filters
     val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<List<Transaction>>(prisonId, filters)
 
     if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
@@ -35,7 +36,7 @@ class GetTransactionsForPersonService(
       throw ValidationException("Account code must either be 'spends', 'savings', or 'cash'")
     }
 
-    val personResponse = getPersonService.getNomisNumber(hmppsId = hmppsId)
+    val personResponse = getPersonService.getNomisNumber(hmppsId = hmppsId, requestContext)
 
     if (personResponse.errors.isNotEmpty()) {
       return Response(
@@ -57,6 +58,7 @@ class GetTransactionsForPersonService(
         accountCode,
         startDate,
         endDate,
+        requestContext,
       )
 
     if (nomisTransactions.errors.isNotEmpty()) {

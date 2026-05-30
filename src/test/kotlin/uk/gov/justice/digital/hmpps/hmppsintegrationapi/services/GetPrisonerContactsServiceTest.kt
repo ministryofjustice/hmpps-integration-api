@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.data.web.PagedModel
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Contact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
@@ -31,7 +32,7 @@ internal class GetPrisonerContactsServiceTest(
   private val getPrisonerContactsService: GetPrisonerContactsService,
 ) : DescribeSpec({
     val hmppsId = "A1234AA"
-    val filters = ConsumerFilters(null)
+    val requestContext = buildRequestContext(filters = ConsumerFilters(null))
     val page = 1
     val size = 10
     val relationship =
@@ -126,13 +127,13 @@ internal class GetPrisonerContactsServiceTest(
 
     beforeEach {
       Mockito.reset(personalRelationshipsGateway)
-      whenever(getPersonService.getNomisNumber(hmppsId, filters)).thenReturn(Response(data = NomisNumber(hmppsId)))
+      whenever(getPersonService.getNomisNumber(hmppsId, requestContext)).thenReturn(Response(data = NomisNumber(hmppsId)))
     }
 
     it("returns a list of contacts with pagination details") {
       whenever(personalRelationshipsGateway.getContacts(hmppsId, page, size)).thenReturn(Response(data = prPaginatedContactsInstance, errors = emptyList()))
 
-      val result = getPrisonerContactsService.execute(hmppsId, page, size, filters)
+      val result = getPrisonerContactsService.execute(hmppsId, page, size, requestContext)
 
       result.shouldNotBeNull()
       result.shouldBe(Response(data = prPaginatedContactsInstance.toPaginatedPrisonerContacts()))
@@ -141,7 +142,7 @@ internal class GetPrisonerContactsServiceTest(
     it("returns a list of emergency contacts with pagination details") {
       whenever(personalRelationshipsGateway.getContacts(hmppsId, page, size, true)).thenReturn(Response(data = prPaginatedContactsInstance, errors = emptyList()))
 
-      val result = getPrisonerContactsService.execute(hmppsId, page, size, filters, true)
+      val result = getPrisonerContactsService.execute(hmppsId, page, size, requestContext, true)
 
       result.shouldNotBeNull()
       result.shouldBe(Response(data = prPaginatedContactsInstance.toPaginatedPrisonerContacts()))
@@ -150,21 +151,21 @@ internal class GetPrisonerContactsServiceTest(
     it("failed personal relationship call") {
       val err = listOf(UpstreamApiError(UpstreamApi.PERSONAL_RELATIONSHIPS, UpstreamApiError.Type.INTERNAL_SERVER_ERROR))
       whenever(personalRelationshipsGateway.getContacts(hmppsId, page, size)).thenReturn(Response(data = null, errors = err))
-      val result = getPrisonerContactsService.execute(hmppsId, page, size, filters)
+      val result = getPrisonerContactsService.execute(hmppsId, page, size, requestContext)
       result.errors.shouldBe(err)
     }
 
     it("failed prison check call") {
       val err = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "NOMIS number not found"))
-      whenever(getPersonService.getNomisNumber(hmppsId, filters)).thenReturn(Response(data = null, errors = err))
-      val result = getPrisonerContactsService.execute(hmppsId, page, size, filters)
+      whenever(getPersonService.getNomisNumber(hmppsId, requestContext)).thenReturn(Response(data = null, errors = err))
+      val result = getPrisonerContactsService.execute(hmppsId, page, size, requestContext)
       result.errors.shouldBe(err)
     }
 
     it("failed to get prisoners nomis number") {
       val err = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND))
-      whenever(getPersonService.getNomisNumber(hmppsId, filters)).thenReturn(Response(data = NomisNumber(), errors = emptyList()))
-      val result = getPrisonerContactsService.execute(hmppsId, page, size, filters)
+      whenever(getPersonService.getNomisNumber(hmppsId, requestContext)).thenReturn(Response(data = NomisNumber(), errors = emptyList()))
+      val result = getPrisonerContactsService.execute(hmppsId, page, size, requestContext)
       result.errors.shouldBe(err)
     }
   })

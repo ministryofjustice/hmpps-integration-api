@@ -9,6 +9,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesHistoricalAttendance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
@@ -31,7 +32,7 @@ class GetHistoricalAttendancesServiceTest(
       val prisonId = "MDI"
       val startDate = "2023-09-10"
       val endDate = "2023-10-10"
-      val filters = ConsumerFilters(listOf(prisonId))
+      val requestContext = buildRequestContext(filters = ConsumerFilters(listOf(prisonId)))
       val person =
         Person(
           firstName = "John",
@@ -51,13 +52,13 @@ class GetHistoricalAttendancesServiceTest(
       beforeEach {
         Mockito.reset(getPersonService, activitiesGateway)
 
-        whenever(getPersonService.getPersonWithPrisonFilter(prisonerNumber, filters)).thenReturn(Response(data = person))
+        whenever(getPersonService.getPersonWithPrisonFilter(prisonerNumber, requestContext)).thenReturn(Response(data = person))
       }
 
       it("Returns historical attendances") {
         whenever(activitiesGateway.getHistoricalAttendances(prisonerNumber, startDate, endDate, prisonId)).thenReturn(Response(data = listOf(activitiesHistoricalAttendance)))
 
-        val result = getHistoricalAttendancesService.execute(prisonerNumber, startDate, endDate, prisonId, filters)
+        val result = getHistoricalAttendancesService.execute(prisonerNumber, startDate, endDate, prisonId, requestContext)
         result.data.shouldBe(listOf(activitiesHistoricalAttendance.toHistoricalAttendance()))
         result.errors.shouldBeEmpty()
       }
@@ -72,9 +73,9 @@ class GetHistoricalAttendancesServiceTest(
             ),
           )
         whenever(activitiesGateway.getHistoricalAttendances(prisonerNumber, startDate, endDate, prisonId)).thenReturn(Response(data = listOf(activitiesHistoricalAttendance)))
-        whenever(getPersonService.getPersonWithPrisonFilter(prisonerNumber, filters)).thenReturn(Response(data = null, errors = errors))
+        whenever(getPersonService.getPersonWithPrisonFilter(prisonerNumber, requestContext)).thenReturn(Response(data = null, errors = errors))
 
-        val result = getHistoricalAttendancesService.execute(prisonerNumber, startDate, endDate, prisonId, filters)
+        val result = getHistoricalAttendancesService.execute(prisonerNumber, startDate, endDate, prisonId, requestContext)
         result.data.shouldBeNull()
         result.errors.shouldBe(errors)
       }
@@ -90,7 +91,7 @@ class GetHistoricalAttendancesServiceTest(
           )
         whenever(activitiesGateway.getHistoricalAttendances(prisonerNumber, startDate, endDate, prisonId)).thenReturn(Response(data = null, errors = errors))
 
-        val result = getHistoricalAttendancesService.execute(prisonerNumber, startDate, endDate, prisonId, filters)
+        val result = getHistoricalAttendancesService.execute(prisonerNumber, startDate, endDate, prisonId, requestContext)
         result.data.shouldBeNull()
         result.errors.shouldBe(errors)
       }

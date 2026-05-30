@@ -4,6 +4,8 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory.times
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,6 +17,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Contact
@@ -62,7 +65,7 @@ internal class PrisonerContactsControllerTest(
           Mockito.reset(getPrisonerContactsService)
           Mockito.reset(auditService)
 
-          whenever(getPrisonerContactsService.execute(sanitisedHmppsId, page = 1, size = 10, filter = null)).thenReturn(
+          whenever(getPrisonerContactsService.execute(eq(sanitisedHmppsId), eq(1), eq(10), any<RequestContext>(), eq(false))).thenReturn(
             Response(
               data =
                 PaginatedPrisonerContacts(
@@ -132,7 +135,7 @@ internal class PrisonerContactsControllerTest(
 
         it("returns a 404 status code when a person cannot be found in both upstream APIs") {
           val idThatDoesNotExist = "blablabla"
-          whenever(getPrisonerContactsService.execute(idThatDoesNotExist, page = 1, size = 10, filter = null))
+          whenever(getPrisonerContactsService.execute(eq(idThatDoesNotExist), eq(1), eq(10), any<RequestContext>(), eq(false)))
             .thenReturn(notFoundErrorResponse(UpstreamApi.PERSONAL_RELATIONSHIPS))
 
           val result = mockMvc.performAuthorised("$basePath/$idThatDoesNotExist/contacts")
@@ -141,7 +144,7 @@ internal class PrisonerContactsControllerTest(
 
         it("returns a 400 status code when a invalid hmppsId") {
           val idThatDoesNotExist = "blablabla"
-          whenever(getPrisonerContactsService.execute(idThatDoesNotExist, page = 1, size = 10, filter = null)).thenReturn(
+          whenever(getPrisonerContactsService.execute(eq(idThatDoesNotExist), eq(1), eq(10), any<RequestContext>(), eq(false))).thenReturn(
             Response(
               data = null,
               errors =
@@ -160,7 +163,7 @@ internal class PrisonerContactsControllerTest(
 
         it("verify getPrisonerContactsService is called ") {
           mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/contacts")
-          verify(getPrisonerContactsService, times(1)).execute(sanitisedHmppsId, page = 1, size = 10, filter = null)
+          verify(getPrisonerContactsService, times(1)).execute(eq(sanitisedHmppsId), eq(1), eq(10), any<RequestContext>(), eq(false))
         }
 
         it("returns prisoner contacts with the matching ID") {
@@ -222,7 +225,7 @@ internal class PrisonerContactsControllerTest(
         }
 
         it("returns many prisoner contacts with the matching ID") {
-          whenever(getPrisonerContactsService.execute(sanitisedHmppsId, page = 1, size = 10, filter = null)).thenReturn(
+          whenever(getPrisonerContactsService.execute(eq(sanitisedHmppsId), eq(1), eq(10), any<RequestContext>(), eq(false))).thenReturn(
             Response(
               data =
                 PaginatedPrisonerContacts(
@@ -420,7 +423,7 @@ internal class PrisonerContactsControllerTest(
           Mockito.reset(getPrisonerContactsService)
           Mockito.reset(auditService)
 
-          whenever(getPrisonerContactsService.execute(sanitisedHmppsId, page = 1, size = 10, filter = null, emergencyNextOfKinOnly = true)).thenReturn(
+          whenever(getPrisonerContactsService.execute(eq(sanitisedHmppsId), eq(1), eq(10), any<RequestContext>(), eq(true))).thenReturn(
             Response(
               data =
                 PaginatedPrisonerContacts(
@@ -490,7 +493,7 @@ internal class PrisonerContactsControllerTest(
 
         it("returns a 404 status code when a person cannot be found in both upstream APIs") {
           val idThatDoesNotExist = "blablabla"
-          whenever(getPrisonerContactsService.execute(idThatDoesNotExist, page = 1, size = 10, filter = null, emergencyNextOfKinOnly = true))
+          whenever(getPrisonerContactsService.execute(eq(idThatDoesNotExist), eq(1), eq(10), any<RequestContext>(), eq(true)))
             .thenReturn(notFoundErrorResponse(UpstreamApi.PERSONAL_RELATIONSHIPS))
 
           val result = mockMvc.performAuthorised("$basePath/$idThatDoesNotExist/emergency-contacts")
@@ -499,7 +502,7 @@ internal class PrisonerContactsControllerTest(
 
         it("returns a 400 status code when a invalid hmppsId") {
           val idThatDoesNotExist = "blablabla"
-          whenever(getPrisonerContactsService.execute(idThatDoesNotExist, page = 1, size = 10, filter = null, emergencyNextOfKinOnly = true)).thenReturn(
+          whenever(getPrisonerContactsService.execute(eq(idThatDoesNotExist), eq(1), eq(10), any<RequestContext>(), eq(true))).thenReturn(
             Response(
               data = null,
               errors =
@@ -518,7 +521,7 @@ internal class PrisonerContactsControllerTest(
 
         it("verify getPrisonerContactsService is called ") {
           mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/emergency-contacts")
-          verify(getPrisonerContactsService, times(1)).execute(sanitisedHmppsId, page = 1, size = 10, filter = null, emergencyNextOfKinOnly = true)
+          verify(getPrisonerContactsService, times(1)).execute(eq(sanitisedHmppsId), eq(1), eq(10), any<RequestContext>(), eq(true))
         }
 
         it("returns prisoner contacts with the matching ID") {
@@ -580,7 +583,7 @@ internal class PrisonerContactsControllerTest(
         }
 
         it("returns many prisoner contacts with the matching ID") {
-          whenever(getPrisonerContactsService.execute(sanitisedHmppsId, page = 1, size = 10, filter = null, emergencyNextOfKinOnly = true)).thenReturn(
+          whenever(getPrisonerContactsService.execute(eq(sanitisedHmppsId), eq(1), eq(10), any<RequestContext>(), eq(true))).thenReturn(
             Response(
               data =
                 PaginatedPrisonerContacts(

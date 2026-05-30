@@ -42,7 +42,7 @@ class HmppsIdController(
     @PathVariable nomisNumber: String,
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<HmppsId?> {
-    val response = getHmppsIdService.execute(nomisNumber, requestContext?.filters)
+    val response = getHmppsIdService.execute(nomisNumber, requestContext)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Invalid Nomis number: $nomisNumber")
@@ -71,7 +71,7 @@ class HmppsIdController(
     @PathVariable hmppsId: String,
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<NomisNumber?> {
-    val response = getPersonService.getNomisNumber(hmppsId, requestContext?.filters)
+    val response = getPersonService.getNomisNumber(hmppsId, requestContext)
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find nomis number for HMPPS ID: $hmppsId")
     }

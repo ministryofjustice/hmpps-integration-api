@@ -47,7 +47,7 @@ class VisitRestrictionsController(
     @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<List<PersonVisitRestriction>?> {
-    val response = getVisitRestrictionsForPersonService.execute(hmppsId, filters = requestContext?.filters)
+    val response = getVisitRestrictionsForPersonService.execute(hmppsId, requestContext)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Bad request from upstream ${response.errors.first().description}")
@@ -77,7 +77,7 @@ class VisitRestrictionsController(
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<PrisonerContactRestrictions?> {
     val stringifiedContactId = contactId.toLongOrNull() ?: throw ValidationException("Invalid contact ID")
-    val response = getVisitorRestrictionsService.execute(hmppsId, stringifiedContactId, requestContext?.filters)
+    val response = getVisitorRestrictionsService.execute(hmppsId, stringifiedContactId, requestContext)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Bad request from upstream ${response.errors.first().description}")

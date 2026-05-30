@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HealthAndMedicationGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CateringInstruction
@@ -10,7 +11,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HealthAndDi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetHealthAndDietService(
@@ -20,9 +20,9 @@ class GetHealthAndDietService(
 ) {
   fun execute(
     hmppsId: String,
-    filters: ConsumerFilters?,
+    requestContext: RequestContext?,
   ): Response<HealthAndDiet?> {
-    val personResponse = getPersonService.getNomisNumber(hmppsId = hmppsId, filters)
+    val personResponse = getPersonService.getNomisNumber(hmppsId = hmppsId, requestContext)
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = personResponse.errors)
     }
@@ -32,7 +32,7 @@ class GetHealthAndDietService(
         errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND)),
       )
 
-    val smokerResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
+    val smokerResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber, requestContext)
     if (smokerResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = smokerResponse.errors)
     }

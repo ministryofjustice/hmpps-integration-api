@@ -30,7 +30,7 @@ internal class GetPrisonerEducationServiceTest(
     {
       val hmppsId = "A1234AA"
       val nomisNumber = NomisNumber(hmppsId)
-      val filters = null
+      val requestContext = null
       val timestamp = "2020-12-04T10:42:43"
 
       val plpPrisonerEducation =
@@ -68,17 +68,17 @@ internal class GetPrisonerEducationServiceTest(
         Mockito.reset(getPersonService)
         Mockito.reset(plpGateway)
 
-        whenever(getPersonService.getNomisNumber(hmppsId = hmppsId, filters = filters)).thenReturn(Response(nomisNumber))
+        whenever(getPersonService.getNomisNumber(hmppsId = hmppsId, requestContext = requestContext)).thenReturn(Response(nomisNumber))
         whenever(plpGateway.getPrisonerEducation(hmppsId)).thenReturn(Response(plpPrisonerEducation))
       }
 
       it("performs a search according to hmpps Id") {
-        getPrisonerEducationService.execute(hmppsId, filters)
-        verify(getPersonService, times(1)).getNomisNumber(hmppsId = hmppsId, filters = filters)
+        getPrisonerEducationService.execute(hmppsId, requestContext)
+        verify(getPersonService, times(1)).getNomisNumber(hmppsId = hmppsId, requestContext = requestContext)
       }
 
       it("should return prisoner education") {
-        val result = getPrisonerEducationService.execute(hmppsId, filters)
+        val result = getPrisonerEducationService.execute(hmppsId, requestContext)
         result.data.shouldBe(prisonerEducation)
         result.errors.count().shouldBe(0)
       }
@@ -91,14 +91,14 @@ internal class GetPrisonerEducationServiceTest(
               type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
             ),
           )
-        whenever(getPersonService.getNomisNumber(hmppsId = "notfound", filters = filters)).thenReturn(
+        whenever(getPersonService.getNomisNumber(hmppsId = "notfound", requestContext = requestContext)).thenReturn(
           Response(
             data = null,
             errors = errors,
           ),
         )
 
-        val result = getPrisonerEducationService.execute(hmppsId = "notfound", filters)
+        val result = getPrisonerEducationService.execute(hmppsId = "notfound", requestContext)
         result.data.shouldBe(null)
         result.errors.shouldBe(errors)
       }
@@ -111,14 +111,14 @@ internal class GetPrisonerEducationServiceTest(
               type = UpstreamApiError.Type.BAD_REQUEST,
             ),
           )
-        whenever(getPersonService.getNomisNumber(hmppsId = "badRequest", filters = filters)).thenReturn(
+        whenever(getPersonService.getNomisNumber(hmppsId = "badRequest", requestContext = requestContext)).thenReturn(
           Response(
             data = null,
             errors = errors,
           ),
         )
 
-        val result = getPrisonerEducationService.execute(hmppsId = "badRequest", filters)
+        val result = getPrisonerEducationService.execute(hmppsId = "badRequest", requestContext)
         result.data.shouldBe(null)
         result.errors.shouldBe(errors)
       }
@@ -138,7 +138,7 @@ internal class GetPrisonerEducationServiceTest(
           ),
         )
 
-        val result = getPrisonerEducationService.execute(hmppsId, filters)
+        val result = getPrisonerEducationService.execute(hmppsId, requestContext)
         result.data.shouldBe(null)
         result.errors.shouldBe(errors)
       }

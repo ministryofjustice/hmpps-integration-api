@@ -4,6 +4,8 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.mockito.Mockito
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -15,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CommunityOffenderManager
@@ -48,7 +51,7 @@ internal class PersonResponsibleOfficerControllerTest(
       beforeTest {
         Mockito.reset(getPrisonOffenderManagerForPersonService)
         Mockito.reset(getCommunityOffenderManagerForPersonService)
-        whenever(getPrisonOffenderManagerForPersonService.execute(hmppsId, filters)).thenReturn(
+        whenever(getPrisonOffenderManagerForPersonService.execute(eq(hmppsId), any<RequestContext>())).thenReturn(
           Response(
             PrisonOffenderManager(
               forename = "Paul",
@@ -58,7 +61,7 @@ internal class PersonResponsibleOfficerControllerTest(
           ),
         )
 
-        whenever(getCommunityOffenderManagerForPersonService.execute(hmppsId, filters)).thenReturn(
+        whenever(getCommunityOffenderManagerForPersonService.execute(eq(hmppsId), any<RequestContext>())).thenReturn(
           Response(
             CommunityOffenderManager(
               name = PersonResponsibleOfficerName("Helen", surname = "Miller"),
@@ -85,7 +88,7 @@ internal class PersonResponsibleOfficerControllerTest(
 
       it("gets the person responsible officer for a person with the matching ID") {
         mockMvc.performAuthorised(path)
-        verify(getCommunityOffenderManagerForPersonService, times(1)).execute(hmppsId, filters)
+        verify(getCommunityOffenderManagerForPersonService, times(1)).execute(eq(hmppsId), any<RequestContext>())
       }
 
       it("logs audit") {
@@ -130,7 +133,7 @@ internal class PersonResponsibleOfficerControllerTest(
       }
 
       it("returns a 400 when getPrisonOffenderManagerForPersonService returns a bad request") {
-        whenever(getPrisonOffenderManagerForPersonService.execute(hmppsId, filters)).thenReturn(
+        whenever(getPrisonOffenderManagerForPersonService.execute(eq(hmppsId), any<RequestContext>())).thenReturn(
           Response(
             data = null,
             errors = listOf(UpstreamApiError(UpstreamApi.MANAGE_POM_CASE, UpstreamApiError.Type.BAD_REQUEST)),
@@ -142,7 +145,7 @@ internal class PersonResponsibleOfficerControllerTest(
       }
 
       it("returns a 404 when getPrisonOffenderManagerForPersonService returns a not found") {
-        whenever(getPrisonOffenderManagerForPersonService.execute(hmppsId, filters)).thenReturn(
+        whenever(getPrisonOffenderManagerForPersonService.execute(eq(hmppsId), any<RequestContext>())).thenReturn(
           Response(
             data = null,
             errors = listOf(UpstreamApiError(UpstreamApi.MANAGE_POM_CASE, UpstreamApiError.Type.ENTITY_NOT_FOUND)),
@@ -154,7 +157,7 @@ internal class PersonResponsibleOfficerControllerTest(
       }
 
       it("returns a 400 when getCommunityOffenderManagerForPersonService returns a bad request") {
-        whenever(getCommunityOffenderManagerForPersonService.execute(hmppsId, filters)).thenReturn(
+        whenever(getCommunityOffenderManagerForPersonService.execute(eq(hmppsId), any<RequestContext>())).thenReturn(
           Response(
             data = null,
             errors = listOf(UpstreamApiError(UpstreamApi.NDELIUS, UpstreamApiError.Type.BAD_REQUEST)),
@@ -166,7 +169,7 @@ internal class PersonResponsibleOfficerControllerTest(
       }
 
       it("returns a 404 when getCommunityOffenderManagerForPersonService returns a not found") {
-        whenever(getCommunityOffenderManagerForPersonService.execute(hmppsId, filters)).thenReturn(
+        whenever(getCommunityOffenderManagerForPersonService.execute(eq(hmppsId), any<RequestContext>())).thenReturn(
           Response(
             data = null,
             errors = listOf(UpstreamApiError(UpstreamApi.NDELIUS, UpstreamApiError.Type.ENTITY_NOT_FOUND)),

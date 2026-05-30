@@ -41,7 +41,7 @@ class PrisonerBaseLocationController(
     @Parameter(description = "A HMPPS id", example = "A123123") @PathVariable hmppsId: String,
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<PrisonerBaseLocation?> {
-    val response = getPrisonerBaseLocationForPersonService.execute(hmppsId, requestContext?.filters)
+    val response = getPrisonerBaseLocationForPersonService.execute(hmppsId, requestContext)
     when {
       response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND) -> throw EntityNotFoundException("Could not find prisoner base location for id: $hmppsId")
       response.hasError(UpstreamApiError.Type.BAD_REQUEST) -> throw ValidationException("Invalid HMPPS ID: $hmppsId")

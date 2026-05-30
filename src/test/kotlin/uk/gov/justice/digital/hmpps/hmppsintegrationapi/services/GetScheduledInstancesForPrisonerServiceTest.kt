@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivityScheduledInstanceForPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
@@ -33,7 +34,7 @@ class GetScheduledInstancesForPrisonerServiceTest(
     {
       val prisonCode = "MKI"
       val prisonerId = "A1234AA"
-      val filters = ConsumerFilters(prisons = listOf(prisonCode))
+      val requestContext = buildRequestContext(filters = ConsumerFilters(prisons = listOf(prisonCode)))
       val activitiesActivityScheduledInstanceForPerson =
         listOf(
           ActivitiesActivityScheduledInstanceForPrisoner(
@@ -63,14 +64,14 @@ class GetScheduledInstancesForPrisonerServiceTest(
       beforeEach {
         Mockito.reset(consumerPrisonAccessService, activitiesGateway)
 
-        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Any>(prisonCode, filters, upstreamServiceType = UpstreamApi.ACTIVITIES)).thenReturn(Response(data = null, errors = emptyList()))
-        whenever(getPersonService.getNomisNumber(prisonerId, filters)).thenReturn(Response(data = NomisNumber(prisonerId)))
+        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Any>(prisonCode, requestContext.filters, upstreamServiceType = UpstreamApi.ACTIVITIES)).thenReturn(Response(data = null, errors = emptyList()))
+        whenever(getPersonService.getNomisNumber(prisonerId, requestContext)).thenReturn(Response(data = NomisNumber(prisonerId)))
       }
 
       it("should return scheduled instances for a prisoner") {
         whenever(activitiesGateway.getScheduledInstancesForPrisoner(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null)).thenReturn(Response(data = activitiesActivityScheduledInstanceForPerson))
 
-        val result = getScheduledInstancesForPrisonerService.execute(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null, filters)
+        val result = getScheduledInstancesForPrisonerService.execute(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null, requestContext)
         result.data.shouldBe(activityScheduledInstanceForPerson)
         result.errors.shouldBeEmpty()
       }
@@ -85,9 +86,9 @@ class GetScheduledInstancesForPrisonerServiceTest(
             ),
           )
 
-        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Any>(prisonCode, filters, upstreamServiceType = UpstreamApi.ACTIVITIES)).thenReturn(Response(data = null, errors = errors))
+        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Any>(prisonCode, requestContext.filters, upstreamServiceType = UpstreamApi.ACTIVITIES)).thenReturn(Response(data = null, errors = errors))
 
-        val result = getScheduledInstancesForPrisonerService.execute(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null, filters)
+        val result = getScheduledInstancesForPrisonerService.execute(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null, requestContext)
         result.data.shouldBeNull()
         result.errors.shouldBe(errors)
       }
@@ -101,9 +102,9 @@ class GetScheduledInstancesForPrisonerServiceTest(
               description = "Error from getPersonService",
             ),
           )
-        whenever(getPersonService.getNomisNumber(prisonerId, filters)).thenReturn(Response(data = null, errors = errors))
+        whenever(getPersonService.getNomisNumber(prisonerId, requestContext)).thenReturn(Response(data = null, errors = errors))
 
-        val result = getScheduledInstancesForPrisonerService.execute(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null, filters)
+        val result = getScheduledInstancesForPrisonerService.execute(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null, requestContext)
         result.data.shouldBeNull()
         result.errors.shouldBe(errors)
       }
@@ -119,7 +120,7 @@ class GetScheduledInstancesForPrisonerServiceTest(
           )
         whenever(activitiesGateway.getScheduledInstancesForPrisoner(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null)).thenReturn(Response(data = null, errors = errors))
 
-        val result = getScheduledInstancesForPrisonerService.execute(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null, filters)
+        val result = getScheduledInstancesForPrisonerService.execute(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null, requestContext)
         result.data.shouldBeNull()
         result.errors.shouldBe(errors)
       }

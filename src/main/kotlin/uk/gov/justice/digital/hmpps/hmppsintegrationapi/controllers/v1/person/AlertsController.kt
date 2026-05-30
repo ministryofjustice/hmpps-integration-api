@@ -53,7 +53,7 @@ class AlertsController(
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
     @RequestAttribute requestContext: RequestContext?,
   ): PaginatedResponse<Alert> {
-    val response = getAlertsForPersonService.getAlerts(hmppsId, requestContext?.filters, page, perPage)
+    val response = getAlertsForPersonService.getAlerts(hmppsId, requestContext, page, perPage)
     ensureResponse(hmppsId, response)
 
     auditService.createEvent("GET_PERSON_ALERTS", mapOf("hmppsId" to hmppsId))
@@ -80,7 +80,7 @@ class AlertsController(
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
     @RequestAttribute requestContext: RequestContext?,
   ): PaginatedResponse<Alert> {
-    val response = getAlertsForPersonService.getAlerts(hmppsId, requestContext?.filters, page, perPage, true)
+    val response = getAlertsForPersonService.getAlerts(hmppsId, requestContext, page, perPage, true)
 
     ensureResponse(hmppsId, response)
 

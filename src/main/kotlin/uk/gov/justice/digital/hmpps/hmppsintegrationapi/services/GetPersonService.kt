@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFound
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FilterViolationException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.UpstreamApiException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CorePersonRecordGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
@@ -31,7 +32,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffenders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSIdentifierWithPrisonerNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationintegrationepf.LimitedAccess
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.SupervisionStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
@@ -48,10 +48,13 @@ class GetPersonService(
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
   }
 
-  fun execute(hmppsId: String): Response<Person?> {
-    val probationResponse = getProbationResponse(hmppsId)
+  fun execute(
+    hmppsId: String,
+    requestContext: RequestContext? = null,
+  ): Response<Person?> {
+    val probationResponse = getProbationResponse(hmppsId, requestContext)
     if (identifyHmppsId(hmppsId) == IdentifierType.NOMS && probationResponse.data == null) {
-      val prisonResponse = prisonerOffenderSearchGateway.getPrisonOffender(hmppsId)
+      val prisonResponse = prisonerOffenderSearchGateway.getPrisonOffender(hmppsId, requestContext)
       return Response(data = prisonResponse.data?.toPerson(), prisonResponse.errors)
     } else {
       return Response(data = probationResponse.data, errors = probationResponse.errors)
@@ -66,6 +69,7 @@ class GetPersonService(
   fun convert(
     hmppsId: String,
     requiredType: IdentifierType,
+    requestContext: RequestContext? = null,
   ): Response<String?> =
     when (val hmppsIdType = identifyHmppsId(hmppsId)) {
       IdentifierType.UNKNOWN ->
@@ -74,14 +78,17 @@ class GetPersonService(
           errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.BAD_REQUEST, description = "Invalid HMPPS ID: $hmppsId")),
         )
       requiredType -> Response(hmppsId)
-      else -> getUpstreamId(hmppsId, hmppsIdType, requiredType)
+      else -> getUpstreamId(hmppsId, hmppsIdType, requiredType, requestContext)
     }
 
   /**
    * Verifies that a given id exists in its own domain indicated by its format (whether it is a NOMS number or CRN)
    *
    */
-  fun verifyId(id: String): Response<String?> {
+  fun verifyId(
+    id: String,
+    requestContext: RequestContext? = null,
+  ): Response<String?> {
     val hmppsIdType = identifyHmppsId(id)
     if (hmppsIdType == IdentifierType.UNKNOWN) {
       return Response(
@@ -89,7 +96,7 @@ class GetPersonService(
         errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.BAD_REQUEST, description = "Invalid HMPPS ID: $id")),
       )
     }
-    return getUpstreamId(id, hmppsIdType, hmppsIdType)
+    return getUpstreamId(id, hmppsIdType, hmppsIdType, requestContext)
   }
 
   fun trackCPRFailureEvent(
@@ -123,15 +130,16 @@ class GetPersonService(
   private fun prisonAPIPersonId(
     nomisNumber: String,
     requiredType: IdentifierType,
+    requestContext: RequestContext?,
   ): Response<String?> {
-    val prisoner = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
+    val prisoner = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber, requestContext)
     if (prisoner.errors.isNotEmpty()) {
       return Response(data = null, errors = prisoner.errors)
     }
     return if (requiredType == IdentifierType.NOMS) {
       Response(nomisNumber)
     } else {
-      val personOnProbation = deliusGateway.getOffender(nomisNumber)
+      val personOnProbation = deliusGateway.getOffender(nomisNumber, requestContext)
       if (personOnProbation.errors.isNotEmpty()) {
         return Response(data = null, errors = personOnProbation.errors)
       }
@@ -146,8 +154,9 @@ class GetPersonService(
   private fun probationAPIPersonId(
     crn: String,
     requiredType: IdentifierType,
+    requestContext: RequestContext?,
   ): Response<String?> {
-    val personOnProbation = getProbationResponse(crn)
+    val personOnProbation = getProbationResponse(crn, requestContext)
     if (personOnProbation.errors.isNotEmpty()) {
       return Response(
         data = null,
@@ -173,8 +182,9 @@ class GetPersonService(
 
   fun getPersonWithPrisonFilter(
     hmppsId: String,
-    filters: ConsumerFilters?,
+    requestContext: RequestContext?,
   ): Response<Person?> {
+    val filters = requestContext?.filters
     // Error if not a valid id
     val hmppsIdType = identifyHmppsId(hmppsId)
     if (hmppsIdType == IdentifierType.UNKNOWN) {
@@ -185,7 +195,7 @@ class GetPersonService(
     }
 
     // Get a delius person, to get NOMIS number and for response
-    val probationResponse = getProbationResponse(hmppsId)
+    val probationResponse = getProbationResponse(hmppsId, requestContext)
 
     if (probationResponse.errors.isNotEmpty() && !probationResponse.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       return Response(
@@ -207,7 +217,7 @@ class GetPersonService(
       }
 
     // Get the NOMIS person for prison ID and for verifying exist in NOMIS
-    val prisonerResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
+    val prisonerResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber, requestContext)
     if (prisonerResponse.errors.isNotEmpty()) {
       return Response(
         data = null,
@@ -252,13 +262,13 @@ class GetPersonService(
    */
   fun getNomisNumber(
     hmppsId: String,
-    filters: ConsumerFilters? = null,
+    requestContext: RequestContext? = null,
   ): Response<NomisNumber?> {
-    val id = convert(hmppsId, IdentifierType.NOMS)
+    val id = convert(hmppsId, IdentifierType.NOMS, requestContext)
     val nomisNumber = id.data ?: return Response(data = null, errors = id.errors)
 
-    ensurePermittedPrisonerLocation(nomisNumber, filters)
-    ensurePermittedSupervisionStatus(nomisNumber, filters)
+    ensurePermittedPrisonerLocation(nomisNumber, requestContext)
+    ensurePermittedSupervisionStatus(nomisNumber, requestContext)
 
     return Response(
       data = NomisNumber(nomisNumber),
@@ -267,18 +277,22 @@ class GetPersonService(
 
   private fun ensurePermittedSupervisionStatus(
     nomisId: String,
-    filters: ConsumerFilters?,
+    requestContext: RequestContext?,
   ) {
+    val filters = requestContext?.filters
     when {
       filters?.hasSupervisionStatusesFilter() != true -> return
       filters.supervisionStatuses!!.containsAll(setOf("PRISONS", "PROBATION", "NONE")) -> return
-      !filters.supervisionStatuses.contains(getPersonSupervisionStatus(nomisId)) -> {
+      !filters.supervisionStatuses.contains(getPersonSupervisionStatus(nomisId, requestContext)) -> {
         throw FilterViolationException("SupervisionStatus filter restricts access to the requested prisoner's supervision status")
       }
     }
   }
 
-  fun getSupervisionStatus(hmppsId: String?): SupervisionStatus {
+  fun getSupervisionStatus(
+    hmppsId: String?,
+    requestContext: RequestContext? = null,
+  ): SupervisionStatus {
     if (hmppsId == null) {
       logger.info("Cant determine supervision from NDelius because the hmppsId is null. Returning ${SupervisionStatus.UNKNOWN.name}")
       return SupervisionStatus.UNKNOWN
@@ -286,7 +300,7 @@ class GetPersonService(
 
     val offender =
       try {
-        getPersonFromDelius(hmppsId, true).data!!
+        getPersonFromDelius(hmppsId, true, requestContext).data!!
       } catch (ex: Exception) {
         logger.info("Cant determine supervision from NDelius for the hmppsId $hmppsId because NDelius encountered the following error: ${ex.message}.")
         null
@@ -307,7 +321,7 @@ class GetPersonService(
       nomisNumber?.let { nomisNumber ->
         // if there is a nomis id in delius and the call to get the nomis number from prisoner offender search is not found (or returns an error) then return UNKNOWN
         try {
-          getPersonFromPrisonerOffenderSearch(nomisNumber)
+          getPersonFromPrisonerOffenderSearch(nomisNumber, requestContext)
         } catch (ex: Exception) {
           logger.info("Cant determine supervision status from prisoner search for the hmppsId $hmppsId because prisoner search encountered the following error for nomis id $nomisNumber: ${ex.message}. Returning ${SupervisionStatus.UNKNOWN.name}")
           return SupervisionStatus.UNKNOWN
@@ -328,13 +342,16 @@ class GetPersonService(
     return supervisionStatus
   }
 
-  fun getPersonSupervisionStatus(nomisId: String): String {
-    val status = getPersonFromPrisonerOffenderSearch(nomisId)?.status ?: return "UNKNOWN"
+  fun getPersonSupervisionStatus(
+    nomisId: String,
+    requestContext: RequestContext,
+  ): String {
+    val status = getPersonFromPrisonerOffenderSearch(nomisId, requestContext)?.status ?: return "UNKNOWN"
 
     if (status.startsWith("ACTIVE")) {
       return "PRISONS"
     }
-    val probationData = getPersonFromDelius(nomisId, true)
+    val probationData = getPersonFromDelius(nomisId, true, requestContext)
     return when (probationData.data?.underActiveSupervision) {
       true -> "PROBATION"
       false -> "NONE"
@@ -344,10 +361,11 @@ class GetPersonService(
 
   private fun ensurePermittedPrisonerLocation(
     nomisId: String,
-    filters: ConsumerFilters?,
+    requestContext: RequestContext?,
   ) {
+    val filters = requestContext?.filters
     if (filters?.hasPrisonFilter() != true) return
-    val prisoner = getPersonFromPrisonerOffenderSearch(nomisId)
+    val prisoner = getPersonFromPrisonerOffenderSearch(nomisId, requestContext)
 
     val prisonId = prisoner?.prisonId
 
@@ -358,15 +376,17 @@ class GetPersonService(
 
   fun getCombinedDataForPerson(
     hmppsId: String,
-    filters: ConsumerFilters? = null,
+    requestContext: RequestContext? = null,
   ): Response<OffenderSearchResponse?> {
-    val probationResponse = getProbationResponse(hmppsId)
+    val filters = requestContext?.filters
+
+    val probationResponse = getProbationResponse(hmppsId, requestContext)
 
     val prisonerId = hmppsId.takeIf { identifyHmppsId(it) == IdentifierType.NOMS } ?: probationResponse.data?.identifiers?.nomisNumber
 
     var prisonResponse =
       prisonerId?.let { nomsNumber ->
-        prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)
+        prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber, requestContext)
       }
 
     var combinedErrors: List<UpstreamApiError> = probationResponse.errors + (prisonResponse?.errors ?: emptyList())
@@ -376,7 +396,7 @@ class GetPersonService(
       combinedErrors.any { it.type == UpstreamApiError.Type.ENTITY_NOT_FOUND && it.causedBy == UpstreamApi.PRISONER_OFFENDER_SEARCH } &&
       !combinedErrors.any { it.type == UpstreamApiError.Type.BAD_REQUEST }
     ) {
-      findPrisonerIdMerged(prisonerId)?.let { posIdentifier ->
+      findPrisonerIdMerged(prisonerId, requestContext)?.let { posIdentifier ->
         // If called with a NOMS, return a redirect to the merged prisoner number
         if (identifyHmppsId(hmppsId) == IdentifierType.NOMS) {
           return Response(
@@ -390,7 +410,7 @@ class GetPersonService(
           )
         } else {
           // Otherwise call the prisoner search again with the merged prisoner number
-          prisonResponse = prisonerOffenderSearchGateway.getPrisonOffender(posIdentifier.prisonerNumber)
+          prisonResponse = prisonerOffenderSearchGateway.getPrisonOffender(posIdentifier.prisonerNumber, requestContext)
           combinedErrors = probationResponse.errors + prisonResponse.errors
         }
       }
@@ -415,7 +435,10 @@ class GetPersonService(
     return Response(data = data, errors = combinedErrors)
   }
 
-  private fun findPrisonerIdMerged(prisonerId: String): POSIdentifierWithPrisonerNumber? {
+  private fun findPrisonerIdMerged(
+    prisonerId: String,
+    requestContext: RequestContext?,
+  ): POSIdentifierWithPrisonerNumber? {
     val attributeSearchRequest =
       POSAttributeSearchRequest(
         joinType = "AND",
@@ -443,7 +466,7 @@ class GetPersonService(
       )
 
     val response =
-      prisonerOffenderSearchGateway.attributeSearch(attributeSearchRequest)
+      prisonerOffenderSearchGateway.attributeSearch(attributeSearchRequest, requestContext)
 
     return response.data
       ?.content
@@ -458,12 +481,16 @@ class GetPersonService(
       }
   }
 
-  fun getPersonFromNomis(nomisNumber: String) = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
+  fun getPersonFromNomis(
+    nomisNumber: String,
+    requestContext: RequestContext?,
+  ) = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber, requestContext)
 
   fun getPrisoner(
     hmppsId: String,
-    filters: ConsumerFilters?,
+    requestContext: RequestContext?,
   ): Response<PersonInPrison?> {
+    val filters = requestContext?.filters
     val prisonerNomisNumber = getNomisNumber(hmppsId)
 
     if (prisonerNomisNumber.errors.isNotEmpty()) {
@@ -477,7 +504,7 @@ class GetPersonService(
 
     val prisonResponse =
       try {
-        getPersonFromNomis(nomisNumber!!)
+        getPersonFromNomis(nomisNumber!!, requestContext)
       } catch (e: RuntimeException) {
         if (nomisNumber == null) {
           return Response(
@@ -523,10 +550,16 @@ class GetPersonService(
       )
     }
 
-  private fun getProbationResponse(hmppsId: String) = getPersonFromDelius(hmppsId)
+  private fun getProbationResponse(
+    hmppsId: String,
+    requestContext: RequestContext?,
+  ) = getPersonFromDelius(hmppsId, requestContext = requestContext)
 
-  private fun getPersonFromPrisonerOffenderSearch(nomisId: String): POSPrisoner? {
-    val searchResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomisId)
+  private fun getPersonFromPrisonerOffenderSearch(
+    nomisId: String,
+    requestContext: RequestContext?,
+  ): POSPrisoner? {
+    val searchResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomisId, requestContext)
     if (searchResponse.errors.isNotEmpty()) {
       throw UpstreamApiException(UpstreamApi.PRISONER_OFFENDER_SEARCH, searchResponse.errors.first().type, "person", nomisId, searchResponse.errors)
     }
@@ -536,8 +569,9 @@ class GetPersonService(
   fun getPersonFromDelius(
     id: String? = null,
     throwErrors: Boolean? = false,
+    requestContext: RequestContext?,
   ): Response<PersonOnProbation?> {
-    val offender = deliusGateway.getOffender(id)
+    val offender = deliusGateway.getOffender(id, requestContext)
     if (throwErrors == true && offender.errors.isNotEmpty()) {
       throw UpstreamApiException(UpstreamApi.NDELIUS, offender.errors.first().type, "person", id, offender.errors)
     }
@@ -553,6 +587,7 @@ class GetPersonService(
     hmppsId: String,
     thisIdType: IdentifierType,
     requiredType: IdentifierType,
+    requestContext: RequestContext?,
   ): Response<String?> {
     var cprFailureException: Exception? = null
     if (featureFlagConfig.isNotDisabled(CPR_ENABLED)) {
@@ -568,8 +603,8 @@ class GetPersonService(
     // Fall back to using the prison API or probation API to get the person id
     val response =
       when (thisIdType) {
-        IdentifierType.NOMS -> prisonAPIPersonId(hmppsId, requiredType)
-        else -> probationAPIPersonId(hmppsId, requiredType)
+        IdentifierType.NOMS -> prisonAPIPersonId(hmppsId, requiredType, requestContext)
+        else -> probationAPIPersonId(hmppsId, requiredType, requestContext)
       }
     // Track the CPR exception using the fallback response
     cprFailureException?.let {

@@ -44,7 +44,7 @@ class FutureVisitsController(
     @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<List<Visit>?> {
-    val response = getFutureVisitsService.execute(hmppsId, requestContext?.filters)
+    val response = getFutureVisitsService.execute(hmppsId, requestContext)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Bad request from upstream ${response.errors.first().description}")
