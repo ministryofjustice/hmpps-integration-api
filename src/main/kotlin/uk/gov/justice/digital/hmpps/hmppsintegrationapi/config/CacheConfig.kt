@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
+import org.springframework.util.StringUtils
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.GATEWAY_CACHE_ENABLED
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import java.lang.reflect.Method
@@ -56,10 +57,13 @@ class CacheConfig {
 
   @Bean("stringParamsGatewayKeyGenerator")
   fun stringParamsGatewayKeyGenerator(): KeyGenerator = StringParamsGatewayKeyGenerator()
+
+  @Bean("paramsGatewayKeyGenerator")
+  fun paramsGatewayKeyGenerator(): KeyGenerator = ParamsGatewayKeyGenerator()
 }
 
 /**
- * Generates a unique key for the cache so this can be used on all gateway methods
+ * Generates a unique key for the cache using only string params
  */
 class StringParamsGatewayKeyGenerator : KeyGenerator {
   override fun generate(
@@ -70,6 +74,17 @@ class StringParamsGatewayKeyGenerator : KeyGenerator {
     val stringParams = params.filterIsInstance<String>()
     return target.javaClass.name + "_" + method.name + "_" + stringParams.joinToString("_")
   }
+}
+
+/**
+ * Generates a unique key for the cache using all params
+ */
+class ParamsGatewayKeyGenerator : KeyGenerator {
+  override fun generate(
+    target: Any,
+    method: Method,
+    vararg params: Any?,
+  ): Any = target.javaClass.name + "_" + method.name + "_" + StringUtils.arrayToDelimitedString(params, "_")
 }
 
 /**
