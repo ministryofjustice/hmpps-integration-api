@@ -32,7 +32,7 @@ class DynamicRisksController(
   @Operation(
     summary = "Returns dynamic risks associated with a person.",
     description =
-      "Will return a code value in response, he codes are \n" +
+      "Returns the following dynamic risks if applicable for an offender \n" +
         "Suicide/Self Harm (ALSH)\n" +
         "Child Concerns (RCCO)\n" +
         "Safeguarding concerns where a child is at risk from the offender.\n" +
