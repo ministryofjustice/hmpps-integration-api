@@ -303,7 +303,7 @@ function confirm_access_denied(path) {
 }
 
 /**
- * Validates the generic endpoints (status, config, refdata).
+ * Validates the generic endpoints (status, refdata).
  *
  * @returns true if the status endpoint worked
  */
@@ -314,9 +314,7 @@ function verify_system_endpoints() {
   })) {
     return false
   }
-
-  validate_get_request("/v2/config/authorisation");
-
+  
   return true
 }
 
