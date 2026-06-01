@@ -35,16 +35,11 @@ class DynamicRisksController(
       "Returns the following dynamic risks if applicable for an offender \n" +
         "Suicide/Self Harm (ALSH)\n" +
         "Child Concerns (RCCO)\n" +
-        "Safeguarding concerns where a child is at risk from the offender.\n" +
         "Child Protection (RCPR)\n" +
-        "Child is subject to a protection plan/conference\n" +
         "Risk to Vulnerable Adult (RVAD)\n" +
         "Street Gangs (STRG)\n" +
-        "Involved in serious group offending\n" +
         "ViSOR Record (AVIS)\n" +
-        "Subject has a ViSOR record\n" +
         "Weapons (WEAP)\n" +
-        "Known to use/carry weapon\n" +
         "Low Risk of Serious Harm (RLRH)\n" +
         "Medium Risk of Serious Harm (RMRH)\n" +
         "High Risk of Serious Harm (RHRH)\n" +
