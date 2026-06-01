@@ -31,6 +31,18 @@ class DynamicRisksController(
   @GetMapping("{hmppsId}/risks/dynamic")
   @Operation(
     summary = "Returns dynamic risks associated with a person.",
+    description =
+      "Will return a code value in response, here are what the codes mean \n" +
+        "\"RCCO\" = CHILD_CONCERNS_CODE \n" +
+        "\"RCPR\" = CHILD_PROTECTION_CODE \n" +
+        "\"RVAD\" = RISK_TO_VULNERABLE_ADULT_CODE \n" +
+        "\"STRG\" = STREET_GANGS_CODE \n" +
+        "\"AVIS\" = VISOR_CODE \n" +
+        "\"WEAP\" = WEAPONS_CODE \n" +
+        "\"RLRH\" = LOW_ROSH_CODE \n" +
+        "\"RMRH\" = MED_ROSH_CODE \n" +
+        "\"RHRH\" = HIGH_ROSH_CODE \n" +
+        "\"RVRH\" = VERY_HIGH_ROSH_CODE",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found dynamic risks for a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
