@@ -152,11 +152,6 @@ authorisation:
     smoke-test-no-access:
       notes: "Automated post-deployment smoke tests (all access denied)"
       roles:
-    test:
-      notes: "Used for testing queues in dev"
-      roles:
-        - "mappa"
-      queueName: "testclientsubscriberqueue"
     sleach:
       notes: "https://peoplefinder.service.gov.uk/people/steve-leach"
       roles:
