@@ -116,7 +116,7 @@ class PrisonerOffenderSearchGateway(
     }
   }
 
-  @Cacheable(GATEWAY_CACHE, keyGenerator = "gatewayKeyGenerator", condition = "@gatewayCacheEnabled")
+  @Cacheable(GATEWAY_CACHE, keyGenerator = "stringParamsGatewayKeyGenerator", condition = "@gatewayCacheEnabled")
   fun getPrisonOffender(
     nomsNumber: String,
     requestContext: RequestContext? = null,

@@ -293,7 +293,7 @@ class NDeliusGateway(
     )
   }
 
-  @Cacheable(GATEWAY_CACHE, keyGenerator = "gatewayKeyGenerator", condition = "@gatewayCacheEnabled")
+  @Cacheable(GATEWAY_CACHE, keyGenerator = "stringParamsGatewayKeyGenerator", condition = "@gatewayCacheEnabled")
   fun getOffender(
     id: String? = null,
     requestContext: RequestContext? = null,
