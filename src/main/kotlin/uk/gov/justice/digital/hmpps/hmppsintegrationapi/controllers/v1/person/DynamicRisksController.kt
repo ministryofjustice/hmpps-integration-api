@@ -32,17 +32,23 @@ class DynamicRisksController(
   @Operation(
     summary = "Returns dynamic risks associated with a person.",
     description =
-      "Will return a code value in response, here are what the codes mean \n" +
-        "\"RCCO\" = CHILD_CONCERNS_CODE \n" +
-        "\"RCPR\" = CHILD_PROTECTION_CODE \n" +
-        "\"RVAD\" = RISK_TO_VULNERABLE_ADULT_CODE \n" +
-        "\"STRG\" = STREET_GANGS_CODE \n" +
-        "\"AVIS\" = VISOR_CODE \n" +
-        "\"WEAP\" = WEAPONS_CODE \n" +
-        "\"RLRH\" = LOW_ROSH_CODE \n" +
-        "\"RMRH\" = MED_ROSH_CODE \n" +
-        "\"RHRH\" = HIGH_ROSH_CODE \n" +
-        "\"RVRH\" = VERY_HIGH_ROSH_CODE",
+      "Will return a code value in response, he codes are \n" +
+        "Suicide/Self Harm (ALSH)\n" +
+        "Child Concerns (RCCO)\n" +
+        "Safeguarding concerns where a child is at risk from the offender.\n" +
+        "Child Protection (RCPR)\n" +
+        "Child is subject to a protection plan/conference\n" +
+        "Risk to Vulnerable Adult (RVAD)\n" +
+        "Street Gangs (STRG)\n" +
+        "Involved in serious group offending\n" +
+        "ViSOR Record (AVIS)\n" +
+        "Subject has a ViSOR record\n" +
+        "Weapons (WEAP)\n" +
+        "Known to use/carry weapon\n" +
+        "Low Risk of Serious Harm (RLRH)\n" +
+        "Medium Risk of Serious Harm (RMRH)\n" +
+        "High Risk of Serious Harm (RHRH)\n" +
+        "Very High Risk of Serious Harm (RVRH)",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found dynamic risks for a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
