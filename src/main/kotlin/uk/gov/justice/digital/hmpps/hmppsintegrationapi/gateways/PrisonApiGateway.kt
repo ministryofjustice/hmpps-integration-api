@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address
@@ -144,12 +145,15 @@ class PrisonApiGateway(
     }
   }
 
-  fun getSentencesForBooking(id: Int): Response<List<Sentence>> {
+  fun getSentencesForBooking(
+    id: Int,
+    context: RequestContext? = null,
+  ): Response<List<Sentence>> {
     val result =
       webClient.requestList<PrisonApiSentence>(
         HttpMethod.GET,
         "/api/offender-sentences/booking/$id/sentences-and-offences",
-        authenticationHeader(),
+        authenticationHeader(context),
         UpstreamApi.PRISON_API,
       )
     return when (result) {
@@ -514,8 +518,8 @@ class PrisonApiGateway(
     }
   }
 
-  private fun authenticationHeader(): Map<String, String> {
-    val token = hmppsAuthGateway.getClientToken("NOMIS")
+  private fun authenticationHeader(context: RequestContext? = null): Map<String, String> {
+    val token = hmppsAuthGateway.getClientToken("NOMIS", context)
 
     return mapOf(
       "Authorization" to "Bearer $token",
