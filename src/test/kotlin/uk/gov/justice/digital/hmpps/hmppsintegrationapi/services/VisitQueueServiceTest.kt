@@ -22,6 +22,8 @@ import software.amazon.awssdk.services.sqs.SqsAsyncClient
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CancelOutcome
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CancelVisitRequest
@@ -74,7 +76,7 @@ internal class VisitQueueServiceTest(
 
     val hmppsId = "A1234AB"
     val prisonId = "MDI"
-    val filters = ConsumerFilters(prisons = listOf(prisonId))
+    val requestContext = buildRequestContext(filters = ConsumerFilters(prisons = listOf(prisonId)))
     val who = "client-name"
     val visitReference = "ABC-123-DEF-456"
     val visitorContactId = 3L
@@ -164,8 +166,8 @@ internal class VisitQueueServiceTest(
       reset(mockSqsClient, objectMapper)
 
       whenever(hmppsQueueService.findByQueueId("visits")).thenReturn(visitQueue)
-      whenever(getPersonService.getNomisNumber(hmppsId = eq(hmppsId), filters = any<ConsumerFilters>())).thenReturn(Response(NomisNumber(hmppsId)))
-      whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessage>(prisonId, filters)).thenReturn(Response(data = null))
+      whenever(getPersonService.getNomisNumber(hmppsId = eq(hmppsId), requestContext = any<RequestContext>())).thenReturn(Response(NomisNumber(hmppsId)))
+      whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessage>(prisonId, requestContext.filters)).thenReturn(Response(data = null))
       whenever(getVisitInformationByReferenceService.execute(eq(visitReference), any<ConsumerFilters>())).thenReturn(Response(data = visitResponse))
       whenever(personalRelationshipsGateway.getContacts(hmppsId, page = 1, size = 10)).thenReturn(
         Response(
@@ -197,7 +199,7 @@ internal class VisitQueueServiceTest(
 
         whenever(objectMapper.writeValueAsString(any<HmppsMessage>())).thenReturn(messageBody)
 
-        val response = visitQueueService.sendCreateVisit(createVisitRequest, who, filters)
+        val response = visitQueueService.sendCreateVisit(createVisitRequest, who, requestContext)
 
         verify(mockSqsClient).sendMessage(
           argThat<SendMessageRequest> { request: SendMessageRequest? ->
@@ -215,7 +217,7 @@ internal class VisitQueueServiceTest(
 
         val exception =
           shouldThrow<MessageFailedException> {
-            visitQueueService.sendCreateVisit(createVisitRequest, who, filters)
+            visitQueueService.sendCreateVisit(createVisitRequest, who, requestContext)
           }
 
         exception.message.shouldBe("Could not send Visit create to queue")
@@ -223,17 +225,17 @@ internal class VisitQueueServiceTest(
 
       it("return error if getPersonService returns an error") {
         val errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.INTERNAL_SERVER_ERROR, description = "getPersonService returns an error"))
-        whenever(getPersonService.getNomisNumber(hmppsId = hmppsId, filters = filters)).thenReturn(Response(data = null, errors))
+        whenever(getPersonService.getNomisNumber(hmppsId = hmppsId, requestContext = requestContext)).thenReturn(Response(data = null, errors))
 
-        val response = visitQueueService.sendCreateVisit(createVisitRequest, who, filters)
+        val response = visitQueueService.sendCreateVisit(createVisitRequest, who, requestContext)
         response.data.shouldBeNull()
         response.errors.shouldBe(errors)
       }
 
       it("return error if consumerPrisonAccessService returns an error") {
-        val incorrectFilters = ConsumerFilters(prisons = listOf("XYZ"))
+        val incorrectFilters = buildRequestContext(filters = ConsumerFilters(prisons = listOf("XYZ")))
         val errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "consumerPrisonAccessService returns an error"))
-        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessage>(createVisitRequest.prisonId, incorrectFilters)).thenReturn(Response(data = null, errors))
+        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessage>(createVisitRequest.prisonId, incorrectFilters.filters)).thenReturn(Response(data = null, errors))
 
         val response = visitQueueService.sendCreateVisit(createVisitRequest, who, incorrectFilters)
         response.data.shouldBeNull()
@@ -244,7 +246,7 @@ internal class VisitQueueServiceTest(
         val errors = listOf(UpstreamApiError(UpstreamApi.PERSONAL_RELATIONSHIPS, UpstreamApiError.Type.INTERNAL_SERVER_ERROR, description = "personalRelationshipsGateway returns an error"))
         whenever(personalRelationshipsGateway.getContacts(prisonerId = hmppsId, page = 1, size = 10)).thenReturn(Response(data = null, errors))
 
-        val response = visitQueueService.sendCreateVisit(createVisitRequest, who, filters)
+        val response = visitQueueService.sendCreateVisit(createVisitRequest, who, requestContext)
         response.data.shouldBeNull()
         response.errors.shouldBe(errors)
       }
@@ -256,14 +258,14 @@ internal class VisitQueueServiceTest(
           ),
         )
 
-        val response = visitQueueService.sendCreateVisit(createVisitRequest, who, filters)
+        val response = visitQueueService.sendCreateVisit(createVisitRequest, who, requestContext)
         response.data.shouldBeNull()
         response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PERSONAL_RELATIONSHIPS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "No contact found with an ID of $visitorContactId")))
       }
 
       it("return error if visit notes contains notes of the same type") {
         val createVisitRequestWithDuplicateNoteTypes = createVisitRequest.copy(visitNotes = listOf(createVisitRequest.visitNotes[0].copy(), createVisitRequest.visitNotes[0].copy()))
-        val response = visitQueueService.sendCreateVisit(createVisitRequestWithDuplicateNoteTypes, who, filters)
+        val response = visitQueueService.sendCreateVisit(createVisitRequestWithDuplicateNoteTypes, who, requestContext)
         response.data.shouldBeNull()
         response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.BAD_REQUEST, "You cannot have multiple visit notes of the same type")))
       }
@@ -288,7 +290,7 @@ internal class VisitQueueServiceTest(
 
         whenever(objectMapper.writeValueAsString(any<HmppsMessage>())).thenReturn(messageBody)
 
-        val response = visitQueueService.sendUpdateVisit(visitReference, updateVisitRequest, who, filters)
+        val response = visitQueueService.sendUpdateVisit(visitReference, updateVisitRequest, who, requestContext.filters)
 
         verify(mockSqsClient).sendMessage(
           argThat<SendMessageRequest> { request: SendMessageRequest? ->
@@ -306,7 +308,7 @@ internal class VisitQueueServiceTest(
 
         val exception =
           shouldThrow<MessageFailedException> {
-            visitQueueService.sendUpdateVisit(visitReference, updateVisitRequest, who, filters)
+            visitQueueService.sendUpdateVisit(visitReference, updateVisitRequest, who, requestContext.filters)
           }
 
         exception.message.shouldBe("Could not send Visit update to queue")
@@ -314,9 +316,9 @@ internal class VisitQueueServiceTest(
 
       it("return error if getVisitInformationByReferenceService returns an error") {
         val errors = listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.INTERNAL_SERVER_ERROR, description = "getVisitInformationByReferenceService returns an error"))
-        whenever(getVisitInformationByReferenceService.execute(visitReference, filters = filters)).thenReturn(Response(data = null, errors))
+        whenever(getVisitInformationByReferenceService.execute(visitReference, filters = requestContext.filters)).thenReturn(Response(data = null, errors))
 
-        val response = visitQueueService.sendUpdateVisit(visitReference, updateVisitRequest, who, filters)
+        val response = visitQueueService.sendUpdateVisit(visitReference, updateVisitRequest, who, requestContext.filters)
         response.data.shouldBeNull()
         response.errors.shouldBe(errors)
       }
@@ -325,7 +327,7 @@ internal class VisitQueueServiceTest(
         val errors = listOf(UpstreamApiError(UpstreamApi.PERSONAL_RELATIONSHIPS, UpstreamApiError.Type.INTERNAL_SERVER_ERROR, description = "personalRelationshipsGateway returns an error"))
         whenever(personalRelationshipsGateway.getContacts(prisonerId = hmppsId, page = 1, size = 10)).thenReturn(Response(data = null, errors))
 
-        val response = visitQueueService.sendUpdateVisit(visitReference, updateVisitRequest, who, filters)
+        val response = visitQueueService.sendUpdateVisit(visitReference, updateVisitRequest, who, requestContext.filters)
         response.data.shouldBeNull()
         response.errors.shouldBe(errors)
       }
@@ -337,14 +339,14 @@ internal class VisitQueueServiceTest(
           ),
         )
 
-        val response = visitQueueService.sendUpdateVisit(visitReference, updateVisitRequest, who, filters)
+        val response = visitQueueService.sendUpdateVisit(visitReference, updateVisitRequest, who, requestContext.filters)
         response.data.shouldBeNull()
         response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PERSONAL_RELATIONSHIPS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "No contact found with an ID of $visitorContactId")))
       }
 
       it("return error if visit notes contains notes of the same type") {
         val updateVisitRequestWithDuplicateNoteTypes = updateVisitRequest.copy(visitNotes = listOf(updateVisitRequest.visitNotes[0].copy(), updateVisitRequest.visitNotes[0].copy()))
-        val response = visitQueueService.sendUpdateVisit(visitReference, updateVisitRequestWithDuplicateNoteTypes, who, filters)
+        val response = visitQueueService.sendUpdateVisit(visitReference, updateVisitRequestWithDuplicateNoteTypes, who, requestContext.filters)
         response.data.shouldBeNull()
         response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.BAD_REQUEST, "You cannot have multiple visit notes of the same type")))
       }
@@ -367,7 +369,7 @@ internal class VisitQueueServiceTest(
 
         whenever(objectMapper.writeValueAsString(any<HmppsMessage>())).thenReturn(messageBody)
 
-        val response = visitQueueService.sendCancelVisit(visitReference, cancelVisitRequest, who, filters)
+        val response = visitQueueService.sendCancelVisit(visitReference, cancelVisitRequest, who, requestContext.filters)
 
         verify(mockSqsClient).sendMessage(
           argThat<SendMessageRequest> { request: SendMessageRequest? ->
@@ -385,7 +387,7 @@ internal class VisitQueueServiceTest(
 
         val exception =
           shouldThrow<MessageFailedException> {
-            visitQueueService.sendCancelVisit(visitReference, cancelVisitRequest, who, filters)
+            visitQueueService.sendCancelVisit(visitReference, cancelVisitRequest, who, requestContext.filters)
           }
 
         exception.message.shouldBe("Could not send Visit cancellation to queue")
@@ -393,9 +395,9 @@ internal class VisitQueueServiceTest(
 
       it("return error if getVisitInformationByReferenceService returns an error") {
         val errors = listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.INTERNAL_SERVER_ERROR, description = "getVisitInformationByReferenceService returns an error"))
-        whenever(getVisitInformationByReferenceService.execute(visitReference, filters = filters)).thenReturn(Response(data = null, errors))
+        whenever(getVisitInformationByReferenceService.execute(visitReference, filters = requestContext.filters)).thenReturn(Response(data = null, errors))
 
-        val response = visitQueueService.sendCancelVisit(visitReference, cancelVisitRequest, who, filters)
+        val response = visitQueueService.sendCancelVisit(visitReference, cancelVisitRequest, who, requestContext.filters)
         response.data.shouldBeNull()
         response.errors.shouldBe(errors)
       }

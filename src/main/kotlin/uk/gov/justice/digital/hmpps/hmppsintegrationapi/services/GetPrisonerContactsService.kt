@@ -2,12 +2,12 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedPrisonerContacts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetPrisonerContactsService(
@@ -18,10 +18,10 @@ class GetPrisonerContactsService(
     prisonerId: String,
     page: Int,
     size: Int,
-    filter: ConsumerFilters?,
+    requestContext: RequestContext?,
     emergencyNextOfKinOnly: Boolean? = false,
   ): Response<PaginatedPrisonerContacts?> {
-    val personResponse = getPersonService.getNomisNumber(prisonerId, filter)
+    val personResponse = getPersonService.getNomisNumber(prisonerId, requestContext)
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = personResponse.errors)
     }

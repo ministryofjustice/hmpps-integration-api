@@ -46,7 +46,7 @@ class CorePersonRecordGateway(
    * Any exceptions should be thrown at this point and caught at the HmppsIntegrationApiExceptionHandler
    * There is no point passing these exceptions all the way up to a controller just to be thrown and caught by the HmppsIntegrationApiExceptionHandler
    */
-  @Cacheable(GATEWAY_CACHE, keyGenerator = "gatewayKeyGenerator", condition = "@gatewayCacheEnabled")
+  @Cacheable(GATEWAY_CACHE, keyGenerator = "paramsGatewayKeyGenerator", condition = "@gatewayCacheEnabled")
   fun corePersonRecordFor(
     cprType: IdentifierType, // prison or probation
     hmppsId: String,

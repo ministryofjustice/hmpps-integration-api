@@ -34,7 +34,7 @@ internal class GetLanguagesForPersonServiceTest(
     {
       val persona = personInProbationAndNomisPersona
       val person = Person(firstName = persona.firstName, lastName = persona.lastName, identifiers = persona.identifiers)
-      val filters = null
+      val requestContext = null
       val languagesGatewayResponse =
         POSPrisoner(
           firstName = person.firstName,
@@ -72,28 +72,28 @@ internal class GetLanguagesForPersonServiceTest(
         Mockito.reset(getPersonService)
         Mockito.reset(prisonerOffenderSearchGateway)
 
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filters)).thenReturn(Response(person))
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, requestContext)).thenReturn(Response(person))
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)).thenReturn(Response(languagesGatewayResponse))
       }
 
       it("performs a search according to hmpps Id") {
-        getLanguagesForPersonService.execute(hmppsId, filters)
-        verify(getPersonService, times(1)).getPersonWithPrisonFilter(hmppsId, filters)
+        getLanguagesForPersonService.execute(hmppsId, requestContext)
+        verify(getPersonService, times(1)).getPersonWithPrisonFilter(hmppsId, requestContext)
       }
 
       it("should return a person's languages from gateway") {
-        val result = getLanguagesForPersonService.execute(hmppsId, filters)
+        val result = getLanguagesForPersonService.execute(hmppsId, requestContext)
         result.data.shouldBe(languages)
         result.errors.shouldBeEmpty()
       }
 
       it("should return an entity not found error if person found in person service but no nomis number set for them") {
         val personWithoutNomis = Person(firstName = persona.firstName, lastName = persona.lastName, identifiers = Identifiers(nomisNumber = null))
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters = filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, requestContext = requestContext)).thenReturn(
           Response(data = personWithoutNomis),
         )
 
-        val result = getLanguagesForPersonService.execute(hmppsId = hmppsId, filters)
+        val result = getLanguagesForPersonService.execute(hmppsId = hmppsId, requestContext)
         result.data.shouldBe(null)
         result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
       }
@@ -106,14 +106,14 @@ internal class GetLanguagesForPersonServiceTest(
               type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
             ),
           )
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = "notfound", filters = filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = "notfound", requestContext = requestContext)).thenReturn(
           Response(
             data = null,
             errors,
           ),
         )
 
-        val result = getLanguagesForPersonService.execute(hmppsId = "notfound", filters)
+        val result = getLanguagesForPersonService.execute(hmppsId = "notfound", requestContext)
         result.data.shouldBe(null)
         result.errors.shouldBe(errors)
       }
@@ -126,14 +126,14 @@ internal class GetLanguagesForPersonServiceTest(
               type = UpstreamApiError.Type.BAD_REQUEST,
             ),
           )
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = "badRequest", filters = filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = "badRequest", requestContext = requestContext)).thenReturn(
           Response(
             data = null,
             errors,
           ),
         )
 
-        val result = getLanguagesForPersonService.execute(hmppsId = "badRequest", filters)
+        val result = getLanguagesForPersonService.execute(hmppsId = "badRequest", requestContext)
         result.data.shouldBe(null)
         result.errors.shouldBe(errors)
       }
@@ -153,7 +153,7 @@ internal class GetLanguagesForPersonServiceTest(
           ),
         )
 
-        val result = getLanguagesForPersonService.execute(hmppsId, filters)
+        val result = getLanguagesForPersonService.execute(hmppsId, requestContext)
         result.data.shouldBe(null)
         result.errors.shouldBe(errors)
       }

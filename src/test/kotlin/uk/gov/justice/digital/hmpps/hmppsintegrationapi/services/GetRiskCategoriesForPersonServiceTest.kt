@@ -9,6 +9,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
@@ -39,33 +40,33 @@ internal class GetRiskCategoriesForPersonServiceTest(
 
       val nomisNumber = person.identifiers.nomisNumber!!
       val hmppsId = nomisNumber
-      val filters = ConsumerFilters(null)
+      val requestContext = buildRequestContext(filters = ConsumerFilters(null))
 
       beforeEach {
         Mockito.reset(getPersonService)
         Mockito.reset(prisonApiGateway)
 
-        whenever(getPersonService.getNomisNumber(hmppsId, filters)).thenReturn(Response(data = NomisNumber(nomisNumber)))
-        whenever(prisonApiGateway.getRiskCategoriesForPerson(nomisNumber)).thenReturn(Response(data = RiskCategory()))
+        whenever(getPersonService.getNomisNumber(hmppsId, requestContext)).thenReturn(Response(data = NomisNumber(nomisNumber)))
+        whenever(prisonApiGateway.getRiskCategoriesForPerson(nomisNumber, requestContext)).thenReturn(Response(data = RiskCategory()))
       }
 
       it("gets a person from getPersonService") {
-        getRiskCategoriesForPersonService.execute(hmppsId, filters)
-        verify(getPersonService, times(1)).getNomisNumber(hmppsId, filters)
+        getRiskCategoriesForPersonService.execute(hmppsId, requestContext)
+        verify(getPersonService, times(1)).getNomisNumber(hmppsId, requestContext)
       }
 
       it("gets a risk category for a person from ARN API using Nomis") {
-        getRiskCategoriesForPersonService.execute(hmppsId, filters)
-        verify(prisonApiGateway, times(1)).getRiskCategoriesForPerson(nomisNumber)
+        getRiskCategoriesForPersonService.execute(hmppsId, requestContext)
+        verify(prisonApiGateway, times(1)).getRiskCategoriesForPerson(nomisNumber, requestContext)
       }
 
       it("returns a risk category for a person") {
         val riskCategory = RiskCategory(offenderNo = nomisNumber, assessments = listOf(RiskAssessment(classificationCode = "987")))
-        whenever(prisonApiGateway.getRiskCategoriesForPerson(nomisNumber)).thenReturn(
+        whenever(prisonApiGateway.getRiskCategoriesForPerson(nomisNumber, requestContext)).thenReturn(
           Response(data = riskCategory),
         )
 
-        val response = getRiskCategoriesForPersonService.execute(hmppsId, filters)
+        val response = getRiskCategoriesForPersonService.execute(hmppsId, requestContext)
         response.data.shouldBe(riskCategory)
       }
 
@@ -77,14 +78,14 @@ internal class GetRiskCategoriesForPersonServiceTest(
               type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
             ),
           )
-        whenever(prisonApiGateway.getRiskCategoriesForPerson(nomisNumber)).thenReturn(
+        whenever(prisonApiGateway.getRiskCategoriesForPerson(nomisNumber, requestContext)).thenReturn(
           Response(
             data = RiskCategory(),
             errors,
           ),
         )
 
-        val response = getRiskCategoriesForPersonService.execute(hmppsId, filters)
+        val response = getRiskCategoriesForPersonService.execute(hmppsId, requestContext)
         response.errors.shouldBe(errors)
       }
     },

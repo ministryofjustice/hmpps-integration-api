@@ -5,6 +5,8 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CateringInstruction
@@ -47,7 +50,7 @@ internal class HealthAndDietControllerTest(
         beforeTest {
           Mockito.reset(auditService)
           Mockito.reset(getHealthAndDietService)
-          whenever(getHealthAndDietService.execute(hmppsId, filters))
+          whenever(getHealthAndDietService.execute(eq(hmppsId), any<RequestContext>()))
             .thenReturn(
               Response(
                 data =
@@ -72,7 +75,7 @@ internal class HealthAndDietControllerTest(
 
         it("should call get health and diet information service") {
           mockMvc.performAuthorised(path)
-          verify(getHealthAndDietService, VerificationModeFactory.times(1)).execute(hmppsId, filters)
+          verify(getHealthAndDietService, VerificationModeFactory.times(1)).execute(eq(hmppsId), any<RequestContext>())
         }
 
         it("logs audit") {
@@ -127,7 +130,7 @@ internal class HealthAndDietControllerTest(
         }
 
         it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
-          whenever(getHealthAndDietService.execute(hmppsId, filters)).thenReturn(
+          whenever(getHealthAndDietService.execute(eq(hmppsId), any<RequestContext>())).thenReturn(
             Response(
               data = null,
               errors =
@@ -146,7 +149,7 @@ internal class HealthAndDietControllerTest(
         }
 
         it("returns a 400 BAD Request status code when an invalid hmpps id is found in the upstream API") {
-          whenever(getHealthAndDietService.execute(hmppsId, filters)).thenReturn(
+          whenever(getHealthAndDietService.execute(eq(hmppsId), any<RequestContext>())).thenReturn(
             Response(
               data = null,
               errors =

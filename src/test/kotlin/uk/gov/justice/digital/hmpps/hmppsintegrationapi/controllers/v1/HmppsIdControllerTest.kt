@@ -4,7 +4,9 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doThrow
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,6 +18,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsId
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
@@ -43,7 +46,7 @@ internal class HmppsIdControllerTest(
 
       beforeTest {
         Mockito.reset(getHmppsIdService)
-        whenever(getHmppsIdService.execute(nomisNumber)).thenReturn(
+        whenever(getHmppsIdService.execute(eq(nomisNumber), any<RequestContext>())).thenReturn(
           Response(
             data = HmppsId(hmppsId = nomisNumber),
           ),
@@ -58,7 +61,7 @@ internal class HmppsIdControllerTest(
       }
 
       it("returns a 400 Bad request status code when invalid nomis number provided") {
-        whenever(getHmppsIdService.execute(nomisNumber)).thenReturn(
+        whenever(getHmppsIdService.execute(eq(nomisNumber), any<RequestContext>())).thenReturn(
           Response(
             data = null,
             errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.BAD_REQUEST)),
@@ -69,7 +72,7 @@ internal class HmppsIdControllerTest(
       }
 
       it("returns a 404 Not found status code when no HMPPS ID found") {
-        whenever(getHmppsIdService.execute(nomisNumber)).thenReturn(
+        whenever(getHmppsIdService.execute(eq(nomisNumber), any<RequestContext>())).thenReturn(
           Response(
             data = null,
             errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
@@ -82,7 +85,7 @@ internal class HmppsIdControllerTest(
       it("gets the person detail for a person with the matching ID") {
         mockMvc.performAuthorised(path)
 
-        verify(getHmppsIdService, VerificationModeFactory.times(1)).execute(nomisNumber)
+        verify(getHmppsIdService, VerificationModeFactory.times(1)).execute(eq(nomisNumber), any<RequestContext>())
       }
 
       it("logs audit") {
@@ -98,7 +101,7 @@ internal class HmppsIdControllerTest(
 
       it("returns a 500 INTERNAL SERVER ERROR status code when upstream api return expected error") {
 
-        whenever(getHmppsIdService.execute(nomisNumber)).doThrow(
+        whenever(getHmppsIdService.execute(eq(nomisNumber), any<RequestContext>())).doThrow(
           WebClientResponseException(500, "MockError", null, null, null, null),
         )
 
@@ -114,13 +117,12 @@ internal class HmppsIdControllerTest(
 
     describe("GET /v1/hmpps/id/nomis-number/by-hmpps-id/$nomisNumber") {
       val path = "/v1/hmpps/id/nomis-number/by-hmpps-id/$nomisNumber"
-      val consumerFilters = null
 
       beforeTest {
         Mockito.reset(getPersonService)
         Mockito.reset(auditService)
 
-        whenever(getPersonService.getNomisNumber(nomisNumber, consumerFilters)).thenReturn(
+        whenever(getPersonService.getNomisNumber(eq(nomisNumber), any<RequestContext>())).thenReturn(
           Response(
             data = NomisNumber(nomisNumber),
           ),
@@ -135,7 +137,7 @@ internal class HmppsIdControllerTest(
       }
 
       it("returns a 400 Bad request status code when invalid Hmpps ID provided") {
-        whenever(getPersonService.getNomisNumber(nomisNumber, consumerFilters)).thenReturn(
+        whenever(getPersonService.getNomisNumber(eq(nomisNumber), any<RequestContext>())).thenReturn(
           Response(
             data = null,
             errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.BAD_REQUEST)),
@@ -146,7 +148,7 @@ internal class HmppsIdControllerTest(
       }
 
       it("returns a 404 Not found status code when no nomis number found") {
-        whenever(getPersonService.getNomisNumber(nomisNumber, consumerFilters)).thenReturn(
+        whenever(getPersonService.getNomisNumber(eq(nomisNumber), any<RequestContext>())).thenReturn(
           Response(
             data = null,
             errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
@@ -168,7 +170,7 @@ internal class HmppsIdControllerTest(
       }
 
       it("returns a 500 INTERNAL SERVER ERROR status code when upstream api return expected error") {
-        whenever(getPersonService.getNomisNumber(nomisNumber, consumerFilters)).doThrow(
+        whenever(getPersonService.getNomisNumber(eq(nomisNumber), any<RequestContext>())).doThrow(
           WebClientResponseException(500, "MockError", null, null, null, null),
         )
 

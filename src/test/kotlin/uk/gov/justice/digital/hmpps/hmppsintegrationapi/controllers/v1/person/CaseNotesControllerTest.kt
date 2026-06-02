@@ -3,8 +3,12 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.person
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
+import org.assertj.core.api.Assertions.assertThat
 import org.mockito.Mockito
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doThrow
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -17,6 +21,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.filters.CaseNoteFilter
@@ -62,7 +67,7 @@ class CaseNotesControllerTest(
           Mockito.reset(getCaseNotesForPersonService)
           Mockito.reset(auditService)
 
-          whenever(getCaseNotesForPersonService.execute(caseNoteFilter, filters)).thenReturn(
+          whenever(getCaseNotesForPersonService.execute(eq(caseNoteFilter), any<RequestContext>())).thenReturn(
             Response(
               data = pageCaseNote,
               errors = emptyList(),
@@ -82,26 +87,29 @@ class CaseNotesControllerTest(
         it("passes prison filters into service") {
           mockMvc.performAuthorisedWithCN(path, "limited-prisons")
 
+          val requestContext = argumentCaptor<RequestContext>()
           verify(
             getCaseNotesForPersonService,
             times(1),
           ).execute(
-            caseNoteFilter,
-            ConsumerFilters(prisons = listOf("XYZ")),
+            eq(caseNoteFilter),
+            requestContext.capture(),
           )
+          assertThat(requestContext.firstValue.filters).isEqualTo(ConsumerFilters(prisons = listOf("XYZ")))
         }
 
         it("passes case notes filters into service") {
           mockMvc.performAuthorisedWithCN(path, "limited-case-notes")
           val specificCaseNoteFilter = CaseNoteFilter(hmppsId, startDate, endDate, listOf("CAB"))
-
+          val requestContext = argumentCaptor<RequestContext>()
           verify(
             getCaseNotesForPersonService,
             times(1),
           ).execute(
-            specificCaseNoteFilter,
-            ConsumerFilters(prisons = null, caseNotes = listOf("CAB")),
+            eq(specificCaseNoteFilter),
+            requestContext.capture(),
           )
+          assertThat(requestContext.firstValue.filters).isEqualTo(ConsumerFilters(prisons = null, caseNotes = listOf("CAB")))
         }
 
         it("returns the case notes for a person with the matching ID with a 200 status code") {
@@ -113,7 +121,7 @@ class CaseNotesControllerTest(
         }
 
         it("returns a 400 when the upstream service returns bad request") {
-          whenever(getCaseNotesForPersonService.execute(caseNoteFilter, filters)).thenReturn(
+          whenever(getCaseNotesForPersonService.execute(eq(caseNoteFilter), any<RequestContext>())).thenReturn(
             Response(
               data = null,
               errors =
@@ -131,7 +139,7 @@ class CaseNotesControllerTest(
         }
 
         it("returns a 403 when the upstream service provides a 403") {
-          whenever(getCaseNotesForPersonService.execute(caseNoteFilter, filters)).thenReturn(
+          whenever(getCaseNotesForPersonService.execute(eq(caseNoteFilter), any<RequestContext>())).thenReturn(
             Response(
               data = null,
               errors =
@@ -149,7 +157,7 @@ class CaseNotesControllerTest(
         }
 
         it("returns a 404 when the upstream service returns entity not found") {
-          whenever(getCaseNotesForPersonService.execute(caseNoteFilter, filters)).thenReturn(
+          whenever(getCaseNotesForPersonService.execute(eq(caseNoteFilter), any<RequestContext>())).thenReturn(
             Response(
               data = null,
               errors =
@@ -167,7 +175,7 @@ class CaseNotesControllerTest(
         }
 
         it("fails with the appropriate error when an upstream service is down") {
-          whenever(getCaseNotesForPersonService.execute(caseNoteFilter, filters)).doThrow(
+          whenever(getCaseNotesForPersonService.execute(eq(caseNoteFilter), any<RequestContext>())).doThrow(
             WebClientResponseException(500, "MockError", null, null, null, null),
           )
 

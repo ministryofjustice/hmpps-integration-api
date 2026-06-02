@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CancelVisitRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CreateVisitRequest
@@ -39,15 +40,16 @@ class VisitQueueService(
   fun sendCreateVisit(
     createVisitRequest: CreateVisitRequest,
     who: String,
-    filters: ConsumerFilters?,
+    requestContext: RequestContext?,
   ): Response<HmppsMessageResponse?> {
     val checkVisitNoteTypesUniqueResponse = checkVisitNoteTypesUnique(createVisitRequest.visitNotes)
     if (checkVisitNoteTypesUniqueResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = checkVisitNoteTypesUniqueResponse.errors)
     }
+    val filters = requestContext?.filters
 
     val visitPrisonerId = createVisitRequest.prisonerId
-    val personResponse = getPersonService.getNomisNumber(hmppsId = visitPrisonerId, filters = filters)
+    val personResponse = getPersonService.getNomisNumber(hmppsId = visitPrisonerId, requestContext = requestContext)
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = personResponse.errors)
     }

@@ -16,6 +16,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivity
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivityCategory
@@ -69,7 +70,7 @@ class ActivitiesQueueServiceTest(
 
       val prisonId = "MDI"
       val prisonerNumber = "A1234AA"
-      val filters = ConsumerFilters(prisons = listOf(prisonId))
+      val requestContext = buildRequestContext(filters = ConsumerFilters(prisons = listOf(prisonId)))
       val who = "automated-test-client"
 
       val persona = personInProbationAndNomisPersona
@@ -98,9 +99,9 @@ class ActivitiesQueueServiceTest(
       beforeTest {
         reset(objectMapper, consumerPrisonAccessService)
         activitiesQueue.purge()
-        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessageResponse>(prisonId, filters))
+        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessageResponse>(prisonId, requestContext.filters))
           .thenReturn(Response(data = null, errors = emptyList()))
-        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessageResponse>(prisonId, filters, upstreamServiceType = UpstreamApi.ACTIVITIES))
+        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessageResponse>(prisonId, requestContext.filters, upstreamServiceType = UpstreamApi.ACTIVITIES))
           .thenReturn(Response(data = null, errors = emptyList()))
       }
 
@@ -122,10 +123,10 @@ class ActivitiesQueueServiceTest(
         it("successfully adds to message queue") {
           val messageBody = """{"messageId": "1", "eventType": "MarkPrisonerAttendance", "messageAttributes": {}, who: "$who"}"""
           whenever(objectMapper.writeValueAsString(any<HmppsMessage>())).thenReturn(messageBody)
-          whenever(getAttendanceByIdService.execute(attendanceUpdateRequests[0].id, filters))
+          whenever(getAttendanceByIdService.execute(attendanceUpdateRequests[0].id, requestContext))
             .thenReturn(Response(data = Attendance(id = 123456L, scheduledInstanceId = 1L, prisonerNumber, status = "WAITING", editable = true, payable = true)))
 
-          val result = activitiesQueueService.sendAttendanceUpdateRequest(attendanceUpdateRequests = attendanceUpdateRequests, who = who, filters = filters)
+          val result = activitiesQueueService.sendAttendanceUpdateRequest(attendanceUpdateRequests = attendanceUpdateRequests, who = who, requestContext = requestContext)
           result.data.shouldBeTypeOf<HmppsMessageResponse>()
           result.data.message.shouldBe("Attendance update written to queue")
           result.errors.shouldBeEmpty()
@@ -136,7 +137,7 @@ class ActivitiesQueueServiceTest(
           val messageBody = """{"messageId": "1", "eventType": "TestEvent", "messageAttributes": {}}"""
           whenever(objectMapper.writeValueAsString(any<HmppsMessage>())).thenReturn(messageBody)
 
-          val result = activitiesQueueService.sendAttendanceUpdateRequest(attendanceUpdateRequests.map { it.copy(status = "TestEvent") }, who, filters)
+          val result = activitiesQueueService.sendAttendanceUpdateRequest(attendanceUpdateRequests.map { it.copy(status = "TestEvent") }, who, requestContext)
           result.data?.message.shouldBe("Attendance update written to queue")
           result.errors.shouldBeEmpty()
 
@@ -147,27 +148,27 @@ class ActivitiesQueueServiceTest(
           val messageBody = """{"messageId": "1", "eventType": "TestEvent", "messageAttributes": {}}"""
           whenever(objectMapper.writeValueAsString(any<HmppsMessage>())).thenReturn(messageBody)
 
-          val result = activitiesQueueService.sendAttendanceUpdateRequest(attendanceUpdateRequests.map { it.copy(status = "TestEvent") }, who, filters)
+          val result = activitiesQueueService.sendAttendanceUpdateRequest(attendanceUpdateRequests.map { it.copy(status = "TestEvent") }, who, requestContext)
           result.data.shouldBeTypeOf<HmppsMessageResponse>()
           activitiesQueue.messages[0].shouldBe(messageBody)
         }
 
         it("should return errors when consumer does not have access to the prison") {
           val error = UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")
-          whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessageResponse>(prisonId, filters))
+          whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessageResponse>(prisonId, requestContext.filters))
             .thenReturn(Response(data = null, errors = listOf(error)))
 
-          val result = activitiesQueueService.sendAttendanceUpdateRequest(attendanceUpdateRequests = attendanceUpdateRequests, who = who, filters = filters)
+          val result = activitiesQueueService.sendAttendanceUpdateRequest(attendanceUpdateRequests = attendanceUpdateRequests, who = who, requestContext = requestContext)
           result.data.shouldBe(null)
           result.errors.shouldBe(listOf(error))
         }
 
         it("should return errors when getAttendanceByIdService returns errors") {
           val error = UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")
-          whenever(getAttendanceByIdService.execute(attendanceUpdateRequests[0].id, filters))
+          whenever(getAttendanceByIdService.execute(attendanceUpdateRequests[0].id, requestContext))
             .thenReturn(Response(data = null, errors = listOf(error)))
 
-          val result = activitiesQueueService.sendAttendanceUpdateRequest(attendanceUpdateRequests = attendanceUpdateRequests, who = who, filters = filters)
+          val result = activitiesQueueService.sendAttendanceUpdateRequest(attendanceUpdateRequests = attendanceUpdateRequests, who = who, requestContext = requestContext)
           result.data.shouldBe(null)
           result.errors.shouldBe(listOf(error))
         }
@@ -284,9 +285,9 @@ class ActivitiesQueueServiceTest(
         it("successfully adds to message queue") {
           val messageBody = """{"messageId": "1", "eventType": "DeallocatePrisonerFromActivitySchedule", "messageAttributes": {}, who: "$who"}"""
           whenever(objectMapper.writeValueAsString(any<HmppsMessage>())).thenReturn(messageBody)
-          whenever(getScheduleDetailsService.execute(scheduleId, filters)).thenReturn(Response(data = activityScheduleDetailed))
+          whenever(getScheduleDetailsService.execute(scheduleId, requestContext.filters)).thenReturn(Response(data = activityScheduleDetailed))
 
-          val result = activitiesQueueService.sendPrisonerDeallocationRequest(scheduleId, prisonerDeallocationRequest, who, filters)
+          val result = activitiesQueueService.sendPrisonerDeallocationRequest(scheduleId, prisonerDeallocationRequest, who, requestContext.filters)
           result.data.shouldBeTypeOf<HmppsMessageResponse>()
           result.data.message.shouldBe("Prisoner deallocation written to queue")
           result.errors.shouldBeEmpty()
@@ -297,9 +298,9 @@ class ActivitiesQueueServiceTest(
         it("successfully adds to message queue when the schedule does not have an end date") {
           val messageBody = """{"messageId": "1", "eventType": "DeallocatePrisonerFromActivitySchedule", "messageAttributes": {}, who: "$who"}"""
           whenever(objectMapper.writeValueAsString(any<HmppsMessage>())).thenReturn(messageBody)
-          whenever(getScheduleDetailsService.execute(scheduleId, filters)).thenReturn(Response(data = activityScheduleDetailed.copy(endDate = null)))
+          whenever(getScheduleDetailsService.execute(scheduleId, requestContext.filters)).thenReturn(Response(data = activityScheduleDetailed.copy(endDate = null)))
 
-          val result = activitiesQueueService.sendPrisonerDeallocationRequest(scheduleId, prisonerDeallocationRequest, who, filters)
+          val result = activitiesQueueService.sendPrisonerDeallocationRequest(scheduleId, prisonerDeallocationRequest, who, requestContext.filters)
           result.data.shouldBeTypeOf<HmppsMessageResponse>()
           result.data.message.shouldBe("Prisoner deallocation written to queue")
           result.errors.shouldBeEmpty()
@@ -310,51 +311,51 @@ class ActivitiesQueueServiceTest(
           val messageBody = """{"messageId": "1", "eventType": "TestEvent", "messageAttributes": {}}"""
           whenever(objectMapper.writeValueAsString(any<HmppsMessage>())).thenReturn(messageBody)
 
-          val result = activitiesQueueService.sendPrisonerDeallocationRequest(scheduleId, prisonerDeallocationRequest.copy(reasonCode = "TestEvent"), who, filters)
+          val result = activitiesQueueService.sendPrisonerDeallocationRequest(scheduleId, prisonerDeallocationRequest.copy(reasonCode = "TestEvent"), who, requestContext.filters)
           result.data.shouldBeTypeOf<HmppsMessageResponse>()
           activitiesQueue.messages[0].shouldBe(messageBody)
         }
 
         it("returns an error if getScheduleDetailsService has an error") {
           val error = UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.ENTITY_NOT_FOUND, "error from getScheduleDetailsService")
-          whenever(getScheduleDetailsService.execute(scheduleId, filters)).thenReturn(Response(data = null, errors = listOf(error)))
+          whenever(getScheduleDetailsService.execute(scheduleId, requestContext.filters)).thenReturn(Response(data = null, errors = listOf(error)))
 
-          val result = activitiesQueueService.sendPrisonerDeallocationRequest(scheduleId, prisonerDeallocationRequest, who, filters)
+          val result = activitiesQueueService.sendPrisonerDeallocationRequest(scheduleId, prisonerDeallocationRequest, who, requestContext.filters)
           result.data.shouldBeNull()
           result.errors.shouldBe(listOf(error))
         }
 
         it("returns an error if getScheduleDetailsService returns data with no allocations") {
-          whenever(getScheduleDetailsService.execute(scheduleId, filters)).thenReturn(Response(data = activityScheduleDetailed.copy(allocations = emptyList())))
+          whenever(getScheduleDetailsService.execute(scheduleId, requestContext.filters)).thenReturn(Response(data = activityScheduleDetailed.copy(allocations = emptyList())))
 
-          val result = activitiesQueueService.sendPrisonerDeallocationRequest(scheduleId, prisonerDeallocationRequest, who, filters)
+          val result = activitiesQueueService.sendPrisonerDeallocationRequest(scheduleId, prisonerDeallocationRequest, who, requestContext.filters)
           result.data.shouldBeNull()
           result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Allocations not found for prisoner: $prisonerNumber")))
         }
 
         it("returns an error if getScheduleDetailsService returns data with no allocations for the prisoner") {
           val scheduleWithInvalidAllocations = activityScheduleDetailed.copy(allocations = listOf(activityScheduleDetailed.allocations[0].copy(prisonerNumber = "invalidPrisonerNumber")))
-          whenever(getScheduleDetailsService.execute(scheduleId, filters)).thenReturn(Response(data = scheduleWithInvalidAllocations))
+          whenever(getScheduleDetailsService.execute(scheduleId, requestContext.filters)).thenReturn(Response(data = scheduleWithInvalidAllocations))
 
-          val result = activitiesQueueService.sendPrisonerDeallocationRequest(scheduleId, prisonerDeallocationRequest, who, filters)
+          val result = activitiesQueueService.sendPrisonerDeallocationRequest(scheduleId, prisonerDeallocationRequest, who, requestContext.filters)
           result.data.shouldBeNull()
           result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Allocations not found for prisoner: $prisonerNumber")))
         }
 
         it("returns an error if getScheduleDetailsService returns data with no active allocations for the prisoner") {
           val scheduleWithInvalidAllocations = activityScheduleDetailed.copy(allocations = listOf(activityScheduleDetailed.allocations[0].copy(status = "ENDED")))
-          whenever(getScheduleDetailsService.execute(scheduleId, filters)).thenReturn(Response(data = scheduleWithInvalidAllocations))
+          whenever(getScheduleDetailsService.execute(scheduleId, requestContext.filters)).thenReturn(Response(data = scheduleWithInvalidAllocations))
 
-          val result = activitiesQueueService.sendPrisonerDeallocationRequest(scheduleId, prisonerDeallocationRequest, who, filters)
+          val result = activitiesQueueService.sendPrisonerDeallocationRequest(scheduleId, prisonerDeallocationRequest, who, requestContext.filters)
           result.data.shouldBeNull()
           result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Allocations not found for prisoner: $prisonerNumber")))
         }
 
         it("returns an error if passed in end date is after the date of the schedule") {
           val invalidPrisonerDeallocationRequest = prisonerDeallocationRequest.copy(endDate = LocalDate.parse(activityScheduleDetailed.endDate!!).plusDays(1))
-          whenever(getScheduleDetailsService.execute(scheduleId, filters)).thenReturn(Response(data = activityScheduleDetailed))
+          whenever(getScheduleDetailsService.execute(scheduleId, requestContext.filters)).thenReturn(Response(data = activityScheduleDetailed))
 
-          val result = activitiesQueueService.sendPrisonerDeallocationRequest(scheduleId, invalidPrisonerDeallocationRequest, who, filters)
+          val result = activitiesQueueService.sendPrisonerDeallocationRequest(scheduleId, invalidPrisonerDeallocationRequest, who, requestContext.filters)
           result.data.shouldBeNull()
           result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "Passed in end date cannot be after the end date of the schedule: ${activityScheduleDetailed.endDate}")))
         }
@@ -521,17 +522,17 @@ class ActivitiesQueueServiceTest(
         beforeTest {
           Mockito.reset(getPersonService, activitiesGateway, getPrisonPayBandsService)
 
-          whenever(getPersonService.getPrisoner(prisonerNumber, filters)).thenReturn(
+          whenever(getPersonService.getPrisoner(prisonerNumber, requestContext)).thenReturn(
             Response(data = person),
           )
 
           whenever(activitiesGateway.getActivityScheduleById(scheduleId))
             .thenReturn(Response(data = activitiesActivityScheduleDetailed))
 
-          whenever(getPrisonPayBandsService.execute(prisonId, filters))
+          whenever(getPrisonPayBandsService.execute(prisonId, requestContext.filters))
             .thenReturn(Response(data = prisonPayBand))
 
-          whenever(getWaitingListApplicationsByScheduleIdService.execute(scheduleId, filters))
+          whenever(getWaitingListApplicationsByScheduleIdService.execute(scheduleId, requestContext.filters))
             .thenReturn(Response(data = emptyList()))
         }
 
@@ -543,7 +544,7 @@ class ActivitiesQueueServiceTest(
               endDate = LocalDate.now().plusMonths(1),
             )
 
-          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, requestContext)
           result.data.shouldBeNull()
           result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "Allocation start date must not be in the past")))
         }
@@ -556,7 +557,7 @@ class ActivitiesQueueServiceTest(
               endDate = LocalDate.now(),
             )
 
-          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, requestContext)
           result.data.shouldBeNull()
           result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "Allocation start date must be the same as or before the end date")))
         }
@@ -570,7 +571,7 @@ class ActivitiesQueueServiceTest(
               payBandId = 1L,
             )
 
-          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, requestContext)
           result.data.shouldBeNull()
           result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "scheduleInstanceId must be provided when allocation start date is today")))
         }
@@ -588,7 +589,7 @@ class ActivitiesQueueServiceTest(
               scheduleInstanceId = scheduledInstanceId,
             )
 
-          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, requestContext)
           result.data.shouldBeNull()
           result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "scheduleInstanceId not found on schedule")))
         }
@@ -606,7 +607,7 @@ class ActivitiesQueueServiceTest(
               scheduleInstanceId = scheduledInstanceId,
             )
 
-          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, requestContext)
           result.data.shouldBeNull()
           result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "scheduleInstanceId not found on schedule")))
         }
@@ -636,17 +637,17 @@ class ActivitiesQueueServiceTest(
                 ),
             )
 
-          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, requestContext)
           result.data.shouldBeNull()
           result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "Exclusion start time cannot be after custom end time")))
         }
 
         it("Returns an error if the getPersonService returns an error") {
           val errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "error from getPersonService"))
-          whenever(getPersonService.getPrisoner(prisonerNumber, filters))
+          whenever(getPersonService.getPrisoner(prisonerNumber, requestContext))
             .thenReturn(Response(data = null, errors))
 
-          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, requestContext)
           result.data.shouldBeNull()
           result.errors.shouldBe(errors)
         }
@@ -663,26 +664,26 @@ class ActivitiesQueueServiceTest(
           whenever(activitiesGateway.getActivityScheduleById(scheduleId))
             .thenReturn(Response(data = null, errors = listOf(error)))
 
-          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, requestContext)
           result.data.shouldBeNull()
           result.errors.shouldBe(listOf(error))
         }
 
         it("Returns an error if the activities gateway returns an schedule belonging to a different prison to the prisoner") {
-          whenever(getPersonService.getPrisoner(prisonerNumber, filters))
+          whenever(getPersonService.getPrisoner(prisonerNumber, requestContext))
             .thenReturn(Response(data = person.copy(prisonId = "XYZ")))
 
-          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, requestContext)
           result.data.shouldBeNull()
           result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "Unable to allocate prisoner with prisoner number $prisonerNumber, prisoner is not active at prison ${activitiesActivityScheduleDetailed.activity.prisonCode}.")))
         }
 
         it("should return errors when consumer does not have access to the prison for the schedule") {
           val errors = listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))
-          whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessageResponse>(prisonId, filters, upstreamServiceType = UpstreamApi.ACTIVITIES))
+          whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessageResponse>(prisonId, requestContext.filters, upstreamServiceType = UpstreamApi.ACTIVITIES))
             .thenReturn(Response(data = null, errors))
 
-          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, requestContext)
           result.data.shouldBe(null)
           result.errors.shouldBe(errors)
         }
@@ -699,7 +700,7 @@ class ActivitiesQueueServiceTest(
           whenever(activitiesGateway.getActivityScheduleById(scheduleId))
             .thenReturn(Response(data = activitiesActivityScheduleDetailed))
 
-          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, requestContext)
           result.data.shouldBeNull()
           result.errors.shouldBe(listOf(error))
         }
@@ -718,7 +719,7 @@ class ActivitiesQueueServiceTest(
           whenever(activitiesGateway.getActivityScheduleById(scheduleId))
             .thenReturn(Response(data = activitiesActivityScheduleDetailed))
 
-          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, requestContext)
           result.data.shouldBeNull()
           result.errors.shouldBe(listOf(error))
         }
@@ -733,10 +734,10 @@ class ActivitiesQueueServiceTest(
             )
 
           val error = UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "error from prisonPayBandsService")
-          whenever(getPrisonPayBandsService.execute(prisonId, filters))
+          whenever(getPrisonPayBandsService.execute(prisonId, requestContext.filters))
             .thenReturn(Response(data = null, errors = listOf(error)))
 
-          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, requestContext)
           result.data.shouldBeNull()
           result.errors.shouldBe(listOf(error))
         }
@@ -756,7 +757,7 @@ class ActivitiesQueueServiceTest(
           whenever(activitiesGateway.getActivityScheduleById(scheduleId))
             .thenReturn(Response(data = activitiesActivityScheduleDetailed))
 
-          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, requestContext)
           result.data.shouldBeNull()
           result.errors.shouldBe(listOf(error))
         }
@@ -773,7 +774,7 @@ class ActivitiesQueueServiceTest(
           val scheduleEnd = LocalDate.parse(activitiesActivityScheduleDetailed.endDate!!)
           val error = UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "Allocation end date must not be after the activity schedule end date ($scheduleEnd)")
 
-          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, requestContext)
           result.data.shouldBeNull()
           result.errors.shouldBe(listOf(error))
         }
@@ -826,7 +827,7 @@ class ActivitiesQueueServiceTest(
           val description = activitiesActivityScheduleDetailed.description
           val error = UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "Prisoner with $prisonerNumber is already allocated to schedule $description.")
 
-          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, requestContext)
           result.data.shouldBeNull()
           result.errors.shouldBe(listOf(error))
         }
@@ -859,7 +860,7 @@ class ActivitiesQueueServiceTest(
           val exclusion = allocationRequest.exclusions?.get(0)
           val error = UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "No ${exclusion?.timeSlot} slots in week number ${exclusion?.weekNumber} for schedule $scheduleId")
 
-          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, requestContext)
           result.data.shouldBeNull()
           result.errors.shouldBe(listOf(error))
         }
@@ -870,10 +871,10 @@ class ActivitiesQueueServiceTest(
           whenever(activitiesGateway.getActivityScheduleById(scheduleId))
             .thenReturn(Response(data = activitiesActivityScheduleDetailed))
 
-          whenever(getWaitingListApplicationsByScheduleIdService.execute(scheduleId, filters))
+          whenever(getWaitingListApplicationsByScheduleIdService.execute(scheduleId, requestContext.filters))
             .thenReturn(Response(data = null, errors = listOf(error)))
 
-          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, requestContext)
           result.data.shouldBeNull()
           result.errors.shouldBe(listOf(error))
         }
@@ -884,10 +885,10 @@ class ActivitiesQueueServiceTest(
           whenever(activitiesGateway.getActivityScheduleById(scheduleId))
             .thenReturn(Response(data = activitiesActivityScheduleDetailed))
 
-          whenever(getWaitingListApplicationsByScheduleIdService.execute(scheduleId, filters))
+          whenever(getWaitingListApplicationsByScheduleIdService.execute(scheduleId, requestContext.filters))
             .thenReturn(Response(data = listOf(pendingWaitingApplication)))
 
-          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, requestContext)
           result.data.shouldBeNull()
           result.errors.shouldBe(listOf(error))
         }
@@ -899,11 +900,11 @@ class ActivitiesQueueServiceTest(
               pendingWaitingApplication.copy(id = 2L, status = "APPROVED"),
             )
 
-          whenever(getWaitingListApplicationsByScheduleIdService.execute(scheduleId, filters))
+          whenever(getWaitingListApplicationsByScheduleIdService.execute(scheduleId, requestContext.filters))
             .thenReturn(Response(data = approvedWaitingListApplications))
 
           val error = UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.CONFLICT, "Prisoner has more than one APPROVED waiting list application. A prisoner can only have one approved waiting list application.")
-          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, requestContext)
           result.data.shouldBeNull()
           result.errors.shouldBe(listOf(error))
         }
@@ -912,7 +913,7 @@ class ActivitiesQueueServiceTest(
           val messageBody = """{"messageId": "1", "eventType": "AllocatePrisonerFromActivitySchedule", "messageAttributes": {}, who: "$who"}"""
           whenever(objectMapper.writeValueAsString(any<HmppsMessage>())).thenReturn(messageBody)
 
-          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, requestContext)
           result.data.shouldBeTypeOf<HmppsMessageResponse>()
           result.data.message.shouldBe("Prisoner allocation written to queue")
           result.errors.shouldBeEmpty()
@@ -926,7 +927,7 @@ class ActivitiesQueueServiceTest(
 
           val error =
             assertThrows<MessageFailedException> {
-              activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+              activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, requestContext)
             }
 
           activitiesQueue.messages.shouldBeEmpty()
@@ -940,7 +941,7 @@ class ActivitiesQueueServiceTest(
           val messageBody = """{"messageId": "1", "eventType": "AllocatePrisonerFromActivitySchedule", "messageAttributes": {}, who: "$who"}"""
           whenever(objectMapper.writeValueAsString(any<HmppsMessage>())).thenReturn(messageBody)
 
-          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, requestContext)
           result.data.shouldBeTypeOf<HmppsMessageResponse>()
           result.data.message.shouldBe("Prisoner allocation written to queue")
           result.errors.shouldBeEmpty()
@@ -976,7 +977,7 @@ class ActivitiesQueueServiceTest(
           val messageBody = """{"messageId": "1", "eventType": "TestEvent", "messageAttributes": {}}"""
           whenever(objectMapper.writeValueAsString(any<HmppsMessage>())).thenReturn(messageBody)
 
-          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, requestContext)
           result.data.shouldBeTypeOf<HmppsMessageResponse>()
 
           activitiesQueue.messages[0].shouldBe(messageBody)

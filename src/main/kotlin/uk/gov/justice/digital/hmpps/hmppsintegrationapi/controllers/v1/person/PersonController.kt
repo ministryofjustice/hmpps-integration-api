@@ -134,7 +134,7 @@ class PersonController(
       throw ValidationException("Invalid date format. Please use yyyy-MM-dd.")
     }
 
-    val response = getPersonsService.personAttributeSearch(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases, requestContext?.filters)
+    val response = getPersonsService.personAttributeSearch(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases, requestContext)
 
     auditService.createEvent(
       "SEARCH_PERSON",
@@ -163,7 +163,7 @@ class PersonController(
     @PathVariable("hmppsId") hmppsId: String,
     @RequestAttribute requestContext: RequestContext?,
   ): ResponseEntity<DataResponse<OffenderSearchResponse>> {
-    val response = getPersonService.getCombinedDataForPerson(hmppsId, requestContext?.filters)
+    val response = getPersonService.getCombinedDataForPerson(hmppsId, requestContext)
 
     if (response.data == null && response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
@@ -204,7 +204,7 @@ class PersonController(
     @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
   ): PaginatedResponse<ImageMetadata> {
-    val response = getImageMetadataForPersonService.execute(hmppsId, requestContext?.filters)
+    val response = getImageMetadataForPersonService.execute(hmppsId, requestContext)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
@@ -233,7 +233,7 @@ class PersonController(
     @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<PersonName?> {
-    val response = getNameForPersonService.execute(hmppsId, requestContext?.filters)
+    val response = getNameForPersonService.execute(hmppsId, requestContext)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
@@ -262,7 +262,7 @@ class PersonController(
     @Parameter(description = "The HMPPS ID of the prisoner") @PathVariable hmppsId: String,
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<IEPLevel?> {
-    val response = getIEPLevelService.execute(hmppsId, requestContext?.filters)
+    val response = getIEPLevelService.execute(hmppsId, requestContext)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
@@ -291,7 +291,7 @@ class PersonController(
     @Parameter(description = "The HMPPS ID of the prisoner") @PathVariable hmppsId: String,
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<VisitOrders?> {
-    val response = getVisitOrdersForPersonService.execute(hmppsId, requestContext?.filters)
+    val response = getVisitOrdersForPersonService.execute(hmppsId, requestContext)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
@@ -322,7 +322,7 @@ class PersonController(
     @Parameter(description = "The HMPPS ID of the prisoner") @PathVariable hmppsId: String,
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<NumberOfChildren?> {
-    val response = getNumberOfChildrenForPersonService.execute(hmppsId, requestContext?.filters)
+    val response = getNumberOfChildrenForPersonService.execute(hmppsId, requestContext)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
@@ -353,7 +353,7 @@ class PersonController(
     @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<PhysicalCharacteristics?> {
-    val response = getPhysicalCharacteristicsForPersonService.execute(hmppsId, filters = requestContext?.filters)
+    val response = getPhysicalCharacteristicsForPersonService.execute(hmppsId, requestContext)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Bad request from upstream ${response.errors.first().description}")
@@ -382,7 +382,7 @@ class PersonController(
     @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<List<PersonalCareNeed>?> {
-    val response = getCareNeedsForPersonService.execute(hmppsId, filters = requestContext?.filters)
+    val response = getCareNeedsForPersonService.execute(hmppsId, requestContext)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Bad request from upstream ${response.errors.first().description}")
@@ -411,7 +411,7 @@ class PersonController(
     @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<List<Language>?> {
-    val response = getLanguagesForPersonService.execute(hmppsId, filters = requestContext?.filters)
+    val response = getLanguagesForPersonService.execute(hmppsId, requestContext)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Bad request from upstream ${response.errors.first().description}")
@@ -440,7 +440,7 @@ class PersonController(
     @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<PrisonerEducation?> {
-    val response = getPrisonerEducationService.execute(hmppsId, filters = requestContext?.filters)
+    val response = getPrisonerEducationService.execute(hmppsId, requestContext)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Bad request from upstream ${response.errors.first().description}")

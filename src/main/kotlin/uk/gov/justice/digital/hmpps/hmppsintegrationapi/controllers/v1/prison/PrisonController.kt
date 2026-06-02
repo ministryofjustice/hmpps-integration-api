@@ -79,7 +79,7 @@ class PrisonController(
     @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<PersonInPrison?> {
-    val response = getPersonService.getPrisoner(hmppsId, requestContext?.filters)
+    val response = getPersonService.getPrisoner(hmppsId, requestContext)
 
     if (response.hasErrorCausedBy(BAD_REQUEST, causedBy = UpstreamApi.PRISON_API)) {
       throw ValidationException("Invalid HMPPS ID: $hmppsId")

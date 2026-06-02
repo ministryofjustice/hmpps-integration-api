@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.messaging.QueueService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivityScheduleDetailed
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AttendanceUpdateRequest
@@ -36,8 +37,9 @@ class ActivitiesQueueService(
   fun sendAttendanceUpdateRequest(
     attendanceUpdateRequests: List<AttendanceUpdateRequest>,
     who: String,
-    filters: ConsumerFilters?,
+    requestContext: RequestContext?,
   ): Response<HmppsMessageResponse?> {
+    val filters = requestContext?.filters
     for (attendanceUpdateRequest in attendanceUpdateRequests) {
       if (attendanceUpdateRequest.status == "TestEvent") {
         val testMessage = attendanceUpdateRequests.toTestMessage(actionedBy = who)
@@ -51,7 +53,7 @@ class ActivitiesQueueService(
         return consumerPrisonFilterCheck
       }
 
-      val attendanceRecordResponse = getAttendanceByIdService.execute(attendanceUpdateRequest.id, filters)
+      val attendanceRecordResponse = getAttendanceByIdService.execute(attendanceUpdateRequest.id, requestContext)
       if (attendanceRecordResponse.errors.isNotEmpty()) {
         return Response(data = null, errors = attendanceRecordResponse.errors)
       }
@@ -100,8 +102,9 @@ class ActivitiesQueueService(
     scheduleId: Long,
     prisonerAllocationRequest: PrisonerAllocationRequest,
     who: String,
-    filters: ConsumerFilters?,
+    requestContext: RequestContext?,
   ): Response<HmppsMessageResponse?> {
+    val filters = requestContext?.filters
     if (prisonerAllocationRequest.testEvent == "TestEvent") {
       val testMessage = prisonerAllocationRequest.toTestMessage(actionedBy = who)
       writeMessageToQueue(testMessage, "Could not send prisoner allocation to queue")
@@ -115,7 +118,7 @@ class ActivitiesQueueService(
     validateScheduleInstanceIfToday(prisonerAllocationRequest, today)?.let { return it }
     validateExclusionTimes(prisonerAllocationRequest)?.let { return it }
 
-    val personResponse = getPersonService.getPrisoner(prisonerAllocationRequest.prisonerNumber, filters)
+    val personResponse = getPersonService.getPrisoner(prisonerAllocationRequest.prisonerNumber, requestContext)
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = personResponse.errors)
     }

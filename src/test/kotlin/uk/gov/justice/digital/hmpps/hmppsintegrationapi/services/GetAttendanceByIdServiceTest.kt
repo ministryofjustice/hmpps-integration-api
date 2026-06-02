@@ -9,6 +9,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesAttendance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesAttendanceHistory
@@ -30,7 +31,7 @@ class GetAttendanceByIdServiceTest(
   private val getAttendanceByIdService: GetAttendanceByIdService,
 ) : DescribeSpec(
     {
-      val filters = ConsumerFilters(prisons = listOf("MDI"))
+      val requestContext = buildRequestContext(filters = ConsumerFilters(prisons = listOf("MDI")))
       val prisonerNumber = "A1234AA"
       val attendanceId = 123456L
       val activitiesAttendanceReason =
@@ -91,9 +92,9 @@ class GetAttendanceByIdServiceTest(
 
       it("should return an attendance record") {
         whenever(activitiesGateway.getAttendanceById(attendanceId)).thenReturn(Response(data = activitiesAttendance))
-        whenever(getPersonService.getPersonWithPrisonFilter(prisonerNumber, filters)).thenReturn(Response(data = person))
+        whenever(getPersonService.getPersonWithPrisonFilter(prisonerNumber, requestContext)).thenReturn(Response(data = person))
 
-        val result = getAttendanceByIdService.execute(attendanceId, filters)
+        val result = getAttendanceByIdService.execute(attendanceId, requestContext)
         result.data.shouldBe(activitiesAttendance.toAttendance())
         result.errors.shouldBeEmpty()
       }
@@ -109,7 +110,7 @@ class GetAttendanceByIdServiceTest(
           )
         whenever(activitiesGateway.getAttendanceById(attendanceId)).thenReturn(Response(data = null, errors = errors))
 
-        val result = getAttendanceByIdService.execute(attendanceId, filters)
+        val result = getAttendanceByIdService.execute(attendanceId, requestContext)
         result.data.shouldBeNull()
         result.errors.shouldBe(errors)
       }
@@ -117,7 +118,7 @@ class GetAttendanceByIdServiceTest(
       it("should return an error if gateway returns no data") {
         whenever(activitiesGateway.getAttendanceById(attendanceId)).thenReturn(Response(data = null))
 
-        val result = getAttendanceByIdService.execute(attendanceId, filters)
+        val result = getAttendanceByIdService.execute(attendanceId, requestContext)
         result.data.shouldBeNull()
         result.errors.shouldBe(
           listOf(
@@ -139,9 +140,9 @@ class GetAttendanceByIdServiceTest(
             ),
           )
         whenever(activitiesGateway.getAttendanceById(attendanceId)).thenReturn(Response(data = activitiesAttendance))
-        whenever(getPersonService.getPersonWithPrisonFilter(prisonerNumber, filters)).thenReturn(Response(data = null, errors = errors))
+        whenever(getPersonService.getPersonWithPrisonFilter(prisonerNumber, requestContext)).thenReturn(Response(data = null, errors = errors))
 
-        val result = getAttendanceByIdService.execute(attendanceId, filters)
+        val result = getAttendanceByIdService.execute(attendanceId, requestContext)
         result.data.shouldBeNull()
         result.errors.shouldBe(errors)
       }

@@ -44,7 +44,7 @@ class ProtectedCharacteristicsController(
     @Parameter(description = "The HMPPS ID of the person", example = "G2996UX") @PathVariable hmppsId: String,
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<PersonProtectedCharacteristics?> {
-    val response = getProtectedCharacteristicsService.execute(hmppsId, requestContext?.filters)
+    val response = getProtectedCharacteristicsService.execute(hmppsId, requestContext)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")

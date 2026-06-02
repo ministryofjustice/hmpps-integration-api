@@ -15,6 +15,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.autoconfigure.json.JsonTest
 import org.springframework.test.context.ActiveProfiles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
@@ -40,7 +41,7 @@ class GetProtectedCharacteristicsServiceTest {
 
   val prisonApiGateway: PrisonApiGateway = mock()
   val hmppsId: String = "A1234AA"
-  val filters = null
+  val requestContext = null
 
   var mockOffender: Offender = Offender("John", "Smith", otherIds = OtherIds(nomsNumber = "mockNomsNumber"), age = 35, gender = "Male", offenderProfile = OffenderProfile(sexualOrientation = "Unknown", ethnicity = "British", nationality = "British", religion = "None", disabilities = emptyList()))
   var mockPrisonOffender: POSPrisoner = POSPrisoner(firstName = "John", lastName = "Smith", maritalStatus = "Widowed", bookingId = "bookingId", youthOffender = false, prisonId = "ABC")
@@ -59,7 +60,7 @@ class GetProtectedCharacteristicsServiceTest {
   @Test
   fun `invalid hmpps id return bad request`() {
     whenever(getPersonService.identifyHmppsId(hmppsId)).thenReturn(GetPersonService.IdentifierType.UNKNOWN)
-    val result = service.execute(hmppsId, filters)
+    val result = service.execute(hmppsId, requestContext)
 
     result.errors.shouldHaveSize(1)
     result.errors
@@ -71,7 +72,7 @@ class GetProtectedCharacteristicsServiceTest {
   @Test
   fun `Probation offender search return errors, return error`() {
     whenever(deliusGateway.getOffender(hmppsId)).thenReturn(Response<Offender?>(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NDELIUS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "MockError"))))
-    val result = service.execute(hmppsId, filters)
+    val result = service.execute(hmppsId, requestContext)
 
     verifyNoInteractions(prisonerOffenderSearchGateway)
     verifyNoInteractions(prisonApiGateway)
@@ -96,7 +97,7 @@ class GetProtectedCharacteristicsServiceTest {
     val mockOffender: Offender = Offender("John", "Smith", otherIds = OtherIds(), age = 35, gender = "Male", offenderProfile = OffenderProfile(sexualOrientation = "Unknown", ethnicity = "British", nationality = "British", religion = "None", disabilities = emptyList()))
     whenever(deliusGateway.getOffender(hmppsId)).thenReturn(Response<Offender?>(data = mockOffender, errors = emptyList()))
 
-    val result = service.execute(hmppsId, filters)
+    val result = service.execute(hmppsId, requestContext)
 
     verifyNoInteractions(prisonerOffenderSearchGateway)
     verifyNoInteractions(prisonApiGateway)
@@ -119,11 +120,11 @@ class GetProtectedCharacteristicsServiceTest {
 
     whenever(deliusGateway.getOffender(hmppsId)).thenReturn(Response(data = mockOffender, errors = emptyList()))
     whenever(prisonerOffenderSearchGateway.getPrisonOffender(mockOffender.otherIds.nomsNumber!!)).thenReturn(Response(data = mockPrisonOffender))
-    whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<PersonProtectedCharacteristics>("ABC", filters)).thenReturn(
+    whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<PersonProtectedCharacteristics>("ABC", requestContext)).thenReturn(
       Response(data = null, errors = emptyList()),
     )
 
-    val result = service.execute(hmppsId, filters)
+    val result = service.execute(hmppsId, requestContext)
 
     verifyNoInteractions(prisonApiGateway)
     result.data.shouldNotBeNull()
@@ -144,11 +145,11 @@ class GetProtectedCharacteristicsServiceTest {
     whenever(deliusGateway.getOffender(hmppsId)).thenReturn(Response(data = mockOffender, errors = emptyList()))
     whenever(prisonerOffenderSearchGateway.getPrisonOffender(mockOffender.otherIds.nomsNumber!!)).thenReturn(Response(data = mockPrisonOffender))
     whenever(prisonApiGateway.getReasonableAdjustments(mockPrisonOffender.bookingId!!)).thenReturn(Response(data = listOf(mockReasonableAdjustment)))
-    whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<PersonProtectedCharacteristics>("ABC", filters)).thenReturn(
+    whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<PersonProtectedCharacteristics>("ABC", requestContext)).thenReturn(
       Response(data = null, errors = emptyList()),
     )
 
-    val result = service.execute(hmppsId, filters)
+    val result = service.execute(hmppsId, requestContext)
 
     result.data.shouldNotBeNull()
     result.errors.shouldHaveSize(0)
@@ -170,14 +171,16 @@ class GetProtectedCharacteristicsServiceTest {
 
   @Test
   fun `return all expected data when approved prison`() {
-    whenever(deliusGateway.getOffender(hmppsId)).thenReturn(Response(data = mockOffender, errors = emptyList()))
-    whenever(prisonerOffenderSearchGateway.getPrisonOffender(mockOffender.otherIds.nomsNumber!!)).thenReturn(Response(data = mockPrisonOffender))
-    whenever(prisonApiGateway.getReasonableAdjustments(mockPrisonOffender.bookingId!!)).thenReturn(Response(data = listOf(mockReasonableAdjustment)))
+    val requestContext = buildRequestContext(filters = ConsumerFilters(listOf("ABC")))
+
+    whenever(deliusGateway.getOffender(hmppsId, requestContext)).thenReturn(Response(data = mockOffender, errors = emptyList()))
+    whenever(prisonerOffenderSearchGateway.getPrisonOffender(mockOffender.otherIds.nomsNumber!!, requestContext)).thenReturn(Response(data = mockPrisonOffender))
+    whenever(prisonApiGateway.getReasonableAdjustments(mockPrisonOffender.bookingId!!, requestContext)).thenReturn(Response(data = listOf(mockReasonableAdjustment)))
     whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<PersonProtectedCharacteristics>("ABC", filters = ConsumerFilters(listOf("ABC")))).thenReturn(
       Response(data = null, errors = emptyList()),
     )
 
-    val result = service.execute(hmppsId, filters = ConsumerFilters(listOf("ABC")))
+    val result = service.execute(hmppsId, requestContext = buildRequestContext(filters = ConsumerFilters(listOf("ABC"))))
 
     result.data.shouldNotBeNull()
     result.errors.shouldHaveSize(0)
@@ -200,17 +203,17 @@ class GetProtectedCharacteristicsServiceTest {
   @Test
   fun `returns null when protected characteristics are requested from an unapproved prison`() {
     val wrongPrisonId = "XYZ"
-    val filters = ConsumerFilters(listOf("ABC"))
+    val requestContext = buildRequestContext(filters = ConsumerFilters(listOf("ABC")))
     val mockPrisonOffenderInWrongPrison = POSPrisoner(firstName = "John", lastName = "Smith", maritalStatus = "Widowed", bookingId = "bookingId", prisonId = wrongPrisonId, youthOffender = false)
-    whenever(deliusGateway.getOffender(hmppsId)).thenReturn(Response(data = mockOffender, errors = emptyList()))
-    whenever(prisonerOffenderSearchGateway.getPrisonOffender(mockOffender.otherIds.nomsNumber!!)).thenReturn(Response(data = mockPrisonOffenderInWrongPrison))
-    whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<PersonProtectedCharacteristics>(wrongPrisonId, filters)).thenReturn(
+    whenever(deliusGateway.getOffender(hmppsId, requestContext)).thenReturn(Response(data = mockOffender, errors = emptyList()))
+    whenever(prisonerOffenderSearchGateway.getPrisonOffender(mockOffender.otherIds.nomsNumber!!, requestContext)).thenReturn(Response(data = mockPrisonOffenderInWrongPrison))
+    whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<PersonProtectedCharacteristics>(wrongPrisonId, requestContext.filters)).thenReturn(
       Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))),
     )
 
-    val result = service.execute(hmppsId, filters)
+    val result = service.execute(hmppsId, requestContext)
 
-    verify(consumerPrisonAccessService, VerificationModeFactory.times(1)).checkConsumerHasPrisonAccess<PersonProtectedCharacteristics>(wrongPrisonId, filters)
+    verify(consumerPrisonAccessService, VerificationModeFactory.times(1)).checkConsumerHasPrisonAccess<PersonProtectedCharacteristics>(wrongPrisonId, requestContext.filters)
     result.data.shouldBeNull()
     result.errors.shouldHaveSize(1)
     result.errors

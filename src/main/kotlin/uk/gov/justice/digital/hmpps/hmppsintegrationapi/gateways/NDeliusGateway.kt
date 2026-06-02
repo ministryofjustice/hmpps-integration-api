@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Companion.GATEWAY_CACHE
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.EPF_ENDPOINT_INCLUDES_LAO
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address
@@ -55,12 +56,15 @@ class NDeliusGateway(
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  fun getOffencesForPerson(id: String): Response<List<Offence>> {
+  fun getOffencesForPerson(
+    id: String,
+    requestContext: RequestContext? = null,
+  ): Response<List<Offence>> {
     val result =
       webClient.request<NDeliusSupervisions>(
         HttpMethod.GET,
         "/case/$id/supervisions",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.NDELIUS,
       )
 
@@ -78,12 +82,15 @@ class NDeliusGateway(
     }
   }
 
-  fun getSentencesForPerson(id: String): Response<List<Sentence>> {
+  fun getSentencesForPerson(
+    id: String,
+    requestContext: RequestContext? = null,
+  ): Response<List<Sentence>> {
     val result =
       webClient.request<NDeliusSupervisions>(
         HttpMethod.GET,
         "/case/$id/supervisions",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.NDELIUS,
       )
 
@@ -101,12 +108,15 @@ class NDeliusGateway(
     }
   }
 
-  fun getDynamicRisksForPerson(id: String): Response<List<DynamicRisk>> {
+  fun getDynamicRisksForPerson(
+    id: String,
+    requestContext: RequestContext? = null,
+  ): Response<List<DynamicRisk>> {
     val result =
       webClient.request<NDeliusSupervisions>(
         HttpMethod.GET,
         "/case/$id/supervisions",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.NDELIUS,
       )
 
@@ -124,12 +134,15 @@ class NDeliusGateway(
     }
   }
 
-  fun getStatusInformationForPerson(id: String): Response<List<StatusInformation>> {
+  fun getStatusInformationForPerson(
+    id: String,
+    requestContext: RequestContext? = null,
+  ): Response<List<StatusInformation>> {
     val result =
       webClient.request<NDeliusSupervisions>(
         HttpMethod.GET,
         "/case/$id/supervisions",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.NDELIUS,
       )
 
@@ -147,12 +160,15 @@ class NDeliusGateway(
     }
   }
 
-  fun getMappaDetailForPerson(id: String): Response<MappaDetail?> {
+  fun getMappaDetailForPerson(
+    id: String,
+    requestContext: RequestContext? = null,
+  ): Response<MappaDetail?> {
     val result =
       webClient.request<NDeliusSupervisions>(
         HttpMethod.GET,
         "/case/$id/supervisions",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.NDELIUS,
       )
 
@@ -170,17 +186,20 @@ class NDeliusGateway(
     }
   }
 
-  fun getCommunityOffenderManagerForPerson(crn: String): Response<CommunityOffenderManager?> {
+  fun getCommunityOffenderManagerForPerson(
+    crn: String,
+    requestContext: RequestContext? = null,
+  ): Response<CommunityOffenderManager?> {
     val result =
       webClient.request<NDeliusSupervisions>(
         HttpMethod.GET,
         "/case/$crn/supervisions",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.NDELIUS,
       )
     return when (result) {
       is WebClientWrapperResponse.Success -> {
-        Response(data = result.data?.communityManager?.toCommunityOffenderManager())
+        Response(data = result.data.communityManager.toCommunityOffenderManager())
       }
 
       is WebClientWrapperResponse.Error -> {
@@ -192,12 +211,15 @@ class NDeliusGateway(
     }
   }
 
-  fun getCaseAccess(crn: String): Response<CaseAccess?> {
+  fun getCaseAccess(
+    crn: String,
+    requestContext: RequestContext? = null,
+  ): Response<CaseAccess?> {
     val result =
       webClient.requestWithRetry<UserAccess>(
         HttpMethod.POST,
         "/probation-cases/access",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.NDELIUS,
         mapOf("crns" to listOf(crn)),
       )
@@ -215,17 +237,18 @@ class NDeliusGateway(
   fun getEpfCaseDetailForPerson(
     id: String,
     eventNumber: Int,
+    requestContext: RequestContext? = null,
   ): Response<CaseDetail?> {
     val result =
       webClient.request<EPFCaseDetail>(
         HttpMethod.GET,
         "/case-details/$id/$eventNumber",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.NDELIUS,
       )
     return when (result) {
       is WebClientWrapperResponse.Success -> {
-        Response(data = result.data?.toCaseDetail(includeLimitedAccess = featureFlag.isEnabled(EPF_ENDPOINT_INCLUDES_LAO)))
+        Response(data = result.data.toCaseDetail(includeLimitedAccess = featureFlag.isEnabled(EPF_ENDPOINT_INCLUDES_LAO)))
       }
 
       is WebClientWrapperResponse.Error -> {
@@ -237,12 +260,15 @@ class NDeliusGateway(
     }
   }
 
-  fun getAccessLimitations(crn: String): Response<LimitedAccess?> {
+  fun getAccessLimitations(
+    crn: String,
+    requestContext: RequestContext? = null,
+  ): Response<LimitedAccess?> {
     val result =
       webClient.request<LimitedAccess>(
         HttpMethod.GET,
         "/case/$crn/access-limitations",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.NDELIUS,
       )
     return when (result) {
@@ -259,16 +285,19 @@ class NDeliusGateway(
     }
   }
 
-  private fun authenticationHeader(): Map<String, String> {
-    val token = hmppsAuthGateway.getClientToken("nDelius")
+  private fun authenticationHeader(requestContext: RequestContext? = null): Map<String, String> {
+    val token = hmppsAuthGateway.getClientToken("nDelius", requestContext)
 
     return mapOf(
       "Authorization" to "Bearer $token",
     )
   }
 
-  @Cacheable(GATEWAY_CACHE, keyGenerator = "gatewayKeyGenerator", condition = "@gatewayCacheEnabled")
-  fun getOffender(id: String? = null): Response<Offender?> {
+  @Cacheable(GATEWAY_CACHE, keyGenerator = "stringParamsGatewayKeyGenerator", condition = "@gatewayCacheEnabled")
+  fun getOffender(
+    id: String? = null,
+    requestContext: RequestContext? = null,
+  ): Response<Offender?> {
     val queryField =
       if (isNomsNumber(id)) {
         "nomsNumber"
@@ -280,7 +309,7 @@ class NDeliusGateway(
       webClient.requestListWithRetry<Offender>(
         HttpMethod.POST,
         "/search/probation-cases",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.NDELIUS,
         mapOf(queryField to id),
       )
@@ -321,6 +350,7 @@ class NDeliusGateway(
     pncNumber: String?,
     dateOfBirth: String?,
     searchWithinAliases: Boolean = false,
+    requestContext: RequestContext? = null,
   ): Response<List<Person>> {
     val requestBody =
       mapOf(
@@ -335,7 +365,7 @@ class NDeliusGateway(
       webClient.requestListWithRetry<Offender>(
         HttpMethod.POST,
         "/search/probation-cases",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.NDELIUS,
         requestBody,
       )
@@ -356,12 +386,15 @@ class NDeliusGateway(
     }
   }
 
-  fun getAddressesForPerson(crn: String): Response<List<Address>> {
+  fun getAddressesForPerson(
+    crn: String,
+    requestContext: RequestContext? = null,
+  ): Response<List<Address>> {
     val result =
       webClient.request<ContactDetailsWithAddress>(
         HttpMethod.GET,
         "/case/$crn/addresses",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.NDELIUS,
       )
 
@@ -389,13 +422,14 @@ class NDeliusGateway(
     pageNo: Int,
     perPage: Int,
     mappaCategories: List<Number>?,
+    requestContext: RequestContext? = null,
   ): Response<NDeliusContactEvents?> {
     val mappaCatQueryParam = "mappaCategories=${mappaCategories?.joinToString(",")}"
     val result =
       webClient.request<NDeliusContactEvents>(
         HttpMethod.GET,
         "/case/$crn/contacts?page=${pageNo - 1}&size=$perPage&$mappaCatQueryParam",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.NDELIUS,
         badRequestAsError = true,
       )
@@ -418,6 +452,7 @@ class NDeliusGateway(
     crn: String,
     contactEventId: Long,
     mappaCategories: List<Number>?,
+    requestContext: RequestContext? = null,
   ): Response<NDeliusContactEvent?> {
     val mappaCatQueryParam = "mappaCategories=${mappaCategories?.joinToString(",")}"
 
@@ -425,7 +460,7 @@ class NDeliusGateway(
       webClient.request<NDeliusContactEvent>(
         HttpMethod.GET,
         "/case/$crn/contacts/$contactEventId?$mappaCatQueryParam",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.NDELIUS,
       )
     return when (result) {
@@ -439,12 +474,15 @@ class NDeliusGateway(
     }
   }
 
-  fun getPersonIdentifier(nomisId: String): PersonIdentifier? {
+  fun getPersonIdentifier(
+    nomisId: String,
+    requestContext: RequestContext? = null,
+  ): PersonIdentifier? {
     val result =
       webClient.request<PersonIdentifier>(
         HttpMethod.GET,
         "/identifier-converter/noms-to-crn/$nomisId",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.NDELIUS,
       )
 
@@ -459,12 +497,15 @@ class NDeliusGateway(
     }
   }
 
-  fun getPersonExists(crn: String): PersonExists {
+  fun getPersonExists(
+    crn: String,
+    requestContext: RequestContext? = null,
+  ): PersonExists {
     val result =
       webClient.request<PersonExists>(
         HttpMethod.GET,
         "/exists-in-delius/crn/$crn",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.NDELIUS,
       )
 

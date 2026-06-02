@@ -72,7 +72,7 @@ class ImageController(
     @PathVariable hmppsId: String,
     @RequestAttribute requestContext: RequestContext?,
   ): ResponseEntity<ByteArray> {
-    val response = getImageService.execute(id, hmppsId, requestContext?.filters)
+    val response = getImageService.execute(id, hmppsId, requestContext)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find image with id: $id")

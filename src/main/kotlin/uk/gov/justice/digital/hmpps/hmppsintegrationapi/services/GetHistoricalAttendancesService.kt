@@ -2,10 +2,10 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HistoricalAttendance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetHistoricalAttendancesService(
@@ -17,9 +17,9 @@ class GetHistoricalAttendancesService(
     startDate: String,
     endDate: String,
     prisonId: String?,
-    filters: ConsumerFilters?,
+    requestContext: RequestContext?,
   ): Response<List<HistoricalAttendance>?> {
-    val getPersonServiceResponse = getPersonService.getPersonWithPrisonFilter(prisonerNumber, filters)
+    val getPersonServiceResponse = getPersonService.getPersonWithPrisonFilter(prisonerNumber, requestContext)
     if (getPersonServiceResponse.errors.isNotEmpty()) {
       return Response(
         data = null,

@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
@@ -27,9 +28,10 @@ class GetPersonsService(
     pncNumber: String?,
     dateOfBirth: String?,
     searchWithinAliases: Boolean = false,
-    consumerFilters: ConsumerFilters? = null,
+    requestContext: RequestContext? = null,
   ): Response<List<Person>> {
     // Perform probation search
+    val consumerFilters = requestContext?.filters
     val probationSearchResponse =
       if (consumerFilters?.isPrisonsOnly() != true) {
         deliusGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases)
@@ -39,7 +41,7 @@ class GetPersonsService(
 
     // Perform prison search
     val attributeSearchRequest = attributeSearchRequest(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases, consumerFilters)
-    val attributeSearchResponse = prisonerOffenderSearchGateway.attributeSearch(attributeSearchRequest)
+    val attributeSearchResponse = prisonerOffenderSearchGateway.attributeSearch(attributeSearchRequest, requestContext)
     val attributeSearchResponseData = attributeSearchResponse.data?.content?.map { it.toPerson() } ?: emptyList()
 
     // Combine and return results

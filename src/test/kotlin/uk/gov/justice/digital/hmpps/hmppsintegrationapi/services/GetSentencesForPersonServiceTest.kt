@@ -7,6 +7,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestSentence
@@ -32,7 +33,7 @@ internal class GetSentencesForPersonServiceTest(
 ) : DescribeSpec(
     {
       val hmppsId = "A1234AA"
-      val filters = ConsumerFilters(null)
+      val requestContext = buildRequestContext(filters = ConsumerFilters(null))
       val firstBookingId = 1
       val secondBookingId = 2
       val personFromProbationOffenderSearch =
@@ -97,338 +98,338 @@ internal class GetSentencesForPersonServiceTest(
       }
 
       it("Person service error → Return person service error") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, requestContext)).thenReturn(
           Response(
             data = null,
             errors = nDelius500Error,
           ),
         )
 
-        val result = getSentencesForPersonService.execute(hmppsId, filters)
+        val result = getSentencesForPersonService.execute(hmppsId, requestContext)
         result.errors.shouldBe(nDelius500Error)
       }
 
       it("No Nomis number + no Delius crn -> Return entity not found response") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, requestContext)).thenReturn(
           Response(
             data = personNoIdentifiers,
           ),
         )
 
-        val result = getSentencesForPersonService.execute(hmppsId, filters)
+        val result = getSentencesForPersonService.execute(hmppsId, requestContext)
         result.errors.shouldBe(nomis404Error)
       }
 
       it("No Nomis number + Delius crn, delius success → return Delius") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, requestContext)).thenReturn(
           Response(
             data = personDeliusOnly,
           ),
         )
-        whenever(nDeliusGateway.getSentencesForPerson(personDeliusOnly.identifiers.deliusCrn!!)).thenReturn(
+        whenever(nDeliusGateway.getSentencesForPerson(personDeliusOnly.identifiers.deliusCrn!!, requestContext)).thenReturn(
           Response(data = listOf(nDeliusSentence1, nDeliusSentence2)),
         )
 
-        val result = getSentencesForPersonService.execute(hmppsId, filters)
+        val result = getSentencesForPersonService.execute(hmppsId, requestContext)
         result.shouldBe(Response(data = listOf(nDeliusSentence1, nDeliusSentence2)))
       }
 
       it("No Nomis number + Delius crn, delius any error → return Delius error") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, requestContext)).thenReturn(
           Response(
             data = personDeliusOnly,
           ),
         )
-        whenever(nDeliusGateway.getSentencesForPerson(personDeliusOnly.identifiers.deliusCrn!!)).thenReturn(
+        whenever(nDeliusGateway.getSentencesForPerson(personDeliusOnly.identifiers.deliusCrn!!, requestContext)).thenReturn(
           Response(data = emptyList(), errors = nDelius500Error),
         )
 
-        val result = getSentencesForPersonService.execute(hmppsId, filters)
+        val result = getSentencesForPersonService.execute(hmppsId, requestContext)
         result.errors.shouldBe(nDelius500Error)
       }
 
       it("Nomis number + No Delius crn, Nomis success -> Return Nomis") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, requestContext)).thenReturn(
           Response(
             data = personNomisOnly,
           ),
         )
-        whenever(prisonApiGateway.getBookingIdsForPerson(personNomisOnly.identifiers.nomisNumber!!)).thenReturn(
+        whenever(prisonApiGateway.getBookingIdsForPerson(personNomisOnly.identifiers.nomisNumber!!, requestContext)).thenReturn(
           Response(
             data = listOf(PrisonApiBooking(bookingId = firstBookingId), PrisonApiBooking(bookingId = secondBookingId)),
           ),
         )
-        whenever(prisonApiGateway.getSentencesForBooking(firstBookingId)).thenReturn(
+        whenever(prisonApiGateway.getSentencesForBooking(firstBookingId, requestContext)).thenReturn(
           Response(data = listOf(nomisSentence1)),
         )
-        whenever(prisonApiGateway.getSentencesForBooking(secondBookingId)).thenReturn(
+        whenever(prisonApiGateway.getSentencesForBooking(secondBookingId, requestContext)).thenReturn(
           Response(data = listOf(nomisSentence2)),
         )
 
-        val result = getSentencesForPersonService.execute(hmppsId, filters)
+        val result = getSentencesForPersonService.execute(hmppsId, requestContext)
         result.shouldBe(Response(data = listOf(nomisSentence1, nomisSentence2)))
       }
 
       it("Nomis number + No Delius crn, Nomis any error on bookings-> Return Nomis error") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, requestContext)).thenReturn(
           Response(
             data = personNomisOnly,
           ),
         )
-        whenever(prisonApiGateway.getBookingIdsForPerson(personNomisOnly.identifiers.nomisNumber!!)).thenReturn(
+        whenever(prisonApiGateway.getBookingIdsForPerson(personNomisOnly.identifiers.nomisNumber!!, requestContext)).thenReturn(
           Response(
             data = emptyList(),
             errors = nomis500Error,
           ),
         )
 
-        val result = getSentencesForPersonService.execute(hmppsId, filters)
+        val result = getSentencesForPersonService.execute(hmppsId, requestContext)
         result.errors.shouldBe(nomis500Error)
       }
 
       it("Nomis number + No Delius crn, Nomis any error on sentences -> Return Nomis error") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, requestContext)).thenReturn(
           Response(
             data = personNomisOnly,
           ),
         )
-        whenever(prisonApiGateway.getBookingIdsForPerson(personNomisOnly.identifiers.nomisNumber!!)).thenReturn(
+        whenever(prisonApiGateway.getBookingIdsForPerson(personNomisOnly.identifiers.nomisNumber!!, requestContext)).thenReturn(
           Response(
             data = listOf(PrisonApiBooking(bookingId = firstBookingId), PrisonApiBooking(bookingId = secondBookingId)),
           ),
         )
-        whenever(prisonApiGateway.getSentencesForBooking(firstBookingId)).thenReturn(
+        whenever(prisonApiGateway.getSentencesForBooking(firstBookingId, requestContext)).thenReturn(
           Response(data = emptyList(), errors = nomis500Error),
         )
-        whenever(prisonApiGateway.getSentencesForBooking(secondBookingId)).thenReturn(
+        whenever(prisonApiGateway.getSentencesForBooking(secondBookingId, requestContext)).thenReturn(
           Response(data = emptyList(), errors = nomis500Error),
         )
 
-        val result = getSentencesForPersonService.execute(hmppsId, filters)
+        val result = getSentencesForPersonService.execute(hmppsId, requestContext)
         result.errors.shouldBe(listOf(nomis500Error, nomis500Error).flatten())
       }
 
       it("Nomis number + Delius crn, Nomis success, Delius success → Merge responses") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, requestContext)).thenReturn(
           Response(
             data = personFromProbationOffenderSearch,
           ),
         )
-        whenever(prisonApiGateway.getBookingIdsForPerson(personFromProbationOffenderSearch.identifiers.nomisNumber!!)).thenReturn(
+        whenever(prisonApiGateway.getBookingIdsForPerson(personFromProbationOffenderSearch.identifiers.nomisNumber!!, requestContext)).thenReturn(
           Response(
             data = listOf(PrisonApiBooking(bookingId = firstBookingId), PrisonApiBooking(bookingId = secondBookingId)),
           ),
         )
-        whenever(prisonApiGateway.getSentencesForBooking(firstBookingId)).thenReturn(
+        whenever(prisonApiGateway.getSentencesForBooking(firstBookingId, requestContext)).thenReturn(
           Response(data = listOf(nomisSentence1)),
         )
-        whenever(prisonApiGateway.getSentencesForBooking(secondBookingId)).thenReturn(
+        whenever(prisonApiGateway.getSentencesForBooking(secondBookingId, requestContext)).thenReturn(
           Response(data = listOf(nomisSentence2)),
         )
-        whenever(nDeliusGateway.getSentencesForPerson(personFromProbationOffenderSearch.identifiers.deliusCrn!!)).thenReturn(
+        whenever(nDeliusGateway.getSentencesForPerson(personFromProbationOffenderSearch.identifiers.deliusCrn!!, requestContext)).thenReturn(
           Response(data = listOf(nDeliusSentence1, nDeliusSentence2)),
         )
 
-        val result = getSentencesForPersonService.execute(hmppsId, filters)
+        val result = getSentencesForPersonService.execute(hmppsId, requestContext)
         result.shouldBe(Response(data = listOf(nomisSentence1, nomisSentence2, nDeliusSentence1, nDeliusSentence2)))
       }
 
       it("Nomis number + Delius crn, Nomis success, Delius 404 → Return Nomis") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, requestContext)).thenReturn(
           Response(
             data = personFromProbationOffenderSearch,
           ),
         )
-        whenever(prisonApiGateway.getBookingIdsForPerson(personFromProbationOffenderSearch.identifiers.nomisNumber!!)).thenReturn(
+        whenever(prisonApiGateway.getBookingIdsForPerson(personFromProbationOffenderSearch.identifiers.nomisNumber!!, requestContext)).thenReturn(
           Response(
             data = listOf(PrisonApiBooking(bookingId = firstBookingId), PrisonApiBooking(bookingId = secondBookingId)),
           ),
         )
-        whenever(prisonApiGateway.getSentencesForBooking(firstBookingId)).thenReturn(
+        whenever(prisonApiGateway.getSentencesForBooking(firstBookingId, requestContext)).thenReturn(
           Response(data = listOf(nomisSentence1)),
         )
-        whenever(prisonApiGateway.getSentencesForBooking(secondBookingId)).thenReturn(
+        whenever(prisonApiGateway.getSentencesForBooking(secondBookingId, requestContext)).thenReturn(
           Response(data = listOf(nomisSentence2)),
         )
-        whenever(nDeliusGateway.getSentencesForPerson(personFromProbationOffenderSearch.identifiers.deliusCrn!!)).thenReturn(
+        whenever(nDeliusGateway.getSentencesForPerson(personFromProbationOffenderSearch.identifiers.deliusCrn!!, requestContext)).thenReturn(
           Response(data = emptyList(), errors = nDelius404Error),
         )
 
-        val result = getSentencesForPersonService.execute(hmppsId, filters)
+        val result = getSentencesForPersonService.execute(hmppsId, requestContext)
         result.shouldBe(Response(data = listOf(nomisSentence1, nomisSentence2)))
       }
 
       it("Nomis number + Delius crn, Nomis 404 on booking ids, Delius success → Return Delius") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, requestContext)).thenReturn(
           Response(
             data = personFromProbationOffenderSearch,
           ),
         )
-        whenever(prisonApiGateway.getBookingIdsForPerson(personFromProbationOffenderSearch.identifiers.nomisNumber!!)).thenReturn(
+        whenever(prisonApiGateway.getBookingIdsForPerson(personFromProbationOffenderSearch.identifiers.nomisNumber!!, requestContext)).thenReturn(
           Response(
             data = emptyList(),
             errors = nomis404Error,
           ),
         )
-        whenever(nDeliusGateway.getSentencesForPerson(personFromProbationOffenderSearch.identifiers.deliusCrn!!)).thenReturn(
+        whenever(nDeliusGateway.getSentencesForPerson(personFromProbationOffenderSearch.identifiers.deliusCrn!!, requestContext)).thenReturn(
           Response(data = listOf(nDeliusSentence1, nDeliusSentence2)),
         )
 
-        val result = getSentencesForPersonService.execute(hmppsId, filters)
+        val result = getSentencesForPersonService.execute(hmppsId, requestContext)
         result.shouldBe(Response(data = listOf(nDeliusSentence1, nDeliusSentence2)))
       }
 
       it("Nomis number + Delius crn, Nomis 404 on sentences, Delius success → Return Delius") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, requestContext)).thenReturn(
           Response(
             data = personFromProbationOffenderSearch,
           ),
         )
-        whenever(prisonApiGateway.getBookingIdsForPerson(personFromProbationOffenderSearch.identifiers.nomisNumber!!)).thenReturn(
+        whenever(prisonApiGateway.getBookingIdsForPerson(personFromProbationOffenderSearch.identifiers.nomisNumber!!, requestContext)).thenReturn(
           Response(
             data = listOf(PrisonApiBooking(bookingId = firstBookingId), PrisonApiBooking(bookingId = secondBookingId)),
           ),
         )
-        whenever(prisonApiGateway.getSentencesForBooking(firstBookingId)).thenReturn(
+        whenever(prisonApiGateway.getSentencesForBooking(firstBookingId, requestContext)).thenReturn(
           Response(data = emptyList(), errors = nomis404Error),
         )
-        whenever(prisonApiGateway.getSentencesForBooking(secondBookingId)).thenReturn(
+        whenever(prisonApiGateway.getSentencesForBooking(secondBookingId, requestContext)).thenReturn(
           Response(data = emptyList(), errors = nomis404Error),
         )
-        whenever(nDeliusGateway.getSentencesForPerson(personFromProbationOffenderSearch.identifiers.deliusCrn!!)).thenReturn(
+        whenever(nDeliusGateway.getSentencesForPerson(personFromProbationOffenderSearch.identifiers.deliusCrn!!, requestContext)).thenReturn(
           Response(data = listOf(nDeliusSentence1, nDeliusSentence2)),
         )
 
-        val result = getSentencesForPersonService.execute(hmppsId, filters)
+        val result = getSentencesForPersonService.execute(hmppsId, requestContext)
         result.shouldBe(Response(data = listOf(nDeliusSentence1, nDeliusSentence2)))
       }
 
       it("Nomis number + Delius crn, Nomis non 404 error on booking ids-> Return Nomis error") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, requestContext)).thenReturn(
           Response(
             data = personFromProbationOffenderSearch,
           ),
         )
-        whenever(prisonApiGateway.getBookingIdsForPerson(personFromProbationOffenderSearch.identifiers.nomisNumber!!)).thenReturn(
+        whenever(prisonApiGateway.getBookingIdsForPerson(personFromProbationOffenderSearch.identifiers.nomisNumber!!, requestContext)).thenReturn(
           Response(
             data = emptyList(),
             errors = nomis500Error,
           ),
         )
 
-        val result = getSentencesForPersonService.execute(hmppsId, filters)
+        val result = getSentencesForPersonService.execute(hmppsId, requestContext)
         result.errors.shouldBe(nomis500Error)
       }
 
       it("Nomis number + Delius crn, Nomis non 404 error on sentences -> Return Nomis error") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, requestContext)).thenReturn(
           Response(
             data = personFromProbationOffenderSearch,
           ),
         )
-        whenever(prisonApiGateway.getBookingIdsForPerson(personFromProbationOffenderSearch.identifiers.nomisNumber!!)).thenReturn(
+        whenever(prisonApiGateway.getBookingIdsForPerson(personFromProbationOffenderSearch.identifiers.nomisNumber!!, requestContext)).thenReturn(
           Response(
             data = listOf(PrisonApiBooking(bookingId = firstBookingId), PrisonApiBooking(bookingId = secondBookingId)),
           ),
         )
-        whenever(prisonApiGateway.getSentencesForBooking(firstBookingId)).thenReturn(
+        whenever(prisonApiGateway.getSentencesForBooking(firstBookingId, requestContext)).thenReturn(
           Response(data = emptyList(), errors = nomis500Error),
         )
-        whenever(prisonApiGateway.getSentencesForBooking(secondBookingId)).thenReturn(
+        whenever(prisonApiGateway.getSentencesForBooking(secondBookingId, requestContext)).thenReturn(
           Response(data = emptyList(), errors = nomis500Error),
         )
 
-        val result = getSentencesForPersonService.execute(hmppsId, filters)
+        val result = getSentencesForPersonService.execute(hmppsId, requestContext)
         result.errors.shouldBe(listOf(nomis500Error, nomis500Error).flatten())
       }
 
       it("Nomis number + Delius crn, Delius non 404 error -> Return Delius error") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, requestContext)).thenReturn(
           Response(
             data = personFromProbationOffenderSearch,
           ),
         )
-        whenever(prisonApiGateway.getBookingIdsForPerson(personFromProbationOffenderSearch.identifiers.nomisNumber!!)).thenReturn(
+        whenever(prisonApiGateway.getBookingIdsForPerson(personFromProbationOffenderSearch.identifiers.nomisNumber!!, requestContext)).thenReturn(
           Response(
             data = listOf(PrisonApiBooking(bookingId = firstBookingId), PrisonApiBooking(bookingId = secondBookingId)),
           ),
         )
-        whenever(prisonApiGateway.getSentencesForBooking(firstBookingId)).thenReturn(
+        whenever(prisonApiGateway.getSentencesForBooking(firstBookingId, requestContext)).thenReturn(
           Response(data = listOf(nomisSentence1)),
         )
-        whenever(prisonApiGateway.getSentencesForBooking(secondBookingId)).thenReturn(
+        whenever(prisonApiGateway.getSentencesForBooking(secondBookingId, requestContext)).thenReturn(
           Response(data = listOf(nomisSentence2)),
         )
-        whenever(nDeliusGateway.getSentencesForPerson(personFromProbationOffenderSearch.identifiers.deliusCrn!!)).thenReturn(
+        whenever(nDeliusGateway.getSentencesForPerson(personFromProbationOffenderSearch.identifiers.deliusCrn!!, requestContext)).thenReturn(
           Response(data = emptyList(), errors = nDelius500Error),
         )
 
-        val result = getSentencesForPersonService.execute(hmppsId, filters)
+        val result = getSentencesForPersonService.execute(hmppsId, requestContext)
         result.errors.shouldBe(nDelius500Error)
       }
 
       it("Nomis number + Delius crn, Nomis 404 on booking ids, Delius any error -> Return Delius error") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, requestContext)).thenReturn(
           Response(
             data = personFromProbationOffenderSearch,
           ),
         )
-        whenever(prisonApiGateway.getBookingIdsForPerson(personFromProbationOffenderSearch.identifiers.nomisNumber!!)).thenReturn(
+        whenever(prisonApiGateway.getBookingIdsForPerson(personFromProbationOffenderSearch.identifiers.nomisNumber!!, requestContext)).thenReturn(
           Response(
             data = emptyList(),
             errors = nomis404Error,
           ),
         )
-        whenever(nDeliusGateway.getSentencesForPerson(personFromProbationOffenderSearch.identifiers.deliusCrn!!)).thenReturn(
+        whenever(nDeliusGateway.getSentencesForPerson(personFromProbationOffenderSearch.identifiers.deliusCrn!!, requestContext)).thenReturn(
           Response(data = emptyList(), errors = nDelius500Error),
         )
 
-        val result = getSentencesForPersonService.execute(hmppsId, filters)
+        val result = getSentencesForPersonService.execute(hmppsId, requestContext)
         result.errors.shouldBe(nDelius500Error)
       }
 
       it("Nomis number + Delius crn, Nomis 404 on sentences, Delius any error -> Return Delius error") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, requestContext)).thenReturn(
           Response(
             data = personFromProbationOffenderSearch,
           ),
         )
-        whenever(prisonApiGateway.getBookingIdsForPerson(personFromProbationOffenderSearch.identifiers.nomisNumber!!)).thenReturn(
+        whenever(prisonApiGateway.getBookingIdsForPerson(personFromProbationOffenderSearch.identifiers.nomisNumber!!, requestContext)).thenReturn(
           Response(
             data = listOf(PrisonApiBooking(bookingId = firstBookingId), PrisonApiBooking(bookingId = secondBookingId)),
           ),
         )
-        whenever(prisonApiGateway.getSentencesForBooking(firstBookingId)).thenReturn(
+        whenever(prisonApiGateway.getSentencesForBooking(firstBookingId, requestContext)).thenReturn(
           Response(data = emptyList(), errors = nomis404Error),
         )
-        whenever(prisonApiGateway.getSentencesForBooking(secondBookingId)).thenReturn(
+        whenever(prisonApiGateway.getSentencesForBooking(secondBookingId, requestContext)).thenReturn(
           Response(data = emptyList(), errors = nomis404Error),
         )
-        whenever(nDeliusGateway.getSentencesForPerson(personFromProbationOffenderSearch.identifiers.deliusCrn!!)).thenReturn(
+        whenever(nDeliusGateway.getSentencesForPerson(personFromProbationOffenderSearch.identifiers.deliusCrn!!, requestContext)).thenReturn(
           Response(data = emptyList(), errors = nDelius500Error),
         )
 
-        val result = getSentencesForPersonService.execute(hmppsId, filters)
+        val result = getSentencesForPersonService.execute(hmppsId, requestContext)
         result.errors.shouldBe(nDelius500Error)
       }
 
       it("Nomis number + Delius crn, Nomis any error on booking ids, Delius 404 -> Return Nomis error") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, requestContext)).thenReturn(
           Response(
             data = personFromProbationOffenderSearch,
           ),
         )
-        whenever(prisonApiGateway.getBookingIdsForPerson(personFromProbationOffenderSearch.identifiers.nomisNumber!!)).thenReturn(
+        whenever(prisonApiGateway.getBookingIdsForPerson(personFromProbationOffenderSearch.identifiers.nomisNumber!!, requestContext)).thenReturn(
           Response(
             data = emptyList(),
             errors = nomis500Error,
           ),
         )
-        whenever(nDeliusGateway.getSentencesForPerson(personFromProbationOffenderSearch.identifiers.deliusCrn!!)).thenReturn(
+        whenever(nDeliusGateway.getSentencesForPerson(personFromProbationOffenderSearch.identifiers.deliusCrn!!, requestContext)).thenReturn(
           Response(data = emptyList(), errors = nDelius404Error),
         )
 
-        val result = getSentencesForPersonService.execute(hmppsId, filters)
+        val result = getSentencesForPersonService.execute(hmppsId, requestContext)
         result.errors.shouldBe(nomis500Error)
       }
     },

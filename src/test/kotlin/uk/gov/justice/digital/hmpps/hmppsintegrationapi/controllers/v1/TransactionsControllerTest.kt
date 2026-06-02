@@ -6,6 +6,8 @@ import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ValidationErrorResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -92,11 +95,11 @@ class TransactionsControllerTest(
         val dateParams = "?from_date=2025-01-01&to_date=2025-01-01"
         mockMvc.performAuthorised(transactionsPath + dateParams)
 
-        verify(getTransactionsForPersonService, VerificationModeFactory.times(1)).execute(hmppsId, prisonId, accountCode, "2025-01-01", "2025-01-01", null)
+        verify(getTransactionsForPersonService, VerificationModeFactory.times(1)).execute(eq(hmppsId), eq(prisonId), eq(accountCode), eq("2025-01-01"), eq("2025-01-01"), any<RequestContext>())
       }
 
       it("returns paginated result") {
-        whenever(getTransactionsForPersonService.execute(hmppsId, prisonId, accountCode, "2025-01-01", "2025-01-01", null)).thenReturn(Response(listOf(transaction)))
+        whenever(getTransactionsForPersonService.execute(eq(hmppsId), eq(prisonId), eq(accountCode), eq("2025-01-01"), eq("2025-01-01"), any<RequestContext>())).thenReturn(Response(listOf(transaction)))
 
         val dateParams = "?from_date=2025-01-01&to_date=2025-01-01"
         val result = mockMvc.performAuthorised(transactionsPath + dateParams)
@@ -106,7 +109,7 @@ class TransactionsControllerTest(
       }
 
       it("returns a prisoners transactions according to supplied code") {
-        whenever(getTransactionsForPersonService.execute(hmppsId, prisonId, accountCode, "2025-01-01", "2025-01-01", null)).thenReturn(Response(listOf(transaction, transactionWithoutClientRef)))
+        whenever(getTransactionsForPersonService.execute(eq(hmppsId), eq(prisonId), eq(accountCode), eq("2025-01-01"), eq("2025-01-01"), any<RequestContext>())).thenReturn(Response(listOf(transaction, transactionWithoutClientRef)))
 
         val dateParams = "?from_date=2025-01-01&to_date=2025-01-01"
         val result = mockMvc.performAuthorised(transactionsPath + dateParams)
@@ -139,7 +142,7 @@ class TransactionsControllerTest(
       }
 
       it("returns a 404 NOT FOUND status code when could not find any transactions") {
-        whenever(getTransactionsForPersonService.execute(hmppsId, prisonId, accountCode, "2025-01-01", "2025-01-01", null)).thenReturn(
+        whenever(getTransactionsForPersonService.execute(eq(hmppsId), eq(prisonId), eq(accountCode), eq("2025-01-01"), eq("2025-01-01"), any<RequestContext>())).thenReturn(
           Response(
             data = null,
             errors =
@@ -158,7 +161,7 @@ class TransactionsControllerTest(
       }
 
       it("returns a 400 BAD REQUEST status code when there is an invalid HMPPS ID or incorrect prison") {
-        whenever(getTransactionsForPersonService.execute(hmppsId, prisonId, accountCode, "2025-01-01", "2025-01-01", null)).thenReturn(
+        whenever(getTransactionsForPersonService.execute(eq(hmppsId), eq(prisonId), eq(accountCode), eq("2025-01-01"), eq("2025-01-01"), any<RequestContext>())).thenReturn(
           Response(
             data = null,
             errors =
@@ -178,7 +181,7 @@ class TransactionsControllerTest(
 
       // get Transaction
       it("returns a prisoner's transaction according to clientUniqueRef") {
-        whenever(getTransactionForPersonService.execute(hmppsId, prisonId, clientUniqueRef, null)).thenReturn(Response(transactionWithoutClientRef))
+        whenever(getTransactionForPersonService.execute(eq(hmppsId), eq(prisonId), eq(clientUniqueRef), any<RequestContext>())).thenReturn(Response(transactionWithoutClientRef))
 
         val result = mockMvc.performAuthorised(transactionPath)
 
@@ -200,7 +203,7 @@ class TransactionsControllerTest(
       }
 
       it("returns a 404 NOT FOUND status code when could not find the transaction") {
-        whenever(getTransactionForPersonService.execute(hmppsId, prisonId, clientUniqueRef, null)).thenReturn(
+        whenever(getTransactionForPersonService.execute(eq(hmppsId), eq(prisonId), eq(clientUniqueRef), any<RequestContext>())).thenReturn(
           Response(
             data = null,
             errors =
@@ -218,7 +221,7 @@ class TransactionsControllerTest(
       }
 
       it("returns a 400 BAD REQUEST status code when there is an invalid HMPPS ID or incorrect prison, to get a singular transaction") {
-        whenever(getTransactionForPersonService.execute(hmppsId, prisonId, clientUniqueRef, null)).thenReturn(
+        whenever(getTransactionForPersonService.execute(eq(hmppsId), eq(prisonId), eq(clientUniqueRef), any<RequestContext>())).thenReturn(
           Response(
             data = null,
             errors =

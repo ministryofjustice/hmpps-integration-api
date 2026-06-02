@@ -2,12 +2,12 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonVisitRestriction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetVisitRestrictionsForPersonService(
@@ -16,9 +16,9 @@ class GetVisitRestrictionsForPersonService(
 ) {
   fun execute(
     hmppsId: String,
-    filters: ConsumerFilters? = null,
+    requestContext: RequestContext? = null,
   ): Response<List<PersonVisitRestriction>?> {
-    val personResponse = getPersonService.getNomisNumber(hmppsId, filters)
+    val personResponse = getPersonService.getNomisNumber(hmppsId, requestContext)
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = personResponse.errors)
     }
@@ -29,7 +29,7 @@ class GetVisitRestrictionsForPersonService(
         errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
       )
 
-    val visitRestrictionResponse = prisonApiGateway.getOffenderVisitRestrictions(nomisNumber)
+    val visitRestrictionResponse = prisonApiGateway.getOffenderVisitRestrictions(nomisNumber, requestContext)
     return visitRestrictionResponse
   }
 }

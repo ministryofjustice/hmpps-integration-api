@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -33,14 +34,14 @@ internal class GetTransactionForPersonServiceTest(
     val nomisNumber = "Z99999ZZ"
     val prisonId = "ABC"
     val clientUniqueRef = "client_unique_ref"
-    val filters = ConsumerFilters(null)
+    val requestContext = buildRequestContext(filters = ConsumerFilters(null))
     val exampleTransaction = Transaction("204564839-3", Type(code = "spends", desc = "Spends desc"), "Spends account code", 12345, "2016-10-21", null)
 
     beforeEach {
       Mockito.reset(getPersonService)
       Mockito.reset(prisonApiGateway)
 
-      whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Transaction>(prisonId, filters)).thenReturn(
+      whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Transaction>(prisonId, requestContext.filters)).thenReturn(
         Response(data = null),
       )
 
@@ -48,7 +49,7 @@ internal class GetTransactionForPersonServiceTest(
         "Invalid Hmpps Id format: $hmppsId"
       }
 
-      whenever(getPersonService.getNomisNumber(hmppsId = hmppsId)).thenReturn(
+      whenever(getPersonService.getNomisNumber(hmppsId = hmppsId, requestContext)).thenReturn(
         Response(data = NomisNumber(nomisNumber = nomisNumber)),
       )
 
@@ -57,6 +58,7 @@ internal class GetTransactionForPersonServiceTest(
           prisonId,
           nomisNumber,
           clientUniqueRef,
+          requestContext,
         ),
       ).thenReturn(
         Response(
@@ -70,10 +72,10 @@ internal class GetTransactionForPersonServiceTest(
         hmppsId,
         prisonId,
         clientUniqueRef,
-        filters,
+        requestContext,
       )
 
-      verify(getPersonService, VerificationModeFactory.times(1)).getNomisNumber(hmppsId = hmppsId)
+      verify(getPersonService, VerificationModeFactory.times(1)).getNomisNumber(hmppsId = hmppsId, requestContext)
     }
 
     it("gets a transaction from NOMIS using a unique client reference number") {
@@ -81,13 +83,14 @@ internal class GetTransactionForPersonServiceTest(
         hmppsId,
         prisonId,
         clientUniqueRef,
-        filters,
+        requestContext,
       )
 
       verify(prisonApiGateway, VerificationModeFactory.times(1)).getTransactionForPerson(
         prisonId,
         nomisNumber,
         clientUniqueRef,
+        requestContext,
       )
     }
 
@@ -97,14 +100,14 @@ internal class GetTransactionForPersonServiceTest(
           hmppsId,
           prisonId,
           clientUniqueRef,
-          filters,
+          requestContext,
         )
 
       result.data.shouldBe(exampleTransaction)
     }
 
     it("records upstream API errors") {
-      whenever(getPersonService.getNomisNumber(hmppsId = hmppsId)).thenReturn(
+      whenever(getPersonService.getNomisNumber(hmppsId = hmppsId, requestContext)).thenReturn(
         Response(
           data = null,
           errors =
@@ -121,7 +124,7 @@ internal class GetTransactionForPersonServiceTest(
           hmppsId,
           prisonId,
           clientUniqueRef,
-          filters,
+          requestContext,
         )
       response
         .hasErrorCausedBy(
@@ -131,7 +134,7 @@ internal class GetTransactionForPersonServiceTest(
     }
 
     it("records upstream API errors when hmppsID is invalid") {
-      whenever(getPersonService.getNomisNumber(hmppsId = hmppsId)).thenReturn(
+      whenever(getPersonService.getNomisNumber(hmppsId = hmppsId, requestContext)).thenReturn(
         Response(
           data = null,
           errors =
@@ -148,7 +151,7 @@ internal class GetTransactionForPersonServiceTest(
           hmppsId,
           prisonId,
           clientUniqueRef,
-          filters,
+          requestContext,
         )
       response
         .hasErrorCausedBy(
@@ -163,6 +166,7 @@ internal class GetTransactionForPersonServiceTest(
           prisonId,
           nomisNumber,
           clientUniqueRef,
+          requestContext,
         ),
       ).thenReturn(
         Response(
@@ -181,7 +185,7 @@ internal class GetTransactionForPersonServiceTest(
           hmppsId,
           prisonId,
           clientUniqueRef,
-          filters,
+          requestContext,
         )
       response
         .hasErrorCausedBy(
@@ -202,7 +206,7 @@ internal class GetTransactionForPersonServiceTest(
           hmppsId,
           wrongPrisonId,
           clientUniqueRef,
-          ConsumerFilters(prisons = listOf("ABC")),
+          buildRequestContext(filters = ConsumerFilters(prisons = listOf("ABC"))),
         )
 
       result.data.shouldBe(null)
@@ -210,8 +214,7 @@ internal class GetTransactionForPersonServiceTest(
     }
 
     it("returns a transaction when requested from an approved prison") {
-      val consumerFillters = ConsumerFilters(prisons = listOf("ABC"))
-      whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Transaction>(prisonId, consumerFillters)).thenReturn(
+      whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Transaction>(prisonId, requestContext.filters)).thenReturn(
         Response(data = null),
       )
 
@@ -220,7 +223,7 @@ internal class GetTransactionForPersonServiceTest(
           hmppsId,
           prisonId,
           clientUniqueRef,
-          ConsumerFilters(prisons = listOf(prisonId)),
+          requestContext,
         )
 
       result.data.shouldBe(exampleTransaction)

@@ -4,7 +4,9 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doThrow
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.person.AddressController
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestAddress
@@ -45,7 +48,7 @@ internal class AddressControllerTest(
           Mockito.reset(getAddressesForPersonService)
           Mockito.reset(auditService)
 
-          whenever(getAddressesForPersonService.execute(hmppsId, null)).thenReturn(Response(data = listOf(generateTestAddress())))
+          whenever(getAddressesForPersonService.execute(eq(hmppsId), any<RequestContext>())).thenReturn(Response(data = listOf(generateTestAddress())))
         }
 
         it("returns a 200 OK status code with data") {
@@ -94,7 +97,7 @@ internal class AddressControllerTest(
         }
 
         it("returns a 400 BAD REQUEST status code when bad request error is returned from address service") {
-          whenever(getAddressesForPersonService.execute(hmppsId, filters)).thenReturn(
+          whenever(getAddressesForPersonService.execute(eq(hmppsId), any<RequestContext>())).thenReturn(
             Response(
               data = emptyList(),
               errors =
@@ -112,7 +115,7 @@ internal class AddressControllerTest(
         }
 
         it("returns a 404 NOT FOUND status code when entity not found error is returned from address service") {
-          whenever(getAddressesForPersonService.execute(hmppsId, filters)).thenReturn(
+          whenever(getAddressesForPersonService.execute(eq(hmppsId), any<RequestContext>())).thenReturn(
             Response(
               data = emptyList(),
               errors =
@@ -130,7 +133,7 @@ internal class AddressControllerTest(
         }
 
         it("returns a 500 INTERNAL SERVER ERROR status code when upstream api return expected error") {
-          whenever(getAddressesForPersonService.execute(hmppsId, filters)).doThrow(
+          whenever(getAddressesForPersonService.execute(eq(hmppsId), any<RequestContext>())).doThrow(
             WebClientResponseException(500, "MockError", null, null, null, null),
           )
 

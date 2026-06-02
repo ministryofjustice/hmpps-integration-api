@@ -65,7 +65,7 @@ class ContactEventsController(
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
     @RequestAttribute requestContext: RequestContext?,
   ): PaginatedResponse<ContactEvent> {
-    val response = contactEventService.getContactEvents(hmppsId, page, perPage, requestContext?.filters)
+    val response = contactEventService.getContactEvents(hmppsId, page, perPage, requestContext)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Bad request from upstream ${response.errors.first().description}")
@@ -107,7 +107,7 @@ class ContactEventsController(
     @Parameter(description = "A Contact Event Id") @PathVariable contactEventId: Long,
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<ContactEvent> {
-    val response = contactEventService.getContactEvent(hmppsId, contactEventId, requestContext?.filters)
+    val response = contactEventService.getContactEvent(hmppsId, contactEventId, requestContext)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Bad request from upstream ${response.errors.first().description}")
