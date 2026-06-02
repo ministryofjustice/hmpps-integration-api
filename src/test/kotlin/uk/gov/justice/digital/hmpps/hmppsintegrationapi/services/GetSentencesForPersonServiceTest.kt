@@ -15,7 +15,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiBooking
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInNomisOnlyPersona
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationOnlyPersona
@@ -32,7 +31,7 @@ internal class GetSentencesForPersonServiceTest(
 ) : DescribeSpec(
     {
       val hmppsId = "A1234AA"
-      val filters = ConsumerFilters(null)
+      val filters = null
       val firstBookingId = 1
       val secondBookingId = 2
       val personFromProbationOffenderSearch =
@@ -104,7 +103,7 @@ internal class GetSentencesForPersonServiceTest(
           ),
         )
 
-        val result = getSentencesForPersonService.execute(hmppsId, filters)
+        val result = getSentencesForPersonService.execute(hmppsId)
         result.errors.shouldBe(nDelius500Error)
       }
 
@@ -115,7 +114,7 @@ internal class GetSentencesForPersonServiceTest(
           ),
         )
 
-        val result = getSentencesForPersonService.execute(hmppsId, filters)
+        val result = getSentencesForPersonService.execute(hmppsId)
         result.errors.shouldBe(nomis404Error)
       }
 
@@ -129,7 +128,7 @@ internal class GetSentencesForPersonServiceTest(
           Response(data = listOf(nDeliusSentence1, nDeliusSentence2)),
         )
 
-        val result = getSentencesForPersonService.execute(hmppsId, filters)
+        val result = getSentencesForPersonService.execute(hmppsId)
         result.shouldBe(Response(data = listOf(nDeliusSentence1, nDeliusSentence2)))
       }
 
@@ -143,7 +142,7 @@ internal class GetSentencesForPersonServiceTest(
           Response(data = emptyList(), errors = nDelius500Error),
         )
 
-        val result = getSentencesForPersonService.execute(hmppsId, filters)
+        val result = getSentencesForPersonService.execute(hmppsId)
         result.errors.shouldBe(nDelius500Error)
       }
 
@@ -165,7 +164,7 @@ internal class GetSentencesForPersonServiceTest(
           Response(data = listOf(nomisSentence2)),
         )
 
-        val result = getSentencesForPersonService.execute(hmppsId, filters)
+        val result = getSentencesForPersonService.execute(hmppsId)
         result.shouldBe(Response(data = listOf(nomisSentence1, nomisSentence2)))
       }
 
@@ -182,7 +181,7 @@ internal class GetSentencesForPersonServiceTest(
           ),
         )
 
-        val result = getSentencesForPersonService.execute(hmppsId, filters)
+        val result = getSentencesForPersonService.execute(hmppsId)
         result.errors.shouldBe(nomis500Error)
       }
 
@@ -204,7 +203,7 @@ internal class GetSentencesForPersonServiceTest(
           Response(data = emptyList(), errors = nomis500Error),
         )
 
-        val result = getSentencesForPersonService.execute(hmppsId, filters)
+        val result = getSentencesForPersonService.execute(hmppsId)
         result.errors.shouldBe(listOf(nomis500Error, nomis500Error).flatten())
       }
 
@@ -229,7 +228,7 @@ internal class GetSentencesForPersonServiceTest(
           Response(data = listOf(nDeliusSentence1, nDeliusSentence2)),
         )
 
-        val result = getSentencesForPersonService.execute(hmppsId, filters)
+        val result = getSentencesForPersonService.execute(hmppsId)
         result.shouldBe(Response(data = listOf(nomisSentence1, nomisSentence2, nDeliusSentence1, nDeliusSentence2)))
       }
 
@@ -254,7 +253,7 @@ internal class GetSentencesForPersonServiceTest(
           Response(data = emptyList(), errors = nDelius404Error),
         )
 
-        val result = getSentencesForPersonService.execute(hmppsId, filters)
+        val result = getSentencesForPersonService.execute(hmppsId)
         result.shouldBe(Response(data = listOf(nomisSentence1, nomisSentence2)))
       }
 
@@ -274,7 +273,7 @@ internal class GetSentencesForPersonServiceTest(
           Response(data = listOf(nDeliusSentence1, nDeliusSentence2)),
         )
 
-        val result = getSentencesForPersonService.execute(hmppsId, filters)
+        val result = getSentencesForPersonService.execute(hmppsId)
         result.shouldBe(Response(data = listOf(nDeliusSentence1, nDeliusSentence2)))
       }
 
@@ -299,7 +298,7 @@ internal class GetSentencesForPersonServiceTest(
           Response(data = listOf(nDeliusSentence1, nDeliusSentence2)),
         )
 
-        val result = getSentencesForPersonService.execute(hmppsId, filters)
+        val result = getSentencesForPersonService.execute(hmppsId)
         result.shouldBe(Response(data = listOf(nDeliusSentence1, nDeliusSentence2)))
       }
 
@@ -316,7 +315,7 @@ internal class GetSentencesForPersonServiceTest(
           ),
         )
 
-        val result = getSentencesForPersonService.execute(hmppsId, filters)
+        val result = getSentencesForPersonService.execute(hmppsId)
         result.errors.shouldBe(nomis500Error)
       }
 
@@ -338,7 +337,7 @@ internal class GetSentencesForPersonServiceTest(
           Response(data = emptyList(), errors = nomis500Error),
         )
 
-        val result = getSentencesForPersonService.execute(hmppsId, filters)
+        val result = getSentencesForPersonService.execute(hmppsId)
         result.errors.shouldBe(listOf(nomis500Error, nomis500Error).flatten())
       }
 
@@ -363,7 +362,7 @@ internal class GetSentencesForPersonServiceTest(
           Response(data = emptyList(), errors = nDelius500Error),
         )
 
-        val result = getSentencesForPersonService.execute(hmppsId, filters)
+        val result = getSentencesForPersonService.execute(hmppsId)
         result.errors.shouldBe(nDelius500Error)
       }
 
@@ -383,7 +382,7 @@ internal class GetSentencesForPersonServiceTest(
           Response(data = emptyList(), errors = nDelius500Error),
         )
 
-        val result = getSentencesForPersonService.execute(hmppsId, filters)
+        val result = getSentencesForPersonService.execute(hmppsId)
         result.errors.shouldBe(nDelius500Error)
       }
 
@@ -408,7 +407,7 @@ internal class GetSentencesForPersonServiceTest(
           Response(data = emptyList(), errors = nDelius500Error),
         )
 
-        val result = getSentencesForPersonService.execute(hmppsId, filters)
+        val result = getSentencesForPersonService.execute(hmppsId)
         result.errors.shouldBe(nDelius500Error)
       }
 
@@ -428,7 +427,7 @@ internal class GetSentencesForPersonServiceTest(
           Response(data = emptyList(), errors = nDelius404Error),
         )
 
-        val result = getSentencesForPersonService.execute(hmppsId, filters)
+        val result = getSentencesForPersonService.execute(hmppsId)
         result.errors.shouldBe(nomis500Error)
       }
     },

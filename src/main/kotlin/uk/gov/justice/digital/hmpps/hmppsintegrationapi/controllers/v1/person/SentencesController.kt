@@ -53,7 +53,7 @@ class SentencesController(
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
     @RequestAttribute requestContext: RequestContext?,
   ): PaginatedResponse<Sentence> {
-    val response = getSentencesForPersonService.execute(hmppsId, requestContext?.filters)
+    val response = getSentencesForPersonService.execute(hmppsId, requestContext)
 
     if (response.hasErrorCausedBy(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")

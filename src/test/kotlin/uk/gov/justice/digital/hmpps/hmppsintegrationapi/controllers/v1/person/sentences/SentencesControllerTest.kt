@@ -6,7 +6,9 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doThrow
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
@@ -46,11 +48,10 @@ internal class SentencesControllerTest(
       describe("/sentences") {
         val hmppsId = "A1234AA"
         val path = "/v1/persons/$hmppsId/sentences"
-        val filters = null
 
         beforeTest {
           Mockito.reset(getSentencesForPersonService)
-          whenever(getSentencesForPersonService.execute(hmppsId, filters)).thenReturn(
+          whenever(getSentencesForPersonService.execute(eq(hmppsId), any())).thenReturn(
             Response(
               data =
                 listOf(
@@ -71,7 +72,7 @@ internal class SentencesControllerTest(
         it("gets the sentences for a person with the matching ID") {
           mockMvc.performAuthorised(path)
 
-          verify(getSentencesForPersonService, VerificationModeFactory.times(1)).execute(hmppsId, filters)
+          verify(getSentencesForPersonService, VerificationModeFactory.times(1)).execute(eq(hmppsId), any())
         }
 
         it("returns the sentences for a person with the matching ID") {
@@ -151,7 +152,7 @@ internal class SentencesControllerTest(
           val hmppsIdForPersonWithNoSentences = "A1234AA"
           val sentencesPath = "/v1/persons/$hmppsIdForPersonWithNoSentences/sentences"
 
-          whenever(getSentencesForPersonService.execute(hmppsIdForPersonWithNoSentences, filters)).thenReturn(
+          whenever(getSentencesForPersonService.execute(eq(hmppsIdForPersonWithNoSentences), any())).thenReturn(
             Response(
               data = emptyList(),
             ),
@@ -163,7 +164,7 @@ internal class SentencesControllerTest(
         }
 
         it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
-          whenever(getSentencesForPersonService.execute(hmppsId, filters)).thenReturn(
+          whenever(getSentencesForPersonService.execute(eq(hmppsId), any())).thenReturn(
             Response(
               data = emptyList(),
               errors =
@@ -182,7 +183,7 @@ internal class SentencesControllerTest(
         }
 
         it("returns a 400 Bad request status code when hmpps id invalid in the upstream API") {
-          whenever(getSentencesForPersonService.execute(hmppsId, filters)).thenReturn(
+          whenever(getSentencesForPersonService.execute(eq(hmppsId), any())).thenReturn(
             Response(
               data = emptyList(),
               errors =
@@ -201,7 +202,7 @@ internal class SentencesControllerTest(
         }
 
         it("returns paginated results") {
-          whenever(getSentencesForPersonService.execute(hmppsId, filters)).thenReturn(
+          whenever(getSentencesForPersonService.execute(eq(hmppsId), any())).thenReturn(
             Response(
               data =
                 List(20) {
@@ -219,7 +220,7 @@ internal class SentencesControllerTest(
         }
 
         it("logs audit") {
-          whenever(getSentencesForPersonService.execute(hmppsId, filters)).thenReturn(
+          whenever(getSentencesForPersonService.execute(eq(hmppsId), any())).thenReturn(
             Response(
               data =
                 List(20) {
@@ -239,7 +240,7 @@ internal class SentencesControllerTest(
         }
 
         it("returns a 500 INTERNAL SERVER ERROR status code when upstream api return expected error") {
-          whenever(getSentencesForPersonService.execute(hmppsId, filters)).doThrow(
+          whenever(getSentencesForPersonService.execute(eq(hmppsId), any())).doThrow(
             WebClientResponseException(500, "MockError", null, null, null, null),
           )
 
