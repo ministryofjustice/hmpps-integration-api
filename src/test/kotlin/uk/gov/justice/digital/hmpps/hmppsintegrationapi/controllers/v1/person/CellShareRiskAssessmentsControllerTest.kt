@@ -4,8 +4,6 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
-import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,7 +14,6 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -42,7 +39,7 @@ internal class CellShareRiskAssessmentsControllerTest(
       describe("GET $path") {
         beforeTest {
           Mockito.reset(csraService)
-          whenever(csraService.getCsraAssessments(eq(hmppsId), any<RequestContext>())).thenReturn(
+          whenever(csraService.getCsraAssessments(hmppsId, filters)).thenReturn(
             Response(
               listOf(
                 PrisonApiAssessmentSummary(
@@ -71,7 +68,7 @@ internal class CellShareRiskAssessmentsControllerTest(
 
         it("gets csras for a person with the matching ID") {
           mockMvc.performAuthorised(path)
-          verify(csraService, VerificationModeFactory.times(1)).getCsraAssessments(eq(hmppsId), any<RequestContext>())
+          verify(csraService, VerificationModeFactory.times(1)).getCsraAssessments(hmppsId, filters)
         }
 
         it("logs audit") {
@@ -84,7 +81,7 @@ internal class CellShareRiskAssessmentsControllerTest(
         }
 
         it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
-          whenever(csraService.getCsraAssessments(eq(hmppsId), any<RequestContext>())).thenReturn(
+          whenever(csraService.getCsraAssessments(hmppsId, filters)).thenReturn(
             Response(
               data = null,
               errors =
@@ -103,7 +100,7 @@ internal class CellShareRiskAssessmentsControllerTest(
         }
 
         it("returns a 400 BAD REQUEST status code when a bad request is sent to the upstream API") {
-          whenever(csraService.getCsraAssessments(eq(hmppsId), any<RequestContext>())).thenReturn(
+          whenever(csraService.getCsraAssessments(hmppsId, filters)).thenReturn(
             Response(
               data = null,
               errors =

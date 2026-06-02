@@ -7,7 +7,6 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsId
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
@@ -31,7 +30,7 @@ internal class GetHmppsIdServiceTest(
       val persona = personInProbationAndNomisPersona
       val nomisNumber = persona.identifiers.nomisNumber!!
       val hmppsId = nomisNumber
-      val filters = buildRequestContext(filters = ConsumerFilters(listOf("ABC")))
+      val filters = ConsumerFilters(listOf("ABC"))
 
       beforeEach {
         Mockito.reset(getPersonService)

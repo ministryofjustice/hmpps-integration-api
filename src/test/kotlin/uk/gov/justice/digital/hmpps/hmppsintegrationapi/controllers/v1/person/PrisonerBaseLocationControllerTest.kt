@@ -3,9 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.person
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
-import org.mockito.kotlin.any
 import org.mockito.kotlin.doThrow
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -19,7 +17,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.LastMovementType
@@ -66,7 +63,7 @@ internal class PrisonerBaseLocationControllerTest(
         beforeTest {
           reset(getPrisonerBaseLocationForPersonService)
           reset(auditService)
-          whenever(getPrisonerBaseLocationForPersonService.execute(eq(hmppsId), any<RequestContext>())).thenReturn(Response(data = prisonerBaseLocationReceived()))
+          whenever(getPrisonerBaseLocationForPersonService.execute(hmppsId, filters)).thenReturn(Response(data = prisonerBaseLocationReceived()))
         }
 
         it("returns a 200 OK status code") {
@@ -78,7 +75,7 @@ internal class PrisonerBaseLocationControllerTest(
         it("gets the prisoner base location for a person with the matching ID") {
           mockMvc.performAuthorised(path)
 
-          verify(getPrisonerBaseLocationForPersonService, times(1)).execute(eq(hmppsId), any<RequestContext>())
+          verify(getPrisonerBaseLocationForPersonService, times(1)).execute(hmppsId, filters)
         }
 
         it("logs audit") {
@@ -104,7 +101,7 @@ internal class PrisonerBaseLocationControllerTest(
         }
 
         it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
-          whenever(getPrisonerBaseLocationForPersonService.execute(eq(hmppsId), any<RequestContext>())).thenReturn(
+          whenever(getPrisonerBaseLocationForPersonService.execute(hmppsId, filters)).thenReturn(
             Response(
               data = null,
               errors =
@@ -123,7 +120,7 @@ internal class PrisonerBaseLocationControllerTest(
         }
 
         it("returns a 400 BAD Request status code when an invalid hmpps id is found in the upstream API") {
-          whenever(getPrisonerBaseLocationForPersonService.execute(eq(hmppsId), any<RequestContext>())).thenReturn(
+          whenever(getPrisonerBaseLocationForPersonService.execute(hmppsId, filters)).thenReturn(
             Response(
               data = null,
               errors =
@@ -142,7 +139,7 @@ internal class PrisonerBaseLocationControllerTest(
         }
 
         it("fails with the appropriate error when an upstream service is down") {
-          whenever(getPrisonerBaseLocationForPersonService.execute(eq(hmppsId), any<RequestContext>())).doThrow(
+          whenever(getPrisonerBaseLocationForPersonService.execute(hmppsId, filters)).doThrow(
             WebClientResponseException(500, "MockError", null, null, null, null),
           )
 

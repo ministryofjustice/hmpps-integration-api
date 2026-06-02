@@ -4,8 +4,6 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import jakarta.servlet.http.HttpServletRequest
 import org.mockito.Mockito
-import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -19,7 +17,6 @@ import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivityCategory
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivityScheduledInstanceForPrisoner
@@ -177,7 +174,7 @@ class PrisonActivitiesControllerTest(
         }
 
         it("should return 200 when success") {
-          whenever(getScheduledInstancesForPrisonerService.execute(eq(prisonId), eq(hmppsId), eq("2022-09-10"), eq("2023-09-10"), eq(null), any<RequestContext>())).thenReturn(Response(data = activityScheduledInstanceForPerson))
+          whenever(getScheduledInstancesForPrisonerService.execute(prisonId, hmppsId, "2022-09-10", "2023-09-10", null, filters)).thenReturn(Response(data = activityScheduledInstanceForPerson))
 
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.OK.value())
@@ -185,7 +182,7 @@ class PrisonActivitiesControllerTest(
         }
 
         it("should call the audit service") {
-          whenever(getScheduledInstancesForPrisonerService.execute(eq(prisonId), eq(hmppsId), eq("2022-09-10"), eq("2023-09-10"), eq(null), any<RequestContext>())).thenReturn(Response(data = activityScheduledInstanceForPerson))
+          whenever(getScheduledInstancesForPrisonerService.execute(prisonId, hmppsId, "2022-09-10", "2023-09-10", null, filters)).thenReturn(Response(data = activityScheduledInstanceForPerson))
 
           mockMvc.performAuthorised(path)
           verify(
@@ -198,7 +195,7 @@ class PrisonActivitiesControllerTest(
         }
 
         it("returns 400 when getScheduledInstancesForPrisonerService returns bad request") {
-          whenever(getScheduledInstancesForPrisonerService.execute(eq(prisonId), eq(hmppsId), eq("2022-09-10"), eq("2023-09-10"), eq(null), any<RequestContext>())).thenReturn(
+          whenever(getScheduledInstancesForPrisonerService.execute(prisonId, hmppsId, "2022-09-10", "2023-09-10", null, filters)).thenReturn(
             Response(
               data = null,
               errors =
@@ -216,7 +213,7 @@ class PrisonActivitiesControllerTest(
         }
 
         it("returns 404 when getScheduledInstancesForPrisonerService returns not found") {
-          whenever(getScheduledInstancesForPrisonerService.execute(eq(prisonId), eq(hmppsId), eq("2022-09-10"), eq("2023-09-10"), eq(null), any<RequestContext>())).thenReturn(
+          whenever(getScheduledInstancesForPrisonerService.execute(prisonId, hmppsId, "2022-09-10", "2023-09-10", null, filters)).thenReturn(
             Response(
               data = null,
               errors =
@@ -371,7 +368,7 @@ class PrisonActivitiesControllerTest(
         }
 
         it("should return 200 when success") {
-          whenever(getHistoricalAttendancesService.execute(eq(hmppsId), eq(startDate), eq(endDate), eq(prisonId), any<RequestContext>())).thenReturn(Response(data = listOf(historicalAttendance)))
+          whenever(getHistoricalAttendancesService.execute(hmppsId, startDate, endDate, prisonId, filters)).thenReturn(Response(data = listOf(historicalAttendance)))
 
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.OK.value())
@@ -379,7 +376,7 @@ class PrisonActivitiesControllerTest(
         }
 
         it("should call the audit service") {
-          whenever(getHistoricalAttendancesService.execute(eq(hmppsId), eq(startDate), eq(endDate), eq(prisonId), any<RequestContext>())).thenReturn(Response(data = listOf(historicalAttendance)))
+          whenever(getHistoricalAttendancesService.execute(hmppsId, startDate, endDate, prisonId, filters)).thenReturn(Response(data = listOf(historicalAttendance)))
 
           mockMvc.performAuthorised(path)
           verify(
@@ -392,7 +389,7 @@ class PrisonActivitiesControllerTest(
         }
 
         it("returns 400 when getHistoricalAttendancesService returns bad request") {
-          whenever(getHistoricalAttendancesService.execute(eq(hmppsId), eq(startDate), eq(endDate), eq(prisonId), any<RequestContext>())).thenReturn(
+          whenever(getHistoricalAttendancesService.execute(hmppsId, startDate, endDate, prisonId, filters)).thenReturn(
             Response(
               data = null,
               errors =
@@ -410,7 +407,7 @@ class PrisonActivitiesControllerTest(
         }
 
         it("returns 404 when getHistoricalAttendancesService returns not found") {
-          whenever(getHistoricalAttendancesService.execute(eq(hmppsId), eq(startDate), eq(endDate), eq(prisonId), any<RequestContext>())).thenReturn(
+          whenever(getHistoricalAttendancesService.execute(hmppsId, startDate, endDate, prisonId, filters)).thenReturn(
             Response(
               data = null,
               errors =

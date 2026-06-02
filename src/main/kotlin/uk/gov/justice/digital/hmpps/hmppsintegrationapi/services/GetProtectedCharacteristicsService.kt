@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
@@ -11,6 +10,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonProte
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService.IdentifierType
 
 @Service
@@ -23,9 +23,8 @@ class GetProtectedCharacteristicsService(
 ) {
   fun execute(
     hmppsId: String,
-    requestContext: RequestContext?,
+    filters: ConsumerFilters?,
   ): Response<PersonProtectedCharacteristics?> {
-    val filters = requestContext?.filters
     val hmppsIdType = getPersonService.identifyHmppsId(hmppsId)
     if (hmppsIdType == IdentifierType.UNKNOWN) {
       return Response(
@@ -34,12 +33,12 @@ class GetProtectedCharacteristicsService(
       )
     }
 
-    val probationOffender = deliusGateway.getOffender(hmppsId, requestContext)
+    val probationOffender = deliusGateway.getOffender(hmppsId)
 
     if (probationOffender.data != null) {
       val prisonOffender =
         probationOffender.data.otherIds.nomsNumber
-          ?.let { prisonerOffenderSearchGateway.getPrisonOffender(it, requestContext) }
+          ?.let { prisonerOffenderSearchGateway.getPrisonOffender(it) }
       if (filters != null) {
         val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<PersonProtectedCharacteristics>(prisonOffender?.data?.prisonId, filters)
         if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
@@ -52,7 +51,7 @@ class GetProtectedCharacteristicsService(
         result.maritalStatus = prisonOffender.data.maritalStatus
 
         if (prisonOffender.data.bookingId != null) {
-          result.reasonableAdjustments = prisonApiGateway.getReasonableAdjustments(prisonOffender.data.bookingId, requestContext).data
+          result.reasonableAdjustments = prisonApiGateway.getReasonableAdjustments(prisonOffender.data.bookingId).data
         }
       }
       return Response(data = result, errors = probationOffender.errors)

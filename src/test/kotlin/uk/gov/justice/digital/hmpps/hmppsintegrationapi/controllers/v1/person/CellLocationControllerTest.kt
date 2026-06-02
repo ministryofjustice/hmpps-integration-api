@@ -5,9 +5,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
-import org.mockito.kotlin.any
 import org.mockito.kotlin.doThrow
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,7 +17,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CellLocation
@@ -47,7 +44,7 @@ internal class CellLocationControllerTest(
         beforeTest {
           Mockito.reset(getCellLocationForPersonService)
           Mockito.reset(auditService)
-          whenever(getCellLocationForPersonService.execute(eq(hmppsId), any<RequestContext>())).thenReturn(
+          whenever(getCellLocationForPersonService.execute(hmppsId, filters)).thenReturn(
             Response(
               data =
                 CellLocation(
@@ -68,7 +65,7 @@ internal class CellLocationControllerTest(
         it("gets the cell location for a person with the matching ID") {
           mockMvc.performAuthorised(path)
 
-          verify(getCellLocationForPersonService, VerificationModeFactory.times(1)).execute(eq(hmppsId), any<RequestContext>())
+          verify(getCellLocationForPersonService, VerificationModeFactory.times(1)).execute(hmppsId, filters)
         }
 
         it("logs audit") {
@@ -98,7 +95,7 @@ internal class CellLocationControllerTest(
           val hmppsIdForPersonNotInPrison = "A1234AA"
           val needsPath = "/v1/persons/$hmppsIdForPersonNotInPrison/cell-location"
 
-          whenever(getCellLocationForPersonService.execute(eq(hmppsIdForPersonNotInPrison), any<RequestContext>())).thenReturn(Response(data = null))
+          whenever(getCellLocationForPersonService.execute(hmppsIdForPersonNotInPrison, filters)).thenReturn(Response(data = null))
 
           val result = mockMvc.performAuthorised(needsPath)
 
@@ -106,7 +103,7 @@ internal class CellLocationControllerTest(
         }
 
         it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
-          whenever(getCellLocationForPersonService.execute(eq(hmppsId), any<RequestContext>())).thenReturn(
+          whenever(getCellLocationForPersonService.execute(hmppsId, filters)).thenReturn(
             Response(
               data = null,
               errors =
@@ -125,7 +122,7 @@ internal class CellLocationControllerTest(
         }
 
         it("returns a 400 BAD Request status code when an invalid hmpps id is found in the upstream API") {
-          whenever(getCellLocationForPersonService.execute(eq(hmppsId), any<RequestContext>())).thenReturn(
+          whenever(getCellLocationForPersonService.execute(hmppsId, filters)).thenReturn(
             Response(
               data = null,
               errors =
@@ -144,7 +141,7 @@ internal class CellLocationControllerTest(
         }
 
         it("fails with the appropriate error when an upstream service is down") {
-          whenever(getCellLocationForPersonService.execute(eq(hmppsId), any<RequestContext>())).doThrow(
+          whenever(getCellLocationForPersonService.execute(hmppsId, filters)).doThrow(
             WebClientResponseException(500, "MockError", null, null, null, null),
           )
 

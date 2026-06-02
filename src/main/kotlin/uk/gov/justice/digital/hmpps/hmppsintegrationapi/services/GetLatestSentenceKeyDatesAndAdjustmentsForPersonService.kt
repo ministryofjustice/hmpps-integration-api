@@ -2,13 +2,13 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.KeyDatesAndAdjustmentsDTO
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.LatestSentenceKeyDatesAndAdjustments
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetLatestSentenceKeyDatesAndAdjustmentsForPersonService(
@@ -17,9 +17,9 @@ class GetLatestSentenceKeyDatesAndAdjustmentsForPersonService(
 ) {
   fun execute(
     hmppsId: String,
-    requestContext: RequestContext?,
+    filters: ConsumerFilters?,
   ): Response<LatestSentenceKeyDatesAndAdjustments?> {
-    val (person, personErrors) = getPersonService.getPersonWithPrisonFilter(hmppsId, requestContext)
+    val (person, personErrors) = getPersonService.getPersonWithPrisonFilter(hmppsId, filters)
 
     if (personErrors.isNotEmpty()) {
       return Response(data = null, personErrors)

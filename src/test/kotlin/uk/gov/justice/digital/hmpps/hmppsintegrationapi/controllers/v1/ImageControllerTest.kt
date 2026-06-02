@@ -4,9 +4,7 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
-import org.mockito.kotlin.any
 import org.mockito.kotlin.doThrow
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,7 +17,6 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -110,7 +107,7 @@ internal class ImageControllerTest(
 
         beforeTest {
           Mockito.reset(getImageService)
-          whenever(getImageService.execute(eq(id), eq(hmppsId), any<RequestContext>())).thenReturn(Response(data = image))
+          whenever(getImageService.execute(id, hmppsId, filter)).thenReturn(Response(data = image))
           Mockito.reset(auditService)
           Mockito.reset(featureFlag)
         }
@@ -134,7 +131,7 @@ internal class ImageControllerTest(
         }
 
         it("returns a 404 NOT FOUND status code") {
-          whenever(getImageService.execute(eq(id), eq(hmppsId), any<RequestContext>())).thenReturn(
+          whenever(getImageService.execute(id, hmppsId, filter)).thenReturn(
             Response(
               data = byteArrayOf(),
               errors =
@@ -153,7 +150,7 @@ internal class ImageControllerTest(
 
         it("returns a 500 INTERNAL SERVER ERROR status code when upstream api return expected error") {
 
-          whenever(getImageService.execute(eq(id), eq(hmppsId), any<RequestContext>())).doThrow(
+          whenever(getImageService.execute(id, hmppsId, filter)).doThrow(
             WebClientResponseException(500, "MockError", null, null, null, null),
           )
 

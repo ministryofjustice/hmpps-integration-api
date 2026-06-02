@@ -2,12 +2,12 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Attendance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetAttendanceByIdService(
@@ -16,7 +16,7 @@ class GetAttendanceByIdService(
 ) {
   fun execute(
     attendanceId: Long,
-    requestContext: RequestContext?,
+    filters: ConsumerFilters?,
   ): Response<Attendance?> {
     val attendanceResponse = activitiesGateway.getAttendanceById(attendanceId)
     if (attendanceResponse.errors.isNotEmpty()) {
@@ -32,7 +32,7 @@ class GetAttendanceByIdService(
           data = null,
           errors = listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.ENTITY_NOT_FOUND)),
         )
-    val personResponse = getPersonService.getPersonWithPrisonFilter(hmppsId, requestContext)
+    val personResponse = getPersonService.getPersonWithPrisonFilter(hmppsId, filters)
     if (personResponse.errors.isNotEmpty()) {
       return Response(
         data = null,

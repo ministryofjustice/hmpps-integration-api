@@ -5,9 +5,7 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
-import org.mockito.kotlin.any
 import org.mockito.kotlin.doThrow
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,7 +17,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Adjudication
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.IncidentDetailsDto
@@ -50,7 +47,7 @@ internal class AdjudicationsControllerTest(
           Mockito.reset(getAdjudicationsForPersonService)
           Mockito.reset(auditService)
           Mockito.reset(getPersonService)
-          whenever(getAdjudicationsForPersonService.execute(eq(hmppsId), any<RequestContext>())).thenReturn(
+          whenever(getAdjudicationsForPersonService.execute(hmppsId, filters)).thenReturn(
             Response(
               data =
                 listOf(
@@ -66,7 +63,7 @@ internal class AdjudicationsControllerTest(
         }
 
         it("throws exception when no person found") {
-          whenever(getAdjudicationsForPersonService.execute(eq("notfound"), any<RequestContext>())).thenReturn(
+          whenever(getAdjudicationsForPersonService.execute(hmppsId = "notfound", filters)).thenReturn(
             Response(
               data = emptyList(),
               errors =
@@ -93,7 +90,7 @@ internal class AdjudicationsControllerTest(
         }
 
         it("returns paginated adjudication results") {
-          whenever(getAdjudicationsForPersonService.execute(eq(hmppsId), any<RequestContext>())).thenReturn(
+          whenever(getAdjudicationsForPersonService.execute(hmppsId, filters)).thenReturn(
             Response(
               data =
                 List(20) {
@@ -118,7 +115,7 @@ internal class AdjudicationsControllerTest(
         }
 
         it("fails with the appropriate error when an upstream service is down") {
-          whenever(getAdjudicationsForPersonService.execute(eq(hmppsId), any<RequestContext>())).doThrow(
+          whenever(getAdjudicationsForPersonService.execute(hmppsId, filters)).doThrow(
             WebClientResponseException(500, "MockError", null, null, null, null),
           )
 
@@ -133,7 +130,7 @@ internal class AdjudicationsControllerTest(
         }
 
         it("returns a 400 Bad request status code when hmpps id invalid in the upstream API") {
-          whenever(getAdjudicationsForPersonService.execute(eq(hmppsId), any<RequestContext>())).thenReturn(
+          whenever(getAdjudicationsForPersonService.execute(hmppsId, filters)).thenReturn(
             Response(
               data = emptyList(),
               errors =

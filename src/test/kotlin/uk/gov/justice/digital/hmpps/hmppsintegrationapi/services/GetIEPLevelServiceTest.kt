@@ -8,7 +8,6 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.IncentivesGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -28,7 +27,7 @@ internal class GetIEPLevelServiceTest(
   private val getIEPLevelService: GetIEPLevelService,
 ) : DescribeSpec({
     val hmppsId = "A1234AA"
-    val filters = buildRequestContext(filters = ConsumerFilters(null))
+    val filters = ConsumerFilters(null)
 
     val iepReviewHistory =
       IncIEPReviewHistory(

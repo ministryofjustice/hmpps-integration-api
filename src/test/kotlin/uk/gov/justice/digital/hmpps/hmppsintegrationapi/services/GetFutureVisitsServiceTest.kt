@@ -104,7 +104,7 @@ class GetFutureVisitsServiceTest(
       Mockito.reset(getPersonService)
       Mockito.reset(prisonVisitsGateway)
 
-      whenever(getPersonService.getPersonWithPrisonFilter(nomisNumber, requestContext = null)).thenReturn(
+      whenever(getPersonService.getPersonWithPrisonFilter(nomisNumber, filters = null)).thenReturn(
         Response(data = person),
       )
 
@@ -114,28 +114,28 @@ class GetFutureVisitsServiceTest(
     }
 
     it("returns a 200 status in the case of a successful query") {
-      val response = getFutureVisitsService.execute(nomisNumber, requestContext = null)
+      val response = getFutureVisitsService.execute(nomisNumber, filters = null)
       response.data.shouldBe(futureVisitServiceResponse)
       response.errors.shouldBeEmpty()
     }
 
     it("returns an errors if getPersonWithPrisonFilter returns an error") {
       val errors = listOf(UpstreamApiError(type = UpstreamApiError.Type.ENTITY_NOT_FOUND, causedBy = UpstreamApi.PRISON_API, description = "Person with prison filters error"))
-      whenever(getPersonService.getPersonWithPrisonFilter(nomisNumber, requestContext = null)).thenReturn(
+      whenever(getPersonService.getPersonWithPrisonFilter(nomisNumber, filters = null)).thenReturn(
         Response(data = null, errors = errors),
       )
 
-      val response = getFutureVisitsService.execute(nomisNumber, requestContext = null)
+      val response = getFutureVisitsService.execute(nomisNumber, filters = null)
       response.data.shouldBe(null)
       response.errors.shouldBe(errors)
     }
 
     it("returns a 404 if no Nomis number found on the person") {
-      whenever(getPersonService.getPersonWithPrisonFilter(deliusCrn, requestContext = null)).thenReturn(
+      whenever(getPersonService.getPersonWithPrisonFilter(deliusCrn, filters = null)).thenReturn(
         Response(data = personWithoutNomisNumber),
       )
 
-      val response = getFutureVisitsService.execute(deliusCrn, requestContext = null)
+      val response = getFutureVisitsService.execute(deliusCrn, filters = null)
       response.data.shouldBe(null)
       response.errors.shouldBe(
         listOf(
@@ -154,7 +154,7 @@ class GetFutureVisitsServiceTest(
         Response(data = null, errors = errors),
       )
 
-      val response = getFutureVisitsService.execute(nomisNumber, requestContext = null)
+      val response = getFutureVisitsService.execute(nomisNumber, filters = null)
       response.data.shouldBe(null)
       response.errors.shouldBe(errors)
     }

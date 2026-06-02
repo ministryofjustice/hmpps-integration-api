@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerAlertsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedAlerts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -17,12 +16,12 @@ class GetAlertsForPersonService(
 ) {
   fun getAlerts(
     hmppsId: String,
-    requestContext: RequestContext?,
+    filters: ConsumerFilters?,
     page: Int,
     perPage: Int,
     activeOnly: Boolean? = false,
   ): Response<PaginatedAlerts?> {
-    val personResponse = getPersonService.getNomisNumber(hmppsId, requestContext)
+    val personResponse = getPersonService.getNomisNumber(hmppsId, filters)
 
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = personResponse.errors)
@@ -34,7 +33,7 @@ class GetAlertsForPersonService(
         errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND)),
       )
 
-    val alertsResponse = prisonerAlertsGateway.getPrisonerAlertsForCodes(nomisNumber, page, size = perPage, ConsumerFilters.alertCodes(requestContext?.filters), activeOnly)
+    val alertsResponse = prisonerAlertsGateway.getPrisonerAlertsForCodes(nomisNumber, page, size = perPage, ConsumerFilters.alertCodes(filters), activeOnly)
     if (alertsResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = alertsResponse.errors)
     }

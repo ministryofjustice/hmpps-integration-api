@@ -3,12 +3,12 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetTransactionForPersonService(
@@ -20,16 +20,15 @@ class GetTransactionForPersonService(
     hmppsId: String,
     prisonId: String,
     clientUniqueRef: String,
-    requestContext: RequestContext? = null,
+    filters: ConsumerFilters? = null,
   ): Response<Transaction?> {
-    val filters = requestContext?.filters
     val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<Transaction>(prisonId, filters)
 
     if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
       return consumerPrisonFilterCheck
     }
 
-    val personResponse = getPersonService.getNomisNumber(hmppsId = hmppsId, requestContext)
+    val personResponse = getPersonService.getNomisNumber(hmppsId = hmppsId)
 
     if (personResponse.errors.isNotEmpty()) {
       return Response(
@@ -49,7 +48,6 @@ class GetTransactionForPersonService(
         prisonId,
         nomisNumber,
         clientUniqueRef,
-        requestContext,
       )
 
     if (nomisTransaction.errors.isNotEmpty()) {

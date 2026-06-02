@@ -49,7 +49,7 @@ class CellShareRiskAssessmentController(
     @Parameter(description = "The HMPPS ID of the person", example = "A1234AA") @PathVariable hmppsId: String,
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<List<PrisonApiAssessmentSummary>> {
-    val response = getCsraForPersonService.getCsraAssessments(hmppsId, requestContext)
+    val response = getCsraForPersonService.getCsraAssessments(hmppsId, requestContext?.filters)
     ensureResponse(hmppsId, response)
 
     auditService.createEvent("GET_PERSON_CSRA", mapOf("hmppsId" to hmppsId))

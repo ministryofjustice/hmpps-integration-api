@@ -45,7 +45,7 @@ class PersonResponsibleOfficerController(
     @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<PersonResponsibleOfficer> {
-    val prisonOffenderManager = getPrisonOffenderManagerForPersonService.execute(hmppsId, requestContext)
+    val prisonOffenderManager = getPrisonOffenderManagerForPersonService.execute(hmppsId, requestContext?.filters)
 
     if (prisonOffenderManager.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Invalid HMPPS ID: $hmppsId")
@@ -55,7 +55,7 @@ class PersonResponsibleOfficerController(
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
 
-    val communityOffenderManager = getCommunityOffenderManagerForPersonService.execute(hmppsId, requestContext)
+    val communityOffenderManager = getCommunityOffenderManagerForPersonService.execute(hmppsId, requestContext?.filters)
 
     if (communityOffenderManager.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Invalid HMPPS ID: $hmppsId")

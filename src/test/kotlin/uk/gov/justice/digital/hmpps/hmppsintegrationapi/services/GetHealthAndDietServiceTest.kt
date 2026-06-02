@@ -10,7 +10,6 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HealthAndMedicationGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.healthandmedication.HAMCateringInstructions
@@ -47,7 +46,7 @@ internal class GetHealthAndDietServiceTest(
     {
       val hmppsId = "A1234AA"
       val nomsId = "A1234BB"
-      val requestContext = buildRequestContext(filters = ConsumerFilters(prisons = null))
+      val filters = ConsumerFilters(prisons = null)
       val prisoner = POSPrisoner(firstName = "Jim", lastName = "Brown", smoker = "Y", dateOfBirth = LocalDate.of(1992, 12, 3), prisonerNumber = nomsId, youthOffender = false)
       val healthAndMedicationResponse =
         HAMHealthAndMedication(
@@ -122,39 +121,39 @@ internal class GetHealthAndDietServiceTest(
         Mockito.reset(prisonerOffenderSearchGateway)
         Mockito.reset(healthAndMedicationGateway)
 
-        whenever(getPersonService.getNomisNumber(hmppsId = hmppsId, requestContext = requestContext)).thenReturn(
+        whenever(getPersonService.getNomisNumber(hmppsId = hmppsId, filters = filters)).thenReturn(
           Response(
             data = NomisNumber(nomsId),
           ),
         )
 
-        whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsId, requestContext)).thenReturn(Response(data = prisoner))
+        whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsId)).thenReturn(Response(data = prisoner))
         whenever(healthAndMedicationGateway.getHealthAndMedicationData(nomsId)).thenReturn(Response(data = healthAndMedicationResponse))
       }
 
       it("gets a person from getPersonService") {
-        getHealthAndDietService.execute(hmppsId, requestContext)
-        verify(getPersonService, VerificationModeFactory.times(1)).getNomisNumber(hmppsId, requestContext)
+        getHealthAndDietService.execute(hmppsId, filters)
+        verify(getPersonService, VerificationModeFactory.times(1)).getNomisNumber(hmppsId, filters)
       }
 
       it("calls health and medication gateway") {
-        val response = getHealthAndDietService.execute(hmppsId, requestContext)
+        val response = getHealthAndDietService.execute(hmppsId, filters)
         verify(healthAndMedicationGateway, VerificationModeFactory.times(1)).getHealthAndMedicationData(nomsId)
       }
 
       it("calls prisoner search gateway") {
-        val response = getHealthAndDietService.execute(hmppsId, requestContext)
-        verify(prisonerOffenderSearchGateway, VerificationModeFactory.times(1)).getPrisonOffender(nomsNumber = nomsId, requestContext)
+        val response = getHealthAndDietService.execute(hmppsId, filters)
+        verify(prisonerOffenderSearchGateway, VerificationModeFactory.times(1)).getPrisonOffender(nomsNumber = nomsId)
       }
 
       it("returns health and diet information") {
         val healthAndDietResponse = HealthAndDiet(diet = healthAndMedicationResponse.dietAndAllergy.toDiet(), smoking = prisoner.smoker)
-        val response = getHealthAndDietService.execute(hmppsId, requestContext)
+        val response = getHealthAndDietService.execute(hmppsId, filters)
         response.data.shouldBe(healthAndDietResponse)
       }
 
       it("returns an upstream 404 error when prisoner not found") {
-        whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsId, requestContext)).thenReturn(
+        whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsId)).thenReturn(
           Response(
             data = null,
             errors =
@@ -167,7 +166,7 @@ internal class GetHealthAndDietServiceTest(
           ),
         )
 
-        val response = getHealthAndDietService.execute(hmppsId, requestContext)
+        val response = getHealthAndDietService.execute(hmppsId, filters)
         response.errors.shouldHaveSize(1)
         response.errors
           .first()
@@ -193,7 +192,7 @@ internal class GetHealthAndDietServiceTest(
           ),
         )
 
-        val response = getHealthAndDietService.execute(hmppsId, requestContext)
+        val response = getHealthAndDietService.execute(hmppsId, filters)
         response.errors.shouldHaveSize(0)
         response.data.shouldBe(
           HealthAndDiet(

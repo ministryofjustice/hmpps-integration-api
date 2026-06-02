@@ -99,7 +99,7 @@ class OffencesController(
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
     @RequestAttribute requestContext: RequestContext?,
   ): PaginatedResponse<Offence> {
-    val response = getOffencesForPersonService.execute(hmppsId, requestContext)
+    val response = getOffencesForPersonService.execute(hmppsId, requestContext?.filters)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")

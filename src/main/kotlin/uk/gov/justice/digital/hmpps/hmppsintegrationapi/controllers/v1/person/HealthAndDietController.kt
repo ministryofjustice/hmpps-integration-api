@@ -48,7 +48,7 @@ class HealthAndDietController(
     @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<HealthAndDiet?> {
-    val response = getHealthAndDietService.execute(hmppsId, requestContext)
+    val response = getHealthAndDietService.execute(hmppsId, requestContext?.filters)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find information for id: $hmppsId")

@@ -2,13 +2,13 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetSentencesForPersonService(
@@ -18,9 +18,9 @@ class GetSentencesForPersonService(
 ) {
   fun execute(
     hmppsId: String,
-    requestContext: RequestContext?,
+    filters: ConsumerFilters?,
   ): Response<List<Sentence>> {
-    val personResponse = getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, requestContext = requestContext)
+    val personResponse = getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters = filters)
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = emptyList(), errors = personResponse.errors)
     }
@@ -36,13 +36,13 @@ class GetSentencesForPersonService(
 
     var nomisSentenceResponse = Response<List<Sentence>>(data = emptyList())
     if (nomisNumber != null) {
-      val bookingIdsResponse = prisonApiGateway.getBookingIdsForPerson(nomisNumber, requestContext)
+      val bookingIdsResponse = prisonApiGateway.getBookingIdsForPerson(nomisNumber)
       if (bookingIdsResponse.errors.isNotEmpty()) {
         if (!bookingIdsResponse.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
           return Response(data = emptyList(), errors = bookingIdsResponse.errors)
         }
       } else {
-        nomisSentenceResponse = Response.merge(bookingIdsResponse.data.map { prisonApiGateway.getSentencesForBooking(it.bookingId, requestContext) })
+        nomisSentenceResponse = Response.merge(bookingIdsResponse.data.map { prisonApiGateway.getSentencesForBooking(it.bookingId) })
         if (nomisSentenceResponse.errors.isNotEmpty() && !nomisSentenceResponse.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
           return Response(data = emptyList(), errors = nomisSentenceResponse.errors)
         }
@@ -51,7 +51,7 @@ class GetSentencesForPersonService(
 
     var nDeliusSentencesResponse: Response<List<Sentence>> = Response(data = emptyList())
     if (deliusCrn != null) {
-      nDeliusSentencesResponse = nDeliusGateway.getSentencesForPerson(deliusCrn, requestContext)
+      nDeliusSentencesResponse = nDeliusGateway.getSentencesForPerson(deliusCrn)
       if (nDeliusSentencesResponse.errors.isNotEmpty()) {
         if (!nDeliusSentencesResponse.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
           return Response(data = emptyList(), errors = nDeliusSentencesResponse.errors)

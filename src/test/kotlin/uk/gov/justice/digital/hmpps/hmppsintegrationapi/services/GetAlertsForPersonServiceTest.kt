@@ -9,7 +9,6 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerAlertsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -21,6 +20,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonerAlerts.PA
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonerAlerts.PAPaginatedAlerts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonerAlerts.PASort
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithPndAlerts
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
@@ -36,7 +36,7 @@ internal class GetAlertsForPersonServiceTest(
 ) : DescribeSpec(
     {
       val hmppsId = "A1234AA"
-      val requestContext = buildRequestContext(filters = ConsumerFilters(null))
+      val filters = ConsumerFilters(null)
       val page = 1
       val perPage = 10
       val alert =
@@ -114,7 +114,7 @@ internal class GetAlertsForPersonServiceTest(
         Mockito.reset(prisonerAlertsGateway)
         Mockito.reset(personService)
 
-        whenever(personService.getNomisNumber(hmppsId, requestContext)).thenReturn(Response(data = NomisNumber(hmppsId)))
+        whenever(personService.getNomisNumber(hmppsId, filters)).thenReturn(Response(data = NomisNumber(hmppsId)))
         whenever(prisonerAlertsGateway.getPrisonerAlertsForCodes(hmppsId, page, perPage)).thenReturn(
           Response(
             data = paginatedAlerts,
@@ -128,31 +128,31 @@ internal class GetAlertsForPersonServiceTest(
       }
 
       it("gets a nomis number from getPersonService") {
-        getAlertsForPersonService.getAlerts(hmppsId, requestContext, page, perPage)
+        getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)
 
-        verify(personService, times(1)).getNomisNumber(hmppsId = hmppsId, requestContext)
+        verify(personService, times(1)).getNomisNumber(hmppsId = hmppsId, filters)
       }
 
       it("gets all alerts using a prisoner number") {
-        val response = getAlertsForPersonService.getAlerts(hmppsId, requestContext, page, perPage)
+        val response = getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)
         verify(prisonerAlertsGateway, times(1)).getPrisonerAlertsForCodes(hmppsId, page, perPage, emptyList(), false)
         response.data.shouldBe(paginatedAlerts.toPaginatedAlertsFilterApplied())
       }
 
       it("gets a nomis number from getPersonService - getAlerts") {
-        getAlertsForPersonService.getAlerts(hmppsId, requestContext, page, perPage)
+        getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)
 
-        verify(personService, times(1)).getNomisNumber(hmppsId = hmppsId, requestContext)
+        verify(personService, times(1)).getNomisNumber(hmppsId = hmppsId, filters)
       }
 
       it("gets alerts using a prisoner number - getAlerts") {
-        val response = getAlertsForPersonService.getAlerts(hmppsId, requestContext, page, perPage)
+        val response = getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)
         verify(prisonerAlertsGateway, times(1)).getPrisonerAlertsForCodes(hmppsId, page, perPage, activeOnly = false)
         response.data.shouldBe(paginatedAlerts.toPaginatedAlertsFilterApplied())
       }
 
       it("gets active alerts using a prisoner number - getAlerts") {
-        val response = getAlertsForPersonService.getAlerts(hmppsId, requestContext, page, perPage, true)
+        val response = getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage, true)
         verify(prisonerAlertsGateway, times(1)).getPrisonerAlertsForCodes(hmppsId, page, perPage, activeOnly = true)
         response.data.shouldBe(paginatedAlerts.toPaginatedAlertsFilterApplied())
       }
@@ -160,29 +160,29 @@ internal class GetAlertsForPersonServiceTest(
       describe("when an upstream API returns an error when looking up nomis number by a Hmmps Id") {
         it("records upstream API errors when failed prison check call") {
           val errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "NOMIS number not found"))
-          whenever(personService.getNomisNumber(hmppsId = hmppsId, requestContext = requestContext)).thenReturn(
+          whenever(personService.getNomisNumber(hmppsId = hmppsId, filters = filters)).thenReturn(
             Response(
               data = null,
               errors = errors,
             ),
           )
 
-          val response = getAlertsForPersonService.getAlerts(hmppsId, requestContext, page, perPage)
+          val response = getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)
           response.errors.shouldBe(errors)
         }
 
         it("failed to get prisoners nomis number") {
           val errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND))
-          whenever(personService.getNomisNumber(hmppsId, requestContext)).thenReturn(Response(data = NomisNumber(), errors = emptyList()))
+          whenever(personService.getNomisNumber(hmppsId, filters)).thenReturn(Response(data = NomisNumber(), errors = emptyList()))
 
-          val response = getAlertsForPersonService.getAlerts(hmppsId, requestContext, page, perPage)
+          val response = getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)
           response.errors.shouldBe(errors)
         }
 
         it("does not get alerts from prison alerts gateway") {
-          whenever(personService.getNomisNumber(hmppsId, requestContext)).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "NOMIS number not found"))))
+          whenever(personService.getNomisNumber(hmppsId, filters)).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "NOMIS number not found"))))
 
-          getAlertsForPersonService.getAlerts(hmppsId, requestContext, page, perPage)
+          getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)
           verify(prisonerAlertsGateway, times(0)).getPrisonerAlertsForCodes(hmppsId, page, perPage)
         }
       }
@@ -190,29 +190,29 @@ internal class GetAlertsForPersonServiceTest(
       describe("when an upstream API returns an error when looking up nomis number by a Hmmps Id - getAlerts") {
         it("records upstream API errors when failed prison check call") {
           val errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "NOMIS number not found"))
-          whenever(personService.getNomisNumber(hmppsId = hmppsId, requestContext = requestContext)).thenReturn(
+          whenever(personService.getNomisNumber(hmppsId = hmppsId, filters = filters)).thenReturn(
             Response(
               data = null,
               errors = errors,
             ),
           )
 
-          val response = getAlertsForPersonService.getAlerts(hmppsId, requestContext, page, perPage)
+          val response = getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)
           response.errors.shouldBe(errors)
         }
 
         it("failed to get prisoners nomis number") {
           val errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND))
-          whenever(personService.getNomisNumber(hmppsId, requestContext)).thenReturn(Response(data = NomisNumber(), errors = emptyList()))
+          whenever(personService.getNomisNumber(hmppsId, filters)).thenReturn(Response(data = NomisNumber(), errors = emptyList()))
 
-          val response = getAlertsForPersonService.getAlerts(hmppsId, requestContext, page, perPage)
+          val response = getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)
           response.errors.shouldBe(errors)
         }
 
         it("does not get alerts from prison alerts gateway") {
-          whenever(personService.getNomisNumber(hmppsId, requestContext)).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "NOMIS number not found"))))
+          whenever(personService.getNomisNumber(hmppsId, filters)).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "NOMIS number not found"))))
 
-          getAlertsForPersonService.getAlerts(hmppsId, requestContext, page, perPage)
+          getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)
           verify(prisonerAlertsGateway, times(0)).getPrisonerAlertsForCodes(hmppsId, page, perPage)
         }
       }
@@ -233,27 +233,26 @@ internal class GetAlertsForPersonServiceTest(
           ),
         )
 
-        val response = getAlertsForPersonService.getAlerts(hmppsId, requestContext, page, perPage)
+        val response = getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)
         response.errors.shouldBe(errors)
       }
 
       describe("getAlertsForPnd") {
 
         it("calls the gateway with a list of alertCodes") {
-          val alertCodes = listOf("A1", "A2")
-          val requestContext = buildRequestContext(filters = ConsumerFilters(alertCodes = alertCodes))
-          whenever(prisonerAlertsGateway.getPrisonerAlertsForCodes(hmppsId, page, perPage, alertCodes)).thenReturn(
+          val filters = ConsumerFilters(alertCodes = testRoleWithPndAlerts.filters?.alertCodes)
+          whenever(prisonerAlertsGateway.getPrisonerAlertsForCodes(hmppsId, page, perPage, filters.alertCodes!!)).thenReturn(
             Response(
               data = paginatedAlerts,
             ),
           )
-          whenever(personService.getNomisNumber(hmppsId, requestContext)).thenReturn(Response(data = NomisNumber(hmppsId)))
-          getAlertsForPersonService.getAlerts(hmppsId, buildRequestContext(filters = ConsumerFilters(alertCodes = alertCodes)), page, perPage)
-          verify(prisonerAlertsGateway, times(1)).getPrisonerAlertsForCodes(hmppsId, page, perPage, alertCodes)
+          whenever(personService.getNomisNumber(hmppsId, filters)).thenReturn(Response(data = NomisNumber(hmppsId)))
+          getAlertsForPersonService.getAlerts(hmppsId, ConsumerFilters(alertCodes = testRoleWithPndAlerts.filters?.alertCodes), page, perPage)
+          verify(prisonerAlertsGateway, times(1)).getPrisonerAlertsForCodes(hmppsId, page, perPage, testRoleWithPndAlerts.filters?.alertCodes!!)
         }
 
         it("calls the gateway without a list of alertCodes") {
-          getAlertsForPersonService.getAlerts(hmppsId, requestContext, page, perPage)
+          getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)
           verify(prisonerAlertsGateway, times(1)).getPrisonerAlertsForCodes(hmppsId, page, perPage, emptyList())
         }
       }

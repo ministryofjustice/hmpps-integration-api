@@ -4,8 +4,6 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import jakarta.servlet.http.HttpServletRequest
 import org.mockito.Mockito
-import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -18,7 +16,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivitySchedule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivityScheduleAllocation
@@ -486,7 +483,7 @@ class ActivitiesControllerTest(
           )
 
         it("should return 200 when success") {
-          whenever(activitiesQueueService.sendAttendanceUpdateRequest(eq(attendanceUpdateRequests), eq(who), any<RequestContext>()))
+          whenever(activitiesQueueService.sendAttendanceUpdateRequest(attendanceUpdateRequests, who, filters))
             .thenReturn(Response(data = HmppsMessageResponse("Attendance updated successfully")))
 
           val result = mockMvc.performAuthorisedPut(path, attendanceUpdateRequests)
@@ -497,7 +494,7 @@ class ActivitiesControllerTest(
         }
 
         it("should call the audit service") {
-          whenever(activitiesQueueService.sendAttendanceUpdateRequest(eq(attendanceUpdateRequests), eq(who), any<RequestContext>()))
+          whenever(activitiesQueueService.sendAttendanceUpdateRequest(attendanceUpdateRequests, who, filters))
             .thenReturn(Response(data = HmppsMessageResponse("Attendance updated successfully")))
 
           mockMvc.performAuthorisedPut(path, attendanceUpdateRequests)
@@ -509,7 +506,7 @@ class ActivitiesControllerTest(
         }
 
         it("returns 400 when activitiesQueueService returns bad request") {
-          whenever(activitiesQueueService.sendAttendanceUpdateRequest(eq(attendanceUpdateRequests), eq(who), any<RequestContext>()))
+          whenever(activitiesQueueService.sendAttendanceUpdateRequest(attendanceUpdateRequests, who, filters))
             .thenReturn(
               Response(
                 data = null,
@@ -528,7 +525,7 @@ class ActivitiesControllerTest(
         }
 
         it("returns 404 when activitiesQueueService returns not found") {
-          whenever(activitiesQueueService.sendAttendanceUpdateRequest(eq(attendanceUpdateRequests), eq(who), any<RequestContext>()))
+          whenever(activitiesQueueService.sendAttendanceUpdateRequest(attendanceUpdateRequests, who, filters))
             .thenReturn(
               Response(
                 data = null,
@@ -756,7 +753,7 @@ class ActivitiesControllerTest(
           )
 
         it("should return 200 when success") {
-          whenever(activitiesQueueService.sendPrisonerAllocationRequest(eq(scheduleId), eq(prisonerAllocationRequest), eq(who), any<RequestContext>()))
+          whenever(activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, prisonerAllocationRequest, who, filters))
             .thenReturn(Response(data = HmppsMessageResponse("Prisoner allocation written to queue")))
 
           val result = mockMvc.performAuthorisedPost(path, prisonerAllocationRequest)
@@ -767,7 +764,7 @@ class ActivitiesControllerTest(
         }
 
         it("should call the audit service") {
-          whenever(activitiesQueueService.sendPrisonerAllocationRequest(eq(scheduleId), eq(prisonerAllocationRequest), eq(who), any<RequestContext>()))
+          whenever(activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, prisonerAllocationRequest, who, filters))
             .thenReturn(Response(data = HmppsMessageResponse("Prisoner allocation written to queue")))
 
           mockMvc.performAuthorisedPost(path, prisonerAllocationRequest)
@@ -779,7 +776,7 @@ class ActivitiesControllerTest(
         }
 
         it("returns 400 when activitiesQueueService returns bad request") {
-          whenever(activitiesQueueService.sendPrisonerAllocationRequest(eq(scheduleId), eq(prisonerAllocationRequest), eq(who), any<RequestContext>()))
+          whenever(activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, prisonerAllocationRequest, who, filters))
             .thenReturn(
               Response(
                 data = null,
@@ -798,7 +795,7 @@ class ActivitiesControllerTest(
         }
 
         it("returns 404 when activitiesQueueService returns not found") {
-          whenever(activitiesQueueService.sendPrisonerAllocationRequest(eq(scheduleId), eq(prisonerAllocationRequest), eq(who), any<RequestContext>()))
+          whenever(activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, prisonerAllocationRequest, who, filters))
             .thenReturn(
               Response(
                 data = null,
@@ -817,7 +814,7 @@ class ActivitiesControllerTest(
         }
 
         it("returns 409 when activitiesQueueService returns conflict") {
-          whenever(activitiesQueueService.sendPrisonerAllocationRequest(eq(scheduleId), eq(prisonerAllocationRequest), eq(who), any<RequestContext>()))
+          whenever(activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, prisonerAllocationRequest, who, filters))
             .thenReturn(
               Response(
                 data = null,

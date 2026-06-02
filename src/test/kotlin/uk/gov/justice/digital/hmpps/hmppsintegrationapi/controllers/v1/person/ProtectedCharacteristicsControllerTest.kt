@@ -5,9 +5,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
-import org.mockito.kotlin.any
 import org.mockito.kotlin.doThrow
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,7 +17,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonProtectedCharacteristics
@@ -47,7 +44,7 @@ internal class ProtectedCharacteristicsControllerTest(
         beforeTest {
           Mockito.reset(getProtectedCharacteristicsService)
           Mockito.reset(auditService)
-          whenever(getProtectedCharacteristicsService.execute(eq(hmppsId), any<RequestContext>())).thenReturn(
+          whenever(getProtectedCharacteristicsService.execute(hmppsId, filters)).thenReturn(
             Response(
               data =
                 PersonProtectedCharacteristics(35, "Female", "Unknown", "British", "British", "None", emptyList()),
@@ -64,7 +61,7 @@ internal class ProtectedCharacteristicsControllerTest(
         it("gets the offences for a person with the matching ID") {
           mockMvc.performAuthorised(path)
 
-          verify(getProtectedCharacteristicsService, VerificationModeFactory.times(1)).execute(eq(hmppsId), any<RequestContext>())
+          verify(getProtectedCharacteristicsService, VerificationModeFactory.times(1)).execute(hmppsId, filters)
         }
 
         it("returns the offences for a person with the matching ID") {
@@ -102,7 +99,7 @@ internal class ProtectedCharacteristicsControllerTest(
           val hmppsIdForPersonWithNoOffences = "A1234AA"
           val offencesPath = "/v1/persons/$hmppsIdForPersonWithNoOffences/protected-characteristics"
 
-          whenever(getProtectedCharacteristicsService.execute(eq(hmppsIdForPersonWithNoOffences), any<RequestContext>())).thenReturn(
+          whenever(getProtectedCharacteristicsService.execute(hmppsIdForPersonWithNoOffences, filters)).thenReturn(
             Response(
               data = null,
             ),
@@ -114,7 +111,7 @@ internal class ProtectedCharacteristicsControllerTest(
         }
 
         it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
-          whenever(getProtectedCharacteristicsService.execute(eq(hmppsId), any<RequestContext>())).thenReturn(
+          whenever(getProtectedCharacteristicsService.execute(hmppsId, filters)).thenReturn(
             Response(
               data = null,
               errors =
@@ -133,7 +130,7 @@ internal class ProtectedCharacteristicsControllerTest(
         }
 
         it("fails with the appropriate error when an upstream service is down") {
-          whenever(getProtectedCharacteristicsService.execute(eq(hmppsId), any<RequestContext>())).doThrow(
+          whenever(getProtectedCharacteristicsService.execute(hmppsId, filters)).doThrow(
             WebClientResponseException(500, "MockError", null, null, null, null),
           )
 
