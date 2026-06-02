@@ -7,7 +7,6 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonVisitRestriction
@@ -27,7 +26,7 @@ class GetVisitRestrictionsForPersonServiceTest(
 ) : DescribeSpec({
     val hmppsId = "1234/56789B"
     val nomisNumber = "Z99999ZZ"
-    val requestContext = buildRequestContext(filters = ConsumerFilters(null))
+    val filters = ConsumerFilters(null)
     val examplePersonVisitRestrictions =
       listOf(
         PersonVisitRestriction(restrictionId = 1, comment = "Restriction 1", restrictionType = "TYPE", restrictionTypeDescription = "Type description", startDate = "2025-01-01", expiryDate = "2025-12-31", active = true),
@@ -42,20 +41,20 @@ class GetVisitRestrictionsForPersonServiceTest(
         "Invalid Hmpps Id format: $hmppsId"
       }
 
-      whenever(getPersonService.getNomisNumber(hmppsId = hmppsId, requestContext)).thenReturn(
+      whenever(getPersonService.getNomisNumber(hmppsId = hmppsId, filters)).thenReturn(
         Response(data = NomisNumber(nomisNumber = nomisNumber)),
       )
 
-      whenever(prisonApiGateway.getOffenderVisitRestrictions(nomisNumber, requestContext)).thenReturn(Response(data = examplePersonVisitRestrictions))
+      whenever(prisonApiGateway.getOffenderVisitRestrictions(nomisNumber)).thenReturn(Response(data = examplePersonVisitRestrictions))
     }
 
     it("returns visitor restrictions for a valid HMPPS ID") {
-      val response = getVisitRestrictionsForPersonService.execute(hmppsId, requestContext)
+      val response = getVisitRestrictionsForPersonService.execute(hmppsId, filters)
       response.data shouldBe (examplePersonVisitRestrictions)
     }
 
     it("returns an error when getNomisNumber returns an error") {
-      whenever(getPersonService.getNomisNumber(hmppsId = hmppsId, requestContext)).thenReturn(
+      whenever(getPersonService.getNomisNumber(hmppsId = hmppsId, filters)).thenReturn(
         Response(
           data = null,
           errors =
@@ -68,7 +67,7 @@ class GetVisitRestrictionsForPersonServiceTest(
         ),
       )
 
-      val response = getVisitRestrictionsForPersonService.execute(hmppsId, requestContext)
+      val response = getVisitRestrictionsForPersonService.execute(hmppsId, filters)
       response
         .hasErrorCausedBy(
           causedBy = UpstreamApi.PRISON_API,
@@ -77,13 +76,13 @@ class GetVisitRestrictionsForPersonServiceTest(
     }
 
     it("records 404 when Nomis number is null") {
-      whenever(getPersonService.getNomisNumber(hmppsId = hmppsId, requestContext)).thenReturn(
+      whenever(getPersonService.getNomisNumber(hmppsId = hmppsId, filters)).thenReturn(
         Response(
           data = NomisNumber(nomisNumber = null),
         ),
       )
 
-      val response = getVisitRestrictionsForPersonService.execute(hmppsId, requestContext)
+      val response = getVisitRestrictionsForPersonService.execute(hmppsId, filters)
       response
         .hasErrorCausedBy(
           causedBy = UpstreamApi.PRISON_API,
@@ -92,7 +91,7 @@ class GetVisitRestrictionsForPersonServiceTest(
     }
 
     it("return an error when nomisGateway.getOffenderVisitRestrictions returns an error") {
-      whenever(prisonApiGateway.getOffenderVisitRestrictions(nomisNumber, requestContext)).thenReturn(
+      whenever(prisonApiGateway.getOffenderVisitRestrictions(nomisNumber)).thenReturn(
         Response(
           data = null,
           errors =
@@ -105,7 +104,7 @@ class GetVisitRestrictionsForPersonServiceTest(
         ),
       )
 
-      val response = getVisitRestrictionsForPersonService.execute(hmppsId, requestContext)
+      val response = getVisitRestrictionsForPersonService.execute(hmppsId, filters)
       response
         .hasErrorCausedBy(
           causedBy = UpstreamApi.PRISON_API,

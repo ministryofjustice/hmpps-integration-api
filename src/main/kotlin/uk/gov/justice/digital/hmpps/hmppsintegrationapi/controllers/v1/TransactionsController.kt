@@ -108,7 +108,7 @@ class TransactionsController(
       endDate = toDate
     }
 
-    val response = getTransactionsForPersonService.execute(hmppsId, prisonId, accountCode, startDate, endDate, requestContext)
+    val response = getTransactionsForPersonService.execute(hmppsId, prisonId, accountCode, startDate, endDate, requestContext?.filters)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find transactions with id: $hmppsId")
@@ -167,7 +167,7 @@ class TransactionsController(
     @Parameter(description = "The clientUniqueRef used when the transaction was created") @PathVariable clientUniqueRef: String,
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<Transaction?> {
-    val response = getTransactionForPersonService.execute(hmppsId, prisonId, clientUniqueRef, requestContext)
+    val response = getTransactionForPersonService.execute(hmppsId, prisonId, clientUniqueRef, requestContext?.filters)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find transaction with id: $hmppsId")

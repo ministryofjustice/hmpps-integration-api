@@ -2,9 +2,9 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonName
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetNameForPersonService(
@@ -12,9 +12,9 @@ class GetNameForPersonService(
 ) {
   fun execute(
     hmppsId: String,
-    requestContext: RequestContext?,
+    filters: ConsumerFilters?,
   ): Response<PersonName?> {
-    val personResponse = getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, requestContext = requestContext)
+    val personResponse = getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)
 
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = personResponse.errors)

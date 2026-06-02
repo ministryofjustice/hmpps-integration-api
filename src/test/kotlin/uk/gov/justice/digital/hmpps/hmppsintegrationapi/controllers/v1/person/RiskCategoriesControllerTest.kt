@@ -5,8 +5,6 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
-import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,7 +15,6 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -25,6 +22,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskAssessm
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskCategory
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetRiskCategoriesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
@@ -45,7 +43,7 @@ internal class RiskCategoriesControllerTest(
       describe("GET $path") {
         beforeTest {
           Mockito.reset(getRiskCategoriesForPersonService)
-          whenever(getRiskCategoriesForPersonService.execute(eq(hmppsId), any<RequestContext>())).thenReturn(
+          whenever(getRiskCategoriesForPersonService.execute(hmppsId, filters)).thenReturn(
             Response(
               data =
                 RiskCategory(
@@ -81,7 +79,7 @@ internal class RiskCategoriesControllerTest(
 
         it("gets the risk categories for a person with the matching ID") {
           mockMvc.performAuthorised(path)
-          verify(getRiskCategoriesForPersonService, VerificationModeFactory.times(1)).execute(eq(hmppsId), any<RequestContext>())
+          verify(getRiskCategoriesForPersonService, VerificationModeFactory.times(1)).execute(hmppsId, filters)
         }
 
         it("logs audit") {
@@ -121,7 +119,7 @@ internal class RiskCategoriesControllerTest(
         }
 
         it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
-          whenever(getRiskCategoriesForPersonService.execute(eq(hmppsId), any<RequestContext>())).thenReturn(
+          whenever(getRiskCategoriesForPersonService.execute(hmppsId, filters)).thenReturn(
             Response(
               data = RiskCategory(),
               errors =
@@ -140,7 +138,7 @@ internal class RiskCategoriesControllerTest(
         }
 
         it("returns a 404 NOT FOUND status code consumer not in allowed for endpoint") {
-          whenever(getRiskCategoriesForPersonService.execute(eq(hmppsId), any<RequestContext>())).thenReturn(
+          whenever(getRiskCategoriesForPersonService.execute(hmppsId, ConsumerFilters(prisons = listOf("XYZ")))).thenReturn(
             Response(
               data = RiskCategory(),
               errors =

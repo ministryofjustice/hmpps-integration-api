@@ -33,7 +33,7 @@ internal class GetCareNeedsForPersonServiceTest(
     {
       val persona = personInProbationAndNomisPersona
       val nomisNumber = persona.identifiers.nomisNumber!!
-      val requestContext = null
+      val filters = null
 
       val person = Person(firstName = persona.firstName, lastName = persona.lastName, identifiers = persona.identifiers)
       val careNeedsGatewayResponse =
@@ -71,28 +71,28 @@ internal class GetCareNeedsForPersonServiceTest(
         Mockito.reset(getPersonService)
         Mockito.reset(prisonerOffenderSearchGateway)
 
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = nomisNumber, requestContext = requestContext)).thenReturn(Response(person))
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = nomisNumber, filters = filters)).thenReturn(Response(person))
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)).thenReturn(Response(careNeedsGatewayResponse))
       }
 
       it("performs a search according to hmpps Id") {
-        getCareNeedsForPersonService.execute(nomisNumber, requestContext)
-        verify(getPersonService, times(1)).getPersonWithPrisonFilter(hmppsId = nomisNumber, requestContext = requestContext)
+        getCareNeedsForPersonService.execute(nomisNumber, filters)
+        verify(getPersonService, times(1)).getPersonWithPrisonFilter(hmppsId = nomisNumber, filters = filters)
       }
 
       it("should return a person's care needs from gateway") {
-        val result = getCareNeedsForPersonService.execute(nomisNumber, requestContext)
+        val result = getCareNeedsForPersonService.execute(nomisNumber, filters)
         result.data.shouldBe(careNeeds)
         result.errors.count().shouldBe(0)
       }
 
       it("should return an entity not found error if person found in person service but no nomis number set for them") {
         val personWithoutNomis = Person(firstName = persona.firstName, lastName = persona.lastName, identifiers = Identifiers(nomisNumber = null))
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = nomisNumber, requestContext = requestContext)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = nomisNumber, filters = filters)).thenReturn(
           Response(data = personWithoutNomis),
         )
 
-        val result = getCareNeedsForPersonService.execute(hmppsId = nomisNumber, requestContext)
+        val result = getCareNeedsForPersonService.execute(hmppsId = nomisNumber, filters)
         result.data.shouldBe(null)
         result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
       }
@@ -105,14 +105,14 @@ internal class GetCareNeedsForPersonServiceTest(
               type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
             ),
           )
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = "notfound", requestContext = requestContext)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = "notfound", filters = filters)).thenReturn(
           Response(
             data = null,
             errors,
           ),
         )
 
-        val result = getCareNeedsForPersonService.execute(hmppsId = "notfound", requestContext)
+        val result = getCareNeedsForPersonService.execute(hmppsId = "notfound", filters)
         result.data.shouldBe(null)
         result.errors.shouldBe(errors)
       }
@@ -125,14 +125,14 @@ internal class GetCareNeedsForPersonServiceTest(
               type = UpstreamApiError.Type.BAD_REQUEST,
             ),
           )
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = "badRequest", requestContext = requestContext)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = "badRequest", filters = filters)).thenReturn(
           Response(
             data = null,
             errors,
           ),
         )
 
-        val result = getCareNeedsForPersonService.execute(hmppsId = "badRequest", requestContext)
+        val result = getCareNeedsForPersonService.execute(hmppsId = "badRequest", filters)
         result.data.shouldBe(null)
         result.errors.shouldBe(errors)
       }
@@ -152,7 +152,7 @@ internal class GetCareNeedsForPersonServiceTest(
           ),
         )
 
-        val result = getCareNeedsForPersonService.execute(nomisNumber, requestContext)
+        val result = getCareNeedsForPersonService.execute(nomisNumber, filters)
         result.data.shouldBe(null)
         result.errors.shouldBe(errors)
       }

@@ -32,7 +32,7 @@ internal class GetImageServiceTest(
       val id = 12345
       val prisonerNumber = "Z99999ZZ"
       val image = byteArrayOf(1, 2, 3, 4)
-      val requestContext = null
+      val filters = null
       val imageMetadata =
         listOf(
           ImageMetadata(
@@ -63,19 +63,19 @@ internal class GetImageServiceTest(
           Mockito.reset(prisonApiGateway)
           Mockito.reset(getPersonService)
 
-          whenever(getPersonService.getNomisNumber(hmppsId = prisonerNumber, requestContext = requestContext)).thenReturn(Response(NomisNumber(prisonerNumber)))
+          whenever(getPersonService.getNomisNumber(hmppsId = prisonerNumber, filters = filters)).thenReturn(Response(NomisNumber(prisonerNumber)))
           whenever(prisonApiGateway.getImageMetadataForPerson(prisonerNumber)).thenReturn(Response(data = imageMetadata))
 
           whenever(prisonApiGateway.getImageData(id)).thenReturn(Response(data = image))
         }
 
         it("should return image data for a prisoner according to specified image id") {
-          getImageService.execute(id, prisonerNumber, requestContext)
+          getImageService.execute(id, prisonerNumber, filters)
           verify(prisonApiGateway, VerificationModeFactory.times(1)).getImageMetadataForPerson(prisonerNumber)
         }
 
         it("should return a list of errors if person not found") {
-          whenever(getPersonService.getNomisNumber(hmppsId = "notfound", requestContext = requestContext)).thenReturn(
+          whenever(getPersonService.getNomisNumber(hmppsId = "notfound", filters = filters)).thenReturn(
             Response(
               data = null,
               errors =
@@ -87,7 +87,7 @@ internal class GetImageServiceTest(
                 ),
             ),
           )
-          val result = getImageService.execute(id, "notfound", requestContext)
+          val result = getImageService.execute(id, "notfound", filters)
           result.data.shouldBe(null)
           result.errors
             .first()
@@ -108,7 +108,7 @@ internal class GetImageServiceTest(
                 ),
             ),
           )
-          val result = getImageService.execute(id, prisonerNumber, requestContext)
+          val result = getImageService.execute(id, prisonerNumber, filters)
           result.data.shouldBe(null)
           result.errors
             .first()
@@ -123,7 +123,7 @@ internal class GetImageServiceTest(
               errors = emptyList(),
             ),
           )
-          val result = getImageService.execute(99999, prisonerNumber, requestContext)
+          val result = getImageService.execute(99999, prisonerNumber, filters)
           result.data.shouldBe(null)
           result.errors
             .first()
@@ -132,7 +132,7 @@ internal class GetImageServiceTest(
         }
 
         it("returns an image") {
-          val response = getImageService.execute(id, prisonerNumber, requestContext)
+          val response = getImageService.execute(id, prisonerNumber, filters)
 
           response.data.shouldBe(image)
         }
@@ -151,7 +151,7 @@ internal class GetImageServiceTest(
             ),
           )
 
-          val response = getImageService.execute(id, prisonerNumber, requestContext)
+          val response = getImageService.execute(id, prisonerNumber, filters)
 
           response.errors.shouldHaveSize(1)
           response.errors

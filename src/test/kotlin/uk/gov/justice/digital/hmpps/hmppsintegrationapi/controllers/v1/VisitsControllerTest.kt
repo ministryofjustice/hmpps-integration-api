@@ -3,8 +3,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
-import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -18,7 +16,6 @@ import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CancelOutcome
@@ -186,7 +183,7 @@ class VisitsControllerTest(
         beforeTest {
           Mockito.reset(visitQueueService)
 
-          whenever(visitQueueService.sendCreateVisit(eq(createVisitRequest), eq(clientName), any<RequestContext>())).thenReturn(Response(data = postResponse))
+          whenever(visitQueueService.sendCreateVisit(createVisitRequest, clientName, filters)).thenReturn(Response(data = postResponse))
         }
 
         it("logs audit") {
@@ -213,21 +210,21 @@ class VisitsControllerTest(
         }
 
         it("returns a 400 when upstream returns 400") {
-          whenever(visitQueueService.sendCreateVisit(eq(createVisitRequest), eq(clientName), any<RequestContext>())).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.MANAGE_PRISON_VISITS, type = UpstreamApiError.Type.BAD_REQUEST))))
+          whenever(visitQueueService.sendCreateVisit(createVisitRequest, clientName, filters)).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.MANAGE_PRISON_VISITS, type = UpstreamApiError.Type.BAD_REQUEST))))
 
           val result = mockMvc.performAuthorisedPost(path, createVisitRequest)
           result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
         }
 
         it("returns a 404 when upstream returns 404") {
-          whenever(visitQueueService.sendCreateVisit(eq(createVisitRequest), eq(clientName), any<RequestContext>())).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.MANAGE_PRISON_VISITS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))))
+          whenever(visitQueueService.sendCreateVisit(createVisitRequest, clientName, filters)).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.MANAGE_PRISON_VISITS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))))
 
           val result = mockMvc.performAuthorisedPost(path, createVisitRequest)
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
         }
 
         it("gets a 500 when visit queue service throws MessageFailedException") {
-          whenever(visitQueueService.sendCreateVisit(eq(createVisitRequest), eq(clientName), any<RequestContext>())).thenThrow(MessageFailedException("Could not send Visit message to queue"))
+          whenever(visitQueueService.sendCreateVisit(createVisitRequest, clientName, filters)).thenThrow(MessageFailedException("Could not send Visit message to queue"))
 
           val result = mockMvc.performAuthorisedPost(path, createVisitRequest)
           result.response.status.shouldBe(HttpStatus.INTERNAL_SERVER_ERROR.value())

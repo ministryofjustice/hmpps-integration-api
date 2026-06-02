@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactEvent
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactEvents
@@ -19,13 +18,12 @@ class ContactEventService(
     hmppsId: String,
     pageNo: Int,
     perPage: Int,
-    requestContext: RequestContext? = null,
+    filters: ConsumerFilters?,
   ): Response<ContactEvents?> {
-    val filters = requestContext?.filters
-    val personResponse = getPersonService.execute(hmppsId, requestContext)
+    val personResponse = getPersonService.execute(hmppsId = hmppsId)
     val response =
       personResponse.data?.identifiers?.deliusCrn?.let {
-        deliusGateway.getContactEventsForPerson(it, pageNo, perPage, ConsumerFilters.mappaCategories(filters), requestContext)
+        deliusGateway.getContactEventsForPerson(it, pageNo, perPage, ConsumerFilters.mappaCategories(filters))
       } ?: throw EntityNotFoundException("NDelius CRN not found for $hmppsId")
 
     val contactEvents = response.data?.toPaginated(perPage, pageNo)
@@ -38,13 +36,12 @@ class ContactEventService(
   fun getContactEvent(
     hmppsId: String,
     contactEventId: Long,
-    requestContext: RequestContext?,
+    filters: ConsumerFilters?,
   ): Response<ContactEvent?> {
-    val filters = requestContext?.filters
-    val personResponse = getPersonService.execute(hmppsId, requestContext)
+    val personResponse = getPersonService.execute(hmppsId = hmppsId)
     val response =
       personResponse.data?.identifiers?.deliusCrn?.let {
-        deliusGateway.getContactEventForPerson(it, contactEventId, ConsumerFilters.mappaCategories(filters), requestContext)
+        deliusGateway.getContactEventForPerson(it, contactEventId, ConsumerFilters.mappaCategories(filters))
       } ?: throw EntityNotFoundException("NDelius CRN not found for $hmppsId with id $contactEventId")
 
     return Response(

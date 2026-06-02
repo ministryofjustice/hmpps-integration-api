@@ -12,7 +12,6 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerBaseLocationGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.LastMovementType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
@@ -63,7 +62,7 @@ internal class GetPrisonerBaseLocationForPersonServiceTest(
       val unknownHmppsId = "Z999999"
       val hmppsId = knownHmppsId
 
-      val requestContext = buildRequestContext(filters = ConsumerFilters(null))
+      val filters = ConsumerFilters(null)
 
       fun prisonerNotFoundErrorResponse(): Response<NomisNumber?> = Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)))
 
@@ -85,34 +84,34 @@ internal class GetPrisonerBaseLocationForPersonServiceTest(
       beforeEach {
         Mockito.reset(getPersonService, consumerPrisonAccessService, prisonerBaseLocationGateway)
 
-        lenient().whenever(getPersonService.getNomisNumber(knownHmppsId, requestContext)).thenReturn(Response(data = NomisNumber(knownNomisNumber)))
-        lenient().whenever(getPersonService.getNomisNumber(anotherHmppsId, requestContext)).thenReturn(Response(data = NomisNumber(anotherNomisNumber)))
-        lenient().whenever(getPersonService.getNomisNumber(unknownHmppsId, requestContext)).thenReturn(prisonerNotFoundErrorResponse())
+        lenient().whenever(getPersonService.getNomisNumber(knownHmppsId)).thenReturn(Response(data = NomisNumber(knownNomisNumber)))
+        lenient().whenever(getPersonService.getNomisNumber(anotherHmppsId)).thenReturn(Response(data = NomisNumber(anotherNomisNumber)))
+        lenient().whenever(getPersonService.getNomisNumber(unknownHmppsId)).thenReturn(prisonerNotFoundErrorResponse())
 
-        lenient().whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<PrisonerBaseLocation>(knownPrisonId, requestContext.filters)).thenReturn(Response(data = null, errors = emptyList()))
-        lenient().whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<PrisonerBaseLocation>(releasedPrisonId, requestContext.filters)).thenReturn(Response(data = null, errors = emptyList()))
-        lenient().whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<PrisonerBaseLocation>(anotherPrisonId, requestContext.filters)).thenReturn(prisonAccessDeniedResponse())
+        lenient().whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<PrisonerBaseLocation>(knownPrisonId, filters)).thenReturn(Response(data = null, errors = emptyList()))
+        lenient().whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<PrisonerBaseLocation>(releasedPrisonId, filters)).thenReturn(Response(data = null, errors = emptyList()))
+        lenient().whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<PrisonerBaseLocation>(anotherPrisonId, filters)).thenReturn(prisonAccessDeniedResponse())
       }
 
       it("calls getNomisNumber") {
         givenLocationIsFound(knownNomisNumber, prisonerBaseLocationReceived)
-        getPrisonerBaseLocationForPersonService.execute(hmppsId, requestContext)
-        verify(getPersonService, times(1)).getNomisNumber(hmppsId, requestContext)
+        getPrisonerBaseLocationForPersonService.execute(hmppsId, filters)
+        verify(getPersonService, times(1)).getNomisNumber(hmppsId)
       }
 
       it("returns prisoner base location") {
         givenLocationIsFound(knownNomisNumber, prisonerBaseLocationReceived)
         val expectedLocation = prisonerBaseLocationReceived.copy()
 
-        val response = getPrisonerBaseLocationForPersonService.execute(hmppsId, requestContext)
+        val response = getPrisonerBaseLocationForPersonService.execute(hmppsId, filters)
         response.data shouldBe expectedLocation
       }
 
       it("returns the upstream error when an error occurs") {
         val errorResponse = prisonerNotFoundErrorResponse()
-        whenever(getPersonService.getNomisNumber(hmppsId, requestContext)).thenReturn(errorResponse)
+        whenever(getPersonService.getNomisNumber(hmppsId)).thenReturn(errorResponse)
 
-        val response = getPrisonerBaseLocationForPersonService.execute(hmppsId, requestContext)
+        val response = getPrisonerBaseLocationForPersonService.execute(hmppsId, filters)
         response.errors shouldBe errorResponse.errors
       }
 
@@ -120,38 +119,38 @@ internal class GetPrisonerBaseLocationForPersonServiceTest(
         val errorResponse = prisonerBaseLocationNotFoundErrorResponse()
         givenLocationIsNotFound(knownNomisNumber)
 
-        val response = getPrisonerBaseLocationForPersonService.execute(knownHmppsId, requestContext)
+        val response = getPrisonerBaseLocationForPersonService.execute(knownHmppsId, filters)
         response.errors shouldBe errorResponse.errors
       }
 
       it("failed to get prisoners nomis number of unknown prisoners") {
         val errorResponse = nomisNumberNotFoundNDeliusErrorResponse()
-        whenever(getPersonService.getNomisNumber(unknownHmppsId, requestContext)).thenReturn(errorResponse)
+        whenever(getPersonService.getNomisNumber(unknownHmppsId)).thenReturn(errorResponse)
 
-        val response = getPrisonerBaseLocationForPersonService.execute(unknownHmppsId, requestContext)
+        val response = getPrisonerBaseLocationForPersonService.execute(unknownHmppsId, filters)
         response.errors shouldBe errorResponse.errors
       }
 
       it("failed to get prisoners nomis number of known person") {
         val errorResponse = nomisNumberMissingResponse()
-        whenever(getPersonService.getNomisNumber(anotherHmppsId, requestContext)).thenReturn(Response(data = NomisNumber(null)))
+        whenever(getPersonService.getNomisNumber(anotherHmppsId)).thenReturn(Response(data = NomisNumber(null)))
 
-        val response = getPrisonerBaseLocationForPersonService.execute(anotherHmppsId, requestContext)
+        val response = getPrisonerBaseLocationForPersonService.execute(anotherHmppsId, filters)
         response.errors shouldBe errorResponse.errors
       }
 
       it("returns location when last prison ID matches filter and prisoner inPrison is false") {
         whenever(prisonerBaseLocationGateway.getPrisonerBaseLocation(knownNomisNumber)).thenReturn(Response(data = prisonerBaseLocationReleased))
 
-        getPrisonerBaseLocationForPersonService.execute(knownHmppsId, requestContext)
-        verify(consumerPrisonAccessService, times(1)).checkConsumerHasPrisonAccess<Any>(prisonerBaseLocationReleased.lastPrisonId, requestContext.filters)
+        getPrisonerBaseLocationForPersonService.execute(knownHmppsId, filters)
+        verify(consumerPrisonAccessService, times(1)).checkConsumerHasPrisonAccess<Any>(prisonerBaseLocationReleased.lastPrisonId, filters)
       }
 
       it("returns location when prison ID matches filter and prisoner inPrison is true") {
         whenever(prisonerBaseLocationGateway.getPrisonerBaseLocation(anotherNomisNumber)).thenReturn(Response(data = prisonerBaseLocationReceived))
 
-        getPrisonerBaseLocationForPersonService.execute(anotherHmppsId, requestContext)
-        verify(consumerPrisonAccessService, times(1)).checkConsumerHasPrisonAccess<Any>(prisonerBaseLocationReceived.prisonId, requestContext.filters)
+        getPrisonerBaseLocationForPersonService.execute(anotherHmppsId, filters)
+        verify(consumerPrisonAccessService, times(1)).checkConsumerHasPrisonAccess<Any>(prisonerBaseLocationReceived.prisonId, filters)
       }
     },
   )

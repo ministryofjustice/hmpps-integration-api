@@ -4,8 +4,6 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
-import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,7 +14,6 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.ContactEventHelper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactEvents
@@ -44,7 +41,7 @@ internal class ContactEventsControllerTest(
       describe("GET $path") {
         beforeTest {
           Mockito.reset(contactEventService)
-          whenever(contactEventService.getContactEvents(eq(hmppsId), eq(1), eq(10), any<RequestContext>())).thenReturn(
+          whenever(contactEventService.getContactEvents(hmppsId, 1, 10, filters)).thenReturn(
             Response(
               ContactEvents(
                 content = events,
@@ -67,7 +64,7 @@ internal class ContactEventsControllerTest(
 
         it("gets the contact events for a person with the matching ID") {
           mockMvc.performAuthorised(path)
-          verify(contactEventService, VerificationModeFactory.times(1)).getContactEvents(eq(hmppsId), eq(1), eq(10), any<RequestContext>())
+          verify(contactEventService, VerificationModeFactory.times(1)).getContactEvents(hmppsId, 1, 10, filters)
         }
 
         it("logs audit") {
@@ -80,7 +77,7 @@ internal class ContactEventsControllerTest(
         }
 
         it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
-          whenever(contactEventService.getContactEvents(eq(hmppsId), eq(1), eq(10), any<RequestContext>())).thenReturn(
+          whenever(contactEventService.getContactEvents(hmppsId, 1, 10, filters)).thenReturn(
             Response(
               data = null,
               errors =
@@ -99,7 +96,7 @@ internal class ContactEventsControllerTest(
         }
 
         it("returns a 400 BAD REQUEST status code when a bad request is sent to the upstream API") {
-          whenever(contactEventService.getContactEvents(eq(hmppsId), eq(1), eq(10), any<RequestContext>())).thenReturn(
+          whenever(contactEventService.getContactEvents(hmppsId, 1, 10, filters)).thenReturn(
             Response(
               data = null,
               errors =
@@ -121,7 +118,7 @@ internal class ContactEventsControllerTest(
       describe("GET $path/2") {
         beforeTest {
           Mockito.reset(contactEventService)
-          whenever(contactEventService.getContactEvent(eq(hmppsId), eq(2), any<RequestContext>())).thenReturn(
+          whenever(contactEventService.getContactEvent(hmppsId, 2, filters)).thenReturn(
             Response(events.first()),
           )
           Mockito.reset(auditService)
@@ -134,7 +131,7 @@ internal class ContactEventsControllerTest(
 
         it("gets the contact events for a person with the matching ID") {
           mockMvc.performAuthorised("$path/2")
-          verify(contactEventService, VerificationModeFactory.times(1)).getContactEvent(eq(hmppsId), eq(2), any<RequestContext>())
+          verify(contactEventService, VerificationModeFactory.times(1)).getContactEvent(hmppsId, 2, filters)
         }
 
         it("logs audit") {
@@ -147,7 +144,7 @@ internal class ContactEventsControllerTest(
         }
 
         it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
-          whenever(contactEventService.getContactEvent(eq(hmppsId), eq(2), any<RequestContext>())).thenReturn(
+          whenever(contactEventService.getContactEvent(hmppsId, 2, filters)).thenReturn(
             Response(
               data = null,
               errors =
@@ -166,7 +163,7 @@ internal class ContactEventsControllerTest(
         }
 
         it("returns a 400 BAD REQUEST status code when a bad request is sent to the upstream API") {
-          whenever(contactEventService.getContactEvent(eq(hmppsId), eq(2), any<RequestContext>())).thenReturn(
+          whenever(contactEventService.getContactEvent(hmppsId, 2, filters)).thenReturn(
             Response(
               data = null,
               errors =

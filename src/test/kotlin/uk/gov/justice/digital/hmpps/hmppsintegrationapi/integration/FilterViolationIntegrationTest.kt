@@ -1,12 +1,9 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.whenever
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -23,14 +20,14 @@ class FilterViolationIntegrationTest : IntegrationTestBase() {
   fun `prisons only - throws a filter violation exception when UNKNOWN`() {
     val posPrisoner = objectMapper.readValue(File("$gatewaysFolder/prisoneroffendersearch/fixtures/PrisonerByIdResponse.json").readText(), POSPrisoner::class.java)
     val posPrisonerUnknownStatus = posPrisoner.copy(status = null)
-    whenever(prisonerOffenderSearchGateway.getPrisonOffender(eq(nomsId), any<RequestContext>())).thenReturn(Response(data = posPrisonerUnknownStatus))
+    whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsId)).thenReturn(Response(data = posPrisonerUnknownStatus))
     callApiWithCN(addressPath, "supervision-status-prison-only")
       .andExpect(status().isNotFound)
   }
 
   @Test
   fun `prisons only - the call to the upstream returns a 404 so no check can be performed`() {
-    whenever(prisonerOffenderSearchGateway.getPrisonOffender(eq(nomsId), any<RequestContext>())).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))))
+    whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsId)).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))))
     callApiWithCN(addressPath, "supervision-status-prison-only")
       .andExpect(status().isNotFound)
   }

@@ -4,8 +4,6 @@ import io.kotest.assertions.json.shouldContainJsonKeyValue
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
-import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -17,7 +15,6 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -78,7 +75,7 @@ class FutureVisitsControllerTest(
       Mockito.reset(getFutureVisitsService)
       Mockito.reset(auditService)
 
-      whenever(getFutureVisitsService.execute(eq(hmppsId), any<RequestContext>())).thenReturn(Response(data = futureVisits))
+      whenever(getFutureVisitsService.execute(hmppsId, filters = null)).thenReturn(Response(data = futureVisits))
     }
 
     it("Returns a 200 response with data") {
@@ -94,21 +91,21 @@ class FutureVisitsControllerTest(
     }
 
     it("Handles 400 bad request") {
-      whenever(getFutureVisitsService.execute(eq(hmppsId), any<RequestContext>())).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.BAD_REQUEST))))
+      whenever(getFutureVisitsService.execute(hmppsId, filters = null)).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.BAD_REQUEST))))
 
       val result = mockMvc.performAuthorised(path)
       result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
     }
 
     it("Handles 404 entity not found") {
-      whenever(getFutureVisitsService.execute(eq(hmppsId), any<RequestContext>())).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.ENTITY_NOT_FOUND))))
+      whenever(getFutureVisitsService.execute(hmppsId, filters = null)).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.ENTITY_NOT_FOUND))))
 
       val result = mockMvc.performAuthorised(path)
       result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
     }
 
     it("Handles 500 internal server error") {
-      whenever(getFutureVisitsService.execute(eq(hmppsId), any<RequestContext>())).thenThrow(IllegalStateException("Internal Server Error"))
+      whenever(getFutureVisitsService.execute(hmppsId, filters = null)).thenThrow(IllegalStateException("Internal Server Error"))
 
       val result = mockMvc.performAuthorised(path)
       result.response.status.shouldBe(HttpStatus.INTERNAL_SERVER_ERROR.value())

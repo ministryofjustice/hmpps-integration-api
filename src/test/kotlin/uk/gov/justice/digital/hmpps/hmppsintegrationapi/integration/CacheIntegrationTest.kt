@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cache.caffeine.CaffeineCache
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 
 @TestPropertySource(properties = ["feature-flag.gateway-cache-enabled=true"])
 class CacheIntegrationTest : IntegrationTestBase() {
@@ -31,7 +30,7 @@ class CacheIntegrationTest : IntegrationTestBase() {
       .andExpect(status().isOk)
 
     // Calls the cached method only once
-    verify(prisonerOffenderSearchGateway, times(1)).getPrisonOffender(eq(nomsId), any<RequestContext>())
+    verify(prisonerOffenderSearchGateway, times(1)).getPrisonOffender(nomsId)
 
     // Calls the cached CPR method only once
     verify(corePersonRecordGateway, times(1)).corePersonRecordFor(any(), eq(nomsId))
@@ -48,7 +47,7 @@ class CacheIntegrationTest : IntegrationTestBase() {
       .andExpect(status().isOk)
 
     // Calls the cacheable method only once (caches first request)
-    verify(nDeliusGateway, times(1)).getOffender(eq(crn), any<RequestContext>())
+    verify(nDeliusGateway, times(1)).getOffender(crn)
   }
 }
 
@@ -68,7 +67,7 @@ class CacheDisabledIntegrationTest : IntegrationTestBase() {
       .andExpect(status().isOk)
 
     // Calls the cacheable method twice (does not cache)
-    verify(prisonerOffenderSearchGateway, times(2)).getPrisonOffender(eq(nomsId), any<RequestContext>())
+    verify(prisonerOffenderSearchGateway, times(2)).getPrisonOffender(nomsId)
 
     // Address endpoint calls CPR twice per request. One for nomis and one for crn
     // Calls the cached CPR method 4 times in total across 2 requests
@@ -85,6 +84,6 @@ class CacheDisabledIntegrationTest : IntegrationTestBase() {
     callApiWithCN(crnPath, specificPrisonCn)
       .andExpect(status().isOk)
     // Calls the cacheable method twice (does not cache)
-    verify(nDeliusGateway, times(2)).getOffender(eq(crn), any<RequestContext>())
+    verify(nDeliusGateway, times(2)).getOffender(crn)
   }
 }

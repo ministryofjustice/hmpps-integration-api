@@ -6,7 +6,6 @@ import org.springframework.cache.annotation.Cacheable
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Companion.GATEWAY_CACHE
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -39,7 +38,6 @@ class PrisonerOffenderSearchGateway(
     lastName: String?,
     dateOfBirth: String?,
     searchWithinAliases: Boolean = false,
-    requestContext: RequestContext? = null,
   ): Response<List<POSPrisoner>> {
     val maxNumberOfResults = 9999
     val requestBody =
@@ -50,7 +48,7 @@ class PrisonerOffenderSearchGateway(
       webClient.request<POSPaginatedPrisoners>(
         HttpMethod.POST,
         "/global-search?size=$maxNumberOfResults",
-        authenticationHeader(requestContext),
+        authenticationHeader(),
         UpstreamApi.PRISONER_OFFENDER_SEARCH,
         requestBody,
       )
@@ -77,7 +75,6 @@ class PrisonerOffenderSearchGateway(
     dateOfBirth: String?,
     searchWithinAliases: Boolean = false,
     prisonIds: List<String?>?,
-    requestContext: RequestContext? = null,
   ): Response<List<POSPrisoner>> {
     val maxNumberOfResults = 9999
 
@@ -95,7 +92,7 @@ class PrisonerOffenderSearchGateway(
       webClient.request<POSPaginatedPrisoners>(
         HttpMethod.POST,
         "/prisoner-detail",
-        authenticationHeader(requestContext),
+        authenticationHeader(),
         UpstreamApi.PRISONER_OFFENDER_SEARCH,
         requestBody,
       )
@@ -116,16 +113,13 @@ class PrisonerOffenderSearchGateway(
     }
   }
 
-  @Cacheable(GATEWAY_CACHE, keyGenerator = "stringParamsGatewayKeyGenerator", condition = "@gatewayCacheEnabled")
-  fun getPrisonOffender(
-    nomsNumber: String,
-    requestContext: RequestContext? = null,
-  ): Response<POSPrisoner?> {
+  @Cacheable(GATEWAY_CACHE, keyGenerator = "gatewayKeyGenerator", condition = "@gatewayCacheEnabled")
+  fun getPrisonOffender(nomsNumber: String): Response<POSPrisoner?> {
     val result =
       webClient.request<POSPrisoner>(
         HttpMethod.GET,
         "/prisoner/$nomsNumber",
-        authenticationHeader(requestContext),
+        authenticationHeader(),
         UpstreamApi.PRISONER_OFFENDER_SEARCH,
       )
 
@@ -143,15 +137,12 @@ class PrisonerOffenderSearchGateway(
     }
   }
 
-  fun attributeSearch(
-    request: POSAttributeSearchRequest,
-    requestContext: RequestContext? = null,
-  ): Response<POSPaginatedPrisoners?> {
+  fun attributeSearch(request: POSAttributeSearchRequest): Response<POSPaginatedPrisoners?> {
     val result =
       webClient.request<POSPaginatedPrisoners>(
         HttpMethod.POST,
         "/attribute-search",
-        authenticationHeader(requestContext),
+        authenticationHeader(),
         UpstreamApi.PRISONER_OFFENDER_SEARCH,
         request.toMap(),
       )
@@ -172,7 +163,7 @@ class PrisonerOffenderSearchGateway(
     }
   }
 
-  private fun authenticationHeader(requestContext: RequestContext? = null): Map<String, String> {
+  private fun authenticationHeader(): Map<String, String> {
     val token = hmppsAuthGateway.getClientToken("Prisoner Offender Search")
 
     return mapOf(

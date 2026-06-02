@@ -130,7 +130,7 @@ class VisitsController(
     @RequestAttribute clientName: String?,
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<HmppsMessageResponse?> {
-    val response = visitQueueService.sendCreateVisit(createVisitRequest, clientName.orEmpty(), requestContext)
+    val response = visitQueueService.sendCreateVisit(createVisitRequest, clientName.orEmpty(), requestContext?.filters)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException(response.errors[0].description ?: "Could not find information for a given visit.")

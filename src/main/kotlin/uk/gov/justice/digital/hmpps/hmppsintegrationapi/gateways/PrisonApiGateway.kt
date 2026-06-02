@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address
@@ -60,15 +59,12 @@ class PrisonApiGateway(
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  fun getImageMetadataForPerson(
-    id: String,
-    requestContext: RequestContext? = null,
-  ): Response<List<ImageMetadata>> {
+  fun getImageMetadataForPerson(id: String): Response<List<ImageMetadata>> {
     val result =
       webClient.requestList<PrisonApiImageDetail>(
         HttpMethod.GET,
         "api/images/offenders/$id",
-        authenticationHeader(requestContext),
+        authenticationHeader(),
         UpstreamApi.PRISON_API,
       )
 
@@ -86,11 +82,8 @@ class PrisonApiGateway(
     }
   }
 
-  fun getImageData(
-    id: Int,
-    requestContext: RequestContext? = null,
-  ): Response<ByteArray> {
-    val result = webClient.request<ByteArray>(HttpMethod.GET, "/api/images/$id/data", authenticationHeader(requestContext), UpstreamApi.PRISON_API)
+  fun getImageData(id: Int): Response<ByteArray> {
+    val result = webClient.request<ByteArray>(HttpMethod.GET, "/api/images/$id/data", authenticationHeader(), UpstreamApi.PRISON_API)
 
     return when (result) {
       is WebClientWrapperResponse.Success -> {
@@ -106,15 +99,12 @@ class PrisonApiGateway(
     }
   }
 
-  fun getAddressesForPerson(
-    id: String,
-    requestContext: RequestContext? = null,
-  ): Response<List<Address>> {
+  fun getAddressesForPerson(id: String): Response<List<Address>> {
     val result =
       webClient.requestList<PrisonApiAddress>(
         HttpMethod.GET,
         "/api/offenders/$id/addresses",
-        authenticationHeader(requestContext),
+        authenticationHeader(),
         UpstreamApi.PRISON_API,
       )
 
@@ -132,15 +122,12 @@ class PrisonApiGateway(
     }
   }
 
-  fun getOffencesForPerson(
-    id: String,
-    requestContext: RequestContext? = null,
-  ): Response<List<Offence>> {
+  fun getOffencesForPerson(id: String): Response<List<Offence>> {
     val result =
       webClient.requestList<PrisonApiOffenceHistoryDetail>(
         HttpMethod.GET,
         "/api/bookings/offenderNo/$id/offenceHistory",
-        authenticationHeader(requestContext),
+        authenticationHeader(),
         UpstreamApi.PRISON_API,
       )
     return when (result) {
@@ -157,15 +144,12 @@ class PrisonApiGateway(
     }
   }
 
-  fun getSentencesForBooking(
-    id: Int,
-    requestContext: RequestContext? = null,
-  ): Response<List<Sentence>> {
+  fun getSentencesForBooking(id: Int): Response<List<Sentence>> {
     val result =
       webClient.requestList<PrisonApiSentence>(
         HttpMethod.GET,
         "/api/offender-sentences/booking/$id/sentences-and-offences",
-        authenticationHeader(requestContext),
+        authenticationHeader(),
         UpstreamApi.PRISON_API,
       )
     return when (result) {
@@ -182,15 +166,12 @@ class PrisonApiGateway(
     }
   }
 
-  fun getBookingIdsForPerson(
-    id: String,
-    requestContext: RequestContext? = null,
-  ): Response<List<PrisonApiBooking>> {
+  fun getBookingIdsForPerson(id: String): Response<List<PrisonApiBooking>> {
     val result =
       webClient.requestList<PrisonApiBooking>(
         HttpMethod.GET,
         "/api/offender-sentences?offenderNo=$id",
-        authenticationHeader(requestContext),
+        authenticationHeader(),
         UpstreamApi.PRISON_API,
       )
     return when (result) {
@@ -207,15 +188,12 @@ class PrisonApiGateway(
     }
   }
 
-  fun getLatestSentenceAdjustmentsForPerson(
-    id: String,
-    requestContext: RequestContext? = null,
-  ): Response<SentenceAdjustment?> {
+  fun getLatestSentenceAdjustmentsForPerson(id: String): Response<SentenceAdjustment?> {
     val result =
       webClient.request<PrisonApiSentenceSummary>(
         HttpMethod.GET,
         "/api/offenders/$id/booking/latest/sentence-summary",
-        authenticationHeader(requestContext),
+        authenticationHeader(),
         UpstreamApi.PRISON_API,
       )
 
@@ -237,15 +215,12 @@ class PrisonApiGateway(
     }
   }
 
-  fun getLatestSentenceKeyDatesForPerson(
-    id: String,
-    requestContext: RequestContext? = null,
-  ): Response<SentenceKeyDates?> {
+  fun getLatestSentenceKeyDatesForPerson(id: String): Response<SentenceKeyDates?> {
     val result =
       webClient.request<PrisonApiOffenderSentence>(
         HttpMethod.GET,
         "/api/offenders/$id/sentences",
-        authenticationHeader(requestContext),
+        authenticationHeader(),
         UpstreamApi.PRISON_API,
       )
 
@@ -263,15 +238,12 @@ class PrisonApiGateway(
     }
   }
 
-  fun getRiskCategoriesForPerson(
-    id: String,
-    requestContext: RequestContext? = null,
-  ): Response<RiskCategory?> {
+  fun getRiskCategoriesForPerson(id: String): Response<RiskCategory?> {
     val result =
       webClient.request<PrisonApiInmateDetail>(
         HttpMethod.GET,
         "/api/offenders/$id",
-        authenticationHeaderForCategories(requestContext),
+        authenticationHeaderForCategories(),
         UpstreamApi.PRISON_API,
       )
 
@@ -289,18 +261,15 @@ class PrisonApiGateway(
     }
   }
 
-  fun getReasonableAdjustments(
-    booking: String,
-    requestContext: RequestContext? = null,
-  ): Response<List<ReasonableAdjustment>> {
-    val treatmentCodes = getReferenceDomains("HEALTH_TREAT", requestContext).data
+  fun getReasonableAdjustments(booking: String): Response<List<ReasonableAdjustment>> {
+    val treatmentCodes = getReferenceDomains("HEALTH_TREAT").data
     val codes = treatmentCodes.map { "type=${URLEncoder.encode(it.code, StandardCharsets.UTF_8)}" }.toList()
     val params = codes.joinToString(separator = "&", prefix = "?")
     val result =
       webClient.request<PrisonApiReasonableAdjustments>(
         HttpMethod.GET,
         "/api/bookings/$booking/reasonable-adjustments$params",
-        authenticationHeaderForCategories(requestContext),
+        authenticationHeaderForCategories(),
         UpstreamApi.PRISON_API,
       )
 
@@ -317,15 +286,12 @@ class PrisonApiGateway(
     }
   }
 
-  fun getReferenceDomains(
-    domain: String,
-    requestContext: RequestContext? = null,
-  ): Response<List<PrisonApiReferenceCode>> {
+  fun getReferenceDomains(domain: String): Response<List<PrisonApiReferenceCode>> {
     val result =
       webClient.requestList<PrisonApiReferenceCode>(
         HttpMethod.GET,
         "/api/reference-domains/domains/$domain/codes",
-        authenticationHeaderForCategories(requestContext),
+        authenticationHeaderForCategories(),
         UpstreamApi.PRISON_API,
       )
 
@@ -345,13 +311,12 @@ class PrisonApiGateway(
   fun getAccountsForPerson(
     prisonId: String,
     nomisNumber: String?,
-    requestContext: RequestContext? = null,
   ): Response<PrisonApiAccounts?> {
     val result =
       webClient.request<PrisonApiAccounts>(
         HttpMethod.GET,
         "/api/v1/prison/$prisonId/offenders/$nomisNumber/accounts",
-        authenticationHeader(requestContext),
+        authenticationHeader(),
         UpstreamApi.PRISON_API,
         badRequestAsError = true,
       )
@@ -375,13 +340,12 @@ class PrisonApiGateway(
     accountCode: String,
     fromDate: String,
     toDate: String,
-    requestContext: RequestContext? = null,
   ): Response<Transactions?> {
     val result =
       webClient.request<Transactions>(
         HttpMethod.GET,
         "/api/transactions/prison/$prisonId/offenders/$nomisNumber/accounts/$accountCode?from_date=$fromDate&to_date=$toDate",
-        authenticationHeader(requestContext),
+        authenticationHeader(),
         UpstreamApi.PRISON_API,
       )
     return when (result) {
@@ -402,13 +366,12 @@ class PrisonApiGateway(
     prisonId: String,
     nomisNumber: String,
     clientUniqueRef: String,
-    requestContext: RequestContext? = null,
   ): Response<Transaction?> {
     val result =
       webClient.request<Transaction>(
         HttpMethod.GET,
         "/api/v1/prison/$prisonId/offenders/$nomisNumber/transactions/$clientUniqueRef",
-        authenticationHeader(requestContext),
+        authenticationHeader(),
         UpstreamApi.PRISON_API,
       )
     return when (result) {
@@ -429,13 +392,12 @@ class PrisonApiGateway(
     prisonId: String,
     nomisNumber: String,
     transactionRequest: TransactionRequest,
-    requestContext: RequestContext? = null,
   ): Response<PrisonApiTransactionResponse?> {
     val result =
       webClient.requestWithRetry<PrisonApiTransactionResponse>(
         HttpMethod.POST,
         "/api/v1/prison/$prisonId/offenders/$nomisNumber/transactions",
-        authenticationHeader(requestContext),
+        authenticationHeader(),
         UpstreamApi.PRISON_API,
         requestBody = transactionRequest.toApiConformingMap(),
         badRequestAsError = true,
@@ -458,13 +420,12 @@ class PrisonApiGateway(
     prisonId: String,
     nomisNumber: String,
     transactionTransferRequest: TransactionTransferRequest,
-    requestContext: RequestContext? = null,
   ): Response<NomisTransactionTransferResponse?> {
     val result =
       webClient.requestWithRetry<NomisTransactionTransferResponse>(
         HttpMethod.POST,
         "/api/finance/prison/$prisonId/offenders/$nomisNumber/transfer-to-savings",
-        authenticationHeader(requestContext),
+        authenticationHeader(),
         UpstreamApi.PRISON_API,
         requestBody = transactionTransferRequest.toApiConformingMap(),
         badRequestAsError = true,
@@ -483,15 +444,12 @@ class PrisonApiGateway(
     }
   }
 
-  fun getOffenderVisitRestrictions(
-    offenderNumber: String,
-    requestContext: RequestContext? = null,
-  ): Response<List<PersonVisitRestriction>?> {
+  fun getOffenderVisitRestrictions(offenderNumber: String): Response<List<PersonVisitRestriction>?> {
     val result =
       webClient.request<NomisOffenderVisitRestrictions>(
         HttpMethod.GET,
         "/api/offenders/$offenderNumber/offender-restrictions",
-        authenticationHeader(requestContext),
+        authenticationHeader(),
         UpstreamApi.PRISON_API,
         badRequestAsError = true,
       )
@@ -509,15 +467,12 @@ class PrisonApiGateway(
     }
   }
 
-  fun getVisitBalances(
-    offenderNumber: String,
-    requestContext: RequestContext? = null,
-  ): Response<VisitBalances?> {
+  fun getVisitBalances(offenderNumber: String): Response<VisitBalances?> {
     val result =
       webClient.request<VisitBalances>(
         HttpMethod.GET,
         "/api/bookings/offenderNo/$offenderNumber/visit/balances",
-        authenticationHeader(requestContext),
+        authenticationHeader(),
         UpstreamApi.PRISON_API,
         badRequestAsError = true,
       )
@@ -536,15 +491,12 @@ class PrisonApiGateway(
     }
   }
 
-  fun getCsraAssessmentsForPerson(
-    nomisNumber: String,
-    requestContext: RequestContext? = null,
-  ): Response<List<PrisonApiAssessmentSummary>> {
+  fun getCsraAssessmentsForPerson(nomisNumber: String): Response<List<PrisonApiAssessmentSummary>> {
     val result =
       webClient.requestList<PrisonApiAssessmentSummary>(
         HttpMethod.GET,
         "/api/offender-assessments/csra/$nomisNumber",
-        authenticationHeader(requestContext),
+        authenticationHeader(),
         UpstreamApi.PRISON_API,
         badRequestAsError = true,
       )
@@ -562,16 +514,16 @@ class PrisonApiGateway(
     }
   }
 
-  private fun authenticationHeader(requestContext: RequestContext? = null): Map<String, String> {
-    val token = hmppsAuthGateway.getClientToken("NOMIS", requestContext)
+  private fun authenticationHeader(): Map<String, String> {
+    val token = hmppsAuthGateway.getClientToken("NOMIS")
 
     return mapOf(
       "Authorization" to "Bearer $token",
     )
   }
 
-  private fun authenticationHeaderForCategories(requestContext: RequestContext? = null): Map<String, String> {
-    val token = hmppsAuthGateway.getClientToken("NOMIS", requestContext)
+  private fun authenticationHeaderForCategories(): Map<String, String> {
+    val token = hmppsAuthGateway.getClientToken("NOMIS")
     val version = "1.0"
 
     return mapOf(

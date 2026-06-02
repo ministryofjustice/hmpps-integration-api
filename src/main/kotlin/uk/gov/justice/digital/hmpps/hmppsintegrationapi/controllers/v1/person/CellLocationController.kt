@@ -47,7 +47,7 @@ class CellLocationController(
     @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<CellLocation?> {
-    val response = getCellLocationForPersonService.execute(hmppsId, requestContext)
+    val response = getCellLocationForPersonService.execute(hmppsId, requestContext?.filters)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find cell location for id: $hmppsId")

@@ -115,7 +115,7 @@ class PrisonActivitiesController(
     @RequestParam(required = false) slot: String? = null,
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<List<ActivityScheduledInstanceForPrisoner>?> {
-    val response = getScheduledInstancesForPrisonerService.execute(prisonId, hmppsId, startDate, endDate, slot, requestContext)
+    val response = getScheduledInstancesForPrisonerService.execute(prisonId, hmppsId, startDate, endDate, slot, requestContext?.filters)
 
     if (response.hasError(BAD_REQUEST)) {
       throw ValidationException("Invalid query parameters.")
@@ -187,7 +187,7 @@ class PrisonActivitiesController(
     @RequestParam prisonId: String?,
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<List<HistoricalAttendance>?> {
-    val response = getHistoricalAttendancesService.execute(hmppsId, startDate, endDate, prisonId, requestContext)
+    val response = getHistoricalAttendancesService.execute(hmppsId, startDate, endDate, prisonId, requestContext?.filters)
 
     if (response.hasError(BAD_REQUEST)) {
       throw ValidationException("Invalid query parameters.")

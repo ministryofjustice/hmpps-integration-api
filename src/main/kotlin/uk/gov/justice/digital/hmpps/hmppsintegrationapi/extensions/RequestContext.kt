@@ -19,21 +19,4 @@ data class RequestContext(
   val filters: ConsumerFilters?,
   val featureFlags: FeatureFlagConfig,
   val oboUserName: String? = null,
-) {
-  companion object {
-    fun buildRequestContext(
-      consumerId: String? = null,
-      consumerConfig: ConsumerConfig? = null,
-      filters: ConsumerFilters? = null,
-      featureFlags: FeatureFlagConfig? = null,
-      oboUserName: String? = null,
-    ): RequestContext =
-      RequestContext(
-        consumerId = consumerId ?: "",
-        consumerConfig = consumerConfig ?: ConsumerConfig(),
-        filters = filters,
-        featureFlags = featureFlags ?: FeatureFlagConfig(),
-        oboUserName = oboUserName,
-      )
-  }
-}
+)

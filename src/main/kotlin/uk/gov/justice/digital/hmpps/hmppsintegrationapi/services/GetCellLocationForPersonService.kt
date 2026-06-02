@@ -2,12 +2,12 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CellLocation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetCellLocationForPersonService(
@@ -16,9 +16,9 @@ class GetCellLocationForPersonService(
 ) {
   fun execute(
     hmppsId: String,
-    requestContext: RequestContext?,
+    filters: ConsumerFilters?,
   ): Response<CellLocation?> {
-    val personResponse = getPersonService.getNomisNumber(hmppsId, requestContext)
+    val personResponse = getPersonService.getNomisNumber(hmppsId, filters)
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = CellLocation(), errors = personResponse.errors)
     }
@@ -29,7 +29,7 @@ class GetCellLocationForPersonService(
         errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND)),
       )
 
-    val prisonResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = nomisNumber, requestContext = requestContext)
+    val prisonResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = nomisNumber)
     val cellLocation = CellLocation(prisonCode = prisonResponse.data?.prisonId, prisonName = prisonResponse.data?.prisonName, cell = prisonResponse.data?.cellLocation)
 
     return Response(

@@ -3,13 +3,13 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactRestriction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContactRestrictions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetVisitorRestrictionsService(
@@ -20,10 +20,9 @@ class GetVisitorRestrictionsService(
   fun execute(
     hmppsId: String,
     contactId: Long,
-    requestContext: RequestContext?,
+    filters: ConsumerFilters?,
   ): Response<PrisonerContactRestrictions?> {
-    val filters = requestContext?.filters
-    val personResponse = getPersonService.getPrisoner(hmppsId, requestContext)
+    val personResponse = getPersonService.getPrisoner(hmppsId, filters)
 
     if (personResponse.errors.isNotEmpty()) {
       return Response(null, personResponse.errors)

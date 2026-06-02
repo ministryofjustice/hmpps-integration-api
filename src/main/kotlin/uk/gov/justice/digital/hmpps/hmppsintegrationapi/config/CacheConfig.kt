@@ -55,31 +55,14 @@ class CacheConfig {
     return cacheManager
   }
 
-  @Bean("stringParamsGatewayKeyGenerator")
-  fun stringParamsGatewayKeyGenerator(): KeyGenerator = StringParamsGatewayKeyGenerator()
-
-  @Bean("paramsGatewayKeyGenerator")
-  fun paramsGatewayKeyGenerator(): KeyGenerator = ParamsGatewayKeyGenerator()
+  @Bean("gatewayKeyGenerator")
+  fun keyGenerator(): KeyGenerator = GatewayKeyGenerator()
 }
 
 /**
- * Generates a unique key for the cache using only string params
+ * Generates a unique key for the cache so this can be used on all gateway methods
  */
-class StringParamsGatewayKeyGenerator : KeyGenerator {
-  override fun generate(
-    target: Any,
-    method: Method,
-    vararg params: Any?,
-  ): Any {
-    val stringParams = params.filterIsInstance<String>()
-    return target.javaClass.name + "_" + method.name + "_" + stringParams.joinToString("_")
-  }
-}
-
-/**
- * Generates a unique key for the cache using all params
- */
-class ParamsGatewayKeyGenerator : KeyGenerator {
+class GatewayKeyGenerator : KeyGenerator {
   override fun generate(
     target: Any,
     method: Method,
