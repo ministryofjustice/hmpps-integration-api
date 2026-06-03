@@ -1,6 +1,9 @@
 name: Development Smoke Test
 on:
   workflow_call:
+    push:
+      branches:
+        - HIA-1361-smoke-tests-stack-messages
 jobs:
   dev-smoke-tests:
     runs-on: ubuntu-latest
@@ -61,3 +64,50 @@ jobs:
           API_KEY: "${{ secrets.DEV_SMOKE_TEST_REVOKED_API_KEY }}"
         run: |
           k6 run --summary-mode=full --quiet ./scripts/K6/smoke-tests.js
+  send-failure-to-slack:
+    runs-on: ubuntu-latest
+    needs:
+      - dev-smoke-tests
+    steps:
+      - name: Send failure message to Slack
+        uses: slackapi/slack-github-action@03ea5433c137af7c0495bc0cad1af10403fc800c # v3.0.2
+        if: ${{ contains(needs.*.result, 'failure') }}
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.HMPPS_SLACK_BOT_TOKEN }}
+          payload: |
+            {
+              "channel": "hmpps-integration-api-alerts",
+              "text": "Dev smoke tests have failed",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "❌ Dev smoke tests failure"
+                  }
+                },
+                {
+                  "type": "context",
+                  "elements": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "The development smoke tests have failed. Please check the logs and re-run the workflow."
+                    }
+                  ]
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "Logs"
+                      },
+                      "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    }
+                  ]
+                }
+              ]
+            }
