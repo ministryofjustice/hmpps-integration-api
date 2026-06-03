@@ -2,7 +2,7 @@ name: Production Smoke Test
 on:
   push:
     branches:
-      - "HIA-1361-prod-preprod-smoke-tests-slack-messages"
+      - "HIA-1361-prod-preprod-smoke-test-slack-messages"
   workflow_call:
 jobs:
   prod-smoke-tests:
