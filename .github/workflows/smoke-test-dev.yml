@@ -1,8 +1,5 @@
 name: Development Smoke Test
 on:
-  push:
-    branches:
-      - 'HIA-1361-smoke-tests-stack-messages'
   workflow_call:
 jobs:
   dev-smoke-tests:
@@ -16,7 +13,7 @@ jobs:
         shell: bash
         env:
           PROFILE: MAIN
-          HMPPSID: g
+          HMPPSID: X688624
           DOMAIN: dev.integration-api.hmpps.service.justice.gov.uk
           CERT: "${{ secrets.DEV_SMOKE_TEST_FULL_ACCESS_CERT }}"
           PRIVATE_KEY: "${{ secrets.DEV_SMOKE_TEST_FULL_ACCESS_KEY }}"
@@ -27,7 +24,7 @@ jobs:
         shell: bash
         env:
           PROFILE: NOPERMS
-          HMPPSID: g
+          HMPPSID: X688624
           DOMAIN: dev.integration-api.hmpps.service.justice.gov.uk
           CERT: "${{ secrets.DEV_SMOKE_TEST_NO_ACCESS_CERT }}"
           PRIVATE_KEY: "${{ secrets.DEV_SMOKE_TEST_NO_ACCESS_KEY }}"
@@ -38,7 +35,7 @@ jobs:
         shell: bash
         env:
           PROFILE: PARTIAL
-          HMPPSID: g
+          HMPPSID: X688624
           DOMAIN: dev.integration-api.hmpps.service.justice.gov.uk
           CERT: "${{ secrets.DEV_SMOKE_TEST_LIMITED_ACCESS_CERT }}"
           PRIVATE_KEY: "${{ secrets.DEV_SMOKE_TEST_LIMITED_ACCESS_KEY }}"
@@ -49,7 +46,7 @@ jobs:
         shell: bash
         env:
           PROFILE: NOPERMS
-          HMPPSID: g
+          HMPPSID: X688624
           DOMAIN: dev.integration-api.hmpps.service.justice.gov.uk
         run: |
           k6 run --summary-mode=full --quiet ./scripts/K6/smoke-tests.js
@@ -57,7 +54,7 @@ jobs:
         shell: bash
         env:
           PROFILE: NOPERMS
-          HMPPSID: g
+          HMPPSID: X688624
           DOMAIN: dev.integration-api.hmpps.service.justice.gov.uk
           CERT: "${{ secrets.DEV_SMOKE_TEST_REVOKED_CERT }}"
           PRIVATE_KEY: "${{ secrets.DEV_SMOKE_TEST_REVOKED_KEY }}"
