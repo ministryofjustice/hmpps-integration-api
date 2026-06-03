@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import kotlin.String
 
 /**
  * Context information for an API request.
@@ -19,4 +20,14 @@ data class RequestContext(
   val filters: ConsumerFilters?,
   val featureFlags: FeatureFlagConfig,
   val oboUserName: String? = null,
-)
+) {
+  companion object {
+    fun buildRequestContext(
+      consumerId: String = "",
+      consumerConfig: ConsumerConfig = ConsumerConfig(),
+      filters: ConsumerFilters? = ConsumerFilters(),
+      featureFlags: FeatureFlagConfig = FeatureFlagConfig(),
+      oboUserName: String? = null,
+    ) = RequestContext(consumerId, consumerConfig, filters, featureFlags, oboUserName)
+  }
+}

@@ -75,8 +75,9 @@ class HmppsAuthGateway(
     service: String,
     context: RequestContext?,
   ): String {
+    val oboUserName = context?.oboUserName
     existingAccessToken?.let {
-      if (checkTokenValid(it)) {
+      if (checkTokenValid(it) && oboUserName == null) {
         telemetryService.trackEvent("AuthTokenCache")
         return it
       }
@@ -84,7 +85,10 @@ class HmppsAuthGateway(
 
     telemetryService.trackEvent("AuthTokenRequest")
     val credentials = Credentials(username, password)
-    val uri = "/auth/oauth/token?grant_type=client_credentials"
+
+    val userNameParam = if (oboUserName != null) "&username=$oboUserName" else ""
+
+    val uri = "/auth/oauth/token?grant_type=client_credentials$userNameParam"
 
     return try {
       var response: String?
@@ -122,7 +126,10 @@ class HmppsAuthGateway(
       }
 
       val accessToken = JSONParser(response).parseObject()["access_token"].toString()
-      this.existingAccessToken = accessToken
+
+      if (oboUserName == null) {
+        this.existingAccessToken = accessToken
+      }
       accessToken
     } catch (exception: WebClientRequestException) {
       throw HmppsAuthFailedException("Connection to ${exception.uri.authority} failed for $service.")
