@@ -27,3 +27,52 @@ jobs:
           DOMAIN: preprod.integration-api.hmpps.service.justice.gov.uk
         run: |
           k6 run --summary-mode=full --quiet ./scripts/K6/smoke-tests.js
+  preprod-send-failure-to-slack:
+    runs-on: ubuntu-latest
+    needs:
+      - preprod-smoke-tests
+    if:
+      always()
+    steps:
+      - name: Send failure message to Slack
+        uses: slackapi/slack-github-action@03ea5433c137af7c0495bc0cad1af10403fc800c # v3.0.2
+        if: ${{ contains(needs.*.result, 'failure') }}
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.HMPPS_SLACK_BOT_TOKEN }}
+          payload: |
+            {
+              "channel": "hmpps-integration-api-alerts",
+              "text": "Preprod smoke tests have failed",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "❌ Preprod smoke tests failure"
+                  }
+                },
+                {
+                  "type": "context",
+                  "elements": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "The pre-production smoke tests have failed. Please check the logs and re-run the workflow."
+                    }
+                  ]
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "Logs"
+                      },
+                      "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    }
+                  ]
+                }
+              ]
+            }
