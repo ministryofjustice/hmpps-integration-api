@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # V6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # V6
       - name: Setup K6
         uses: grafana/setup-k6-action@db07bd9765aac508ef18982e52ab937fe633a065 # V1
       - name: Run dev load Test script (progressive load for 30s)
