@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.3.1"
-  kotlin("plugin.spring") version "2.3.21"
+  kotlin("plugin.spring") version "2.4.0"
   id("dev.detekt") version "2.0.0-alpha.3"
   id("org.jetbrains.kotlinx.kover") version "0.9.8"
 }
@@ -33,13 +33,13 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-jdbc")
   runtimeOnly("org.springframework.boot:spring-boot-starter-flyway")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
-  implementation("io.sentry:sentry-spring-boot-4-starter:8.42.0")
-  implementation("io.sentry:sentry-logback:8.42.0")
+  implementation("io.sentry:sentry-spring-boot-4-starter:8.43.0")
+  implementation("io.sentry:sentry-logback:8.43.0")
   implementation("org.springframework.data:spring-data-jdbc")
   implementation("org.springframework.data:spring-data-commons")
   implementation("org.springframework:spring-aop")
   implementation("org.aspectj:aspectjweaver")
-  implementation("tools.jackson.module:jackson-module-kotlin:3.1.3")
+  implementation("tools.jackson.module:jackson-module-kotlin:3.1.4")
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.3.2") {
     exclude("org.springframework.security", "spring-security-config")
     exclude("org.springframework.security", "spring-security-core")
@@ -75,14 +75,14 @@ dependencies {
   }
   // Explicitly add all necessary Jetty and Servlet dependencies
   testImplementation("javax.servlet:javax.servlet-api:4.0.1")
-  testImplementation("org.eclipse.jetty:jetty-util:12.1.9")
-  testImplementation("org.eclipse.jetty:jetty-server:12.1.9")
-  testImplementation("org.eclipse.jetty:jetty-http:12.1.9")
-  testImplementation("org.eclipse.jetty:jetty-io:12.1.9")
+  testImplementation("org.eclipse.jetty:jetty-util:12.1.10")
+  testImplementation("org.eclipse.jetty:jetty-server:12.1.10")
+  testImplementation("org.eclipse.jetty:jetty-http:12.1.10")
+  testImplementation("org.eclipse.jetty:jetty-io:12.1.10")
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
   testImplementation(kotlin("test"))
-  testImplementation("io.mockk:mockk:1.14.9")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:5.1.1")
+  testImplementation("io.mockk:mockk:1.14.11")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:5.1.2")
 }
 
 java {
