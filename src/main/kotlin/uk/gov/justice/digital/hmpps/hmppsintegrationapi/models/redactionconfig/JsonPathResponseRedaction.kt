@@ -4,6 +4,7 @@ import com.jayway.jsonpath.Configuration
 import com.jayway.jsonpath.DocumentContext
 import com.jayway.jsonpath.JsonPath
 import com.jayway.jsonpath.Option
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.normalisePath
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionContext
 
 open class JsonPathResponseRedaction(
@@ -20,7 +21,7 @@ open class JsonPathResponseRedaction(
     redactionContext: RedactionContext,
     responseBody: Any,
   ): Any {
-    var shouldRun = endpointPatterns?.any { it.matches(redactionContext.requestUri) } ?: true
+    val shouldRun = endpointPatterns?.any { it.matches(normalisePath(redactionContext.requestUri)) } ?: true
     if (!shouldRun) return responseBody
 
     if (laoOnly && !redactionContext.isLimitedAccessOffender()) return responseBody
