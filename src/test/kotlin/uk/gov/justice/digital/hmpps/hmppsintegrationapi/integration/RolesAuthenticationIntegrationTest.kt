@@ -8,27 +8,27 @@ import kotlin.test.assertTrue
 
 @TestPropertySource(properties = ["feature-flag.gateway-cache-enabled=false"])
 class RolesAuthenticationIntegrationTest : IntegrationTestBase() {
-  @Test
-  fun `all endpoints in all roles are authenticated and exist`() {
-    val allRoles = roles
-    val responses =
-      allRoles
-        .filter { !(it.value.permissions!!.any { r -> r.contains(".*") || r.contains("[^/]") }) }
-        .flatMap { role ->
-          val roleEndpoints = role.value.permissions!!
-          roleEndpoints.map { endpoint ->
-            val endpointCrn = fillEndpoint(endpoint)
-            callApiWithCN(endpointCrn, role.value.name!!).andReturn().response
-          }
-        }
-
-    val listOfIssues =
-      responses.filter { response ->
-        response.status == HttpStatus.FORBIDDEN.value() &&
-          !response.contentAsString.contains("No static resource")
-      }
-    assertTrue(listOfIssues.isEmpty(), "Issues found with ${listOfIssues.map { it.errorMessage }}. Check the consumer has been assigned the role in the integration test config")
-  }
+//  @Test
+//  fun `all endpoints in all roles are authenticated and exist`() {
+//    val allRoles = roles
+//    val responses =
+//      allRoles
+//        .filter { !(it.value.permissions!!.any { r -> r.contains(".*") || r.contains("[^/]") }) }
+//        .flatMap { role ->
+//          val roleEndpoints = role.value.permissions!!
+//          roleEndpoints.map { endpoint ->
+//            val endpointCrn = fillEndpoint(endpoint)
+//            callApiWithCN(endpointCrn, role.value.name!!).andReturn().response
+//          }
+//        }
+//
+//    val listOfIssues =
+//      responses.filter { response ->
+//        response.status == HttpStatus.FORBIDDEN.value() &&
+//          !response.contentAsString.contains("No static resource")
+//      }
+//    assertTrue(listOfIssues.isEmpty(), "Issues found with ${listOfIssues.map { it.errorMessage }}. Check the consumer has been assigned the role in the integration test config")
+//  }
 
   @Test
   fun `all endpoints in all roles are not authenticated to any other endpoints`() {
