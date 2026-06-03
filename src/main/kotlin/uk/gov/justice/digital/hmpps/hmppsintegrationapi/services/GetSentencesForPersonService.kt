@@ -2,13 +2,13 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetSentencesForPersonService(
@@ -18,8 +18,9 @@ class GetSentencesForPersonService(
 ) {
   fun execute(
     hmppsId: String,
-    filters: ConsumerFilters?,
+    requestContext: RequestContext? = null,
   ): Response<List<Sentence>> {
+    val filters = requestContext?.filters
     val personResponse = getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters = filters)
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = emptyList(), errors = personResponse.errors)
@@ -42,7 +43,7 @@ class GetSentencesForPersonService(
           return Response(data = emptyList(), errors = bookingIdsResponse.errors)
         }
       } else {
-        nomisSentenceResponse = Response.merge(bookingIdsResponse.data.map { prisonApiGateway.getSentencesForBooking(it.bookingId) })
+        nomisSentenceResponse = Response.merge(bookingIdsResponse.data.map { prisonApiGateway.getSentencesForBooking(it.bookingId, requestContext) })
         if (nomisSentenceResponse.errors.isNotEmpty() && !nomisSentenceResponse.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
           return Response(data = emptyList(), errors = nomisSentenceResponse.errors)
         }
