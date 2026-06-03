@@ -13,6 +13,7 @@ generic-service:
     modsecurity_snippet: |
       SecAuditEngine On
       SecRuleEngine DetectionOnly
+      SecDefaultAction "phase:2,pass,log,tag:github_team=hmpps-integration-api,tag:namespace={{ .Release.Namespace }}"
 
   poddisruptionbudget:
     enabled: false
