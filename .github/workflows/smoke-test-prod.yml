@@ -1,8 +1,5 @@
 name: Production Smoke Test
 on:
-  push:
-    branches:
-      - "HIA-1361-prod-preprod-smoke-test-slack-messages"
   workflow_call:
 jobs:
   prod-smoke-tests:
@@ -20,7 +17,7 @@ jobs:
           DOMAIN: integration-api.hmpps.service.justice.gov.uk
           CERT: "${{ secrets.PROD_SMOKE_TEST_CERT }}"
           PRIVATE_KEY: "${{ secrets.PROD_SMOKE_TEST_KEY }}"
-          API_KEY: "Non"
+          API_KEY: "${{ secrets.PROD_SMOKE_TEST_API_KEY }}"
         run: |
           k6 run --summary-mode=full --quiet ./scripts/K6/smoke-tests.js
       - name: Run no cert test
