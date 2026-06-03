@@ -20,13 +20,13 @@ jobs:
           DOMAIN: preprod.integration-api.hmpps.service.justice.gov.uk
           CERT: "${{ secrets.PREPROD_SMOKE_TEST_CERT }}"
           PRIVATE_KEY: "${{ secrets.PREPROD_SMOKE_TEST_KEY }}"
-          API_KEY: "${{ secrets.PREPROD_SMOKE_TEST_API_KEY }}"
+          API_KEY: "Non"
         run: |
           k6 run --summary-mode=full --quiet ./scripts/K6/smoke-tests.js
       - name: Run no cert test
         shell: bash
         env:
-          PROFILE: NOPERM
+          PROFILE: NOPERMS
           DOMAIN: preprod.integration-api.hmpps.service.justice.gov.uk
         run: |
           k6 run --summary-mode=full --quiet ./scripts/K6/smoke-tests.js
