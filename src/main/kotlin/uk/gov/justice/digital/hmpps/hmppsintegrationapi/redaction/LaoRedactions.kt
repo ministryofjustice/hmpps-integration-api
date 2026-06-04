@@ -18,15 +18,15 @@ val laoRedactionPolicy =
     responseRedactions {
       laoRejection {
         endpoints {
-          -"/v1/persons/.*/risk-management-plan"
-          -"/v1/persons/.*/risks/scores"
-          -"/v1/persons/.*/risks/serious-harm"
+          -"/v1/persons/{hmppsId}/risk-management-plan"
+          -"/v1/persons/{hmppsId}/risks/scores"
+          -"/v1/persons/{hmppsId}/risks/serious-harm"
         }
       }
       jsonPath {
         laoOnly(true)
         endpoints {
-          -"/v1/persons/.*/licences/conditions"
+          -"/v1/persons/{hmppsId}/licences/conditions"
         }
         redactions {
           -("$..condition" to MASK)
@@ -35,9 +35,9 @@ val laoRedactionPolicy =
       jsonPath {
         laoOnly(true)
         endpoints {
-          -"/v1/persons/.*/risks/mappadetail"
-          -"/v1/persons/.*/risks/dynamic"
-          -"/v1/persons/.*/status-information"
+          -"/v1/persons/{hmppsId}/risks/mappadetail"
+          -"/v1/persons/{hmppsId}/risks/dynamic"
+          -"/v1/persons/{hmppsId}/status-information"
         }
         redactions {
           -("$..notes" to MASK)
@@ -46,7 +46,7 @@ val laoRedactionPolicy =
       jsonPath {
         laoOnly(true)
         endpoints {
-          -"/v1/persons/[^/]*$"
+          -"/v1/persons/{hmppsId}"
         }
         redactions {
           -personLaoRedactions
@@ -55,7 +55,7 @@ val laoRedactionPolicy =
       jsonPath {
         laoOnly(true)
         endpoints {
-          -"/v1/persons/.*/alerts"
+          -"/v1/persons/{hmppsId}/alerts"
         }
         redactions {
           -("$..type" to REMOVE)
@@ -72,8 +72,8 @@ val laoRedactionPolicy =
       }
       laoRejection {
         endpoints {
-          -"/v1/persons/.*/addresses"
-          -"/v1/persons/.*/sentences"
+          -"/v1/persons/{hmppsId}/addresses"
+          -"/v1/persons/{hmppsId}/sentences"
         }
       }
     }
