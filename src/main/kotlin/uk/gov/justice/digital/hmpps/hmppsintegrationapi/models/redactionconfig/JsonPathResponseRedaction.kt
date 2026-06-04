@@ -14,14 +14,14 @@ open class JsonPathResponseRedaction(
   open val redactions: List<String>? = emptyList(),
   open val laoOnly: Boolean = false,
 ) : ResponseRedaction {
-  private val endpointPatterns: List<Regex>? = endpoints?.map(::Regex)
+  private val endpointPatterns: List<Regex>? = endpoints?.map(::normalisePath)?.map(::Regex)
 
   override fun apply(
     policyName: String,
     redactionContext: RedactionContext,
     responseBody: Any,
   ): Any {
-    val shouldRun = endpointPatterns?.any { it.matches(normalisePath(redactionContext.requestUri)) } ?: true
+    val shouldRun = endpointPatterns?.any { it.matches(redactionContext.requestUri) } ?: true
     if (!shouldRun) return responseBody
 
     if (laoOnly && !redactionContext.isLimitedAccessOffender()) return responseBody
