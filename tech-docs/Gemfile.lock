@@ -56,18 +56,18 @@ GEM
     fastimage (2.4.1)
     ffi (1.17.4-arm64-darwin)
     ffi (1.17.4-x86_64-linux-gnu)
-    google-protobuf (4.34.1-arm64-darwin)
+    google-protobuf (4.35.0-arm64-darwin)
       bigdecimal
       rake (~> 13.3)
-    google-protobuf (4.34.1-x86_64-linux-gnu)
+    google-protobuf (4.35.0-x86_64-linux-gnu)
       bigdecimal
       rake (~> 13.3)
-    govuk_tech_docs (6.2.3)
+    govuk_tech_docs (6.2.4)
       autoprefixer-rails
       chronic
       concurrent-ruby
       csv
-      haml (~> 6.0)
+      haml (>= 6, < 8)
       middleman
       middleman-autoprefixer
       middleman-compass
@@ -93,7 +93,7 @@ GEM
     http_parser.rb (0.8.1)
     i18n (1.14.8)
       concurrent-ruby (~> 1.0)
-    json (2.19.5)
+    json (2.19.8)
     kramdown (2.5.2)
       rexml (>= 3.4.4)
     listen (3.10.0)
@@ -189,9 +189,9 @@ GEM
     rexml (3.4.4)
     rouge (3.30.0)
     sass (3.4.25)
-    sass-embedded (1.99.0-arm64-darwin)
+    sass-embedded (1.100.0-arm64-darwin)
       google-protobuf (~> 4.31)
-    sass-embedded (1.99.0-x86_64-linux-gnu)
+    sass-embedded (1.100.0-x86_64-linux-gnu)
       google-protobuf (~> 4.31)
     sassc (2.4.0)
       ffi (~> 1.9)

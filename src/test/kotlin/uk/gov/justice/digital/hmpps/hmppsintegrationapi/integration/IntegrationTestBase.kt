@@ -185,6 +185,7 @@ abstract class IntegrationTestBase {
       hmppsAuthMockServer.start()
       corePersonRecordMockServer.start()
       hmppsAuthMockServer.stubGetOAuthToken("client", "client-secret", HmppsAuthMockServer.TOKEN)
+      hmppsAuthMockServer.stubGetOAuthToken("client", "client-secret", HmppsAuthMockServer.TOKEN, "testName")
 
       prisonerOffenderSearchMockServer.start()
 

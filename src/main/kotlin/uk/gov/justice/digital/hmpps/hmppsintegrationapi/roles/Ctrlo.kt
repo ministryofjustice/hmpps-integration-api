@@ -11,9 +11,7 @@ val ctrlo =
       -"/v1/persons/{hmppsId}/access-limitations"
       -"/v1/persons/{hmppsId}/risks/scores"
     }
-    redactionPolicies(
-      listOf(
-        epfRiskScoreRedactions,
-      ),
-    )
+    redactionPolicies {
+      -epfRiskScoreRedactions
+    }
   }

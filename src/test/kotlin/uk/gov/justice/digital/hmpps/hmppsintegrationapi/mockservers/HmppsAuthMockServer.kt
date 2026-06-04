@@ -32,10 +32,12 @@ class HmppsAuthMockServer : WireMockServer(WIREMOCK_PORT) {
     client: String,
     clientSecret: String,
     token: String = getToken(),
+    oboUserName: String? = null,
   ) {
+    val url = if (oboUserName != null) "$authUrl&username=$oboUserName" else authUrl
     stubFor(
       WireMock
-        .post(authUrl)
+        .post(url)
         .withBasicAuth(client, clientSecret)
         .willReturn(
           WireMock
