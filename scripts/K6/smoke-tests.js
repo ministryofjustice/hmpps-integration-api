@@ -43,6 +43,31 @@ const httpParams = {
   },
 };
 
+const httpOboHeaderParams = {
+  headers: {
+    'Content-Type': 'application/json',
+    'x-api-key': api_key,
+// Test jwt, decoded as follows
+    //      {
+    //        "header": {
+    //          "alg":"none"
+    //          "kid":"testKid"
+    //        }
+    //        "payload":{
+    //          "sub":"1234567890"
+    //          "name":"John Doe"
+    //          "admin":true
+    //          "iat":1516239022
+    //          "aud":"testAud"
+    //          "iss":"testIss"
+    //          "appid":"testId"
+    //          "unique_name":"testName"
+    //        }
+    //      }
+    'X-On-Behalf-Of': "eyJhbGciOiJub25lIiwia2lkIjoidGVzdEtpZCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMiwiYXVkIjoidGVzdEF1ZCIsImlzcyI6InRlc3RJc3MiLCJhcHBpZCI6InRlc3RJZCIsInVuaXF1ZV9uYW1lIjoidGVzdE5hbWUifQ."
+  },
+};
+
 const baseUrl = `https://${domain}`;
 
 const hmppsId = "A8451DY";
@@ -279,6 +304,21 @@ function validate_get_request(path) {
   return res;
 }
 
+/**
+ * Make a GET request with an on befalf of to the API and validate that the http response code indicates success.
+ * @returns the http response object
+ */
+function validate_get_request_with_obo(path) {
+  const res = http.get(`${baseUrl}${path}`, httpOboHeaderParams);
+  if (!check(res, {
+    [`GET ${path} successful`]: (r) => r.status < 400,
+  })) {
+    exec.test.fail(`GET ${path} with obo failed, http status = ${res.status}`);
+  }
+  return res;
+}
+
+
 function validate_response_list_not_empty(response, message) {
   let data = response.json() ? response.json()["data"] : null;
   check(data, {
@@ -314,7 +354,7 @@ function verify_system_endpoints() {
   })) {
     return false
   }
-  
+
   return true
 }
 
@@ -593,7 +633,7 @@ function verify_get_basic_details(hmppsId) {
     validate_get_request(`/v1/persons/${hmppsId}/addresses`);
     validate_get_request(`/v1/persons/${hmppsId}/alerts`);
     validate_get_request(`/v1/persons/${hmppsId}/offences`);
-    validate_get_request(`/v1/persons/${hmppsId}/sentences`);
+    validate_get_request_with_obo(`/v1/persons/${hmppsId}/sentences`);
     validate_get_request(`/v1/persons/${hmppsId}/reported-adjudications`);
     validate_get_request(`/v1/persons/${hmppsId}/number-of-children`);
     validate_get_request(`/v1/persons/${hmppsId}/physical-characteristics`);
@@ -655,32 +695,7 @@ function verify_prisoner_contacts(hmppsId) {
 
 function verify_headers() {
   //Tests to add headers too for app insights
-  const httpHeaderParams = {
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': api_key,
-// Test jwt, decoded as follows
-      //      {
-      //        "header": {
-      //          "alg":"none"
-      //          "kid":"testKid"
-      //        }
-      //        "payload":{
-      //          "sub":"1234567890"
-      //          "name":"John Doe"
-      //          "admin":true
-      //          "iat":1516239022
-      //          "aud":"testAud"
-      //          "iss":"testIss"
-      //          "appid":"testId"
-      //          "unique_name":"testName"
-      //        }
-      //      }
-      'X-On-Behalf-Of': "eyJhbGciOiJub25lIiwia2lkIjoidGVzdEtpZCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMiwiYXVkIjoidGVzdEF1ZCIsImlzcyI6InRlc3RJc3MiLCJhcHBpZCI6InRlc3RJZCIsInVuaXF1ZV9uYW1lIjoidGVzdE5hbWUifQ."
-    },
-  };
-
-  const res = http.get(`${baseUrl}/v1/status`, httpHeaderParams);
+  const res = http.get(`${baseUrl}/v1/status`, httpOboHeaderParams);
     if (!check(res, {
       [`Successful sent api call with extended headers.`]: (r) => r.status < 400,
     })) {

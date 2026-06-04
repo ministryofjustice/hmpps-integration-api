@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientRequestException
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_WEBCLIENT_WRAPPER_FOR_HMPPS_AUTH
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.HmppsAuthFailedException
@@ -75,8 +76,9 @@ class HmppsAuthGateway(
     service: String,
     context: RequestContext?,
   ): String {
+    val oboUserName = context?.oboUserName
     existingAccessToken?.let {
-      if (checkTokenValid(it)) {
+      if (checkTokenValid(it) && oboUserName == null) {
         telemetryService.trackEvent("AuthTokenCache")
         return it
       }
@@ -84,7 +86,17 @@ class HmppsAuthGateway(
 
     telemetryService.trackEvent("AuthTokenRequest")
     val credentials = Credentials(username, password)
-    val uri = "/auth/oauth/token?grant_type=client_credentials"
+
+    val uriComponents =
+      UriComponentsBuilder
+        .fromUriString("/auth/oauth/token")
+        .queryParam("grant_type", "client_credentials")
+
+    if (oboUserName != null) {
+      uriComponents.queryParam("username", oboUserName)
+    }
+
+    val uri = uriComponents.encode().build().toUriString()
 
     return try {
       var response: String?
@@ -122,7 +134,10 @@ class HmppsAuthGateway(
       }
 
       val accessToken = JSONParser(response).parseObject()["access_token"].toString()
-      this.existingAccessToken = accessToken
+
+      if (oboUserName == null) {
+        this.existingAccessToken = accessToken
+      }
       accessToken
     } catch (exception: WebClientRequestException) {
       throw HmppsAuthFailedException("Connection to ${exception.uri.authority} failed for $service.")

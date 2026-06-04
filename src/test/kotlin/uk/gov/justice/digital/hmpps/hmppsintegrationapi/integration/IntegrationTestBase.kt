@@ -27,6 +27,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtens
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CorePersonRecordGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerAlertsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
@@ -75,6 +76,9 @@ abstract class IntegrationTestBase {
   @MockitoSpyBean
   lateinit var eventNotificationRepository: JdbcTemplateEventNotificationRepository
 
+  @MockitoSpyBean
+  lateinit var authGateway: HmppsAuthGateway
+
   @Autowired
   lateinit var mockMvc: MockMvc
 
@@ -89,6 +93,7 @@ abstract class IntegrationTestBase {
     reset(featureFlagConfig)
     reset(authorisationService)
     reset(eventNotificationRepository)
+    reset(authGateway)
 
     prisonerOffenderSearchMockServer.stubForGet(
       "/prisoner/${Companion.nomsId}",
@@ -180,6 +185,7 @@ abstract class IntegrationTestBase {
       hmppsAuthMockServer.start()
       corePersonRecordMockServer.start()
       hmppsAuthMockServer.stubGetOAuthToken("client", "client-secret", HmppsAuthMockServer.TOKEN)
+      hmppsAuthMockServer.stubGetOAuthToken("client", "client-secret", HmppsAuthMockServer.TOKEN, "testName")
 
       prisonerOffenderSearchMockServer.start()
 
