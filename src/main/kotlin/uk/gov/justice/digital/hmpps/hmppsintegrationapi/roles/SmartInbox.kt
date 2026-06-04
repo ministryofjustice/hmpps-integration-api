@@ -15,9 +15,7 @@ val smartinbox =
         -"PRISONS"
       }
     }
-    redactionPolicies(
-      listOf(
-        personSearchIdOnly,
-      ),
-    )
+    redactionPolicies {
+      -personSearchIdOnly
+    }
   }

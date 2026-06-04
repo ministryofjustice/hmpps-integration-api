@@ -21,9 +21,7 @@ val curious =
       -"/v1/persons/{hmppsId}/education/status"
       -"/v1/persons/{hmppsId}/education/aln-assessment"
     }
-    redactionPolicies(
-      listOf(
-        prisonEducation,
-      ),
-    )
+    redactionPolicies {
+      -prisonEducation
+    }
   }
