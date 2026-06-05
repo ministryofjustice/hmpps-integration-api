@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
-import org.springframework.cache.CacheManager
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpHeaders
 import org.springframework.test.context.ActiveProfiles
@@ -85,9 +84,6 @@ abstract class IntegrationTestBase {
 
   @Autowired
   lateinit var mockMvc: MockMvc
-
-  @Autowired
-  lateinit var cacheManager: CacheManager
 
   @BeforeEach
   fun evictAllCaches() {
