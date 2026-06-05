@@ -50,12 +50,10 @@ class HmppsAuthGatewayTest(
       hmppsAuthMockServer.start()
       Mockito.reset(telemetryService)
       hmppsAuthMockServer.stubGetOAuthToken("username", "password")
-      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.GATEWAY_CACHE_ENABLED)).thenReturn(true)
     }
 
     afterTest {
       hmppsAuthMockServer.stop()
-      hmppsAuthGateway.reset()
     }
 
     it("throws an exception if connection is refused") {
