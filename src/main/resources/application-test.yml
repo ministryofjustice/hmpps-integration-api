@@ -99,7 +99,6 @@ feature-flag:
   use-emergency-contacts-endpoint: false
   epf-endpoint-includes-lao: true
   cpr-enabled: true
-  gateway-cache-enabled: true
   use-webclient-wrapper-for-hmpps-auth: true
   # Events Config
   enable-delete-processed-events: false
