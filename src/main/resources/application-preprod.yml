@@ -57,7 +57,7 @@ feature-flag:
   epf-gateway-disabled: true
   cpr-enabled: true
   gateway-cache-enabled: true
-  use-webclient-wrapper-for-hmpps-auth: false
+  use-webclient-wrapper-for-hmpps-auth: true
   # Events Config
   enable-delete-processed-events: true
   enable-publish-pending-events: true
