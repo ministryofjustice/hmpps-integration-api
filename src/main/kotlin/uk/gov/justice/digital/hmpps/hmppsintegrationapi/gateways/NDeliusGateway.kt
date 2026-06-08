@@ -267,7 +267,7 @@ class NDeliusGateway(
     )
   }
 
-  @Cacheable(GATEWAY_CACHE, keyGenerator = "gatewayKeyGenerator", condition = "@gatewayCacheEnabled")
+  @Cacheable(GATEWAY_CACHE, keyGenerator = "gatewayKeyGenerator")
   fun getOffender(id: String? = null): Response<Offender?> {
     val queryField =
       if (isNomsNumber(id)) {

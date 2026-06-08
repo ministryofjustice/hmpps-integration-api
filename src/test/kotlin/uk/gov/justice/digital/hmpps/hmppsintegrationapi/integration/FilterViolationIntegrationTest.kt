@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.whenever
-import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -11,7 +10,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffenders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.objectMapper
 import java.io.File
 
-@TestPropertySource(properties = ["feature-flag.gateway-cache-enabled=false"])
 class FilterViolationIntegrationTest : IntegrationTestBase() {
   private final val nomsPath = "/v1/persons/$nomsId"
   private final val addressPath = "$nomsPath/addresses"

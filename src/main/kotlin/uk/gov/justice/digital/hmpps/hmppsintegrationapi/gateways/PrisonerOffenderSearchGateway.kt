@@ -113,7 +113,7 @@ class PrisonerOffenderSearchGateway(
     }
   }
 
-  @Cacheable(GATEWAY_CACHE, keyGenerator = "gatewayKeyGenerator", condition = "@gatewayCacheEnabled")
+  @Cacheable(GATEWAY_CACHE, keyGenerator = "gatewayKeyGenerator")
   fun getPrisonOffender(nomsNumber: String): Response<POSPrisoner?> {
     val result =
       webClient.request<POSPrisoner>(

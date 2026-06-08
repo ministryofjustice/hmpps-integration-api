@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
+import org.springframework.context.annotation.Import
 import org.springframework.http.HttpHeaders
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
@@ -21,6 +22,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheDisabledTestConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.JdbcTemplateEventNotificationRepository
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.writeAsJson
@@ -42,9 +44,10 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
 @ActiveProfiles("integration-test")
-@TestPropertySource(properties = ["feature-flag.gateway-cache-enabled=false"])
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = RANDOM_PORT)
+@TestPropertySource(properties = ["cache-enabled=false"])
+@Import(CacheDisabledTestConfiguration::class)
 abstract class IntegrationTestBase {
   @MockitoSpyBean
   lateinit var featureFlagConfig: FeatureFlagConfig
