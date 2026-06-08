@@ -76,7 +76,7 @@ class HmppsAuthGateway(
     context: RequestContext?,
   ): String {
     val oboUserName = context?.oboUserName
-    val cacheKey = if (oboUserName != null) "$service-$oboUserName" else service
+    val cacheKey = if (oboUserName != null) "hmpps-token-$oboUserName" else "hmpps-token"
 
     val existingAccessToken = tokenCache?.get(cacheKey)?.get()?.toString()
 
