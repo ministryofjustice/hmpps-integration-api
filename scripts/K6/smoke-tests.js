@@ -290,6 +290,19 @@ function verify_post_endpoints() {
   }
 }
 
+function verify_web_application_firewall_request(path) {
+
+  const res = http.get(`${baseUrl}${path}`, httpParams);
+  if (!check(res, {
+    // ToDo - Change condition to be >= 400 when modsec enabled
+    [`GET ${endpoint} is blocked by WAF`]: (r) => r.status < 400,
+  })) {
+    // ToDo - Change condition to fail this test when modsec enabled
+    console.log(`${endpoint} caused the test to fail, status = ${res.status}`);
+  }
+
+}
+
 /**
  * Make a GET request to the API and validate that the http response code indicates success.
  * @returns the http response object
@@ -426,6 +439,7 @@ function verify_get_person(hmppsId) {
 function minimal_prod_verification() {
   verify_system_endpoints();
   validate_get_request(`/v1/hmpps/reference-data`);
+  verify_web_application_firewall_request(`/v1/status?id=abc'+or+'1'%3D'1'`)
 }
 
 /**
@@ -444,6 +458,7 @@ function denied_endpoint_verification() {
 function simple_endpoint_tests() {
   verify_post_endpoints();
   verify_get_endpoints();
+  verify_web_application_firewall_request(`/v1/status?id=abc'+or+'1'%3D'1'`)
 }
 
 /**
