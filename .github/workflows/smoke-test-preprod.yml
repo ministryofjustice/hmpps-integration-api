@@ -1,8 +1,5 @@
 name: Preprod Smoke Test
 on:
-  push:
-    branches:
-      - HIA-1458-check-waf-response-body
   workflow_call:
 jobs:
   preprod-smoke-tests:
