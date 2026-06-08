@@ -1,0 +1,37 @@
+{
+  "data": {
+    "automaticRelease": {
+      "date": "2020-02-03",
+      "overrideDate": "2020-02-03"
+    },
+    "conditionalRelease": {
+      "date": "2020-02-03",
+      "overrideDate": "2020-02-03"
+    },
+    "dtoPostRecallRelease": {
+      "date": "2020-02-03",
+      "overrideDate": "2020-04-01"
+    },
+    "homeDetentionCurfew": {
+      "actualDate": "2020-02-03",
+      "endDate": "2019-04-01"
+    },
+    "licenceExpiry": {
+      "date": "2020-02-03",
+      "overrideDate": "2020-02-03",
+      "calculatedDate": "2020-02-03"
+    },
+    "release": {
+      "confirmedDate": "2020-04-20"
+    },
+    "sentence": {
+      "effectiveEndDate": "2020-02-03",
+      "expiryCalculatedDate": "2020-02-03",
+      "expiryDate": "2020-02-03",
+      "expiryOverrideDate": "2020-02-03",
+      "startDate": "2010-02-03"
+    },
+    "actualParoleDate": "2020-02-03",
+    "releaseOnTemporaryLicenceDate": "2020-02-03"
+  }
+}

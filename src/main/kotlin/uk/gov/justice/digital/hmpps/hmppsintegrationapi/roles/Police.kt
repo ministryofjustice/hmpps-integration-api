@@ -4,6 +4,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.laoRedactionPo
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.personResponsibleOfficerRedactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.riskScores.generalRiskScoreRedactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.seriousHarmRedactions
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.unusedKeyDatesRedactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
 
 val police =
@@ -29,6 +30,7 @@ val police =
       -generalRiskScoreRedactions
       -personResponsibleOfficerRedactions
       -seriousHarmRedactions
+      -unusedKeyDatesRedactions
     }
     filters {
       alertCodes {
