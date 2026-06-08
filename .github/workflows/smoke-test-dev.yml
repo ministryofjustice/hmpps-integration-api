@@ -1,8 +1,5 @@
 name: Development Smoke Test
 on:
-  push:
-    branches:
-      - HIA-1458-modsec-smoke-tests
   workflow_call:
 jobs:
   dev-smoke-tests:
