@@ -115,10 +115,6 @@ const get_endpoints = [
   `/v1/activities/schedule/${scheduleId}/suitability-criteria`,
 ];
 
-const modsec_endpoints = [
-  `/v1/status?id=abc'+or+'1'%3D'1'`,
-]
-
 const postEducationUpdateEndpoint = `/v1/persons/${hmppsId}/education/status`
 const postEducationUpdateRequest = JSON.stringify({
   status: "EDUCATION_STARTED",
