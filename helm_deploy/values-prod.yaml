@@ -6,14 +6,6 @@ generic-service:
     host: hmpps-integration-api-prod.apps.live.cloud-platform.service.justice.gov.uk
     annotations:
       nginx.ingress.kubernetes.io/auth-tls-secret: "hmpps-integration-api-prod/client-certificate-auth"
-    modsecurity_enabled: true
-    modsecurity_github_team: "hmpps-integration-api"
-    modsecurity_snippet: |
-      SecAuditEngine On
-      SecRuleEngine DetectionOnly
-      SecDefaultAction "phase:2,pass,log,tag:github_team=hmpps-integration-api,tag:namespace={{ .Release.Namespace }}"
-      # Default is only GET HEAD POST OPTIONS so need to include PUT.
-      SecAction "id:900200,phase:1,nolog,pass,t:none,setvar:tx.allowed_methods=GET HEAD POST OPTIONS PUT"
 
   poddisruptionbudget:
     enabled: false
