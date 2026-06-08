@@ -46,7 +46,7 @@ class CacheConfig {
       Caffeine
         .newBuilder()
         .recordStats()
-        .expireAfterWrite(Duration.ofSeconds(5))
+        .expireAfterWrite(Duration.ofHours(1))
         .build(),
     )
 
