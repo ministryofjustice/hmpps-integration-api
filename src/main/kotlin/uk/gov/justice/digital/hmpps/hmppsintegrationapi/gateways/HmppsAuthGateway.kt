@@ -4,12 +4,14 @@ import io.sentry.Sentry
 import org.apache.tomcat.util.json.JSONParser
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.cache.CacheManager
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientRequestException
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import org.springframework.web.util.UriComponentsBuilder
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Companion.TOKEN_CACHE
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_WEBCLIENT_WRAPPER_FOR_HMPPS_AUTH
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.HmppsAuthFailedException
@@ -27,6 +29,7 @@ import java.util.Base64
 @Component
 class HmppsAuthGateway(
   @Autowired val featureFlag: FeatureFlagConfig,
+  private val cacheManager: CacheManager,
   @Value("\${services.hmpps-auth.base-url}") hmppsAuthUrl: String,
 ) : IAuthGateway,
   UpstreamGateway {
@@ -54,7 +57,7 @@ class HmppsAuthGateway(
   @Autowired
   private lateinit var telemetryService: TelemetryService
 
-  private var existingAccessToken: String? = null
+  val tokenCache = cacheManager.getCache(TOKEN_CACHE)
 
   private fun checkTokenValid(token: String): Boolean =
     try {
@@ -68,17 +71,17 @@ class HmppsAuthGateway(
       false
     }
 
-  fun reset() {
-    existingAccessToken = null
-  }
-
   override fun getClientToken(
     service: String,
     context: RequestContext?,
   ): String {
     val oboUserName = context?.oboUserName
+    val cacheKey = if (oboUserName != null) "hmpps-token-$oboUserName" else "hmpps-token"
+
+    val existingAccessToken = tokenCache?.get(cacheKey)?.get()?.toString()
+
     existingAccessToken?.let {
-      if (checkTokenValid(it) && oboUserName == null) {
+      if (checkTokenValid(it)) {
         telemetryService.trackEvent("AuthTokenCache")
         return it
       }
@@ -134,10 +137,7 @@ class HmppsAuthGateway(
       }
 
       val accessToken = JSONParser(response).parseObject()["access_token"].toString()
-
-      if (oboUserName == null) {
-        this.existingAccessToken = accessToken
-      }
+      tokenCache?.put(cacheKey, accessToken)
       accessToken
     } catch (exception: WebClientRequestException) {
       throw HmppsAuthFailedException("Connection to ${exception.uri.authority} failed for $service.")

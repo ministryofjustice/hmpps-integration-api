@@ -24,6 +24,7 @@ import java.time.Duration
 class CacheConfig {
   companion object {
     const val GATEWAY_CACHE = "GATEWAY_CACHE"
+    const val TOKEN_CACHE = "TOKEN_CACHE"
   }
 
   @Bean
@@ -39,9 +40,20 @@ class CacheConfig {
     )
 
   @Bean
+  fun tokenCache(): CaffeineCache =
+    CaffeineCache(
+      TOKEN_CACHE,
+      Caffeine
+        .newBuilder()
+        .recordStats()
+        .expireAfterWrite(Duration.ofSeconds(5))
+        .build(),
+    )
+
+  @Bean
   fun caffeineCacheManager(): CacheManager {
     val cacheManager = SimpleCacheManager()
-    val caches = listOf(gatewayCache())
+    val caches = listOf(gatewayCache(), tokenCache())
     cacheManager.setCaches(caches)
     return cacheManager
   }

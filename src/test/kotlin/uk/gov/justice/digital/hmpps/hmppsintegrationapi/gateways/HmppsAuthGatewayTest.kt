@@ -14,11 +14,15 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
+import org.springframework.cache.CacheManager
+import org.springframework.context.annotation.Import
 import org.springframework.http.HttpMethod
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.util.ReflectionTestUtils
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.HmppsAuthFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
@@ -28,6 +32,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryServi
 import kotlin.test.assertEquals
 
 @ActiveProfiles("test")
+@Import(CacheConfig::class)
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
   classes = [(HmppsAuthGateway::class)],
@@ -36,10 +41,12 @@ class HmppsAuthGatewayTest(
   hmppsAuthGateway: HmppsAuthGateway,
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
   @MockitoBean val telemetryService: TelemetryService,
+  @MockitoSpyBean val cacheManager: CacheManager,
 ) : DescribeSpec({
     val hmppsAuthMockServer = HmppsAuthMockServer()
 
     beforeEach {
+      cacheManager.resetCaches()
       hmppsAuthMockServer.start()
       Mockito.reset(telemetryService)
       hmppsAuthMockServer.stubGetOAuthToken("username", "password")
@@ -47,7 +54,6 @@ class HmppsAuthGatewayTest(
 
     afterTest {
       hmppsAuthMockServer.stop()
-      hmppsAuthGateway.reset()
     }
 
     it("throws an exception if connection is refused") {
@@ -183,17 +189,22 @@ class HmppsAuthGatewayTest(
       verify(telemetryService, times(2)).trackEvent("AuthTokenRequest")
     }
 
-    it("includes the oboUserName in the URI sent to hmpps auth and does not cache") {
+    it("includes the oboUserName in the URI sent to hmpps auth and caches") {
       whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.USE_WEBCLIENT_WRAPPER_FOR_HMPPS_AUTH)).thenReturn(true)
       val firstMockedToken = hmppsAuthMockServer.getToken()
       hmppsAuthMockServer.stubGetOAuthToken("client", "client-secret", firstMockedToken, "testUser")
       val client = WebClientWrapper("http://localhost:3000")
       val wrapper = spy(client)
       ReflectionTestUtils.setField(hmppsAuthGateway, "webClientWrapper", wrapper)
-      hmppsAuthGateway.getClientToken("NOMIS", buildRequestContext(oboUserName = "testUser"))
+      val firstToken = hmppsAuthGateway.getClientToken("NOMIS", buildRequestContext(oboUserName = "testUser"))
       val uri = argumentCaptor<String>()
       verify(wrapper, atLeast(1)).getResponseBodySpec(eq(HttpMethod.POST), uri.capture(), anyMap(), eq(null))
       assertEquals("/auth/oauth/token?grant_type=client_credentials&username=testUser", uri.firstValue)
-      verify(telemetryService, times(0)).trackEvent("AuthTokenCache")
+      verify(telemetryService, times(1)).trackEvent("AuthTokenRequest")
+
+      // Second request with obo username should be the same as the first
+      val secondToken = hmppsAuthGateway.getClientToken("NOMIS", buildRequestContext(oboUserName = "testUser"))
+      secondToken shouldBe firstToken
+      verify(telemetryService, times(1)).trackEvent("AuthTokenCache")
     }
   })
