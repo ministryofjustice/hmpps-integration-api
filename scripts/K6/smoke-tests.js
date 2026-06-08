@@ -115,6 +115,10 @@ const get_endpoints = [
   `/v1/activities/schedule/${scheduleId}/suitability-criteria`,
 ];
 
+const modsec_endpoints = [
+  `/v1/status?id=abc'+or+'1'%3D'1'`,
+]
+
 const postEducationUpdateEndpoint = `/v1/persons/${hmppsId}/education/status`
 const postEducationUpdateRequest = JSON.stringify({
   status: "EDUCATION_STARTED",
@@ -290,6 +294,19 @@ function verify_post_endpoints() {
   }
 }
 
+function verify_modsec_endpoints() {
+  for (const endpoint of modsec_endpoints) {
+    const res = http.get(`${baseUrl}${endpoint}`, httpParams);
+    if (!check(res, {
+      // ToDo - Change conidtion to be >= 400 when modsec enabled
+      [`GET ${endpoint} is blocked by modsec`]: (r) => r.status < 400,
+    })) {
+      // ToDo - Change conidtion to fail this test when modsec enabled
+      console.log(`${endpoint} caused the test to fail, status = ${res.status}`);
+    }
+  }
+}
+
 /**
  * Make a GET request to the API and validate that the http response code indicates success.
  * @returns the http response object
@@ -426,6 +443,7 @@ function verify_get_person(hmppsId) {
 function minimal_prod_verification() {
   verify_system_endpoints();
   validate_get_request(`/v1/hmpps/reference-data`);
+  verify_modsec_endpoints()
 }
 
 /**
@@ -444,6 +462,7 @@ function denied_endpoint_verification() {
 function simple_endpoint_tests() {
   verify_post_endpoints();
   verify_get_endpoints();
+  verify_modsec_endpoints()
 }
 
 /**
