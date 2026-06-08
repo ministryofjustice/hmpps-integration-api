@@ -294,11 +294,10 @@ function verify_web_application_firewall_request(path) {
 
   const res = http.get(`${baseUrl}${path}`, httpParams);
   if (!check(res, {
-    // ToDo - Change condition to be >= 400 when modsec enabled
-    [`GET ${endpoint} is blocked by WAF`]: (r) => r.status < 400,
+    [`GET ${path} is blocked by WAF`]: (r) => r.status === 403,
   })) {
-    // ToDo - Change condition to fail this test when modsec enabled
-    console.log(`${endpoint} caused the test to fail, status = ${res.status}`);
+    // ToDo - Change condition to fail this test when modsec enabled in all environments
+    console.log(`${path} is failing, status is ${res.status}, it should be 403`);
   }
 
 }
