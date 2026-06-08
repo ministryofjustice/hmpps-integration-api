@@ -36,6 +36,14 @@ generic-service:
       nginx.ingress.kubernetes.io/auth-tls-verify-depth: "1"
       nginx.ingress.kubernetes.io/auth-tls-pass-certificate-to-upstream: "true"
       nginx.ingress.kubernetes.io/limit-rps: "100"
+    modsecurity_enabled: true
+    modsecurity_github_team: "hmpps-integration-api"
+    modsecurity_snippet: |
+      SecAuditEngine On
+      SecRuleEngine On
+      SecDefaultAction "phase:2,pass,log,tag:github_team=hmpps-integration-api,tag:namespace={{ .Release.Namespace }}"
+      # Default is only GET HEAD POST OPTIONS so need to include PUT.
+      SecAction "id:900200,phase:1,nolog,pass,t:none,setvar:tx.allowed_methods=GET HEAD POST OPTIONS PUT"
 
   # Environment variables to load into the deployment
   env:

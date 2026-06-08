@@ -297,7 +297,7 @@ function verify_web_application_firewall_request(path) {
     [`GET ${path} is blocked by WAF`]: (r) => r.status === 403 && r.body.includes("nginx"),
   })) {
     // ToDo - Change condition to fail this test when modsec enabled in all environments
-    console.log(`${path} is failing. http status is ${res.status}. Status should be 403 and the response body should include "nginx"`);
+    exec.test.fail(`GET ${path} failed. http status is ${res.status}. Status should be 403 and the response body should include "nginx"`);
   }
 
 }
