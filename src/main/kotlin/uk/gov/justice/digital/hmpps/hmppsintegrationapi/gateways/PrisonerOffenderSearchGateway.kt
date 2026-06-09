@@ -6,6 +6,7 @@ import org.springframework.cache.annotation.Cacheable
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Companion.GATEWAY_CACHE
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -137,12 +138,15 @@ class PrisonerOffenderSearchGateway(
     }
   }
 
-  fun attributeSearch(request: POSAttributeSearchRequest): Response<POSPaginatedPrisoners?> {
+  fun attributeSearch(
+    request: POSAttributeSearchRequest,
+    requestContext: RequestContext? = null,
+  ): Response<POSPaginatedPrisoners?> {
     val result =
       webClient.request<POSPaginatedPrisoners>(
         HttpMethod.POST,
         "/attribute-search",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.PRISONER_OFFENDER_SEARCH,
         request.toMap(),
       )
@@ -163,8 +167,8 @@ class PrisonerOffenderSearchGateway(
     }
   }
 
-  private fun authenticationHeader(): Map<String, String> {
-    val token = hmppsAuthGateway.getClientToken("Prisoner Offender Search")
+  private fun authenticationHeader(requestContext: RequestContext? = null): Map<String, String> {
+    val token = hmppsAuthGateway.getClientToken("Prisoner Offender Search", requestContext)
 
     return mapOf(
       "Authorization" to "Bearer $token",

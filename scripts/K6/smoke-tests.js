@@ -386,7 +386,7 @@ function verify_contact_events(hmppsId){
 }
 
 function validate_person_search(lastName, dob) {
-  let res = validate_get_request(`/v1/persons?last_name=${lastName}&date_of_birth=${dob}`);
+  let res = validate_get_request_with_obo(`/v1/persons?last_name=${lastName}&date_of_birth=${dob}`);
   if (res.status !== 200) {
     return
   }
