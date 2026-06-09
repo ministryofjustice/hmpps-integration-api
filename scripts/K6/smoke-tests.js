@@ -399,9 +399,6 @@ function validate_person_search(lastName, dob) {
   })
 }
 
-
-
-
 function verify_get_person(hmppsId) {
   let res = validate_get_request(`/v1/persons/${hmppsId}`);
   if (res.status >= 400) {
