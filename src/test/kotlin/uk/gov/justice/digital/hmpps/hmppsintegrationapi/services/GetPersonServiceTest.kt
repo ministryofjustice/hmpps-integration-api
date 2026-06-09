@@ -16,6 +16,7 @@ import org.mockito.Mockito
 import org.mockito.Mockito.mock
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -125,7 +126,7 @@ internal class GetPersonServiceTest :
           .thenReturn(Response(data = null, errors = notFoundErrors(UpstreamApi.PRISONER_OFFENDER_SEARCH)))
 
       fun givenPrisonerNumberMergedAttributeSearchReturnsEmpty() =
-        whenever(prisonerOffenderSearchGateway.attributeSearch(any())).thenReturn(
+        whenever(prisonerOffenderSearchGateway.attributeSearch(any(), eq(null))).thenReturn(
           Response(
             data =
               POSPaginatedPrisoners(
@@ -165,7 +166,7 @@ internal class GetPersonServiceTest :
       fun givenPrisonerNumberMergedAttributeSearchReturnsMatchingResult(
         removedPrisonerNumber: String?,
         mergedInToPrisonerNumber: String,
-      ) = whenever(prisonerOffenderSearchGateway.attributeSearch(any())).thenReturn(
+      ) = whenever(prisonerOffenderSearchGateway.attributeSearch(any(), eq(null))).thenReturn(
         Response(
           data =
             POSPaginatedPrisoners(

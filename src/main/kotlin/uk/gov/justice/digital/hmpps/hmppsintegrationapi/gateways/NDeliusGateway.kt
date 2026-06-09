@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Companion.GATEWAY_CACHE
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.EPF_ENDPOINT_INCLUDES_LAO
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address
@@ -259,8 +260,8 @@ class NDeliusGateway(
     }
   }
 
-  private fun authenticationHeader(): Map<String, String> {
-    val token = hmppsAuthGateway.getClientToken("nDelius")
+  private fun authenticationHeader(requestContext: RequestContext? = null): Map<String, String> {
+    val token = hmppsAuthGateway.getClientToken("nDelius", requestContext)
 
     return mapOf(
       "Authorization" to "Bearer $token",
@@ -321,6 +322,7 @@ class NDeliusGateway(
     pncNumber: String?,
     dateOfBirth: String?,
     searchWithinAliases: Boolean = false,
+    requestContext: RequestContext? = null,
   ): Response<List<Person>> {
     val requestBody =
       mapOf(
@@ -335,7 +337,7 @@ class NDeliusGateway(
       webClient.requestListWithRetry<Offender>(
         HttpMethod.POST,
         "/search/probation-cases",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.NDELIUS,
         requestBody,
       )
