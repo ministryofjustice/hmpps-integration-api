@@ -1,8 +1,5 @@
 name: Development Smoke Test
 on:
-  push:
-    branches:
-      - HIA-1484-fix-obo-smoke-tests
   workflow_call:
 jobs:
   dev-smoke-tests:
