@@ -386,7 +386,7 @@ function verify_contact_events(hmppsId){
 }
 
 function validate_person_search(lastName, dob) {
-  let res = validate_get_request_with_obo(`/v1/persons?last_name=${lastName}&date_of_birth=${dob}`);
+  let res = validate_get_request(`/v1/persons?last_name=${lastName}&date_of_birth=${dob}`);
   if (res.status !== 200) {
     return
   }
@@ -398,6 +398,9 @@ function validate_person_search(lastName, dob) {
     [`Search result last name matches`]: (data) => data[0]["lastName"].toLowerCase() === lastName.toLowerCase(),
   })
 }
+
+
+
 
 function verify_get_person(hmppsId) {
   let res = validate_get_request(`/v1/persons/${hmppsId}`);
@@ -647,7 +650,7 @@ function verify_get_basic_details(hmppsId) {
     validate_get_request(`/v1/persons/${hmppsId}/addresses`);
     validate_get_request(`/v1/persons/${hmppsId}/alerts`);
     validate_get_request(`/v1/persons/${hmppsId}/offences`);
-    validate_get_request_with_obo(`/v1/persons/${hmppsId}/sentences`);
+    validate_get_request(`/v1/persons/${hmppsId}/sentences`);
     validate_get_request(`/v1/persons/${hmppsId}/reported-adjudications`);
     validate_get_request(`/v1/persons/${hmppsId}/number-of-children`);
     validate_get_request(`/v1/persons/${hmppsId}/physical-characteristics`);
@@ -707,14 +710,19 @@ function verify_prisoner_contacts(hmppsId) {
   validate_get_request(`/v1/contacts/${contactId}`);
 }
 
-function verify_headers() {
-  //Tests to add headers too for app insights
-  const res = http.get(`${baseUrl}/v1/status`, httpOboHeaderParams);
-    if (!check(res, {
-      [`Successful sent api call with extended headers.`]: (r) => r.status < 400,
-    })) {
-      exec.test.fail(`Failed to use headers in api call.`);
-    }
+function verify_obo_access() {
+  let res = validate_get_request_with_obo(`/v1/persons/${hmppsId}`);
+  if (res.status >= 400) {
+    return null
+  }
+
+  let probationData = res.json()["data"]["probationOffenderSearch"];
+  let lastName = probationData["lastName"];
+  let dob = probationData["dateOfBirth"];
+
+  validate_get_request_with_obo(`/v1/status`);
+  validate_get_request_with_obo(`/v1/persons/${hmppsId}/sentences`);
+  validate_get_request_with_obo(`/v1/persons?last_name=${lastName}&date_of_birth=${dob}`);
 }
 
 /**
@@ -756,7 +764,7 @@ function structured_verification_test(hmppsId) {
 
   verify_education_san(hmppsId);
 
-  verify_headers()
+  verify_obo_access()
 }
 /************************************************************************/
 
