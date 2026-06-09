@@ -707,19 +707,22 @@ function verify_prisoner_contacts(hmppsId) {
   validate_get_request(`/v1/contacts/${contactId}`);
 }
 
-function verify_obo_access() {
-  let res = validate_get_request_with_obo(`/v1/persons/${hmppsId}`);
-  if (res.status >= 400) {
-    return null
-  }
+function verify_obo_access(hmppsId) {
 
-  let probationData = res.json()["data"]["probationOffenderSearch"];
-  let lastName = probationData["lastName"];
-  let dob = probationData["dateOfBirth"];
+  group('requests with obo', () => {
+    let res = validate_get_request_with_obo(`/v1/persons/${hmppsId}`);
+    if (res.status >= 400) {
+      return null
+    }
 
-  validate_get_request_with_obo(`/v1/status`);
-  validate_get_request_with_obo(`/v1/persons/${hmppsId}/sentences`);
-  validate_get_request_with_obo(`/v1/persons?last_name=${lastName}&date_of_birth=${dob}`);
+    let probationData = res.json()["data"]["probationOffenderSearch"];
+    let lastName = probationData["lastName"];
+    let dob = probationData["dateOfBirth"];
+
+    validate_get_request_with_obo(`/v1/status`);
+    validate_get_request_with_obo(`/v1/persons/${hmppsId}/sentences`);
+    validate_get_request_with_obo(`/v1/persons?last_name=${lastName}&date_of_birth=${dob}`);
+  });
 }
 
 /**
@@ -761,7 +764,7 @@ function structured_verification_test(hmppsId) {
 
   verify_education_san(hmppsId);
 
-  verify_obo_access()
+  verify_obo_access(hmppsId)
 }
 /************************************************************************/
 
