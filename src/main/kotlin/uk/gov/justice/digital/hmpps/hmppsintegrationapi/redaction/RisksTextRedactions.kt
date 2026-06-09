@@ -3,14 +3,15 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionType.MASK
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.redactionPolicy
 
-val seriousHarmRedactions =
+val risksTextRedactions =
   redactionPolicy(
-    "serious-harm-redactions",
+    "risks-text-redactions",
   ) {
     responseRedactions {
       jsonPath {
         endpoints {
           -"/v1/persons/{hmppsId}/risks/serious-harm"
+          -"/v1/persons/{hmppsId}/risks/dynamic"
         }
         redactions {
           -("$..previousConcernsText" to MASK)
@@ -20,6 +21,7 @@ val seriousHarmRedactions =
           -("$..riskImminence" to MASK)
           -("$..riskIncreaseFactors" to MASK)
           -("$..riskMitigationFactors" to MASK)
+          -("$..notes" to MASK)
         }
       }
     }
