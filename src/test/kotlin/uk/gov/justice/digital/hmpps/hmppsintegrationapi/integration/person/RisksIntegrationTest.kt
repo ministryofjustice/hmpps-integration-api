@@ -43,5 +43,4 @@ class RisksIntegrationTest : IntegrationTestBase() {
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("person-risk-dynamic-text-redacted.json")))
   }
-
 }
