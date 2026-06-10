@@ -60,7 +60,7 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `an obo username is passed to HmppsAuthGateway for the sentences endpoint using NONIS `() {
+  fun `an obo username is passed to HmppsAuthGateway for the sentences endpoint using NONIS`() {
     callApiWithCN("$basePath/$crn/sentences", "obo-unsigned", oboValue = createUnsignedJwt())
       .andExpect(MockMvcResultMatchers.status().isOk)
     val requestContext = argumentCaptor<RequestContext?>()
@@ -78,7 +78,7 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
     callApiWithCN("$basePath/$crn/sentences", "obo-unsigned", oboValue = createUnsignedJwt())
       .andExpect(MockMvcResultMatchers.status().isOk)
     val requestContext = argumentCaptor<RequestContext?>()
-    verify(authGateway, atLeast(1)).getClientToken(eq("NDELIUS"), requestContext.capture())
+    verify(authGateway, atLeast(1)).getClientToken(eq("nDelius"), requestContext.capture())
     val obUserName =
       requestContext.allValues
         .filter { it?.oboUserName != null }
