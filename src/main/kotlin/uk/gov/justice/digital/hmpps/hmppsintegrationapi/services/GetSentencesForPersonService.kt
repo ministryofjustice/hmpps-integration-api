@@ -52,7 +52,7 @@ class GetSentencesForPersonService(
 
     var nDeliusSentencesResponse: Response<List<Sentence>> = Response(data = emptyList())
     if (deliusCrn != null) {
-      nDeliusSentencesResponse = nDeliusGateway.getSentencesForPerson(deliusCrn)
+      nDeliusSentencesResponse = nDeliusGateway.getSentencesForPerson(deliusCrn, requestContext)
       if (nDeliusSentencesResponse.errors.isNotEmpty()) {
         if (!nDeliusSentencesResponse.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
           return Response(data = emptyList(), errors = nDeliusSentencesResponse.errors)
