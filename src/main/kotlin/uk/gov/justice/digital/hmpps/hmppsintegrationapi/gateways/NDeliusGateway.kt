@@ -79,12 +79,15 @@ class NDeliusGateway(
     }
   }
 
-  fun getSentencesForPerson(id: String): Response<List<Sentence>> {
+  fun getSentencesForPerson(
+    id: String,
+    requestContext: RequestContext? = null,
+  ): Response<List<Sentence>> {
     val result =
       webClient.request<NDeliusSupervisions>(
         HttpMethod.GET,
         "/case/$id/supervisions",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.NDELIUS,
       )
 
