@@ -179,7 +179,7 @@ read_certificate_arguments() {
 
   echo "Upload Backups to S3?:  $( [[ "$upload_to_s3" == 1 ]] && echo 'Yes' || echo 'No' )"
   echo "-----------------------------------------------------"
-  echo "Are you sure these options are correct? (y/n)"
+  echo "Do you wish to proceed? (y/n)"
   read confirmation
 
   case $confirmation in
@@ -209,8 +209,6 @@ generate_client() {
   else
     cp ./csrs/$environment/$client/$environment-$client-client.csr .
   fi
-
-  validate_csr "$environment-$client-client.csr"
 
   openssl x509 -req -in $environment-$client-client.csr -CA truststore.pem -CAkey truststore.key -out $environment-$client-client.pem -days 365 -sha256 -CAcreateserial
 }
