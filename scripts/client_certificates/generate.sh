@@ -14,7 +14,7 @@ validate_csr() {
   fi
 
   local csr_cn
-  csr_cn=$(openssl req -in "$csr_file" -noout -subject | sed -n 's/.*[=,/]CN *=[ ]* \?\([^/,]*\).*/\1/p' | xargs)
+  csr_cn=$(openssl req -in "$csr_file" -noout -subject | sed -n '/^subject/s/^.*CN=//p' | xargs)
 
   echo "Validating CSR..."
   echo "Expected Client Name: $client"
