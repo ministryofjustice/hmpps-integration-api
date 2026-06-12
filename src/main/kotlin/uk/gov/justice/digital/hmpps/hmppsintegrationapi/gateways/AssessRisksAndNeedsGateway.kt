@@ -7,14 +7,17 @@ import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.ArnAssessmentSummary
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.ArnNeeds
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.ArnRiskPredictorScore
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.ArnRisks
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AssessmentSummary
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Needs
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskPredictorScore
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Risks
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import java.time.LocalDateTime
 
 @Component
 class AssessRisksAndNeedsGateway(
@@ -104,6 +107,43 @@ class AssessRisksAndNeedsGateway(
     return when (result) {
       is WebClientWrapperResponse.Success -> {
         Response(data = result.data.toNeeds())
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getAssessmentSummary(id: String): Response<AssessmentSummary?> {
+    if (featureFlagConfig.isEnabled(FeatureFlagConfig.USE_STUBBED_ASSESSMENT_SUMMARY)) {
+      return Response(
+        AssessmentSummary(
+          initiationDate = LocalDateTime.of(2026, 1, 5, 11, 28, 32),
+          completedDate = LocalDateTime.of(2026, 2, 22, 15, 9, 3),
+          assessmentType = "Stubbed Assessment Type",
+          status = "Stubbed Assessment Status",
+          assessorName = "Stubbed Assessor Name",
+          countersignerName = "Stubbed Countersigner Name",
+        ),
+      )
+    }
+
+    val result =
+      webClient.request<ArnAssessmentSummary>(
+        HttpMethod.GET,
+        "/assessment-summary/$id",
+        authenticationHeader(),
+        UpstreamApi.ASSESS_RISKS_AND_NEEDS,
+        forbiddenAsError = true,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data.toAssessmentSummary())
       }
 
       is WebClientWrapperResponse.Error -> {

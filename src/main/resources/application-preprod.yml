@@ -57,6 +57,8 @@ feature-flag:
   epf-gateway-disabled: true
   cpr-enabled: true
   use-webclient-wrapper-for-hmpps-auth: true
+  use-assessment-summary-endpoint: false
+  use-stubbed-assessment-summary: false
   # Events Config
   enable-delete-processed-events: true
   enable-publish-pending-events: true
