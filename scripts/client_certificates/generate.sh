@@ -5,6 +5,33 @@ clean() {
   rm -fr *.pem *.key *.csr *-api-key
 }
 
+validate_csr() {
+  local csr_file=$1
+
+  if [[ ! -f "$csr_file" ]]; then
+    echo "Error: CSR file $csr_file not found for validation."
+    exit 1
+  fi
+
+  local csr_cn
+  csr_cn=$(openssl req -in "$csr_file" -noout -subject | sed -n '/^subject/s/^.*CN=//p' | xargs)
+
+  echo "Validating CSR..."
+  echo "Expected Client Name: $client"
+  echo "Found CN in CSR:     $csr_cn"
+
+  if [[ "$csr_cn" != "$client" ]]; then
+    echo "-----------------------------------------------------"
+    echo " ERROR: CSR validation failed!"
+    echo " The Common Name (CN) '$csr_cn' in the CSR does not match"
+    echo " the expected client identifier '$client'."
+    echo "-----------------------------------------------------"
+    exit 1
+  else
+    echo "Success: CSR CN matches the client identifier."
+  fi
+}
+
 read_certificate_arguments() {
   echo "Environment: (dev, preprod or prod)"
   read environment
@@ -97,6 +124,7 @@ read_certificate_arguments() {
     read does_csr_exist
     case $does_csr_exist in
       [yY])
+        validate_csr "./csrs/$environment/$client/$environment-$client-client.csr"
         ;;
       [nN])
         echo "Please place the CSR at the following location."
@@ -112,6 +140,57 @@ read_certificate_arguments() {
         exit 1
     esac
   fi
+
+  echo "Do you wish to upload the generated certificates to the S3 backup bucket?"
+  echo "(y)es, (n)o, or (c)ancel:"
+  read upload_s3_user_input
+  case $upload_s3_user_input in
+    [yY])
+      upload_to_s3=1
+      ;;
+    [nN])
+      upload_to_s3=0
+      ;;
+    [cC])
+      echo "User selected 'Cancel'."
+      exit 1
+      ;;
+    *)
+      echo "Invalid choice."
+      exit 1
+  esac
+
+  echo "-----------------------------------------------------"
+  echo "   PLEASE REVIEW CHOICES BEFORE GENERATING CERTS"
+  echo "-----------------------------------------------------"
+  echo "Environment:            $environment"
+  echo "Client Identifier:      $client"
+  echo "Using supplied CSR?:    $( [[ "$csr_required" == 1 ]] && echo 'Yes' || echo 'No' )"
+
+  if [[ "$csr_required" == 1 ]]; then
+    echo "Create Tarball?:        $( [[ "$create_tar_ball" == 1 ]] && echo 'Yes' || echo 'No' )"
+    if [[ "$create_tar_ball" == 1 ]]; then
+      echo "Add API Key to Tarball: $( [[ "$add_api_key" == 1 ]] && echo 'Yes' || echo 'No' )"
+    fi
+  else
+    echo "Client Organisation:    $organisation"
+    echo "Client Region:          $region"
+  fi
+
+  echo "Upload Backups to S3?:  $( [[ "$upload_to_s3" == 1 ]] && echo 'Yes' || echo 'No' )"
+  echo "-----------------------------------------------------"
+  echo "Do you wish to proceed? (y/n)"
+  read confirmation
+
+  case $confirmation in
+    [yY])
+      echo "Confirmation accepted. Proceeding..."
+      ;;
+    *)
+      echo "Execution aborted by user."
+      exit 1
+      ;;
+  esac
 }
 
 get_ca() {
@@ -130,6 +209,7 @@ generate_client() {
   else
     cp ./csrs/$environment/$client/$environment-$client-client.csr .
   fi
+
   openssl x509 -req -in $environment-$client-client.csr -CA truststore.pem -CAkey truststore.key -out $environment-$client-client.pem -days 365 -sha256 -CAcreateserial
 }
 
@@ -205,7 +285,13 @@ main() {
   generate_client
   generate_tar_ball
   success_message
-  upload_backup
+
+  if [[ "$upload_to_s3" == 1 ]]; then
+    upload_backup
+  else
+    echo "Skipping S3 backup upload."
+  fi
+
   clean_ca
   trap clean_ca EXIT
   trap clean_ca SIGINT
