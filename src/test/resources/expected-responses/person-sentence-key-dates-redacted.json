@@ -8,10 +8,6 @@
       "date": "2020-02-03",
       "overrideDate": "2020-02-03"
     },
-    "dtoPostRecallRelease": {
-      "date": "2020-02-03",
-      "overrideDate": "2020-04-01"
-    },
     "homeDetentionCurfew": {
       "actualDate": "2020-02-03",
       "endDate": "2019-04-01"
@@ -21,7 +17,12 @@
       "overrideDate": "2020-02-03",
       "calculatedDate": "2020-02-03"
     },
+    "postRecallRelease": {
+      "date": "2020-02-03",
+      "overrideDate": "2020-04-01"
+    },
     "release": {
+      "date": "2020-04-01",
       "confirmedDate": "2020-04-20"
     },
     "sentence": {

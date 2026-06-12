@@ -24,9 +24,7 @@ val unusedKeyDatesRedactions =
           -("$.data.nonDto" to REMOVE)
           -("$.data.nonParole" to REMOVE)
           -("$.data.paroleEligibility" to REMOVE)
-          -("$.data.postRecallRelease" to REMOVE)
-          -("$.data.release.date" to REMOVE)
-          -("$.data.postRecallRelease" to REMOVE)
+          -("$.data.dtoPostRecallRelease" to REMOVE)
           -("$.data.tariffEarlyRemovalSchemeEligibilityDate" to REMOVE)
           -("$.data.topupSupervision" to REMOVE)
         }
