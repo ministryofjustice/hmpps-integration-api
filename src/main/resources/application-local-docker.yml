@@ -97,6 +97,8 @@ feature-flag:
   epf-endpoint-includes-lao: true
   cpr-enabled: true
   use-webclient-wrapper-for-hmpps-auth: true
+  use-assessment-summary-endpoint: true
+  use-stubbed-assessment-summary: false
   # Events Config
   enable-delete-processed-events: false
   enable-publish-pending-events: false
