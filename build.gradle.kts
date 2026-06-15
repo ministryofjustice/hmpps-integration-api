@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.3.1"
   kotlin("plugin.spring") version "2.4.0"
-  id("dev.detekt") version "2.0.0-alpha.3"
+  id("dev.detekt") version "2.0.0-alpha.4"
   id("org.jetbrains.kotlinx.kover") version "0.9.8"
 }
 
