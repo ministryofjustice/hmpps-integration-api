@@ -115,6 +115,10 @@ authorisation:
       notes: "See client list in Confluence"
       roles:
         - "community-payback"
+    daso:
+      notes: "See client list in Confluence"
+      roles:
+        - "daso"
 
 hmpps.sqs:
   queues:
