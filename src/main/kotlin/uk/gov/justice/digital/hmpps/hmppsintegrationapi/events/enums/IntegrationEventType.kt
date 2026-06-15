@@ -194,6 +194,8 @@ val RISK_SCORE_TYPES =
 
 val ROSH_TYPES = listOf(DomainEventName.Assessment.Summary.PRODUCED)
 
+val ASSESSMENT_SUMMARY_TYPES = listOf(DomainEventName.Assessment.Summary.PRODUCED)
+
 val PROBATION_STATUS_REGISTER_TYPES = listOf(SERIOUS_FURTHER_OFFENCE_CODE, WARRANT_SUMMONS_CODE)
 
 val DYNAMIC_RISKS_REGISTER_TYPES =
@@ -380,6 +382,11 @@ enum class IntegrationEventType(
   RISK_OF_SERIOUS_HARM_CHANGED(
     "v1/persons/{hmppsId}/risks/serious-harm",
     { ROSH_TYPES.contains(it.eventType) },
+  ),
+  ASSESSMENT_SUMMARY_CHANGE(
+    "v1/persons/{hmppsId}/assessment-summary",
+    { ASSESSMENT_SUMMARY_TYPES.contains(it.eventType) },
+    featureFlag = FeatureFlagConfig.USE_ASSESSMENT_SUMMARY_ENDPOINT,
   ),
   PLP_INDUCTION_SCHEDULE_CHANGED(
     "v1/persons/{hmppsId}/plp-induction-schedule/history",
