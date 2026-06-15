@@ -381,6 +381,10 @@ enum class IntegrationEventType(
     "v1/persons/{hmppsId}/risks/serious-harm",
     { ROSH_TYPES.contains(it.eventType) },
   ),
+  ASSESSMENT_SUMMARY_CHANGE(
+    "v1/persons/{hmppsId}/assessment-summary",
+    { ROSH_TYPES.contains(it.eventType) },
+  ),
   PLP_INDUCTION_SCHEDULE_CHANGED(
     "v1/persons/{hmppsId}/plp-induction-schedule/history",
     { PLP_INDUCTION_SCHEDULE_EVENTS.contains(it.eventType) },
