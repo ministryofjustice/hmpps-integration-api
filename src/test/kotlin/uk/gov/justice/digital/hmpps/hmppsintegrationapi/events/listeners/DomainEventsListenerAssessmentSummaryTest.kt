@@ -5,11 +5,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.Integration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents.ASSESSMENT_SUMMARY_PRODUCED
 
-class DomainEventsListenerROSHTest : DomainEventsListenerTestCase() {
+class DomainEventsListenerAssessmentSummaryTest : DomainEventsListenerTestCase() {
   private val crn = "X777776"
 
   @Test
-  fun `will process and save a rosh notification`() {
+  fun `will process and save a assessment summary notification`() {
     // Arrange
     val eventType = "assessment.summary.produced"
     val message = ASSESSMENT_SUMMARY_PRODUCED
@@ -22,7 +22,7 @@ class DomainEventsListenerROSHTest : DomainEventsListenerTestCase() {
     onDomainEventShouldCreateEventNotification(
       hmppsEventRawMessage = payload,
       hmppsId = crn,
-      expectedNotificationType = IntegrationEventType.RISK_OF_SERIOUS_HARM_CHANGED.toString(),
+      expectedNotificationType = IntegrationEventType.ASSESSMENT_SUMMARY_CHANGE.toString(),
     )
   }
 }
