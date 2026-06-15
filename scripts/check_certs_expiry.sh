@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ignore="dev/sleach5 dev/bmadley"
+ignore="dev/sleach5 dev/bmadley dev/myrall preprod/pmcphee"
 
 configure_aws_credentials() {
     local environment="$1"
