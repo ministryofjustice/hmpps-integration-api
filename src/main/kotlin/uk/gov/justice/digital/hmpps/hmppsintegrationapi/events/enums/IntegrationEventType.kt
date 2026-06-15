@@ -384,6 +384,7 @@ enum class IntegrationEventType(
   ASSESSMENT_SUMMARY_CHANGE(
     "v1/persons/{hmppsId}/assessment-summary",
     { ROSH_TYPES.contains(it.eventType) },
+    featureFlag = FeatureFlagConfig.USE_ASSESSMENT_SUMMARY_ENDPOINT,
   ),
   PLP_INDUCTION_SCHEDULE_CHANGED(
     "v1/persons/{hmppsId}/plp-induction-schedule/history",
