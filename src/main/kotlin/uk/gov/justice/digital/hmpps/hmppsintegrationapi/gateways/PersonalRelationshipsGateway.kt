@@ -5,13 +5,16 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRDetailedContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRLinkedPrisoners
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRNumberOfChildren
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPaginatedContactSearchResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPaginatedPrisonerContacts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPrisonerContactRestrictions
 
@@ -166,8 +169,40 @@ class PersonalRelationshipsGateway(
     }
   }
 
-  private fun authenticationHeader(): Map<String, String> {
-    val token = hmppsAuthGateway.getClientToken("PERSONAL-RELATIONSHIPS")
+  fun contactSearch(
+    contactSearchRequest: ContactSearchRequest,
+    pageNo: Int,
+    perPage: Int,
+    requestContext: RequestContext?,
+  ): Response<PRPaginatedContactSearchResponse?> {
+    val result =
+      webClient.request<PRPaginatedContactSearchResponse>(
+        HttpMethod.GET,
+        contactSearchRequest.uriString(pageNo, perPage),
+        authenticationHeader(requestContext),
+        UpstreamApi.PERSONAL_RELATIONSHIPS,
+        badRequestAsError = true,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(
+          data =
+            result.data,
+        )
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  private fun authenticationHeader(requestContext: RequestContext? = null): Map<String, String> {
+    val token = hmppsAuthGateway.getClientToken("PERSONAL-RELATIONSHIPS", requestContext)
 
     return mapOf(
       "Authorization" to "Bearer $token",

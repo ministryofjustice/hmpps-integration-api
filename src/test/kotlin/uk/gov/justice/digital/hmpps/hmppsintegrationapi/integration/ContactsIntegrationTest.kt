@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 
 import org.junit.jupiter.api.Test
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 class ContactsIntegrationTest : IntegrationTestBase() {
@@ -83,5 +84,40 @@ class ContactsIntegrationTest : IntegrationTestBase() {
           """.trimIndent(),
         ),
       )
+  }
+
+  @Test
+  fun `successfully searches contacts by firstName and lastName using a GET`() {
+    callApi("/v1/contacts/search?firstName=John&lastName=Doe")
+      .andExpect(status().isOk)
+      .andExpect(header().string("Cache-Control", "no-cache"))
+  }
+
+  @Test
+  fun `contact search returns a bad request when no search criteria using a GET`() {
+    callApi("/v1/contacts/search")
+      .andExpect(status().isBadRequest)
+  }
+
+  @Test
+  fun `successfully searches contacts by firstName and lastName using a POST`() {
+    postToApi(
+      "/v1/contacts/search",
+      """
+      {
+        "firstName":"John",
+        "lastName":"Doe"
+      }
+      """.trimIndent(),
+    ).andExpect(status().isOk)
+      .andExpect(header().string("Cache-Control", "no-cache"))
+  }
+
+  @Test
+  fun `contact search returns a bad request when no search criteria using a POST`() {
+    postToApi(
+      "/v1/contacts/search",
+      "",
+    ).andExpect(status().isBadRequest)
   }
 }

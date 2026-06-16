@@ -3,16 +3,22 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
+import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
 import org.springframework.context.annotation.Import
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactSearchRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactSearchResponseItem
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedContactSearchResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -20,8 +26,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelations
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.EmailAddress
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRDetailedContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PhoneNumber
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ContactSearchService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetContactService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 
 @WebMvcTest(controllers = [ContactsController::class])
 @Import(WebMvcTestConfiguration::class)
@@ -30,6 +38,7 @@ internal class ContactsControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getContactService: GetContactService,
+  @MockitoBean val contactSearchService: ContactSearchService,
 ) : DescribeSpec({
     val mockMvc = IntegrationAPIMockMvc(springMockMvc)
     val path = "/v1/contacts/"
@@ -161,6 +170,32 @@ internal class ContactsControllerTest(
         genderDescription = "Male",
       )
 
+    val contact =
+      ContactSearchResponseItem(
+        1L,
+        "Smith",
+        firstName = "John",
+        dateOfBirth = "12-08-1990",
+        middleNames = "Simon",
+        flat = null,
+        property = null,
+        street = "Test street",
+        area = "Test area",
+        cityCode = "C",
+        cityDescription = "Test city",
+        countyCode = "TCC",
+        countyDescription = "Test county",
+        postCode = "Test postcode",
+        countryCode = "CC",
+        countryDescription = "Test country",
+        mailAddress = false,
+        startDate = "12-08-1990",
+        endDate = "12-08-1990",
+        noFixedAddress = false,
+        comments = "Comments",
+      )
+    val resp = PaginatedContactSearchResponse(listOf(contact), true, 1, 1, 10, 1, 1)
+
     describe("GET Contacts") {
       beforeTest {
         Mockito.reset(auditService)
@@ -191,6 +226,87 @@ internal class ContactsControllerTest(
 
         val result = mockMvc.performAuthorised("$path$defaultContactId")
         result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+      }
+    }
+
+    describe("Search Contacts using GET") {
+
+      beforeTest {
+        Mockito.reset(auditService)
+        Mockito.reset(getContactService)
+
+        whenever(contactSearchService.contactSearch(any(), any(), any(), any()))
+          .thenReturn(Response(resp))
+      }
+
+      it("returns a 200 OK status code") {
+        val result = mockMvc.performAuthorised("$path/search?firstName=John&middleNames=Simon&lastName=Smith")
+        result.response.status.shouldBe(HttpStatus.OK.value())
+        result.response.getHeader(HttpHeaders.CACHE_CONTROL).shouldBe("no-cache")
+        val response = result.response.contentAsJson<PaginatedResponse<ContactSearchResponseItem>>()
+        response.data
+          .first()
+          .firstName
+          .shouldBe("John")
+      }
+
+      it("returns a 400 status code when no search criteria found") {
+        val result = mockMvc.performAuthorised("$path/search")
+        result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+      }
+
+      it("returns a 400 status code when an invalid date of birth is provided") {
+        val result = mockMvc.performAuthorised("$path/search?firstName=John&middleNames=Simon&lastName=Smith&dateOfBirth=12-08-1990")
+        result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+      }
+
+      it("returns a 200 status code when a valid date of birth provided") {
+        val result = mockMvc.performAuthorised("$path/search?firstName=John&middleNames=Simon&lastName=Smith&dateOfBirth=12/08/1990")
+        result.response.status.shouldBe(HttpStatus.OK.value())
+      }
+
+      it("returns a 400 status code when the upstream returns a 400 status code") {
+        whenever(contactSearchService.contactSearch(any(), any(), any(), any()))
+          .thenReturn(Response(null, listOf(UpstreamApiError(UpstreamApi.PERSONAL_RELATIONSHIPS, UpstreamApiError.Type.BAD_REQUEST))))
+        val result = mockMvc.performAuthorised("$path/search?firstName=John&middleNames=Simon&lastName=Smith&dateOfBirth=12/08/1990")
+        result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+      }
+    }
+
+    describe("Search Contacts using POST") {
+
+      beforeTest {
+        Mockito.reset(auditService)
+        Mockito.reset(getContactService)
+
+        whenever(contactSearchService.contactSearch(any(), any(), any(), any()))
+          .thenReturn(Response(resp))
+      }
+
+      it("returns a 200 OK status code") {
+        val result = mockMvc.performAuthorisedPost("$path/search", ContactSearchRequest("John"))
+        result.response.status.shouldBe(HttpStatus.OK.value())
+        result.response.getHeader(HttpHeaders.CACHE_CONTROL).shouldBe("no-cache")
+        val response = result.response.contentAsJson<PaginatedResponse<ContactSearchResponseItem>>()
+        response.data
+          .first()
+          .firstName
+          .shouldBe("John")
+      }
+
+      it("returns a 400 status code when no search criteria found") {
+        val result = mockMvc.performAuthorisedPost("$path/search", ContactSearchRequest())
+        result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+      }
+
+      it("returns a 400 status code when an invalid date of birth is provided") {
+        val result = mockMvc.performAuthorisedPost("$path/search", ContactSearchRequest("John", "Simon", "Smith", dateOfBirth = "12-08-1990"))
+        result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+      }
+
+      it("returns a 200 status code when a valid date of birth provided") {
+        val result = mockMvc.performAuthorisedPost("$path/search", ContactSearchRequest("John", "Simon", "Smith", dateOfBirth = "12/08/1990"))
+        result.response.status.shouldBe(HttpStatus.OK.value())
       }
     }
   })
