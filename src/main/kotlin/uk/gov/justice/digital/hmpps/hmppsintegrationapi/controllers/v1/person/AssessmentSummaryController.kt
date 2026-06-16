@@ -23,7 +23,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 
 @RestController
 @RequestMapping("/v1/persons")
-@Tags(value = [Tag(name = "Persons"), Tag(name = "Assessment Summary")])
+@Tags(value = [Tag(name = "Risks"), Tag(name = "Assessment Summary")])
 class AssessmentSummaryController(
   @Autowired val assessmentSummaryService: AssessmentSummaryService,
   @Autowired val auditService: AuditService,
