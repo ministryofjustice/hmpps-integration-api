@@ -73,7 +73,6 @@ val laoRedactionPolicy =
       laoRejection {
         endpoints {
           -"/v1/persons/{hmppsId}/addresses"
-          -"/v1/persons/{hmppsId}/sentences"
         }
       }
     }
