@@ -88,21 +88,21 @@ class ContactsIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `successfully searches contacts by firstName and lastName using a GET`() {
-    callApi("/v1/contacts/search?firstName=John&lastName=Doe")
+    callApi("/v1/contacts?firstName=John&lastName=Doe")
       .andExpect(status().isOk)
       .andExpect(header().string("Cache-Control", "no-cache"))
   }
 
   @Test
   fun `contact search returns a bad request when no search criteria using a GET`() {
-    callApi("/v1/contacts/search")
+    callApi("/v1/contacts")
       .andExpect(status().isBadRequest)
   }
 
   @Test
   fun `successfully searches contacts by firstName and lastName using a POST`() {
     postToApi(
-      "/v1/contacts/search",
+      "/v1/contacts",
       """
       {
         "firstName":"John",
@@ -116,7 +116,7 @@ class ContactsIntegrationTest : IntegrationTestBase() {
   @Test
   fun `contact search returns a bad request when no search criteria using a POST`() {
     postToApi(
-      "/v1/contacts/search",
+      "/v1/contacts",
       "",
     ).andExpect(status().isBadRequest)
   }

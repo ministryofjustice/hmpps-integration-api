@@ -230,7 +230,7 @@ internal class ContactsControllerTest(
     }
 
     describe("Search Contacts using GET") {
-
+      val path = "/v1/contacts"
       beforeTest {
         Mockito.reset(auditService)
         Mockito.reset(getContactService)
@@ -240,7 +240,7 @@ internal class ContactsControllerTest(
       }
 
       it("returns a 200 OK status code") {
-        val result = mockMvc.performAuthorised("$path/search?firstName=John&middleNames=Simon&lastName=Smith")
+        val result = mockMvc.performAuthorised("$path?firstName=John&middleNames=Simon&lastName=Smith")
         result.response.status.shouldBe(HttpStatus.OK.value())
         result.response.getHeader(HttpHeaders.CACHE_CONTROL).shouldBe("no-cache")
         val response = result.response.contentAsJson<PaginatedResponse<ContactSearchResponseItem>>()
@@ -251,30 +251,30 @@ internal class ContactsControllerTest(
       }
 
       it("returns a 400 status code when no search criteria found") {
-        val result = mockMvc.performAuthorised("$path/search")
+        val result = mockMvc.performAuthorised(path)
         result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
       }
 
       it("returns a 400 status code when an invalid date of birth is provided") {
-        val result = mockMvc.performAuthorised("$path/search?firstName=John&middleNames=Simon&lastName=Smith&dateOfBirth=12-08-1990")
+        val result = mockMvc.performAuthorised("$path?firstName=John&middleNames=Simon&lastName=Smith&dateOfBirth=12-08-1990")
         result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
       }
 
       it("returns a 200 status code when a valid date of birth provided") {
-        val result = mockMvc.performAuthorised("$path/search?firstName=John&middleNames=Simon&lastName=Smith&dateOfBirth=12/08/1990")
+        val result = mockMvc.performAuthorised("$path?firstName=John&middleNames=Simon&lastName=Smith&dateOfBirth=12/08/1990")
         result.response.status.shouldBe(HttpStatus.OK.value())
       }
 
       it("returns a 400 status code when the upstream returns a 400 status code") {
         whenever(contactSearchService.contactSearch(any(), any(), any(), any()))
           .thenReturn(Response(null, listOf(UpstreamApiError(UpstreamApi.PERSONAL_RELATIONSHIPS, UpstreamApiError.Type.BAD_REQUEST))))
-        val result = mockMvc.performAuthorised("$path/search?firstName=John&middleNames=Simon&lastName=Smith&dateOfBirth=12/08/1990")
+        val result = mockMvc.performAuthorised("$path?firstName=John&middleNames=Simon&lastName=Smith&dateOfBirth=12/08/1990")
         result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
       }
     }
 
     describe("Search Contacts using POST") {
-
+      val path = "/v1/contacts"
       beforeTest {
         Mockito.reset(auditService)
         Mockito.reset(getContactService)
@@ -284,7 +284,7 @@ internal class ContactsControllerTest(
       }
 
       it("returns a 200 OK status code") {
-        val result = mockMvc.performAuthorisedPost("$path/search", ContactSearchRequest("John"))
+        val result = mockMvc.performAuthorisedPost(path, ContactSearchRequest("John"))
         result.response.status.shouldBe(HttpStatus.OK.value())
         result.response.getHeader(HttpHeaders.CACHE_CONTROL).shouldBe("no-cache")
         val response = result.response.contentAsJson<PaginatedResponse<ContactSearchResponseItem>>()
@@ -295,17 +295,17 @@ internal class ContactsControllerTest(
       }
 
       it("returns a 400 status code when no search criteria found") {
-        val result = mockMvc.performAuthorisedPost("$path/search", ContactSearchRequest())
+        val result = mockMvc.performAuthorisedPost(path, ContactSearchRequest())
         result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
       }
 
       it("returns a 400 status code when an invalid date of birth is provided") {
-        val result = mockMvc.performAuthorisedPost("$path/search", ContactSearchRequest("John", "Simon", "Smith", dateOfBirth = "12-08-1990"))
+        val result = mockMvc.performAuthorisedPost(path, ContactSearchRequest("John", "Simon", "Smith", dateOfBirth = "12-08-1990"))
         result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
       }
 
       it("returns a 200 status code when a valid date of birth provided") {
-        val result = mockMvc.performAuthorisedPost("$path/search", ContactSearchRequest("John", "Simon", "Smith", dateOfBirth = "12/08/1990"))
+        val result = mockMvc.performAuthorisedPost(path, ContactSearchRequest("John", "Simon", "Smith", dateOfBirth = "12/08/1990"))
         result.response.status.shouldBe(HttpStatus.OK.value())
       }
     }

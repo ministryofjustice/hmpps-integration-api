@@ -34,13 +34,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 
 @RestController
+@RequestMapping("/v1/contacts")
 @Tag(name = "Contacts")
 class ContactsController(
   private val auditService: AuditService,
   private val getContactService: GetContactService,
   private val contactSearchService: ContactSearchService,
 ) {
-  @GetMapping("/v1/contacts/{contactId}")
+  @GetMapping("/{contactId}")
   @Tag(name = "Visits")
   @Operation(
     summary = "Returns a contact by ID.",
@@ -73,7 +74,7 @@ class ContactsController(
     return response
   }
 
-  @RequestMapping("/v1/contacts/search", method = [RequestMethod.GET, RequestMethod.POST])
+  @RequestMapping(method = [RequestMethod.GET, RequestMethod.POST])
   @Tag(name = "Visits")
   @Operation(
     summary = "Search for a contact.",
