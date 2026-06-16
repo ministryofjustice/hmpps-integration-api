@@ -19,8 +19,10 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactSearchResponseItem
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactSearchType
@@ -96,6 +98,7 @@ class ContactsController(
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
   )
+  @FeatureFlag(name = FeatureFlagConfig.USE_CONTACT_SEARCH_ENDPOINT)
   fun contactSearch(
     @Parameter(description = "The first name of the contact") @RequestParam(required = false) firstName: String?,
     @Parameter(description = "The middle names of the contact") @RequestParam(required = false) middleNames: String?,

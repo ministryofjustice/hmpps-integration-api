@@ -32,6 +32,7 @@ data class FeatureFlagConfig(
     const val USE_WEBCLIENT_WRAPPER_FOR_HMPPS_AUTH = "use-webclient-wrapper-for-hmpps-auth"
     const val USE_ASSESSMENT_SUMMARY_ENDPOINT = "use-assessment-summary-endpoint"
     const val USE_STUBBED_ASSESSMENT_SUMMARY = "use-stubbed-assessment-summary"
+    const val USE_CONTACT_SEARCH_ENDPOINT = "use-contact-search-endpoint"
 
     // Events feature flags
     const val ENABLE_DELETE_PROCESSED_EVENTS = "enable-delete-processed-events"
