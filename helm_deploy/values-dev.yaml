@@ -37,9 +37,6 @@ generic-service:
     event-moj-esw-queue:
       MOJ_ESW_QUEUE_NAME: "sqs_name"
       MOJ_ESW_QUEUE_ARN: "sqs_arn"
-    event-daso-queue:
-      DASO_QUEUE_NAME: "sqs_name"
-      DASO_QUEUE_ARN: "sqs_arn"
 
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
