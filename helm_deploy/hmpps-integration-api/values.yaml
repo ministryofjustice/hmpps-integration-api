@@ -108,6 +108,9 @@ generic-service:
       CTRLO_QUEUE_NAME: "sqs_name"
       CTRLO_QUEUE_ARN: "sqs_arn"
       CTRLO_FILTER_POLICY_SECRET_ID: "ctrlo_filter_policy_secret_id"
+    event-daso-queue:
+      DASO_QUEUE_NAME: "sqs_name"
+      DASO_QUEUE_ARN: "sqs_arn"
 
   allowlist:
     unrestricted: "0.0.0.0/0"

@@ -115,6 +115,11 @@ authorisation:
       notes: "See client list in Confluence"
       roles:
         - "community-payback"
+    daso:
+      notes: "See client list in Confluence"
+      roles:
+        - "daso"
+      queueName: "dasosubscriberqueue"
 
 hmpps.sqs:
   queues:
@@ -135,3 +140,6 @@ hmpps.sqs:
       queueName: ${CTRLO_QUEUE_NAME}
       queueArn: ${CTRLO_QUEUE_ARN}
       subscribeTopicId: integrationeventtopic
+    dasosubscriberqueue:
+      queueName: ${DASO_QUEUE_NAME}
+      queueArn: ${DASO_QUEUE_ARN}
