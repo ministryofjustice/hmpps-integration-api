@@ -103,7 +103,7 @@ class ContactsIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `contact search returns a 503 when feature flag is disabled using a GET`() {
-    whenever(featureFlagConfig.getConfigFlagValue(FeatureFlagConfig.USE_CONTACT_SEARCH_ENDPOINT)).thenReturn(false)
+    whenever(featureFlagConfig.getConfigFlagValue(FeatureFlagConfig.CONTACT_SEARCH_ENDPOINT_ENABLED)).thenReturn(false)
     callApi(
       "/v1/contacts?firstName=John&lastName=Doe",
     ).andExpect(status().isServiceUnavailable)
@@ -133,7 +133,7 @@ class ContactsIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `contact search returns a 503 when feature flag is disabled using a POST`() {
-    whenever(featureFlagConfig.getConfigFlagValue(FeatureFlagConfig.USE_CONTACT_SEARCH_ENDPOINT)).thenReturn(false)
+    whenever(featureFlagConfig.getConfigFlagValue(FeatureFlagConfig.CONTACT_SEARCH_ENDPOINT_ENABLED)).thenReturn(false)
     postToApi(
       "/v1/contacts",
       "",

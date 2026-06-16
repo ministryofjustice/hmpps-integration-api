@@ -98,7 +98,7 @@ class ContactsController(
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
   )
-  @FeatureFlag(name = FeatureFlagConfig.USE_CONTACT_SEARCH_ENDPOINT)
+  @FeatureFlag(name = FeatureFlagConfig.CONTACT_SEARCH_ENDPOINT_ENABLED)
   fun contactSearch(
     @Parameter(description = "The first name of the contact") @RequestParam(required = false) firstName: String?,
     @Parameter(description = "The middle names of the contact") @RequestParam(required = false) middleNames: String?,
