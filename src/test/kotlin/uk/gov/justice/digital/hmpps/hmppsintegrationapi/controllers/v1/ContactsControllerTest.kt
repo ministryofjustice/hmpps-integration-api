@@ -248,6 +248,14 @@ internal class ContactsControllerTest(
           .first()
           .firstName
           .shouldBe("John")
+        response.data
+          .first()
+          .middleNames
+          .shouldBe("Simon")
+        response.data
+          .first()
+          .lastName
+          .shouldBe("Smith")
       }
 
       it("returns a 400 status code when no search criteria found") {

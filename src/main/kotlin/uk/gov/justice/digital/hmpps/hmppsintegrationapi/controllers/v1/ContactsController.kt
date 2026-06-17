@@ -110,7 +110,7 @@ class ContactsController(
     @RequestAttribute requestContext: RequestContext?,
     @Valid @RequestBody request: ContactSearchRequest? = null,
   ): ResponseEntity<PaginatedResponse<ContactSearchResponseItem>> {
-    val req = request ?: ContactSearchRequest(firstName, lastName, middleNames, dateOfBirth, searchType)
+    val req = request ?: ContactSearchRequest(firstName, middleNames, lastName, dateOfBirth, searchType)
     req.validate()
 
     val response = contactSearchService.contactSearch(req, pageNo, perPage, requestContext)

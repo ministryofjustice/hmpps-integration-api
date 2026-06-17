@@ -381,7 +381,7 @@ class PersonalRelationshipsGatewayTest(
       it("returns a search response") {
 
         personalRelationshipsApiMockServer.stubForGet(
-          "/contacts/search?page=0&size=10&firstName=John&searchType=EXACT",
+          "/contact/search?page=0&size=10&firstName=John&searchType=EXACT",
           body =
             File(
               fixturesPath,
@@ -418,7 +418,7 @@ class PersonalRelationshipsGatewayTest(
 
       it("returns a 404 response") {
         personalRelationshipsApiMockServer.stubForGet(
-          "/contacts/search?page=0&size=10&firstName=John&searchType=EXACT",
+          "/contact/search?page=0&size=10&firstName=John&searchType=EXACT",
           body = "",
           status = HttpStatus.NOT_FOUND,
         )
@@ -429,7 +429,7 @@ class PersonalRelationshipsGatewayTest(
 
       it("returns a 400 response") {
         personalRelationshipsApiMockServer.stubForGet(
-          "/contacts/search?page=0&size=10&searchType=EXACT",
+          "/contact/search?page=0&size=10&searchType=EXACT",
           body = "",
           status = HttpStatus.BAD_REQUEST,
         )
