@@ -23,6 +23,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactLinkedPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactSearchResponseItem
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactSearchType
@@ -74,6 +75,40 @@ class ContactsController(
 
     auditService.createEvent("GET_CONTACT_BY_ID", mapOf("contactId" to contactId))
     return response
+  }
+
+  @GetMapping("/{contactId}/linked-prisoners")
+  @Tag(name = "Visits")
+  @Operation(
+    summary = "Returns the linked prisoners for a contact id.",
+    description = "",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully retrieved linked prisoners by contact ID."),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  @FeatureFlag(name = FeatureFlagConfig.CONTACT_LINKED_PRISONERS_ENDPOINT_ENABLED)
+  fun getContactLinkedPrisoners(
+    @Parameter(description = "The page number (starting at 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1") pageNo: Int,
+    @Parameter(description = "The maximum number of results for a page (starting at 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
+    @PathVariable contactId: Long,
+    @RequestAttribute requestContext: RequestContext?,
+  ): PaginatedResponse<ContactLinkedPrisoner> {
+    val response =
+      getContactService.getContactLinkedPrisoners(
+        contactId,
+        pageNo = pageNo,
+        perPage = perPage,
+        requestContext = requestContext,
+      )
+
+    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Linked prisoners not found for $contactId")
+    }
+
+    auditService.createEvent("GET_CONTACT_LINKED_PRISONERS", mapOf("contactId" to contactId.toString()))
+    return response.data.toPaginatedResponse()
   }
 
   @RequestMapping(method = [RequestMethod.GET, RequestMethod.POST])
