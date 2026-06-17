@@ -61,6 +61,7 @@ feature-flag:
   use-webclient-wrapper-for-hmpps-auth: true
   use-assessment-summary-endpoint: true
   use-stubbed-assessment-summary: true
+  contact-search-endpoint-enabled: true
   # Events Config
   enable-delete-processed-events: true
   enable-publish-pending-events: true

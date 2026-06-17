@@ -6,6 +6,8 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
@@ -13,12 +15,16 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import java.io.File
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -40,6 +46,7 @@ class PersonalRelationshipsGatewayTest(
       Mockito.reset(hmppsAuthGateway)
 
       whenever(hmppsAuthGateway.getClientToken("PERSONAL-RELATIONSHIPS")).thenReturn(HmppsAuthMockServer.TOKEN)
+      whenever(hmppsAuthGateway.getClientToken(eq("PERSONAL-RELATIONSHIPS"), any<RequestContext>())).thenReturn(HmppsAuthMockServer.TOKEN)
     }
 
     afterTest {
@@ -365,6 +372,70 @@ class PersonalRelationshipsGatewayTest(
         val response = personalRelationshipsGateway.getNumberOfChildren(prisonerId)
         response.data.shouldBe(null)
         response.errors.shouldBe(listOf(UpstreamApiError(causedBy = UpstreamApi.PERSONAL_RELATIONSHIPS, type = UpstreamApiError.Type.BAD_REQUEST, description = null)))
+      }
+    }
+
+    describe("GET /contact/search returns a response") {
+      val requestContext = buildRequestContext()
+      val fixturesPath = "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/personalRelationships/fixtures/contact-search-response.json"
+      it("returns a search response") {
+
+        personalRelationshipsApiMockServer.stubForGet(
+          "/contacts/search?page=0&size=10&firstName=John&searchType=EXACT",
+          body =
+            File(
+              fixturesPath,
+            ).readText(),
+        )
+
+        val contactResponse = personalRelationshipsGateway.contactSearch(ContactSearchRequest(firstName = "John"), 1, 10, buildRequestContext())
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("PERSONAL-RELATIONSHIPS", requestContext)
+        contactResponse.data
+          ?.contacts
+          ?.size
+          .shouldBe(1)
+        contactResponse.data
+          ?.contacts[0]
+          ?.firstName
+          .shouldBe("John")
+        contactResponse.data
+          ?.pageMetadata
+          ?.size
+          .shouldBe(10)
+        contactResponse.data
+          ?.pageMetadata
+          ?.number
+          .shouldBe(0)
+        contactResponse.data
+          ?.pageMetadata
+          ?.totalElements
+          .shouldBe(1)
+        contactResponse.data
+          ?.pageMetadata
+          ?.totalPages
+          .shouldBe(1)
+      }
+
+      it("returns a 404 response") {
+        personalRelationshipsApiMockServer.stubForGet(
+          "/contacts/search?page=0&size=10&firstName=John&searchType=EXACT",
+          body = "",
+          status = HttpStatus.NOT_FOUND,
+        )
+        val contactResponse = personalRelationshipsGateway.contactSearch(ContactSearchRequest(firstName = "John"), 1, 10, buildRequestContext())
+        contactResponse.errors.size.shouldBe(1)
+        contactResponse.errors[0].shouldBe(UpstreamApiError(type = UpstreamApiError.Type.ENTITY_NOT_FOUND, causedBy = UpstreamApi.PERSONAL_RELATIONSHIPS))
+      }
+
+      it("returns a 400 response") {
+        personalRelationshipsApiMockServer.stubForGet(
+          "/contacts/search?page=0&size=10&searchType=EXACT",
+          body = "",
+          status = HttpStatus.BAD_REQUEST,
+        )
+        val contactResponse = personalRelationshipsGateway.contactSearch(ContactSearchRequest(), 1, 10, buildRequestContext())
+        contactResponse.errors.size.shouldBe(1)
+        contactResponse.errors[0].shouldBe(UpstreamApiError(type = UpstreamApiError.Type.BAD_REQUEST, causedBy = UpstreamApi.PERSONAL_RELATIONSHIPS))
       }
     }
   })
