@@ -139,4 +139,19 @@ class ContactsIntegrationTest : IntegrationTestBase() {
       "",
     ).andExpect(status().isServiceUnavailable)
   }
+
+  @Test
+  fun `GET linked prisoners returns a 200`() {
+    callApi(
+      "/v1/contacts/$contactId/linked-prisoners",
+    ).andExpect(status().isOk)
+  }
+
+  @Test
+  fun `GET linked prisoners returns a 503 when feature flag is disabled `() {
+    whenever(featureFlagConfig.getConfigFlagValue(FeatureFlagConfig.CONTACT_LINKED_PRISONERS_ENDPOINT_ENABLED)).thenReturn(false)
+    callApi(
+      "/v1/contacts/$contactId/linked-prisoners",
+    ).andExpect(status().isServiceUnavailable)
+  }
 }

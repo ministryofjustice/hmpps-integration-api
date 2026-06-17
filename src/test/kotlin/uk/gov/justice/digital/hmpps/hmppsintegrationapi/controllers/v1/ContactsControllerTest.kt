@@ -4,6 +4,7 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
@@ -15,9 +16,12 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactLinkedPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactSearchResponseItem
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedContactLinkedPrisonerResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedContactSearchResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -307,6 +311,61 @@ internal class ContactsControllerTest(
       it("returns a 200 status code when a valid date of birth provided") {
         val result = mockMvc.performAuthorisedPost(path, ContactSearchRequest("John", "Simon", "Smith", dateOfBirth = "12/08/1990"))
         result.response.status.shouldBe(HttpStatus.OK.value())
+      }
+    }
+
+    describe("GET contact linked prisoners") {
+
+      val linkedPrisoner =
+        ContactLinkedPrisoner(
+          prisonerNumber = "AA1234BC",
+          lastName = "Smith",
+          firstName = "John",
+          middleNames = "Simon",
+          relationshipTypeCode = "S",
+          relationshipTypeDescription = "Official",
+          relationshipToPrisonerCode = "FRI",
+          relationshipToPrisonerDescription = "Friend",
+          isRelationshipActive = true,
+          prisonerContactId = 123456,
+        )
+
+      val response =
+        PaginatedContactLinkedPrisonerResponse(
+          content = listOf(linkedPrisoner),
+          isLastPage = true,
+          page = 1,
+          perPage = 10,
+          totalCount = 1,
+          totalPages = 1,
+          count = 1,
+        )
+
+      beforeTest {
+        Mockito.reset(auditService)
+        Mockito.reset(getContactService)
+
+        whenever(getContactService.getContactLinkedPrisoners(eq(defaultContactId.toLong()), eq(1), eq(10), any<RequestContext>())).thenReturn(
+          Response(response),
+        )
+      }
+
+      it("returns a 200 OK status code") {
+        val result = mockMvc.performAuthorised("$path/$defaultContactId/linked-prisoners")
+        result.response.status.shouldBe(HttpStatus.OK.value())
+        val response = result.response.contentAsJson<PaginatedResponse<ContactLinkedPrisoner>>()
+        response.data
+          .first()
+          .prisonerNumber
+          .shouldBe("AA1234BC")
+      }
+
+      it("returns a 404 Not found status code") {
+        whenever(getContactService.getContactLinkedPrisoners(eq(defaultContactId.toLong()), eq(1), eq(10), any<RequestContext>())).thenReturn(
+          Response(null, listOf(UpstreamApiError(UpstreamApi.PERSONAL_RELATIONSHIPS, UpstreamApiError.Type.ENTITY_NOT_FOUND))),
+        )
+        val result = mockMvc.performAuthorised("$path/$defaultContactId/linked-prisoners")
+        result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
       }
     }
   })

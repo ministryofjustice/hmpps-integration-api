@@ -438,4 +438,44 @@ class PersonalRelationshipsGatewayTest(
         contactResponse.errors[0].shouldBe(UpstreamApiError(type = UpstreamApiError.Type.BAD_REQUEST, causedBy = UpstreamApi.PERSONAL_RELATIONSHIPS))
       }
     }
+
+    it("gets a list of prisoner contact ids with page data") {
+      val path = "/contact/$contactId/linked-prisoners?page=0&size=10"
+      personalRelationshipsApiMockServer.stubForGet(
+        path,
+        body =
+          """
+          {
+            "content": [
+              {
+                "prisonerNumber": "A1234BC",
+                "lastName": "Doe",
+                "firstName": "John",
+                "middleNames": "William",
+                "prisonerContactId": 123456,
+                "relationshipTypeCode": "S",
+                "relationshipTypeDescription": "Official",
+                "relationshipToPrisonerCode": "FRI",
+                "relationshipToPrisonerDescription": "Friend",
+                "isRelationshipActive": true
+              }
+            ],
+            "page": {
+              "size": 10,
+              "totalElements": 1,
+              "totalPages": 1,
+              "number": 0
+            }
+          }
+          """.trimIndent(),
+      )
+
+      val response = personalRelationshipsGateway.getLinkedPrisoner(contactId, 1, 10)
+      response.errors.shouldBeEmpty()
+      response.data.shouldNotBeNull()
+      response.data.prisoners
+        .first()
+        .prisonerNumber
+        .shouldBe("A1234BC")
+    }
   })

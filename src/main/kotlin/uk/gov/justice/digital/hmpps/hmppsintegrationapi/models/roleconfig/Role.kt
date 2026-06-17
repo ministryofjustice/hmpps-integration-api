@@ -53,6 +53,7 @@ val roleConstants =
       -"/v1/activities/{activityId}/schedules"
       -"/v1/contacts"
       -"/v1/contacts/{contactId}"
+      -"/v1/contacts/{contactId}/linked-prisoners"
       -"/v1/education/course-completion"
       -"/v1/epf/person-details/{hmppsId}/{eventNumber}"
       -"/v1/hmpps/id/by-nomis-number/{nomisNumber}"
