@@ -18,7 +18,7 @@ data class ContactSearchRequest(
   ): String {
     val uri =
       UriComponentsBuilder
-        .fromUriString("/contacts/search")
+        .fromUriString("/contact/search")
     // Downstream pagination is zero based
     uri.queryParam("page", (pageNo - 1).toString())
     uri.queryParam("size", perPage.toString())
