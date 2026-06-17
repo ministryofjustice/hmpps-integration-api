@@ -7,9 +7,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedCo
 
 data class PRContactSearchResponseItem(
   val id: Long,
-  val firstName: String,
+  val firstName: String? = null,
   val middleNames: String? = null,
-  val lastName: String,
+  val lastName: String? = null,
   val endDate: String? = null,
   val cityCode: String? = null,
   val flat: String? = null,
@@ -22,7 +22,7 @@ data class PRContactSearchResponseItem(
   val comments: String? = null,
   val postcode: String? = null,
   val mailAddress: Boolean? = false,
-  val dateOfBirth: String,
+  val dateOfBirth: String? = null,
   val countyDescription: String? = null,
   val noFixedAddress: Boolean? = false,
   val countyCode: String? = null,
