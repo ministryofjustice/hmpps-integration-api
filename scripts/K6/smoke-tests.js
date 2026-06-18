@@ -525,6 +525,25 @@ function verify_activities_search(prisonId, prisonerId, startDate, days = 90) {
   return res;
 }
 
+function verify_contact_endpoints(firstName, lastName, dateOfBirth) {
+  group('contacts', () => {
+    let res = validate_get_request(`/v1/contacts?firstName=${firstName}&lastName=${lastName}&dateOfBirth=${dateOfBirth}`)
+    if (res.status !== 200) {
+      console.log(`Contact search failed`);
+      return
+    }
+    let contacts = res.json()["data"];
+    if (!check(contacts, {
+      [`At least one contact returned`]: () => contacts.length >= 1,
+    })) {
+      return
+    }
+    let contactId = contacts[0]["contactId"];
+    validate_get_request(`/v1/contacts/${contactId}`);
+    validate_get_request(`/v1/contacts/${contactId}/linked-prisoners`);
+  })
+}
+
 function verify_prisons_endpoints(nomisNumber) {
   group('prisons', () => {
     let res = validate_get_request(`/v1/prison/prisoners/${nomisNumber}`)
@@ -765,6 +784,8 @@ function structured_verification_test(hmppsId) {
   verify_education_san(hmppsId);
 
   verify_obo_access(hmppsId)
+
+  verify_contact_endpoints("Joe-Dps", "Bloggs", "01/01/2000")
 }
 /************************************************************************/
 
