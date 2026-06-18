@@ -527,7 +527,7 @@ function verify_activities_search(prisonId, prisonerId, startDate, days = 90) {
 
 function verify_contact_endpoints(firstName, lastName, dateOfBirth) {
   group('contacts', () => {
-    let res = validate_get_request(`/v1/contacts?firstName=${firstName}&lastName=${lastName}&dateOfBirth=${dateOfBirth}`)
+    let res = validate_get_request_with_obo(`/v1/contacts?firstName=${firstName}&lastName=${lastName}&dateOfBirth=${dateOfBirth}`)
     if (res.status !== 200) {
       console.log(`Contact search failed`);
       return
@@ -539,8 +539,8 @@ function verify_contact_endpoints(firstName, lastName, dateOfBirth) {
       return
     }
     let contactId = contacts[0]["contactId"];
-    validate_get_request(`/v1/contacts/${contactId}`);
-    validate_get_request(`/v1/contacts/${contactId}/linked-prisoners`);
+    validate_get_request_with_obo(`/v1/contacts/${contactId}`);
+    validate_get_request_with_obo(`/v1/contacts/${contactId}/linked-prisoners`);
   })
 }
 
