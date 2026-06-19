@@ -167,7 +167,7 @@ runs:
               elif [[ $file == *".tf" ]] || [[ $file == *".tfvars" ]]; then
                 terraform fmt $file
               elif [[ $file == *".html.md.erb" ]]; then
-                bundle exec erb_lint -a $file
+                bundle exec erblint -a $file
               elif [[ $file == *".yaml" || $file == *".yml" || $file == *".md" || $file == *".html.md" ]]; then
                 npx prettier --print-width=150 --write $file
               fi
