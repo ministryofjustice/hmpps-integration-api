@@ -1,0 +1,35 @@
+{
+  "personAddresses": [
+    {
+      "person": {
+        "id": 123,
+        "crn": "X123123",
+        "dob": "1990-08-16",
+        "gender": "Male"
+      },
+      "address": {
+        "id": 123,
+        "buildingName": "Burnham House",
+        "addressNumber": "1",
+        "streetName": "Church Road",
+        "district": "Clarendon Park",
+        "town": "Leicester",
+        "county": "Leicestershire",
+        "postcode": "LM2 1BF",
+        "startDate": "2020-08-03",
+        "notes": "notes text",
+        "createdDateTime": "2020-08-11T11:00:01+01:00",
+        "lastUpdatedDateTime": "2022-06-09T11:47:51+01:00",
+        "status": {
+          "code": "M",
+          "description": "Main"
+        },
+        "type": {
+          "code": "A02",
+          "description": "Approved Premises"
+        },
+        "noFixedAbode": false
+      },
+      "matchScore": 100
+    }
+  ]

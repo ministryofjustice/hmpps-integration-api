@@ -35,6 +35,7 @@ services:
   integration-api.base-url: http://localhost:4029
   prisoner-base-location.base-url: http://localhost:4030
   core-person-record.base-url: http://localhost:4031
+  probation-offender-search.base-url: http://localhost:4033
 
 hmpps.sqs:
   provider: localstack

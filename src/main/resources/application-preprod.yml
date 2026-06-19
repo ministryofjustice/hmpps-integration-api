@@ -45,6 +45,8 @@ services:
     base-url: https://prisoner-base-location-api-preprod.hmpps.service.justice.gov.uk
   core-person-record:
     base-url: https://hmpps-person-record-preprod.hmpps.service.justice.gov.uk
+  probation-offender-search:
+    base-url: https://probation-offender-search-preprod.hmpps.service.justice.gov.uk
 
 feature-flag:
   # API Config

@@ -33,6 +33,7 @@ data class FeatureFlagConfig(
     const val USE_ASSESSMENT_SUMMARY_ENDPOINT = "use-assessment-summary-endpoint"
     const val USE_STUBBED_ASSESSMENT_SUMMARY = "use-stubbed-assessment-summary"
     const val CONTACT_SEARCH_ENDPOINT_ENABLED = "contact-search-endpoint-enabled"
+    const val ADDRESS_SEARCH_ENDPOINT_ENABLED = "address-search-endpoint-enabled"
 
     // Events feature flags
     const val ENABLE_DELETE_PROCESSED_EVENTS = "enable-delete-processed-events"
