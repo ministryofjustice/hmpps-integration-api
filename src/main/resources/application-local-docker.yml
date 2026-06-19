@@ -101,6 +101,7 @@ feature-flag:
   use-assessment-summary-endpoint: true
   use-stubbed-assessment-summary: false
   contact-search-endpoint-enabled: true
+  contact-linked-prisoners-endpoint-enabled: true
   # Events Config
   enable-delete-processed-events: false
   enable-publish-pending-events: false

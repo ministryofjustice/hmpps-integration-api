@@ -61,10 +61,10 @@ const httpOboHeaderParams = {
     //          "aud":"testAud"
     //          "iss":"testIss"
     //          "appid":"testId"
-    //          "unique_name":"testName"
+    //          "unique_name":"hmpps-external-api@justice.gov.uk"
     //        }
     //      }
-    'X-On-Behalf-Of': "eyJhbGciOiJub25lIiwia2lkIjoidGVzdEtpZCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMiwiYXVkIjoidGVzdEF1ZCIsImlzcyI6InRlc3RJc3MiLCJhcHBpZCI6InRlc3RJZCIsInVuaXF1ZV9uYW1lIjoidGVzdE5hbWUifQ."
+    'X-On-Behalf-Of': "eyJhbGciOiJub25lIiwia2lkIjoidGVzdEtpZCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMiwiYXVkIjoidGVzdEF1ZCIsImlzcyI6InRlc3RJc3MiLCJhcHBpZCI6InRlc3RJZCIsInVuaXF1ZV9uYW1lIjoiaG1wcHMtZXh0ZXJuYWwtYXBpQGp1c3RpY2UuZ292LnVrIn0."
   },
 };
 
@@ -525,6 +525,41 @@ function verify_activities_search(prisonId, prisonerId, startDate, days = 90) {
   return res;
 }
 
+function verify_contact_endpoints(firstName, lastName, dateOfBirth) {
+  group('contacts', () => {
+    let res = validate_get_request_with_obo(`/v1/contacts?firstName=${firstName}&lastName=${lastName}&dateOfBirth=${dateOfBirth}`)
+    if (res.status !== 200) {
+      console.log(`Contact search failed`);
+      return
+    }
+    let contacts = res.json()["data"];
+    if (!check(contacts, {
+      [`At least one contact returned`]: () => contacts.length >= 1,
+    })) {
+      return
+    }
+    const postRes = http.post(`${baseUrl}/v1/contacts`, JSON.stringify({
+      firstName: firstName,
+      lastName: lastName,
+      dateOfBirth: dateOfBirth
+    }), httpOboHeaderParams);
+
+    if (!check(postRes, {
+      'POST /v1/contacts returns 200': (r) => r.status === 200,
+    })) {
+      fail(`/v1/contacts caused the test to fail`)
+    }
+    let contactsFromPost = postRes.json()["data"];
+
+    if(contacts[0]["contactId"] !== contactsFromPost[0]["contactId"]){
+      fail(`/v1/contacts POST response is different to GET`)
+    }
+
+    validate_get_request_with_obo(`/v1/contacts/${contactId}`);
+    validate_get_request_with_obo(`/v1/contacts/${contactId}/linked-prisoners`);
+  })
+}
+
 function verify_prisons_endpoints(nomisNumber) {
   group('prisons', () => {
     let res = validate_get_request(`/v1/prison/prisoners/${nomisNumber}`)
@@ -765,6 +800,8 @@ function structured_verification_test(hmppsId) {
   verify_education_san(hmppsId);
 
   verify_obo_access(hmppsId)
+
+  verify_contact_endpoints("Joe-Dps", "Bloggs", "01/01/2000")
 }
 /************************************************************************/
 

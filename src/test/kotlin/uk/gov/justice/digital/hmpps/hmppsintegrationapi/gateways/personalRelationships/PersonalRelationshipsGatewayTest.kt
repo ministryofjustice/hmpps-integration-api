@@ -381,7 +381,7 @@ class PersonalRelationshipsGatewayTest(
       it("returns a search response") {
 
         personalRelationshipsApiMockServer.stubForGet(
-          "/contacts/search?page=0&size=10&firstName=John&searchType=EXACT",
+          "/contact/search?page=0&size=10&firstName=John&searchType=EXACT",
           body =
             File(
               fixturesPath,
@@ -418,7 +418,7 @@ class PersonalRelationshipsGatewayTest(
 
       it("returns a 404 response") {
         personalRelationshipsApiMockServer.stubForGet(
-          "/contacts/search?page=0&size=10&firstName=John&searchType=EXACT",
+          "/contact/search?page=0&size=10&firstName=John&searchType=EXACT",
           body = "",
           status = HttpStatus.NOT_FOUND,
         )
@@ -429,7 +429,7 @@ class PersonalRelationshipsGatewayTest(
 
       it("returns a 400 response") {
         personalRelationshipsApiMockServer.stubForGet(
-          "/contacts/search?page=0&size=10&searchType=EXACT",
+          "/contact/search?page=0&size=10&searchType=EXACT",
           body = "",
           status = HttpStatus.BAD_REQUEST,
         )
@@ -437,5 +437,45 @@ class PersonalRelationshipsGatewayTest(
         contactResponse.errors.size.shouldBe(1)
         contactResponse.errors[0].shouldBe(UpstreamApiError(type = UpstreamApiError.Type.BAD_REQUEST, causedBy = UpstreamApi.PERSONAL_RELATIONSHIPS))
       }
+    }
+
+    it("gets a list of prisoner contact ids with page data") {
+      val path = "/contact/$contactId/linked-prisoners?page=0&size=10"
+      personalRelationshipsApiMockServer.stubForGet(
+        path,
+        body =
+          """
+          {
+            "content": [
+              {
+                "prisonerNumber": "A1234BC",
+                "lastName": "Doe",
+                "firstName": "John",
+                "middleNames": "William",
+                "prisonerContactId": 123456,
+                "relationshipTypeCode": "S",
+                "relationshipTypeDescription": "Official",
+                "relationshipToPrisonerCode": "FRI",
+                "relationshipToPrisonerDescription": "Friend",
+                "isRelationshipActive": true
+              }
+            ],
+            "page": {
+              "size": 10,
+              "totalElements": 1,
+              "totalPages": 1,
+              "number": 0
+            }
+          }
+          """.trimIndent(),
+      )
+
+      val response = personalRelationshipsGateway.getLinkedPrisoner(contactId, 1, 10)
+      response.errors.shouldBeEmpty()
+      response.data.shouldNotBeNull()
+      response.data.prisoners
+        .first()
+        .prisonerNumber
+        .shouldBe("A1234BC")
     }
   })

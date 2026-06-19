@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
+import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
@@ -38,12 +39,21 @@ class PersonalRelationshipsGateway(
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  fun getLinkedPrisoner(contactId: Long): Response<PRLinkedPrisoners?> {
+  fun getLinkedPrisoner(
+    contactId: Long,
+    pageNo: Int? = null,
+    perPage: Int? = null,
+    requestContext: RequestContext? = null,
+  ): Response<PRLinkedPrisoners?> {
+    val uri = UriComponentsBuilder.fromUriString("/contact/$contactId/linked-prisoners")
+    pageNo?.let { uri.queryParam("page", (pageNo - 1).toString()) }
+    perPage?.let { uri.queryParam("size", perPage.toString()) }
+
     val result =
       webClient.request<PRLinkedPrisoners>(
         HttpMethod.GET,
-        "/contact/$contactId/linked-prisoners",
-        authenticationHeader(),
+        uri.toUriString(),
+        authenticationHeader(requestContext),
         UpstreamApi.PERSONAL_RELATIONSHIPS,
       )
     return when (result) {
