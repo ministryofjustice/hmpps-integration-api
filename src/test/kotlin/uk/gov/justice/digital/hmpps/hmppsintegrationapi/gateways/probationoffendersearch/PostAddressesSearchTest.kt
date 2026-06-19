@@ -114,7 +114,7 @@ class PostAddressesSearchTest(
           )
           val addressResponse = probationOffenderSearchGateway.addressSearch(requestBody, maxResults, buildRequestContext())
           addressResponse.errors.size.shouldBe(1)
-          addressResponse.errors[0].shouldBe(UpstreamApiError(type = UpstreamApiError.Type.BAD_REQUEST, causedBy = UpstreamApi.PERSONAL_RELATIONSHIPS))
+          addressResponse.errors[0].shouldBe(UpstreamApiError(type = UpstreamApiError.Type.BAD_REQUEST, causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH))
         }
       }
     },

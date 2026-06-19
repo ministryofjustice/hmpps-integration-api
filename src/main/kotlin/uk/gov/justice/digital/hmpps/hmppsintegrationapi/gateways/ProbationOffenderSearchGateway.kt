@@ -42,6 +42,7 @@ class ProbationOffenderSearchGateway(
         authenticationHeader(requestContext),
         UpstreamApi.PROBATION_OFFENDER_SEARCH,
         requestBody = addressSearchRequest.toMap(),
+        badRequestAsError = true,
       )
 
     return when (result) {
