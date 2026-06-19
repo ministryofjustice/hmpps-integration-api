@@ -8,9 +8,8 @@ data class AddressSearchRequest(
   val addressNumber: String? = null,
   val streetName: String? = null,
   val postcode: String? = null,
-  val maxResults: Int? = null,
 ) {
-  fun uriString(): String {
+  fun uriString(maxResults: Int? = null): String {
     val uri =
       UriComponentsBuilder
         .fromUriString("/search/addresses")

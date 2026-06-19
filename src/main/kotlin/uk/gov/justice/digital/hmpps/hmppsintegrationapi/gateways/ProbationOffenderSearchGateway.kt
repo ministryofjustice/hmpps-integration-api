@@ -31,13 +31,14 @@ class ProbationOffenderSearchGateway(
 
   fun addressSearch(
     addressSearchRequest: AddressSearchRequest,
+    maxResults: Int,
     requestContext: RequestContext?,
   ): Response<PSAddressSearchResponse?> {
     val test = addressSearchRequest.uriString()
     val result =
       webClient.request<PSAddressSearchResponse>(
         HttpMethod.POST,
-        addressSearchRequest.uriString(),
+        addressSearchRequest.uriString(maxResults),
         authenticationHeader(requestContext),
         UpstreamApi.PROBATION_OFFENDER_SEARCH,
         requestBody = addressSearchRequest.toMap(),

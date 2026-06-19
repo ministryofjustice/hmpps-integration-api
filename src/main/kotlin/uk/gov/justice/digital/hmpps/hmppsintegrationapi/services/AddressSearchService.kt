@@ -13,9 +13,10 @@ class AddressSearchService(
 ) {
   fun addressSearch(
     addressSearchRequest: AddressSearchRequest,
+    maxResults: Int,
     requestContext: RequestContext?,
   ): Response<AddressSearchResponse?> {
-    val addressSearch = probationOffenderSearchGateway.addressSearch(addressSearchRequest, requestContext)
+    val addressSearch = probationOffenderSearchGateway.addressSearch(addressSearchRequest, maxResults, requestContext)
     val data = addressSearch.data ?: return Response(null, addressSearch.errors)
     return Response(data.toDownstreamFormat())
   }

@@ -98,14 +98,14 @@ class AddressController(
     @Parameter(description = "The address number of the address") @RequestParam(required = false) addressNumber: String?,
     @Parameter(description = "The street name of the address") @RequestParam(required = false) streetName: String?,
     @Parameter(description = "The postcode name of the address") @RequestParam(required = false) postcode: String?,
-    @Parameter(description = "Max results returned for address") @RequestParam(required = false, defaultValue = "100") maxResults: Int?,
+    @Parameter(description = "Max results returned for address") @RequestParam(required = false, defaultValue = "100") maxResults: Int,
     @RequestAttribute requestContext: RequestContext?,
     @Valid @RequestBody request: AddressSearchRequest? = null,
   ): DataResponse<AddressSearchResponse?> {
-    val req = request ?: AddressSearchRequest(buildingName, addressNumber, streetName, postcode, maxResults)
+    val req = request ?: AddressSearchRequest(buildingName, addressNumber, streetName, postcode)
     req.validate()
 
-    val response = addressSearchService.addressSearch(req, requestContext)
+    val response = addressSearchService.addressSearch(req, maxResults, requestContext)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException()

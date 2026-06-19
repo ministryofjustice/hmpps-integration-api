@@ -43,13 +43,17 @@ class PostAddressesSearchTest(
           postcode = "LM2 1BF",
         )
 
+      val maxResults = 100
+
+      val path = "/search/addresses?maxResults=$maxResults"
+
       beforeEach {
 
         probationOffenderSearchMockServer.start()
 
         val fixturesPath = "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/probationoffendersearch/fixtures/address-search-response.json"
         probationOffenderSearchMockServer.stubForPost(
-          "/search/addresses",
+          path,
           resBody =
             File(
               fixturesPath,
@@ -68,7 +72,7 @@ class PostAddressesSearchTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        probationOffenderSearchGateway.addressSearch(requestBody, requestContext)
+        probationOffenderSearchGateway.addressSearch(requestBody, maxResults, requestContext)
 
         verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("Probation Offender Search", requestContext)
       }
@@ -76,7 +80,7 @@ class PostAddressesSearchTest(
       describe("GET /search/addresses returns a response") {
         it("returns a search response") {
 
-          val addressResponse = probationOffenderSearchGateway.addressSearch(requestBody, buildRequestContext())
+          val addressResponse = probationOffenderSearchGateway.addressSearch(requestBody, maxResults, buildRequestContext())
           verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("Probation Offender Search", requestContext)
           addressResponse.data
             ?.personAddresses
@@ -91,24 +95,24 @@ class PostAddressesSearchTest(
 
         it("returns a 404 response") {
           probationOffenderSearchMockServer.stubForPost(
-            "/search/addresses",
+            path,
             resBody = "",
             reqBody = objectMapper.writeValueAsString(requestBody),
             status = HttpStatus.NOT_FOUND,
           )
-          val addressResponse = probationOffenderSearchGateway.addressSearch(requestBody, buildRequestContext())
+          val addressResponse = probationOffenderSearchGateway.addressSearch(requestBody, maxResults, buildRequestContext())
           addressResponse.errors.size.shouldBe(1)
           addressResponse.errors[0].shouldBe(UpstreamApiError(type = UpstreamApiError.Type.ENTITY_NOT_FOUND, causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH))
         }
 
         it("returns a 400 response") {
           probationOffenderSearchMockServer.stubForPost(
-            "/search/addresses",
+            path,
             resBody = "",
             reqBody = objectMapper.writeValueAsString(requestBody),
             status = HttpStatus.BAD_REQUEST,
           )
-          val addressResponse = probationOffenderSearchGateway.addressSearch(requestBody, buildRequestContext())
+          val addressResponse = probationOffenderSearchGateway.addressSearch(requestBody, maxResults, buildRequestContext())
           addressResponse.errors.size.shouldBe(1)
           addressResponse.errors[0].shouldBe(UpstreamApiError(type = UpstreamApiError.Type.BAD_REQUEST, causedBy = UpstreamApi.PERSONAL_RELATIONSHIPS))
         }
