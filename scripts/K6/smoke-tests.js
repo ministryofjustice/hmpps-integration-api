@@ -538,7 +538,23 @@ function verify_contact_endpoints(firstName, lastName, dateOfBirth) {
     })) {
       return
     }
-    let contactId = contacts[0]["contactId"];
+    const postRes = http.post(`${baseUrl}/v1/contacts`, JSON.stringify({
+      firstName: firstName,
+      lastName: lastName,
+      dateOfBirth: dateOfBirth
+    }), httpOboHeaderParams);
+
+    if (!check(postRes, {
+      'POST /v1/contacts returns 200': (r) => r.status === 200,
+    })) {
+      fail(`/v1/contacts caused the test to fail`)
+    }
+    let contactsFromPost = postRes.json()["data"];
+
+    if(contacts[0]["contactId"] !== contactsFromPost[0]["contactId"]){
+      fail(`/v1/contacts POST response is different to GET`)
+    }
+
     validate_get_request_with_obo(`/v1/contacts/${contactId}`);
     validate_get_request_with_obo(`/v1/contacts/${contactId}/linked-prisoners`);
   })
