@@ -60,7 +60,6 @@ feature-flag:
   epf-endpoint-includes-lao: true
   epf-gateway-disabled: true
   cpr-enabled: true
-  use-webclient-wrapper-for-hmpps-auth: true
   use-assessment-summary-endpoint: true
   use-stubbed-assessment-summary: true
   contact-search-endpoint-enabled: true

@@ -101,7 +101,6 @@ feature-flag:
   use-emergency-contacts-endpoint: false
   epf-endpoint-includes-lao: true
   cpr-enabled: true
-  use-webclient-wrapper-for-hmpps-auth: true
   use-assessment-summary-endpoint: false
   use-stubbed-assessment-summary: false
   contact-search-endpoint-enabled: true
