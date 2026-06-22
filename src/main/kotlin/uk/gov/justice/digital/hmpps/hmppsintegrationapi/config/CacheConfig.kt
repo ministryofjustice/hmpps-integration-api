@@ -70,7 +70,10 @@ class GatewayKeyGenerator : KeyGenerator {
     target: Any,
     method: Method,
     vararg params: Any?,
-  ): Any = target.javaClass.name + "_" + method.name + "_" + StringUtils.arrayToDelimitedString(params, "_")
+  ): Any {
+    val stringParam = params.filterIsInstance<String>().toTypedArray()
+    return target.javaClass.name + "_" + method.name + "_" + StringUtils.arrayToDelimitedString(stringParam, "_")
+  }
 }
 
 /**

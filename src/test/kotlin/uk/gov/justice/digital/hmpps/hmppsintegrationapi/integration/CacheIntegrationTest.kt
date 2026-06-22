@@ -7,6 +7,7 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 
 @TestPropertySource(properties = ["cache-enabled=true"])
 class CacheIntegrationTest : IntegrationTestBase() {
@@ -42,7 +43,7 @@ class CacheIntegrationTest : IntegrationTestBase() {
       .andExpect(status().isOk)
 
     // Calls the cacheable method only once (caches first request)
-    verify(nDeliusGateway, times(1)).getOffender(crn)
+    verify(nDeliusGateway, times(1)).getOffender(eq(crn), any<RequestContext>())
   }
 }
 
@@ -79,6 +80,6 @@ class CacheDisabledIntegrationTest : IntegrationTestBase() {
     callApiWithCN(crnPath, specificPrisonCn)
       .andExpect(status().isOk)
     // Calls the cacheable method twice (does not cache)
-    verify(nDeliusGateway, times(2)).getOffender(crn)
+    verify(nDeliusGateway, times(2)).getOffender(eq(crn), any<RequestContext>())
   }
 }

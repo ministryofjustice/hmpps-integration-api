@@ -322,7 +322,7 @@ internal class PersonControllerTest(
               probationOffenderSearch = probationOffenderSearch,
               prisonerOffenderSearch = prisonResponse.data.toPerson(),
             )
-          whenever(getPersonService.getCombinedDataForPerson(hmppsId)).thenReturn(Response(data = personMap))
+          whenever(getPersonService.getCombinedDataForPerson(eq(hmppsId), any<RequestContext>())).thenReturn(Response(data = personMap))
         }
 
         it("returns a 200 OK status code") {
@@ -343,7 +343,7 @@ internal class PersonControllerTest(
           }
 
           it("returns a 404 status code when a person cannot be found in both upstream APIs") {
-            whenever(getPersonService.getCombinedDataForPerson(idThatDoesNotExist))
+            whenever(getPersonService.getCombinedDataForPerson(eq(idThatDoesNotExist), any<RequestContext>()))
               .thenReturn(notFoundErrorResponse(UpstreamApi.NDELIUS))
 
             val result = mockMvc.performAuthorised("$basePath/$idThatDoesNotExist")
@@ -364,7 +364,7 @@ internal class PersonControllerTest(
 
         it("gets a person with the matching ID") {
           mockMvc.performAuthorised("$basePath/$hmppsId")
-          verify(getPersonService, times(1)).getCombinedDataForPerson(hmppsId)
+          verify(getPersonService, times(1)).getCombinedDataForPerson(eq(hmppsId), any<RequestContext>())
         }
 
         it("returns a person with the matching ID") {

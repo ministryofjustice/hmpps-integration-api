@@ -272,7 +272,10 @@ class NDeliusGateway(
   }
 
   @Cacheable(GATEWAY_CACHE, keyGenerator = "gatewayKeyGenerator")
-  fun getOffender(id: String? = null): Response<Offender?> {
+  fun getOffender(
+    id: String? = null,
+    requestContext: RequestContext? = null,
+  ): Response<Offender?> {
     val queryField =
       if (isNomsNumber(id)) {
         "nomsNumber"
@@ -284,7 +287,7 @@ class NDeliusGateway(
       webClient.requestListWithRetry<Offender>(
         HttpMethod.POST,
         "/search/probation-cases",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.NDELIUS,
         mapOf(queryField to id),
       )
