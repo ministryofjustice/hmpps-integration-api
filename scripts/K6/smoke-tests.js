@@ -562,14 +562,17 @@ function verify_contact_endpoints(firstName, lastName, dateOfBirth) {
 
 function verify_address_endpoints(addressNumber, streetName, postcode) {
   group('address', () => {
-    let res = validate_get_request_with_obo(`/v1/address/search?streetName=${streetName}&addressNumber=${addressNumber}&postcode=${postcode}`)
+
+    let path = `/v1/address/search?streetName=${streetName}&addressNumber=${addressNumber}&postcode=${postcode}`;
+    let res = validate_get_request_with_obo(encodeURI(path))
+
     if (res.status !== 200) {
       console.log(`Address search failed`);
       return
     }
     let address = res.json()["personAddresses"];
     if (!check(address, {
-      [`At least one address returned`]: () => address.length >= 1,
+      [`At least one address returned from GET`]: () => address.length >= 1,
     })) {
       fail(`no addresses returned from GET`);
     }
@@ -586,9 +589,10 @@ function verify_address_endpoints(addressNumber, streetName, postcode) {
     }
     let addressFromPost = postRes.json()["personAddresses"];
     if (!check(addressFromPost, {
-      [`At least one address returned`]: () => address.length >= 1,
+      [`At least one address returned from POST`]: () => address.length >= 1,
     })) {
       fail(`no addresses returned from POST`);
+      return;
     }
 
     if(address[0]["hmppsId"] !== addressFromPost[0]["hmppsId"]){
@@ -839,7 +843,7 @@ function structured_verification_test(hmppsId) {
   verify_obo_access(hmppsId)
 
   verify_contact_endpoints("Joe-Dps", "Bloggs", "01/01/2000")
-  verify_address_endpoints("102", "Petty", "SW1H%209AJ")
+  verify_address_endpoints("102", "Petty", "SW1H 9AJ")
 }
 /************************************************************************/
 
