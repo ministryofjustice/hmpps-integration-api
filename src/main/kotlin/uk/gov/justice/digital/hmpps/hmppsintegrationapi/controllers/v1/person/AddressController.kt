@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tags
 import jakarta.validation.Valid
 import jakarta.validation.ValidationException
 import org.springframework.http.HttpHeaders
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestAttribute
@@ -101,7 +102,7 @@ class AddressController(
     @Parameter(description = "Max results returned for address") @RequestParam(required = false, defaultValue = "100") maxResults: Int,
     @RequestAttribute requestContext: RequestContext?,
     @Valid @RequestBody request: AddressSearchRequest? = null,
-  ): DataResponse<AddressSearchResponse?> {
+  ): ResponseEntity<AddressSearchResponse> {
     val req = request ?: AddressSearchRequest(buildingName, addressNumber, streetName, postcode)
     req.validate()
 
@@ -113,6 +114,9 @@ class AddressController(
 
     auditService.createEvent("SEARCH_ADDRESS", req.toMap())
 
-    return DataResponse(response.data)
+    return ResponseEntity
+      .ok()
+      .header(HttpHeaders.CACHE_CONTROL, "no-cache")
+      .body(response.data)
   }
 }
