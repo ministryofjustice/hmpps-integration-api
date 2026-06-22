@@ -1,11 +1,15 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.whenever
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AddressSearchRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.objectMapper
+import java.io.File
 
 class AddressSearchIntegrationTest : IntegrationTestBase() {
   val path = "/v1/address/search"
@@ -16,6 +20,21 @@ class AddressSearchIntegrationTest : IntegrationTestBase() {
       "buildingName":"Burnham"
     }
     """.trimIndent()
+
+  val requestBody = AddressSearchRequest(buildingName = "Burnham")
+
+  @BeforeEach
+  fun setup() {
+    val fixturesPath = "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/probationoffendersearch/fixtures/address-search-response.json"
+    probationSearchMockServer.stubForPost(
+      path,
+      resBody =
+        File(
+          fixturesPath,
+        ).readText(),
+      reqBody = objectMapper.writeValueAsString(requestBody),
+    )
+  }
 
   @Test
   fun `successfully searches address building name using a GET`() {
