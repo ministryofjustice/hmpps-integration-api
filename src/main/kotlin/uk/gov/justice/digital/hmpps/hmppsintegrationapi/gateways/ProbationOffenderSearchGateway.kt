@@ -34,7 +34,6 @@ class ProbationOffenderSearchGateway(
     maxResults: Int,
     requestContext: RequestContext?,
   ): Response<PSAddressSearchResponse?> {
-    val test = addressSearchRequest.uriString()
     val result =
       webClient.request<PSAddressSearchResponse>(
         HttpMethod.POST,

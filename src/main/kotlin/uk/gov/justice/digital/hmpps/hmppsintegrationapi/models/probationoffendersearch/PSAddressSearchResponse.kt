@@ -14,7 +14,7 @@ data class PSAddressSearchResponse(
       personAddresses =
         this.personAddresses.map { (person, address, matchScore) ->
           AddressSearchResponseItem(
-            hmppsId = person.crn?.toLong(),
+            hmppsId = person.crn,
             address =
               SearchAddress(
                 buildingName = address.buildingName,

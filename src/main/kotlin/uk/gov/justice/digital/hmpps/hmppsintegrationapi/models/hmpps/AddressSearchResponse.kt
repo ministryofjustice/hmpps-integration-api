@@ -8,7 +8,7 @@ data class AddressSearchResponse(
 
 data class AddressSearchResponseItem(
   @Schema(description = "The ID of the persons address", example = "123456")
-  val hmppsId: Long? = null,
+  val hmppsId: String? = null,
   @Schema(description = "The address details of the person")
   val address: SearchAddress,
   @Schema(description = "The match score of the persons address", example = "100")

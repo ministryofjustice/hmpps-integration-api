@@ -23,11 +23,16 @@ data class AddressSearchRequest(
     }
   }
 
-  fun toMap(): Map<String, String?> =
-    mapOf(
+  fun toMap(): Map<String, String> {
+    val buildingName = buildingName ?: ""
+    val addressNumber = addressNumber ?: ""
+    val streetName = streetName ?: ""
+    val postcode = postcode ?: ""
+    return mapOf(
       "buildingName" to buildingName,
       "addressNumber" to addressNumber,
       "streetName" to streetName,
       "postcode" to postcode,
     )
+  }
 }
