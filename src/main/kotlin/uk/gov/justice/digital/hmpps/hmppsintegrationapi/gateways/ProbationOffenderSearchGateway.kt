@@ -18,7 +18,7 @@ class ProbationOffenderSearchGateway(
 ) : UpstreamGateway {
   override fun metaData() =
     GatewayMetadata(
-      summary = "A service for searching for probation in Delius, augmented by data from other probation services",
+      summary = "Provides search features for Delius elastic search",
       apiDocUrl = "https://probation-offender-search-dev.hmpps.service.justice.gov.uk/swagger-ui/index.html",
       apiSpecUrl = "https://probation-offender-search-dev.hmpps.service.justice.gov.uk/v3/api-docs",
       gitHubRepoUrl = "https://github.com/ministryofjustice/probation-offender-search",

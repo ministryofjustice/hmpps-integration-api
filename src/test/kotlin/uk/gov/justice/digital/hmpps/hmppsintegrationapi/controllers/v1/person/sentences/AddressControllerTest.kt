@@ -23,13 +23,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtens
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestAddress
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AddressDetails
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AddressSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AddressSearchResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AddressSearchResponseItem
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AddressStatus
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AddressType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SearchAddress
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SearchStatus
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SearchType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AddressSearchService
@@ -54,7 +54,7 @@ internal class AddressControllerTest(
       val addresses =
         AddressSearchResponseItem(
           "12345",
-          SearchAddress(
+          AddressDetails(
             buildingName = "Burnham House",
             addressNumber = "1",
             streetName = "Church Road",
@@ -64,12 +64,12 @@ internal class AddressControllerTest(
             postcode = "LM2 1BF",
             startDate = "2020-08-03",
             status =
-              SearchStatus(
+              AddressStatus(
                 code = "M",
                 description = "Main",
               ),
             type =
-              SearchType(
+              AddressType(
                 code = "A02",
                 description = "Approved Premises",
               ),

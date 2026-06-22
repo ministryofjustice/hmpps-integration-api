@@ -10,12 +10,12 @@ data class AddressSearchResponseItem(
   @Schema(description = "The ID of the persons address", example = "123456")
   val hmppsId: String? = null,
   @Schema(description = "The address details of the person")
-  val address: SearchAddress,
+  val address: AddressDetails,
   @Schema(description = "The match score of the persons address", example = "100")
   val matchScore: Long? = null,
 )
 
-data class SearchAddress(
+data class AddressDetails(
   @Schema(description = "The building name of the address", example = "Burnham House")
   val buildingName: String? = null,
   @Schema(description = "The address number", example = "1")
@@ -35,21 +35,21 @@ data class SearchAddress(
   @Schema(description = "The start date of the address", example = "2020-08-03")
   val startDate: String? = null,
   @Schema(description = "The status of the address")
-  val status: SearchStatus? = null,
+  val status: AddressStatus? = null,
   @Schema(description = "The type of the address")
-  val type: SearchType? = null,
+  val type: AddressType? = null,
   @Schema(description = "Boolean representing if the abode is fixed or not", example = "false")
   val noFixedAbode: Boolean? = null,
 )
 
-data class SearchStatus(
+data class AddressStatus(
   @Schema(description = "Status code", example = "M")
   val code: String? = null,
   @Schema(description = "Description of the status", example = "Main")
   val description: String? = null,
 )
 
-data class SearchType(
+data class AddressType(
   @Schema(description = "Type code", example = "A02")
   val code: String? = null,
   @Schema(description = "Description of the type", example = "Approved Premises")

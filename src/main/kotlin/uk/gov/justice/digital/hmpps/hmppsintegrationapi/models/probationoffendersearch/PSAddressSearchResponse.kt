@@ -1,22 +1,22 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch
 
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AddressDetails
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AddressSearchResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AddressSearchResponseItem
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SearchAddress
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SearchStatus
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SearchType
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AddressStatus
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AddressType
 
 data class PSAddressSearchResponse(
   val personAddresses: List<PSPersonAddress>,
 ) {
-  fun toDownstreamFormat(): AddressSearchResponse =
+  fun toAddressSearchResponse(): AddressSearchResponse =
     AddressSearchResponse(
       personAddresses =
         this.personAddresses.map { (person, address, matchScore) ->
           AddressSearchResponseItem(
             hmppsId = person.crn,
             address =
-              SearchAddress(
+              AddressDetails(
                 buildingName = address.buildingName,
                 addressNumber = address.addressNumber,
                 streetName = address.streetName,
@@ -26,12 +26,12 @@ data class PSAddressSearchResponse(
                 postcode = address.postcode,
                 startDate = address.startDate,
                 status =
-                  SearchStatus(
+                  AddressStatus(
                     code = address.status.code,
                     description = address.status.description,
                   ),
                 type =
-                  SearchType(
+                  AddressType(
                     code = address.type.code,
                     description = address.type.description,
                   ),

@@ -18,6 +18,6 @@ class AddressSearchService(
   ): Response<AddressSearchResponse?> {
     val addressSearch = probationOffenderSearchGateway.addressSearch(addressSearchRequest, maxResults, requestContext)
     val data = addressSearch.data ?: return Response(null, addressSearch.errors)
-    return Response(data.toDownstreamFormat())
+    return Response(data.toAddressSearchResponse())
   }
 }
