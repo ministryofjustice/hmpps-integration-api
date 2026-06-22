@@ -571,7 +571,7 @@ function verify_address_endpoints(addressNumber, streetName, postcode) {
     if (!check(address, {
       [`At least one address returned`]: () => address.length >= 1,
     })) {
-      return
+      fail(`no addresses returned from GET`);
     }
     const postRes = http.post(`${baseUrl}/v1/address/search`, JSON.stringify({
       streetName: streetName,
@@ -585,10 +585,15 @@ function verify_address_endpoints(addressNumber, streetName, postcode) {
       fail(`/v1/address/search caused the test to fail`)
     }
     let addressFromPost = postRes.json()["personAddresses"];
+    if (!check(addressFromPost, {
+      [`At least one address returned`]: () => address.length >= 1,
+    })) {
+      fail(`no addresses returned from POST`);
+    }
 
     if(address[0]["hmppsId"] !== addressFromPost[0]["hmppsId"]){
       fail(`/v1/address/search POST response is different to GET`)
-    };
+    }
   })
 }
 
