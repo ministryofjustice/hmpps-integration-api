@@ -22,3 +22,4 @@ updateOpenApiSpec "https://dev.moic.service.justice.gov.uk/v3/api-docs.json" "..
 updateOpenApiSpec "https://external-api-and-delius-dev.hmpps.service.justice.gov.uk/v3/api-docs" "../src/test/resources/openapi-specs/ndelius.json"
 updateOpenApiSpec "https://learningandworkprogress-api-dev.hmpps.service.justice.gov.uk/v3/api-docs" "../src/test/resources/openapi-specs/plp.json"
 updateOpenApiSpec "https://prisoner-base-location-api-dev.hmpps.service.justice.gov.uk/v3/api-docs" "../src/test/resources/openapi-specs/prisoner-base-location.json"
+updateOpenApiSpec "https://probation-offender-search-dev.hmpps.service.justice.gov.uk/v3/api-docs" "../src/test/resources/openapi-specs/probation-offender-search.json"

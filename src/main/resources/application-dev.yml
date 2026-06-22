@@ -47,6 +47,8 @@ services:
     base-url: https://prisoner-base-location-api-dev.hmpps.service.justice.gov.uk
   core-person-record:
     base-url: https://hmpps-person-record-dev.hmpps.service.justice.gov.uk
+  probation-offender-search:
+    base-url: https://probation-offender-search-dev.hmpps.service.justice.gov.uk
 
 feature-flag:
   # API Config
@@ -62,6 +64,7 @@ feature-flag:
   use-assessment-summary-endpoint: true
   use-stubbed-assessment-summary: true
   contact-search-endpoint-enabled: true
+  address-search-endpoint-enabled: true
   contact-linked-prisoners-endpoint-enabled: true
   # Events Config
   enable-delete-processed-events: true

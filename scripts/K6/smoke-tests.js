@@ -560,6 +560,38 @@ function verify_contact_endpoints(firstName, lastName, dateOfBirth) {
   })
 }
 
+function verify_address_endpoints(addressNumber, streetName, postcode) {
+  group('address', () => {
+    let res = validate_get_request_with_obo(`/v1/address/search?streetName=${streetName}&addressNumber=${addressNumber}&postcode=${postcode}`)
+    if (res.status !== 200) {
+      console.log(`Address search failed`);
+      return
+    }
+    let address = res.json()["personAddresses"];
+    if (!check(address, {
+      [`At least one address returned`]: () => address.length >= 1,
+    })) {
+      return
+    }
+    const postRes = http.post(`${baseUrl}/v1/address/search`, JSON.stringify({
+      streetName: streetName,
+      addressNumber: addressNumber,
+      postcode: postcode
+    }), httpOboHeaderParams);
+
+    if (!check(postRes, {
+      'POST /v1/address/search returns 200': (r) => r.status === 200,
+    })) {
+      fail(`/v1/address/search caused the test to fail`)
+    }
+    let addressFromPost = postRes.json()["personAddresses"];
+
+    if(address[0]["hmppsId"] !== addressFromPost[0]["hmppsId"]){
+      fail(`/v1/address/search POST response is different to GET`)
+    };
+  })
+}
+
 function verify_prisons_endpoints(nomisNumber) {
   group('prisons', () => {
     let res = validate_get_request(`/v1/prison/prisoners/${nomisNumber}`)
@@ -802,6 +834,7 @@ function structured_verification_test(hmppsId) {
   verify_obo_access(hmppsId)
 
   verify_contact_endpoints("Joe-Dps", "Bloggs", "01/01/2000")
+  verify_address_endpoints("102", "Petty", "SW1H 9AJ")
 }
 /************************************************************************/
 

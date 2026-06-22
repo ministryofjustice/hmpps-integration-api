@@ -106,6 +106,8 @@ services:
     base-url: http://localhost:4030
   core-person-record:
     base-url: http://localhost:4031
+  probation-offender-search:
+    base-url: http://localhost:4033
 
 authorisation:
   certificate-revocation-list:

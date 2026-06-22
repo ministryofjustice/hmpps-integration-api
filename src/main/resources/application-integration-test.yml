@@ -65,6 +65,8 @@ services:
     base-url: http://localhost:4031
   activities:
     base-url: http://localhost:4004
+  probation-offender-search:
+    base-url: http://localhost:4033
 
 hmpps.sqs:
   provider: localstack
@@ -118,6 +120,7 @@ feature-flag:
   use-assessment-summary-endpoint: true
   use-stubbed-assessment-summary: false
   contact-search-endpoint-enabled: true
+  address-search-endpoint-enabled: true
   contact-linked-prisoners-endpoint-enabled: true
   # Events Config
   enable-delete-processed-events: true

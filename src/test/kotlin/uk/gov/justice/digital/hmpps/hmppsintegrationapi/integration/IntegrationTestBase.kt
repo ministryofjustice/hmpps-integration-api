@@ -190,6 +190,7 @@ abstract class IntegrationTestBase {
     val prisonerBaseLocationMockServer = ApiMockServer.create(UpstreamApi.PRISONER_BASE_LOCATION)
     val corePersonRecordMockServer = ApiMockServer.create(UpstreamApi.CORE_PERSON_RECORD)
     val arnsMockServer = ApiMockServer.create(UpstreamApi.ARNS_INTEGRATION_TEST)
+    val probationSearchMockServer = ApiMockServer.create(UpstreamApi.PROBATION_OFFENDER_SEARCH)
 
     @BeforeEach
     fun setUp() {
@@ -394,6 +395,8 @@ abstract class IntegrationTestBase {
               }
               """,
       )
+
+      probationSearchMockServer.start()
 
       managePomCaseMockServer.start()
       plpMockServer.start()
