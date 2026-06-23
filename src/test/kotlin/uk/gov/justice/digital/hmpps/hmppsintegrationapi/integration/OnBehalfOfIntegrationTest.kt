@@ -86,4 +86,32 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
         .first()
     assertEquals("testName", obUserName)
   }
+
+  @Test
+  fun `an obo username is passed to HmppsAuthGateway for the get person endpoint using NOMIS`() {
+    callApiWithCN("$basePath/$crn", "obo-unsigned", oboValue = createUnsignedJwt())
+      .andExpect(MockMvcResultMatchers.status().isOk)
+    val requestContext = argumentCaptor<RequestContext?>()
+    verify(authGateway, atLeast(1)).getClientToken(eq("Prisoner Offender Search"), requestContext.capture())
+    val obUserName =
+      requestContext.allValues
+        .filter { it?.oboUserName != null }
+        .map { it?.oboUserName }
+        .first()
+    assertEquals("testName", obUserName)
+  }
+
+  @Test
+  fun `an obo username is passed to HmppsAuthGateway for the get person endpoint using NDELIUS`() {
+    callApiWithCN("$basePath/$crn", "obo-unsigned", oboValue = createUnsignedJwt())
+      .andExpect(MockMvcResultMatchers.status().isOk)
+    val requestContext = argumentCaptor<RequestContext?>()
+    verify(authGateway, atLeast(1)).getClientToken(eq("nDelius"), requestContext.capture())
+    val obUserName =
+      requestContext.allValues
+        .filter { it?.oboUserName != null }
+        .map { it?.oboUserName }
+        .first()
+    assertEquals("testName", obUserName)
+  }
 }
