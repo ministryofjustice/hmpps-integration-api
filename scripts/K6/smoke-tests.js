@@ -840,10 +840,9 @@ function structured_verification_test(hmppsId) {
 }
 /************************************************************************/
 
-
+let runtime_errors = new Counter("runtime_errors");
 export default function ()  {
   console.log(`Using profile: ${profile} with base url: ${baseUrl}`);
-  let runtime_errors = new Counter("runtime_errors");
   let runtime_errors_threshold = 0
 
   try {
