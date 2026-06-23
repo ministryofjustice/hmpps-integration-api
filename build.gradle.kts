@@ -3,9 +3,9 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.5.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.5.1"
   kotlin("plugin.spring") version "2.4.0"
-  id("dev.detekt") version "2.0.0-alpha.4"
+  id("dev.detekt") version "2.0.0-alpha.5"
   id("org.jetbrains.kotlinx.kover") version "0.9.8"
 }
 
@@ -33,8 +33,8 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-jdbc")
   runtimeOnly("org.springframework.boot:spring-boot-starter-flyway")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
-  implementation("io.sentry:sentry-spring-boot-4-starter:8.43.2")
-  implementation("io.sentry:sentry-logback:8.43.2")
+  implementation("io.sentry:sentry-spring-boot-4-starter:8.44.1")
+  implementation("io.sentry:sentry-logback:8.44.1")
   implementation("org.springframework.data:spring-data-jdbc")
   implementation("org.springframework.data:spring-data-commons")
   implementation("org.springframework:spring-aop")
@@ -55,10 +55,10 @@ dependencies {
 
   testImplementation("org.springframework.boot:spring-boot-starter-test")
   testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
-  testImplementation("io.kotest:kotest-assertions-json-jvm:6.1.11")
-  testImplementation("io.kotest:kotest-runner-junit5-jvm:6.1.11")
-  testImplementation("io.kotest:kotest-assertions-core-jvm:6.1.11")
-  testImplementation("io.kotest:kotest-extensions-spring:6.1.11")
+  testImplementation("io.kotest:kotest-assertions-json-jvm:6.2.1")
+  testImplementation("io.kotest:kotest-runner-junit5-jvm:6.2.1")
+  testImplementation("io.kotest:kotest-assertions-core-jvm:6.2.1")
+  testImplementation("io.kotest:kotest-extensions-spring:6.2.1")
   add("koverCli", "org.jetbrains.kotlinx:kover-cli:0.9.8")
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
   testImplementation("org.mockito:mockito-core:5.23.0")
