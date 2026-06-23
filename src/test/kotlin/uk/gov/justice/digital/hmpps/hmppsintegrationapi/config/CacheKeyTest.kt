@@ -43,7 +43,7 @@ class CacheKeyTest {
         NDeliusGateway("", FeatureFlagConfig()),
         method,
         "A1234AA",
-        buildRequestContext("oboUserName"),
+        buildRequestContext(oboUserName = "oboUserName"),
       )
     assertThat(key).isEqualTo("uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway_getOffender_A1234AA_oboUserName")
   }
