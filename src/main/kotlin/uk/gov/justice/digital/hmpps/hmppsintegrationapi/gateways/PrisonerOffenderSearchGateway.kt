@@ -115,12 +115,15 @@ class PrisonerOffenderSearchGateway(
   }
 
   @Cacheable(GATEWAY_CACHE, keyGenerator = "gatewayKeyGenerator")
-  fun getPrisonOffender(nomsNumber: String): Response<POSPrisoner?> {
+  fun getPrisonOffender(
+    nomsNumber: String,
+    requestContext: RequestContext? = null,
+  ): Response<POSPrisoner?> {
     val result =
       webClient.request<POSPrisoner>(
         HttpMethod.GET,
         "/prisoner/$nomsNumber",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.PRISONER_OFFENDER_SEARCH,
       )
 

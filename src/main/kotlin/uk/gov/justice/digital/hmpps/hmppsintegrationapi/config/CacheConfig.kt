@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
-import org.springframework.util.StringUtils
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import java.lang.reflect.Method
 import java.time.Duration
@@ -70,7 +70,15 @@ class GatewayKeyGenerator : KeyGenerator {
     target: Any,
     method: Method,
     vararg params: Any?,
-  ): Any = target.javaClass.name + "_" + method.name + "_" + StringUtils.arrayToDelimitedString(params, "_")
+  ): Any {
+    val stringParam = params.filterIsInstance<String>().toMutableList()
+    params
+      .filterIsInstance<RequestContext>()
+      .firstOrNull()
+      ?.oboUserName
+      ?.let { stringParam.add(it) }
+    return target.javaClass.name + "_" + method.name + "_" + stringParam.joinToString("_")
+  }
 }
 
 /**
