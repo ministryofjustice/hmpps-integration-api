@@ -2,6 +2,7 @@ import http from 'k6/http';
 import { group, check, fail } from 'k6';
 import exec from 'k6/execution';
 import { read_certificate } from "./support.js"
+import { Counter } from "k6/metrics";
 
 /***********
  To run this script locally, make sure the following environment variables are set:-
@@ -25,6 +26,7 @@ const profile = __ENV.PROFILE;
 
 const [cert, key, api_key] = read_certificate();
 
+let runtime_errors = new Counter("runtime_errors");
 export const options = (cert === "") ? {} : {
   vus: 1,
   iterations: 1,
@@ -34,6 +36,9 @@ export const options = (cert === "") ? {} : {
       key,
     },
   ],
+  thresholds: {
+    "runtime_errors": [{ threshold: "count==0", abortOnFail: true }]
+  }
 };
 
 const httpParams = {
@@ -841,30 +846,35 @@ function structured_verification_test(hmppsId) {
 export default function ()  {
   console.log(`Using profile: ${profile} with base url: ${baseUrl}`);
 
-  switch (profile) {
-    case "MAIN":
-      structured_verification_test(primaryHmppsId);
-      simple_endpoint_tests();
-      break
-    case "STRUCTURED":
-      structured_verification_test(primaryHmppsId);
-      break
-    case "PROD":
-    case "MINIMAL":
-      minimal_prod_verification();
-      break
-    case "LIMITED":
-    case "PARTIAL":
-      partial_access_tests();
-      break
-    case "NOPERMS":
-    case "NOCERT":
-    case "REVOKED":
-      denied_endpoint_verification();
-      break
-    default:
-      console.log(`Unsupported profile: ${profile}`);
-      break
+  try {
+    switch (profile) {
+      case "MAIN":
+        structured_verification_test(primaryHmppsId);
+        simple_endpoint_tests();
+        break
+      case "STRUCTURED":
+        structured_verification_test(primaryHmppsId);
+        break
+      case "PROD":
+      case "MINIMAL":
+        minimal_prod_verification();
+        break
+      case "LIMITED":
+      case "PARTIAL":
+        partial_access_tests();
+        break
+      case "NOPERMS":
+      case "NOCERT":
+      case "REVOKED":
+        denied_endpoint_verification();
+        break
+      default:
+        console.log(`Unsupported profile: ${profile}`);
+        break
+    }
+  } catch (e) {
+    console.log(e);
+    runtime_errors.add(1)
   }
 };
 
