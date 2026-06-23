@@ -123,12 +123,15 @@ class PrisonApiGateway(
     }
   }
 
-  fun getOffencesForPerson(id: String): Response<List<Offence>> {
+  fun getOffencesForPerson(
+    id: String,
+    requestContext: RequestContext?,
+  ): Response<List<Offence>> {
     val result =
       webClient.requestList<PrisonApiOffenceHistoryDetail>(
         HttpMethod.GET,
         "/api/bookings/offenderNo/$id/offenceHistory",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.PRISON_API,
       )
     return when (result) {

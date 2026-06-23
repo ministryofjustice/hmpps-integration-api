@@ -6,7 +6,9 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doThrow
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
@@ -40,14 +42,13 @@ internal class OffencesControllerTest(
     {
       val hmppsId = "A1234AA"
       val path = "/v1/persons/$hmppsId/offences"
-      val filters = null
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
       describe("GET $path") {
         beforeTest {
           Mockito.reset(getOffencesForPersonService)
           Mockito.reset(auditService)
-          whenever(getOffencesForPersonService.execute(hmppsId, filters)).thenReturn(
+          whenever(getOffencesForPersonService.execute(eq(hmppsId), any())).thenReturn(
             Response(
               data =
                 listOf(
@@ -77,7 +78,7 @@ internal class OffencesControllerTest(
         it("gets the offences for a person with the matching ID") {
           mockMvc.performAuthorised(path)
 
-          verify(getOffencesForPersonService, VerificationModeFactory.times(1)).execute(hmppsId, filters)
+          verify(getOffencesForPersonService, VerificationModeFactory.times(1)).execute(eq(hmppsId), any())
         }
 
         it("returns the offences for a person with the matching ID") {
@@ -115,7 +116,7 @@ internal class OffencesControllerTest(
           val hmppsIdForPersonWithNoOffences = "B5678BB"
           val offencesPath = "/v1/persons/$hmppsIdForPersonWithNoOffences/offences"
 
-          whenever(getOffencesForPersonService.execute(hmppsIdForPersonWithNoOffences, filters)).thenReturn(
+          whenever(getOffencesForPersonService.execute(eq(hmppsIdForPersonWithNoOffences), any())).thenReturn(
             Response(
               data = emptyList(),
             ),
@@ -127,7 +128,7 @@ internal class OffencesControllerTest(
         }
 
         it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
-          whenever(getOffencesForPersonService.execute(hmppsId, filters)).thenReturn(
+          whenever(getOffencesForPersonService.execute(eq(hmppsId), any())).thenReturn(
             Response(
               data = emptyList(),
               errors =
@@ -146,7 +147,7 @@ internal class OffencesControllerTest(
         }
 
         it("returns paginated results") {
-          whenever(getOffencesForPersonService.execute(hmppsId, filters)).thenReturn(
+          whenever(getOffencesForPersonService.execute(eq(hmppsId), any())).thenReturn(
             Response(
               data =
                 List(20) {
@@ -172,7 +173,7 @@ internal class OffencesControllerTest(
         }
 
         it("fails with the appropriate error when an upstream service is down") {
-          whenever(getOffencesForPersonService.execute(hmppsId, filters)).doThrow(
+          whenever(getOffencesForPersonService.execute(eq(hmppsId), any())).doThrow(
             WebClientResponseException(500, "MockError", null, null, null, null),
           )
 
