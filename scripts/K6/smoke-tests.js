@@ -562,7 +562,7 @@ function verify_contact_endpoints(firstName, lastName, dateOfBirth) {
 
 function verify_address_endpoints(addressNumber, streetName, postcode) {
   group('address', () => {
-    let res = validate_get_request_with_obo(`/v1/address/search?streetName=${streetName}&addressNumber=${addressNumber}&postcode=${postcode}`)
+    let res = validate_get_request_with_obo(`/v1/addresses?streetName=${streetName}&addressNumber=${addressNumber}&postcode=${postcode}`)
     if (res.status !== 200) {
       console.log(`Address search failed`);
       return
@@ -573,21 +573,21 @@ function verify_address_endpoints(addressNumber, streetName, postcode) {
     })) {
       return
     }
-    const postRes = http.post(`${baseUrl}/v1/address/search`, JSON.stringify({
+    const postRes = http.post(`${baseUrl}/v1/addresses`, JSON.stringify({
       streetName: streetName,
       addressNumber: addressNumber,
       postcode: postcode
     }), httpOboHeaderParams);
 
     if (!check(postRes, {
-      'POST /v1/address/search returns 200': (r) => r.status === 200,
+      'POST /v1/addresses returns 200': (r) => r.status === 200,
     })) {
-      fail(`/v1/address/search caused the test to fail`)
+      fail(`/v1/addresses caused the test to fail`)
     }
     let addressFromPost = postRes.json()["personAddresses"];
 
     if(address[0]["hmppsId"] !== addressFromPost[0]["hmppsId"]){
-      fail(`/v1/address/search POST response is different to GET`)
+      fail(`/v1/addresses POST response is different to GET`)
     };
   })
 }

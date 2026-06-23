@@ -72,7 +72,7 @@ class AddressController(
     return DataResponse(response.data)
   }
 
-  @RequestMapping(method = [RequestMethod.GET, RequestMethod.POST], value = ["address/search"])
+  @RequestMapping(method = [RequestMethod.GET, RequestMethod.POST], value = ["addresses"])
   @Operation(
     summary = "Search for a address.",
     description =

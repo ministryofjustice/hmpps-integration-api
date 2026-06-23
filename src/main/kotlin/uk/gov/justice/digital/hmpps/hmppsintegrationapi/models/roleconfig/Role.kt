@@ -51,7 +51,7 @@ val roleConstants =
       -"/v1/activities/schedule/{scheduleId}/suitability-criteria"
       -"/v1/activities/schedule/{scheduleId}/waiting-list-applications"
       -"/v1/activities/{activityId}/schedules"
-      -"/v1/address/search"
+      -"/v1/addresses"
       -"/v1/contacts"
       -"/v1/contacts/{contactId}"
       -"/v1/contacts/{contactId}/linked-prisoners"

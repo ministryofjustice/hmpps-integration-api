@@ -12,7 +12,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.objectMapp
 import java.io.File
 
 class AddressSearchIntegrationTest : IntegrationTestBase() {
-  val path = "/v1/address/search"
+  val path = "/v1/addresses"
   val pathGetParams = "?buildingName=Burnham"
   val bodyPostParams =
     """

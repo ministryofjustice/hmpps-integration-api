@@ -183,7 +183,7 @@ internal class AddressControllerTest(
       }
 
       describe("Search Address using GET") {
-        val path = "/v1/address/search"
+        val path = "/v1/addresses"
         val pathGetParams = "?buildingName=Burnham"
 
         beforeTest {
@@ -219,7 +219,7 @@ internal class AddressControllerTest(
       }
 
       describe("Search Address using POST") {
-        val path = "/v1/address/search"
+        val path = "/v1/addresses"
         val bodyPostParams =
           AddressSearchRequest(
             buildingName = "Burnham",
