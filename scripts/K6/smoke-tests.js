@@ -26,7 +26,7 @@ const profile = __ENV.PROFILE;
 
 const [cert, key, api_key] = read_certificate();
 
-
+let runtime_errors = new Counter("runtime_errors");
 export const options = (cert === "") ? {} : {
   vus: 1,
   iterations: 1,
@@ -36,6 +36,9 @@ export const options = (cert === "") ? {} : {
       key,
     },
   ],
+  thresholds: {
+    "runtime_errors": [{ threshold: "count==0", abortOnFail: true }]
+  }
 };
 
 const httpParams = {
@@ -840,10 +843,8 @@ function structured_verification_test(hmppsId) {
 }
 /************************************************************************/
 
-let runtime_errors = new Counter("runtime_errors");
 export default function ()  {
   console.log(`Using profile: ${profile} with base url: ${baseUrl}`);
-  let runtime_errors_threshold = 0
 
   try {
     switch (profile) {
@@ -874,9 +875,6 @@ export default function ()  {
   } catch (e) {
     console.log(e);
     runtime_errors.add(1)
-  }
-  if(runtime_errors.size > runtime_errors_threshold) {
-    exec.test.fail(`runtime_errors_threshold exceeded`);
   }
 };
 
