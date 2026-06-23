@@ -56,12 +56,15 @@ class NDeliusGateway(
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  fun getOffencesForPerson(id: String): Response<List<Offence>> {
+  fun getOffencesForPerson(
+    id: String,
+    requestContext: RequestContext?,
+  ): Response<List<Offence>> {
     val result =
       webClient.request<NDeliusSupervisions>(
         HttpMethod.GET,
         "/case/$id/supervisions",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.NDELIUS,
       )
 
