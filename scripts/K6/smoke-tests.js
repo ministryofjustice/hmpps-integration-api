@@ -849,7 +849,7 @@ function structured_verification_test(hmppsId) {
   verify_obo_access(hmppsId)
 
   verify_contact_endpoints("Joe-Dps", "Bloggs", "01/01/2000")
-  verify_address_endpoints("102", "Petty", "SW1H%209AJ")
+  verify_address_endpoints("102", "Petty", "SW1H 9AJ")
 }
 /************************************************************************/
 
