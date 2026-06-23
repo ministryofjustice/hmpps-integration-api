@@ -9,6 +9,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.MappaDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
@@ -47,6 +48,7 @@ internal class GetMappaDetailForPersonServiceTest(
 
       val deliusCrn = personFromProbationOffenderSearch.identifiers.deliusCrn!!
       val hmppsId = deliusCrn
+      val requestContext = buildRequestContext("testUser")
 
       beforeEach {
         Mockito.reset(getPersonService)
@@ -123,7 +125,7 @@ internal class GetMappaDetailForPersonServiceTest(
         )
 
         val response = getMappaDetailForPersonService.execute(hmppsId)
-        verify(nDeliusGateway, times(0)).getOffencesForPerson(id = deliusCrn)
+        verify(nDeliusGateway, times(0)).getOffencesForPerson(id = deliusCrn, requestContext)
         response.errors.shouldBe(errors)
       }
     },
