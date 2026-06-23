@@ -1,8 +1,5 @@
 name: Development Smoke Test
 on:
-  push:
-    branches:
-      - HIA-1525-fix-address-search-tests
   workflow_call:
 jobs:
   dev-smoke-tests:
