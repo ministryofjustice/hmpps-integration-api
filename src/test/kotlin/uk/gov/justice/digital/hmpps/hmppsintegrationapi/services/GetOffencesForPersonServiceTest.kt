@@ -60,7 +60,7 @@ internal class GetOffencesForPersonServiceTest(
             data = personFromProbationOffenderSearch,
           ),
         )
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, requestContext.filters)).thenReturn(
           Response(
             data = personFromProbationOffenderSearch,
           ),
@@ -75,7 +75,7 @@ internal class GetOffencesForPersonServiceTest(
               ),
           ),
         )
-        whenever(nDeliusGateway.getOffencesForPerson(deliusCrn, null)).thenReturn(
+        whenever(nDeliusGateway.getOffencesForPerson(deliusCrn, requestContext)).thenReturn(
           Response(
             data =
               listOf(
@@ -94,29 +94,29 @@ internal class GetOffencesForPersonServiceTest(
           ),
         )
 
-        val result = getOffencesForPersonService.execute(hmppsId, filters)
+        val result = getOffencesForPersonService.execute(hmppsId, requestContext)
         result.shouldBe(
           Response(data = listOf(prisonOffence1, prisonOffence2, prisonOffence3, probationOffence1, probationOffence2, probationOffence3)),
         )
       }
 
       it("gets a person using a Hmpps ID") {
-        getOffencesForPersonService.execute(hmppsId, filters)
+        getOffencesForPersonService.execute(hmppsId, requestContext)
         verify(getPersonService, times(1)).execute(hmppsId = hmppsId)
       }
 
       it("gets offences from NOMIS using a prisoner number") {
-        getOffencesForPersonService.execute(hmppsId, filters)
+        getOffencesForPersonService.execute(hmppsId, requestContext)
         verify(prisonApiGateway, times(1)).getOffencesForPerson(nomisNumber, requestContext)
       }
 
       it("gets offences from nDelius using a CRN") {
-        getOffencesForPersonService.execute(hmppsId, filters)
+        getOffencesForPersonService.execute(hmppsId, requestContext)
         verify(nDeliusGateway, VerificationModeFactory.times(1)).getOffencesForPerson(deliusCrn, requestContext)
       }
 
       it("combines and returns offences from Nomis and nDelius") {
-        val response = getOffencesForPersonService.execute(hmppsId, filters)
+        val response = getOffencesForPersonService.execute(hmppsId, requestContext)
         response.data.shouldBe(
           listOf(
             prisonOffence1,
@@ -132,9 +132,20 @@ internal class GetOffencesForPersonServiceTest(
       it("returns only offences from Nomis when prison filters present ") {
         val populatedFilters = ConsumerFilters(listOf("ABC"))
         val populatedRequestContext = buildRequestContext("testUser", filters = populatedFilters)
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, populatedFilters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, populatedRequestContext.filters)).thenReturn(
           Response(
             data = personFromProbationOffenderSearch,
+          ),
+        )
+
+        whenever(prisonApiGateway.getOffencesForPerson(nomisNumber, populatedRequestContext)).thenReturn(
+          Response(
+            data =
+              listOf(
+                prisonOffence1,
+                prisonOffence2,
+                prisonOffence3,
+              ),
           ),
         )
 
@@ -171,17 +182,17 @@ internal class GetOffencesForPersonServiceTest(
         }
 
         it("records upstream API errors") {
-          val response = getOffencesForPersonService.execute(hmppsId, filters)
+          val response = getOffencesForPersonService.execute(hmppsId, requestContext)
           response.errors.shouldBe(errors)
         }
 
         it("does not get offences from Nomis") {
-          getOffencesForPersonService.execute(hmppsId, filters)
+          getOffencesForPersonService.execute(hmppsId, requestContext)
           verify(prisonApiGateway, times(0)).getOffencesForPerson(id = nomisNumber, requestContext)
         }
 
         it("does not get offences from nDelius") {
-          getOffencesForPersonService.execute(hmppsId, filters)
+          getOffencesForPersonService.execute(hmppsId, requestContext)
           verify(nDeliusGateway, times(0)).getOffencesForPerson(id = deliusCrn, requestContext)
         }
       }
@@ -210,7 +221,7 @@ internal class GetOffencesForPersonServiceTest(
           ),
         )
 
-        val response = getOffencesForPersonService.execute(hmppsId, filters)
+        val response = getOffencesForPersonService.execute(hmppsId, requestContext)
         response.errors.shouldBe(listOf(nomisError, deliusError))
       }
     },

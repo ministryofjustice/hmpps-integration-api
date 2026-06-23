@@ -138,6 +138,17 @@ internal class GetOffencesForPersonServiceNullPrisonFilterTest(
           ),
         )
 
+        whenever(prisonApiGateway.getOffencesForPerson(nomisNumber, populatedRequestContext)).thenReturn(
+          Response(
+            data =
+              listOf(
+                prisonOffence1,
+                prisonOffence2,
+                prisonOffence3,
+              ),
+          ),
+        )
+
         val response = getOffencesForPersonService.execute(hmppsId, populatedRequestContext)
         response.data.shouldBe(
           listOf(
