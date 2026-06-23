@@ -1,5 +1,8 @@
 name: Production Smoke Test
 on:
+  push:
+    branches:
+      - HIA-smoke-test
   workflow_call:
 jobs:
   prod-smoke-tests:

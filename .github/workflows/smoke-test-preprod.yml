@@ -1,8 +1,5 @@
 name: Preprod Smoke Test
 on:
-  push:
-    branches:
-      - HIA-smoke-test
   workflow_call:
 jobs:
   preprod-smoke-tests:
