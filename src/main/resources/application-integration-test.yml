@@ -116,7 +116,6 @@ feature-flag:
   csra-endpoint: true
   epf-endpoint-includes-lao: true
   cpr-enabled: true
-  use-webclient-wrapper-for-hmpps-auth: true
   use-assessment-summary-endpoint: true
   use-stubbed-assessment-summary: false
   contact-search-endpoint-enabled: true

@@ -13,7 +13,6 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Companion.TOKEN_CACHE
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_WEBCLIENT_WRAPPER_FOR_HMPPS_AUTH
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.HmppsAuthFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
@@ -103,37 +102,26 @@ class HmppsAuthGateway(
 
     return try {
       var response: String?
-      if (featureFlag.isEnabled(USE_WEBCLIENT_WRAPPER_FOR_HMPPS_AUTH)) {
-        val result =
-          webClientWrapper.request<String>(
-            HttpMethod.POST,
-            uri,
-            mapOf("Authorization" to credentials.toBasicAuth()),
-            UpstreamApi.HMPPS_AUTH,
-          )
+      val result =
+        webClientWrapper.request<String>(
+          HttpMethod.POST,
+          uri,
+          mapOf("Authorization" to credentials.toBasicAuth()),
+          UpstreamApi.HMPPS_AUTH,
+        )
 
-        when (result) {
-          is WebClientWrapperResponse.Success -> {
-            response = result.data
-          }
+      when (result) {
+        is WebClientWrapperResponse.Success -> {
+          response = result.data
+        }
 
-          is WebClientWrapperResponse.Error -> {
-            when (result.errors.map { it.type }.firstOrNull()) {
-              UpstreamApiError.Type.FORBIDDEN -> throw HmppsAuthFailedException("Invalid credentials used for $service.")
-              UpstreamApiError.Type.ENTITY_NOT_FOUND -> throw HmppsAuthFailedException("$uri is unavailable for $service.")
-              else -> throw HmppsAuthFailedException("Connection to $uri failed for $service.")
-            }
+        is WebClientWrapperResponse.Error -> {
+          when (result.errors.map { it.type }.firstOrNull()) {
+            UpstreamApiError.Type.FORBIDDEN -> throw HmppsAuthFailedException("Invalid credentials used for $service.")
+            UpstreamApiError.Type.ENTITY_NOT_FOUND -> throw HmppsAuthFailedException("$uri is unavailable for $service.")
+            else -> throw HmppsAuthFailedException("Connection to $uri failed for $service.")
           }
         }
-      } else {
-        response =
-          webClient
-            .post()
-            .uri(uri)
-            .header("Authorization", credentials.toBasicAuth())
-            .retrieve()
-            .bodyToMono(String::class.java)
-            .block()
       }
 
       val accessToken = JSONParser(response).parseObject()["access_token"].toString()
