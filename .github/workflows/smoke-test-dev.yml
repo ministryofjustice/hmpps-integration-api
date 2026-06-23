@@ -1,8 +1,5 @@
 name: Development Smoke Test
 on:
-  push:
-    branches:
-      - HIA-1525-smoke-test-runtime-errors-fix
   workflow_call:
 jobs:
   dev-smoke-tests:
