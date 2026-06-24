@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
@@ -35,6 +36,8 @@ class GetAddressesForPersonTest(
       val nomisApiMockServer = ApiMockServer.create(UpstreamApi.PRISON_API)
       val offenderNo = "abc123"
       val addressPath = "/api/offenders/$offenderNo/addresses"
+      val requestContext = buildRequestContext("testUser")
+
       beforeEach {
         nomisApiMockServer.start()
         nomisApiMockServer.stubForGet(
@@ -88,7 +91,7 @@ class GetAddressesForPersonTest(
         )
 
         Mockito.reset(hmppsAuthGateway)
-        whenever(hmppsAuthGateway.getClientToken("NOMIS")).thenReturn(HmppsAuthMockServer.TOKEN)
+        whenever(hmppsAuthGateway.getClientToken("NOMIS", requestContext)).thenReturn(HmppsAuthMockServer.TOKEN)
       }
 
       afterTest {
@@ -96,19 +99,19 @@ class GetAddressesForPersonTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        prisonApiGateway.getAddressesForPerson(offenderNo)
+        prisonApiGateway.getAddressesForPerson(offenderNo, requestContext)
 
-        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS", requestContext)
       }
 
       it("returns addresses for a person with the matching ID") {
-        val response = prisonApiGateway.getAddressesForPerson(offenderNo)
+        val response = prisonApiGateway.getAddressesForPerson(offenderNo, requestContext)
 
         response.data.count().shouldBeGreaterThan(0)
       }
 
       it("returns only the usages that have an addressUsage code") {
-        val response = prisonApiGateway.getAddressesForPerson(offenderNo)
+        val response = prisonApiGateway.getAddressesForPerson(offenderNo, requestContext)
 
         response.data[0]
           .types
@@ -131,7 +134,7 @@ class GetAddressesForPersonTest(
       it("returns an empty list when no addresses are found") {
         nomisApiMockServer.stubForGet(addressPath, "[]")
 
-        val response = prisonApiGateway.getAddressesForPerson(offenderNo)
+        val response = prisonApiGateway.getAddressesForPerson(offenderNo, requestContext)
 
         response.data.shouldBeEmpty()
       }
@@ -147,7 +150,7 @@ class GetAddressesForPersonTest(
           HttpStatus.NOT_FOUND,
         )
 
-        val response = prisonApiGateway.getAddressesForPerson(addressPath)
+        val response = prisonApiGateway.getAddressesForPerson(addressPath, requestContext)
 
         response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
       }
