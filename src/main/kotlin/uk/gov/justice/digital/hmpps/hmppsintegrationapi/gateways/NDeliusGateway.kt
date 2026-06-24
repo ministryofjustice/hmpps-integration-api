@@ -367,12 +367,15 @@ class NDeliusGateway(
     }
   }
 
-  fun getAddressesForPerson(crn: String): Response<List<Address>> {
+  fun getAddressesForPerson(
+    crn: String,
+    requestContext: RequestContext?,
+  ): Response<List<Address>> {
     val result =
       webClient.request<ContactDetailsWithAddress>(
         HttpMethod.GET,
         "/case/$crn/addresses",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.NDELIUS,
       )
 

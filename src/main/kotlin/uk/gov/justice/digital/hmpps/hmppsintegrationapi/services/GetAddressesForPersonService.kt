@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address
@@ -17,7 +18,7 @@ class GetAddressesForPersonService(
 ) {
   fun execute(
     hmppsId: String,
-    filters: ConsumerFilters?,
+    requestContext: RequestContext?,
   ): Response<List<Address>> {
     // Verify that the provided ID exists in its own domain
     val verifyId = getPersonService.verifyId(hmppsId)
@@ -26,17 +27,17 @@ class GetAddressesForPersonService(
     }
 
     val prisonerAddresses =
-      if (ConsumerFilters.hasPrisonAccess(filters)) {
-        val prisonerId = getPersonService.getNomisNumber(hmppsId, filters)
-        prisonerId.data?.nomisNumber?.let { prisonApiGateway.getAddressesForPerson(it).withoutNotFound() } ?: Response(data = emptyList(), errors = prisonerId.errors)
+      if (ConsumerFilters.hasPrisonAccess(requestContext?.filters)) {
+        val prisonerId = getPersonService.getNomisNumber(hmppsId, requestContext?.filters)
+        prisonerId.data?.nomisNumber?.let { prisonApiGateway.getAddressesForPerson(it, requestContext).withoutNotFound() } ?: Response(data = emptyList(), errors = prisonerId.errors)
       } else {
         Response(emptyList(), emptyList())
       }
 
     val probationAddresses =
-      if (ConsumerFilters.hasProbationAccess(filters)) {
+      if (ConsumerFilters.hasProbationAccess(requestContext?.filters)) {
         val probationId = getPersonService.convert(hmppsId, GetPersonService.IdentifierType.CRN)
-        probationId.data?.let { deliusGateway.getAddressesForPerson(it).withoutNotFound() } ?: Response(data = emptyList(), errors = probationId.errors)
+        probationId.data?.let { deliusGateway.getAddressesForPerson(it, requestContext).withoutNotFound() } ?: Response(data = emptyList(), errors = probationId.errors)
       } else {
         Response(emptyList(), emptyList())
       }
