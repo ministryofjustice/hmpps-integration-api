@@ -26,16 +26,17 @@ class GetAddressesForPersonService(
       return Response(data = emptyList(), errors = verifyId.errors)
     }
 
+    val filters = requestContext?.filters
     val prisonerAddresses =
-      if (ConsumerFilters.hasPrisonAccess(requestContext?.filters)) {
-        val prisonerId = getPersonService.getNomisNumber(hmppsId, requestContext?.filters)
+      if (ConsumerFilters.hasPrisonAccess(filters)) {
+        val prisonerId = getPersonService.getNomisNumber(hmppsId, filters)
         prisonerId.data?.nomisNumber?.let { prisonApiGateway.getAddressesForPerson(it, requestContext).withoutNotFound() } ?: Response(data = emptyList(), errors = prisonerId.errors)
       } else {
         Response(emptyList(), emptyList())
       }
 
     val probationAddresses =
-      if (ConsumerFilters.hasProbationAccess(requestContext?.filters)) {
+      if (ConsumerFilters.hasProbationAccess(filters)) {
         val probationId = getPersonService.convert(hmppsId, GetPersonService.IdentifierType.CRN)
         probationId.data?.let { deliusGateway.getAddressesForPerson(it, requestContext).withoutNotFound() } ?: Response(data = emptyList(), errors = probationId.errors)
       } else {
