@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.models
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.ASSESSMENT_STATUS_COMPLETE
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -13,8 +14,11 @@ data class HmppsDomainEvent(
   @JsonProperty("reason") val reason: String? = null,
   @JsonProperty("prisonerId") val prisonerId: String? = null,
   @JsonProperty("prisonId") val prisonId: String? = null,
+  @JsonProperty("detailUrl") val detailUrl: String? = null,
 ) {
   fun isValidContactEvent(): Boolean = additionalInformation?.mappa?.category != null && MappaCategory.from(additionalInformation.mappa.category) != MappaCategory.UNKNOWN
+
+  fun isCompletedAssessmentEvent(): Boolean = detailUrl?.split("/")?.lastOrNull() == ASSESSMENT_STATUS_COMPLETE
 }
 
 @JsonIgnoreProperties(ignoreUnknown = true)
