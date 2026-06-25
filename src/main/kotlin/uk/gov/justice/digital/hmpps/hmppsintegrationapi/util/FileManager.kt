@@ -68,4 +68,22 @@ class FileManager {
     val resourceDirectory: Path = Paths.get("src", "main", "resources")
     return resourceDirectory.toFile().absolutePath
   }
+
+  /**
+   * Function that returns a file from the documentation folder
+   * @return The contents of the file
+   */
+  fun getDocumentationContents(
+    path: String,
+    docName: String,
+  ): String = read("$path/$docName")?.readText() ?: throw RuntimeException("Document $path/$docName not found")
+
+  /**
+   * Function that returns the absolute path to the documentation folder
+   * @return The absolute path of the documentation folder
+   */
+  fun getDocumentationPath(docType: String): String {
+    val documentationDirectory: Path = Paths.get("tech-docs", "source", "documentation", docType)
+    return documentationDirectory.toFile().absolutePath
+  }
 }

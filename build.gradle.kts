@@ -100,7 +100,7 @@ tasks {
     arrayOf(
       "uk.gov.justice.digital.hmpps.hmppsintegrationapi.HmppsIntegrationApiKt",
       "uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.SchedulingConfig",
-      "uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.subscriptionfilters.SubscriptionFilterPolicyFileGenerator",
+      "uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.DocumentationGenerator",
       "uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.FileManager",
     )
 
@@ -160,10 +160,10 @@ tasks {
   getByName("mergeCoverageReport").dependsOn(koverCli)
   getByName("createCoverageReport").dependsOn(mergeCoverageReport)
 
-  register<JavaExec>("generateFilterPolicies") {
-    description = "Generates subscription filter policies"
+  register<JavaExec>("generateDocumentation") {
+    description = "Generates Event documentation"
     classpath = sourceSets["main"].output + configurations["testRuntimeClasspath"] + sourceSets["test"].output
-    mainClass.set("uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.subscriptionfilters.SubscriptionFilterPolicyFileGenerator")
+    mainClass.set("uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.DocumentationGenerator")
   }
 
   register<Test>("unitTest") {
