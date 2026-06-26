@@ -9,10 +9,9 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.data.web.PagedModel
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Contact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContactRelationship
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -32,46 +31,9 @@ internal class GetPrisonerContactsServiceTest(
 ) : DescribeSpec({
     val hmppsId = "A1234AA"
     val filters = ConsumerFilters(null)
+    val requestContext = buildRequestContext("testUser", filters = filters)
     val page = 1
     val size = 10
-    val relationship =
-      PrisonerContactRelationship(
-        relationshipTypeCode = "FRIEND",
-        relationshipTypeDescription = "Friend",
-        relationshipToPrisonerCode = "FRI",
-        relationshipToPrisonerDescription = "Friend of",
-        approvedVisitor = true,
-        nextOfKin = false,
-        emergencyContact = true,
-        isRelationshipActive = true,
-        currentTerm = true,
-        comments = "Close family friend",
-      )
-    val contact =
-      Contact(
-        contactId = 654321L,
-        lastName = "Doe",
-        firstName = "John",
-        middleNames = "William",
-        dateOfBirth = "1980-01-01",
-        flat = "Flat 1",
-        property = "123",
-        street = "Baker Street",
-        area = "Marylebone",
-        cityCode = "25343",
-        cityDescription = "Sheffield",
-        countyCode = "S.YORKSHIRE",
-        countyDescription = "South Yorkshire",
-        postCode = "NW1 6XE",
-        countryCode = "ENG",
-        countryDescription = "England",
-        primaryAddress = true,
-        mailAddress = true,
-        phoneType = "MOB",
-        phoneTypeDescription = "Mobile",
-        phoneNumber = "+1234567890",
-        extNumber = "123",
-      )
     val personalRelationshipsContactResponseInstance =
       PRPrisonerContact(
         prisonerContactId = 123456,
@@ -110,7 +72,6 @@ internal class GetPrisonerContactsServiceTest(
         comments = "Close family friend",
         restrictionSummary = RestrictionSummary(active = emptyList(), totalActive = 0, totalExpired = 0),
       )
-
     val pageMetadata =
       PagedModel.PageMetadata(
         10,
@@ -130,18 +91,18 @@ internal class GetPrisonerContactsServiceTest(
     }
 
     it("returns a list of contacts with pagination details") {
-      whenever(personalRelationshipsGateway.getContacts(hmppsId, page, size)).thenReturn(Response(data = prPaginatedContactsInstance, errors = emptyList()))
+      whenever(personalRelationshipsGateway.getContacts(hmppsId, page, size, requestContext = requestContext)).thenReturn(Response(data = prPaginatedContactsInstance, errors = emptyList()))
 
-      val result = getPrisonerContactsService.execute(hmppsId, page, size, filters)
+      val result = getPrisonerContactsService.execute(hmppsId, page, size, requestContext)
 
       result.shouldNotBeNull()
       result.shouldBe(Response(data = prPaginatedContactsInstance.toPaginatedPrisonerContacts()))
     }
 
     it("returns a list of emergency contacts with pagination details") {
-      whenever(personalRelationshipsGateway.getContacts(hmppsId, page, size, true)).thenReturn(Response(data = prPaginatedContactsInstance, errors = emptyList()))
+      whenever(personalRelationshipsGateway.getContacts(hmppsId, page, size, true, requestContext)).thenReturn(Response(data = prPaginatedContactsInstance, errors = emptyList()))
 
-      val result = getPrisonerContactsService.execute(hmppsId, page, size, filters, true)
+      val result = getPrisonerContactsService.execute(hmppsId, page, size, requestContext, true)
 
       result.shouldNotBeNull()
       result.shouldBe(Response(data = prPaginatedContactsInstance.toPaginatedPrisonerContacts()))
@@ -149,22 +110,22 @@ internal class GetPrisonerContactsServiceTest(
 
     it("failed personal relationship call") {
       val err = listOf(UpstreamApiError(UpstreamApi.PERSONAL_RELATIONSHIPS, UpstreamApiError.Type.INTERNAL_SERVER_ERROR))
-      whenever(personalRelationshipsGateway.getContacts(hmppsId, page, size)).thenReturn(Response(data = null, errors = err))
-      val result = getPrisonerContactsService.execute(hmppsId, page, size, filters)
+      whenever(personalRelationshipsGateway.getContacts(hmppsId, page, size, requestContext = requestContext)).thenReturn(Response(data = null, errors = err))
+      val result = getPrisonerContactsService.execute(hmppsId, page, size, requestContext)
       result.errors.shouldBe(err)
     }
 
     it("failed prison check call") {
       val err = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "NOMIS number not found"))
       whenever(getPersonService.getNomisNumber(hmppsId, filters)).thenReturn(Response(data = null, errors = err))
-      val result = getPrisonerContactsService.execute(hmppsId, page, size, filters)
+      val result = getPrisonerContactsService.execute(hmppsId, page, size, requestContext)
       result.errors.shouldBe(err)
     }
 
     it("failed to get prisoners nomis number") {
       val err = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND))
       whenever(getPersonService.getNomisNumber(hmppsId, filters)).thenReturn(Response(data = NomisNumber(), errors = emptyList()))
-      val result = getPrisonerContactsService.execute(hmppsId, page, size, filters)
+      val result = getPrisonerContactsService.execute(hmppsId, page, size, requestContext)
       result.errors.shouldBe(err)
     }
   })
