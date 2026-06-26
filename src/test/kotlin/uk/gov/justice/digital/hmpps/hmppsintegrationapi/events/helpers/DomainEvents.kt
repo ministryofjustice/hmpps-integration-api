@@ -70,6 +70,11 @@ object DomainEvents {
     {\"eventType\":\"assessment.summary.produced\",\"version\": 1,\"description\":\"Assessment Summary has been produced\",\"detailUrl\":\"https://oasys.service.justice.gov.uk/eor/oasys/ass/asssumm/R007565/ALLOW/2513077240/COMPLETE\",\"occurredAt\": \"2024-08-14T12:33:34+01:00\",\"personReference\":{\"identifiers\":[{\"type\": \"CRN\", \"value\": \"$crn\"}]}}
     """.trimIndent()
 
+  val ASSESSMENT_SUMMARY_PRODUCED_LOCKED_INCOMPLETE =
+    """
+    {\"eventType\":\"assessment.summary.produced\",\"version\": 1,\"description\":\"Assessment Summary has been produced\",\"detailUrl\":\"https://oasys.service.justice.gov.uk/eor/oasys/ass/asssumm/R007565/ALLOW/2513077240/LOCKED_INCOMPLETE\",\"occurredAt\": \"2024-08-14T12:33:34+01:00\",\"personReference\":{\"identifiers\":[{\"type\": \"CRN\", \"value\": \"$crn\"}]}}
+    """.trimIndent()
+
   private val sqsNotificationGeneratingHelper =
     SqsNotificationGeneratingHelper()
 
