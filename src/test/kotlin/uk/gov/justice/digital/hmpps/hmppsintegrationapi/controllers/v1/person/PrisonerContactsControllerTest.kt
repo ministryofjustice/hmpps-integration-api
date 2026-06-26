@@ -4,6 +4,8 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory.times
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
@@ -24,7 +26,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerCon
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonerContactsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
@@ -41,14 +42,8 @@ internal class PrisonerContactsControllerTest(
 ) : DescribeSpec(
     {
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
-      val hmppsId = "A1234AA"
       val sanitisedHmppsId = "A1234AA"
-      val pncNumber = "2003/13116M"
       val basePath = "/v1/persons"
-      val filters = null
-
-      // Test persona
-      val person = personInProbationAndNomisPersona
 
       fun notFoundErrors(vararg upstreamApi: UpstreamApi) = upstreamApi.map { UpstreamApiError(causedBy = it, type = UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "MockError") }.toList()
 
@@ -62,7 +57,7 @@ internal class PrisonerContactsControllerTest(
           Mockito.reset(getPrisonerContactsService)
           Mockito.reset(auditService)
 
-          whenever(getPrisonerContactsService.execute(sanitisedHmppsId, page = 1, size = 10, filter = null)).thenReturn(
+          whenever(getPrisonerContactsService.execute(eq(sanitisedHmppsId), page = eq(1), size = eq(10), requestContext = any(), emergencyNextOfKinOnly = any())).thenReturn(
             Response(
               data =
                 PaginatedPrisonerContacts(
@@ -132,7 +127,7 @@ internal class PrisonerContactsControllerTest(
 
         it("returns a 404 status code when a person cannot be found in both upstream APIs") {
           val idThatDoesNotExist = "blablabla"
-          whenever(getPrisonerContactsService.execute(idThatDoesNotExist, page = 1, size = 10, filter = null))
+          whenever(getPrisonerContactsService.execute(eq(idThatDoesNotExist), page = eq(1), size = eq(10), requestContext = any(), emergencyNextOfKinOnly = any()))
             .thenReturn(notFoundErrorResponse(UpstreamApi.PERSONAL_RELATIONSHIPS))
 
           val result = mockMvc.performAuthorised("$basePath/$idThatDoesNotExist/contacts")
@@ -141,7 +136,7 @@ internal class PrisonerContactsControllerTest(
 
         it("returns a 400 status code when a invalid hmppsId") {
           val idThatDoesNotExist = "blablabla"
-          whenever(getPrisonerContactsService.execute(idThatDoesNotExist, page = 1, size = 10, filter = null)).thenReturn(
+          whenever(getPrisonerContactsService.execute(eq(idThatDoesNotExist), page = eq(1), size = eq(10), requestContext = any(), emergencyNextOfKinOnly = any())).thenReturn(
             Response(
               data = null,
               errors =
@@ -160,7 +155,7 @@ internal class PrisonerContactsControllerTest(
 
         it("verify getPrisonerContactsService is called ") {
           mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/contacts")
-          verify(getPrisonerContactsService, times(1)).execute(sanitisedHmppsId, page = 1, size = 10, filter = null)
+          verify(getPrisonerContactsService, times(1)).execute(eq(sanitisedHmppsId), page = eq(1), size = eq(10), requestContext = any(), emergencyNextOfKinOnly = any())
         }
 
         it("returns prisoner contacts with the matching ID") {
@@ -222,7 +217,7 @@ internal class PrisonerContactsControllerTest(
         }
 
         it("returns many prisoner contacts with the matching ID") {
-          whenever(getPrisonerContactsService.execute(sanitisedHmppsId, page = 1, size = 10, filter = null)).thenReturn(
+          whenever(getPrisonerContactsService.execute(eq(sanitisedHmppsId), page = eq(1), size = eq(10), requestContext = any(), emergencyNextOfKinOnly = any())).thenReturn(
             Response(
               data =
                 PaginatedPrisonerContacts(
@@ -420,7 +415,7 @@ internal class PrisonerContactsControllerTest(
           Mockito.reset(getPrisonerContactsService)
           Mockito.reset(auditService)
 
-          whenever(getPrisonerContactsService.execute(sanitisedHmppsId, page = 1, size = 10, filter = null, emergencyNextOfKinOnly = true)).thenReturn(
+          whenever(getPrisonerContactsService.execute(eq(sanitisedHmppsId), page = eq(1), size = eq(10), requestContext = any(), emergencyNextOfKinOnly = eq(true))).thenReturn(
             Response(
               data =
                 PaginatedPrisonerContacts(
@@ -490,7 +485,7 @@ internal class PrisonerContactsControllerTest(
 
         it("returns a 404 status code when a person cannot be found in both upstream APIs") {
           val idThatDoesNotExist = "blablabla"
-          whenever(getPrisonerContactsService.execute(idThatDoesNotExist, page = 1, size = 10, filter = null, emergencyNextOfKinOnly = true))
+          whenever(getPrisonerContactsService.execute(eq(idThatDoesNotExist), page = eq(1), size = eq(10), requestContext = any(), emergencyNextOfKinOnly = eq(true)))
             .thenReturn(notFoundErrorResponse(UpstreamApi.PERSONAL_RELATIONSHIPS))
 
           val result = mockMvc.performAuthorised("$basePath/$idThatDoesNotExist/emergency-contacts")
@@ -499,7 +494,7 @@ internal class PrisonerContactsControllerTest(
 
         it("returns a 400 status code when a invalid hmppsId") {
           val idThatDoesNotExist = "blablabla"
-          whenever(getPrisonerContactsService.execute(idThatDoesNotExist, page = 1, size = 10, filter = null, emergencyNextOfKinOnly = true)).thenReturn(
+          whenever(getPrisonerContactsService.execute(eq(idThatDoesNotExist), page = eq(1), size = eq(10), requestContext = any(), emergencyNextOfKinOnly = eq(true))).thenReturn(
             Response(
               data = null,
               errors =
@@ -518,7 +513,7 @@ internal class PrisonerContactsControllerTest(
 
         it("verify getPrisonerContactsService is called ") {
           mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/emergency-contacts")
-          verify(getPrisonerContactsService, times(1)).execute(sanitisedHmppsId, page = 1, size = 10, filter = null, emergencyNextOfKinOnly = true)
+          verify(getPrisonerContactsService, times(1)).execute(eq(sanitisedHmppsId), page = eq(1), size = eq(10), requestContext = any(), emergencyNextOfKinOnly = eq(true))
         }
 
         it("returns prisoner contacts with the matching ID") {
@@ -580,7 +575,7 @@ internal class PrisonerContactsControllerTest(
         }
 
         it("returns many prisoner contacts with the matching ID") {
-          whenever(getPrisonerContactsService.execute(sanitisedHmppsId, page = 1, size = 10, filter = null, emergencyNextOfKinOnly = true)).thenReturn(
+          whenever(getPrisonerContactsService.execute(eq(sanitisedHmppsId), page = eq(1), size = eq(10), requestContext = any(), emergencyNextOfKinOnly = eq(true))).thenReturn(
             Response(
               data =
                 PaginatedPrisonerContacts(
