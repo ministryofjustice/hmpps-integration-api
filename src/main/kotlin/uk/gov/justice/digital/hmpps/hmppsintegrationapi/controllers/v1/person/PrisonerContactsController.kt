@@ -52,7 +52,7 @@ class PrisonerContactsController(
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
     @RequestAttribute requestContext: RequestContext?,
   ): PaginatedResponse<PrisonerContact> {
-    val response = getPrisonerContactsService.execute(hmppsId, page, perPage, requestContext?.filters)
+    val response = getPrisonerContactsService.execute(hmppsId, page, perPage, requestContext)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
@@ -85,7 +85,7 @@ class PrisonerContactsController(
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
     @RequestAttribute requestContext: RequestContext?,
   ): PaginatedResponse<PrisonerContact> {
-    val response = getPrisonerContactsService.execute(hmppsId, page, perPage, requestContext?.filters, true)
+    val response = getPrisonerContactsService.execute(hmppsId, page, perPage, requestContext, true)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")

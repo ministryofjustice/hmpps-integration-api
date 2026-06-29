@@ -155,7 +155,7 @@ class VisitQueueService(
     val contacts =
       buildList {
         while (!isLastPage) {
-          val response = personalRelationshipsGateway.getContacts(nomisNumber, page, size = 10)
+          val response = personalRelationshipsGateway.getContacts(nomisNumber, page, size = 10, requestContext = null)
           if (response.errors.isNotEmpty()) {
             return Response(data = null, errors = response.errors)
           }

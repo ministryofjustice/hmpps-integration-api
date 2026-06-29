@@ -125,12 +125,13 @@ class PersonalRelationshipsGateway(
     page: Int,
     size: Int,
     emergencyOrNextOfKin: Boolean? = false,
+    requestContext: RequestContext?,
   ): Response<PRPaginatedPrisonerContacts?> {
     val result =
       webClient.request<PRPaginatedPrisonerContacts>(
         HttpMethod.GET,
         "/prisoner/$prisonerId/contact?page=${page - 1}&size=$size${uriEmergencyOrNOK(emergencyOrNextOfKin)}",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.PERSONAL_RELATIONSHIPS,
         badRequestAsError = true,
       )

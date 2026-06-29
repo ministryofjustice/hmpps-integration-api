@@ -29,4 +29,22 @@ class DomainEventPredicatesTests {
     val event = SqsNotificationGeneratingHelper().createHmppsDomainEvent().copy(additionalInformation = AdditionalInformation(mappa = Mappa(1)))
     assertTrue(event.isValidContactEvent())
   }
+
+  @Test
+  fun `is not a completed assessment event when no detail url`() {
+    val event = SqsNotificationGeneratingHelper().createHmppsDomainEvent()
+    assertFalse(event.isCompletedAssessmentEvent())
+  }
+
+  @Test
+  fun `is not a completed assessment event when the detail url ends with LOCKED_INCOMPLETE `() {
+    val event = SqsNotificationGeneratingHelper().createHmppsDomainEvent().copy(detailUrl = "http://localhost/eor/oasys/ass/asssumm/R007565/ALLOW/2513077240/LOCKED_INCOMPLETE")
+    assertFalse(event.isCompletedAssessmentEvent())
+  }
+
+  @Test
+  fun `is  a completed assessment event when the detail url ends with complete`() {
+    val event = SqsNotificationGeneratingHelper().createHmppsDomainEvent().copy(detailUrl = "http://localhost/eor/oasys/ass/asssumm/R007565/ALLOW/2513077240/COMPLETE")
+    assertTrue(event.isCompletedAssessmentEvent())
+  }
 }

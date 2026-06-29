@@ -806,6 +806,7 @@ function verify_obo_access(hmppsId) {
     validate_get_request_with_obo(`/v1/persons?last_name=${lastName}&date_of_birth=${dob}`);
     validate_get_request_with_obo(`/v1/persons/${hmppsId}/offences`)
     validate_get_request_with_obo(`/v1/persons/${hmppsId}/addresses`)
+    validate_get_request_with_obo(`/v1/persons/${hmppsId}/contacts`)
   });
 }
 

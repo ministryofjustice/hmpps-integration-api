@@ -121,6 +121,8 @@ enum class PrisonerChangedCategory {
   PHYSICAL_DETAILS,
 }
 
+const val ASSESSMENT_STATUS_COMPLETE = "COMPLETE"
+
 val PERSON_ADDRESS_EVENTS =
   listOf(
     DomainEventName.ProbabtionCase.Address.CREATED,
@@ -394,7 +396,7 @@ enum class IntegrationEventType(
   ),
   ASSESSMENT_SUMMARY_CHANGE(
     "v1/persons/{hmppsId}/assessment-summary",
-    { ASSESSMENT_SUMMARY_TYPES.contains(it.eventType) },
+    { ASSESSMENT_SUMMARY_TYPES.contains(it.eventType) && it.isCompletedAssessmentEvent() },
     featureFlag = FeatureFlagConfig.USE_ASSESSMENT_SUMMARY_ENDPOINT,
     description = "Assessment Summary Changed",
   ),
