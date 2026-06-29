@@ -51,9 +51,10 @@ class AlertsController(
     @Parameter(description = "The HMPPS ID of the person", example = "A1234AA") @PathVariable hmppsId: String,
     @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
+    @Parameter(description = "The status of alerts returned", schema = Schema(minimum = "active")) @RequestParam(required = false, defaultValue = "", name = "status") status: String,
     @RequestAttribute requestContext: RequestContext?,
   ): PaginatedResponse<Alert> {
-    val response = getAlertsForPersonService.getAlerts(hmppsId, requestContext?.filters, page, perPage)
+    val response = getAlertsForPersonService.getAlerts(hmppsId, requestContext?.filters, page, perPage, status == "active")
     ensureResponse(hmppsId, response)
 
     auditService.createEvent("GET_PERSON_ALERTS", mapOf("hmppsId" to hmppsId))
@@ -65,6 +66,7 @@ class AlertsController(
   @GetMapping("/persons/{hmppsId}/active-alerts")
   @Tags(value = [Tag("Reception"), Tag("Activities")])
   @Operation(
+    deprecated = true,
     summary = "Returns active alerts associated with a prisoner, sorted by dateCreated (newest first).",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
@@ -108,7 +110,7 @@ class AlertsController(
     @RequestAttribute requestContext: RequestContext?,
   ): PaginatedResponse<Alert> =
     // This endpoint is deprecated - implementation is now identical to getPersonAlerts
-    getPersonAlerts(hmppsId, page, perPage, requestContext)
+    getPersonAlerts(hmppsId, page, perPage, "", requestContext)
 }
 
 private fun ensureResponse(
