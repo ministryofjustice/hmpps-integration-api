@@ -7,6 +7,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory.times
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
@@ -14,6 +15,8 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
@@ -92,29 +95,29 @@ internal class GetPersonsServiceTest(
       Mockito.reset(featureFlag)
 
       whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName, dateOfBirth)).thenReturn(Response(data = emptyList()))
-      whenever(deliusGateway.getPersons(firstName, lastName, null, dateOfBirth)).thenReturn(Response(data = emptyList()))
+      whenever(deliusGateway.getPersons(eq(firstName), eq(lastName), eq(null), eq(dateOfBirth), eq(false), any<RequestContext>())).thenReturn(Response(data = emptyList()))
     }
 
     it("search returns prisoner") {
       val responseFromProbationOffenderSearch = Response(data = listOf(Person(firstName, lastName, middleName = "John")))
-      whenever(prisonerOffenderSearchGateway.attributeSearch(any())).thenReturn(prisonAttributeSearchResponse)
+      whenever(prisonerOffenderSearchGateway.attributeSearch(any(), any<RequestContext>())).thenReturn(prisonAttributeSearchResponse)
       whenever(
         deliusGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth),
       ).thenReturn(responseFromProbationOffenderSearch)
-      val response = getPersonsService.personAttributeSearch(firstName, lastName, pncNumber, dateOfBirth, false, ConsumerFilters(prisons = listOf("MDI")))
+      val response = getPersonsService.personAttributeSearch(firstName, lastName, pncNumber, dateOfBirth, false, buildRequestContext(filters = ConsumerFilters(prisons = listOf("MDI"))))
       response.data.size.shouldBe(1)
-      verify(prisonerOffenderSearchGateway, times(1)).attributeSearch(any())
+      verify(prisonerOffenderSearchGateway, times(1)).attributeSearch(any(), any<RequestContext>())
     }
 
     it("search with prisons filter (no probation search) returns an error") {
       val error = UpstreamApiError(type = UpstreamApiError.Type.BAD_REQUEST, causedBy = UpstreamApi.TEST)
       val paginatedResponse = Response<POSPaginatedPrisoners?>(errors = listOf(error), data = null)
       val responseFromProbationOffenderSearch = Response(data = listOf(Person(firstName, lastName, middleName = "John")))
-      whenever(prisonerOffenderSearchGateway.attributeSearch(any())).thenReturn(paginatedResponse)
+      whenever(prisonerOffenderSearchGateway.attributeSearch(any(), any<RequestContext>())).thenReturn(paginatedResponse)
       whenever(
-        deliusGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth),
+        deliusGateway.getPersons(eq(firstName), eq(lastName), eq(pncNumber), eq(dateOfBirth), eq(false), any<RequestContext>()),
       ).thenReturn(responseFromProbationOffenderSearch)
-      val response = getPersonsService.personAttributeSearch(firstName, lastName, pncNumber, dateOfBirth, false, ConsumerFilters(prisons = listOf("MDI")))
+      val response = getPersonsService.personAttributeSearch(firstName, lastName, pncNumber, dateOfBirth, false, buildRequestContext(filters = ConsumerFilters(prisons = listOf("MDI"))))
       response.data.shouldBeEmpty()
       response.errors.shouldBe(listOf(error))
     }
@@ -122,11 +125,11 @@ internal class GetPersonsServiceTest(
     it("search without prisons filter continues to call prison search (success) if probation search fails") {
       val error = UpstreamApiError(type = UpstreamApiError.Type.BAD_REQUEST, causedBy = UpstreamApi.TEST)
       val responseFromProbationOffenderSearch = Response(errors = listOf(error), data = emptyList<Person>())
-      whenever(prisonerOffenderSearchGateway.attributeSearch(any())).thenReturn(prisonAttributeSearchResponse)
+      whenever(prisonerOffenderSearchGateway.attributeSearch(any(), any<RequestContext>())).thenReturn(prisonAttributeSearchResponse)
       whenever(
-        deliusGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth),
+        deliusGateway.getPersons(eq(firstName), eq(lastName), eq(pncNumber), eq(dateOfBirth), eq(false), any<RequestContext>()),
       ).thenReturn(responseFromProbationOffenderSearch)
-      val response = getPersonsService.personAttributeSearch(firstName, lastName, pncNumber, dateOfBirth, false, ConsumerFilters())
+      val response = getPersonsService.personAttributeSearch(firstName, lastName, pncNumber, dateOfBirth, false, buildRequestContext(filters = ConsumerFilters()))
       response.data.size.shouldBe(1)
       response.errors.shouldBe(listOf(error))
     }
@@ -135,34 +138,34 @@ internal class GetPersonsServiceTest(
       val error = UpstreamApiError(type = UpstreamApiError.Type.BAD_REQUEST, causedBy = UpstreamApi.TEST)
       val paginatedResponse = Response<POSPaginatedPrisoners?>(errors = listOf(error), data = null)
       val responseFromProbationOffenderSearch = Response(errors = listOf(error), data = emptyList<Person>())
-      whenever(prisonerOffenderSearchGateway.attributeSearch(any())).thenReturn(paginatedResponse)
+      whenever(prisonerOffenderSearchGateway.attributeSearch(any(), any<RequestContext>())).thenReturn(paginatedResponse)
       whenever(
-        deliusGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth),
+        deliusGateway.getPersons(eq(firstName), eq(lastName), eq(pncNumber), eq(dateOfBirth), eq(false), any<RequestContext>()),
       ).thenReturn(responseFromProbationOffenderSearch)
-      val response = getPersonsService.personAttributeSearch(firstName, lastName, pncNumber, dateOfBirth, false, ConsumerFilters())
+      val response = getPersonsService.personAttributeSearch(firstName, lastName, pncNumber, dateOfBirth, false, buildRequestContext(filters = ConsumerFilters()))
       response.data.shouldBeEmpty()
       response.errors.shouldBe(listOf(error, error))
     }
 
     it("does not do probation search for supervisionStatus == PRISON") {
-      whenever(prisonerOffenderSearchGateway.attributeSearch(any())).thenReturn(prisonAttributeSearchResponse)
+      whenever(prisonerOffenderSearchGateway.attributeSearch(any(), any<RequestContext>())).thenReturn(prisonAttributeSearchResponse)
 
-      val filters = ConsumerFilters(supervisionStatuses = listOf(SupervisionStatus.PRISONS.name))
+      val requestContext = buildRequestContext(filters = ConsumerFilters(supervisionStatuses = listOf(SupervisionStatus.PRISONS.name)))
 
-      getPersonsService.personAttributeSearch(firstName, lastName, null, dateOfBirth, true, filters)
+      getPersonsService.personAttributeSearch(firstName, lastName, null, dateOfBirth, true, requestContext)
 
       verifyNoInteractions(deliusGateway)
-      verify(prisonerOffenderSearchGateway, times(1)).attributeSearch(any())
+      verify(prisonerOffenderSearchGateway, times(1)).attributeSearch(any(), any<RequestContext>())
     }
 
     it("search returns an empty list when no person(s) are found") {
-      whenever(deliusGateway.getPersons(firstName, lastName, null, dateOfBirth)).thenReturn(Response(emptyList()))
-      whenever(prisonerOffenderSearchGateway.attributeSearch(any())).thenReturn(
+      whenever(deliusGateway.getPersons(eq(firstName), eq(lastName), eq(null), eq(dateOfBirth), eq(false), any<RequestContext>())).thenReturn(Response(emptyList()))
+      whenever(prisonerOffenderSearchGateway.attributeSearch(any(), any<RequestContext>())).thenReturn(
         Response<POSPaginatedPrisoners?>(
           data = paginatedPrisoners.copy(content = emptyList()),
         ),
       )
-      val response = getPersonsService.personAttributeSearch(firstName, lastName, null, dateOfBirth)
+      val response = getPersonsService.personAttributeSearch(firstName, lastName, null, dateOfBirth, requestContext = buildRequestContext(filters = ConsumerFilters()))
       response.data.shouldBe(emptyList())
     }
 

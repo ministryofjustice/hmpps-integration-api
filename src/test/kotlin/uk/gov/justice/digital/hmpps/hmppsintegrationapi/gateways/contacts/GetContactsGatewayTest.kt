@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
@@ -36,12 +37,13 @@ class GetContactsGatewayTest(
       val size = 10
       val pathWithQueryParams = "$getContactsPath?page=${page - 1}&size=$size"
       val personalRelationshipsApiMockServer = ApiMockServer.create(UpstreamApi.PERSONAL_RELATIONSHIPS)
+      val requestContext = buildRequestContext("testUser")
 
       beforeEach {
         personalRelationshipsApiMockServer.start()
         Mockito.reset(hmppsAuthGateway)
 
-        whenever(hmppsAuthGateway.getClientToken("PERSONAL-RELATIONSHIPS")).thenReturn(HmppsAuthMockServer.TOKEN)
+        whenever(hmppsAuthGateway.getClientToken("PERSONAL-RELATIONSHIPS", requestContext)).thenReturn(HmppsAuthMockServer.TOKEN)
       }
 
       afterTest {
@@ -49,9 +51,9 @@ class GetContactsGatewayTest(
       }
 
       it("authenticates using HMPPS Auth with credentials for linked prisoners api") {
-        personalRelationshipsGateway.getContacts(prisonerId, page, size)
+        personalRelationshipsGateway.getContacts(prisonerId, page, size, requestContext = requestContext)
 
-        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("PERSONAL-RELATIONSHIPS")
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("PERSONAL-RELATIONSHIPS", requestContext)
       }
 
       it("returns a 200 when contacts are found") {
@@ -107,7 +109,7 @@ class GetContactsGatewayTest(
 
         personalRelationshipsApiMockServer.stubForGet(pathWithQueryParams, body = exampleData, HttpStatus.OK)
 
-        val response = personalRelationshipsGateway.getContacts(prisonerId, page, size)
+        val response = personalRelationshipsGateway.getContacts(prisonerId, page, size, requestContext = requestContext)
         response.data.shouldNotBeNull()
         response.data!!.contacts.shouldHaveSize(1)
         response.data!!
@@ -120,7 +122,7 @@ class GetContactsGatewayTest(
       it("returns a 404 when visit is not found") {
         personalRelationshipsApiMockServer.stubForGet(pathWithQueryParams, body = "", HttpStatus.NOT_FOUND)
 
-        val response = personalRelationshipsGateway.getContacts(prisonerId, page, size)
+        val response = personalRelationshipsGateway.getContacts(prisonerId, page, size, requestContext = requestContext)
         response.errors.shouldHaveSize(1)
         response.errors
           .first()

@@ -121,6 +121,8 @@ enum class PrisonerChangedCategory {
   PHYSICAL_DETAILS,
 }
 
+const val ASSESSMENT_STATUS_COMPLETE = "COMPLETE"
+
 val PERSON_ADDRESS_EVENTS =
   listOf(
     DomainEventName.ProbabtionCase.Address.CREATED,
@@ -193,6 +195,8 @@ val RISK_SCORE_TYPES =
   )
 
 val ROSH_TYPES = listOf(DomainEventName.Assessment.Summary.PRODUCED)
+
+val ASSESSMENT_SUMMARY_TYPES = listOf(DomainEventName.Assessment.Summary.PRODUCED)
 
 val PROBATION_STATUS_REGISTER_TYPES = listOf(SERIOUS_FURTHER_OFFENCE_CODE, WARRANT_SUMMONS_CODE)
 
@@ -331,22 +335,27 @@ enum class IntegrationEventType(
   val pathTemplate: String,
   val predicate: (HmppsDomainEvent) -> Boolean,
   val featureFlag: String? = null,
+  val description: String,
 ) {
   DYNAMIC_RISKS_CHANGED(
     "v1/persons/{hmppsId}/risks/dynamic",
     { DYNAMIC_RISK_EVENTS.contains(it.eventType) && DYNAMIC_RISKS_REGISTER_TYPES.contains(it.additionalInformation!!.registerTypeCode) },
+    description = "Dynamic Risks Changed",
   ),
   PROBATION_STATUS_CHANGED(
     "v1/persons/{hmppsId}/status-information",
     { PROBATION_STATUS_CHANGED_EVENTS.contains(it.eventType) && PROBATION_STATUS_REGISTER_TYPES.contains(it.additionalInformation!!.registerTypeCode) },
+    description = "Probation Status Changed",
   ),
   MAPPA_DETAIL_CHANGED(
     "v1/persons/{hmppsId}/risks/mappadetail",
     { MAPPA_DETAIL_REGISTER_EVENTS.contains(it.eventType) && MAPPA_DETAIL_REGISTER_TYPES.contains(it.additionalInformation!!.registerTypeCode) },
+    description = "MAPPA Detail Changed",
   ),
   RISK_SCORE_CHANGED(
     "v1/persons/{hmppsId}/risks/scores",
     { RISK_SCORE_TYPES.contains(it.eventType) },
+    description = "Risk Score Changed",
   ),
   PRISONER_BASE_LOCATION_CHANGED(
     "v1/persons/{hmppsId}/prisoner-base-location",
@@ -368,78 +377,98 @@ enum class IntegrationEventType(
       }
     },
     featureFlag = FeatureFlagConfig.PRISONER_BASE_LOCATION_CHANGED_NOTIFICATIONS_ENABLED,
+    description = "Prisoner Base Location Changed",
   ),
   KEY_DATES_AND_ADJUSTMENTS_PRISONER_RELEASE(
     "v1/persons/{hmppsId}/sentences/latest-key-dates-and-adjustments",
     { NEW_PERSON_EVENTS.contains(it.eventType) || KEY_DATES_AND_ADJUSTMENTS_PRISONER_RELEASE_EVENTS.contains(it.eventType) },
+    description = "Key Dates and Adjustments Prisoner Release",
   ),
   LICENCE_CONDITION_CHANGED(
     "v1/persons/{hmppsId}/licences/conditions",
     { LICENCE_CONDITION_EVENTS.contains(it.eventType) },
+    description = "Licence Condition Changed",
   ),
   RISK_OF_SERIOUS_HARM_CHANGED(
     "v1/persons/{hmppsId}/risks/serious-harm",
     { ROSH_TYPES.contains(it.eventType) },
+    description = "Risk of Serious Harm Changed",
+  ),
+  ASSESSMENT_SUMMARY_CHANGE(
+    "v1/persons/{hmppsId}/assessment-summary",
+    { ASSESSMENT_SUMMARY_TYPES.contains(it.eventType) && it.isCompletedAssessmentEvent() },
+    featureFlag = FeatureFlagConfig.USE_ASSESSMENT_SUMMARY_ENDPOINT,
+    description = "Assessment Summary Changed",
   ),
   PLP_INDUCTION_SCHEDULE_CHANGED(
     "v1/persons/{hmppsId}/plp-induction-schedule/history",
     { PLP_INDUCTION_SCHEDULE_EVENTS.contains(it.eventType) },
+    description = "PLP Induction Schedule Changed",
   ),
   PLP_REVIEW_SCHEDULE_CHANGED(
     "v1/persons/{hmppsId}/plp-review-schedule",
     { PLP_REVIEW_SCHEDULE_EVENTS.contains(it.eventType) },
+    description = "PLP Review Schedule Changed",
   ),
   SAN_PLAN_CREATION_SCHEDULE_CHANGED(
     "v1/persons/{hmppsId}/education/san/plan-creation-schedule",
     { SAN_PLAN_CREATION_SCHEDULE_EVENTS.contains(it.eventType) },
+    description = "SAN Plan Creation Schedule Changed",
   ),
   SAN_REVIEW_SCHEDULE_CHANGED(
     "v1/persons/{hmppsId}/education/san/review-schedule",
     { SAN_REVIEW_SCHEDULE_EVENTS.contains(it.eventType) },
+    description = "SAN Review Schedule Changed",
   ),
   PERSON_STATUS_CHANGED(
     "v1/persons/{hmppsId}",
     { PERSON_EVENTS.contains(it.eventType) },
+    description = "Person Status Changed",
   ),
   PERSON_ADDRESS_CHANGED(
     "v1/persons/{hmppsId}/addresses",
     { NEW_PERSON_EVENTS.contains(it.eventType) || PERSON_ADDRESS_EVENTS.contains(it.eventType) },
+    description = "Person Address Changed",
   ),
   PERSON_CONTACTS_CHANGED(
     "v1/persons/{hmppsId}/contacts",
     { NEW_PERSON_EVENTS.contains(it.eventType) || PERSON_CONTACT_EVENTS.contains(it.eventType) },
+    description = "Person Contacts Changed",
   ),
   PERSON_IEP_LEVEL_CHANGED(
     "v1/persons/{hmppsId}/iep-level",
     { NEW_PERSON_EVENTS.contains(it.eventType) || PERSON_IEP_EVENTS.contains(it.eventType) },
+    description = "Person IEP Level Changed",
   ),
   PERSON_VISITOR_RESTRICTIONS_CHANGED(
     "v1/persons/{hmppsId}/visitor/{contactId}/restrictions",
     { PERSON_VISITOR_RESTRICTION_EVENTS.contains(it.eventType) },
+    description = "Person Visitor Restrictions Changed",
   ),
   PERSON_VISIT_RESTRICTIONS_CHANGED(
     "v1/persons/{hmppsId}/visit-restrictions",
     { NEW_PERSON_EVENTS.contains(it.eventType) || it.eventType == DomainEventName.PrisonOffenderEvents.Prisoner.Restriction.CHANGED },
-  ),
-  PERSON_VISIT_ORDERS_CHANGED(
-    "v1/persons/{hmppsId}/visit-orders",
-    { false }, // Probably not needed
+    description = "Person Visit Restrictions Changed",
   ),
   PERSON_FUTURE_VISITS_CHANGED(
     "v1/persons/{hmppsId}/visit/future",
     { VISIT_CHANGED_EVENTS.contains(it.eventType) },
+    description = "Person Future Visits Changed",
   ),
   PERSON_ALERTS_CHANGED(
     "v1/persons/{hmppsId}/alerts",
     { NEW_PERSON_EVENTS.contains(it.eventType) || ALERT_EVENTS.contains(it.eventType) },
+    description = "Person Alerts Changed",
   ),
   PERSON_PND_ALERTS_CHANGED(
     "v1/pnd/persons/{hmppsId}/alerts",
     { NEW_PERSON_EVENTS.contains(it.eventType) || ALERT_EVENTS.contains(it.eventType) && PND_ALERT_TYPES.contains(it.additionalInformation!!.alertCode) },
+    description = "Person PND Alerts Changed",
   ),
   PERSON_CASE_NOTES_CHANGED(
     "v1/persons/{hmppsId}/case-notes",
     { NEW_PERSON_EVENTS.contains(it.eventType) || PERSON_CASE_NOTE_EVENTS.contains(it.eventType) },
+    description = "Person Case Notes Changed",
   ),
   PERSON_NAME_CHANGED(
     "v1/persons/{hmppsId}/name",
@@ -453,6 +482,7 @@ enum class IntegrationEventType(
             )
         )
     },
+    description = "Person Name Changed",
   ),
   PERSON_CELL_LOCATION_CHANGED(
     "v1/persons/{hmppsId}/cell-location",
@@ -463,10 +493,7 @@ enum class IntegrationEventType(
             (it.additionalInformation?.categoriesChanged?.contains(PrisonerChangedCategory.LOCATION.name) ?: false)
         )
     },
-  ),
-  PERSON_RISK_CATEGORIES_CHANGED(
-    "v1/persons/{hmppsId}/risks/categories",
-    { false }, // Probably not needed
+    description = "Person Cell Location Changed",
   ),
   PERSON_SENTENCES_CHANGED(
     "v1/persons/{hmppsId}/sentences",
@@ -477,26 +504,27 @@ enum class IntegrationEventType(
             (it.additionalInformation?.categoriesChanged?.contains(PrisonerChangedCategory.SENTENCE.name) ?: false)
         )
     },
-  ),
-  PERSON_OFFENCES_CHANGED(
-    "v1/persons/{hmppsId}/offences",
-    { false }, // Probably not needed
+    description = "Person Sentences Changed",
   ),
   PERSON_RESPONSIBLE_OFFICER_CHANGED(
     "v1/persons/{hmppsId}/person-responsible-officer",
     { NEW_PERSON_EVENTS.contains(it.eventType) || RESPONSIBLE_OFFICER_EVENTS.contains(it.eventType) },
+    description = "Person Responsible Officer Changed",
   ),
   PERSON_PROTECTED_CHARACTERISTICS_CHANGED(
     "v1/persons/{hmppsId}/protected-characteristics",
     { NEW_PERSON_EVENTS.contains(it.eventType) }, // No specific event found
+    description = "Person Protected Characteristics Changed",
   ),
   PERSON_REPORTED_ADJUDICATIONS_CHANGED(
     "v1/persons/{hmppsId}/reported-adjudications",
     { NEW_PERSON_EVENTS.contains(it.eventType) || PERSON_ADJUDICATION_EVENTS.contains(it.eventType) },
+    description = "Person Reported Adjudications Changed",
   ),
   PERSON_NUMBER_OF_CHILDREN_CHANGED(
     "v1/persons/{hmppsId}/number-of-children",
     { NEW_PERSON_EVENTS.contains(it.eventType) }, // No specific event found
+    description = "Person Number of Children Changed",
   ),
   PERSON_PHYSICAL_CHARACTERISTICS_CHANGED(
     "v1/persons/{hmppsId}/physical-characteristics",
@@ -510,22 +538,22 @@ enum class IntegrationEventType(
             )
         )
     },
+    description = "Person Physical Characteristics Changed",
   ),
   PERSON_IMAGES_CHANGED(
     "v1/persons/{hmppsId}/images",
     { NEW_PERSON_EVENTS.contains(it.eventType) }, // No specific event found
-  ),
-  PERSON_IMAGE_CHANGED(
-    "v1/persons/{hmppsId}/images/{imageId}",
-    { false }, // Probably not needed
+    description = "Person Images Changed",
   ),
   PRISONERS_CHANGED(
     "v1/prison/prisoners",
     { PRISONER_EVENTS.contains(it.eventType) },
+    description = "Prisoners Changed",
   ),
   PRISONER_CHANGED(
     "v1/prison/prisoners/{hmppsId}",
     { PRISONER_EVENTS.contains(it.eventType) },
+    description = "Prisoner Changed",
   ),
   PERSON_EDUCATION_ASSESSMENTS_CHANGED(
     "v1/persons/{hmppsId}/education/assessments",
@@ -539,90 +567,84 @@ enum class IntegrationEventType(
             ?.isNotEmpty() ?: false
         )
     },
-  ),
-  PRISONER_BALANCES_CHANGED(
-    "v1/prison/{prisonId}/prisoners/{hmppsId}/balances",
-    { false }, // No specific event found
-  ),
-  PRISONER_ACCOUNT_BALANCES_CHANGED(
-    "v1/prison/{prisonId}/prisoners/{hmppsId}/accounts/{accountCode}/balances",
-    { false }, // No specific event found
-  ),
-  PRISONER_ACCOUNT_TRANSACTIONS_CHANGED(
-    "v1/prison/{prisonId}/prisoners/{hmppsId}/accounts/{accountCode}/transactions",
-    { false }, // No specific event found
+    description = "Person Education Assessments Changed",
   ),
   PRISONER_NON_ASSOCIATIONS_CHANGED(
     "v1/prison/{prisonId}/prisoners/{hmppsId}/non-associations",
     { NEW_PRISONER_EVENTS.contains(it.eventType) || PERSON_NON_ASSOCIATION_EVENTS.contains(it.eventType) },
+    description = "Prisoner Non-Associations Changed",
   ),
   PRISON_VISITS_CHANGED(
     "v1/prison/{prisonId}/visit/search",
     { VISIT_CHANGED_EVENTS.contains(it.eventType) },
+    description = "Prison Visits Changed",
   ),
   PRISON_RESIDENTIAL_HIERARCHY_CHANGED(
     "v1/prison/{prisonId}/residential-hierarchy",
     {
       LOCATION_EVENTS.contains(it.eventType)
     },
+    description = "Prison Residential Hierarchy Changed",
   ),
   PRISON_LOCATION_CHANGED(
     "v1/prison/{prisonId}/location/{locationKey}",
     {
       LOCATION_EVENTS.contains(it.eventType)
     },
+    description = "Prison Location Changed",
   ),
   PRISON_RESIDENTIAL_DETAILS_CHANGED(
     "v1/prison/{prisonId}/residential-details",
     {
       LOCATION_EVENTS.contains(it.eventType)
     },
+    description = "Prison Residential Details Changed",
   ),
   PRISON_CAPACITY_CHANGED(
     "v1/prison/{prisonId}/capacity",
     {
       PRISON_CAPACITY_EVENTS.contains(it.eventType)
     },
+    description = "Prison Capacity Changed",
   ),
   VISIT_CHANGED(
     "v1/visit/{visitReference}",
     { VISIT_CHANGED_EVENTS.contains(it.eventType) },
-  ),
-  VISIT_FROM_EXTERNAL_SYSTEM_CREATED(
-    "v1/visit/id/by-client-ref/{clientVisitReference}",
-    { false }, // Probably want to add clientVisitReference to visit created domain event
-  ),
-  CONTACT_CHANGED(
-    "v1/contacts/{contactId}",
-    { false }, // No specific event found
+    description = "Visit Changed",
   ),
   CONTACT_EVENT_CREATED(
     "v1/persons/{hmppsId}/contact-events/{contactEventId}",
     { CONTACT_EVENT_CREATED_EVENTS.contains(it.eventType) && it.isValidContactEvent() },
     featureFlag = FeatureFlagConfig.CONTACT_EVENTS_NOTIFICATIONS_ENABLED,
+    description = "Contact Event Created",
   ),
   CONTACT_EVENT_CHANGED(
     "v1/persons/{hmppsId}/contact-events/{contactEventId}",
     { CONTACT_EVENT_CHANGED_EVENTS.contains(it.eventType) && it.isValidContactEvent() },
     featureFlag = FeatureFlagConfig.CONTACT_EVENTS_NOTIFICATIONS_ENABLED,
+    description = "Contact Event Changed",
   ),
   PERSON_HEALTH_AND_DIET_CHANGED(
     "v1/persons/{hmppsId}/health-and-diet",
     { NEW_PERSON_EVENTS.contains(it.eventType) }, // No specific event found
+    description = "Person Health and Diet Changed",
   ),
   PERSON_CARE_NEEDS_CHANGED(
     "v1/persons/{hmppsId}/care-needs",
     { NEW_PERSON_EVENTS.contains(it.eventType) }, // No specific event found
+    description = "Person Care Needs Changed",
   ),
   PERSON_LANGUAGES_CHANGED(
     "v1/persons/{hmppsId}/languages",
     { NEW_PERSON_EVENTS.contains(it.eventType) }, // No specific event found
     featureFlag = FeatureFlagConfig.PERSON_LANGUAGES_CHANGED_NOTIFICATIONS_ENABLED,
+    description = "Person Languages Changed",
   ),
   PRISONER_MERGED(
     "v1/persons/{hmppsId}",
     { it.eventType == DomainEventName.PrisonOffenderEvents.Prisoner.MERGED },
     featureFlag = FeatureFlagConfig.PRISONER_MERGED_NOTIFICATIONS_ENABLED,
+    description = "Prisoner Merged",
   ) {
     override fun getNotification(
       baseUrl: String,
@@ -641,6 +663,7 @@ enum class IntegrationEventType(
     "v1/persons/{hmppsId}/access-limitations",
     { it.eventType in LIMITED_ACCESS_EVENTS },
     featureFlag = FeatureFlagConfig.LIMITED_ACCESS_NOTIFICATIONS_ENABLED,
+    description = "Person Access Limitations Changed",
   ),
   ;
 

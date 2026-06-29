@@ -45,6 +45,8 @@ services:
     base-url: https://prisoner-base-location-api.hmpps.service.justice.gov.uk
   core-person-record:
     base-url: https://hmpps-person-record.hmpps.service.justice.gov.uk
+  probation-offender-search:
+    base-url: https://probation-offender-search.hmpps.service.justice.gov.uk
 
 feature-flag:
   # API Config
@@ -56,8 +58,11 @@ feature-flag:
   epf-endpoint-includes-lao: true
   epf-gateway-disabled: true
   cpr-enabled: true
-  gateway-cache-enabled: true
-  use-webclient-wrapper-for-hmpps-auth: false
+  use-assessment-summary-endpoint: false
+  use-stubbed-assessment-summary: false
+  contact-search-endpoint-enabled: false
+  address-search-endpoint-enabled: false
+  contact-linked-prisoners-endpoint-enabled: false
   # Events Config
   enable-delete-processed-events: true
   enable-publish-pending-events: true
@@ -114,6 +119,11 @@ authorisation:
       notes: "See client list in Confluence"
       roles:
         - "community-payback"
+    daso:
+      notes: "See client list in Confluence"
+      roles:
+        - "daso"
+      queueName: "dasosubscriberqueue"
 
 hmpps.sqs:
   queues:
@@ -134,3 +144,6 @@ hmpps.sqs:
       queueName: ${CTRLO_QUEUE_NAME}
       queueArn: ${CTRLO_QUEUE_ARN}
       subscribeTopicId: integrationeventtopic
+    dasosubscriberqueue:
+      queueName: ${DASO_QUEUE_NAME}
+      queueArn: ${DASO_QUEUE_ARN}

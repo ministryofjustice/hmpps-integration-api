@@ -16,6 +16,7 @@ import org.mockito.Mockito
 import org.mockito.Mockito.mock
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -27,6 +28,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFound
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FilterViolationException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.UpstreamApiException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CorePersonRecordGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
@@ -102,13 +105,15 @@ internal class GetPersonServiceTest :
       fun givenPersonFoundInProbation(
         id: String = crnNumber,
         person: Offender? = personOnProbation,
+        requestContext: RequestContext? = null,
         errors: List<UpstreamApiError> = emptyList(),
-      ) = whenever(deliusGateway.getOffender(id)).thenReturn(Response(data = person, errors = errors))
+      ) = whenever(deliusGateway.getOffender(id, requestContext)).thenReturn(Response(data = person, errors = errors))
 
       fun givenPersonWithNoActiveSupervisionFoundInProbation(
         id: String = crnNumber,
+        requestContext: RequestContext? = null,
         errors: List<UpstreamApiError> = emptyList(),
-      ) = whenever(deliusGateway.getOffender(id)).thenReturn(Response(data = personOnProbationNotUnderActiveSupervision, errors = errors))
+      ) = whenever(deliusGateway.getOffender(id, requestContext)).thenReturn(Response(data = personOnProbationNotUnderActiveSupervision, errors = errors))
 
       fun givenPersonNotFoundInProbation(
         id: String = unknownCrnNumber,
@@ -118,14 +123,15 @@ internal class GetPersonServiceTest :
       fun givenPrisonerFound(
         nomisNumber: String = nomsNumber,
         posPrisoner: POSPrisoner = prisoner,
-      ) = whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)).thenReturn(Response(data = posPrisoner))
+        requestContext: RequestContext? = null,
+      ) = whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber, requestContext)).thenReturn(Response(data = posPrisoner))
 
       fun givenPrisonerNotFound(nomisNumber: String = unknownNomsNumber) =
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber))
           .thenReturn(Response(data = null, errors = notFoundErrors(UpstreamApi.PRISONER_OFFENDER_SEARCH)))
 
       fun givenPrisonerNumberMergedAttributeSearchReturnsEmpty() =
-        whenever(prisonerOffenderSearchGateway.attributeSearch(any())).thenReturn(
+        whenever(prisonerOffenderSearchGateway.attributeSearch(any(), eq(null))).thenReturn(
           Response(
             data =
               POSPaginatedPrisoners(
@@ -165,7 +171,7 @@ internal class GetPersonServiceTest :
       fun givenPrisonerNumberMergedAttributeSearchReturnsMatchingResult(
         removedPrisonerNumber: String?,
         mergedInToPrisonerNumber: String,
-      ) = whenever(prisonerOffenderSearchGateway.attributeSearch(any())).thenReturn(
+      ) = whenever(prisonerOffenderSearchGateway.attributeSearch(any(), eq(null))).thenReturn(
         Response(
           data =
             POSPaginatedPrisoners(
@@ -319,7 +325,7 @@ internal class GetPersonServiceTest :
 
             result.errors shouldBe notFoundErrors(UpstreamApi.NDELIUS)
             result.data.shouldBeNull()
-            verify(prisonerOffenderSearchGateway, never()).getPrisonOffender(any())
+            verify(prisonerOffenderSearchGateway, never()).getPrisonOffender(any(), any())
           }
         }
 
@@ -434,26 +440,29 @@ internal class GetPersonServiceTest :
 
         describe("supervision status filter") {
           it("throws a 403 if supervision status filter is probation and probation record is under active supervision") {
-            givenPersonWithNoActiveSupervisionFoundInProbation()
+            val requestContext = buildRequestContext(filters = ConsumerFilters(supervisionStatuses = listOf(SupervisionStatus.PROBATION.name)))
+            givenPersonWithNoActiveSupervisionFoundInProbation(requestContext = requestContext)
             val exception =
               assertThrows<ForbiddenByUpstreamServiceException> {
-                getPersonService.getCombinedDataForPerson(crnNumber, ConsumerFilters(supervisionStatuses = listOf(SupervisionStatus.PROBATION.name)))
+                getPersonService.getCombinedDataForPerson(crnNumber, requestContext)
               }
             exception.message.shouldBe("Not under active supervision. Access denied.")
           }
 
           it("only probation record and no prisons data is returned if prison record found and supervision status filter is probation and not prison") {
-            givenPersonFoundInProbation()
+            val requestContext = buildRequestContext(filters = ConsumerFilters(supervisionStatuses = listOf(SupervisionStatus.PROBATION.name)))
+            givenPersonFoundInProbation(requestContext = requestContext)
             givenPrisonerFound()
-            val result: OffenderSearchResult? = getPersonService.getCombinedDataForPerson(crnNumber, ConsumerFilters(supervisionStatuses = listOf(SupervisionStatus.PROBATION.name))).data as OffenderSearchResult?
+            val result: OffenderSearchResult? = getPersonService.getCombinedDataForPerson(crnNumber, requestContext).data as OffenderSearchResult?
             result?.prisonerOffenderSearch.shouldBeNull()
             result?.probationOffenderSearch.shouldNotBeNull()
           }
 
           it("prison and probation records are returned when supervision status filter is prison") {
-            givenPersonFoundInProbation()
-            givenPrisonerFound()
-            val result: OffenderSearchResult? = getPersonService.getCombinedDataForPerson(crnNumber, ConsumerFilters(supervisionStatuses = listOf(SupervisionStatus.PRISONS.name))).data as OffenderSearchResult?
+            val requestContext = buildRequestContext(filters = ConsumerFilters(supervisionStatuses = listOf(SupervisionStatus.PRISONS.name)))
+            givenPersonFoundInProbation(requestContext = requestContext)
+            givenPrisonerFound(requestContext = requestContext)
+            val result: OffenderSearchResult? = getPersonService.getCombinedDataForPerson(crnNumber, requestContext).data as OffenderSearchResult?
             result?.prisonerOffenderSearch.shouldNotBeNull()
             result.probationOffenderSearch.shouldNotBeNull()
           }
@@ -1030,7 +1039,7 @@ internal class GetPersonServiceTest :
         beforeEach {
           val featureFlagConfigCPR = FeatureFlagConfig(mapOf(CPR_ENABLED to false))
           getPersonService = GetPersonService(prisonerOffenderSearchGateway, consumerPrisonAccessService, corePersonRecordGateway, featureFlagConfigCPR, telemetryService, deliusGateway)
-          whenever(deliusGateway.getOffender(any())).thenReturn(Response(data = Offender("Test", "Test", otherIds = OtherIds(crn = crnNumber, nomsNumber = nomsNumber))))
+          whenever(deliusGateway.getOffender(any(), eq(null))).thenReturn(Response(data = Offender("Test", "Test", otherIds = OtherIds(crn = crnNumber, nomsNumber = nomsNumber))))
         }
 
         afterEach {
@@ -1071,33 +1080,33 @@ internal class GetPersonServiceTest :
 
       describe("get Supervision Status by hmppsId") {
         it("HmppsId resolves to a supervision status of PROBATION") {
-          whenever(deliusGateway.getOffender(any())).thenReturn(Response(data = Offender("Test", "Test", activeProbationManagedSentence = true, otherIds = OtherIds(crn = crnNumber, nomsNumber = nomsNumber))))
+          whenever(deliusGateway.getOffender(any(), eq(null))).thenReturn(Response(data = Offender("Test", "Test", activeProbationManagedSentence = true, otherIds = OtherIds(crn = crnNumber, nomsNumber = nomsNumber))))
           val result = getPersonService.getSupervisionStatus(crnNumber)
           result.shouldBe(SupervisionStatus.PROBATION)
         }
 
         it("HmppsId resolves to a supervision status of NONE") {
-          whenever(deliusGateway.getOffender(any())).thenReturn(Response(data = Offender("Test", "Test", activeProbationManagedSentence = false, otherIds = OtherIds(crn = crnNumber, nomsNumber = nomsNumber))))
+          whenever(deliusGateway.getOffender(any(), eq(null))).thenReturn(Response(data = Offender("Test", "Test", activeProbationManagedSentence = false, otherIds = OtherIds(crn = crnNumber, nomsNumber = nomsNumber))))
           val result = getPersonService.getSupervisionStatus(crnNumber)
           result.shouldBe(SupervisionStatus.NONE)
         }
 
         it("HmppsId resolves to a supervision status of PRISONS") {
-          whenever(prisonerOffenderSearchGateway.getPrisonOffender(any())).thenReturn(Response(data = prisonerWithPrisonId, errors = emptyList()))
+          whenever(prisonerOffenderSearchGateway.getPrisonOffender(any(), eq(null))).thenReturn(Response(data = prisonerWithPrisonId, errors = emptyList()))
           val result = getPersonService.getSupervisionStatus(crnNumber)
           result.shouldBe(SupervisionStatus.PRISONS)
         }
 
         it("HmppsId resolves to a supervision status of PRISONS when the hmppsId is not found in delius but is ACTIVE in prisons") {
-          whenever(deliusGateway.getOffender(any())).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NDELIUS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))))
-          whenever(prisonerOffenderSearchGateway.getPrisonOffender(any())).thenReturn(Response(data = prisonerWithPrisonId, errors = emptyList()))
+          whenever(deliusGateway.getOffender(any(), eq(null))).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NDELIUS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))))
+          whenever(prisonerOffenderSearchGateway.getPrisonOffender(any(), eq(null))).thenReturn(Response(data = prisonerWithPrisonId, errors = emptyList()))
           val result = getPersonService.getSupervisionStatus(nomsNumber)
           result.shouldBe(SupervisionStatus.PRISONS)
         }
 
         it("HmppsId resolves to a supervision status of UNKNOWN when the hmppsId is not found in delius and is NOT ACTIVE in prisons") {
-          whenever(deliusGateway.getOffender(any())).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NDELIUS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))))
-          whenever(prisonerOffenderSearchGateway.getPrisonOffender(any())).thenReturn(Response(data = prisonerInactiveOut, errors = emptyList()))
+          whenever(deliusGateway.getOffender(any(), eq(null))).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NDELIUS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))))
+          whenever(prisonerOffenderSearchGateway.getPrisonOffender(any(), eq(null))).thenReturn(Response(data = prisonerInactiveOut, errors = emptyList()))
           val result = getPersonService.getSupervisionStatus(nomsNumber)
           result.shouldBe(SupervisionStatus.UNKNOWN)
         }
@@ -1108,37 +1117,37 @@ internal class GetPersonServiceTest :
         }
 
         it("HmppsId resolves to a supervision status of UNKNOWN when there is a nomis in delius but it is not found by prison offender search") {
-          whenever(prisonerOffenderSearchGateway.getPrisonOffender(any())).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))))
+          whenever(prisonerOffenderSearchGateway.getPrisonOffender(any(), eq(null))).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))))
           val result = getPersonService.getSupervisionStatus(crnNumber)
           result.shouldBe(SupervisionStatus.UNKNOWN)
         }
 
         it("HmppsId resolves to a supervision status of UNKNOWN when the hmmpsId can not be found in delius") {
-          whenever(deliusGateway.getOffender(any())).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NDELIUS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))))
+          whenever(deliusGateway.getOffender(any(), eq(null))).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NDELIUS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))))
           val result = getPersonService.getSupervisionStatus(crnNumber)
           result.shouldBe(SupervisionStatus.UNKNOWN)
         }
 
         it("HmppsId resolves to a supervision status of UNKNOWN when there is a nomis in delius but a technical error occurs retrieving it from prison offender search") {
-          whenever(prisonerOffenderSearchGateway.getPrisonOffender(any())).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH, type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR))))
+          whenever(prisonerOffenderSearchGateway.getPrisonOffender(any(), eq(null))).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH, type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR))))
           val result = getPersonService.getSupervisionStatus(crnNumber)
           result.shouldBe(SupervisionStatus.UNKNOWN)
         }
 
         it("HmppsId resolves to a supervision status of UNKNOWN when there is a technical error trying to find the hmmpsId can not be found in delius") {
-          whenever(deliusGateway.getOffender(any())).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NDELIUS, type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR))))
+          whenever(deliusGateway.getOffender(any(), eq(null))).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NDELIUS, type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR))))
           val result = getPersonService.getSupervisionStatus(crnNumber)
           result.shouldBe(SupervisionStatus.UNKNOWN)
         }
 
         it("HmppsId resolves to a supervision status of PROBATION when the hmmpsId does not have a nomis in delius but has a activeProbationManagedSentence in delius") {
-          whenever(deliusGateway.getOffender(any())).thenReturn(Response(data = Offender("Test", "Test", activeProbationManagedSentence = true, otherIds = OtherIds())))
+          whenever(deliusGateway.getOffender(any(), eq(null))).thenReturn(Response(data = Offender("Test", "Test", activeProbationManagedSentence = true, otherIds = OtherIds())))
           val result = getPersonService.getSupervisionStatus(crnNumber)
           result.shouldBe(SupervisionStatus.PROBATION)
         }
 
         it("HmppsId resolves to a supervision status of NONE when the hmmpsId does not have a nomis in delius and does NOT have a activeProbationManagedSentence in delius") {
-          whenever(deliusGateway.getOffender(any())).thenReturn(Response(data = Offender("Test", "Test", activeProbationManagedSentence = false, otherIds = OtherIds())))
+          whenever(deliusGateway.getOffender(any(), eq(null))).thenReturn(Response(data = Offender("Test", "Test", activeProbationManagedSentence = false, otherIds = OtherIds())))
           val result = getPersonService.getSupervisionStatus(crnNumber)
           result.shouldBe(SupervisionStatus.NONE)
         }

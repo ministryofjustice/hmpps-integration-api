@@ -5,13 +5,17 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
+import org.springframework.web.util.UriComponentsBuilder
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRDetailedContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRLinkedPrisoners
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRNumberOfChildren
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPaginatedContactSearchResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPaginatedPrisonerContacts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPrisonerContactRestrictions
 
@@ -35,12 +39,21 @@ class PersonalRelationshipsGateway(
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  fun getLinkedPrisoner(contactId: Long): Response<PRLinkedPrisoners?> {
+  fun getLinkedPrisoner(
+    contactId: Long,
+    pageNo: Int? = null,
+    perPage: Int? = null,
+    requestContext: RequestContext? = null,
+  ): Response<PRLinkedPrisoners?> {
+    val uri = UriComponentsBuilder.fromUriString("/contact/$contactId/linked-prisoners")
+    pageNo?.let { uri.queryParam("page", (pageNo - 1).toString()) }
+    perPage?.let { uri.queryParam("size", perPage.toString()) }
+
     val result =
       webClient.request<PRLinkedPrisoners>(
         HttpMethod.GET,
-        "/contact/$contactId/linked-prisoners",
-        authenticationHeader(),
+        uri.toUriString(),
+        authenticationHeader(requestContext),
         UpstreamApi.PERSONAL_RELATIONSHIPS,
       )
     return when (result) {
@@ -112,12 +125,13 @@ class PersonalRelationshipsGateway(
     page: Int,
     size: Int,
     emergencyOrNextOfKin: Boolean? = false,
+    requestContext: RequestContext?,
   ): Response<PRPaginatedPrisonerContacts?> {
     val result =
       webClient.request<PRPaginatedPrisonerContacts>(
         HttpMethod.GET,
         "/prisoner/$prisonerId/contact?page=${page - 1}&size=$size${uriEmergencyOrNOK(emergencyOrNextOfKin)}",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.PERSONAL_RELATIONSHIPS,
         badRequestAsError = true,
       )
@@ -166,8 +180,40 @@ class PersonalRelationshipsGateway(
     }
   }
 
-  private fun authenticationHeader(): Map<String, String> {
-    val token = hmppsAuthGateway.getClientToken("PERSONAL-RELATIONSHIPS")
+  fun contactSearch(
+    contactSearchRequest: ContactSearchRequest,
+    pageNo: Int,
+    perPage: Int,
+    requestContext: RequestContext?,
+  ): Response<PRPaginatedContactSearchResponse?> {
+    val result =
+      webClient.request<PRPaginatedContactSearchResponse>(
+        HttpMethod.GET,
+        contactSearchRequest.uriString(pageNo, perPage),
+        authenticationHeader(requestContext),
+        UpstreamApi.PERSONAL_RELATIONSHIPS,
+        badRequestAsError = true,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(
+          data =
+            result.data,
+        )
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  private fun authenticationHeader(requestContext: RequestContext? = null): Map<String, String> {
+    val token = hmppsAuthGateway.getClientToken("PERSONAL-RELATIONSHIPS", requestContext)
 
     return mapOf(
       "Authorization" to "Bearer $token",

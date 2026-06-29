@@ -270,6 +270,7 @@ abstract class DomainEventsListenerTestCase {
         FeatureFlagConfig.PERSON_LANGUAGES_CHANGED_NOTIFICATIONS_ENABLED,
         FeatureFlagConfig.PRISONER_BASE_LOCATION_CHANGED_NOTIFICATIONS_ENABLED,
         FeatureFlagConfig.PRISONER_MERGED_NOTIFICATIONS_ENABLED,
+        FeatureFlagConfig.USE_ASSESSMENT_SUMMARY_ENDPOINT,
       )
 
     enabledFeatureFlags.forEach { featureFlagTestConfig.assumeFeatureFlag(it, true) }

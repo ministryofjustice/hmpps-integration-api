@@ -3,9 +3,9 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.3.1"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.5.1"
   kotlin("plugin.spring") version "2.4.0"
-  id("dev.detekt") version "2.0.0-alpha.3"
+  id("dev.detekt") version "2.0.0-alpha.5"
   id("org.jetbrains.kotlinx.kover") version "0.9.8"
 }
 
@@ -33,14 +33,14 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-jdbc")
   runtimeOnly("org.springframework.boot:spring-boot-starter-flyway")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
-  implementation("io.sentry:sentry-spring-boot-4-starter:8.43.0")
-  implementation("io.sentry:sentry-logback:8.43.0")
+  implementation("io.sentry:sentry-spring-boot-4-starter:8.44.1")
+  implementation("io.sentry:sentry-logback:8.44.1")
   implementation("org.springframework.data:spring-data-jdbc")
   implementation("org.springframework.data:spring-data-commons")
   implementation("org.springframework:spring-aop")
   implementation("org.aspectj:aspectjweaver")
-  implementation("tools.jackson.module:jackson-module-kotlin:3.1.4")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.3.2") {
+  implementation("tools.jackson.module:jackson-module-kotlin:3.2.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.4.0") {
     exclude("org.springframework.security", "spring-security-config")
     exclude("org.springframework.security", "spring-security-core")
     exclude("org.springframework.security", "spring-security-crypto")
@@ -55,10 +55,10 @@ dependencies {
 
   testImplementation("org.springframework.boot:spring-boot-starter-test")
   testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
-  testImplementation("io.kotest:kotest-assertions-json-jvm:6.1.11")
-  testImplementation("io.kotest:kotest-runner-junit5-jvm:6.1.11")
-  testImplementation("io.kotest:kotest-assertions-core-jvm:6.1.11")
-  testImplementation("io.kotest:kotest-extensions-spring:6.1.11")
+  testImplementation("io.kotest:kotest-assertions-json-jvm:6.2.1")
+  testImplementation("io.kotest:kotest-runner-junit5-jvm:6.2.1")
+  testImplementation("io.kotest:kotest-assertions-core-jvm:6.2.1")
+  testImplementation("io.kotest:kotest-extensions-spring:6.2.1")
   add("koverCli", "org.jetbrains.kotlinx:kover-cli:0.9.8")
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
   testImplementation("org.mockito:mockito-core:5.23.0")
@@ -100,7 +100,7 @@ tasks {
     arrayOf(
       "uk.gov.justice.digital.hmpps.hmppsintegrationapi.HmppsIntegrationApiKt",
       "uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.SchedulingConfig",
-      "uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.subscriptionfilters.SubscriptionFilterPolicyFileGenerator",
+      "uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.DocumentationGenerator",
       "uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.FileManager",
     )
 
@@ -160,10 +160,10 @@ tasks {
   getByName("mergeCoverageReport").dependsOn(koverCli)
   getByName("createCoverageReport").dependsOn(mergeCoverageReport)
 
-  register<JavaExec>("generateFilterPolicies") {
-    description = "Generates subscription filter policies"
+  register<JavaExec>("generateDocumentation") {
+    description = "Generates Event documentation"
     classpath = sourceSets["main"].output + configurations["testRuntimeClasspath"] + sourceSets["test"].output
-    mainClass.set("uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.subscriptionfilters.SubscriptionFilterPolicyFileGenerator")
+    mainClass.set("uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.DocumentationGenerator")
   }
 
   register<Test>("unitTest") {
@@ -213,7 +213,7 @@ detekt {
 configurations.matching { it.name == "detekt" }.all {
   resolutionStrategy.eachDependency {
     if (requested.group == "org.jetbrains.kotlin") {
-      useVersion("2.3.21")
+      useVersion("2.4.0")
     }
   }
 }

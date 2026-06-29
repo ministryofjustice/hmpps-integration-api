@@ -1,0 +1,68 @@
+{
+  "data": {
+    "assessedOn": "2026-01-16T16:22:54",
+    "riskToSelf": {
+      "suicide": {
+        "risk": "YES",
+        "previous": "YES",
+        "previousConcernsText": "**REDACTED**",
+        "current": "YES",
+        "currentConcernsText": "**REDACTED**"
+      },
+      "selfHarm": {
+        "risk": "YES",
+        "previous": "YES",
+        "previousConcernsText": "**REDACTED**",
+        "current": "YES",
+        "currentConcernsText": "**REDACTED**"
+      },
+      "custody": {
+        "risk": "YES",
+        "previous": "YES",
+        "previousConcernsText": "**REDACTED**",
+        "current": "YES",
+        "currentConcernsText": "**REDACTED**"
+      },
+      "hostelSetting": {
+        "risk": "YES",
+        "previous": "YES",
+        "previousConcernsText": "**REDACTED**",
+        "current": "YES",
+        "currentConcernsText": "**REDACTED**"
+      },
+      "vulnerability": {
+        "risk": "YES",
+        "previous": "YES",
+        "previousConcernsText": "**REDACTED**",
+        "current": "YES",
+        "currentConcernsText": "**REDACTED**"
+      }
+    },
+    "otherRisks": {
+      "escapeOrAbscond": "YES",
+      "controlIssuesDisruptiveBehaviour": "YES",
+      "breachOfTrust": "YES",
+      "riskToOtherPrisoners": "YES"
+    },
+    "summary": {
+      "whoIsAtRisk": "**REDACTED**",
+      "natureOfRisk": "**REDACTED**",
+      "riskImminence": "**REDACTED**",
+      "riskIncreaseFactors": "**REDACTED**",
+      "riskMitigationFactors": "**REDACTED**",
+      "overallRiskLevel": "VERY_HIGH",
+      "riskInCommunity": {
+        "children": "HIGH ",
+        "public": "HIGH ",
+        "staff": "MEDIUM",
+        "prisoners": "LOW"
+      },
+      "riskInCustody": {
+        "children": "LOW",
+        "public": "LOW",
+        "staff": "VERY_HIGH",
+        "prisoners": "VERY_HIGH"
+      }
+    }
+  }
+}

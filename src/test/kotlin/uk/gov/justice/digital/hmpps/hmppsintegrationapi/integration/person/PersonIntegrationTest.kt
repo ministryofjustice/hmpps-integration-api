@@ -6,26 +6,36 @@ import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.post
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching
+import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.Matchers
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.mockito.ArgumentMatchers.anyMap
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.atLeast
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.http.HttpMethod
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithPrisonFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService.Companion.attributeSearchRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.createUnsignedJwt
 import java.io.File
 
 class PersonIntegrationTest : IntegrationTestBase() {
   @Nested
   inner class GetPerson {
-    @Test
-    fun `returns a list of persons using first name and last name as search parameters`() {
-      val firstName = "Robert"
-      val lastName = "Larsen"
+    val firstName = "Robert"
+    val lastName = "Larsen"
+
+    @BeforeEach
+    fun setup() {
       val expectedRequest = attributeSearchRequest(firstName, lastName)
 
       prisonerOffenderSearchMockServer.stubForPost(
@@ -35,7 +45,10 @@ class PersonIntegrationTest : IntegrationTestBase() {
           "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/AttributeSearch.json",
         ).readText(),
       )
+    }
 
+    @Test
+    fun `returns a list of persons using first name and last name as search parameters`() {
       val queryParams = "first_name=$firstName&last_name=$lastName"
 
       callApi("$basePath?$queryParams")
@@ -48,9 +61,6 @@ class PersonIntegrationTest : IntegrationTestBase() {
     @Test
     fun `returns a list of persons using pnc number search with consumer filters`() {
       whenever(authorisationConfig.roles).thenReturn(mapOf("full-access" to testRoleWithPrisonFilters))
-
-      val firstName = "Robert"
-      val lastName = "Larsen"
       val pncNumber = "2003/13116M"
 
       val expectedRequest = attributeSearchRequest(firstName, lastName, pncNumber, consumerFilters = testRoleWithPrisonFilters.filters!!)
@@ -70,6 +80,34 @@ class PersonIntegrationTest : IntegrationTestBase() {
         .andExpect(content().json(getExpectedResponse("person-name-pnc-search-response.json")))
 
       prisonerOffenderSearchMockServer.assertValidationPassed()
+    }
+
+    @Test
+    fun `sends the obo username to hmpps auth in a query param when obo username present in request`() {
+      val queryParams = "first_name=$firstName&last_name=$lastName"
+      callApiWithCN("$basePath?$queryParams", "obo-unsigned", oboValue = createUnsignedJwt())
+      val uri = argumentCaptor<String>()
+      verify(authSpy, atLeast(1)).getResponseBodySpec(eq(HttpMethod.POST), uri.capture(), anyMap(), eq(null))
+      val authRequestStrings = uri.allValues
+      // Gets an auth token for deliusGateway.getPersons and prisonerOffenderSearchGateway.attributeSearch passing the username
+      assertThat(authRequestStrings.size).isEqualTo(2)
+      authRequestStrings.forEach {
+        assertThat(it).isEqualTo("/auth/oauth/token?grant_type=client_credentials&username=testName")
+      }
+    }
+
+    @Test
+    fun `does not send the obo username to hmpps auth in a query param when obo username present in request`() {
+      val queryParams = "first_name=$firstName&last_name=$lastName"
+      callApi("$basePath?$queryParams")
+      val uri = argumentCaptor<String>()
+      verify(authSpy, atLeast(1)).getResponseBodySpec(eq(HttpMethod.POST), uri.capture(), anyMap(), eq(null))
+      val authRequestStrings = uri.allValues
+      // Gets an auth token for deliusGateway.getPersons and prisonerOffenderSearchGateway.attributeSearch passing the username
+      assertThat(authRequestStrings.size).isEqualTo(2)
+      authRequestStrings.forEach {
+        assertThat(it).isEqualTo("/auth/oauth/token?grant_type=client_credentials")
+      }
     }
 
     @Test

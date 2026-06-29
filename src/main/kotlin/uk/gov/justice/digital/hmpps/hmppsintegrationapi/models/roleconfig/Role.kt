@@ -51,7 +51,10 @@ val roleConstants =
       -"/v1/activities/schedule/{scheduleId}/suitability-criteria"
       -"/v1/activities/schedule/{scheduleId}/waiting-list-applications"
       -"/v1/activities/{activityId}/schedules"
+      -"/v1/addresses"
+      -"/v1/contacts"
       -"/v1/contacts/{contactId}"
+      -"/v1/contacts/{contactId}/linked-prisoners"
       -"/v1/education/course-completion"
       -"/v1/epf/person-details/{hmppsId}/{eventNumber}"
       -"/v1/hmpps/id/by-nomis-number/{nomisNumber}"
@@ -65,6 +68,7 @@ val roleConstants =
       -"/v1/persons/{hmppsId}/addresses"
       -"/v1/persons/{hmppsId}/active-alerts"
       -"/v1/persons/{hmppsId}/alerts"
+      -"/v1/persons/{hmppsId}/assessment-summary"
       -"/v1/persons/{hmppsId}/care-needs"
       -"/v1/persons/{hmppsId}/case-notes"
       -"/v1/persons/{hmppsId}/cell-location"
@@ -140,6 +144,9 @@ val roleConstants =
       -"/v1/visit/{visitReference}/cancel"
       -"/v2/config/authorisation"
       -"/v3/api-docs"
+      -"/v3/api-docs/swagger-config"
+      -"/swagger-ui.html"
+      -"/swagger-ui/.*"
     }
   }
 

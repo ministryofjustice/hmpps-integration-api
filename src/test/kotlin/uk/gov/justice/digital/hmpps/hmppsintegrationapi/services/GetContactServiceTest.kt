@@ -6,9 +6,12 @@ import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.kotlin.whenever
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
+import org.springframework.data.web.PagedModel
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -16,6 +19,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.EmailAddress
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRDetailedContact
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRLinkedPrisoner
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRLinkedPrisoners
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PhoneNumber
 
 @ContextConfiguration(
@@ -25,6 +30,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelations
 internal class GetContactServiceTest(
   private val getVisitorService: GetContactService,
   @MockitoBean val personalRelationshipsGateway: PersonalRelationshipsGateway,
+  @Autowired private val getContactService: GetContactService,
 ) : DescribeSpec({
 
     val contactId = "123456"
@@ -181,5 +187,54 @@ internal class GetContactServiceTest(
     it("will return 400 when invalid contactId") {
       val response = getVisitorService.execute(contactId = "THIS_ISNT_A_LONG!")
       response.errors.shouldContain(UpstreamApiError(UpstreamApi.PERSONAL_RELATIONSHIPS, UpstreamApiError.Type.BAD_REQUEST))
+    }
+
+    it("will return 200 for linked offenders for contactId") {
+      val linkedPrisoner =
+        PRLinkedPrisoner(
+          prisonerNumber = "AA1234BC",
+          lastName = "Smith",
+          firstName = "John",
+          middleNames = "Simon",
+          relationshipTypeCode = "S",
+          relationshipTypeDescription = "Official",
+          relationshipToPrisonerCode = "FRI",
+          relationshipToPrisonerDescription = "Friend",
+          isRelationshipActive = true,
+          prisonerContactId = 123456,
+        )
+      val gwResponse =
+        PRLinkedPrisoners(
+          prisoners = listOf(linkedPrisoner),
+          pageMetadata = PagedModel.PageMetadata(10, 0, 1, 1),
+        )
+      val requestContext = buildRequestContext()
+      whenever(personalRelationshipsGateway.getLinkedPrisoner(contactId.toLong(), 1, 10, requestContext)).thenReturn(Response(gwResponse))
+      val response = getContactService.getContactLinkedPrisoners(contactId = contactId.toLong(), 1, 10, requestContext)
+
+      response.data
+        ?.content
+        ?.size
+        .shouldBe(1)
+      response.data
+        ?.content
+        ?.first()
+        ?.prisonerNumber
+        .shouldBe("AA1234BC")
+      response.data?.perPage?.shouldBe(10)
+      response.data?.page?.shouldBe(1)
+    }
+
+    it("will return the upstream 404 for linked offenders for contactId") {
+      val requestContext = buildRequestContext()
+      val error =
+        UpstreamApiError(
+          UpstreamApi.PERSONAL_RELATIONSHIPS,
+          UpstreamApiError.Type.ENTITY_NOT_FOUND,
+        )
+      whenever(personalRelationshipsGateway.getLinkedPrisoner(contactId.toLong(), 1, 10, requestContext)).thenReturn(Response(null, listOf(error)))
+      val response = getContactService.getContactLinkedPrisoners(contactId = contactId.toLong(), 1, 10, requestContext)
+      response.data?.shouldBe(null)
+      response.errors[0].shouldBe(error)
     }
   })

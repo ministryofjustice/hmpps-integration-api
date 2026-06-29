@@ -43,4 +43,17 @@ class PersonResponsibleOfficerIntegrationTest : IntegrationTestBase() {
     callApiWithCN("$basePath/$nomsId/person-responsible-officer", noPrisonsCn)
       .andExpect(status().isNotFound)
   }
+
+  @Test
+  fun `returns redacted needs for a person`() {
+    managePomCaseMockServer.stubForGet(
+      "/api/allocation/$nomsIdFromProbation/primary_pom",
+      File("$gatewaysFolder/managePOMcase/fixtures/GetPrimaryPOMResponse.json").readText(),
+    )
+    callApiWithCN("$basePath/$nomsIdFromProbation/person-responsible-officer", "police")
+      .andExpect(status().isOk)
+      .andExpect(content().json(getExpectedResponse("person-responsible-officer-redacted.json")))
+
+    managePomCaseMockServer.assertValidationPassed()
+  }
 }

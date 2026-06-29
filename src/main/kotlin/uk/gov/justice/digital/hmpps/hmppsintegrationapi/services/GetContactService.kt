@@ -2,8 +2,10 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DetailedContact
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedContactLinkedPrisonerResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -40,5 +42,16 @@ class GetContactService(
     return Response(
       data = response.data.toDetailedContact(),
     )
+  }
+
+  fun getContactLinkedPrisoners(
+    contactId: Long,
+    pageNo: Int,
+    perPage: Int,
+    requestContext: RequestContext? = null,
+  ): Response<PaginatedContactLinkedPrisonerResponse?> {
+    val linkedPrisoners = personalRelationshipsGateway.getLinkedPrisoner(contactId, pageNo, perPage, requestContext)
+    val data = linkedPrisoners.data ?: return Response(null, linkedPrisoners.errors)
+    return Response(data.toPaginatedLinkedPrisonerResponse())
   }
 }

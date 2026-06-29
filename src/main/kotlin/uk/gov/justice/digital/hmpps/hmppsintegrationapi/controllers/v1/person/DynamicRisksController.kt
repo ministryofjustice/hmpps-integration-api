@@ -32,18 +32,18 @@ class DynamicRisksController(
   @Operation(
     summary = "Returns dynamic risks associated with a person.",
     description =
-      "Returns the following dynamic risks if applicable for an offender \n" +
-        "Suicide/Self Harm (ALSH)\n" +
-        "Child Concerns (RCCO)\n" +
-        "Child Protection (RCPR)\n" +
-        "Risk to Vulnerable Adult (RVAD)\n" +
-        "Street Gangs (STRG)\n" +
-        "ViSOR Record (AVIS)\n" +
-        "Weapons (WEAP)\n" +
-        "Low Risk of Serious Harm (RLRH)\n" +
-        "Medium Risk of Serious Harm (RMRH)\n" +
-        "High Risk of Serious Harm (RHRH)\n" +
-        "Very High Risk of Serious Harm (RVRH)",
+      "Returns the following dynamic risks if applicable for an offender </br>" +
+        "- Suicide/Self Harm (ALSH) </br>" +
+        "- Child Concerns (RCCO) </br>" +
+        "- Child Protection (RCPR) </br>" +
+        "- Risk to Vulnerable Adult (RVAD) </br>" +
+        "- Street Gangs (STRG) </br>" +
+        "- ViSOR Record (AVIS) </br>" +
+        "- Weapons (WEAP) </br>" +
+        "- Low Risk of Serious Harm (RLRH) </br>" +
+        "- Medium Risk of Serious Harm (RMRH) </br>" +
+        "- High Risk of Serious Harm (RHRH) </br>" +
+        "- Very High Risk of Serious Harm (RVRH) </br>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found dynamic risks for a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),

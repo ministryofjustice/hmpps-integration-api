@@ -2,6 +2,7 @@ import http from 'k6/http';
 import { group, check, fail } from 'k6';
 import exec from 'k6/execution';
 import { read_certificate } from "./support.js"
+import { Counter } from "k6/metrics";
 
 /***********
  To run this script locally, make sure the following environment variables are set:-
@@ -25,6 +26,7 @@ const profile = __ENV.PROFILE;
 
 const [cert, key, api_key] = read_certificate();
 
+let runtime_errors = new Counter("runtime_errors");
 export const options = (cert === "") ? {} : {
   vus: 1,
   iterations: 1,
@@ -34,12 +36,40 @@ export const options = (cert === "") ? {} : {
       key,
     },
   ],
+  thresholds: {
+    "runtime_errors": [{ threshold: "count==0", abortOnFail: true }]
+  }
 };
 
 const httpParams = {
   headers: {
     'Content-Type': 'application/json',
     'x-api-key': api_key,
+  },
+};
+
+const httpOboHeaderParams = {
+  headers: {
+    'Content-Type': 'application/json',
+    'x-api-key': api_key,
+// Test jwt, decoded as follows
+    //      {
+    //        "header": {
+    //          "alg":"none"
+    //          "kid":"testKid"
+    //        }
+    //        "payload":{
+    //          "sub":"1234567890"
+    //          "name":"John Doe"
+    //          "admin":true
+    //          "iat":1516239022
+    //          "aud":"testAud"
+    //          "iss":"testIss"
+    //          "appid":"testId"
+    //          "unique_name":"hmpps-external-api@justice.gov.uk"
+    //        }
+    //      }
+    'X-On-Behalf-Of': "eyJhbGciOiJub25lIiwia2lkIjoidGVzdEtpZCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMiwiYXVkIjoidGVzdEF1ZCIsImlzcyI6InRlc3RJc3MiLCJhcHBpZCI6InRlc3RJZCIsInVuaXF1ZV9uYW1lIjoiaG1wcHMtZXh0ZXJuYWwtYXBpQGp1c3RpY2UuZ292LnVrIn0."
   },
 };
 
@@ -265,6 +295,18 @@ function verify_post_endpoints() {
   }
 }
 
+function verify_web_application_firewall_request(path) {
+
+  const res = http.get(`${baseUrl}${path}`, httpParams);
+  if (!check(res, {
+    [`GET ${path} is blocked by WAF`]: (r) => r.status === 403 && r.body.includes("nginx"),
+  })) {
+    // ToDo - Change condition to fail this test when modsec enabled in all environments
+    exec.test.fail(`GET ${path} failed. http status is ${res.status}. Status should be 403 and the response body should include "nginx"`);
+  }
+
+}
+
 /**
  * Make a GET request to the API and validate that the http response code indicates success.
  * @returns the http response object
@@ -278,6 +320,21 @@ function validate_get_request(path) {
   }
   return res;
 }
+
+/**
+ * Make a GET request with an on befalf of to the API and validate that the http response code indicates success.
+ * @returns the http response object
+ */
+function validate_get_request_with_obo(path) {
+  const res = http.get(`${baseUrl}${path}`, httpOboHeaderParams);
+  if (!check(res, {
+    [`GET ${path} successful`]: (r) => r.status < 400,
+  })) {
+    exec.test.fail(`GET ${path} with obo failed, http status = ${res.status}`);
+  }
+  return res;
+}
+
 
 function validate_response_list_not_empty(response, message) {
   let data = response.json() ? response.json()["data"] : null;
@@ -314,7 +371,7 @@ function verify_system_endpoints() {
   })) {
     return false
   }
-  
+
   return true
 }
 
@@ -386,6 +443,7 @@ function verify_get_person(hmppsId) {
 function minimal_prod_verification() {
   verify_system_endpoints();
   validate_get_request(`/v1/hmpps/reference-data`);
+  verify_web_application_firewall_request(`/v1/status?id=abc'+or+'1'%3D'1'`)
 }
 
 /**
@@ -404,6 +462,7 @@ function denied_endpoint_verification() {
 function simple_endpoint_tests() {
   verify_post_endpoints();
   verify_get_endpoints();
+  verify_web_application_firewall_request(`/v1/status?id=abc'+or+'1'%3D'1'`)
 }
 
 /**
@@ -469,6 +528,83 @@ function verify_activities_search(prisonId, prisonerId, startDate, days = 90) {
     exec.test.fail(`GET ${path} failed, http status = ${res.status}`);
   }
   return res;
+}
+
+function verify_contact_endpoints(firstName, lastName, dateOfBirth) {
+  group('contacts', () => {
+    let res = validate_get_request_with_obo(`/v1/contacts?firstName=${firstName}&lastName=${lastName}&dateOfBirth=${dateOfBirth}`)
+    if (res.status !== 200) {
+      console.log(`Contact search failed`);
+      return
+    }
+    let contacts = res.json()["data"];
+    if (!check(contacts, {
+      [`At least one contact returned`]: () => contacts.length >= 1,
+    })) {
+      return
+    }
+    const postRes = http.post(`${baseUrl}/v1/contacts`, JSON.stringify({
+      firstName: firstName,
+      lastName: lastName,
+      dateOfBirth: dateOfBirth
+    }), httpOboHeaderParams);
+
+    if (!check(postRes, {
+      'POST /v1/contacts returns 200': (r) => r.status === 200,
+    })) {
+      fail(`/v1/contacts caused the test to fail`)
+    }
+    let contactsFromPost = postRes.json()["data"];
+
+    if(contacts[0]["contactId"] !== contactsFromPost[0]["contactId"]){
+      fail(`/v1/contacts POST response is different to GET`)
+    }
+
+    validate_get_request_with_obo(`/v1/contacts/${contactId}`);
+    validate_get_request_with_obo(`/v1/contacts/${contactId}/linked-prisoners`);
+  })
+}
+
+function verify_address_endpoints(addressNumber, streetName, postcode) {
+  group('address', () => {
+
+    let path = `/v1/addresses?streetName=${streetName}&addressNumber=${addressNumber}&postcode=${postcode}`
+    let res = validate_get_request_with_obo(encodeURI(path))
+    if (res.status !== 200) {
+      console.log(`Address search failed`);
+      return
+    }
+    let address = res.json()["personAddresses"];
+    if (!check(address, {
+      [`At least one address returned from GET`]: () => address.length >= 1,
+    })) {
+      fail(`no addresses returned from GET`);
+      return;
+    }
+    const postRes = http.post(`${baseUrl}/v1/addresses`, JSON.stringify({
+      streetName: streetName,
+      addressNumber: addressNumber,
+      postcode: postcode
+    }), httpOboHeaderParams);
+
+    if (!check(postRes, {
+      'POST /v1/addresses returns 200': (r) => r.status === 200,
+    })) {
+      fail(`/v1/addresses caused the test to fail`)
+    }
+    let addressFromPost = postRes.json()["personAddresses"];
+
+    if (!check(addressFromPost, {
+      [`At least one address returned from POST`]: () => addressFromPost.length >= 1,
+    })) {
+      fail(`no addresses returned from POST`);
+      return;
+    }
+
+    if(address[0]["hmppsId"] !== addressFromPost[0]["hmppsId"]){
+      fail(`/v1/addresses POST response is different to GET`)
+    }
+  })
 }
 
 function verify_prisons_endpoints(nomisNumber) {
@@ -653,39 +789,25 @@ function verify_prisoner_contacts(hmppsId) {
   validate_get_request(`/v1/contacts/${contactId}`);
 }
 
-function verify_headers() {
-  //Tests to add headers too for app insights
-  const httpHeaderParams = {
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': api_key,
-// Test jwt, decoded as follows
-      //      {
-      //        "header": {
-      //          "alg":"none"
-      //          "kid":"testKid"
-      //        }
-      //        "payload":{
-      //          "sub":"1234567890"
-      //          "name":"John Doe"
-      //          "admin":true
-      //          "iat":1516239022
-      //          "aud":"testAud"
-      //          "iss":"testIss"
-      //          "appid":"testId"
-      //          "unique_name":"testName"
-      //        }
-      //      }
-      'X-On-Behalf-Of': "eyJhbGciOiJub25lIiwia2lkIjoidGVzdEtpZCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMiwiYXVkIjoidGVzdEF1ZCIsImlzcyI6InRlc3RJc3MiLCJhcHBpZCI6InRlc3RJZCIsInVuaXF1ZV9uYW1lIjoidGVzdE5hbWUifQ."
-    },
-  };
+function verify_obo_access(hmppsId) {
 
-  const res = http.get(`${baseUrl}/v1/status`, httpHeaderParams);
-    if (!check(res, {
-      [`Successful sent api call with extended headers.`]: (r) => r.status < 400,
-    })) {
-      exec.test.fail(`Failed to use headers in api call.`);
+  group('requests with obo', () => {
+    let res = validate_get_request_with_obo(`/v1/persons/${hmppsId}`);
+    if (res.status >= 400) {
+      return null
     }
+
+    let probationData = res.json()["data"]["probationOffenderSearch"];
+    let lastName = probationData["lastName"];
+    let dob = probationData["dateOfBirth"];
+
+    validate_get_request_with_obo(`/v1/status`);
+    validate_get_request_with_obo(`/v1/persons/${hmppsId}/sentences`);
+    validate_get_request_with_obo(`/v1/persons?last_name=${lastName}&date_of_birth=${dob}`);
+    validate_get_request_with_obo(`/v1/persons/${hmppsId}/offences`)
+    validate_get_request_with_obo(`/v1/persons/${hmppsId}/addresses`)
+    validate_get_request_with_obo(`/v1/persons/${hmppsId}/contacts`)
+  });
 }
 
 /**
@@ -727,37 +849,45 @@ function structured_verification_test(hmppsId) {
 
   verify_education_san(hmppsId);
 
-  verify_headers()
+  verify_obo_access(hmppsId)
+
+  verify_contact_endpoints("Joe-Dps", "Bloggs", "01/01/2000")
+  verify_address_endpoints("102", "Petty", "SW1H 9AJ")
 }
 /************************************************************************/
 
 export default function ()  {
   console.log(`Using profile: ${profile} with base url: ${baseUrl}`);
 
-  switch (profile) {
-    case "MAIN":
-      structured_verification_test(primaryHmppsId);
-      simple_endpoint_tests();
-      break
-    case "STRUCTURED":
-      structured_verification_test(primaryHmppsId);
-      break
-    case "PROD":
-    case "MINIMAL":
-      minimal_prod_verification();
-      break
-    case "LIMITED":
-    case "PARTIAL":
-      partial_access_tests();
-      break
-    case "NOPERMS":
-    case "NOCERT":
-    case "REVOKED":
-      denied_endpoint_verification();
-      break
-    default:
-      console.log(`Unsupported profile: ${profile}`);
-      break
+  try {
+    switch (profile) {
+      case "MAIN":
+        structured_verification_test(primaryHmppsId);
+        simple_endpoint_tests();
+        break
+      case "STRUCTURED":
+        structured_verification_test(primaryHmppsId);
+        break
+      case "PROD":
+      case "MINIMAL":
+        minimal_prod_verification();
+        break
+      case "LIMITED":
+      case "PARTIAL":
+        partial_access_tests();
+        break
+      case "NOPERMS":
+      case "NOCERT":
+      case "REVOKED":
+        denied_endpoint_verification();
+        break
+      default:
+        console.log(`Unsupported profile: ${profile}`);
+        break
+    }
+  } catch (e) {
+    console.log(e);
+    runtime_errors.add(1)
   }
 };
 

@@ -5,6 +5,7 @@ import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
+import kotlin.test.Test
 
 class RisksIntegrationTest : IntegrationTestBase() {
   @ParameterizedTest
@@ -34,5 +35,12 @@ class RisksIntegrationTest : IntegrationTestBase() {
   fun `return a 400 when invalid hmpps submitted`(path: String) {
     callApi("$basePath/invalid-invalid/risks/$path")
       .andExpect(status().isBadRequest)
+  }
+
+  @Test
+  fun `notes are redacted for dynamic risks for police role`() {
+    callApiWithCN("$basePath/$crn/risks/dynamic", "police")
+      .andExpect(status().isOk)
+      .andExpect(content().json(getExpectedResponse("person-risk-dynamic-text-redacted.json")))
   }
 }

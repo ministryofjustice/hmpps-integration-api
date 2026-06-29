@@ -1,0 +1,38 @@
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
+
+import jakarta.validation.ValidationException
+import org.springframework.web.util.UriComponentsBuilder
+
+data class AddressSearchRequest(
+  val buildingName: String? = null,
+  val addressNumber: String? = null,
+  val streetName: String? = null,
+  val postcode: String? = null,
+) {
+  fun uriString(maxResults: Int? = null): String {
+    val uri =
+      UriComponentsBuilder
+        .fromUriString("/search/addresses")
+    maxResults?.let { uri.queryParam("maxResults", it) }
+    return uri.toUriString()
+  }
+
+  fun validate() {
+    if (buildingName == null && addressNumber == null && streetName == null && postcode == null) {
+      throw ValidationException("No search criteria found")
+    }
+  }
+
+  fun toMap(): Map<String, String> {
+    val buildingName = buildingName ?: ""
+    val addressNumber = addressNumber ?: ""
+    val streetName = streetName ?: ""
+    val postcode = postcode ?: ""
+    return mapOf(
+      "buildingName" to buildingName,
+      "addressNumber" to addressNumber,
+      "streetName" to streetName,
+      "postcode" to postcode,
+    )
+  }
+}

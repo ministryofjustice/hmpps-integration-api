@@ -13,6 +13,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestAddress
@@ -35,6 +36,7 @@ class GetAddressesForPersonTest(
       val deliusMockServer = ApiMockServer.create(UpstreamApi.NDELIUS)
       val hmppsId = "X777776"
       val path = "/case/$hmppsId/addresses"
+      val requestContext = buildRequestContext("testUser")
 
       beforeEach {
 
@@ -74,7 +76,7 @@ class GetAddressesForPersonTest(
         )
 
         Mockito.reset(hmppsAuthGateway)
-        whenever(hmppsAuthGateway.getClientToken("nDelius")).thenReturn(
+        whenever(hmppsAuthGateway.getClientToken("nDelius", requestContext)).thenReturn(
           HmppsAuthMockServer.TOKEN,
         )
       }
@@ -84,13 +86,13 @@ class GetAddressesForPersonTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        deliusGateway.getAddressesForPerson(hmppsId)
+        deliusGateway.getAddressesForPerson(hmppsId, requestContext)
 
-        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("nDelius")
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("nDelius", requestContext)
       }
 
       it("returns addresses for a person with the matching ID") {
-        val response = deliusGateway.getAddressesForPerson(hmppsId)
+        val response = deliusGateway.getAddressesForPerson(hmppsId, requestContext)
 
         response.data.shouldContain(
           generateTestAddress(
@@ -116,7 +118,7 @@ class GetAddressesForPersonTest(
         """,
         )
 
-        val response = deliusGateway.getAddressesForPerson(hmppsId)
+        val response = deliusGateway.getAddressesForPerson(hmppsId, requestContext)
 
         response.data.shouldBeEmpty()
       }
@@ -128,7 +130,7 @@ class GetAddressesForPersonTest(
           HttpStatus.NOT_FOUND,
         )
 
-        val response = deliusGateway.getAddressesForPerson(hmppsId)
+        val response = deliusGateway.getAddressesForPerson(hmppsId, requestContext)
 
         response.data.shouldBeEmpty()
       }
@@ -144,7 +146,7 @@ class GetAddressesForPersonTest(
         """,
         )
 
-        val response = deliusGateway.getAddressesForPerson(hmppsId)
+        val response = deliusGateway.getAddressesForPerson(hmppsId, requestContext)
 
         response.data.shouldBeEmpty()
       }
@@ -161,7 +163,7 @@ class GetAddressesForPersonTest(
         """,
         )
 
-        val response = deliusGateway.getAddressesForPerson(hmppsId)
+        val response = deliusGateway.getAddressesForPerson(hmppsId, requestContext)
 
         response.data.shouldBeEmpty()
       }
@@ -180,7 +182,7 @@ class GetAddressesForPersonTest(
         """,
         )
 
-        val response = deliusGateway.getAddressesForPerson(hmppsId)
+        val response = deliusGateway.getAddressesForPerson(hmppsId, requestContext)
 
         response.data.shouldBeEmpty()
       }
@@ -203,7 +205,7 @@ class GetAddressesForPersonTest(
         """,
         )
 
-        val response = deliusGateway.getAddressesForPerson(hmppsId)
+        val response = deliusGateway.getAddressesForPerson(hmppsId, requestContext)
 
         response.data
           .first()

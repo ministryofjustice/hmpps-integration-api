@@ -35,6 +35,7 @@ services:
   integration-api.base-url: http://localhost:4029
   prisoner-base-location.base-url: http://localhost:4030
   core-person-record.base-url: http://localhost:4031
+  probation-offender-search.base-url: http://localhost:4033
 
 hmpps.sqs:
   provider: localstack
@@ -74,8 +75,11 @@ feature-flag:
   csra-endpoint: true
   epf-endpoint-includes-lao: true
   cpr-enabled: true
-  gateway-cache-enabled: true
-  use-webclient-wrapper-for-hmpps-auth: true
+  use-assessment-summary-endpoint: true
+  use-stubbed-assessment-summary: false
+  contact-search-endpoint-enabled: true
+  address-search-endpoint-enabled: true
+  contact-linked-prisoners-endpoint-enabled: true
   # Events Config
   enable-delete-processed-events: false
   enable-publish-pending-events: false

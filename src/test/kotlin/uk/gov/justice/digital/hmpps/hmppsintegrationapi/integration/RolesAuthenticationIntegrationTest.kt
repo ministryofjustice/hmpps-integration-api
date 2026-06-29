@@ -2,11 +2,9 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
-import org.springframework.test.context.TestPropertySource
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.roles
 import kotlin.test.assertTrue
 
-@TestPropertySource(properties = ["feature-flag.gateway-cache-enabled=false"])
 class RolesAuthenticationIntegrationTest : IntegrationTestBase() {
 //  @Test
 //  fun `all endpoints in all roles are authenticated and exist`() {

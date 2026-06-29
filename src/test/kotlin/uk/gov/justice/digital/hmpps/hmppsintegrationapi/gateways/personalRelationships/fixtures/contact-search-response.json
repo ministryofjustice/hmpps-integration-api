@@ -1,0 +1,50 @@
+{
+  "content": [
+    {
+      "id": 123456,
+      "lastName": "Doe",
+      "firstName": "John",
+      "middleNames": "William",
+      "dateOfBirth": "1980-01-01",
+      "deceasedDate": "1980-01-01",
+      "createdBy": "JD000001",
+      "createdTime": "2024-01-01T00:00:00Z",
+      "flat": "01",
+      "property": "01",
+      "street": "Bluebell Crescent",
+      "area": "Birmingham",
+      "cityCode": "25343",
+      "cityDescription": "Sheffield",
+      "countyCode": "S.YORKSHIRE",
+      "countyDescription": "South Yorkshire",
+      "postcode": "B42 2QJ",
+      "countryCode": "ENG",
+      "countryDescription": "England",
+      "mailAddress": true,
+      "startDate": "2022-10-01",
+      "endDate": "2023-10-02",
+      "noFixedAddress": false,
+      "comments": "Some additional information",
+      "existingRelationships": [
+        {
+          "prisonerContactId": 123456,
+          "relationshipTypeCode": "S",
+          "relationshipTypeDescription": "Official",
+          "relationshipToPrisonerCode": "FRI",
+          "relationshipToPrisonerDescription": "Friend",
+          "isRelationshipActive": true,
+          "isApprovedVisitor": true,
+          "isEmergencyContact": true,
+          "isNextOfKin": true,
+          "comments": "string"
+        }
+      ]
+    }
+  ],
+  "page": {
+    "size": 10,
+    "number": 0,
+    "totalElements": 1,
+    "totalPages": 1
+  }
+}

@@ -54,15 +54,15 @@ runs:
                   tail -5 $FILE4 | grep ruby | sed "s/[^0-9.]*//g" > .ruby-version
                   chmod 755 .ruby-version
                 else
-                  echo "Using ruby version 3.1.0"
-                  echo '3.1.0' > .ruby-version
+                  echo "Using ruby version 3.2.0"
+                  echo '3.2.0' > .ruby-version
                   chmod 755 .ruby-version
                 fi
               fi
             fi
           else
-            echo "Using ruby version 3.1.0"
-            echo '3.1.0' > .ruby-version
+            echo "Using ruby version 3.2.0"
+            echo '3.2.0' > .ruby-version
             chmod 755 .ruby-version
           fi
         fi
@@ -72,8 +72,8 @@ runs:
       run: |
         if [[ ${{ steps.branch-exists.outputs.result }} == 1 ]];
         then
-          echo "Using ruby version 3.1.0"
-          echo '3.1.0' > .ruby-version
+          echo "Using ruby version 3.2.0"
+          echo '3.2.0' > .ruby-version
           chmod 755 .ruby-version
         fi
       shell: bash

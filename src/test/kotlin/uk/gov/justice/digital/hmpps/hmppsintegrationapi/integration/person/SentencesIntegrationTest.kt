@@ -74,19 +74,18 @@ class SentencesIntegrationTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `sentences returns forbidden for an LAO person when redaction policy is present`() {
-    setToLao()
-    whenever(authorisationConfig.roles).thenReturn(mapOf("full-access" to testRoleWithLaoRedactions))
-    callApi(path)
-      .andExpect(status().isForbidden)
-  }
-
-  @Test
   fun `returns latest sentence key dates and adjustments for an LAO person when redaction policy is present`() {
     setToLao()
     whenever(authorisationConfig.roles).thenReturn(mapOf("full-access" to testRoleWithLaoRedactions))
     callApi("$path/latest-key-dates-and-adjustments")
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("person-sentence-key-dates")))
+  }
+
+  @Test
+  fun `returns latest redacted sentence key dates and adjustments for an person when redaction policy is present`() {
+    callApiWithCN("$basePath/$nomsIdFromProbation/sentences/latest-key-dates-and-adjustments", "police")
+      .andExpect(status().isOk)
+      .andExpect(content().json(getExpectedResponse("person-sentence-key-dates-redacted.json")))
   }
 }

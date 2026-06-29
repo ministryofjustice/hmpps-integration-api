@@ -167,7 +167,7 @@ internal class VisitQueueServiceTest(
       whenever(getPersonService.getNomisNumber(hmppsId = eq(hmppsId), filters = any<ConsumerFilters>())).thenReturn(Response(NomisNumber(hmppsId)))
       whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessage>(prisonId, filters)).thenReturn(Response(data = null))
       whenever(getVisitInformationByReferenceService.execute(eq(visitReference), any<ConsumerFilters>())).thenReturn(Response(data = visitResponse))
-      whenever(personalRelationshipsGateway.getContacts(hmppsId, page = 1, size = 10)).thenReturn(
+      whenever(personalRelationshipsGateway.getContacts(hmppsId, page = 1, size = 10, requestContext = null)).thenReturn(
         Response(
           data = getContactsResponse(visitorContactId),
         ),
@@ -242,7 +242,7 @@ internal class VisitQueueServiceTest(
 
       it("return error if personalRelationshipsGateway returns an error") {
         val errors = listOf(UpstreamApiError(UpstreamApi.PERSONAL_RELATIONSHIPS, UpstreamApiError.Type.INTERNAL_SERVER_ERROR, description = "personalRelationshipsGateway returns an error"))
-        whenever(personalRelationshipsGateway.getContacts(prisonerId = hmppsId, page = 1, size = 10)).thenReturn(Response(data = null, errors))
+        whenever(personalRelationshipsGateway.getContacts(prisonerId = hmppsId, page = 1, size = 10, requestContext = null)).thenReturn(Response(data = null, errors))
 
         val response = visitQueueService.sendCreateVisit(createVisitRequest, who, filters)
         response.data.shouldBeNull()
@@ -250,7 +250,7 @@ internal class VisitQueueServiceTest(
       }
 
       it("return error if the visitor is not a contact of the prisoner") {
-        whenever(personalRelationshipsGateway.getContacts(prisonerId = hmppsId, page = 1, size = 10)).thenReturn(
+        whenever(personalRelationshipsGateway.getContacts(prisonerId = hmppsId, page = 1, size = 10, requestContext = null)).thenReturn(
           Response(
             data = getContactsResponse(visitorContactId + 1), // Add 1 so it is different from expected
           ),
@@ -323,7 +323,7 @@ internal class VisitQueueServiceTest(
 
       it("return error if personalRelationshipsGateway returns an error") {
         val errors = listOf(UpstreamApiError(UpstreamApi.PERSONAL_RELATIONSHIPS, UpstreamApiError.Type.INTERNAL_SERVER_ERROR, description = "personalRelationshipsGateway returns an error"))
-        whenever(personalRelationshipsGateway.getContacts(prisonerId = hmppsId, page = 1, size = 10)).thenReturn(Response(data = null, errors))
+        whenever(personalRelationshipsGateway.getContacts(prisonerId = hmppsId, page = 1, size = 10, requestContext = null)).thenReturn(Response(data = null, errors))
 
         val response = visitQueueService.sendUpdateVisit(visitReference, updateVisitRequest, who, filters)
         response.data.shouldBeNull()
@@ -331,7 +331,7 @@ internal class VisitQueueServiceTest(
       }
 
       it("return error if the visitor is not a contact of the prisoner") {
-        whenever(personalRelationshipsGateway.getContacts(prisonerId = hmppsId, page = 1, size = 10)).thenReturn(
+        whenever(personalRelationshipsGateway.getContacts(prisonerId = hmppsId, page = 1, size = 10, requestContext = null)).thenReturn(
           Response(
             data = getContactsResponse(visitorContactId + 1), // Add 1 so it is different from expected
           ),

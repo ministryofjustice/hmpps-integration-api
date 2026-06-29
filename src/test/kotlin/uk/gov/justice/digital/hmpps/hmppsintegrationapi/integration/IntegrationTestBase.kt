@@ -7,23 +7,28 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.mockito.kotlin.reset
+import org.mockito.kotlin.spy
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
+import org.springframework.context.annotation.Import
 import org.springframework.http.HttpHeaders
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
+import org.springframework.test.util.ReflectionTestUtils
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheDisabledTestConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.JdbcTemplateEventNotificationRepository
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.writeAsJson
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CorePersonRecordGateway
@@ -42,9 +47,10 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
 @ActiveProfiles("integration-test")
-@TestPropertySource(properties = ["feature-flag.gateway-cache-enabled=false"])
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = RANDOM_PORT)
+@TestPropertySource(properties = ["cache-enabled=false"])
+@Import(CacheDisabledTestConfiguration::class)
 abstract class IntegrationTestBase {
   @MockitoSpyBean
   lateinit var featureFlagConfig: FeatureFlagConfig
@@ -82,6 +88,8 @@ abstract class IntegrationTestBase {
   @Autowired
   lateinit var mockMvc: MockMvc
 
+  lateinit var authSpy: WebClientWrapper
+
   @BeforeEach
   fun evictAllCaches() {
     reset(alertsGateway)
@@ -94,6 +102,14 @@ abstract class IntegrationTestBase {
     reset(authorisationService)
     reset(eventNotificationRepository)
     reset(authGateway)
+
+    // Create a spy on the auth client in order to check
+    val authClient =
+      WebClientWrapper(
+        "http://localhost:3000",
+      )
+    authSpy = spy(authClient)
+    ReflectionTestUtils.setField(authGateway, "webClientWrapper", authSpy)
 
     prisonerOffenderSearchMockServer.stubForGet(
       "/prisoner/${Companion.nomsId}",
@@ -174,6 +190,7 @@ abstract class IntegrationTestBase {
     val prisonerBaseLocationMockServer = ApiMockServer.create(UpstreamApi.PRISONER_BASE_LOCATION)
     val corePersonRecordMockServer = ApiMockServer.create(UpstreamApi.CORE_PERSON_RECORD)
     val arnsMockServer = ApiMockServer.create(UpstreamApi.ARNS_INTEGRATION_TEST)
+    val probationSearchMockServer = ApiMockServer.create(UpstreamApi.PROBATION_OFFENDER_SEARCH)
 
     @BeforeEach
     fun setUp() {
@@ -185,6 +202,7 @@ abstract class IntegrationTestBase {
       hmppsAuthMockServer.start()
       corePersonRecordMockServer.start()
       hmppsAuthMockServer.stubGetOAuthToken("client", "client-secret", HmppsAuthMockServer.TOKEN)
+      hmppsAuthMockServer.stubGetOAuthToken("client", "client-secret", HmppsAuthMockServer.TOKEN, "testName")
 
       prisonerOffenderSearchMockServer.start()
 
@@ -377,6 +395,8 @@ abstract class IntegrationTestBase {
               }
               """,
       )
+
+      probationSearchMockServer.start()
 
       managePomCaseMockServer.start()
       plpMockServer.start()

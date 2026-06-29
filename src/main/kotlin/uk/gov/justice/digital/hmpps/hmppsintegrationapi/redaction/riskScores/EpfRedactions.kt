@@ -10,7 +10,7 @@ val epfRiskScoreRedactions =
     responseRedactions {
       jsonPath {
         endpoints {
-          -"/v1/persons/.*/risks/scores"
+          -"/v1/persons/{hmppsId}/risks/scores"
         }
         redactions {
           -("$..band" to REMOVE)
