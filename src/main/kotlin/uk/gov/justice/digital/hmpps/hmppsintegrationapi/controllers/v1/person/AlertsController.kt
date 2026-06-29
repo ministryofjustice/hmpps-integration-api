@@ -51,7 +51,7 @@ class AlertsController(
     @Parameter(description = "The HMPPS ID of the person", example = "A1234AA") @PathVariable hmppsId: String,
     @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
-    @Parameter(description = "The status of alerts returned", schema = Schema(minimum = "active")) @RequestParam(required = false, defaultValue = "", name = "status") status: String,
+    @Parameter(description = "The status of alerts returned", example = "active") @RequestParam(required = false, defaultValue = "", name = "status") status: String,
     @RequestAttribute requestContext: RequestContext?,
   ): PaginatedResponse<Alert> {
     val response = getAlertsForPersonService.getAlerts(hmppsId, requestContext?.filters, page, perPage, status == "active")

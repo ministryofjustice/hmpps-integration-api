@@ -50,7 +50,7 @@ class PrisonerContactsController(
     @Parameter(description = "The HMPPS ID of the prisoner") @PathVariable hmppsId: String,
     @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
-    @Parameter(description = "The type of contacts returned", schema = Schema(minimum = "emergency")) @RequestParam(required = false, defaultValue = "", name = "type") type: String,
+    @Parameter(description = "The type of contacts returned", example = "emergency") @RequestParam(required = false, defaultValue = "", name = "type") type: String,
     @RequestAttribute requestContext: RequestContext?,
   ): PaginatedResponse<PrisonerContact> {
     val response = getPrisonerContactsService.execute(hmppsId, page, perPage, requestContext, type == "emergency")
