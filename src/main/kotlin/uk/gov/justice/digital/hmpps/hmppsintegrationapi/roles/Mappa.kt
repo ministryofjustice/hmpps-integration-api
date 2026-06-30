@@ -11,6 +11,7 @@ val mappa =
       -"/v1/persons/{hmppsId}/images"
       -"/v1/images/{id}"
       -"/v1/persons/{hmppsId}/addresses"
+      -"/v1/persons/{hmppsId}/assessment-summary"
       -"/v1/persons/{hmppsId}/offences"
       -"/v1/persons/{hmppsId}/alerts"
       -"/v1/persons/{hmppsId}/sentences"
