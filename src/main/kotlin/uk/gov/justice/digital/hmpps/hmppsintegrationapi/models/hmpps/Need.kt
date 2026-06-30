@@ -9,6 +9,6 @@ data class Need(
   val riskOfHarm: Boolean? = null,
   @Schema(description = "Risk of reoffending")
   val riskOfReoffending: Boolean? = null,
-  @Schema(description = "Severity of need", example = "NO_NEED")
+  @Schema(description = "Severity of need", example = "NO_NEED", deprecated = true)
   val severity: String? = null,
 )
