@@ -10,5 +10,6 @@ data class Need(
   @Schema(description = "Risk of reoffending")
   val riskOfReoffending: Boolean? = null,
   @Schema(description = "Severity of need", example = "NO_NEED", deprecated = true)
+  @Deprecated("No longer populated by upstream. This will always be null")
   val severity: String? = null,
 )
