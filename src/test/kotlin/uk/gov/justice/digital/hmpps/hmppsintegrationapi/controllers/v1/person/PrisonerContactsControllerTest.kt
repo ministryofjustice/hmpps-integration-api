@@ -158,8 +158,8 @@ internal class PrisonerContactsControllerTest(
           verify(getPrisonerContactsService, times(1)).execute(eq(sanitisedHmppsId), page = eq(1), size = eq(10), requestContext = any(), emergencyNextOfKinOnly = eq(false))
         }
 
-        it("verify getPrisonerContactsService is called with emergency contacts enabled") {
-          mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/contacts?type=emergency")
+        it("verify getPrisonerContactsService is called with emergencyOrNextOfKin contacts enabled") {
+          mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/contacts?type=emergencyOrNextOfKin")
           verify(getPrisonerContactsService, times(1)).execute(eq(sanitisedHmppsId), page = eq(1), size = eq(10), requestContext = any(), emergencyNextOfKinOnly = eq(true))
         }
 
