@@ -106,7 +106,13 @@ internal class AlertsControllerTest(
         it("gets the alerts for a person with the matching ID") {
           mockMvc.performAuthorised(path)
 
-          verify(getAlertsForPersonService, VerificationModeFactory.times(1)).getAlerts(hmppsId, filters, page, perPage)
+          verify(getAlertsForPersonService, VerificationModeFactory.times(1)).getAlerts(hmppsId, filters, page, perPage, false)
+        }
+
+        it("gets the active alerts for a person with the matching ID") {
+          mockMvc.performAuthorised("$path?status=active")
+
+          verify(getAlertsForPersonService, VerificationModeFactory.times(1)).getAlerts(hmppsId, filters, page, perPage, true)
         }
 
         it("returns the alerts for a person with the matching ID") {

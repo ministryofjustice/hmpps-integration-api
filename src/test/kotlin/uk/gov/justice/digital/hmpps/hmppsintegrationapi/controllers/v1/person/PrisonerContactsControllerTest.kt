@@ -153,9 +153,14 @@ internal class PrisonerContactsControllerTest(
           result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
         }
 
-        it("verify getPrisonerContactsService is called ") {
+        it("verify getPrisonerContactsService is called") {
           mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/contacts")
-          verify(getPrisonerContactsService, times(1)).execute(eq(sanitisedHmppsId), page = eq(1), size = eq(10), requestContext = any(), emergencyNextOfKinOnly = any())
+          verify(getPrisonerContactsService, times(1)).execute(eq(sanitisedHmppsId), page = eq(1), size = eq(10), requestContext = any(), emergencyNextOfKinOnly = eq(false))
+        }
+
+        it("verify getPrisonerContactsService is called with emergencyOrNextOfKin contacts enabled") {
+          mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/contacts?type=emergencyOrNextOfKin")
+          verify(getPrisonerContactsService, times(1)).execute(eq(sanitisedHmppsId), page = eq(1), size = eq(10), requestContext = any(), emergencyNextOfKinOnly = eq(true))
         }
 
         it("returns prisoner contacts with the matching ID") {
