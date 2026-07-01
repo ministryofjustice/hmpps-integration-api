@@ -1,6 +1,9 @@
 name: Security Snyk dependency check
 
 on:
+  push:
+    branches:
+      - HIA-1369-add-snyk-scan
   workflow_dispatch:
   schedule:
     - cron: '23 6 * * MON-FRI'
