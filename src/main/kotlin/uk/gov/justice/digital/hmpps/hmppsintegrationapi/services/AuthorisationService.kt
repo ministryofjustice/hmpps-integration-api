@@ -194,6 +194,8 @@ class AuthorisationService(
 
   fun requiresObo(consumerName: String): Boolean = authorisationConfig.consumers[consumerName]?.oboConfig?.required == true
 
+  fun requiresOboVerification(consumerName: String): Boolean = authorisationConfig.consumers[consumerName]?.oboConfig?.required == true
+
   /**
    * Converts a certificate expiry date in the OpenSSL format to an ISO-6801 format
    * Creates a sentry alert if the number of days to expiry is in the range 30, 21, 14, 7..0
