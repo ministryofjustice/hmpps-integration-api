@@ -35,6 +35,7 @@ services:
   prisoner-base-location.base-url: http://localhost:4030
   core-person-record.base-url: http://localhost:4031
   probation-offender-search.base-url: http://localhost:4033
+  manage-users.base-url: http://localhost:4034
 
 authorisation:
   consumers:
