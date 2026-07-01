@@ -391,7 +391,7 @@ enum class IntegrationEventType(
   ),
   RISK_OF_SERIOUS_HARM_CHANGED(
     "v1/persons/{hmppsId}/risks/serious-harm",
-    { ROSH_TYPES.contains(it.eventType) },
+    { ROSH_TYPES.contains(it.eventType) && it.isCompletedAssessmentEvent() },
     description = "Risk of Serious Harm Changed",
   ),
   ASSESSMENT_SUMMARY_CHANGE(
