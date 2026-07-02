@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction
 
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionType.MASK
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionType.REMOVE
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.redactionPolicy
 
@@ -14,6 +15,10 @@ val personResponsibleOfficerRedactions =
         }
         redactions {
           -("$..prisonOffenderManager" to REMOVE)
+          -("$..forename" to MASK)
+          -("$..surname" to MASK)
+          -("$.data.communityOffenderManager.email" to MASK)
+          -("$.data.communityOffenderManager.telephoneNumber" to MASK)
         }
       }
     }

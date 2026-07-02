@@ -2,11 +2,11 @@
   "data": {
     "communityOffenderManager": {
       "name": {
-        "forename": "string",
-        "surname": "string"
+        "forename": "**REDACTED**",
+        "surname": "**REDACTED**"
       },
-      "email": "string",
-      "telephoneNumber": "string",
+      "email": "**REDACTED**",
+      "telephoneNumber": "**REDACTED**",
       "team": {
         "code": "string",
         "description": "string",
