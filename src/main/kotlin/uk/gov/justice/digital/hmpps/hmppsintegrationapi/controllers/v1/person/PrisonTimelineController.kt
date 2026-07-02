@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.PRISON_TIMELINE_ENDPOINT
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.PRISON_TIMELINE_ENDPOINT_ENABLED
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
@@ -31,7 +31,7 @@ class PrisonTimelineController(
   @Autowired val getPrisonTimelineForPersonService: GetPrisonTimelineForPersonService,
   @Autowired val auditService: AuditService,
 ) {
-  @FeatureFlag(name = PRISON_TIMELINE_ENDPOINT)
+  @FeatureFlag(name = PRISON_TIMELINE_ENDPOINT_ENABLED)
   @GetMapping("/persons/{hmppsId}/prison-timeline")
   @Operation(
     summary = "Returns prison timeline associated with a prisoner.",

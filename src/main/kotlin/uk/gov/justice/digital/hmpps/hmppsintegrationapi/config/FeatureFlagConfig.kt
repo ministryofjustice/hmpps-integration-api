@@ -34,7 +34,7 @@ data class FeatureFlagConfig(
     const val CONTACT_SEARCH_ENDPOINT_ENABLED = "contact-search-endpoint-enabled"
     const val ADDRESS_SEARCH_ENDPOINT_ENABLED = "address-search-endpoint-enabled"
     const val CONTACT_LINKED_PRISONERS_ENDPOINT_ENABLED = "contact-linked-prisoners-endpoint-enabled"
-    const val PRISON_TIMELINE_ENDPOINT = "prison-timeline-endpoint"
+    const val PRISON_TIMELINE_ENDPOINT_ENABLED = "prison-timeline-endpoint-enabled"
 
     // Events feature flags
     const val ENABLE_DELETE_PROCESSED_EVENTS = "enable-delete-processed-events"

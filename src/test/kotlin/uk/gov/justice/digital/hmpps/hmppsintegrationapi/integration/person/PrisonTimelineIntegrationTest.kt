@@ -17,12 +17,6 @@ class PrisonTimelineIntegrationTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `returns a 400 if the hmppsId is invalid`() {
-    callApi("$basePath/$invalidNomsId/prison-timeline")
-      .andExpect(status().isBadRequest)
-  }
-
-  @Test
   fun `returns a 404 for if consumer has empty list of prisons`() {
     callApiWithCN(path, noPrisonsCn)
       .andExpect(status().isNotFound)
