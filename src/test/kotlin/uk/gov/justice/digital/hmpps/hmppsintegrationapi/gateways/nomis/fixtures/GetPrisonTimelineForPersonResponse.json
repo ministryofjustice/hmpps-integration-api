@@ -1,0 +1,106 @@
+{
+  "prisonerNumber": "A7748DZ",
+  "prisonPeriod": [
+    {
+      "bookNumber": "47828A",
+      "bookingId": 1211013,
+      "entryDate": "2023-12-08T15:50:37",
+      "releaseDate": "2023-12-08T16:21:24",
+      "movementDates": [
+        {
+          "reasonInToPrison": "Imprisonment Without Option",
+          "dateInToPrison": "2023-12-08T15:50:37",
+          "inwardType": "ADM",
+          "reasonOutOfPrison": "Wedding/Civil Ceremony",
+          "dateOutOfPrison": "2023-12-08T15:53:37",
+          "outwardType": "TAP",
+          "admittedIntoPrisonId": "BMI",
+          "releaseFromPrisonId": "BSI"
+        },
+        {
+          "reasonInToPrison": "Wedding/Civil Ceremony",
+          "dateInToPrison": "2023-12-08T15:54:12",
+          "inwardType": "TAP",
+          "reasonOutOfPrison": "Conditional Release (CJA91) -SH Term>1YR",
+          "dateOutOfPrison": "2023-12-08T16:20:19",
+          "outwardType": "REL",
+          "admittedIntoPrisonId": "BSI",
+          "releaseFromPrisonId": "AYI"
+        },
+        {
+          "reasonInToPrison": "Recall From Intermittent Custody",
+          "dateInToPrison": "2023-12-08T16:20:45",
+          "inwardType": "ADM",
+          "reasonOutOfPrison": "Conditional Release (CJA91) -SH Term>1YR",
+          "dateOutOfPrison": "2023-12-08T16:21:24",
+          "outwardType": "REL",
+          "admittedIntoPrisonId": "AYI",
+          "releaseFromPrisonId": "AYI"
+        }
+      ],
+      "transfers": [
+        {
+          "dateOutOfPrison": "2023-12-08T15:51:09",
+          "dateInToPrison": "2023-12-08T15:52:32",
+          "transferReason": "Compassionate Transfer",
+          "fromPrisonId": "BMI",
+          "toPrisonId": "BSI"
+        },
+        {
+          "dateOutOfPrison": "2023-12-08T15:54:56",
+          "dateInToPrison": "2023-12-08T15:55:54",
+          "transferReason": "Transfer Via Court",
+          "fromPrisonId": "BSI",
+          "toPrisonId": "BRI"
+        },
+        {
+          "dateOutOfPrison": "2023-12-08T15:56:05",
+          "dateInToPrison": "2023-12-08T15:57:25",
+          "transferReason": "Appeals",
+          "fromPrisonId": "BRI",
+          "toPrisonId": "DAI"
+        },
+        {
+          "dateOutOfPrison": "2023-12-08T16:18:45",
+          "dateInToPrison": "2023-12-08T16:19:45",
+          "transferReason": "Medical",
+          "fromPrisonId": "DAI",
+          "toPrisonId": "AYI"
+        }
+      ],
+      "prisons": [
+        "BMI",
+        "BSI",
+        "BRI",
+        "DAI",
+        "AYI"
+      ]
+    },
+    {
+      "bookNumber": "47829A",
+      "bookingId": 1211014,
+      "entryDate": "2023-12-08T16:21:21",
+      "movementDates": [
+        {
+          "reasonInToPrison": "Imprisonment Without Option",
+          "dateInToPrison": "2023-12-08T16:21:21",
+          "inwardType": "ADM",
+          "admittedIntoPrisonId": "DGI"
+        }
+      ],
+      "transfers": [
+        {
+          "dateOutOfPrison": "2023-12-08T16:22:02",
+          "dateInToPrison": "2023-12-08T16:23:32",
+          "transferReason": "Overcrowding Draft",
+          "fromPrisonId": "DGI",
+          "toPrisonId": "BLI"
+        }
+      ],
+      "prisons": [
+        "DGI",
+        "BLI"
+      ]
+    }
+  ]
+}

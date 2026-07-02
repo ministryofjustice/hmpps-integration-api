@@ -102,6 +102,7 @@ feature-flag:
   contact-search-endpoint-enabled: true
   address-search-endpoint-enabled: true
   contact-linked-prisoners-endpoint-enabled: true
+  use-prison-timeline-endpoint: true
   # Events Config
   enable-delete-processed-events: false
   enable-publish-pending-events: false
