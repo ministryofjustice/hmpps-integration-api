@@ -535,7 +535,6 @@ class PrisonApiGateway(
         "/api/offenders/$nomisNumber/prison-timeline",
         authenticationHeader(requestContext),
         UpstreamApi.PRISON_API,
-        badRequestAsError = true,
       )
     return when (result) {
       is WebClientWrapperResponse.Success -> {

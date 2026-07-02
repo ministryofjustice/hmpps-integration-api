@@ -49,12 +49,9 @@ internal class PrisonTimelineControllerTest(
           whenever(getPrisonTimelineForPersonService.getPrisonTimeline(any(), any())).thenReturn(
             Response(
               PrisonApiPrisonTimeline(
-                prisonerNumber = "A7748DZ",
                 prisonPeriod =
                   listOf(
                     PrisonPeriodEntry(
-                      bookNumber = "47828A",
-                      bookingId = 1211013,
                       entryDate = "2023-12-08T15:50:37",
                       releaseDate = "2023-12-08T16:21:24",
                       movementDates =
@@ -125,25 +122,6 @@ internal class PrisonTimelineControllerTest(
           val result = mockMvc.performAuthorised(path)
 
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
-        }
-
-        it("returns a 400 BAD REQUEST status code when a bad request is sent to the upstream API") {
-          whenever(getPrisonTimelineForPersonService.getPrisonTimeline(eq(hmppsId), any())).thenReturn(
-            Response(
-              data = null,
-              errors =
-                listOf(
-                  UpstreamApiError(
-                    causedBy = UpstreamApi.NDELIUS,
-                    type = UpstreamApiError.Type.BAD_REQUEST,
-                  ),
-                ),
-            ),
-          )
-
-          val result = mockMvc.performAuthorised(path)
-
-          result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
         }
       }
     },

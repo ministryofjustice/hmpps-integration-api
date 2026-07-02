@@ -1,13 +1,10 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi
 
 data class PrisonApiPrisonTimeline(
-  var prisonerNumber: String? = null,
   var prisonPeriod: List<PrisonPeriodEntry> = emptyList(),
 )
 
 data class PrisonPeriodEntry(
-  var bookNumber: String? = null,
-  var bookingId: Long? = null,
   var entryDate: String? = null,
   var releaseDate: String? = null,
   var movementDates: List<MovementDatesEntry> = emptyList(),

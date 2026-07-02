@@ -38,7 +38,7 @@ class GetPrisonTimelineForPersonServiceTest(
         Mockito.reset(prisonApiGateway)
 
         whenever(getPersonService.getNomisNumber(hmppsId, requestContext.filters)).thenReturn(Response(NomisNumber(nomisNumber)))
-        whenever(prisonApiGateway.getPrisonTimelineForPerson(nomisNumber, requestContext)).thenReturn(Response(PrisonApiPrisonTimeline(prisonerNumber = hmppsId, prisonPeriod = emptyList())))
+        whenever(prisonApiGateway.getPrisonTimelineForPerson(nomisNumber, requestContext)).thenReturn(Response(PrisonApiPrisonTimeline(prisonPeriod = emptyList())))
       }
 
       it("performs a search according to hmpps Id") {
@@ -52,9 +52,6 @@ class GetPrisonTimelineForPersonServiceTest(
         result.data.prisonPeriod
           .shouldNotBeNull()
           .shouldBe(emptyList())
-        result.data
-          .prisonerNumber
-          .shouldBe(hmppsId)
         result.errors.count().shouldBe(0)
       }
 

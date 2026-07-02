@@ -63,7 +63,6 @@ class GetPrisonTimelineForPersonTest(
       it("returns latest sentence key dates for a person with the matching ID") {
         val response = prisonApiGateway.getPrisonTimelineForPerson(offenderNo, requestContext)
 
-        response.data?.prisonerNumber.shouldBe(offenderNo)
         response.data
           ?.prisonPeriod
           ?.count()
