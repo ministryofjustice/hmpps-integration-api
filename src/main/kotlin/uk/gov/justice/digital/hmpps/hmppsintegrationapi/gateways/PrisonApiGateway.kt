@@ -32,6 +32,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonA
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiInmateDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiOffenceHistoryDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiOffenderSentence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiPrisonTimeline
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiReasonableAdjustments
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiReferenceCode
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiSentence
@@ -518,6 +519,31 @@ class PrisonApiGateway(
       is WebClientWrapperResponse.Error -> {
         Response(
           data = emptyList(),
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getPrisonTimelineForPerson(
+    nomisNumber: String,
+    requestContext: RequestContext?,
+  ): Response<PrisonApiPrisonTimeline?> {
+    val result =
+      webClient.request<PrisonApiPrisonTimeline>(
+        HttpMethod.GET,
+        "/api/offenders/$nomisNumber/prison-timeline",
+        authenticationHeader(requestContext),
+        UpstreamApi.PRISON_API,
+      )
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
           errors = result.errors,
         )
       }

@@ -28,12 +28,12 @@ data class FeatureFlagConfig(
     const val EPF_ENDPOINT_INCLUDES_LAO = "epf-endpoint-includes-lao"
     const val EPF_GATEWAY_DISABLED = "epf-gateway-disabled"
     const val CPR_ENABLED = "cpr-enabled"
-    const val GATEWAY_CACHE_ENABLED = "gateway-cache-enabled"
     const val USE_ASSESSMENT_SUMMARY_ENDPOINT = "use-assessment-summary-endpoint"
     const val USE_STUBBED_ASSESSMENT_SUMMARY = "use-stubbed-assessment-summary"
     const val CONTACT_SEARCH_ENDPOINT_ENABLED = "contact-search-endpoint-enabled"
     const val ADDRESS_SEARCH_ENDPOINT_ENABLED = "address-search-endpoint-enabled"
     const val CONTACT_LINKED_PRISONERS_ENDPOINT_ENABLED = "contact-linked-prisoners-endpoint-enabled"
+    const val PRISON_TIMELINE_ENDPOINT_ENABLED = "prison-timeline-endpoint-enabled"
 
     // Events feature flags
     const val ENABLE_DELETE_PROCESSED_EVENTS = "enable-delete-processed-events"
