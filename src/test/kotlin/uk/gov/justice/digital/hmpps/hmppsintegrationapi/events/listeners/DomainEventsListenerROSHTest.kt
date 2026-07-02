@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.IntegrationEventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents.ASSESSMENT_SUMMARY_PRODUCED
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.DomainEvents.ASSESSMENT_SUMMARY_PRODUCED_LOCKED_INCOMPLETE
 
 class DomainEventsListenerROSHTest : DomainEventsListenerTestCase() {
   private val crn = "X777776"
@@ -24,5 +25,19 @@ class DomainEventsListenerROSHTest : DomainEventsListenerTestCase() {
       hmppsId = crn,
       expectedNotificationType = IntegrationEventType.RISK_OF_SERIOUS_HARM_CHANGED.toString(),
     )
+  }
+
+  @Test
+  fun `will NOT create a rosh notification when incorrect status`() {
+    // Arrange
+    val eventType = "assessment.summary.produced"
+    val message = ASSESSMENT_SUMMARY_PRODUCED_LOCKED_INCOMPLETE
+    assumeIdentities(hmppsId = crn)
+
+    val payload =
+      DomainEvents
+        .generateDomainEvent(eventType, message)
+
+    onDomainEventShouldNotCreateEventNotification(payload)
   }
 }
