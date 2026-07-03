@@ -39,8 +39,11 @@ configurations.all {
     }
   }
 
-  // CVE-2026-53914 - jetbrains kotlin
-  // CVE-2020-29582 - Issue with detekt aplpha version
+  // CVE-2026-53914 - kotlin-build-tools-api-2.4.0.jar - Still not fixed
+
+  // CVE-2026-54515 - jackson-databind needs 2.18.9, 2.21.5, and 3.1.4
+
+  // CVE-2020-29582 - jetbrains kotlin intellij-1 1.10.2 jar (issue with detekt aplha-5) Issue with detekt aplpha version
 }
 
 dependencies {
@@ -234,7 +237,7 @@ detekt {
 configurations.matching { it.name == "detekt" }.all {
   resolutionStrategy.eachDependency {
     if (requested.group == "org.jetbrains.kotlin") {
-      useVersion("2.4.0")
+      useVersion("2.4.20-Beta1")
     }
   }
 }
