@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.5.3"
-  kotlin("plugin.spring") version "2.4.20-Beta1" // Beta used to address - CVE-2026-53914
+  kotlin("plugin.spring") version "2.4.0"
   id("dev.detekt") version "2.0.0-alpha.5"
   id("org.jetbrains.kotlinx.kover") version "0.9.8"
 }
@@ -24,14 +24,6 @@ configurations {
 
 configurations.all {
   resolutionStrategy.eachDependency {
-    if (requested.group.contains("com.fasterxml.jackson")
-      && requested.version == "2.21.4") {
-      useVersion("2.22.0")
-      because("Fix CVE-2026-54515")
-    }
-  }
-
-  resolutionStrategy.eachDependency {
     if (requested.group == ("org.apache.tomcat.embed")
       && requested.version == "11.0.22") {
       useVersion("11.0.23")
@@ -39,10 +31,8 @@ configurations.all {
     }
   }
 
-  // CVE-2026-53914 - kotlin-build-tools-api-2.4.0.jar - Still not fixed
-
-  // CVE-2026-54515 - jackson-databind needs 2.18.9, 2.21.5, and 3.1.4
-
+  // CVE-2026-53914 - kotlin-build-tools-api-2.4.0.jar - needs 2.4.20 available
+  // CVE-2026-54515 - jackson-databind needs 2.18.9, 2.21.5, and 3.1.4 - Waiting for spring boot starter
   // CVE-2020-29582 - jetbrains kotlin intellij-1 1.10.2 jar (issue with detekt aplha-5) Issue with detekt aplpha version
 }
 
@@ -237,10 +227,11 @@ detekt {
 configurations.matching { it.name == "detekt" }.all {
   resolutionStrategy.eachDependency {
     if (requested.group == "org.jetbrains.kotlin") {
-      useVersion("2.4.20-Beta1")
+      useVersion(dev.detekt.gradle.plugin.getSupportedKotlinVersion())
     }
   }
 }
+
 
 kotlin {
   kotlinDaemonJvmArgs = listOf("-Xmx2g")
