@@ -22,6 +22,29 @@ configurations {
   }
 }
 
+configurations.all {
+  resolutionStrategy.eachDependency {
+    if (requested.group == "org.apache.tomcat.embed" &&
+      requested.version == "11.0.22"
+    ) {
+      useVersion("11.0.23")
+      because("Fix CVE-2026-55276, CVE-2026-53404, CVE-2026-55955, CVE-2026-55956, CVE-2026-50229, CVE-2026-53434")
+    }
+
+    if (requested.group == "ch.qos.logback" &&
+      requested.name == "logback-core" &&
+      requested.version == "1.5.34"
+    ) {
+      useVersion("1.5.37")
+      because("Fix CVE-2026-13006")
+    }
+  }
+
+  // CVE-2026-53914 - kotlin-build-tools-api-2.4.0.jar - needs 2.4.20 available
+  // CVE-2026-54515 - jackson-databind needs 2.18.9, 2.21.5, and 3.1.4 - Waiting for spring boot starter
+  // CVE-2020-29582 - jetbrains kotlin intellij-1 1.10.2 jar (issue with detekt aplha-5) waiting for detekt upgrade
+}
+
 dependencies {
   runtimeOnly("io.jsonwebtoken:jjwt-impl:0.13.0")
   runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.13.0")
@@ -213,7 +236,10 @@ detekt {
 configurations.matching { it.name == "detekt" }.all {
   resolutionStrategy.eachDependency {
     if (requested.group == "org.jetbrains.kotlin") {
-      useVersion("2.4.0")
+      useVersion(
+        dev.detekt.gradle.plugin
+          .getSupportedKotlinVersion(),
+      )
     }
   }
 }
