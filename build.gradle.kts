@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.5.3"
-  kotlin("plugin.spring") version "2.4.0"
+  kotlin("plugin.spring") version "2.4.20-Beta1" // Beta used to address - CVE-2026-53914
   id("dev.detekt") version "2.0.0-alpha.5"
   id("org.jetbrains.kotlinx.kover") version "0.9.8"
 }
@@ -20,6 +20,27 @@ configurations {
   all {
     exclude(group = "dev.detekt", module = "detekt-report-checkstyle")
   }
+}
+
+configurations.all {
+  resolutionStrategy.eachDependency {
+    if (requested.group.contains("com.fasterxml.jackson")
+      && requested.version == "2.21.4") {
+      useVersion("2.22.0")
+      because("Fix CVE-2026-54515")
+    }
+  }
+
+  resolutionStrategy.eachDependency {
+    if (requested.group == ("org.apache.tomcat.embed")
+      && requested.version == "11.0.22") {
+      useVersion("11.0.23")
+      because("Fix CVE-2026-55276, CVE-2026-53404, CVE-2026-55955, CVE-2026-55956, CVE-2026-50229, CVE-2026-53434")
+    }
+  }
+
+  // CVE-2026-53914 - jetbrains kotlin
+  // CVE-2020-29582 - Issue with detekt aplpha version
 }
 
 dependencies {
