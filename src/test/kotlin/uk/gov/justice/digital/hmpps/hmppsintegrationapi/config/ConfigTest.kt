@@ -7,6 +7,7 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.mockito.Mockito.mock
 import org.springframework.core.io.ClassPathResource
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ManageUsersService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.AuthorisationConfigReader
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.FileManager
@@ -19,6 +20,7 @@ abstract class ConfigTest {
   val mapper = ObjectMapper(YAMLFactory()).registerKotlinModule()
   val configReader = AuthorisationConfigReader(FileManager())
   val mockTelemetryService: TelemetryService = mock()
+  val mockManageUsersService: ManageUsersService = mock()
 
   fun getConfigPath(
     environment: String,
@@ -28,7 +30,7 @@ abstract class ConfigTest {
   /**
    * Loads the configuration for a specified environment.
    */
-  fun getAuthService(environment: String): AuthorisationService = AuthorisationService(configReader.read(environment), mockTelemetryService)
+  fun getAuthService(environment: String): AuthorisationService = AuthorisationService(configReader.read(environment), mockTelemetryService, mockManageUsersService)
 
   fun getFeatureConfig(environment: String): Map<String, Boolean> {
     val featureConfig = getConfigPath(environment, "feature-flag")

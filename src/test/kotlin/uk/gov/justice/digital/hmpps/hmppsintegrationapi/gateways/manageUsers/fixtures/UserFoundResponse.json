@@ -2,15 +2,15 @@
   "content": [
     {
       "userId": "91229A16-B5F4-4784-942E-A484A97AC865",
-      "username": "externaluser",
-      "email": "external.user@someagency.justice.gov.uk",
-      "firstName": "External",
+      "username": "testUser",
+      "email": "testUser",
+      "firstName": "Test",
       "lastName": "User",
-      "locked": true,
-      "enabled": false,
-      "verified": false,
+      "locked": false,
+      "enabled": true,
+      "verified": true,
       "lastLoggedIn": "01/01/2001",
-      "source": "delius"
+      "source": "azuread"
     }
   ],
   "pageable": {

@@ -308,6 +308,12 @@ authorisation:
         - "all-endpoints"
       oboConfig:
         strategy: "unsigned"
+    obo-unsigned-verified:
+      roles:
+        - "all-endpoints"
+      oboConfig:
+        strategy: "unsigned"
+        verification-strategy: "azuread"
     obo-invalid:
       roles:
         - "all-endpoints"

@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithLaoRedactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ManageUsersService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import java.time.Clock
 
@@ -19,6 +20,10 @@ class WebMvcTestConfiguration {
   @Bean
   @ConditionalOnMissingBean
   fun telemetryService(): TelemetryService = Mockito.mock(TelemetryService::class.java)
+
+  @Bean
+  @ConditionalOnMissingBean
+  fun manageUsersService(): ManageUsersService = Mockito.mock(ManageUsersService::class.java)
 
   @Bean
   @ConditionalOnMissingBean
@@ -37,5 +42,5 @@ class WebMvcTestConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
-  fun authorisationService(): AuthorisationService = AuthorisationService(config(), telemetryService(), clock())
+  fun authorisationService(): AuthorisationService = AuthorisationService(config(), telemetryService(), manageUsersService(), clock())
 }

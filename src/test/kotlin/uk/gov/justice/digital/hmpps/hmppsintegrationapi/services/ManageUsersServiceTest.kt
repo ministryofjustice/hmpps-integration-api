@@ -9,8 +9,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ManageUsersGate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsAuthUser
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.PaginatedUsers
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.User
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -18,34 +18,40 @@ import kotlin.test.assertTrue
 
 class ManageUsersServiceTest {
   lateinit var service: ManageUsersService
-  val manageUsersGateway = mock<ManageUsersGateway>()
+  val manageUsersGateway: ManageUsersGateway = mock()
 
   @BeforeEach
   fun setup() {
-    val users = listOf(User("testName1", "azuread"), User("testName2", "delius"), User("testName3", "azuread"))
-    val paginatedUsers = PaginatedUsers(users)
-    whenever(manageUsersGateway.findUser(any(), any())).thenReturn(Response(paginatedUsers))
     service = ManageUsersService(manageUsersGateway)
   }
 
   @Test
   fun `username is found in one of the required sources`() {
-    assertTrue(service.usernameExists("testName2", listOf("delius")))
-  }
-
-  @Test
-  fun `username is found, but is not in one of the required sources`() {
-    assertFalse(service.usernameExists("testName2", listOf("someOtherSource")))
+    whenever(manageUsersGateway.findUser(any(), any())).thenReturn(Response(PaginatedUsers(listOf(HmppsAuthUser("testName1", "delius")))))
+    assertTrue(service.usernameExists("testName1", listOf("delius")))
   }
 
   @Test
   fun `username is NOT found in one of the required sources`() {
-    assertFalse(service.usernameExists("testName5", listOf("delius")))
+    whenever(manageUsersGateway.findUser(any(), any())).thenReturn(Response(PaginatedUsers(emptyList())))
+    assertFalse(service.usernameExists("testName2", listOf("delius")))
   }
 
   @Test
-  fun `Gateway returns empty content`() {
-    whenever(manageUsersGateway.findUser(any(), any())).thenReturn(Response(PaginatedUsers(emptyList())))
+  fun `username is found but is not enabled`() {
+    whenever(manageUsersGateway.findUser(any(), any())).thenReturn(Response(PaginatedUsers(listOf(HmppsAuthUser("testName2", "delius", enabled = false)))))
+    assertFalse(service.usernameExists("testName2", listOf("delius")))
+  }
+
+  @Test
+  fun `username is found but and is locked`() {
+    whenever(manageUsersGateway.findUser(any(), any())).thenReturn(Response(PaginatedUsers(listOf(HmppsAuthUser("testName2", "delius", locked = true)))))
+    assertFalse(service.usernameExists("testName2", listOf("delius")))
+  }
+
+  @Test
+  fun `no data is returned from manage users gateway`() {
+    whenever(manageUsersGateway.findUser(any(), any())).thenReturn(Response(data = null))
     assertFalse(service.usernameExists("testName2", listOf("delius")))
   }
 

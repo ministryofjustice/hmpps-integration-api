@@ -29,6 +29,7 @@ import kotlin.math.ceil
 class AuthorisationService(
   private val authorisationConfig: AuthorisationConfig,
   private val telemetryService: TelemetryService,
+  private val manageUsersService: ManageUsersService,
   private val clock: Clock = fixedClock(),
 ) {
   /**
@@ -192,9 +193,15 @@ class AuthorisationService(
     }
   }
 
-  fun requiresObo(consumerName: String): Boolean = authorisationConfig.consumers[consumerName]?.oboConfig?.required == true
+  fun verifyUsername(
+    username: String,
+    consumerName: String,
+  ): Boolean {
+    val authSource = authorisationConfig.consumers[consumerName]?.oboConfig?.verificationStrategy ?: return true
+    return manageUsersService.usernameExists(username, listOf(authSource))
+  }
 
-  fun requiresOboVerification(consumerName: String): Boolean = authorisationConfig.consumers[consumerName]?.oboConfig?.required == true
+  fun requiresObo(consumerName: String): Boolean = authorisationConfig.consumers[consumerName]?.oboConfig?.required == true
 
   /**
    * Converts a certificate expiry date in the OpenSSL format to an ISO-6801 format

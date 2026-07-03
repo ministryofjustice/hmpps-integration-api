@@ -169,11 +169,12 @@ authorisation:
       roles:
         - "full-access"
     pmcphee:
-      include:
-        - "/v1/persons/{hmppsId}/assessment-summary"
-        - "/v1/contacts"
-        - "/v1/contacts/{contactId}"
-      queueName: "testclientsubscriberqueue"
+      roles:
+        - "full-access"
+      oboConfig:
+        strategy: "unsigned"
+        required: true
+        verification-strategy: "azuread"
     geoamey:
       notes: "See client list in Confluence"
       roles:

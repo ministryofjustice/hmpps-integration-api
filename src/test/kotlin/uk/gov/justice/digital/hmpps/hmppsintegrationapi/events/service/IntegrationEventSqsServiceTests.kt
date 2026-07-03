@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.EventNot
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.objectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ManageUsersService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.TestQueueService
 import java.time.LocalDateTime
@@ -31,6 +32,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
   val authorisationService: AuthorisationService = mock()
   val featureFlagConfig: FeatureFlagConfig = FeatureFlagConfig()
   val telemetryService: TelemetryService = mock()
+  val manageUsersService: ManageUsersService = mock()
 
   private lateinit var eventNotificationService: EventNotificationService
   val currentTime: LocalDateTime = LocalDateTime.now()
@@ -104,6 +106,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
           """.trimIndent(),
         ),
         telemetryService,
+        manageUsersService,
       )
 
     eventNotificationService = EventNotificationService(queueService, objectMapper, authService, telemetryService)
@@ -124,6 +127,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
           """.trimIndent(),
         ),
         telemetryService,
+        manageUsersService,
       )
     eventNotificationService = EventNotificationService(queueService, objectMapper, authService, telemetryService)
     Assertions.assertFalse(eventNotificationService.isEventApplicable("tester", testEvent))
@@ -146,6 +150,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
           """.trimIndent(),
         ),
         telemetryService,
+        manageUsersService,
       )
     eventNotificationService = EventNotificationService(queueService, objectMapper, authService, telemetryService)
     Assertions.assertTrue(eventNotificationService.isEventApplicable("tester", testEvent))
@@ -168,6 +173,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
           """.trimIndent(),
         ),
         telemetryService,
+        manageUsersService,
       )
     eventNotificationService = EventNotificationService(queueService, objectMapper, authService, telemetryService)
     Assertions.assertFalse(eventNotificationService.isEventApplicable("tester", testEvent))
@@ -189,7 +195,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
         prisonId = messagePrisonId,
         metadata = messageSupervisionStatus?.let { Metadata(it) },
       )
-    val authService = AuthorisationService(parseAuthorisationConfig(config), telemetryService)
+    val authService = AuthorisationService(parseAuthorisationConfig(config), telemetryService, manageUsersService)
     eventNotificationService = EventNotificationService(queueService, objectMapper, authService, telemetryService)
 
     assertThat(eventNotificationService.isEventApplicable("tester", testEvent)).isEqualTo(shouldBeSent)

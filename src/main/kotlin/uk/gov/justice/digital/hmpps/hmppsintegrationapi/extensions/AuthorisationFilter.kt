@@ -7,6 +7,7 @@ import jakarta.servlet.ServletRequest
 import jakarta.servlet.ServletResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
@@ -24,6 +25,10 @@ class AuthorisationFilter(
   private val telemetryService: TelemetryService,
   private val features: FeatureFlagConfig,
 ) : Filter {
+  companion object {
+    private val log = LoggerFactory.getLogger(this::class.java)
+  }
+
   @Throws(IOException::class, ServletException::class)
   override fun doFilter(
     request: ServletRequest,
@@ -66,9 +71,17 @@ class AuthorisationFilter(
     // Set App insights request attributes
     setSpanAttributes(clientName, certificateSerialNumber, oboUsername ?: onBehalfOf, certificateExpiryDate)
 
-    if (authorisationService.requiresObo(clientName) && oboUsername.isNullOrEmpty()) {
-      res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "On Behalf Of username unavailable for $clientName")
-      return
+    if (authorisationService.requiresObo(clientName)) {
+      if (oboUsername.isNullOrEmpty()) {
+        res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "On Behalf Of username unavailable for $clientName")
+        return
+      }
+
+      if (!authorisationService.verifyUsername(oboUsername, clientName)) {
+        log.error("On Behalf Of username: $oboUsername not found in hmpps auth")
+        res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Not authorized")
+        return
+      }
     }
 
     // Set filters

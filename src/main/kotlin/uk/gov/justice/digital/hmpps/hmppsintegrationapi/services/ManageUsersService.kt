@@ -15,8 +15,6 @@ class ManageUsersService(
     usersResponse.errors.forEach {
       throw RuntimeException("Call to ${it.causedBy.name} failed with error: ${it.type.name}")
     }
-    return usersResponse.data?.content?.any {
-      it.username == username && authSources.contains(it.source)
-    } ?: false
+    return usersResponse.data?.content?.any { it.enabled && !it.locked } ?: false
   }
 }

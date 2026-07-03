@@ -30,14 +30,14 @@ class ManageUsersTest(
 ) : DescribeSpec(
     {
       val manageUsersMockServer = ApiMockServer.create(UpstreamApi.MANAGE_USERS)
-      val path = "/users/search?username=testUsername&authSources=auth&authSources=azuread"
+      val path = "/users/search?username=testUser&authSources=azuread"
 
       beforeEach {
         manageUsersMockServer.start()
         manageUsersMockServer.stubForGet(
           path,
           File(
-            "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/SearchUserResponse.json",
+            "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/UserFoundResponse.json",
           ).readText(),
         )
 
@@ -48,25 +48,23 @@ class ManageUsersTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        manageUsersGateway.findUser("testUsername", listOf("auth", "azuread"))
+        manageUsersGateway.findUser("testUser", listOf("auth", "azuread"))
         verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken(UpstreamApi.MANAGE_USERS.name)
       }
 
       it("successfully finds a user") {
-        val response = manageUsersGateway.findUser("testUsername", listOf("auth", "azuread"))
-        assertEquals(response.data?.content[0]?.username, "externaluser")
-        assertEquals(response.data?.content[0]?.source, "delius")
+        val response = manageUsersGateway.findUser("testUser", listOf("azuread"))
+        assertEquals(response.data?.content[0]?.username, "testUser")
+        assertEquals(response.data?.content[0]?.source, "azuread")
       }
 
       it("returns a 400 ") {
         manageUsersMockServer.stubForGet(
           path,
-          File(
-            "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/SearchUserResponse.json",
-          ).readText(),
+          "",
           HttpStatus.BAD_REQUEST,
         )
-        val response = manageUsersGateway.findUser("testUsername", listOf("auth", "azuread"))
+        val response = manageUsersGateway.findUser("testUser", listOf("azuread"))
         assertEquals(null, response.data)
         assertEquals(UpstreamApiError.Type.BAD_REQUEST, response.errors[0].type)
         assertEquals(UpstreamApi.MANAGE_USERS, response.errors[0].causedBy)

@@ -16,6 +16,7 @@ import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
@@ -120,6 +121,7 @@ class AuthorisationServiceTest : ConfigTest() {
           ),
         ),
         mockTelemetryService,
+        mockManageUsersService,
       )
 
     val matches = authorisationService.consumersWithAccess("/tester")
@@ -142,6 +144,7 @@ class AuthorisationServiceTest : ConfigTest() {
           """.trimIndent(),
         ),
         mockTelemetryService,
+        mockManageUsersService,
       )
 
     val emptyConfig =
@@ -157,6 +160,7 @@ class AuthorisationServiceTest : ConfigTest() {
           """.trimIndent(),
         ),
         mockTelemetryService,
+        mockManageUsersService,
       )
 
     assertEquals(missingConfig.consumers()["tester"]?.permissions(), emptyConfig.consumers()["tester"]?.permissions())
@@ -182,6 +186,7 @@ class AuthorisationServiceTest : ConfigTest() {
           roles = mapOf("test-role" to testRole),
         ),
         mockTelemetryService,
+        mockManageUsersService,
       ).allFilters(consumer, listOf(role))
 
     assertEquals(filters, ConsumerFilters.Companion.NO_FILTERS)
@@ -214,6 +219,7 @@ class AuthorisationServiceTest : ConfigTest() {
           roles = mapOf("test-role" to testRole),
         ),
         mockTelemetryService,
+        mockManageUsersService,
       ).allFilters(consumer, listOf(role))
 
     assertFalse(filters == ConsumerFilters.Companion.NO_FILTERS)
@@ -249,6 +255,7 @@ class AuthorisationServiceTest : ConfigTest() {
           roles = mapOf("test-role" to testRole),
         ),
         mockTelemetryService,
+        mockManageUsersService,
       ).allFilters(consumer, listOf(role))
 
     assertFalse(filters == ConsumerFilters.Companion.NO_FILTERS)
@@ -285,6 +292,7 @@ class AuthorisationServiceTest : ConfigTest() {
           roles = mapOf("test-role" to testRole),
         ),
         mockTelemetryService,
+        mockManageUsersService,
       ).allFilters(consumer, listOf(role))
 
     assertFalse(filters == ConsumerFilters.Companion.NO_FILTERS)
@@ -309,6 +317,7 @@ class AuthorisationServiceTest : ConfigTest() {
           roles = mapOf("test-role" to testRole),
         ),
         mockTelemetryService,
+        mockManageUsersService,
       )
     assertEquals(listOf(laoRedactionPolicy), service.redactionPolicies("consumer-name"))
   }
@@ -324,6 +333,7 @@ class AuthorisationServiceTest : ConfigTest() {
           ),
         ),
         mockTelemetryService,
+        mockManageUsersService,
       )
     assertEquals(null, service.oboService("consumer-name"))
   }
@@ -341,6 +351,7 @@ class AuthorisationServiceTest : ConfigTest() {
           ),
         ),
         mockTelemetryService,
+        mockManageUsersService,
       )
     assertEquals(UnsignedJwtOboService()::class::java, service.oboService("consumer-name")!!::class::java)
   }
@@ -358,6 +369,7 @@ class AuthorisationServiceTest : ConfigTest() {
           ),
         ),
         mockTelemetryService,
+        mockManageUsersService,
       )
     assertEquals(JwksOboService::class, service.oboService("consumer-name")!!::class)
   }
@@ -375,6 +387,7 @@ class AuthorisationServiceTest : ConfigTest() {
           ),
         ),
         mockTelemetryService,
+        mockManageUsersService,
       )
     assertEquals(true, service.requiresObo("consumer-name"))
   }
@@ -392,12 +405,13 @@ class AuthorisationServiceTest : ConfigTest() {
           ),
         ),
         mockTelemetryService,
+        mockManageUsersService,
       )
     assertEquals(false, service.requiresObo("consumer-name"))
   }
 
   @Test
-  fun `returns false if oboConfig has a value`() {
+  fun `returns false if oboConfig has no value`() {
     val service =
       AuthorisationService(
         AuthorisationConfig(
@@ -407,8 +421,59 @@ class AuthorisationServiceTest : ConfigTest() {
           ),
         ),
         mockTelemetryService,
+        mockManageUsersService,
       )
     assertEquals(false, service.requiresObo("consumer-name"))
+  }
+
+  @Test
+  fun `verifyUsername returns true if oboConfig does not have a verification strategy`() {
+    val service =
+      AuthorisationService(
+        AuthorisationConfig(
+          mapOf(
+            "consumer-name" to
+              ConsumerConfig(),
+          ),
+        ),
+        mockTelemetryService,
+        mockManageUsersService,
+      )
+    assertEquals(true, service.verifyUsername("testUsername", "consumer-name"))
+  }
+
+  @Test
+  fun `verifyUsername returns false if oboConfig does have a verification strategy but user not verified`() {
+    whenever(mockManageUsersService.usernameExists("testUsername", listOf("testStrategy"))).thenReturn(false)
+    val service =
+      AuthorisationService(
+        AuthorisationConfig(
+          mapOf(
+            "consumer-name" to
+              ConsumerConfig(oboConfig = OboConfig("test", verificationStrategy = "testStrategy")),
+          ),
+        ),
+        mockTelemetryService,
+        mockManageUsersService,
+      )
+    assertEquals(false, service.verifyUsername("testUsername", "consumer-name"))
+  }
+
+  @Test
+  fun `verifyUsername returns false if oboConfig does have a verification strategy and user IS verified`() {
+    whenever(mockManageUsersService.usernameExists("testUsername", listOf("testStrategy"))).thenReturn(true)
+    val service =
+      AuthorisationService(
+        AuthorisationConfig(
+          mapOf(
+            "consumer-name" to
+              ConsumerConfig(oboConfig = OboConfig("test", verificationStrategy = "testStrategy")),
+          ),
+        ),
+        mockTelemetryService,
+        mockManageUsersService,
+      )
+    assertEquals(true, service.verifyUsername("testUsername", "consumer-name"))
   }
 
   @DisplayName("Handle certificate expiry date")
@@ -421,6 +486,7 @@ class AuthorisationServiceTest : ConfigTest() {
       AuthorisationService(
         AuthorisationConfig(),
         mockTelemetryService,
+        mockManageUsersService,
         fixedClock,
       )
 
