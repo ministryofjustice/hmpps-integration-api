@@ -19,7 +19,7 @@ generic-service:
   volumeMounts:
     # subPath ensures only this specific file is added to the folder
     - name: config-volume
-      mountPath: /app/config/test-override.yaml
+      mountPath: /app/test-override.yaml
       subPath: test-override.yaml
   volumes:
     - name: config-volume
