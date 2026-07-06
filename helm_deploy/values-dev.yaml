@@ -16,6 +16,19 @@ generic-service:
     SPRING_PROFILES_ACTIVE: dev
     SENTRY_ENVIRONMENT: dev
 
+  volumeMounts:
+    # subPath ensures only this specific file is added to the folder
+    - name: config-volume
+      mountPath: /app/config/test-override.yaml
+      subPath: test-override.yaml
+  volumes:
+    - name: config-volume
+      configMap:
+        name: yaml-override-config
+        items:
+          - key: override.yaml
+            path: test-override.yaml
+
   namespace_secrets:
     hmpps-auth:
       CLIENT_ID: "client-id"
@@ -55,3 +68,6 @@ generic-prometheus-alerts:
   sqsAlertsOldestThreshold: 60
   sqsAlertsTotalMessagesThreshold: 10
   ingressAlertsEnabled: false
+
+config-override:
+  enabled: true
