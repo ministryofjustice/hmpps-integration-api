@@ -75,6 +75,7 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt-api:0.13.0")
   implementation("com.jayway.jsonpath:json-path:3.0.0")
   implementation("com.github.ben-manes.caffeine:caffeine:3.2.4")
+  implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:1.9.25")
 
   testImplementation("org.springframework.boot:spring-boot-starter-test")
   testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
