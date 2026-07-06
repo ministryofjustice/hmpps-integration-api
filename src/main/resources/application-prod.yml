@@ -47,6 +47,8 @@ services:
     base-url: https://hmpps-person-record.hmpps.service.justice.gov.uk
   probation-offender-search:
     base-url: https://probation-offender-search.hmpps.service.justice.gov.uk
+  manage-users:
+    base-url: https://manage-users-api.hmpps.service.justice.gov.uk
 
 feature-flag:
   # API Config

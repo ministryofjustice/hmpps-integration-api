@@ -29,6 +29,7 @@ import kotlin.math.ceil
 class AuthorisationService(
   private val authorisationConfig: AuthorisationConfig,
   private val telemetryService: TelemetryService,
+  private val manageUsersService: ManageUsersService,
   private val clock: Clock = fixedClock(),
 ) {
   /**
@@ -190,6 +191,14 @@ class AuthorisationService(
       "entra" -> entraOboService // reuse the same instance to benefit from JWKS caching
       else -> null
     }
+  }
+
+  fun verifyUsername(
+    username: String,
+    consumerName: String,
+  ): Boolean {
+    val authSource = authorisationConfig.consumers[consumerName]?.oboConfig?.verificationStrategy ?: return true
+    return manageUsersService.usernameExists(username, listOf(authSource))
   }
 
   fun requiresObo(consumerName: String): Boolean = authorisationConfig.consumers[consumerName]?.oboConfig?.required == true

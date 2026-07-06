@@ -1,0 +1,41 @@
+{
+  "content": [
+    {
+      "userId": "91229A16-B5F4-4784-942E-A484A97AC865",
+      "username": "testUser",
+      "email": "testUser",
+      "firstName": "Test",
+      "lastName": "User",
+      "locked": false,
+      "enabled": false,
+      "verified": true,
+      "lastLoggedIn": "01/01/2001",
+      "source": "delius"
+    }
+  ],
+  "pageable": {
+    "sort": {
+      "sorted": true,
+      "unsorted": true,
+      "empty": true
+    },
+    "offset": 0,
+    "pageNumber": 0,
+    "pageSize": 0,
+    "paged": true,
+    "unpaged": true
+  },
+  "last": true,
+  "totalPages": 0,
+  "totalElements": 0,
+  "size": 0,
+  "number": 0,
+  "sort": {
+    "sorted": true,
+    "unsorted": true,
+    "empty": true
+  },
+  "numberOfElements": 0,
+  "first": true,
+  "empty": true
+}

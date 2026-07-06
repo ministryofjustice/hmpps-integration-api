@@ -49,6 +49,8 @@ services:
     base-url: https://hmpps-person-record-dev.hmpps.service.justice.gov.uk
   probation-offender-search:
     base-url: https://probation-offender-search-dev.hmpps.service.justice.gov.uk
+  manage-users:
+    base-url: https://manage-users-api-dev.hmpps.service.justice.gov.uk
 
 feature-flag:
   # API Config
@@ -167,11 +169,12 @@ authorisation:
       roles:
         - "full-access"
     pmcphee:
-      include:
-        - "/v1/persons/{hmppsId}/assessment-summary"
-        - "/v1/contacts"
-        - "/v1/contacts/{contactId}"
-      queueName: "testclientsubscriberqueue"
+      roles:
+        - "full-access"
+      oboConfig:
+        strategy: "unsigned"
+        required: true
+        verification-strategy: "azuread"
     geoamey:
       notes: "See client list in Confluence"
       roles:
