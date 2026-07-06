@@ -15,6 +15,6 @@ jobs:
       - name: Format code
         uses: ./.github/actions/format
         with:
-          ignore-files: "**/templates/*.yaml"
+          ignore-files: "config-override-test.yaml"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
