@@ -14,5 +14,7 @@ jobs:
           persist-credentials: false
       - name: Format code
         uses: ./.github/actions/format
+        with:
+          ignore-files: "**/templates/*.yaml"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
