@@ -6,6 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.parallel.ResourceLock
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.spy
 import org.springframework.beans.factory.annotation.Autowired
@@ -51,6 +52,7 @@ import java.nio.charset.StandardCharsets
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @TestPropertySource(properties = ["cache-enabled=false"])
 @Import(CacheDisabledTestConfiguration::class)
+@ResourceLock("integration-test")
 abstract class IntegrationTestBase {
   @MockitoSpyBean
   lateinit var featureFlagConfig: FeatureFlagConfig
