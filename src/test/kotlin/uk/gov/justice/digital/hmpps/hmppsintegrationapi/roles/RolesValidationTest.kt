@@ -39,6 +39,7 @@ class MockDbConfig {
     "DB_SERVER=dummy-server",
     "DB_NAME=dummy-db",
     "spring.flyway.enabled=false",
+    "services.manage-users.base-url=http://dummy-url.com",
   ],
 )
 @Import(MockDbConfig::class)
