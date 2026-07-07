@@ -1,0 +1,8 @@
+authorisation:
+  consumers:
+    automated-test-client:
+      roles:
+        - "full-access"
+        - "mappa-cat4"
+      filters:
+      queueName: "testqueue"
