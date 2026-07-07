@@ -208,6 +208,14 @@ tasks {
     }
   }
 
+  register<Test>("fulltest") {
+    description = "Runs all tests with parallel execution. Serve dependencies first with `make serve`"
+    group = "verification"
+    testClassesDirs = sourceSets["test"].output.classesDirs
+    maxParallelForks = 6
+    classpath = sourceSets["main"].output + configurations["testRuntimeClasspath"] + sourceSets["test"].output
+  }
+
   withType<KotlinCompile> {
     compilerOptions {
       jvmTarget = JvmTarget.JVM_25
