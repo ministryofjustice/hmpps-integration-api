@@ -24,7 +24,7 @@ jobs:
         uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
       - name: Build code
         id: build
-        run: ./gradlew compileKotlin
+        run: ./gradlew compileKotlin compileTestKotlin
       - name: Run ktlintCheck
         id: lint
         run: ./gradlew ktlintCheck
