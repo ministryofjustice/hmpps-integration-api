@@ -6,9 +6,5 @@ metadata:
   name: yaml-override-config
 data:
   override.yaml: |
-    authorisation:
-      consumers:
-        pmcphee:
-          roles:
-            - "status-only"
-  {{- end -}}
+  {{ index .Values "config-override" "data" }}
+{{- end -}}
