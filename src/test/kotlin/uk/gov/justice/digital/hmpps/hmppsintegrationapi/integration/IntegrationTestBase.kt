@@ -52,7 +52,6 @@ import java.nio.charset.StandardCharsets
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @TestPropertySource(properties = ["cache-enabled=false"])
 @Import(CacheDisabledTestConfiguration::class)
-@ResourceLock("integration-test")
 abstract class IntegrationTestBase {
   @MockitoSpyBean
   lateinit var featureFlagConfig: FeatureFlagConfig
