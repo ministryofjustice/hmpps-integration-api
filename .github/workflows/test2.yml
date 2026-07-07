@@ -29,6 +29,14 @@ jobs:
         id: unittest
         run: ./gradlew unittest
         background: true
+      - name: Serve Dependencies
+        id: dependencies
+        run: make serve-dependencies
+        background: true
+      - name: Run Integration Tests
+        run: TEST_TYPE="INT" ./gradlew koverXmlReport
+        background: true
+        wait: dependencies
       - name: Wait for previous steps
         wait-all:
 
