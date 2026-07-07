@@ -6,12 +6,9 @@ metadata:
   name: yaml-override-config
 data:
   override.yaml: |
-    authorisation-test:
+    authorisation:
       consumers:
-        test1:
+        pmcphee:
           roles:
             - "status-only"
-        test2:
-          roles:
-            - "full-access"
   {{- end -}}

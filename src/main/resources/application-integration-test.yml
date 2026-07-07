@@ -1,4 +1,7 @@
 spring:
+  config:
+    import: "resource:classpath:test-auth-override.yaml"
+
   datasource:
     url: "jdbc:postgresql://localhost:5432/event_store?sslmode=prefer"
     username: postgres
@@ -137,12 +140,6 @@ feature-flag:
 
 authorisation:
   consumers:
-    automated-test-client:
-      roles:
-        - "full-access"
-        - "mappa-cat4"
-      filters:
-      queueName: "testqueue"
     automated-test-client-mappa:
       roles:
         - "full-access"
