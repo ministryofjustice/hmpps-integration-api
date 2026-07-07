@@ -10,5 +10,5 @@ data:
       consumers:
         pmcphee:
           roles:
-            - "full-access"
+            - "status-only"
   {{- end -}}
