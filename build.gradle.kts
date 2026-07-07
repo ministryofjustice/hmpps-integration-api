@@ -212,7 +212,7 @@ tasks {
     description = "Runs all tests with parallel execution. Serve dependencies first with `make serve`"
     group = "verification"
     testClassesDirs = sourceSets["test"].output.classesDirs
-    maxParallelForks = 6
+    maxParallelForks = 4
     classpath = sourceSets["main"].output + configurations["testRuntimeClasspath"] + sourceSets["test"].output
   }
 

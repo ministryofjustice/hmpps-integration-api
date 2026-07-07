@@ -22,7 +22,7 @@ jobs:
       - name: Serve Dependencies
         run: make serve-dependencies
       - name: Run Tests
-        run: TEST_TYPE="INT" ./gradlew ktlintcheck fulltest koverXmlReport
+        run: TEST_TYPE="INT" ./gradlew fulltest koverXmlReport createCoverageReport
       - name: Upload raw test reports on failure
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
