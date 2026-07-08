@@ -1,14 +1,12 @@
 {{- $config := index .Values "config-override" | default dict -}}
 {{- if $config.enabled | default false -}}
+{{- if $config.data }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: yaml-override-config
 data:
   override.yaml: |
-    authorisation:
-      consumers:
-        pmcphee:
-          roles:
-            - "status-only"
-  {{- end -}}
+  {{ $config.data | b64dec }}
+{{- end }}
+{{- end -}}
