@@ -1,7 +1,3 @@
-spring:
-  config:
-    import: "optional:file:/app/test-override.yaml"
-
 services:
   int-api:
     base-url: https://dev.integration-api.hmpps.service.justice.gov.uk
