@@ -16,8 +16,6 @@ class CacheIntegrationTest : IntegrationTestBase() {
   private final val crnPath = "/v1/persons/$crn"
   private final val addressPath = "$nomsPath/addresses"
 
-  private final val oboCn = "obo-unsigned-verified"
-
   @Test
   fun `caches prisoner and cpr data when addresses endpoint called twice and feature enabled`() {
     // Request 1
@@ -36,20 +34,6 @@ class CacheIntegrationTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `caches find user data from manangeUsersGateway when addresses endpoint called twice and feature enabled with obo`() {
-    // Request 1UnsignedJwtOboService
-    callApiWithCN(addressPath, oboCn, oboValue = createUnsignedJwt())
-      .andExpect(status().isOk)
-
-    // Reqyest 2
-    callApiWithCN(addressPath, oboCn, oboValue = createUnsignedJwt())
-      .andExpect(status().isOk)
-
-    // Calls the cached manage users only once
-    verify(manageUsersGateway, times(1)).findUser(any(), any())
-  }
-
-  @Test
   fun `does caches offender data when crn endpoint called twice and feature enabled`() {
     // Request 1
     callApiWithCN(crnPath, specificPrisonCn)
@@ -61,6 +45,27 @@ class CacheIntegrationTest : IntegrationTestBase() {
 
     // Calls the cacheable method only once (caches first request)
     verify(nDeliusGateway, times(1)).getOffender(eq(crn), any<RequestContext>())
+  }
+}
+
+@TestPropertySource(properties = ["cache-enabled=true"])
+class CacheIntegrationOboTest : IntegrationTestBase() {
+  private final val nomsPath = "/v1/persons/$nomsId"
+  private final val addressPath = "$nomsPath/addresses"
+  private final val oboCn = "obo-unsigned-verified"
+
+  @Test
+  fun `caches find user data from manangeUsersGateway when addresses endpoint called twice and feature enabled with obo`() {
+    // Request 1UnsignedJwtOboService
+    callApiWithCN(addressPath, oboCn, oboValue = createUnsignedJwt())
+      .andExpect(status().isOk)
+
+    // Reqyest 2
+    callApiWithCN(addressPath, oboCn, oboValue = createUnsignedJwt())
+      .andExpect(status().isOk)
+
+    // Calls the cached manage users only once
+    verify(manageUsersGateway, times(1)).findUser(any(), any())
   }
 }
 
