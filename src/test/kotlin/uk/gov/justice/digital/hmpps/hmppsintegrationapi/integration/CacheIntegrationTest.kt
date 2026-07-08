@@ -42,7 +42,7 @@ class CacheIntegrationTest : IntegrationTestBase() {
   @Test
   fun `does caches offender data when crn endpoint called twice and feature enabled`() {
     // Request 1
-    callApiWithCN(crnPath, "specificPrisonCn")
+    callApiWithCN(crnPath, specificPrisonCn)
       .andExpect(status().isOk)
 
     // Request 2
