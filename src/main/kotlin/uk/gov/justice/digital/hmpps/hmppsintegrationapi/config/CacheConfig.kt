@@ -25,6 +25,7 @@ class CacheConfig {
   companion object {
     const val GATEWAY_CACHE = "GATEWAY_CACHE"
     const val TOKEN_CACHE = "TOKEN_CACHE"
+    const val HMPPS_AUTH_USERS = "HMPPS_AUTH_USERS"
   }
 
   @Bean
@@ -51,15 +52,30 @@ class CacheConfig {
     )
 
   @Bean
+  fun hmppsAuthUsersCache(): CaffeineCache =
+    CaffeineCache(
+      HMPPS_AUTH_USERS,
+      Caffeine
+        .newBuilder()
+        .maximumSize(100)
+        .recordStats()
+        .expireAfterWrite(Duration.ofMinutes(5))
+        .build(),
+    )
+
+  @Bean
   fun caffeineCacheManager(): CacheManager {
     val cacheManager = SimpleCacheManager()
-    val caches = listOf(gatewayCache(), tokenCache())
+    val caches = listOf(gatewayCache(), tokenCache(), hmppsAuthUsersCache())
     cacheManager.setCaches(caches)
     return cacheManager
   }
 
   @Bean("gatewayKeyGenerator")
   fun keyGenerator(): KeyGenerator = GatewayKeyGenerator()
+
+  @Bean("hmppsAuthUsersCacheKeyGenerator")
+  fun hmppsAuthUsersKeyGenerator(): KeyGenerator = HmppsAuthUsersKeyGenerator()
 }
 
 /**
@@ -78,6 +94,28 @@ class GatewayKeyGenerator : KeyGenerator {
       ?.oboUserName
       ?.let { stringParam.add(it) }
     return target.javaClass.name + "_" + method.name + "_" + stringParam.joinToString("_")
+  }
+}
+
+/**
+ * Generates a unique key for the cache so this can be used on find user call
+ */
+class HmppsAuthUsersKeyGenerator : KeyGenerator {
+  override fun generate(
+    target: Any,
+    method: Method,
+    vararg params: Any?,
+  ): Any {
+    val keyParts =
+      params.mapNotNull { param ->
+        when (param) {
+          is String -> param // Handles the username
+          is Collection<*> -> param.joinToString("_") // Handles the authSources list
+          else -> null
+        }
+      }
+
+    return target.javaClass.name + "_" + method.name + "_" + keyParts.joinToString("_")
   }
 }
 

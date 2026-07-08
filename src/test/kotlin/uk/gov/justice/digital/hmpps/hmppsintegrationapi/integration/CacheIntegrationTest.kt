@@ -8,12 +8,15 @@ import org.mockito.kotlin.verify
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.createUnsignedJwt
 
 @TestPropertySource(properties = ["cache-enabled=true"])
 class CacheIntegrationTest : IntegrationTestBase() {
   private final val nomsPath = "/v1/persons/$nomsId"
   private final val crnPath = "/v1/persons/$crn"
   private final val addressPath = "$nomsPath/addresses"
+
+  private final val oboCn = "obo-unsigned-verified"
 
   @Test
   fun `caches prisoner and cpr data when addresses endpoint called twice and feature enabled`() {
@@ -30,6 +33,20 @@ class CacheIntegrationTest : IntegrationTestBase() {
 
     // Calls the cached CPR method only once
     verify(corePersonRecordGateway, times(1)).corePersonRecordFor(any(), eq(nomsId))
+  }
+
+  @Test
+  fun `caches find user data from manangeUsersGateway when addresses endpoint called twice and feature enabled with obo`() {
+    // Request 1UnsignedJwtOboService
+    callApiWithCN(addressPath, oboCn, oboValue = createUnsignedJwt())
+      .andExpect(status().isOk)
+
+    // Reqyest 2
+    callApiWithCN(addressPath, oboCn, oboValue = createUnsignedJwt())
+      .andExpect(status().isOk)
+
+    // Calls the cached manage users only once
+    verify(manageUsersGateway, times(1)).findUser(any(), any())
   }
 
   @Test
@@ -52,6 +69,8 @@ class CacheDisabledIntegrationTest : IntegrationTestBase() {
   private final val crnPath = "/v1/persons/$crn"
   private final val addressPath = "$nomsPath/addresses"
 
+  private final val oboCn = "obo-unsigned-verified"
+
   @Test
   fun `does not cache prisoner data when addresses endpoint called twice and feature disabled`() {
     // Request 1
@@ -68,6 +87,20 @@ class CacheDisabledIntegrationTest : IntegrationTestBase() {
     // Address endpoint calls CPR twice per request. One for nomis and one for crn
     // Calls the cached CPR method 4 times in total across 2 requests
     verify(corePersonRecordGateway, times(4)).corePersonRecordFor(any(), eq(nomsId))
+  }
+
+  @Test
+  fun `does not cache find user data from manangeUsersGateway when addresses endpoint called twice and feature disabled with obo`() {
+    // Request 1UnsignedJwtOboService
+    callApiWithCN(addressPath, oboCn, oboValue = createUnsignedJwt())
+      .andExpect(status().isOk)
+
+    // Reqyest 2
+    callApiWithCN(addressPath, oboCn, oboValue = createUnsignedJwt())
+      .andExpect(status().isOk)
+
+    // Calls the cached manage users only once
+    verify(manageUsersGateway, times(2)).findUser(any(), any())
   }
 
   @Test
