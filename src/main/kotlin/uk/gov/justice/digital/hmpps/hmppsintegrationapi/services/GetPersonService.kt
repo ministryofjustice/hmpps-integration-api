@@ -464,12 +464,16 @@ class GetPersonService(
       }
   }
 
-  fun getPersonFromNomis(nomisNumber: String) = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
+  fun getPersonFromNomis(
+    nomisNumber: String,
+    requestContext: RequestContext?,
+  ) = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber, requestContext)
 
   fun getPrisoner(
     hmppsId: String,
-    filters: ConsumerFilters?,
+    requestContext: RequestContext?,
   ): Response<PersonInPrison?> {
+    val filters = requestContext?.filters
     val prisonerNomisNumber = getNomisNumber(hmppsId)
 
     if (prisonerNomisNumber.errors.isNotEmpty()) {
@@ -483,7 +487,7 @@ class GetPersonService(
 
     val prisonResponse =
       try {
-        getPersonFromNomis(nomisNumber!!)
+        getPersonFromNomis(nomisNumber!!, requestContext)
       } catch (e: RuntimeException) {
         if (nomisNumber == null) {
           return Response(

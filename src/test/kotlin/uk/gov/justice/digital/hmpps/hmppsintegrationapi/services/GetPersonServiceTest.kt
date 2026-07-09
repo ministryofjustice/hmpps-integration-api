@@ -79,6 +79,9 @@ internal class GetPersonServiceTest :
       val wrongPrisonId = "XYZ"
       val filters = ConsumerFilters(listOf(prisonId))
       val blankConsumerFilters = ConsumerFilters(null)
+      val requestContext = buildRequestContext("testUser", filters = filters)
+      val blankRequestContext = buildRequestContext("testUser", filters = blankConsumerFilters)
+      val emptyRequestContext = buildRequestContext("testUser", filters = ConsumerFilters(emptyList()))
 
       val personaInProbationAndPrison = personInProbationAndNomisPersona
       val personOnProbation = personaInProbationAndPrison.run { Offender(firstName = firstName, surname = lastName, otherIds = OtherIds(crn = identifiers.deliusCrn, nomsNumber = identifiers.nomisNumber), activeProbationManagedSentence = true) }
@@ -229,6 +232,12 @@ internal class GetPersonServiceTest :
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = nomsNumberForPrisonerWithWrongPrisonId)).thenReturn(
           Response(data = prisonerWithWrongPrisonId),
         )
+        whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = nomsNumber, requestContext)).thenReturn(Response(data = prisoner))
+        whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = nomsNumberForPrisonerWithWrongPrisonId, requestContext)).thenReturn(
+          Response(data = prisonerWithWrongPrisonId),
+        )
+        whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = nomsNumber, blankRequestContext)).thenReturn(Response(data = prisoner))
+        whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = nomsNumber, emptyRequestContext)).thenReturn(Response(data = prisoner))
         whenever(prisonerOffenderSearchGateway.getPersons(prisoner.firstName, prisoner.lastName, prisoner.dateOfBirth.toString())).thenReturn(
           Response(data = listOf(prisonerWithPrisonId)),
         )
@@ -473,11 +482,11 @@ internal class GetPersonServiceTest :
         it("returns a prisoner when valid hmppsId is provided") {
           val validHmppsId = "G2996UX"
           val person = PersonInPrison(firstName = "Sam", lastName = "Mills", category = null, csra = null, receptionDate = null, status = null, prisonId = null, prisonName = null, cellLocation = null, youthOffender = false)
-          whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = "G2996UX")).thenReturn(
+          whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = "G2996UX", blankRequestContext)).thenReturn(
             Response(data = POSPrisoner(firstName = "Sam", lastName = "Mills", youthOffender = false)),
           )
 
-          val result = getPersonService.getPrisoner(validHmppsId, blankConsumerFilters)
+          val result = getPersonService.getPrisoner(validHmppsId, blankRequestContext)
           result.data.shouldBeTypeOf<PersonInPrison>()
           result.data.firstName.shouldBe(person.firstName)
           result.data.lastName.shouldBe(person.lastName)
@@ -486,16 +495,16 @@ internal class GetPersonServiceTest :
 
         it("returns null when prisoner is not found") {
           val errors = listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))
-          whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = null, errors))
+          whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber, requestContext)).thenReturn(Response(data = null, errors))
 
-          val result = getPersonService.getPrisoner(nomsNumber, blankConsumerFilters)
+          val result = getPersonService.getPrisoner(nomsNumber, requestContext)
           result.data.shouldBe(null)
           result.errors.shouldBe(errors)
         }
 
         it("returns error when invalid hmppsId is provided") {
           val invalidHmppsId = "invalid_id"
-          val result = getPersonService.getPrisoner(invalidHmppsId, blankConsumerFilters)
+          val result = getPersonService.getPrisoner(invalidHmppsId, requestContext)
           result.data.shouldBe(null)
           result.errors.shouldBe(
             listOf(
@@ -514,42 +523,43 @@ internal class GetPersonServiceTest :
             Response(data = null, errors),
           )
 
-          val result = getPersonService.getPrisoner(crnNumber, blankConsumerFilters)
+          val result = getPersonService.getPrisoner(crnNumber, requestContext)
           result.data.shouldBe(null)
           result.errors.shouldBe(errors)
         }
 
         it("returns null when prisoner is found but not in approved prison") {
-          whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerWithWrongPrisonId, errors = emptyList()))
+          whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber, requestContext)).thenReturn(Response(data = prisonerWithWrongPrisonId, errors = emptyList()))
 
-          val result = getPersonService.getPrisoner(nomsNumber, filters)
+          val result = getPersonService.getPrisoner(nomsNumber, requestContext)
           result.data.shouldBe(null)
           result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
         }
 
         it("returns prisoner when in approved prison") {
-          whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber))
+          whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber, requestContext))
             .thenReturn(Response(data = prisonerWithPrisonId))
 
-          val result = getPersonService.getPrisoner(nomsNumber, filters)
+          val result = getPersonService.getPrisoner(nomsNumber, requestContext)
           result.data.shouldBe(prisonerWithPrisonId.toPersonInPrison())
           result.errors.shouldBe(emptyList())
         }
 
         it("returns prisoner if no prison filter present") {
-          val result = getPersonService.getPrisoner(nomsNumber, ConsumerFilters(prisons = null))
+          val result = getPersonService.getPrisoner(nomsNumber, blankRequestContext)
           result.data.shouldBe(prisoner.toPersonInPrison())
           result.errors.shouldBe(emptyList())
         }
 
         it("returns null if no prisons in prison filter") {
-          val result = getPersonService.getPrisoner(nomsNumber, ConsumerFilters(prisons = emptyList()))
+          val result = getPersonService.getPrisoner(nomsNumber, emptyRequestContext)
           result.data.shouldBe(null)
           result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
         }
 
         it("does not return prisoners who are missing prison ID") {
-          val result = getPersonService.getPrisoner(nomsNumber, ConsumerFilters(prisons = listOf("ABC")))
+          val idPrisonRequestContext = buildRequestContext("testUser", filters = ConsumerFilters(prisons = listOf("ABC")))
+          val result = getPersonService.getPrisoner(nomsNumber, idPrisonRequestContext)
           result.data.shouldBe(null)
           result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
         }

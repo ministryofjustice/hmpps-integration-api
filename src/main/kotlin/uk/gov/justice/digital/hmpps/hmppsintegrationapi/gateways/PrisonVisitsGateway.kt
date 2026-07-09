@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -62,6 +63,7 @@ class PrisonVisitsGateway(
   fun getVisits(
     prisonId: String,
     hmppsId: String?,
+    requestContext: RequestContext?,
     fromDate: String?,
     toDate: String?,
     visitStatus: String,
@@ -84,7 +86,7 @@ class PrisonVisitsGateway(
       webClient.request<PVPaginatedVisits>(
         HttpMethod.GET,
         "/visits/search$queryString",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.MANAGE_PRISON_VISITS,
         badRequestAsError = true,
       )
@@ -158,8 +160,8 @@ class PrisonVisitsGateway(
     }
   }
 
-  private fun authenticationHeader(): Map<String, String> {
-    val token = hmppsAuthGateway.getClientToken("MANAGE-PRISON-VISITS")
+  private fun authenticationHeader(requestContext: RequestContext? = null): Map<String, String> {
+    val token = hmppsAuthGateway.getClientToken("MANAGE-PRISON-VISITS", requestContext)
 
     return mapOf(
       "Authorization" to "Bearer $token",

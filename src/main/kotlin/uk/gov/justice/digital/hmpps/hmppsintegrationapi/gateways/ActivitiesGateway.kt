@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivitySchedule
@@ -44,19 +45,22 @@ class ActivitiesGateway(
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  private fun authenticationHeader(): Map<String, String> {
-    val token = hmppsAuthGateway.getClientToken("ACTIVITIES")
+  private fun authenticationHeader(requestContext: RequestContext? = null): Map<String, String> {
+    val token = hmppsAuthGateway.getClientToken("ACTIVITIES", requestContext)
     return mapOf(
       "Authorization" to "Bearer $token",
     )
   }
 
-  fun getPrisonRegime(prisonCode: String): Response<List<ActivitiesPrisonRegime>?> {
+  fun getPrisonRegime(
+    prisonCode: String,
+    requestContext: RequestContext?,
+  ): Response<List<ActivitiesPrisonRegime>?> {
     val result =
       webClient.requestList<ActivitiesPrisonRegime>(
         HttpMethod.GET,
         "/integration-api/prison/prison-regime/$prisonCode",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.ACTIVITIES,
         badRequestAsError = true,
       )
@@ -75,12 +79,15 @@ class ActivitiesGateway(
     }
   }
 
-  fun getPrisonPayBands(prisonCode: String): Response<List<ActivitiesPrisonPayBand>?> {
+  fun getPrisonPayBands(
+    prisonCode: String,
+    requestContext: RequestContext?,
+  ): Response<List<ActivitiesPrisonPayBand>?> {
     val result =
       webClient.requestList<ActivitiesPrisonPayBand>(
         HttpMethod.GET,
         "/integration-api/prison/$prisonCode/prison-pay-bands",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.ACTIVITIES,
         badRequestAsError = true,
       )

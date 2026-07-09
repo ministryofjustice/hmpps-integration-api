@@ -33,6 +33,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitesp
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CorePersonRecordGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ManageUsersGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerAlertsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
@@ -84,6 +85,9 @@ abstract class IntegrationTestBase {
 
   @MockitoSpyBean
   lateinit var authGateway: HmppsAuthGateway
+
+  @MockitoSpyBean
+  lateinit var manageUsersGateway: ManageUsersGateway
 
   @Autowired
   lateinit var mockMvc: MockMvc

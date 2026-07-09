@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.LocationsInsidePrisonGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ResidentialHierarchyItem
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -34,6 +35,7 @@ class GetResidentialDetailsServiceTest(
       val prisonId = "MKI"
       val parentPathHierarchy = null
       val filters = null
+      val requestContext = buildRequestContext("testUser", filters = filters)
       val residentialSummary =
         LIPResidentialSummary(
           prisonSummary =
@@ -90,11 +92,11 @@ class GetResidentialDetailsServiceTest(
         Mockito.reset(locationsInsidePrisonGateway)
 
         whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<List<ResidentialHierarchyItem>>(prisonId, filters)).thenReturn(Response(data = null, errors = emptyList()))
-        whenever(locationsInsidePrisonGateway.getResidentialSummary(prisonId, parentPathHierarchy)).thenReturn(Response(data = residentialSummary))
+        whenever(locationsInsidePrisonGateway.getResidentialSummary(prisonId, parentPathHierarchy, requestContext)).thenReturn(Response(data = residentialSummary))
       }
 
       it("performs a search according to prisonId and parentPathHierarchy and returns data") {
-        val result = getResidentialDetailsService.execute(prisonId, parentPathHierarchy, filters)
+        val result = getResidentialDetailsService.execute(prisonId, parentPathHierarchy, requestContext)
         result.data.shouldNotBeNull()
         result.data.shouldBe(residentialSummary.toResidentialDetails())
         result.errors.count().shouldBe(0)
@@ -104,16 +106,16 @@ class GetResidentialDetailsServiceTest(
         val errors = listOf(UpstreamApiError(UpstreamApi.LOCATIONS_INSIDE_PRISON, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "Consumer Prison Access Service not found"))
         whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<List<ResidentialHierarchyItem>>(prisonId, filters)).thenReturn(Response(data = null, errors = errors))
 
-        val result = getResidentialDetailsService.execute(prisonId, parentPathHierarchy, filters)
+        val result = getResidentialDetailsService.execute(prisonId, parentPathHierarchy, requestContext)
         result.data.shouldBe(null)
         result.errors.shouldBe(errors)
       }
 
       it("should return a list of errors if locationsInsidePrisonGateway returns errors") {
         val errors = listOf(UpstreamApiError(UpstreamApi.LOCATIONS_INSIDE_PRISON, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "locationsInsidePrisonGateway returns errors"))
-        whenever(locationsInsidePrisonGateway.getResidentialSummary(prisonId, parentPathHierarchy)).thenReturn(Response(data = null, errors = errors))
+        whenever(locationsInsidePrisonGateway.getResidentialSummary(prisonId, parentPathHierarchy, requestContext)).thenReturn(Response(data = null, errors = errors))
 
-        val result = getResidentialDetailsService.execute(prisonId, parentPathHierarchy, filters)
+        val result = getResidentialDetailsService.execute(prisonId, parentPathHierarchy, requestContext)
         result.data.shouldBe(null)
         result.errors.shouldBe(errors)
       }

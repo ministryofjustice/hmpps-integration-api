@@ -4,6 +4,8 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,7 +25,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerCon
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitRestrictionsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitorRestrictionsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
@@ -95,7 +96,7 @@ internal class VisitRestrictionsControllerTest(
           ),
         )
 
-        whenever(getVisitorRestrictionsService.execute(hmppsId, contactId, filters = null)).thenReturn(
+        whenever(getVisitorRestrictionsService.execute(eq(hmppsId), eq(contactId), any())).thenReturn(
           Response(
             data = prisonerContactRestrictions,
           ),
@@ -222,7 +223,7 @@ internal class VisitRestrictionsControllerTest(
       }
 
       it("returned 404 when GetVisitorRestrictionsService returns entity not found") {
-        whenever(getVisitorRestrictionsService.execute(hmppsId, contactId, filters = null)).thenReturn(
+        whenever(getVisitorRestrictionsService.execute(eq(hmppsId), eq(contactId), any())).thenReturn(
           Response(
             data = null,
             errors =
@@ -239,7 +240,7 @@ internal class VisitRestrictionsControllerTest(
       }
 
       it("returned 404 when consumerPrisonAccessService returns entity not found") {
-        whenever(getVisitorRestrictionsService.execute(hmppsId, contactId, filters = ConsumerFilters(listOf("XYZ")))).thenReturn(
+        whenever(getVisitorRestrictionsService.execute(eq(hmppsId), eq(contactId), any())).thenReturn(
           Response(
             data = null,
             errors =
@@ -257,7 +258,7 @@ internal class VisitRestrictionsControllerTest(
       }
 
       it("returned 400 when GetVisitorRestrictionsService returns bad request") {
-        whenever(getVisitorRestrictionsService.execute(hmppsId, contactId, filters = null)).thenReturn(
+        whenever(getVisitorRestrictionsService.execute(eq(hmppsId), eq(contactId), any())).thenReturn(
           Response(
             data = null,
             errors =
