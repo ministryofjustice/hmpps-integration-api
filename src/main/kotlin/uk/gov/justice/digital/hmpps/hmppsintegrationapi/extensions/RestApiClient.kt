@@ -34,7 +34,7 @@ class RestApiClient(
   val defaultOptions: RestApiOptions = RestApiOptions(),
   val webClient: WebClient? = null,
 ) {
-  val CREATE_TRANSACTION_RETRY_HTTP_CODES = listOf(502, 503, 504, 522, 599, 499, 408)
+  val retryCodes = listOf(502, 503, 504, 522, 599, 499, 408)
 
   fun <T : Any> get(
     path: String,
@@ -55,7 +55,7 @@ class RestApiClient(
 
       if (opts.retryAttempts > 0) {
         responseSpec =
-          responseSpec.onStatus({ status -> status.value() in CREATE_TRANSACTION_RETRY_HTTP_CODES }) { response ->
+          responseSpec.onStatus({ status -> status.value() in retryCodes }) { response ->
             retryError(response, apiName, HttpMethod.GET, path)
           }
       }
