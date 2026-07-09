@@ -110,7 +110,7 @@ class HmppsAuthUsersKeyGenerator : KeyGenerator {
       params.mapNotNull { param ->
         when (param) {
           is String -> param // Handles the username
-          is Collection<*> -> param.joinToString("_") // Handles the authSources list
+          is List<*> -> param.filterIsInstance<String>().joinToString("_") // Handles the authSources list
           else -> null
         }
       }
