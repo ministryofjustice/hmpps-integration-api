@@ -1,9 +1,11 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import org.springframework.web.util.UriComponentsBuilder
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Companion.HMPPS_AUTH_USERS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -33,6 +35,7 @@ class ManageUsersGateway(
     )
   }
 
+  @Cacheable(HMPPS_AUTH_USERS, keyGenerator = "hmppsAuthUsersCacheKeyGenerator")
   fun findUser(
     username: String,
     authSources: List<String>,
