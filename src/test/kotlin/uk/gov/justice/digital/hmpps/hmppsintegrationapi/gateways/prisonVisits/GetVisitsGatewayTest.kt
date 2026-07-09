@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonVisitsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
@@ -39,12 +40,13 @@ class GetVisitsGatewayTest(
       val size = 10
       val pathWithQueryParams = "$path?prisonId=$prisonId&visitStatus=$visitStatus&page=${page - 1}&size=$size&prisonerId=$hmppsId&visitStartDate=$fromDate&visitEndDate=$toDate"
       val prisonVisitsApiMockServer = ApiMockServer.create(UpstreamApi.MANAGE_PRISON_VISITS)
+      val requestContext = buildRequestContext("testUser")
 
       beforeEach {
         prisonVisitsApiMockServer.start()
         Mockito.reset(hmppsAuthGateway)
 
-        whenever(hmppsAuthGateway.getClientToken("MANAGE-PRISON-VISITS")).thenReturn(HmppsAuthMockServer.TOKEN)
+        whenever(hmppsAuthGateway.getClientToken("MANAGE-PRISON-VISITS", requestContext)).thenReturn(HmppsAuthMockServer.TOKEN)
       }
 
       afterTest {
@@ -52,9 +54,9 @@ class GetVisitsGatewayTest(
       }
 
       it("authenticates using HMPPS Auth with credentials for linked prisoners api") {
-        prisonVisitsGateway.getVisits(prisonId, hmppsId, fromDate, toDate, visitStatus, page, size)
+        prisonVisitsGateway.getVisits(prisonId, hmppsId, requestContext, fromDate, toDate, visitStatus, page, size)
 
-        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("MANAGE-PRISON-VISITS")
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("MANAGE-PRISON-VISITS", requestContext)
       }
 
       it("returns a 200 when visit is found") {
@@ -131,7 +133,7 @@ class GetVisitsGatewayTest(
           """.trimIndent()
 
         prisonVisitsApiMockServer.stubForGet(pathWithQueryParams, body = exampleData, HttpStatus.OK)
-        val response = prisonVisitsGateway.getVisits(prisonId, hmppsId, fromDate, toDate, visitStatus, page, size)
+        val response = prisonVisitsGateway.getVisits(prisonId, hmppsId, requestContext, fromDate, toDate, visitStatus, page, size)
         response.data.shouldNotBeNull()
         response.data!!
           .content
@@ -254,7 +256,7 @@ class GetVisitsGatewayTest(
 
         prisonVisitsApiMockServer.stubForGet(pathWithQueryParams, body = exampleData, HttpStatus.OK)
 
-        val response = prisonVisitsGateway.getVisits(prisonId, hmppsId, fromDate, toDate, visitStatus, page, size)
+        val response = prisonVisitsGateway.getVisits(prisonId, hmppsId, requestContext, fromDate, toDate, visitStatus, page, size)
         response.data.shouldNotBeNull()
         response.data!!
           .content

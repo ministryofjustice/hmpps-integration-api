@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -58,12 +59,13 @@ class LocationsInsidePrisonGateway(
   fun getResidentialSummary(
     prisonId: String,
     parentPathHierarchy: String? = null,
+    requestContext: RequestContext?,
   ): Response<LIPResidentialSummary?> {
     val result =
       webClient.request<LIPResidentialSummary>(
         HttpMethod.GET,
         "/locations/residential-summary/$prisonId" + if (parentPathHierarchy == null) "" else "?parentPathHierarchy=$parentPathHierarchy",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.LOCATIONS_INSIDE_PRISON,
         badRequestAsError = true,
       )
@@ -85,12 +87,13 @@ class LocationsInsidePrisonGateway(
   fun getResidentialHierarchy(
     prisonId: String,
     includeInactive: Boolean = false,
+    requestContext: RequestContext?,
   ): Response<List<LIPResidentialHierarchyItem>?> {
     val result =
       webClient.requestList<LIPResidentialHierarchyItem>(
         HttpMethod.GET,
         "/locations/prison/$prisonId/residential-hierarchy" + if (includeInactive) "?includeInactive=true" else "",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.LOCATIONS_INSIDE_PRISON,
         badRequestAsError = true,
       )
@@ -109,8 +112,8 @@ class LocationsInsidePrisonGateway(
     }
   }
 
-  private fun authenticationHeader(): Map<String, String> {
-    val token = hmppsAuthGateway.getClientToken("LOCATIONS-INSIDE-PRISON")
+  private fun authenticationHeader(requestContext: RequestContext? = null): Map<String, String> {
+    val token = hmppsAuthGateway.getClientToken("LOCATIONS-INSIDE-PRISON", requestContext)
 
     return mapOf(
       "Authorization" to "Bearer $token",

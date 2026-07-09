@@ -4,10 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.LocationsInsidePrisonGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonCapacity
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Component
 @Service
@@ -17,15 +17,15 @@ class GetCapacityForPrisonService(
 ) {
   fun execute(
     prisonId: String,
-    filters: ConsumerFilters?,
+    requestContext: RequestContext?,
   ): Response<PrisonCapacity?> {
-    val checkAccess = consumerPrisonAccessService.checkConsumerHasPrisonAccess<PrisonCapacity>(prisonId, filters)
+    val checkAccess = consumerPrisonAccessService.checkConsumerHasPrisonAccess<PrisonCapacity>(prisonId, requestContext?.filters)
 
     if (checkAccess.errors.isNotEmpty()) {
       return Response(data = checkAccess.data, errors = checkAccess.errors)
     }
 
-    val result = locationsInsidePrisonGateway.getResidentialSummary(prisonId)
+    val result = locationsInsidePrisonGateway.getResidentialSummary(prisonId, requestContext = requestContext)
 
     if (result.errors.isNotEmpty()) {
       return Response(data = null, errors = result.errors)

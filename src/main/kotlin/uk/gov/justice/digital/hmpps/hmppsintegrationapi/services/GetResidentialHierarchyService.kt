@@ -4,10 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.LocationsInsidePrisonGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ResidentialHierarchyItem
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Component
 @Service
@@ -18,14 +18,14 @@ class GetResidentialHierarchyService(
   fun execute(
     prisonId: String,
     includeInactive: Boolean = false,
-    filters: ConsumerFilters?,
+    requestContext: RequestContext?,
   ): Response<List<ResidentialHierarchyItem>?> {
-    val checkAccess = consumerPrisonAccessService.checkConsumerHasPrisonAccess<List<ResidentialHierarchyItem>>(prisonId, filters)
+    val checkAccess = consumerPrisonAccessService.checkConsumerHasPrisonAccess<List<ResidentialHierarchyItem>>(prisonId, requestContext?.filters)
     if (checkAccess.errors.isNotEmpty()) {
       return Response(data = checkAccess.data, errors = checkAccess.errors)
     }
 
-    val result = locationsInsidePrisonGateway.getResidentialHierarchy(prisonId, includeInactive)
+    val result = locationsInsidePrisonGateway.getResidentialHierarchy(prisonId, includeInactive, requestContext)
     if (result.errors.isNotEmpty()) {
       return Response(data = null, errors = result.errors)
     }

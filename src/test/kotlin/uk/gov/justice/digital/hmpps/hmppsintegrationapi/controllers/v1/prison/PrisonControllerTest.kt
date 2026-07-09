@@ -4,6 +4,7 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import jakarta.servlet.http.HttpServletRequest
 import org.mockito.Mockito
+import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.times
@@ -419,7 +420,6 @@ internal class PrisonControllerTest(
     describe("GET /{prisonId}/residential-hierarchy") {
       val prisonId = "ABC"
       val includeInactive = true
-      val filters = null
       val path = "$basePath/$prisonId/residential-hierarchy?includeInactive=$includeInactive"
 
       val subLocation =
@@ -448,7 +448,7 @@ internal class PrisonControllerTest(
       }
 
       it("should return 200 when success") {
-        whenever(getResidentialHierarchyService.execute(prisonId, includeInactive, filters)).thenReturn(Response(data = listOf(mainLocation)))
+        whenever(getResidentialHierarchyService.execute(eq(prisonId), eq(includeInactive), any())).thenReturn(Response(data = listOf(mainLocation)))
 
         val result = mockMvc.performAuthorised(path)
         result.response.status.shouldBe(HttpStatus.OK.value())
@@ -456,7 +456,7 @@ internal class PrisonControllerTest(
       }
 
       it("should call the audit service") {
-        whenever(getResidentialHierarchyService.execute(prisonId, includeInactive, filters)).thenReturn(Response(data = listOf(mainLocation)))
+        whenever(getResidentialHierarchyService.execute(eq(prisonId), eq(includeInactive), any())).thenReturn(Response(data = listOf(mainLocation)))
 
         mockMvc.performAuthorised(path)
         verify(
@@ -469,7 +469,7 @@ internal class PrisonControllerTest(
       }
 
       it("returns 400 when getResidentialHierarchyService returns Bad Request") {
-        whenever(getResidentialHierarchyService.execute(prisonId, includeInactive, filters)).thenReturn(
+        whenever(getResidentialHierarchyService.execute(eq(prisonId), eq(includeInactive), any())).thenReturn(
           Response(
             data = null,
             errors =
@@ -487,7 +487,7 @@ internal class PrisonControllerTest(
       }
 
       it("returns 404 when getResidentialHierarchyService returns not found") {
-        whenever(getResidentialHierarchyService.execute(prisonId, includeInactive, filters)).thenReturn(
+        whenever(getResidentialHierarchyService.execute(eq(prisonId), eq(includeInactive), any())).thenReturn(
           Response(
             data = null,
             errors =
@@ -508,7 +508,6 @@ internal class PrisonControllerTest(
     describe("GET /{prisonId}/residential-details") {
       val prisonId = "ABC"
       val parentPathHierarchy = "A"
-      val filters = null
       val path = "$basePath/$prisonId/residential-details?parentPathHierarchy=$parentPathHierarchy"
 
       val residentialDetails =
@@ -563,7 +562,7 @@ internal class PrisonControllerTest(
       }
 
       it("should return 200 when success") {
-        whenever(getResidentialDetailsService.execute(prisonId, parentPathHierarchy, filters)).thenReturn(Response(data = residentialDetails))
+        whenever(getResidentialDetailsService.execute(eq(prisonId), eq(parentPathHierarchy), any())).thenReturn(Response(data = residentialDetails))
 
         val result = mockMvc.performAuthorised(path)
         result.response.status.shouldBe(HttpStatus.OK.value())
@@ -571,7 +570,7 @@ internal class PrisonControllerTest(
       }
 
       it("should call the audit service") {
-        whenever(getResidentialDetailsService.execute(prisonId, parentPathHierarchy, filters)).thenReturn(Response(data = residentialDetails))
+        whenever(getResidentialDetailsService.execute(eq(prisonId), eq(parentPathHierarchy), any())).thenReturn(Response(data = residentialDetails))
 
         mockMvc.performAuthorised(path)
         verify(
@@ -584,7 +583,7 @@ internal class PrisonControllerTest(
       }
 
       it("returns 400 when getResidentialDetailsService Bad Request") {
-        whenever(getResidentialDetailsService.execute(prisonId, parentPathHierarchy, filters)).thenReturn(
+        whenever(getResidentialDetailsService.execute(eq(prisonId), eq(parentPathHierarchy), any())).thenReturn(
           Response(
             data = null,
             errors =
@@ -602,7 +601,7 @@ internal class PrisonControllerTest(
       }
 
       it("returns 404 when getResidentialDetailsService returns not found") {
-        whenever(getResidentialDetailsService.execute(prisonId, parentPathHierarchy, filters)).thenReturn(
+        whenever(getResidentialDetailsService.execute(eq(prisonId), eq(parentPathHierarchy), any())).thenReturn(
           Response(
             data = null,
             errors =
@@ -622,7 +621,6 @@ internal class PrisonControllerTest(
 
     describe("GET /{prisonId}/capacity") {
       val prisonId = "ABC"
-      val filters = null
       val path = "$basePath/$prisonId/capacity"
 
       val prisonCapacity =
@@ -639,7 +637,7 @@ internal class PrisonControllerTest(
       }
 
       it("should return 200 when success") {
-        whenever(getCapacityForPrisonService.execute(prisonId, filters)).thenReturn(Response(data = prisonCapacity))
+        whenever(getCapacityForPrisonService.execute(eq(prisonId), any())).thenReturn(Response(data = prisonCapacity))
 
         val result = mockMvc.performAuthorised(path)
         result.response.status.shouldBe(HttpStatus.OK.value())
@@ -647,7 +645,7 @@ internal class PrisonControllerTest(
       }
 
       it("should call the audit service") {
-        whenever(getCapacityForPrisonService.execute(prisonId, filters)).thenReturn(Response(data = prisonCapacity))
+        whenever(getCapacityForPrisonService.execute(eq(prisonId), any())).thenReturn(Response(data = prisonCapacity))
 
         mockMvc.performAuthorised(path)
         verify(
@@ -660,7 +658,7 @@ internal class PrisonControllerTest(
       }
 
       it("returns 400 when getCapacityForPrisonService returns bad request") {
-        whenever(getCapacityForPrisonService.execute(prisonId, filters)).thenReturn(
+        whenever(getCapacityForPrisonService.execute(eq(prisonId), any())).thenReturn(
           Response(
             data = null,
             errors =
@@ -678,7 +676,7 @@ internal class PrisonControllerTest(
       }
 
       it("returns 404 when getCapacityForPrisonService returns not found") {
-        whenever(getCapacityForPrisonService.execute(prisonId, filters)).thenReturn(
+        whenever(getCapacityForPrisonService.execute(eq(prisonId), any())).thenReturn(
           Response(
             data = null,
             errors =
@@ -698,7 +696,6 @@ internal class PrisonControllerTest(
 
     describe("GET /{prisonId}/prison-regime") {
       val prisonId = "ABC"
-      val filters = null
       val path = "$basePath/$prisonId/prison-regime"
 
       val prisonRegime =
@@ -717,7 +714,7 @@ internal class PrisonControllerTest(
       }
 
       it("should return 200 when success") {
-        whenever(getPrisonRegimeService.execute(prisonId, filters)).thenReturn(Response(data = listOf(prisonRegime)))
+        whenever(getPrisonRegimeService.execute(eq(prisonId), any())).thenReturn(Response(data = listOf(prisonRegime)))
 
         val result = mockMvc.performAuthorised(path)
         result.response.status.shouldBe(HttpStatus.OK.value())
@@ -725,7 +722,7 @@ internal class PrisonControllerTest(
       }
 
       it("should call the audit service") {
-        whenever(getPrisonRegimeService.execute(prisonId, filters)).thenReturn(Response(data = listOf(prisonRegime)))
+        whenever(getPrisonRegimeService.execute(eq(prisonId), any())).thenReturn(Response(data = listOf(prisonRegime)))
 
         mockMvc.performAuthorised(path)
         verify(
@@ -738,7 +735,7 @@ internal class PrisonControllerTest(
       }
 
       it("returns 400 when getPrisonRegimeService returns bad request") {
-        whenever(getPrisonRegimeService.execute(prisonId, filters)).thenReturn(
+        whenever(getPrisonRegimeService.execute(eq(prisonId), any())).thenReturn(
           Response(
             data = null,
             errors =
@@ -756,7 +753,7 @@ internal class PrisonControllerTest(
       }
 
       it("returns 404 when getPrisonRegimeService returns not found") {
-        whenever(getPrisonRegimeService.execute(prisonId, filters)).thenReturn(
+        whenever(getPrisonRegimeService.execute(eq(prisonId), any())).thenReturn(
           Response(
             data = null,
             errors =
@@ -776,7 +773,6 @@ internal class PrisonControllerTest(
 
     describe("GET /{prisonId}/prison-pay-bands") {
       val prisonId = "ABC"
-      val filters = null
       val path = "$basePath/$prisonId/prison-pay-bands"
 
       val prisonPayBand =
@@ -791,7 +787,7 @@ internal class PrisonControllerTest(
       }
 
       it("should return 200 when success") {
-        whenever(getPrisonPayBandsService.execute(prisonId, filters)).thenReturn(Response(data = listOf(prisonPayBand)))
+        whenever(getPrisonPayBandsService.execute(eq(prisonId), any())).thenReturn(Response(data = listOf(prisonPayBand)))
 
         val result = mockMvc.performAuthorised(path)
         result.response.status.shouldBe(HttpStatus.OK.value())
@@ -799,7 +795,7 @@ internal class PrisonControllerTest(
       }
 
       it("should call the audit service") {
-        whenever(getPrisonPayBandsService.execute(prisonId, filters)).thenReturn(Response(data = listOf(prisonPayBand)))
+        whenever(getPrisonPayBandsService.execute(eq(prisonId), any())).thenReturn(Response(data = listOf(prisonPayBand)))
 
         mockMvc.performAuthorised(path)
         verify(
@@ -812,7 +808,7 @@ internal class PrisonControllerTest(
       }
 
       it("returns 400 when getPrisonPayBandsService returns bad request") {
-        whenever(getPrisonPayBandsService.execute(prisonId, filters)).thenReturn(
+        whenever(getPrisonPayBandsService.execute(eq(prisonId), any())).thenReturn(
           Response(
             data = null,
             errors =
@@ -830,7 +826,7 @@ internal class PrisonControllerTest(
       }
 
       it("returns 404 when getPrisonPayBandsService returns not found") {
-        whenever(getPrisonPayBandsService.execute(prisonId, filters)).thenReturn(
+        whenever(getPrisonPayBandsService.execute(eq(prisonId), any())).thenReturn(
           Response(
             data = null,
             errors =

@@ -79,7 +79,7 @@ class PrisonController(
     @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<PersonInPrison?> {
-    val response = getPersonService.getPrisoner(hmppsId, requestContext?.filters)
+    val response = getPersonService.getPrisoner(hmppsId, requestContext)
 
     if (response.hasErrorCausedBy(BAD_REQUEST, causedBy = UpstreamApi.PRISON_API)) {
       throw ValidationException("Invalid HMPPS ID: $hmppsId")
@@ -171,7 +171,7 @@ class PrisonController(
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = true, defaultValue = "10") size: Int,
     @RequestAttribute requestContext: RequestContext?,
   ): PaginatedResponse<Visit> {
-    val response = getVisitsService.execute(hmppsId, prisonId, fromDate, toDate, visitStatus, page, size, requestContext?.filters)
+    val response = getVisitsService.execute(hmppsId, prisonId, fromDate, toDate, visitStatus, page, size, requestContext)
 
     if (response.hasErrorCausedBy(BAD_REQUEST, causedBy = UpstreamApi.MANAGE_PRISON_VISITS)) {
       throw ValidationException("Invalid query parameters.")
@@ -213,7 +213,7 @@ class PrisonController(
     includeInactive: Boolean = false,
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<List<ResidentialHierarchyItem>?> {
-    val response = getResidentialHierarchyService.execute(prisonId, includeInactive, requestContext?.filters)
+    val response = getResidentialHierarchyService.execute(prisonId, includeInactive, requestContext)
 
     if (response.hasError(BAD_REQUEST)) {
       throw ValidationException("Invalid query parameters.")
@@ -255,7 +255,7 @@ class PrisonController(
     parentPathHierarchy: String?,
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<ResidentialDetails?> {
-    val response = getResidentialDetailsService.execute(prisonId, parentPathHierarchy, requestContext?.filters)
+    val response = getResidentialDetailsService.execute(prisonId, parentPathHierarchy, requestContext)
 
     if (response.hasError(BAD_REQUEST)) {
       throw ValidationException("Invalid query parameters.")
@@ -294,7 +294,7 @@ class PrisonController(
     @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<PrisonCapacity?> {
-    val response = getCapacityForPrisonService.execute(prisonId, requestContext?.filters)
+    val response = getCapacityForPrisonService.execute(prisonId, requestContext)
 
     if (response.hasError(BAD_REQUEST)) {
       throw ValidationException("Invalid query parameters.")
@@ -328,7 +328,7 @@ class PrisonController(
     @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<List<PrisonRegime>?> {
-    val response = getPrisonRegimeService.execute(prisonId, requestContext?.filters)
+    val response = getPrisonRegimeService.execute(prisonId, requestContext)
 
     if (response.hasError(BAD_REQUEST)) {
       throw ValidationException("Invalid query parameters.")
@@ -362,7 +362,7 @@ class PrisonController(
     @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<List<PrisonPayBand>?> {
-    val response = getPrisonPayBandsService.execute(prisonId, requestContext?.filters)
+    val response = getPrisonPayBandsService.execute(prisonId, requestContext)
 
     if (response.hasError(BAD_REQUEST)) {
       throw ValidationException("Invalid query parameters.")

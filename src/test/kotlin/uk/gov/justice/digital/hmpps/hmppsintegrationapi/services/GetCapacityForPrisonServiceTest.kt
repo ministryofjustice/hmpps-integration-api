@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.LocationsInsidePrisonGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonCapacity
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -29,6 +30,7 @@ class GetCapacityForPrisonServiceTest(
     {
       val prisonId = "ABC"
       val filters = null
+      val requestContext = buildRequestContext("testUser", filters = filters)
       val lipResidentialSummary =
         LIPResidentialSummary(
           prisonSummary =
@@ -52,11 +54,11 @@ class GetCapacityForPrisonServiceTest(
         Mockito.reset(locationsInsidePrisonGateway)
 
         whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<PrisonCapacity>(prisonId, filters)).thenReturn(Response(data = null, errors = emptyList()))
-        whenever(locationsInsidePrisonGateway.getResidentialSummary(prisonId)).thenReturn(Response(data = lipResidentialSummary))
+        whenever(locationsInsidePrisonGateway.getResidentialSummary(prisonId, requestContext = requestContext)).thenReturn(Response(data = lipResidentialSummary))
       }
 
       it("performs a search according to prisonId and returns data") {
-        val result = getCapacityForPrisonService.execute(prisonId, filters)
+        val result = getCapacityForPrisonService.execute(prisonId, requestContext)
         result.data.shouldNotBeNull()
         result.data.shouldBe(prisonCapacity)
         result.errors.count().shouldBe(0)
@@ -66,16 +68,16 @@ class GetCapacityForPrisonServiceTest(
         val errors = listOf(UpstreamApiError(UpstreamApi.LOCATIONS_INSIDE_PRISON, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "Consumer Prison Access Service not found"))
         whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<PrisonCapacity>(prisonId, filters)).thenReturn(Response(data = null, errors = errors))
 
-        val result = getCapacityForPrisonService.execute(prisonId, filters)
+        val result = getCapacityForPrisonService.execute(prisonId, requestContext)
         result.data.shouldBe(null)
         result.errors.shouldBe(errors)
       }
 
       it("should return a list of errors if locationsInsidePrisonGateway returns errors") {
         val errors = listOf(UpstreamApiError(UpstreamApi.LOCATIONS_INSIDE_PRISON, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "locationsInsidePrisonGateway returns errors"))
-        whenever(locationsInsidePrisonGateway.getResidentialSummary(prisonId)).thenReturn(Response(data = null, errors = errors))
+        whenever(locationsInsidePrisonGateway.getResidentialSummary(prisonId, requestContext = requestContext)).thenReturn(Response(data = null, errors = errors))
 
-        val result = getCapacityForPrisonService.execute(prisonId, filters)
+        val result = getCapacityForPrisonService.execute(prisonId, requestContext)
         result.data.shouldBe(null)
         result.errors.shouldBe(errors)
       }
