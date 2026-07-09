@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.LocationsInsidePrisonGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
@@ -30,12 +31,17 @@ class LocationsInsidePrisonGatewayTest(
 ) : DescribeSpec(
     {
       val locationsInsidePrisonApiMockServer = ApiMockServer.create(UpstreamApi.LOCATIONS_INSIDE_PRISON)
+      val requestContext = buildRequestContext("testUser")
 
       beforeEach {
         locationsInsidePrisonApiMockServer.start()
 
         Mockito.reset(hmppsAuthGateway)
         whenever(hmppsAuthGateway.getClientToken("LOCATIONS-INSIDE-PRISON")).thenReturn(
+          HmppsAuthMockServer.TOKEN,
+        )
+
+        whenever(hmppsAuthGateway.getClientToken("LOCATIONS-INSIDE-PRISON", requestContext)).thenReturn(
           HmppsAuthMockServer.TOKEN,
         )
       }
@@ -204,9 +210,9 @@ class LocationsInsidePrisonGatewayTest(
         val path = "/locations/residential-summary/$prisonId?parentPathHierarchy=$parentPathHierarchy"
 
         it("authenticates using HMPPS Auth with credentials") {
-          locationsInsidePrisonGateway.getResidentialSummary(prisonId)
+          locationsInsidePrisonGateway.getResidentialSummary(prisonId, requestContext = requestContext)
 
-          verify(hmppsAuthGateway, times(1)).getClientToken("LOCATIONS-INSIDE-PRISON")
+          verify(hmppsAuthGateway, times(1)).getClientToken("LOCATIONS-INSIDE-PRISON", requestContext)
         }
 
         it("returns residential summary") {
@@ -403,7 +409,7 @@ class LocationsInsidePrisonGatewayTest(
             }
             """,
           )
-          val result = locationsInsidePrisonGateway.getResidentialSummary(prisonId, parentPathHierarchy)
+          val result = locationsInsidePrisonGateway.getResidentialSummary(prisonId, parentPathHierarchy, requestContext)
 
           result.data.shouldNotBeNull()
           result.data!!
@@ -424,7 +430,7 @@ class LocationsInsidePrisonGatewayTest(
             HttpStatus.BAD_REQUEST,
           )
 
-          val result = locationsInsidePrisonGateway.getResidentialSummary(prisonId, parentPathHierarchy)
+          val result = locationsInsidePrisonGateway.getResidentialSummary(prisonId, parentPathHierarchy, requestContext)
           result.data.shouldBe(null)
           result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.LOCATIONS_INSIDE_PRISON, UpstreamApiError.Type.BAD_REQUEST)))
         }
@@ -435,9 +441,9 @@ class LocationsInsidePrisonGatewayTest(
         val path = "/locations/prison/$prisonId/residential-hierarchy"
 
         it("authenticates using HMPPS Auth with credentials") {
-          locationsInsidePrisonGateway.getResidentialHierarchy(prisonId)
+          locationsInsidePrisonGateway.getResidentialHierarchy(prisonId, requestContext = requestContext)
 
-          verify(hmppsAuthGateway, times(1)).getClientToken("LOCATIONS-INSIDE-PRISON")
+          verify(hmppsAuthGateway, times(1)).getClientToken("LOCATIONS-INSIDE-PRISON", requestContext)
         }
 
         it("should get residential hierarchy") {
@@ -479,7 +485,7 @@ class LocationsInsidePrisonGatewayTest(
             """.trimIndent(),
           )
 
-          val result = locationsInsidePrisonGateway.getResidentialHierarchy(prisonId)
+          val result = locationsInsidePrisonGateway.getResidentialHierarchy(prisonId, requestContext = requestContext)
           result.data.shouldNotBeNull()
           val topLevelLocations = result.data.orEmpty()
           topLevelLocations.size.shouldBe(1)
@@ -505,7 +511,7 @@ class LocationsInsidePrisonGatewayTest(
             HttpStatus.BAD_REQUEST,
           )
 
-          val result = locationsInsidePrisonGateway.getResidentialHierarchy(prisonId)
+          val result = locationsInsidePrisonGateway.getResidentialHierarchy(prisonId, requestContext = requestContext)
           result.data.shouldBe(null)
           result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.LOCATIONS_INSIDE_PRISON, UpstreamApiError.Type.BAD_REQUEST)))
         }

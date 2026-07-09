@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesPrisonRegime
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -30,6 +31,7 @@ class GetPrisonRegimeServiceTest(
     {
       val prisonId = "MDI"
       val filters = ConsumerFilters(prisons = listOf(prisonId))
+      val requestContext = buildRequestContext("testUser", filters = filters)
 
       beforeEach {
         Mockito.reset(consumerPrisonAccessService, activitiesGateway)
@@ -53,9 +55,9 @@ class GetPrisonRegimeServiceTest(
             ),
           )
 
-        whenever(activitiesGateway.getPrisonRegime(prisonId)).thenReturn(Response(data = activitiesPrisonRegime))
+        whenever(activitiesGateway.getPrisonRegime(prisonId, requestContext)).thenReturn(Response(data = activitiesPrisonRegime))
 
-        val result = getPrisonRegimeService.execute(prisonId, filters)
+        val result = getPrisonRegimeService.execute(prisonId, requestContext)
         result.data.shouldBe(activitiesPrisonRegime.map { it.toPrisonRegime() })
         result.errors.shouldBeEmpty()
       }
@@ -71,7 +73,7 @@ class GetPrisonRegimeServiceTest(
           )
         whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Any>(prisonId, filters, upstreamServiceType = UpstreamApi.ACTIVITIES)).thenReturn(Response(data = null, errors = errors))
 
-        val result = getPrisonRegimeService.execute(prisonId, filters)
+        val result = getPrisonRegimeService.execute(prisonId, requestContext)
         result.data.shouldBeNull()
         result.errors.shouldBe(errors)
       }
@@ -85,9 +87,9 @@ class GetPrisonRegimeServiceTest(
               description = "Error from gateway",
             ),
           )
-        whenever(activitiesGateway.getPrisonRegime(prisonId)).thenReturn(Response(data = null, errors = errors))
+        whenever(activitiesGateway.getPrisonRegime(prisonId, requestContext)).thenReturn(Response(data = null, errors = errors))
 
-        val result = getPrisonRegimeService.execute(prisonId, filters)
+        val result = getPrisonRegimeService.execute(prisonId, requestContext)
         result.data.shouldBeNull()
         result.errors.shouldBe(errors)
       }

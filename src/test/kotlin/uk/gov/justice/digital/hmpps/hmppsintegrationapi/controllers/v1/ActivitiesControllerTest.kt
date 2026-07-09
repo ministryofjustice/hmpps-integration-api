@@ -4,6 +4,8 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import jakarta.servlet.http.HttpServletRequest
 import org.mockito.Mockito
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -753,7 +755,7 @@ class ActivitiesControllerTest(
           )
 
         it("should return 200 when success") {
-          whenever(activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, prisonerAllocationRequest, who, filters))
+          whenever(activitiesQueueService.sendPrisonerAllocationRequest(eq(scheduleId), eq(prisonerAllocationRequest), eq(who), any()))
             .thenReturn(Response(data = HmppsMessageResponse("Prisoner allocation written to queue")))
 
           val result = mockMvc.performAuthorisedPost(path, prisonerAllocationRequest)
@@ -764,7 +766,7 @@ class ActivitiesControllerTest(
         }
 
         it("should call the audit service") {
-          whenever(activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, prisonerAllocationRequest, who, filters))
+          whenever(activitiesQueueService.sendPrisonerAllocationRequest(eq(scheduleId), eq(prisonerAllocationRequest), eq(who), any()))
             .thenReturn(Response(data = HmppsMessageResponse("Prisoner allocation written to queue")))
 
           mockMvc.performAuthorisedPost(path, prisonerAllocationRequest)
@@ -776,7 +778,7 @@ class ActivitiesControllerTest(
         }
 
         it("returns 400 when activitiesQueueService returns bad request") {
-          whenever(activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, prisonerAllocationRequest, who, filters))
+          whenever(activitiesQueueService.sendPrisonerAllocationRequest(eq(scheduleId), eq(prisonerAllocationRequest), eq(who), any()))
             .thenReturn(
               Response(
                 data = null,
@@ -795,7 +797,7 @@ class ActivitiesControllerTest(
         }
 
         it("returns 404 when activitiesQueueService returns not found") {
-          whenever(activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, prisonerAllocationRequest, who, filters))
+          whenever(activitiesQueueService.sendPrisonerAllocationRequest(eq(scheduleId), eq(prisonerAllocationRequest), eq(who), any()))
             .thenReturn(
               Response(
                 data = null,
@@ -814,7 +816,7 @@ class ActivitiesControllerTest(
         }
 
         it("returns 409 when activitiesQueueService returns conflict") {
-          whenever(activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, prisonerAllocationRequest, who, filters))
+          whenever(activitiesQueueService.sendPrisonerAllocationRequest(eq(scheduleId), eq(prisonerAllocationRequest), eq(who), any()))
             .thenReturn(
               Response(
                 data = null,

@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesPrisonPayBand
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -29,6 +30,7 @@ class GetPrisonPayBandsServiceTest(
     {
       val prisonId = "MDI"
       val filters = ConsumerFilters(prisons = listOf(prisonId))
+      val requestContext = buildRequestContext("testUser", filters = filters)
 
       beforeEach {
         Mockito.reset(consumerPrisonAccessService, activitiesGateway)
@@ -53,9 +55,9 @@ class GetPrisonPayBandsServiceTest(
             ),
           )
 
-        whenever(activitiesGateway.getPrisonPayBands(prisonId)).thenReturn(Response(data = activitiesPrisonPayBand))
+        whenever(activitiesGateway.getPrisonPayBands(prisonId, requestContext)).thenReturn(Response(data = activitiesPrisonPayBand))
 
-        val result = getPrisonPayBandsService.execute(prisonId, filters)
+        val result = getPrisonPayBandsService.execute(prisonId, requestContext)
         result.data.shouldBe(activitiesPrisonPayBand.map { it.toPrisonPayBand() })
         result.errors.shouldBeEmpty()
       }
@@ -71,7 +73,7 @@ class GetPrisonPayBandsServiceTest(
           )
         whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Any>(prisonId, filters, upstreamServiceType = UpstreamApi.ACTIVITIES)).thenReturn(Response(data = null, errors = errors))
 
-        val result = getPrisonPayBandsService.execute(prisonId, filters)
+        val result = getPrisonPayBandsService.execute(prisonId, requestContext)
         result.data.shouldBeNull()
         result.errors.shouldBe(errors)
       }
@@ -85,9 +87,9 @@ class GetPrisonPayBandsServiceTest(
               description = "Error from gateway",
             ),
           )
-        whenever(activitiesGateway.getPrisonPayBands(prisonId)).thenReturn(Response(data = null, errors = errors))
+        whenever(activitiesGateway.getPrisonPayBands(prisonId, requestContext)).thenReturn(Response(data = null, errors = errors))
 
-        val result = getPrisonPayBandsService.execute(prisonId, filters)
+        val result = getPrisonPayBandsService.execute(prisonId, requestContext)
         result.data.shouldBeNull()
         result.errors.shouldBe(errors)
       }

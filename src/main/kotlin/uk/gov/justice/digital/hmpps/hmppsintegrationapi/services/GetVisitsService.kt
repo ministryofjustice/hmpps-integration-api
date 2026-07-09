@@ -3,12 +3,12 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonVisitsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedVisits
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetVisitsService(
@@ -24,9 +24,9 @@ class GetVisitsService(
     visitStatus: String,
     page: Int,
     size: Int,
-    filters: ConsumerFilters? = null,
+    requestContext: RequestContext? = null,
   ): Response<PaginatedVisits?> {
-    val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<PaginatedVisits?>(prisonId, filters, upstreamServiceType = UpstreamApi.MANAGE_PRISON_VISITS)
+    val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<PaginatedVisits?>(prisonId, requestContext?.filters, upstreamServiceType = UpstreamApi.MANAGE_PRISON_VISITS)
 
     if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
       return consumerPrisonFilterCheck
@@ -45,7 +45,7 @@ class GetVisitsService(
       prisonerId = personServiceResponse.nomisNumber
     }
 
-    val response = prisonVisitsGateway.getVisits(prisonId, prisonerId, fromDate, toDate, visitStatus, page, size)
+    val response = prisonVisitsGateway.getVisits(prisonId, prisonerId, requestContext, fromDate, toDate, visitStatus, page, size)
 
     return Response(data = response.data?.toPaginatedVisits(), errors = response.errors)
   }

@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonVisitsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedVisits
@@ -35,6 +36,7 @@ internal class GetVisitsServiceTest(
     val hmppsId = "A1234AA"
     val prisonId = "ABC"
     val filters = ConsumerFilters(null)
+    val requestContext = buildRequestContext("testUser", filters = filters)
     val visitResponse =
       PVVisit(
         prisonerId = "PrisonerId",
@@ -87,10 +89,10 @@ internal class GetVisitsServiceTest(
     }
 
     it("will return 200 and a list of visits") {
-      whenever(prisonVisitsGateway.getVisits(prisonId, hmppsId, "2021-01-01", "2021-01-02", "BOOKED", 1, 10)).thenReturn(
+      whenever(prisonVisitsGateway.getVisits(prisonId, hmppsId, requestContext, "2021-01-01", "2021-01-02", "BOOKED", 1, 10)).thenReturn(
         Response(data = paginatedVisitsData),
       )
-      val response = getVisitsService.execute(hmppsId, prisonId, "2021-01-01", "2021-01-02", "BOOKED", 1, 10, filters)
+      val response = getVisitsService.execute(hmppsId, prisonId, "2021-01-01", "2021-01-02", "BOOKED", 1, 10, requestContext)
       response.data.shouldNotBeNull()
     }
 
@@ -99,7 +101,7 @@ internal class GetVisitsServiceTest(
       whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<PVPaginatedVisits>(wrongPrisonId, filters, upstreamServiceType = UpstreamApi.MANAGE_PRISON_VISITS)).thenReturn(
         Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))),
       )
-      val response = getVisitsService.execute(hmppsId, wrongPrisonId, "2021-01-01", "2021-01-02", "BOOKED", 1, 10, filters)
+      val response = getVisitsService.execute(hmppsId, wrongPrisonId, "2021-01-01", "2021-01-02", "BOOKED", 1, 10, requestContext)
       response.data.shouldBe(null)
       response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
     }
@@ -108,14 +110,14 @@ internal class GetVisitsServiceTest(
       whenever(getPersonService.getNomisNumber(hmppsId)).thenReturn(
         Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))),
       )
-      val response = getVisitsService.execute(hmppsId, prisonId, "2021-01-01", "2021-01-02", "BOOKED", 1, 10, filters)
+      val response = getVisitsService.execute(hmppsId, prisonId, "2021-01-01", "2021-01-02", "BOOKED", 1, 10, requestContext)
       response.data.shouldBe(null)
       response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
     }
 
     it("will return 400 bad request when visit status is invalid") {
       val incorrectStatus = "SCHEMING"
-      val response = getVisitsService.execute(hmppsId, prisonId, "2021-01-01", "2021-01-02", incorrectStatus, 1, 10, filters)
+      val response = getVisitsService.execute(hmppsId, prisonId, "2021-01-01", "2021-01-02", incorrectStatus, 1, 10, requestContext)
       response.data.shouldBe(null)
       response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.BAD_REQUEST, "Invalid visit status")))
     }

@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
@@ -33,12 +34,13 @@ class GetPrisonPayBandsGatewayTest(
 ) : DescribeSpec({
     val mockServer = ApiMockServer.create(UpstreamApi.ACTIVITIES)
     val prisonCode = "MDI"
+    val requestContext = buildRequestContext("testUser")
 
     beforeEach {
       mockServer.start()
 
       Mockito.reset(hmppsAuthGateway)
-      whenever(hmppsAuthGateway.getClientToken("ACTIVITIES")).thenReturn(
+      whenever(hmppsAuthGateway.getClientToken("ACTIVITIES", requestContext)).thenReturn(
         HmppsAuthMockServer.TOKEN,
       )
     }
@@ -49,9 +51,9 @@ class GetPrisonPayBandsGatewayTest(
     }
 
     it("authenticates using HMPPS Auth with credentials") {
-      activitiesGateway.getPrisonPayBands(prisonCode)
+      activitiesGateway.getPrisonPayBands(prisonCode, requestContext)
 
-      verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("ACTIVITIES")
+      verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("ACTIVITIES", requestContext)
     }
 
     it("Returns a prison regime") {
@@ -60,7 +62,7 @@ class GetPrisonPayBandsGatewayTest(
         File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/activities/fixtures/GetPrisonPayBands.json").readText(),
       )
 
-      val result = activitiesGateway.getPrisonPayBands(prisonCode)
+      val result = activitiesGateway.getPrisonPayBands(prisonCode, requestContext)
       result.errors.shouldBeEmpty()
       result.data.shouldNotBeNull()
       result.data.size.shouldBe(1)
@@ -89,7 +91,7 @@ class GetPrisonPayBandsGatewayTest(
         HttpStatus.BAD_REQUEST,
       )
 
-      val result = activitiesGateway.getPrisonPayBands(prisonCode)
+      val result = activitiesGateway.getPrisonPayBands(prisonCode, requestContext)
       result.errors.shouldBe(listOf(UpstreamApiError(causedBy = UpstreamApi.ACTIVITIES, type = UpstreamApiError.Type.BAD_REQUEST)))
     }
   })
