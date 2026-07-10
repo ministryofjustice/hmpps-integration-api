@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono
 class RestApiClientTest :
   DescribeSpec({
     describe("basic RestApiClient functionality") {
-      fun buildMockClient(responseBody: String?) : WebClient {
+      fun buildMockClient(responseBody: String?): WebClient {
         val webClient = mock(WebClient::class.java, RETURNS_DEEP_STUBS)
         val requestSpec = mock(WebClient.RequestBodySpec::class.java)
         val responseSpec = mock(WebClient.ResponseSpec::class.java)
