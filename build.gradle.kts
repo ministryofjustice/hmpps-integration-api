@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.5.4"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.5.7"
   kotlin("plugin.spring") version "2.4.0"
   id("dev.detekt") version "2.0.0-alpha.5"
   id("org.jetbrains.kotlinx.kover") version "0.9.8"
@@ -20,29 +20,6 @@ configurations {
   all {
     exclude(group = "dev.detekt", module = "detekt-report-checkstyle")
   }
-}
-
-configurations.all {
-  resolutionStrategy.eachDependency {
-    if (requested.group == "org.apache.tomcat.embed" &&
-      requested.version == "11.0.22"
-    ) {
-      useVersion("11.0.23")
-      because("Fix CVE-2026-55276, CVE-2026-53404, CVE-2026-55955, CVE-2026-55956, CVE-2026-50229, CVE-2026-53434")
-    }
-
-    if (requested.group == "ch.qos.logback" &&
-      requested.name == "logback-core" &&
-      requested.version == "1.5.34"
-    ) {
-      useVersion("1.5.37")
-      because("Fix CVE-2026-13006")
-    }
-  }
-
-  // CVE-2026-53914 - kotlin-build-tools-api-2.4.0.jar - needs 2.4.20 available
-  // CVE-2026-54515 - jackson-databind needs 2.18.9, 2.21.5, and 3.1.4 - Waiting for spring boot starter
-  // CVE-2020-29582 - jetbrains kotlin intellij-1 1.10.2 jar (issue with detekt aplha-5) waiting for detekt upgrade
 }
 
 dependencies {
@@ -229,6 +206,10 @@ detekt {
   buildUponDefaultConfig = true
   ignoreFailures = true
   baseline = file("./detekt-baseline.xml")
+}
+
+dependencyCheck {
+  suppressionFiles.add(".hmpps-external-api-suppressions.xml")
 }
 
 // detekt must use a specific kotlin version when running, this block ensures it's using the correct version
