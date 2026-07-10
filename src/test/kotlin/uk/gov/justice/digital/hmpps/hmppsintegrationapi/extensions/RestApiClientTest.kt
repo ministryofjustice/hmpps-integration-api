@@ -15,7 +15,11 @@ import reactor.core.publisher.Mono
 class RestApiClientTest :
   DescribeSpec({
     describe("basic RestApiClient functionality") {
-      fun buildMockClient(responseBody: String?, httpError: Exception? = null, retrySuccess: Boolean = false): WebClient {
+      fun buildMockClient(
+        responseBody: String?,
+        httpError: Exception? = null,
+        retrySuccess: Boolean = false,
+      ): WebClient {
         val webClient = mock(WebClient::class.java, RETURNS_DEEP_STUBS)
         val requestSpec = mock(WebClient.RequestBodySpec::class.java)
         val responseSpec = mock(WebClient.ResponseSpec::class.java)
@@ -49,7 +53,7 @@ class RestApiClientTest :
       }
 
       it("should handle HTTP errors") {
-        val webClient = buildMockClient("It fails", WebClientResponseException(500,"Server error 543", null, null, null))
+        val webClient = buildMockClient("It fails", WebClientResponseException(500, "Server error 543", null, null, null))
 
         val options = RestApiOptions(retryAttempts = 0)
         val client = RestApiClient("TestAPI", "http://localhost:8765", webClient = webClient, defaultOptions = options)
