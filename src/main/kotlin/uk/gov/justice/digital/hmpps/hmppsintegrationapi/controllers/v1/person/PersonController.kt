@@ -106,6 +106,7 @@ class PersonController(
   @GetMapping
   @Operation(
     summary = "Returns person(s) by search criteria, sorted by date of birth (newest first). At least one query parameter must be specified.",
+    description = "Only the first page will be returned. The page size is restricted to 100 records. If this is insufficient, then please narrow your search criteria.",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully performed the query on upstream APIs. An empty list is returned when no results are found."),
       ApiResponse(
@@ -132,6 +133,10 @@ class PersonController(
 
     if (dateOfBirth != null && !isValidISODateFormat(dateOfBirth)) {
       throw ValidationException("Invalid date format. Please use yyyy-MM-dd.")
+    }
+
+    if (page > 1 || perPage > 100) {
+      throw ValidationException("Only the first page will be returned. The page size is restricted to 100 records. If this is insufficient, then please narrow your search criteria.")
     }
 
     val response = getPersonsService.personAttributeSearch(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases, requestContext)

@@ -230,7 +230,8 @@ internal class PersonControllerTest(
           )
         }
 
-        it("returns paginated results") {
+        // Test skipped as paginated results above page 1 are currently not supported
+        xit("returns paginated results") {
           whenever(getPersonsService.personAttributeSearch(eq(firstName), eq(lastName), eq(null), eq(dateOfBirth.toString()), eq(false), any<RequestContext>())).thenReturn(
             Response(
               data =
@@ -281,6 +282,18 @@ internal class PersonControllerTest(
           val result = mockMvc.performAuthorised("$basePath?date_of_birth=12323423234")
           result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
           result.response.contentAsString.shouldContain("Invalid date format. Please use yyyy-MM-dd.")
+        }
+
+        it("returns a 400 BAD REQUEST status code when trying get any page that isn't page 1 of results") {
+          val result = mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName&date_of_birth=$dateOfBirth&page=2")
+          result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+          result.response.contentAsString.shouldContain("Only the first page will be returned. The page size is restricted to 100 records. If this is insufficient, then please narrow your search criteria.")
+        }
+
+        it("returns a 400 BAD REQUEST status code when trying get more than 100 results per page") {
+          val result = mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName&date_of_birth=$dateOfBirth&perPage=101")
+          result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+          result.response.contentAsString.shouldContain("Only the first page will be returned. The page size is restricted to 100 records. If this is insufficient, then please narrow your search criteria.")
         }
       }
 
