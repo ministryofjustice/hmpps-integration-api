@@ -209,7 +209,7 @@ detekt {
 }
 
 dependencyCheck {
-  skipConfigurations.add("detekt")
+  suppressionFiles.add(".hmpps-external-api-suppressions.xml")
 }
 
 // detekt must use a specific kotlin version when running, this block ensures it's using the correct version
