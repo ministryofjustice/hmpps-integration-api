@@ -134,7 +134,7 @@ internal class GetPersonServiceTest :
           .thenReturn(Response(data = null, errors = notFoundErrors(UpstreamApi.PRISONER_OFFENDER_SEARCH)))
 
       fun givenPrisonerNumberMergedAttributeSearchReturnsEmpty() =
-        whenever(prisonerOffenderSearchGateway.attributeSearch(any(), eq(null))).thenReturn(
+        whenever(prisonerOffenderSearchGateway.attributeSearch(any(), eq(null), eq(1), eq(10))).thenReturn(
           Response(
             data =
               POSPaginatedPrisoners(
@@ -174,7 +174,7 @@ internal class GetPersonServiceTest :
       fun givenPrisonerNumberMergedAttributeSearchReturnsMatchingResult(
         removedPrisonerNumber: String?,
         mergedInToPrisonerNumber: String,
-      ) = whenever(prisonerOffenderSearchGateway.attributeSearch(any(), eq(null))).thenReturn(
+      ) = whenever(prisonerOffenderSearchGateway.attributeSearch(any(), eq(null), eq(1), eq(10))).thenReturn(
         Response(
           data =
             POSPaginatedPrisoners(

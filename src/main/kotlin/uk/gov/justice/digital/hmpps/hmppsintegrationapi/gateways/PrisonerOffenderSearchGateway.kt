@@ -149,7 +149,7 @@ class PrisonerOffenderSearchGateway(
     size: Int = 10,
   ): Response<POSPaginatedPrisoners?> {
     val uriBuilder = UriComponentsBuilder.fromPath("/attribute-search")
-    uriBuilder.queryParam("page", page)
+    uriBuilder.queryParam("page", page - 1)
     uriBuilder.queryParam("size", size)
     val uri = uriBuilder.build().toUriString()
 

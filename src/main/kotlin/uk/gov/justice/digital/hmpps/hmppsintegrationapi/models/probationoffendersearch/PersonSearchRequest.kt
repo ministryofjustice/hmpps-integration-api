@@ -16,7 +16,7 @@ data class PersonSearchRequest(
     val uri =
       UriComponentsBuilder
         .fromUriString("/search/people")
-    uri.queryParam("page", page)
+    uri.queryParam("page", page - 1)
     uri.queryParam("size", pageSize)
     return uri.toUriString()
   }

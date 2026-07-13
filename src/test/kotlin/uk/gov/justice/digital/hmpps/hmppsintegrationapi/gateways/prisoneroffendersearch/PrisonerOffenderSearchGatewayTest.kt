@@ -430,7 +430,7 @@ class PrisonerOffenderSearchGatewayTest(
 
         it("throws an exception when 400 BAD REQUEST is returned") {
           prisonerOffenderSearchApiMockServer.stubForPost(
-            "/attribute-search?page=1&size=10",
+            "/attribute-search?page=0&size=10",
             objectMapper.writeValueAsString(request),
             """
             {

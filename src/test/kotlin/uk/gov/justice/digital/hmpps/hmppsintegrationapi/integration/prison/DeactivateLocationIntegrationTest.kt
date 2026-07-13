@@ -92,7 +92,7 @@ class DeactivateLocationIntegrationTest : IntegrationTestWithQueueBase("location
   @Test
   fun `return the response saying message on queue`() {
     prisonerOffenderSearchMockServer.stubForPost(
-      "/attribute-search?page=1&size=10",
+      "/attribute-search?page=0&size=10",
       jacksonObjectMapper().writeValueAsString(cellRequest),
       """
       {
@@ -158,7 +158,7 @@ class DeactivateLocationIntegrationTest : IntegrationTestWithQueueBase("location
   @Test
   fun `an invalid cell request with unknown join type fails schema validation`() {
     prisonerOffenderSearchMockServer.stubForPost(
-      "/attribute-search?page=1&size=10",
+      "/attribute-search?page=0&size=10",
       jacksonObjectMapper().writeValueAsString(invalidCellRequest),
       """
       {
@@ -224,7 +224,7 @@ class DeactivateLocationIntegrationTest : IntegrationTestWithQueueBase("location
   @Test
   fun `return a 409 when cell is not empty`() {
     prisonerOffenderSearchMockServer.stubForPost(
-      "/attribute-search?page=1&size=10",
+      "/attribute-search?page=0&size=10",
       jacksonObjectMapper().writeValueAsString(cellRequest),
       """
       {
