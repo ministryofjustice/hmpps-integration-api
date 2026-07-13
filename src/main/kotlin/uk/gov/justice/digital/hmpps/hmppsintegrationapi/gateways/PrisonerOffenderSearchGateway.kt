@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
+import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Companion.GATEWAY_CACHE
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
@@ -144,11 +145,18 @@ class PrisonerOffenderSearchGateway(
   fun attributeSearch(
     request: POSAttributeSearchRequest,
     requestContext: RequestContext? = null,
+    page: Int = 1,
+    size: Int = 10,
   ): Response<POSPaginatedPrisoners?> {
+    val uriBuilder = UriComponentsBuilder.fromPath("/attribute-search")
+    uriBuilder.queryParam("page", page)
+    uriBuilder.queryParam("size", size)
+    val uri = uriBuilder.build().toUriString()
+
     val result =
       webClient.request<POSPaginatedPrisoners>(
         HttpMethod.POST,
-        "/attribute-search",
+        uri,
         authenticationHeader(requestContext),
         UpstreamApi.PRISONER_OFFENDER_SEARCH,
         request.toMap(),

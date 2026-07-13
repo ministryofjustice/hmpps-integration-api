@@ -44,7 +44,7 @@ class GetPersonsService(
 
     // Perform prison search
     val attributeSearchRequest = attributeSearchRequest(personSearchRequest.firstName, personSearchRequest.surname, personSearchRequest.pncNumber, personSearchRequest.dateOfBirth, personSearchRequest.includeAliases, consumerFilters)
-    val attributeSearchResponse = prisonerOffenderSearchGateway.attributeSearch(attributeSearchRequest, requestContext)
+    val attributeSearchResponse = prisonerOffenderSearchGateway.attributeSearch(attributeSearchRequest, requestContext, pageNo, pageSize)
     val attributeSearchResponseData = attributeSearchResponse.data?.content?.map { it.toPerson() } ?: emptyList()
 
     // Combine and return results

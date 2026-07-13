@@ -407,7 +407,7 @@ class PrisonerOffenderSearchGatewayTest(
 
         it("returns a prisoner by attributes") {
           prisonerOffenderSearchApiMockServer.stubForPost(
-            "/attribute-search",
+            "/attribute-search?",
             objectMapper.writeValueAsString(request),
             File(
               "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/AttributeSearch.json",
@@ -430,7 +430,7 @@ class PrisonerOffenderSearchGatewayTest(
 
         it("throws an exception when 400 BAD REQUEST is returned") {
           prisonerOffenderSearchApiMockServer.stubForPost(
-            "/attribute-search",
+            "/attribute-search?page=1&size=10",
             objectMapper.writeValueAsString(request),
             """
             {

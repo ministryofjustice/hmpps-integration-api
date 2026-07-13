@@ -42,7 +42,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
       val expectedRequest = attributeSearchRequest(firstName, lastName)
 
       prisonerOffenderSearchMockServer.stubForPost(
-        "/attribute-search",
+        "/attribute-search?page=1&size=10",
         jacksonObjectMapper().writeValueAsString(expectedRequest.toMap()),
         File(
           "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/AttributeSearch.json",
@@ -69,7 +69,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
       val expectedRequest = attributeSearchRequest(firstName, lastName, pncNumber, consumerFilters = testRoleWithPrisonFilters.filters!!)
 
       prisonerOffenderSearchMockServer.stubForPost(
-        "/attribute-search",
+        "/attribute-search?page=1&size=10",
         jacksonObjectMapper().writeValueAsString(expectedRequest.toMap()),
         File(
           "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/AttributeSearch.json",
@@ -158,7 +158,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
         require(file.exists()) { "File not found at: ${file.absolutePath}" }
         val body = file.readText()
         prisonerOffenderSearchMockServer.stubFor(
-          post(urlPathEqualTo("/attribute-search"))
+          post(urlPathEqualTo("/attribute-search?page=1&size=10"))
             .willReturn(aResponse().withHeader("Content-Type", "application/json").withBody(body)),
         )
 
@@ -194,7 +194,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
       val file = File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/AttributeSearchPrisonerNumberMergedFromCrn.json")
       val body = file.readText()
       prisonerOffenderSearchMockServer.stubFor(
-        post(urlPathEqualTo("/attribute-search"))
+        post(urlPathEqualTo("/attribute-search?page=1&size=10"))
           .willReturn(aResponse().withHeader("Content-Type", "application/json").withBody(body)),
       )
 

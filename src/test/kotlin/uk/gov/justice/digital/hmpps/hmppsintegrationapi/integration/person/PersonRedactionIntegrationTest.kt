@@ -216,7 +216,7 @@ class PersonRedactionIntegrationTest : IntegrationTestBase() {
         val expectedRequest = attributeSearchRequest(firstName, lastName)
 
         prisonerOffenderSearchMockServer.stubForPost(
-          "/attribute-search",
+          "/attribute-search?page=1&size=10",
           jacksonObjectMapper().writeValueAsString(expectedRequest.toMap()),
           File(
             "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/AttributeSearch.json",
@@ -281,7 +281,7 @@ class PersonRedactionIntegrationTest : IntegrationTestBase() {
         val expectedRequest = attributeSearchRequest(firstName, lastName)
 
         prisonerOffenderSearchMockServer.stubForPost(
-          "/attribute-search",
+          "/attribute-search?page=1&size=10",
           jacksonObjectMapper().writeValueAsString(expectedRequest.toMap()),
           File(
             "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/AttributeSearch.json",
