@@ -136,6 +136,7 @@ feature-flag:
   prisoner-base-location-changed-notifications-enabled: true
   contact-events-notifications-enabled: true
   limited-access-notifications-enabled: true
+  use-probation-search-for-person-search: false
   deduplicate-events: true
 
 authorisation:

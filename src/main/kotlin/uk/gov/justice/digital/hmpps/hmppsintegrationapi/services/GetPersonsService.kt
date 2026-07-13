@@ -2,9 +2,11 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchDateMatcher
@@ -12,35 +14,36 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffenders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchPncMatcher
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchQuery
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.PersonSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetPersonsService(
   @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
   private val deliusGateway: NDeliusGateway,
+  private val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
+  private val featureFlagConfig: FeatureFlagConfig,
 ) {
   /**
    * Person search using prisonerOffenderSearchGateway.attributeSearch
    */
   fun personAttributeSearch(
-    firstName: String?,
-    lastName: String?,
-    pncNumber: String?,
-    dateOfBirth: String?,
-    searchWithinAliases: Boolean = false,
+    personSearchRequest: PersonSearchRequest,
+    pageNo: Int,
+    pageSize: Int,
     requestContext: RequestContext? = null,
   ): Response<List<Person>> {
     // Perform probation search
     val consumerFilters = requestContext?.filters
     val probationSearchResponse =
       if (consumerFilters?.isPrisonsOnly() != true) {
-        deliusGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases, requestContext)
+        probationPersonSearch(personSearchRequest, pageNo, pageSize, requestContext)
       } else {
         Response(emptyList(), emptyList())
       }
 
     // Perform prison search
-    val attributeSearchRequest = attributeSearchRequest(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases, consumerFilters)
+    val attributeSearchRequest = attributeSearchRequest(personSearchRequest.firstName, personSearchRequest.surname, personSearchRequest.pncNumber, personSearchRequest.dateOfBirth, personSearchRequest.includeAliases, consumerFilters)
     val attributeSearchResponse = prisonerOffenderSearchGateway.attributeSearch(attributeSearchRequest, requestContext)
     val attributeSearchResponseData = attributeSearchResponse.data?.content?.map { it.toPerson() } ?: emptyList()
 
@@ -49,6 +52,18 @@ class GetPersonsService(
     val data = attributeSearchResponseData + probationSearchResponse.data
 
     return Response(data, errors)
+  }
+
+  fun probationPersonSearch(
+    personSearchRequest: PersonSearchRequest,
+    pageNo: Int,
+    pageSize: Int,
+    requestContext: RequestContext? = null,
+  ): Response<List<Person>> {
+    if (featureFlagConfig.isEnabled(FeatureFlagConfig.USE_PROBATION_SEARCH_FOR_PERSON_SEARCH)) {
+      return probationOffenderSearchGateway.personSearch(personSearchRequest, pageNo, pageSize, requestContext)
+    }
+    return deliusGateway.getPersons(personSearchRequest.firstName, personSearchRequest.surname, personSearchRequest.pncNumber, personSearchRequest.dateOfBirth, personSearchRequest.includeAliases, requestContext)
   }
 
   companion object {

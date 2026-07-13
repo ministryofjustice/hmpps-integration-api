@@ -8,9 +8,12 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContex
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AddressSearchRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.PSAddressSearchResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.PSPaginatedOffendersResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.PersonSearchRequest
 
 @Component
 class ProbationOffenderSearchGateway(
@@ -55,6 +58,41 @@ class ProbationOffenderSearchGateway(
       is WebClientWrapperResponse.Error -> {
         Response(
           data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun personSearch(
+    personSearchRequest: PersonSearchRequest,
+    pageNo: Int,
+    pageSize: Int,
+    requestContext: RequestContext?,
+  ): Response<List<Person>> {
+    val result =
+      webClient.request<PSPaginatedOffendersResponse>(
+        HttpMethod.POST,
+        personSearchRequest.uriString(pageNo, pageSize),
+        authenticationHeader(requestContext),
+        UpstreamApi.PROBATION_OFFENDER_SEARCH,
+        requestBody = personSearchRequest.toMap(),
+        badRequestAsError = true,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(
+          data =
+            result.data.content
+              .map { it.toPerson() }
+              .sortedByDescending { it.dateOfBirth },
+        )
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = emptyList(),
           errors = result.errors,
         )
       }
