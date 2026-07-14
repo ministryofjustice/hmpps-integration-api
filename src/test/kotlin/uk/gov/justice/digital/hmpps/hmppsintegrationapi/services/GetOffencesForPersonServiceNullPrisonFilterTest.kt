@@ -60,7 +60,7 @@ internal class GetOffencesForPersonServiceNullPrisonFilterTest(
             data = personFromProbationOffenderSearch,
           ),
         )
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters, null)).thenReturn(
           Response(
             data = personFromProbationOffenderSearch,
           ),
@@ -132,7 +132,7 @@ internal class GetOffencesForPersonServiceNullPrisonFilterTest(
       it("returns only offences from Nomis when prison filters present ") {
         val populatedFilters = ConsumerFilters(listOf("ABC"))
         val populatedRequestContext = buildRequestContext("testUser", filters = populatedFilters)
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, populatedFilters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, null, populatedRequestContext)).thenReturn(
           Response(
             data = personFromProbationOffenderSearch,
           ),

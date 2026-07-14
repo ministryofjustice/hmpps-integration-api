@@ -573,7 +573,7 @@ internal class GetPersonServiceTest :
 
       describe("getPersonWithPrisonFilter()") {
         it("if not a hmpps is not a nomis number or crn then return a bad request") {
-          val result = getPersonService.getPersonWithPrisonFilter(invalidNomsNumber, filters)
+          val result = getPersonService.getPersonWithPrisonFilter(invalidNomsNumber, filters, null)
           result.data.shouldBe(null)
           result.errors.shouldBe(listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.BAD_REQUEST)))
         }
@@ -583,7 +583,7 @@ internal class GetPersonServiceTest :
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = POSPrisoner(firstName = "Sam", lastName = "Person", prisonId = wrongPrisonId, youthOffender = false)))
           whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Person>(wrongPrisonId, filters)).thenReturn(Response(data = null, errors = errors))
 
-          val result = getPersonService.getPersonWithPrisonFilter(nomsNumber, filters)
+          val result = getPersonService.getPersonWithPrisonFilter(nomsNumber, filters, null)
           result.data.shouldBe(null)
           result.errors.shouldBe(errors)
         }
@@ -593,7 +593,7 @@ internal class GetPersonServiceTest :
           whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Person>(prisonId, filters)).thenReturn(Response(data = null))
           whenever(deliusGateway.getOffender(id = nomsNumber)).thenReturn(Response(data = personOnProbation))
 
-          val result = getPersonService.getPersonWithPrisonFilter(nomsNumber, filters)
+          val result = getPersonService.getPersonWithPrisonFilter(nomsNumber, filters, null)
           result.data?.shouldBeEqualToComparingFields(personOnProbation.toPersonOnProbation())
         }
 
@@ -605,7 +605,7 @@ internal class GetPersonServiceTest :
             Response(data = null, errors = errors),
           )
 
-          val result = getPersonService.getPersonWithPrisonFilter(nomsNumber, filters)
+          val result = getPersonService.getPersonWithPrisonFilter(nomsNumber, filters, null)
 
           val person = prisonerWithPrisonId.toPerson()
           result.data.shouldNotBeNull()
@@ -618,7 +618,7 @@ internal class GetPersonServiceTest :
           val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = null, errors = errors))
 
-          val result = getPersonService.getPersonWithPrisonFilter(nomsNumber, filters)
+          val result = getPersonService.getPersonWithPrisonFilter(nomsNumber, filters, null)
           result.data.shouldBe(null)
           result.errors.shouldBe(errors)
         }
@@ -626,7 +626,7 @@ internal class GetPersonServiceTest :
         it("if filters are null, we get data from delius") {
           whenever(deliusGateway.getOffender(id = nomsNumber)).thenReturn(Response(data = personOnProbation))
 
-          val result = getPersonService.getPersonWithPrisonFilter(nomsNumber, blankConsumerFilters)
+          val result = getPersonService.getPersonWithPrisonFilter(nomsNumber, blankConsumerFilters, null)
           result.data?.shouldBeEqualToComparingFields(personOnProbation.toPersonOnProbation())
         }
 
@@ -637,7 +637,7 @@ internal class GetPersonServiceTest :
             Response(data = null, errors = errors),
           )
 
-          val result = getPersonService.getPersonWithPrisonFilter(nomsNumber, blankConsumerFilters)
+          val result = getPersonService.getPersonWithPrisonFilter(nomsNumber, blankConsumerFilters, null)
           val person = prisonerWithPrisonId.toPerson()
           result.data.shouldNotBeNull()
           result.data.firstName.shouldBe(person.firstName)
@@ -652,7 +652,7 @@ internal class GetPersonServiceTest :
             Response(data = null, errors = errors),
           )
 
-          val result = getPersonService.getPersonWithPrisonFilter(nomsNumber, blankConsumerFilters)
+          val result = getPersonService.getPersonWithPrisonFilter(nomsNumber, blankConsumerFilters, null)
           result.data.shouldBe(null)
           result.errors.shouldBe(errors)
         }

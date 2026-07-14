@@ -175,6 +175,7 @@ class GetPersonService(
   fun getPersonWithPrisonFilter(
     hmppsId: String,
     filters: ConsumerFilters?,
+    requestContext: RequestContext?,
   ): Response<Person?> {
     // Error if not a valid id
     val hmppsIdType = identifyHmppsId(hmppsId)
@@ -186,7 +187,7 @@ class GetPersonService(
     }
 
     // Get a delius person, to get NOMIS number and for response
-    val probationResponse = getProbationResponse(hmppsId)
+    val probationResponse = getProbationResponse(hmppsId, requestContext)
 
     if (probationResponse.errors.isNotEmpty() && !probationResponse.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       return Response(
@@ -208,7 +209,7 @@ class GetPersonService(
       }
 
     // Get the NOMIS person for prison ID and for verifying exist in NOMIS
-    val prisonerResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
+    val prisonerResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber, requestContext)
     if (prisonerResponse.errors.isNotEmpty()) {
       return Response(
         data = null,
@@ -217,6 +218,7 @@ class GetPersonService(
     }
 
     // Filter on Prison
+    val filters = requestContext?.filters ?: filters // Use RequestContext first before trying to use ConsumerFilters
     if (filters?.prisons != null) {
       val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<Person>(prisonerResponse.data?.prisonId, filters)
       if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
@@ -525,8 +527,11 @@ class GetPersonService(
     )
   }
 
-  fun getAccessLimitations(hmppsId: String): Response<LimitedAccess?> =
-    with(deliusGateway.getAccessLimitations(hmppsId)) {
+  fun getAccessLimitations(
+    hmppsId: String,
+    requestContext: RequestContext?,
+  ): Response<LimitedAccess?> =
+    with(deliusGateway.getAccessLimitations(hmppsId, requestContext)) {
       Response(
         data = data,
         errors = errors,

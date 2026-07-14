@@ -8,6 +8,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.IncentivesGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -28,6 +29,7 @@ internal class GetIEPLevelServiceTest(
 ) : DescribeSpec({
     val hmppsId = "A1234AA"
     val filters = ConsumerFilters(null)
+    val requestContext = buildRequestContext("testUser", filters = filters)
 
     val iepReviewHistory =
       IncIEPReviewHistory(
@@ -65,9 +67,9 @@ internal class GetIEPLevelServiceTest(
     }
 
     it("returns IEP level review history") {
-      whenever(incentivesGateway.getIEPReviewHistory(hmppsId)).thenReturn(Response(data = iepReviewHistory, errors = emptyList()))
+      whenever(incentivesGateway.getIEPReviewHistory(hmppsId, requestContext)).thenReturn(Response(data = iepReviewHistory, errors = emptyList()))
 
-      val result = getIEPLevelService.execute(hmppsId, filters)
+      val result = getIEPLevelService.execute(hmppsId, requestContext)
 
       result.shouldNotBeNull()
       result.shouldBe(Response(data = iepReviewHistory.toIEPLevel()))
@@ -75,22 +77,22 @@ internal class GetIEPLevelServiceTest(
 
     it("failed incentives gateway call") {
       val err = listOf(UpstreamApiError(UpstreamApi.INCENTIVES, UpstreamApiError.Type.INTERNAL_SERVER_ERROR))
-      whenever(incentivesGateway.getIEPReviewHistory(hmppsId)).thenReturn(Response(data = null, errors = err))
-      val result = getIEPLevelService.execute(hmppsId, filters)
+      whenever(incentivesGateway.getIEPReviewHistory(hmppsId, requestContext)).thenReturn(Response(data = null, errors = err))
+      val result = getIEPLevelService.execute(hmppsId, requestContext)
       result.errors.shouldBe(err)
     }
 
     it("failed prison check call") {
       val err = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "NOMIS number not found"))
       whenever(getPersonService.getNomisNumber(hmppsId, filters)).thenReturn(Response(data = null, errors = err))
-      val result = getIEPLevelService.execute(hmppsId, filters)
+      val result = getIEPLevelService.execute(hmppsId, requestContext)
       result.errors.shouldBe(err)
     }
 
     it("failed to get prisoners nomis number") {
       val err = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND))
       whenever(getPersonService.getNomisNumber(hmppsId, filters)).thenReturn(Response(data = NomisNumber(), errors = emptyList()))
-      val result = getIEPLevelService.execute(hmppsId, filters)
+      val result = getIEPLevelService.execute(hmppsId, requestContext)
       result.errors.shouldBe(err)
     }
   })

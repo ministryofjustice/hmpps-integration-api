@@ -18,7 +18,7 @@ class GetFutureVisitsService(
     hmppsId: String,
     filters: ConsumerFilters?,
   ): Response<List<Visit>?> {
-    val (person, personErrors) = getPersonService.getPersonWithPrisonFilter(hmppsId, filters)
+    val (person, personErrors) = getPersonService.getPersonWithPrisonFilter(hmppsId, filters = filters, requestContext = null)
     if (personErrors.isNotEmpty()) {
       return Response(data = null, errors = personErrors)
     }

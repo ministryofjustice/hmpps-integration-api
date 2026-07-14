@@ -104,7 +104,7 @@ class GetFutureVisitsServiceTest(
       Mockito.reset(getPersonService)
       Mockito.reset(prisonVisitsGateway)
 
-      whenever(getPersonService.getPersonWithPrisonFilter(nomisNumber, filters = null)).thenReturn(
+      whenever(getPersonService.getPersonWithPrisonFilter(nomisNumber, filters = null, requestContext = null)).thenReturn(
         Response(data = person),
       )
 
@@ -121,7 +121,7 @@ class GetFutureVisitsServiceTest(
 
     it("returns an errors if getPersonWithPrisonFilter returns an error") {
       val errors = listOf(UpstreamApiError(type = UpstreamApiError.Type.ENTITY_NOT_FOUND, causedBy = UpstreamApi.PRISON_API, description = "Person with prison filters error"))
-      whenever(getPersonService.getPersonWithPrisonFilter(nomisNumber, filters = null)).thenReturn(
+      whenever(getPersonService.getPersonWithPrisonFilter(nomisNumber, filters = null, requestContext = null)).thenReturn(
         Response(data = null, errors = errors),
       )
 
@@ -131,7 +131,7 @@ class GetFutureVisitsServiceTest(
     }
 
     it("returns a 404 if no Nomis number found on the person") {
-      whenever(getPersonService.getPersonWithPrisonFilter(deliusCrn, filters = null)).thenReturn(
+      whenever(getPersonService.getPersonWithPrisonFilter(deliusCrn, filters = null, requestContext = null)).thenReturn(
         Response(data = personWithoutNomisNumber),
       )
 

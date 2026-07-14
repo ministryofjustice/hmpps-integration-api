@@ -32,7 +32,7 @@ class GetAttendanceByIdService(
           data = null,
           errors = listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.ENTITY_NOT_FOUND)),
         )
-    val personResponse = getPersonService.getPersonWithPrisonFilter(hmppsId, filters)
+    val personResponse = getPersonService.getPersonWithPrisonFilter(hmppsId, filters = filters, requestContext = null)
     if (personResponse.errors.isNotEmpty()) {
       return Response(
         data = null,

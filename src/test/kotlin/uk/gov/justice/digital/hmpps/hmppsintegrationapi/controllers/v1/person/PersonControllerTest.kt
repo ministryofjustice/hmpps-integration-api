@@ -89,7 +89,6 @@ internal class PersonControllerTest(
       val sanitisedHmppsId = "A1234AA"
       val pncNumber = "2003/13116M"
       val basePath = "/v1/persons"
-      val filters = null
 
       // Test persona
       val person = personInProbationAndNomisPersona
@@ -442,7 +441,7 @@ internal class PersonControllerTest(
           Mockito.reset(getNameForPersonService)
           Mockito.reset(auditService)
 
-          whenever(getNameForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+          whenever(getNameForPersonService.execute(eq(sanitisedHmppsId), any())).thenReturn(
             Response(
               data = PersonName(firstName, lastName),
             ),
@@ -467,7 +466,7 @@ internal class PersonControllerTest(
           }
 
           it("returns a 404 status code when a person cannot be found in both upstream APIs") {
-            whenever(getNameForPersonService.execute(idThatDoesNotExist, filters))
+            whenever(getNameForPersonService.execute(eq(idThatDoesNotExist), any()))
               .thenReturn(notFoundErrorResponse(UpstreamApi.NDELIUS))
 
             val result = mockMvc.performAuthorised("$basePath/$idThatDoesNotExist/name")
@@ -476,7 +475,7 @@ internal class PersonControllerTest(
         }
 
         it("returns a 400 status code when bad request in upstream APIs") {
-          whenever(getNameForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+          whenever(getNameForPersonService.execute(eq(sanitisedHmppsId), any())).thenReturn(
             Response(
               data = null,
               errors =
@@ -495,7 +494,7 @@ internal class PersonControllerTest(
 
         it("gets a person name details with the matching ID") {
           mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/name")
-          verify(getNameForPersonService, times(1)).execute(sanitisedHmppsId, filters)
+          verify(getNameForPersonService, times(1)).execute(eq(sanitisedHmppsId), any())
         }
 
         it("returns person name with the matching ID") {
@@ -525,7 +524,7 @@ internal class PersonControllerTest(
               restrictedTo = listOf(),
               restrictionMessage = null,
             )
-          whenever(getPersonService.getAccessLimitations(sanitisedHmppsId)).thenReturn(Response(limitedAccess))
+          whenever(getPersonService.getAccessLimitations(eq(sanitisedHmppsId), any())).thenReturn(Response(limitedAccess))
         }
 
         it("logs audit") {
@@ -557,7 +556,7 @@ internal class PersonControllerTest(
         beforeTest {
           Mockito.reset(auditService)
           Mockito.reset(getImageMetadataForPersonService)
-          whenever(getImageMetadataForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+          whenever(getImageMetadataForPersonService.execute(eq(sanitisedHmppsId), any())).thenReturn(
             Response(
               data =
                 listOf(
@@ -575,7 +574,7 @@ internal class PersonControllerTest(
         }
 
         it("returns paginated results") {
-          whenever(getImageMetadataForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+          whenever(getImageMetadataForPersonService.execute(eq(sanitisedHmppsId), any())).thenReturn(
             Response(
               data =
                 List(20) {
@@ -608,7 +607,7 @@ internal class PersonControllerTest(
 
         it("gets the metadata of images for a person with the matching ID") {
           mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/images")
-          verify(getImageMetadataForPersonService, times(1)).execute(sanitisedHmppsId, filters)
+          verify(getImageMetadataForPersonService, times(1)).execute(eq(sanitisedHmppsId), any())
         }
 
         it("returns the metadata of images for a person with the matching ID") {
@@ -627,7 +626,7 @@ internal class PersonControllerTest(
         }
 
         it("returns a 404 NOT FOUND status code") {
-          whenever(getImageMetadataForPersonService.execute(sanitisedHmppsId, filters))
+          whenever(getImageMetadataForPersonService.execute(eq(sanitisedHmppsId), any()))
             .thenReturn(notFoundErrorResponseEmptyList(UpstreamApi.PRISON_API))
 
           val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/images")
@@ -642,7 +641,7 @@ internal class PersonControllerTest(
         beforeTest {
           Mockito.reset(auditService)
 
-          whenever(getIEPLevelService.execute(sanitisedHmppsId, filter = null)).thenReturn(
+          whenever(getIEPLevelService.execute(eq(sanitisedHmppsId), any())).thenReturn(
             Response(
               data = iepLevel,
             ),
@@ -670,7 +669,7 @@ internal class PersonControllerTest(
         }
 
         it("returns a 400 bad request") {
-          whenever(getIEPLevelService.execute(sanitisedHmppsId, filter = null)).thenReturn(
+          whenever(getIEPLevelService.execute(eq(sanitisedHmppsId), any())).thenReturn(
             Response(
               data = null,
               errors =
@@ -688,7 +687,7 @@ internal class PersonControllerTest(
         }
 
         it("returns a 404 not found") {
-          whenever(getIEPLevelService.execute(sanitisedHmppsId, filter = null))
+          whenever(getIEPLevelService.execute(eq(sanitisedHmppsId), any()))
             .thenReturn(notFoundErrorResponse(UpstreamApi.PRISON_API))
 
           val result = mockMvc.performAuthorised(path)
@@ -701,12 +700,11 @@ internal class PersonControllerTest(
           Mockito.reset(getPersonsService)
           Mockito.reset(auditService)
 
-          val filters = ConsumerFilters(prisons = emptyList())
-          whenever(getPersonService.getNomisNumber(sanitisedHmppsId, filters)).thenReturn(Response(NomisNumber("A1234AA")))
+          whenever(getPersonService.getNomisNumber(eq(sanitisedHmppsId), any())).thenReturn(Response(NomisNumber("A1234AA")))
         }
 
         it("returns a prisoners visit orders") {
-          whenever(getVisitOrdersForPersonService.execute(sanitisedHmppsId)).thenReturn(
+          whenever(getVisitOrdersForPersonService.execute(eq(sanitisedHmppsId), any())).thenReturn(
             Response(
               data =
                 VisitOrders(
@@ -721,7 +719,7 @@ internal class PersonControllerTest(
         }
 
         it("returns a 404 when no prisoner visit orders found") {
-          whenever(getVisitOrdersForPersonService.execute(sanitisedHmppsId))
+          whenever(getVisitOrdersForPersonService.execute(eq(sanitisedHmppsId), any()))
             .thenReturn(notFoundErrorResponse(UpstreamApi.PRISON_API))
 
           val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/visit-orders")
@@ -729,7 +727,7 @@ internal class PersonControllerTest(
         }
 
         it("returns a 400 when invalid hmppsid") {
-          whenever(getVisitOrdersForPersonService.execute(sanitisedHmppsId)).thenReturn(
+          whenever(getVisitOrdersForPersonService.execute(eq(sanitisedHmppsId), any())).thenReturn(
             Response(
               data = null,
               errors =
@@ -778,7 +776,7 @@ internal class PersonControllerTest(
           Mockito.reset(getPhysicalCharacteristicsForPersonService)
           Mockito.reset(auditService)
 
-          whenever(getPhysicalCharacteristicsForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+          whenever(getPhysicalCharacteristicsForPersonService.execute(eq(sanitisedHmppsId), any())).thenReturn(
             Response(
               data = physicalCharacteristics,
             ),
@@ -833,7 +831,7 @@ internal class PersonControllerTest(
         }
 
         it("returns a 400 bad request") {
-          whenever(getPhysicalCharacteristicsForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+          whenever(getPhysicalCharacteristicsForPersonService.execute(eq(sanitisedHmppsId), any())).thenReturn(
             Response(
               data = null,
               errors =
@@ -851,7 +849,7 @@ internal class PersonControllerTest(
         }
 
         it("returns a 404 not found") {
-          whenever(getPhysicalCharacteristicsForPersonService.execute(sanitisedHmppsId, filters))
+          whenever(getPhysicalCharacteristicsForPersonService.execute(eq(sanitisedHmppsId), any()))
             .thenReturn(notFoundErrorResponse(UpstreamApi.PRISONER_OFFENDER_SEARCH))
 
           val result = mockMvc.performAuthorised(path)
@@ -867,7 +865,7 @@ internal class PersonControllerTest(
           Mockito.reset(getNumberOfChildrenForPersonService)
           Mockito.reset(auditService)
 
-          whenever(getNumberOfChildrenForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+          whenever(getNumberOfChildrenForPersonService.execute(eq(sanitisedHmppsId), any())).thenReturn(
             Response(
               data = numberOfChildren,
             ),
@@ -894,7 +892,7 @@ internal class PersonControllerTest(
         }
 
         it("returns a 400 bad request") {
-          whenever(getNumberOfChildrenForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+          whenever(getNumberOfChildrenForPersonService.execute(eq(sanitisedHmppsId), any())).thenReturn(
             Response(
               data = null,
               errors =
@@ -912,7 +910,7 @@ internal class PersonControllerTest(
         }
 
         it("returns a 404 not found") {
-          whenever(getNumberOfChildrenForPersonService.execute(sanitisedHmppsId, filters))
+          whenever(getNumberOfChildrenForPersonService.execute(eq(sanitisedHmppsId), any()))
             .thenReturn(notFoundErrorResponse(UpstreamApi.PERSONAL_RELATIONSHIPS))
 
           val result = mockMvc.performAuthorised(path)
@@ -925,12 +923,11 @@ internal class PersonControllerTest(
           Mockito.reset(getPersonsService)
           Mockito.reset(auditService)
 
-          val filters = ConsumerFilters(prisons = emptyList())
-          whenever(getPersonService.getNomisNumber(sanitisedHmppsId, filters)).thenReturn(Response(NomisNumber("A1234AA")))
+          whenever(getPersonService.getNomisNumber(eq(sanitisedHmppsId), any())).thenReturn(Response(NomisNumber("A1234AA")))
         }
 
         it("returns a prisoners visit orders") {
-          whenever(getVisitOrdersForPersonService.execute(sanitisedHmppsId)).thenReturn(
+          whenever(getVisitOrdersForPersonService.execute(eq(sanitisedHmppsId), any())).thenReturn(
             Response(
               data =
                 VisitOrders(
@@ -945,7 +942,7 @@ internal class PersonControllerTest(
         }
 
         it("returns a 404 when no prisoner visit orders found") {
-          whenever(getVisitOrdersForPersonService.execute(sanitisedHmppsId))
+          whenever(getVisitOrdersForPersonService.execute(eq(sanitisedHmppsId), any()))
             .thenReturn(notFoundErrorResponse(UpstreamApi.PRISON_API))
 
           val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/visit-orders")
@@ -953,7 +950,7 @@ internal class PersonControllerTest(
         }
 
         it("returns a 400 when invalid hmppsid") {
-          whenever(getVisitOrdersForPersonService.execute(sanitisedHmppsId)).thenReturn(
+          whenever(getVisitOrdersForPersonService.execute(eq(sanitisedHmppsId), any())).thenReturn(
             Response(
               data = null,
               errors =
@@ -990,7 +987,7 @@ internal class PersonControllerTest(
           Mockito.reset(getCareNeedsForPersonService)
           Mockito.reset(auditService)
 
-          whenever(getCareNeedsForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+          whenever(getCareNeedsForPersonService.execute(eq(sanitisedHmppsId), any())).thenReturn(
             Response(
               data = careNeeds,
             ),
@@ -1025,7 +1022,7 @@ internal class PersonControllerTest(
         }
 
         it("returns a 400 bad request") {
-          whenever(getCareNeedsForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+          whenever(getCareNeedsForPersonService.execute(eq(sanitisedHmppsId), any())).thenReturn(
             Response(
               data = null,
               errors =
@@ -1043,7 +1040,7 @@ internal class PersonControllerTest(
         }
 
         it("returns a 404 not found") {
-          whenever(getCareNeedsForPersonService.execute(sanitisedHmppsId, filters))
+          whenever(getCareNeedsForPersonService.execute(eq(sanitisedHmppsId), any()))
             .thenReturn(notFoundErrorResponse(UpstreamApi.PRISONER_OFFENDER_SEARCH))
 
           val result = mockMvc.performAuthorised(path)
@@ -1069,7 +1066,7 @@ internal class PersonControllerTest(
           Mockito.reset(getLanguagesForPersonService)
           Mockito.reset(auditService)
 
-          whenever(getLanguagesForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+          whenever(getLanguagesForPersonService.execute(eq(sanitisedHmppsId), any())).thenReturn(
             Response(
               data = languages,
             ),
@@ -1103,7 +1100,7 @@ internal class PersonControllerTest(
         }
 
         it("returns a 400 bad request") {
-          whenever(getLanguagesForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+          whenever(getLanguagesForPersonService.execute(eq(sanitisedHmppsId), any())).thenReturn(
             Response(
               data = null,
               errors =
@@ -1120,7 +1117,7 @@ internal class PersonControllerTest(
         }
 
         it("returns a 404 not found") {
-          whenever(getLanguagesForPersonService.execute(sanitisedHmppsId, filters))
+          whenever(getLanguagesForPersonService.execute(eq(sanitisedHmppsId), any()))
             .thenReturn(notFoundErrorResponse(UpstreamApi.PRISONER_OFFENDER_SEARCH))
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
@@ -1146,7 +1143,7 @@ internal class PersonControllerTest(
           Mockito.reset(getLanguagesForPersonService)
           Mockito.reset(auditService)
 
-          whenever(getPrisonerEducationService.execute(sanitisedHmppsId, filters)).thenReturn(
+          whenever(getPrisonerEducationService.execute(eq(sanitisedHmppsId), any())).thenReturn(
             Response(
               data = education,
             ),
@@ -1180,7 +1177,7 @@ internal class PersonControllerTest(
         }
 
         it("returns a 400 bad request") {
-          whenever(getPrisonerEducationService.execute(sanitisedHmppsId, filters)).thenReturn(
+          whenever(getPrisonerEducationService.execute(eq(sanitisedHmppsId), any())).thenReturn(
             Response(
               data = null,
               errors =
@@ -1197,7 +1194,7 @@ internal class PersonControllerTest(
         }
 
         it("returns a 404 not found") {
-          whenever(getPrisonerEducationService.execute(sanitisedHmppsId, filters)).thenReturn(
+          whenever(getPrisonerEducationService.execute(eq(sanitisedHmppsId), any())).thenReturn(
             Response(
               data = null,
               errors =

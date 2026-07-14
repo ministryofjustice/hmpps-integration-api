@@ -2,12 +2,12 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PLPGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerEducation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetPrisonerEducationService(
@@ -16,16 +16,16 @@ class GetPrisonerEducationService(
 ) {
   fun execute(
     hmppsId: String,
-    filters: ConsumerFilters? = null,
+    requestContext: RequestContext? = null,
   ): Response<PrisonerEducation?> {
-    val personResponse = getPersonService.getNomisNumber(hmppsId = hmppsId, filters = filters)
+    val personResponse = getPersonService.getNomisNumber(hmppsId = hmppsId, filters = requestContext?.filters)
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = personResponse.errors)
     }
 
     val nomisNumber = personResponse.data?.nomisNumber ?: return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "Prisoner not found")))
 
-    val response = plpGateway.getPrisonerEducation(nomisNumber)
+    val response = plpGateway.getPrisonerEducation(nomisNumber, requestContext)
     if (response.errors.isNotEmpty()) {
       return Response(data = null, errors = response.errors)
     }

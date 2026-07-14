@@ -58,17 +58,17 @@ class GetCommunityOffenderManagerForPersonServiceTest(
         Mockito.reset(getPersonService)
         Mockito.reset(nDeliusGateway)
 
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filter)).thenReturn(Response(person))
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filter, null)).thenReturn(Response(person))
         whenever(nDeliusGateway.getCommunityOffenderManagerForPerson(crn = deliusCrn)).thenReturn(Response(communityOffenderManager))
       }
 
       it("performs a search according to hmpps Id") {
         getCommunityOffenderManagerForPersonService.execute(hmppsId, filter)
-        verify(getPersonService, times(1)).getPersonWithPrisonFilter(hmppsId = hmppsId, filter)
+        verify(getPersonService, times(1)).getPersonWithPrisonFilter(hmppsId = hmppsId, filter, null)
       }
 
       it("Returns a community offender manager for person given a hmppsId") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filter)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filter, null)).thenReturn(
           Response(
             data = person,
           ),
@@ -86,7 +86,7 @@ class GetCommunityOffenderManagerForPersonServiceTest(
               type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
             ),
           )
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = "NOT_FOUND", filter)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = "NOT_FOUND", filter, null)).thenReturn(
           Response(
             data = null,
             errors = errors,

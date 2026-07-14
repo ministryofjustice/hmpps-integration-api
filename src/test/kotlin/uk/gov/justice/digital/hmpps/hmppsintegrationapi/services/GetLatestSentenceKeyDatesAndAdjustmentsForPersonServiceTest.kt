@@ -49,7 +49,7 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
         Mockito.reset(prisonApiGateway)
         Mockito.reset(getPersonService)
 
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filters, null)).thenReturn(
           Response(
             data = person,
           ),
@@ -149,7 +149,7 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
       it("gets NOMIS number from get person service") {
         getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId, filters)
 
-        verify(getPersonService, VerificationModeFactory.times(1)).getPersonWithPrisonFilter(hmppsId, filters)
+        verify(getPersonService, VerificationModeFactory.times(1)).getPersonWithPrisonFilter(hmppsId, filters, null)
       }
 
       it("gets latest sentence key dates from NOMIS") {
@@ -403,7 +403,7 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
       }
 
       it("returns an error when person cannot be found") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filters, null)).thenReturn(
           Response(
             data = null,
             errors =
@@ -463,7 +463,7 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
       it("returns null when latest key dates and adjustments are queried and the consumer doesnt have access to the persons prison") {
         val consumerFilters = ConsumerFilters(prisons = listOf("XYZ"))
 
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, consumerFilters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, consumerFilters, null)).thenReturn(
           Response(
             data = null,
             errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")),
@@ -481,7 +481,7 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
 
       it("returns latest key dates and adjustments when the consumer does have access to the persons prison") {
         val consumerFilters = ConsumerFilters(prisons = listOf("MDI"))
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, consumerFilters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, consumerFilters, null)).thenReturn(
           Response(
             data = person,
             errors = emptyList(),

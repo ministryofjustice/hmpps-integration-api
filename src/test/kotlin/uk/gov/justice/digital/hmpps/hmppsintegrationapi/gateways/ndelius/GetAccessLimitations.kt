@@ -11,6 +11,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
@@ -33,6 +34,7 @@ class GetAccessLimitations(
       val nDeliusApiMockServer = ApiMockServer.create(UpstreamApi.NDELIUS)
       val hmppsId = "X150876"
       val path = "/case/$hmppsId/access-limitations"
+      val requestContext = buildRequestContext("testUser")
 
       beforeEach {
         nDeliusApiMockServer.start()
@@ -45,7 +47,7 @@ class GetAccessLimitations(
 
         Mockito.reset(hmppsAuthGateway)
         Mockito.reset(featureFlagConfig)
-        whenever(hmppsAuthGateway.getClientToken("nDelius")).thenReturn(HmppsAuthMockServer.TOKEN)
+        whenever(hmppsAuthGateway.getClientToken("nDelius", requestContext)).thenReturn(HmppsAuthMockServer.TOKEN)
       }
 
       afterTest {
@@ -53,13 +55,13 @@ class GetAccessLimitations(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        deliusGateway.getAccessLimitations(hmppsId)
+        deliusGateway.getAccessLimitations(hmppsId, requestContext)
 
-        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("nDelius")
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("nDelius", requestContext)
       }
 
       it("returns limited access details for the matching CRN") {
-        val response = deliusGateway.getAccessLimitations(hmppsId)
+        val response = deliusGateway.getAccessLimitations(hmppsId, requestContext)
 
         response.data.shouldBe(
           LimitedAccess(

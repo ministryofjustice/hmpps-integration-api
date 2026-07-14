@@ -51,7 +51,7 @@ class GetHistoricalAttendancesServiceTest(
       beforeEach {
         Mockito.reset(getPersonService, activitiesGateway)
 
-        whenever(getPersonService.getPersonWithPrisonFilter(prisonerNumber, filters)).thenReturn(Response(data = person))
+        whenever(getPersonService.getPersonWithPrisonFilter(prisonerNumber, filters, null)).thenReturn(Response(data = person))
       }
 
       it("Returns historical attendances") {
@@ -72,7 +72,7 @@ class GetHistoricalAttendancesServiceTest(
             ),
           )
         whenever(activitiesGateway.getHistoricalAttendances(prisonerNumber, startDate, endDate, prisonId)).thenReturn(Response(data = listOf(activitiesHistoricalAttendance)))
-        whenever(getPersonService.getPersonWithPrisonFilter(prisonerNumber, filters)).thenReturn(Response(data = null, errors = errors))
+        whenever(getPersonService.getPersonWithPrisonFilter(prisonerNumber, filters, null)).thenReturn(Response(data = null, errors = errors))
 
         val result = getHistoricalAttendancesService.execute(prisonerNumber, startDate, endDate, prisonId, filters)
         result.data.shouldBeNull()

@@ -9,6 +9,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -34,22 +35,23 @@ internal class GetNumberOfChildrenForPersonServiceTest(
       val filters = null
       val numberOfChildrenGatewayResponse = PRNumberOfChildren(numberOfChildren = "2", id = 1, active = true, createdTime = "now", createdBy = "me")
       val numberOfChildren = numberOfChildrenGatewayResponse.toNumberOfChildren()
+      val requestContext = buildRequestContext("testUser", filters = filters)
 
       beforeEach {
         Mockito.reset(getPersonService)
         Mockito.reset(personalRelationshipsGateway)
 
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters = filters)).thenReturn(Response(person))
-        whenever(personalRelationshipsGateway.getNumberOfChildren(prisonerNumber)).thenReturn(Response(numberOfChildrenGatewayResponse))
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters = null, requestContext)).thenReturn(Response(person))
+        whenever(personalRelationshipsGateway.getNumberOfChildren(prisonerNumber, requestContext)).thenReturn(Response(numberOfChildrenGatewayResponse))
       }
 
       it("performs a search according to hmpps Id") {
-        getNumberOfChildrenForPersonService.execute(hmppsId, filters)
-        verify(getPersonService, VerificationModeFactory.times(1)).getPersonWithPrisonFilter(hmppsId = hmppsId, filters = filters)
+        getNumberOfChildrenForPersonService.execute(hmppsId, requestContext)
+        verify(getPersonService, VerificationModeFactory.times(1)).getPersonWithPrisonFilter(hmppsId = hmppsId, filters = null, requestContext)
       }
 
       it("should return number of children from gateway") {
-        val result = getNumberOfChildrenForPersonService.execute(hmppsId, filters)
+        val result = getNumberOfChildrenForPersonService.execute(hmppsId, requestContext)
         result.data.shouldBe(numberOfChildren)
         result.errors.count().shouldBe(0)
       }
@@ -62,14 +64,14 @@ internal class GetNumberOfChildrenForPersonServiceTest(
               type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
             ),
           )
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = "notfound", filters = filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = "notfound", filters = null, requestContext)).thenReturn(
           Response(
             data = null,
             errors = errors,
           ),
         )
 
-        val result = getNumberOfChildrenForPersonService.execute(hmppsId = "notfound", filters)
+        val result = getNumberOfChildrenForPersonService.execute(hmppsId = "notfound", requestContext)
         result.data.shouldBe(null)
         result.errors.shouldBe(errors)
       }
@@ -82,14 +84,14 @@ internal class GetNumberOfChildrenForPersonServiceTest(
               type = UpstreamApiError.Type.BAD_REQUEST,
             ),
           )
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = "badRequest", filters = filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = "badRequest", filters = null, requestContext)).thenReturn(
           Response(
             data = null,
             errors = errors,
           ),
         )
 
-        val result = getNumberOfChildrenForPersonService.execute(hmppsId = "badRequest", filters)
+        val result = getNumberOfChildrenForPersonService.execute(hmppsId = "badRequest", requestContext)
         result.data.shouldBe(null)
         result.errors.shouldBe(errors)
       }
@@ -102,14 +104,14 @@ internal class GetNumberOfChildrenForPersonServiceTest(
               type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
             ),
           )
-        whenever(personalRelationshipsGateway.getNumberOfChildren(prisonerNumber)).thenReturn(
+        whenever(personalRelationshipsGateway.getNumberOfChildren(prisonerNumber, requestContext)).thenReturn(
           Response(
             data = null,
             errors = errors,
           ),
         )
 
-        val result = getNumberOfChildrenForPersonService.execute(hmppsId, filters)
+        val result = getNumberOfChildrenForPersonService.execute(hmppsId, requestContext)
         result.data.shouldBe(null)
         result.errors.shouldBe(errors)
       }

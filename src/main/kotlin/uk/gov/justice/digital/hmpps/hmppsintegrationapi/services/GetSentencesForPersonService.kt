@@ -20,8 +20,7 @@ class GetSentencesForPersonService(
     hmppsId: String,
     requestContext: RequestContext? = null,
   ): Response<List<Sentence>> {
-    val filters = requestContext?.filters
-    val personResponse = getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters = filters)
+    val personResponse = getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters = null, requestContext = requestContext)
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = emptyList(), errors = personResponse.errors)
     }

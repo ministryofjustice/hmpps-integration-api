@@ -9,6 +9,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PLPGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -32,6 +33,7 @@ internal class GetPrisonerEducationServiceTest(
       val nomisNumber = NomisNumber(hmppsId)
       val filters = null
       val timestamp = "2020-12-04T10:42:43"
+      val requestContext = buildRequestContext("testUser", filters = filters)
 
       val plpPrisonerEducation =
         PLPPrisonerEducation(
@@ -69,16 +71,16 @@ internal class GetPrisonerEducationServiceTest(
         Mockito.reset(plpGateway)
 
         whenever(getPersonService.getNomisNumber(hmppsId = hmppsId, filters = filters)).thenReturn(Response(nomisNumber))
-        whenever(plpGateway.getPrisonerEducation(hmppsId)).thenReturn(Response(plpPrisonerEducation))
+        whenever(plpGateway.getPrisonerEducation(hmppsId, requestContext)).thenReturn(Response(plpPrisonerEducation))
       }
 
       it("performs a search according to hmpps Id") {
-        getPrisonerEducationService.execute(hmppsId, filters)
+        getPrisonerEducationService.execute(hmppsId, requestContext)
         verify(getPersonService, times(1)).getNomisNumber(hmppsId = hmppsId, filters = filters)
       }
 
       it("should return prisoner education") {
-        val result = getPrisonerEducationService.execute(hmppsId, filters)
+        val result = getPrisonerEducationService.execute(hmppsId, requestContext)
         result.data.shouldBe(prisonerEducation)
         result.errors.count().shouldBe(0)
       }
@@ -98,7 +100,7 @@ internal class GetPrisonerEducationServiceTest(
           ),
         )
 
-        val result = getPrisonerEducationService.execute(hmppsId = "notfound", filters)
+        val result = getPrisonerEducationService.execute(hmppsId = "notfound", requestContext)
         result.data.shouldBe(null)
         result.errors.shouldBe(errors)
       }
@@ -118,7 +120,7 @@ internal class GetPrisonerEducationServiceTest(
           ),
         )
 
-        val result = getPrisonerEducationService.execute(hmppsId = "badRequest", filters)
+        val result = getPrisonerEducationService.execute(hmppsId = "badRequest", requestContext)
         result.data.shouldBe(null)
         result.errors.shouldBe(errors)
       }
@@ -131,14 +133,14 @@ internal class GetPrisonerEducationServiceTest(
               type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
             ),
           )
-        whenever(plpGateway.getPrisonerEducation(hmppsId)).thenReturn(
+        whenever(plpGateway.getPrisonerEducation(hmppsId, requestContext)).thenReturn(
           Response(
             data = null,
             errors = errors,
           ),
         )
 
-        val result = getPrisonerEducationService.execute(hmppsId, filters)
+        val result = getPrisonerEducationService.execute(hmppsId, requestContext)
         result.data.shouldBe(null)
         result.errors.shouldBe(errors)
       }

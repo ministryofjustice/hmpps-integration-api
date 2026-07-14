@@ -17,7 +17,7 @@ class GetCommunityOffenderManagerForPersonService(
     hmppsId: String,
     filters: ConsumerFilters?,
   ): Response<CommunityOffenderManager?> {
-    val personResponse = getPersonService.getPersonWithPrisonFilter(hmppsId, filters)
+    val personResponse = getPersonService.getPersonWithPrisonFilter(hmppsId, filters = filters, requestContext = null)
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = personResponse.errors)
     }

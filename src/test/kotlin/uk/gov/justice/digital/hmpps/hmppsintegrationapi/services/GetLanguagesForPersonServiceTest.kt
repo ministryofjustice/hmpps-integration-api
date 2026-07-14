@@ -72,13 +72,13 @@ internal class GetLanguagesForPersonServiceTest(
         Mockito.reset(getPersonService)
         Mockito.reset(prisonerOffenderSearchGateway)
 
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filters)).thenReturn(Response(person))
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filters, null)).thenReturn(Response(person))
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)).thenReturn(Response(languagesGatewayResponse))
       }
 
       it("performs a search according to hmpps Id") {
         getLanguagesForPersonService.execute(hmppsId, filters)
-        verify(getPersonService, times(1)).getPersonWithPrisonFilter(hmppsId, filters)
+        verify(getPersonService, times(1)).getPersonWithPrisonFilter(hmppsId, filters, null)
       }
 
       it("should return a person's languages from gateway") {
@@ -89,7 +89,7 @@ internal class GetLanguagesForPersonServiceTest(
 
       it("should return an entity not found error if person found in person service but no nomis number set for them") {
         val personWithoutNomis = Person(firstName = persona.firstName, lastName = persona.lastName, identifiers = Identifiers(nomisNumber = null))
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters = filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters = filters, requestContext = null)).thenReturn(
           Response(data = personWithoutNomis),
         )
 
@@ -106,7 +106,7 @@ internal class GetLanguagesForPersonServiceTest(
               type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
             ),
           )
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = "notfound", filters = filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = "notfound", filters = filters, requestContext = null)).thenReturn(
           Response(
             data = null,
             errors,
@@ -126,7 +126,7 @@ internal class GetLanguagesForPersonServiceTest(
               type = UpstreamApiError.Type.BAD_REQUEST,
             ),
           )
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = "badRequest", filters = filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = "badRequest", filters = filters, requestContext = null)).thenReturn(
           Response(
             data = null,
             errors,

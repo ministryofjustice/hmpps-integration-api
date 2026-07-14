@@ -19,7 +19,7 @@ class GetHistoricalAttendancesService(
     prisonId: String?,
     filters: ConsumerFilters?,
   ): Response<List<HistoricalAttendance>?> {
-    val getPersonServiceResponse = getPersonService.getPersonWithPrisonFilter(prisonerNumber, filters)
+    val getPersonServiceResponse = getPersonService.getPersonWithPrisonFilter(prisonerNumber, filters = filters, requestContext = null)
     if (getPersonServiceResponse.errors.isNotEmpty()) {
       return Response(
         data = null,

@@ -38,7 +38,7 @@ internal class GetHmppsIdServiceTest(
 
       it("Returns a hmpps id for the given id") {
         val person = Person(firstName = persona.firstName, lastName = persona.lastName, hmppsId = hmppsId)
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filters, null)).thenReturn(
           Response(
             data = person,
           ),
@@ -50,7 +50,7 @@ internal class GetHmppsIdServiceTest(
 
       it("Returns a hmpps id when hmpps id is null but a nomis number is present") {
         val person = Person(firstName = persona.firstName, lastName = persona.lastName, identifiers = Identifiers(nomisNumber = nomisNumber))
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filters, null)).thenReturn(
           Response(
             data = person,
           ),
@@ -62,7 +62,7 @@ internal class GetHmppsIdServiceTest(
 
       it("Returns an error if getPersonWithPrisonFilter() returns an error") {
         val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "getPersonWithPrisonFilter error"))
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filters, null)).thenReturn(
           Response(
             data = null,
             errors = errors,
@@ -75,7 +75,7 @@ internal class GetHmppsIdServiceTest(
 
       it("Returns an 404 if getPersonWithPrisonFilter() returns a person with no hmppsId or identifiers") {
         val personWithNoHmppsIdOrIdentifiers = Person(firstName = persona.firstName, lastName = persona.lastName, hmppsId = null)
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filters, null)).thenReturn(
           Response(
             data = personWithNoHmppsIdOrIdentifiers,
           ),

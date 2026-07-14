@@ -244,12 +244,15 @@ class NDeliusGateway(
     }
   }
 
-  fun getAccessLimitations(crn: String): Response<LimitedAccess?> {
+  fun getAccessLimitations(
+    crn: String,
+    requestContext: RequestContext?,
+  ): Response<LimitedAccess?> {
     val result =
       webClient.request<LimitedAccess>(
         HttpMethod.GET,
         "/case/$crn/access-limitations",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.NDELIUS,
       )
     return when (result) {

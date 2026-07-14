@@ -61,12 +61,15 @@ class PrisonApiGateway(
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  fun getImageMetadataForPerson(id: String): Response<List<ImageMetadata>> {
+  fun getImageMetadataForPerson(
+    id: String,
+    requestContext: RequestContext? = null,
+  ): Response<List<ImageMetadata>> {
     val result =
       webClient.requestList<PrisonApiImageDetail>(
         HttpMethod.GET,
         "api/images/offenders/$id",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.PRISON_API,
       )
 
@@ -478,12 +481,15 @@ class PrisonApiGateway(
     }
   }
 
-  fun getVisitBalances(offenderNumber: String): Response<VisitBalances?> {
+  fun getVisitBalances(
+    offenderNumber: String,
+    requestContext: RequestContext?,
+  ): Response<VisitBalances?> {
     val result =
       webClient.request<VisitBalances>(
         HttpMethod.GET,
         "/api/bookings/offenderNo/$offenderNumber/visit/balances",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.PRISON_API,
         badRequestAsError = true,
       )

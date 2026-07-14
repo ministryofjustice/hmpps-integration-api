@@ -16,7 +16,7 @@ class GetAdjudicationsForPersonService(
     hmppsId: String,
     filters: ConsumerFilters? = null,
   ): Response<List<Adjudication>> {
-    val personResponse = getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters = filters)
+    val personResponse = getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters = filters, requestContext = null)
     val nomisNumber = personResponse.data?.identifiers?.nomisNumber
 
     var adjudications: Response<List<Adjudication>> = Response(data = emptyList())

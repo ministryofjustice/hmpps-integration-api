@@ -9,6 +9,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonName
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -30,22 +31,23 @@ internal class GetPersonNameServiceTest(
       val hmppsId = persona.identifiers.nomisNumber!!
       val filters = ConsumerFilters(null)
       val person = Person(firstName = persona.firstName, lastName = persona.lastName)
+      val requestContext = buildRequestContext("testUser", filters = filters)
 
       beforeEach {
         Mockito.reset(getPersonService)
 
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, null, requestContext)).thenReturn(
           Response(data = person),
         )
       }
 
       it("gets person name for hmpps Id calls getPersonWithPrisonFilter") {
-        getNameForPersonService.execute(hmppsId, filters)
-        verify(getPersonService, times(1)).getPersonWithPrisonFilter(hmppsId, filters)
+        getNameForPersonService.execute(hmppsId, requestContext)
+        verify(getPersonService, times(1)).getPersonWithPrisonFilter(hmppsId, null, requestContext)
       }
 
       it("returns a person name") {
-        val response = getNameForPersonService.execute(hmppsId, filters)
+        val response = getNameForPersonService.execute(hmppsId, requestContext)
         response.data.shouldBe(PersonName(firstName = person.firstName, lastName = person.lastName))
       }
 
@@ -57,14 +59,14 @@ internal class GetPersonNameServiceTest(
               type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
             ),
           )
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, null, requestContext)).thenReturn(
           Response(
             data = null,
             errors,
           ),
         )
 
-        val response = getNameForPersonService.execute(hmppsId, filters)
+        val response = getNameForPersonService.execute(hmppsId, requestContext)
         response.errors.shouldBe(errors)
       }
     },

@@ -40,12 +40,14 @@ class PersonalRelationshipsGatewayTest(
     val prisonerId = "A1234BC"
     val getChildrenPath = "/prisoner/$prisonerId/number-of-children"
     val personalRelationshipsApiMockServer = ApiMockServer.create(UpstreamApi.PERSONAL_RELATIONSHIPS)
+    val requestContext = buildRequestContext("testUser")
 
     beforeEach {
       personalRelationshipsApiMockServer.start()
       Mockito.reset(hmppsAuthGateway)
 
       whenever(hmppsAuthGateway.getClientToken("PERSONAL-RELATIONSHIPS")).thenReturn(HmppsAuthMockServer.TOKEN)
+      whenever(hmppsAuthGateway.getClientToken("PERSONAL-RELATIONSHIPS", requestContext)).thenReturn(HmppsAuthMockServer.TOKEN)
       whenever(hmppsAuthGateway.getClientToken(eq("PERSONAL-RELATIONSHIPS"), any<RequestContext>())).thenReturn(HmppsAuthMockServer.TOKEN)
     }
 
@@ -336,9 +338,9 @@ class PersonalRelationshipsGatewayTest(
 
       it("authenticates using HMPPS Auth with credentials") {
 
-        personalRelationshipsGateway.getNumberOfChildren(prisonerId)
+        personalRelationshipsGateway.getNumberOfChildren(prisonerId, requestContext)
 
-        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("PERSONAL-RELATIONSHIPS")
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("PERSONAL-RELATIONSHIPS", requestContext)
       }
 
       it("Gets a number of children by id successfully") {
@@ -356,7 +358,7 @@ class PersonalRelationshipsGatewayTest(
             """.trimIndent(),
         )
 
-        val response = personalRelationshipsGateway.getNumberOfChildren(prisonerId)
+        val response = personalRelationshipsGateway.getNumberOfChildren(prisonerId, requestContext)
         response.errors.shouldBeEmpty()
         response.data.shouldNotBeNull()
         response.data!!.numberOfChildren.shouldBe("2")
@@ -369,7 +371,7 @@ class PersonalRelationshipsGatewayTest(
           HttpStatus.BAD_REQUEST,
         )
 
-        val response = personalRelationshipsGateway.getNumberOfChildren(prisonerId)
+        val response = personalRelationshipsGateway.getNumberOfChildren(prisonerId, requestContext)
         response.data.shouldBe(null)
         response.errors.shouldBe(listOf(UpstreamApiError(causedBy = UpstreamApi.PERSONAL_RELATIONSHIPS, type = UpstreamApiError.Type.BAD_REQUEST, description = null)))
       }

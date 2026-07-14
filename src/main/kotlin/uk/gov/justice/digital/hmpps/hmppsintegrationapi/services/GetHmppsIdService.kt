@@ -20,7 +20,7 @@ class GetHmppsIdService(
     nomisNumber: String,
     filters: ConsumerFilters? = null,
   ): Response<HmppsId?> {
-    val (person, personErrors) = getPersonService.getPersonWithPrisonFilter(nomisNumber, filters)
+    val (person, personErrors) = getPersonService.getPersonWithPrisonFilter(nomisNumber, filters = filters, requestContext = null)
     if (personErrors.isNotEmpty()) {
       return Response(
         data = null,

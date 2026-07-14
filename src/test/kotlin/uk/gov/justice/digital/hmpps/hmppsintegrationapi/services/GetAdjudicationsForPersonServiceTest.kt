@@ -39,13 +39,13 @@ internal class GetAdjudicationsForPersonServiceTest(
         Mockito.reset(getPersonService)
         Mockito.reset(adjudicationsGateway)
 
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filters)).thenReturn(Response(person))
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filters, null)).thenReturn(Response(person))
         whenever(adjudicationsGateway.getReportedAdjudicationsForPerson(id = prisonerNumber)).thenReturn(Response(adjudications))
       }
 
       it("performs a search according to hmpps Id") {
         getAdjudicationsForPersonService.execute(hmppsId, filters)
-        verify(getPersonService, times(1)).getPersonWithPrisonFilter(hmppsId, filters)
+        verify(getPersonService, times(1)).getPersonWithPrisonFilter(hmppsId, filters, null)
       }
 
       it("should return a list of errors if person not found") {
@@ -56,7 +56,7 @@ internal class GetAdjudicationsForPersonServiceTest(
               type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
             ),
           )
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = "notfound", filters = filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = "notfound", filters = filters, requestContext = null)).thenReturn(
           Response(
             data = null,
             errors = errors,

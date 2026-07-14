@@ -96,7 +96,7 @@ internal class GetSentencesForPersonServiceTest(
       }
 
       it("Person service error → Return person service error") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters, null)).thenReturn(
           Response(
             data = null,
             errors = nDelius500Error,
@@ -108,7 +108,7 @@ internal class GetSentencesForPersonServiceTest(
       }
 
       it("No Nomis number + no Delius crn -> Return entity not found response") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters, null)).thenReturn(
           Response(
             data = personNoIdentifiers,
           ),
@@ -119,7 +119,7 @@ internal class GetSentencesForPersonServiceTest(
       }
 
       it("No Nomis number + Delius crn, delius success → return Delius") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters, null)).thenReturn(
           Response(
             data = personDeliusOnly,
           ),
@@ -133,7 +133,7 @@ internal class GetSentencesForPersonServiceTest(
       }
 
       it("No Nomis number + Delius crn, delius any error → return Delius error") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters, null)).thenReturn(
           Response(
             data = personDeliusOnly,
           ),
@@ -147,7 +147,7 @@ internal class GetSentencesForPersonServiceTest(
       }
 
       it("Nomis number + No Delius crn, Nomis success -> Return Nomis") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters, null)).thenReturn(
           Response(
             data = personNomisOnly,
           ),
@@ -169,7 +169,7 @@ internal class GetSentencesForPersonServiceTest(
       }
 
       it("Nomis number + No Delius crn, Nomis any error on bookings-> Return Nomis error") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters, null)).thenReturn(
           Response(
             data = personNomisOnly,
           ),
@@ -186,7 +186,7 @@ internal class GetSentencesForPersonServiceTest(
       }
 
       it("Nomis number + No Delius crn, Nomis any error on sentences -> Return Nomis error") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters, null)).thenReturn(
           Response(
             data = personNomisOnly,
           ),
@@ -208,7 +208,7 @@ internal class GetSentencesForPersonServiceTest(
       }
 
       it("Nomis number + Delius crn, Nomis success, Delius success → Merge responses") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters, null)).thenReturn(
           Response(
             data = personFromProbationOffenderSearch,
           ),
@@ -233,7 +233,7 @@ internal class GetSentencesForPersonServiceTest(
       }
 
       it("Nomis number + Delius crn, Nomis success, Delius 404 → Return Nomis") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters, null)).thenReturn(
           Response(
             data = personFromProbationOffenderSearch,
           ),
@@ -258,7 +258,7 @@ internal class GetSentencesForPersonServiceTest(
       }
 
       it("Nomis number + Delius crn, Nomis 404 on booking ids, Delius success → Return Delius") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters, null)).thenReturn(
           Response(
             data = personFromProbationOffenderSearch,
           ),
@@ -278,7 +278,7 @@ internal class GetSentencesForPersonServiceTest(
       }
 
       it("Nomis number + Delius crn, Nomis 404 on sentences, Delius success → Return Delius") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters, null)).thenReturn(
           Response(
             data = personFromProbationOffenderSearch,
           ),
@@ -303,7 +303,7 @@ internal class GetSentencesForPersonServiceTest(
       }
 
       it("Nomis number + Delius crn, Nomis non 404 error on booking ids-> Return Nomis error") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters, null)).thenReturn(
           Response(
             data = personFromProbationOffenderSearch,
           ),
@@ -320,7 +320,7 @@ internal class GetSentencesForPersonServiceTest(
       }
 
       it("Nomis number + Delius crn, Nomis non 404 error on sentences -> Return Nomis error") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters, null)).thenReturn(
           Response(
             data = personFromProbationOffenderSearch,
           ),
@@ -342,7 +342,7 @@ internal class GetSentencesForPersonServiceTest(
       }
 
       it("Nomis number + Delius crn, Delius non 404 error -> Return Delius error") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters, null)).thenReturn(
           Response(
             data = personFromProbationOffenderSearch,
           ),
@@ -367,7 +367,7 @@ internal class GetSentencesForPersonServiceTest(
       }
 
       it("Nomis number + Delius crn, Nomis 404 on booking ids, Delius any error -> Return Delius error") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters, null)).thenReturn(
           Response(
             data = personFromProbationOffenderSearch,
           ),
@@ -387,7 +387,7 @@ internal class GetSentencesForPersonServiceTest(
       }
 
       it("Nomis number + Delius crn, Nomis 404 on sentences, Delius any error -> Return Delius error") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters, null)).thenReturn(
           Response(
             data = personFromProbationOffenderSearch,
           ),
@@ -412,7 +412,7 @@ internal class GetSentencesForPersonServiceTest(
       }
 
       it("Nomis number + Delius crn, Nomis any error on booking ids, Delius 404 -> Return Nomis error") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters, null)).thenReturn(
           Response(
             data = personFromProbationOffenderSearch,
           ),

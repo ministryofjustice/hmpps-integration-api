@@ -91,7 +91,7 @@ class GetAttendanceByIdServiceTest(
 
       it("should return an attendance record") {
         whenever(activitiesGateway.getAttendanceById(attendanceId)).thenReturn(Response(data = activitiesAttendance))
-        whenever(getPersonService.getPersonWithPrisonFilter(prisonerNumber, filters)).thenReturn(Response(data = person))
+        whenever(getPersonService.getPersonWithPrisonFilter(prisonerNumber, filters, null)).thenReturn(Response(data = person))
 
         val result = getAttendanceByIdService.execute(attendanceId, filters)
         result.data.shouldBe(activitiesAttendance.toAttendance())
@@ -139,7 +139,7 @@ class GetAttendanceByIdServiceTest(
             ),
           )
         whenever(activitiesGateway.getAttendanceById(attendanceId)).thenReturn(Response(data = activitiesAttendance))
-        whenever(getPersonService.getPersonWithPrisonFilter(prisonerNumber, filters)).thenReturn(Response(data = null, errors = errors))
+        whenever(getPersonService.getPersonWithPrisonFilter(prisonerNumber, filters, null)).thenReturn(Response(data = null, errors = errors))
 
         val result = getAttendanceByIdService.execute(attendanceId, filters)
         result.data.shouldBeNull()

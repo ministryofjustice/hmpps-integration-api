@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -27,19 +28,22 @@ class IncentivesGateway(
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  private fun authenticationHeader(): Map<String, String> {
-    val token = hmppsAuthGateway.getClientToken("INCENTIVES")
+  private fun authenticationHeader(requestContext: RequestContext?): Map<String, String> {
+    val token = hmppsAuthGateway.getClientToken("INCENTIVES", requestContext)
     return mapOf(
       "Authorization" to "Bearer $token",
     )
   }
 
-  fun getIEPReviewHistory(prisonerNumber: String): Response<IncIEPReviewHistory?> {
+  fun getIEPReviewHistory(
+    prisonerNumber: String,
+    requestContext: RequestContext?,
+  ): Response<IncIEPReviewHistory?> {
     val result =
       webClient.request<IncIEPReviewHistory>(
         HttpMethod.GET,
         "/incentive-reviews/prisoner/$prisonerNumber",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.INCENTIVES,
         badRequestAsError = true,
       )

@@ -71,13 +71,13 @@ internal class GetCareNeedsForPersonServiceTest(
         Mockito.reset(getPersonService)
         Mockito.reset(prisonerOffenderSearchGateway)
 
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = nomisNumber, filters = filters)).thenReturn(Response(person))
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = nomisNumber, filters = filters, requestContext = null)).thenReturn(Response(person))
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)).thenReturn(Response(careNeedsGatewayResponse))
       }
 
       it("performs a search according to hmpps Id") {
         getCareNeedsForPersonService.execute(nomisNumber, filters)
-        verify(getPersonService, times(1)).getPersonWithPrisonFilter(hmppsId = nomisNumber, filters = filters)
+        verify(getPersonService, times(1)).getPersonWithPrisonFilter(hmppsId = nomisNumber, filters = filters, requestContext = null)
       }
 
       it("should return a person's care needs from gateway") {
@@ -88,7 +88,7 @@ internal class GetCareNeedsForPersonServiceTest(
 
       it("should return an entity not found error if person found in person service but no nomis number set for them") {
         val personWithoutNomis = Person(firstName = persona.firstName, lastName = persona.lastName, identifiers = Identifiers(nomisNumber = null))
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = nomisNumber, filters = filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = nomisNumber, filters = filters, requestContext = null)).thenReturn(
           Response(data = personWithoutNomis),
         )
 
@@ -105,7 +105,7 @@ internal class GetCareNeedsForPersonServiceTest(
               type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
             ),
           )
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = "notfound", filters = filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = "notfound", filters = filters, requestContext = null)).thenReturn(
           Response(
             data = null,
             errors,
@@ -125,7 +125,7 @@ internal class GetCareNeedsForPersonServiceTest(
               type = UpstreamApiError.Type.BAD_REQUEST,
             ),
           )
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = "badRequest", filters = filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = "badRequest", filters = filters, requestContext = null)).thenReturn(
           Response(
             data = null,
             errors,

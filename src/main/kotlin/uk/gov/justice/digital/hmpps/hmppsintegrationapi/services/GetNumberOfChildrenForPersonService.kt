@@ -2,10 +2,10 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NumberOfChildren
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetNumberOfChildrenForPersonService(
@@ -14,12 +14,12 @@ class GetNumberOfChildrenForPersonService(
 ) {
   fun execute(
     hmppsId: String,
-    filters: ConsumerFilters? = null,
+    requestContext: RequestContext? = null,
   ): Response<NumberOfChildren?> {
-    val personResponse = getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters = filters)
+    val personResponse = getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters = null, requestContext = requestContext)
     val nomisNumber = personResponse.data?.identifiers?.nomisNumber ?: return Response(data = null, errors = personResponse.errors)
 
-    val numberOfChildren = personalRelationshipsGateway.getNumberOfChildren(nomisNumber)
+    val numberOfChildren = personalRelationshipsGateway.getNumberOfChildren(nomisNumber, requestContext)
 
     return Response(
       data = numberOfChildren.data?.toNumberOfChildren(),

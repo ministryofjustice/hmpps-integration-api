@@ -15,6 +15,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PLPGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
@@ -37,11 +38,15 @@ class PlpGatewayTest(
       val nomsNumber = "X1234YZ"
       val path = "/inductions/$nomsNumber/induction-schedule"
       val plpMockServer = ApiMockServer.create(UpstreamApi.PLP)
+      val requestContext = buildRequestContext("testUser")
 
       beforeEach {
         plpMockServer.start()
         Mockito.reset(hmppsAuthGateway)
         whenever(hmppsAuthGateway.getClientToken("PLP")).thenReturn(
+          HmppsAuthMockServer.TOKEN,
+        )
+        whenever(hmppsAuthGateway.getClientToken("PLP", requestContext)).thenReturn(
           HmppsAuthMockServer.TOKEN,
         )
       }
@@ -194,14 +199,14 @@ class PlpGatewayTest(
 
       describe("getPrisonerEducation") {
         it("authenticates using HMPPS Auth with credentials") {
-          plpGateway.getPrisonerEducation(nomsNumber)
-          verify(hmppsAuthGateway, times(1)).getClientToken("PLP")
+          plpGateway.getPrisonerEducation(nomsNumber, requestContext)
+          verify(hmppsAuthGateway, times(1)).getClientToken("PLP", requestContext)
         }
 
         it("upstream API returns an error, throw exception") {
           plpMockServer.stubForGet("/person/$nomsNumber/education", "", HttpStatus.NOT_FOUND)
 
-          val response = plpGateway.getPrisonerEducation(nomsNumber)
+          val response = plpGateway.getPrisonerEducation(nomsNumber, requestContext)
           response.data.shouldBe(null)
           response.errors.shouldBe(listOf(UpstreamApiError(causedBy = UpstreamApi.PLP, type = UpstreamApiError.Type.ENTITY_NOT_FOUND, description = null)))
         }
@@ -214,7 +219,7 @@ class PlpGatewayTest(
             ).readText(),
           )
 
-          val response = plpGateway.getPrisonerEducation(nomsNumber)
+          val response = plpGateway.getPrisonerEducation(nomsNumber, requestContext)
           response.data.shouldNotBeNull()
           response.data.createdAtPrison
             .shouldBe("BXI")

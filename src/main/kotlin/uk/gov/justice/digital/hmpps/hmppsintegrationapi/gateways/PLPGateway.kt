@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.education.EducationAssessmentSummaryResponse
@@ -129,12 +130,15 @@ class PLPGateway(
     }
   }
 
-  fun getPrisonerEducation(prisonerNumber: String): Response<PLPPrisonerEducation?> {
+  fun getPrisonerEducation(
+    prisonerNumber: String,
+    requestContext: RequestContext?,
+  ): Response<PLPPrisonerEducation?> {
     val result =
       webClient.request<PLPPrisonerEducation>(
         HttpMethod.GET,
         "/person/$prisonerNumber/education",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.PLP,
       )
     return when (result) {
@@ -174,8 +178,8 @@ class PLPGateway(
     }
   }
 
-  private fun authenticationHeader(): Map<String, String> {
-    val token = hmppsAuthGateway.getClientToken("PLP")
+  private fun authenticationHeader(requestContext: RequestContext? = null): Map<String, String> {
+    val token = hmppsAuthGateway.getClientToken("PLP", requestContext)
     return mapOf(
       "Authorization" to "Bearer $token",
     )

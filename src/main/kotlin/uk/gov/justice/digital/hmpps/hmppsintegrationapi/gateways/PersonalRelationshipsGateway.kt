@@ -153,12 +153,15 @@ class PersonalRelationshipsGateway(
     }
   }
 
-  fun getNumberOfChildren(prisonerId: String): Response<PRNumberOfChildren?> {
+  fun getNumberOfChildren(
+    prisonerId: String,
+    requestContext: RequestContext?,
+  ): Response<PRNumberOfChildren?> {
     val result =
       webClient.request<PRNumberOfChildren>(
         HttpMethod.GET,
         "/prisoner/$prisonerId/number-of-children",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.PERSONAL_RELATIONSHIPS,
         badRequestAsError = true,
       )
