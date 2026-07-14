@@ -39,7 +39,16 @@ class PersonIntegrationTest : IntegrationTestBase() {
 
     @BeforeEach
     fun setup() {
+      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.USE_PROBATION_SEARCH_FOR_PERSON_SEARCH)).thenReturn(false)
       val expectedRequest = attributeSearchRequest(firstName, lastName)
+
+      prisonerOffenderSearchMockServer.stubForPost(
+        "/attribute-search",
+        jacksonObjectMapper().writeValueAsString(expectedRequest.toMap()),
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/AttributeSearch.json",
+        ).readText(),
+      )
 
       prisonerOffenderSearchMockServer.stubForPost(
         "/attribute-search?page=0&size=10",
@@ -69,7 +78,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
       val expectedRequest = attributeSearchRequest(firstName, lastName, pncNumber, consumerFilters = testRoleWithPrisonFilters.filters!!)
 
       prisonerOffenderSearchMockServer.stubForPost(
-        "/attribute-search?page=0&size=10",
+        "/attribute-search",
         jacksonObjectMapper().writeValueAsString(expectedRequest.toMap()),
         File(
           "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/AttributeSearch.json",
@@ -94,6 +103,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
         objectMapper.writeValueAsString(searchRequest.toMap()),
         File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/probationoffendersearch/fixtures/PaginatedOffenderSearchResponse.json").readText(),
       )
+
       val queryParams = "first_name=$firstName&last_name=$lastName"
       callApi("$basePath?$queryParams")
         .andExpect(status().isOk)
@@ -194,7 +204,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
       val file = File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/AttributeSearchPrisonerNumberMergedFromCrn.json")
       val body = file.readText()
       prisonerOffenderSearchMockServer.stubFor(
-        post(urlPathEqualTo("/attribute-search?page=0&size=10"))
+        post(urlPathEqualTo("/attribute-search"))
           .willReturn(aResponse().withHeader("Content-Type", "application/json").withBody(body)),
       )
 

@@ -7,6 +7,7 @@ import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Companion.GATEWAY_CACHE
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
@@ -35,6 +36,9 @@ class PrisonerOffenderSearchGateway(
 
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
+
+  @Autowired
+  private lateinit var featureFlagConfig: FeatureFlagConfig
 
   fun getPersons(
     firstName: String?,
@@ -148,10 +152,16 @@ class PrisonerOffenderSearchGateway(
     requestContext: RequestContext? = null,
     paginatedRequest: PaginatedRequest = PaginatedRequest(),
   ): Response<POSPaginatedPrisoners?> {
-    val uriBuilder = UriComponentsBuilder.fromPath("/attribute-search")
-    uriBuilder.queryParam("page", paginatedRequest.page - 1)
-    uriBuilder.queryParam("size", paginatedRequest.perPage)
-    val uri = uriBuilder.build().toUriString()
+    // Only send the page number and page size when the Probation person search feature is enabled
+    val uri =
+      if (featureFlagConfig.isEnabled(FeatureFlagConfig.USE_PROBATION_SEARCH_FOR_PERSON_SEARCH)) {
+        val uriBuilder = UriComponentsBuilder.fromPath("/attribute-search")
+        uriBuilder.queryParam("page", paginatedRequest.page - 1)
+        uriBuilder.queryParam("size", paginatedRequest.perPage)
+        uriBuilder.build().toUriString()
+      } else {
+        "/attribute-search"
+      }
 
     val result =
       webClient.request<POSPaginatedPrisoners>(
