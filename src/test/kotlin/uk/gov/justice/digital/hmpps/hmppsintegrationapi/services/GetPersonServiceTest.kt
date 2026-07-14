@@ -38,6 +38,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchRedirectionResult
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResult
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -134,7 +135,7 @@ internal class GetPersonServiceTest :
           .thenReturn(Response(data = null, errors = notFoundErrors(UpstreamApi.PRISONER_OFFENDER_SEARCH)))
 
       fun givenPrisonerNumberMergedAttributeSearchReturnsEmpty() =
-        whenever(prisonerOffenderSearchGateway.attributeSearch(any(), eq(null), eq(1), eq(10))).thenReturn(
+        whenever(prisonerOffenderSearchGateway.attributeSearch(any(), eq(null), eq(PaginatedRequest(1, 10)))).thenReturn(
           Response(
             data =
               POSPaginatedPrisoners(
@@ -174,7 +175,7 @@ internal class GetPersonServiceTest :
       fun givenPrisonerNumberMergedAttributeSearchReturnsMatchingResult(
         removedPrisonerNumber: String?,
         mergedInToPrisonerNumber: String,
-      ) = whenever(prisonerOffenderSearchGateway.attributeSearch(any(), eq(null), eq(1), eq(10))).thenReturn(
+      ) = whenever(prisonerOffenderSearchGateway.attributeSearch(any(), eq(null), eq(PaginatedRequest(1, 10)))).thenReturn(
         Response(
           data =
             POSPaginatedPrisoners(

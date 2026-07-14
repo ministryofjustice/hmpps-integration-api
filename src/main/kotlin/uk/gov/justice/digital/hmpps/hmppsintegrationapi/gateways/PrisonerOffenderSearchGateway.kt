@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Compa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchRequest
@@ -145,12 +146,11 @@ class PrisonerOffenderSearchGateway(
   fun attributeSearch(
     request: POSAttributeSearchRequest,
     requestContext: RequestContext? = null,
-    page: Int = 1,
-    size: Int = 10,
+    paginatedRequest: PaginatedRequest = PaginatedRequest(),
   ): Response<POSPaginatedPrisoners?> {
     val uriBuilder = UriComponentsBuilder.fromPath("/attribute-search")
-    uriBuilder.queryParam("page", page - 1)
-    uriBuilder.queryParam("size", size)
+    uriBuilder.queryParam("page", paginatedRequest.page - 1)
+    uriBuilder.queryParam("size", paginatedRequest.perPage)
     val uri = uriBuilder.build().toUriString()
 
     val result =

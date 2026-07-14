@@ -7,6 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContex
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchDateMatcher
@@ -28,23 +29,26 @@ class GetPersonsService(
    * Person search using prisonerOffenderSearchGateway.attributeSearch
    */
   fun personAttributeSearch(
-    personSearchRequest: PersonSearchRequest,
-    pageNo: Int,
-    pageSize: Int,
+    firstName: String?,
+    lastName: String?,
+    pncNumber: String?,
+    dateOfBirth: String?,
+    searchWithinAliases: Boolean = false,
+    paginatedRequest: PaginatedRequest,
     requestContext: RequestContext? = null,
   ): Response<List<Person>> {
     // Perform probation search
     val consumerFilters = requestContext?.filters
     val probationSearchResponse =
       if (consumerFilters?.isPrisonsOnly() != true) {
-        probationPersonSearch(personSearchRequest, pageNo, pageSize, requestContext)
+        probationPersonSearch(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases, paginatedRequest, requestContext)
       } else {
         Response(emptyList(), emptyList())
       }
 
     // Perform prison search
-    val attributeSearchRequest = attributeSearchRequest(personSearchRequest.firstName, personSearchRequest.surname, personSearchRequest.pncNumber, personSearchRequest.dateOfBirth, personSearchRequest.includeAliases, consumerFilters)
-    val attributeSearchResponse = prisonerOffenderSearchGateway.attributeSearch(attributeSearchRequest, requestContext, pageNo, pageSize)
+    val attributeSearchRequest = attributeSearchRequest(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases, consumerFilters)
+    val attributeSearchResponse = prisonerOffenderSearchGateway.attributeSearch(attributeSearchRequest, requestContext, paginatedRequest)
     val attributeSearchResponseData = attributeSearchResponse.data?.content?.map { it.toPerson() } ?: emptyList()
 
     // Combine and return results
@@ -55,15 +59,19 @@ class GetPersonsService(
   }
 
   fun probationPersonSearch(
-    personSearchRequest: PersonSearchRequest,
-    pageNo: Int,
-    pageSize: Int,
+    firstName: String?,
+    lastName: String?,
+    pncNumber: String?,
+    dateOfBirth: String?,
+    searchWithinAliases: Boolean = false,
+    paginatedRequest: PaginatedRequest,
     requestContext: RequestContext? = null,
   ): Response<List<Person>> {
     if (featureFlagConfig.isEnabled(FeatureFlagConfig.USE_PROBATION_SEARCH_FOR_PERSON_SEARCH)) {
-      return probationOffenderSearchGateway.personSearch(personSearchRequest, pageNo, pageSize, requestContext)
+      val personSearchRequest = PersonSearchRequest(firstName, lastName, dateOfBirth, pncNumber, searchWithinAliases)
+      return probationOffenderSearchGateway.personSearch(personSearchRequest, paginatedRequest, requestContext)
     }
-    return deliusGateway.getPersons(personSearchRequest.firstName, personSearchRequest.surname, personSearchRequest.pncNumber, personSearchRequest.dateOfBirth, personSearchRequest.includeAliases, requestContext)
+    return deliusGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases, requestContext)
   }
 
   companion object {

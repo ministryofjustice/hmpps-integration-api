@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContex
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AddressSearchRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -66,14 +67,13 @@ class ProbationOffenderSearchGateway(
 
   fun personSearch(
     personSearchRequest: PersonSearchRequest,
-    pageNo: Int,
-    pageSize: Int,
+    paginatedRequest: PaginatedRequest,
     requestContext: RequestContext?,
   ): Response<List<Person>> {
     val result =
       webClient.request<PSPaginatedOffendersResponse>(
         HttpMethod.POST,
-        personSearchRequest.uriString(pageNo, pageSize),
+        personSearchRequest.uriString(paginatedRequest.page, paginatedRequest.perPage),
         authenticationHeader(requestContext),
         UpstreamApi.PROBATION_OFFENDER_SEARCH,
         requestBody = personSearchRequest.toMap(),

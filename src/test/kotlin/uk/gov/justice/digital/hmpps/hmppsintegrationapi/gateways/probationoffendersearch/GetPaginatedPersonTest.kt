@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGatewa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.PersonSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.objectMapper
@@ -65,7 +66,7 @@ class GetPaginatedPersonTest(
 
       describe("POST /search/people returns a response") {
         it("returns a search response") {
-          val personSearchResponse = probationOffenderSearchGateway.personSearch(searchRequest, 1, 10, requestContext)
+          val personSearchResponse = probationOffenderSearchGateway.personSearch(searchRequest, PaginatedRequest(1, 10), requestContext)
           assertThat(personSearchResponse).isNotNull
         }
       }
