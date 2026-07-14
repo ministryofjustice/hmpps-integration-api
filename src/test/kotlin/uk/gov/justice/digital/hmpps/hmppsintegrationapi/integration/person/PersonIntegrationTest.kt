@@ -22,7 +22,10 @@ import org.springframework.http.HttpMethod
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.PersonSearchRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.objectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithPrisonFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService.Companion.attributeSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.createUnsignedJwt
@@ -36,10 +39,19 @@ class PersonIntegrationTest : IntegrationTestBase() {
 
     @BeforeEach
     fun setup() {
+      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.USE_PROBATION_SEARCH_FOR_PERSON_SEARCH)).thenReturn(false)
       val expectedRequest = attributeSearchRequest(firstName, lastName)
 
       prisonerOffenderSearchMockServer.stubForPost(
         "/attribute-search",
+        jacksonObjectMapper().writeValueAsString(expectedRequest.toMap()),
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/AttributeSearch.json",
+        ).readText(),
+      )
+
+      prisonerOffenderSearchMockServer.stubForPost(
+        "/attribute-search?page=0&size=10",
         jacksonObjectMapper().writeValueAsString(expectedRequest.toMap()),
         File(
           "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/AttributeSearch.json",
@@ -78,6 +90,24 @@ class PersonIntegrationTest : IntegrationTestBase() {
       callApi("$basePath?$queryParams")
         .andExpect(status().isOk)
         .andExpect(content().json(getExpectedResponse("person-name-pnc-search-response.json")))
+
+      prisonerOffenderSearchMockServer.assertValidationPassed()
+    }
+
+    @Test
+    fun `returns a person from Prisoner Offender Search and Probation Offender Search using probation offender search`() {
+      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.USE_PROBATION_SEARCH_FOR_PERSON_SEARCH)).thenReturn(true)
+      val searchRequest = PersonSearchRequest(firstName, lastName)
+      probationSearchMockServer.stubForPost(
+        searchRequest.uriString(1, 10),
+        objectMapper.writeValueAsString(searchRequest.toMap()),
+        File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/probationoffendersearch/fixtures/PaginatedOffenderSearchResponse.json").readText(),
+      )
+
+      val queryParams = "first_name=$firstName&last_name=$lastName"
+      callApi("$basePath?$queryParams")
+        .andExpect(status().isOk)
+        .andExpect(content().json(getExpectedResponse("person-name-search-probation-and-prison-response.json")))
 
       prisonerOffenderSearchMockServer.assertValidationPassed()
     }

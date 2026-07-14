@@ -5,10 +5,13 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
+import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Companion.GATEWAY_CACHE
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchRequest
@@ -33,6 +36,9 @@ class PrisonerOffenderSearchGateway(
 
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
+
+  @Autowired
+  private lateinit var featureFlagConfig: FeatureFlagConfig
 
   fun getPersons(
     firstName: String?,
@@ -144,11 +150,23 @@ class PrisonerOffenderSearchGateway(
   fun attributeSearch(
     request: POSAttributeSearchRequest,
     requestContext: RequestContext? = null,
+    paginatedRequest: PaginatedRequest = PaginatedRequest(),
   ): Response<POSPaginatedPrisoners?> {
+    // Only send the page number and page size when the Probation person search feature is enabled
+    val uri =
+      if (featureFlagConfig.isEnabled(FeatureFlagConfig.USE_PROBATION_SEARCH_FOR_PERSON_SEARCH)) {
+        val uriBuilder = UriComponentsBuilder.fromPath("/attribute-search")
+        uriBuilder.queryParam("page", paginatedRequest.page - 1)
+        uriBuilder.queryParam("size", paginatedRequest.perPage)
+        uriBuilder.build().toUriString()
+      } else {
+        "/attribute-search"
+      }
+
     val result =
       webClient.request<POSPaginatedPrisoners>(
         HttpMethod.POST,
-        "/attribute-search",
+        uri,
         authenticationHeader(requestContext),
         UpstreamApi.PRISONER_OFFENDER_SEARCH,
         request.toMap(),

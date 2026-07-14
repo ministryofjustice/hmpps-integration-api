@@ -30,6 +30,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NumberOfChi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchRedirectionResult
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResult
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonName
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonalCareNeed
@@ -139,7 +140,7 @@ class PersonController(
       throw ValidationException("Only the first page will be returned. The page size is restricted to 100 records. If this is insufficient, then please narrow your search criteria.")
     }
 
-    val response = getPersonsService.personAttributeSearch(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases, requestContext)
+    val response = getPersonsService.personAttributeSearch(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases, PaginatedRequest(page, perPage), requestContext)
 
     auditService.createEvent(
       "SEARCH_PERSON",

@@ -1,0 +1,313 @@
+{
+  "content": [
+    {
+      "previousSurname": "string",
+      "offenderId": 0,
+      "title": "string",
+      "firstName": "Matt",
+      "middleNames": [
+        "John"
+      ],
+      "surname": "Nolan",
+      "dateOfBirth": "1975-04-02",
+      "gender": "Male",
+      "otherIds": {
+        "crn": "A123456",
+        "pncNumber": "2012/0052494Q",
+        "croNumber": "123456/24A",
+        "niNumber": "AA123456A",
+        "nomsNumber": "G5555TT",
+        "immigrationNumber": "string",
+        "mostRecentPrisonerNumber": "string",
+        "previousCrn": "string"
+      },
+      "contactDetails": {
+        "phoneNumbers": [
+          {
+            "number": "string",
+            "type": "TELEPHONE"
+          }
+        ],
+        "emailAddresses": [
+          "string"
+        ],
+        "allowSMS": true,
+        "addresses": [
+          {
+            "id": 0,
+            "from": "1996-04-01",
+            "to": "1996-04-01",
+            "noFixedAbode": true,
+            "notes": "string",
+            "addressNumber": "string",
+            "buildingName": "string",
+            "streetName": "string",
+            "district": "string",
+            "town": "string",
+            "county": "string",
+            "postcode": "string",
+            "telephoneNumber": "string",
+            "status": {
+              "code": "string",
+              "description": "string"
+            },
+            "type": {
+              "code": "string",
+              "description": "string"
+            }
+          }
+        ]
+      },
+      "offenderProfile": {
+        "ethnicity": "White: Eng./Welsh/Scot./N.Irish/British",
+        "nationality": "string",
+        "secondaryNationality": "string",
+        "notes": "string",
+        "immigrationStatus": "string",
+        "offenderLanguages": {
+          "primaryLanguage": "string",
+          "otherLanguages": [
+            "string"
+          ],
+          "languageConcerns": "string",
+          "requiresInterpreter": true
+        },
+        "religion": "string",
+        "sexualOrientation": "string",
+        "offenderDetails": "string",
+        "remandStatus": "string",
+        "previousConviction": {
+          "convictionDate": "1996-04-01",
+          "detail": {
+            "additionalProp1": "string",
+            "additionalProp2": "string",
+            "additionalProp3": "string"
+          }
+        },
+        "riskColour": "string",
+        "disabilities": [
+          {
+            "disabilityId": 0,
+            "disabilityType": {
+              "code": "string",
+              "description": "string"
+            },
+            "condition": {
+              "code": "string",
+              "description": "string"
+            },
+            "startDate": "1996-04-01",
+            "endDate": "1996-04-01",
+            "notes": "string"
+          }
+        ],
+        "provisions": [
+          {
+            "provisionId": 0,
+            "provisionType": {
+              "code": "string",
+              "description": "string"
+            },
+            "category": {
+              "code": "string",
+              "description": "string"
+            },
+            "startDate": "1996-04-01",
+            "endDate": "1996-04-01",
+            "notes": "string"
+          }
+        ]
+      },
+      "offenderAliases": [
+        {
+          "id": "string",
+          "dateOfBirth": "1996-04-01",
+          "firstName": "Bob",
+          "middleNames": [
+            "Trevor"
+          ],
+          "surname": "Smith",
+          "gender": "Male"
+        }
+      ],
+      "offenderManagers": [
+        {
+          "trustOfficer": {
+            "forenames": "Sheila Linda",
+            "surname": "Hancock"
+          },
+          "staff": {
+            "code": "AN001A",
+            "forenames": "Sheila Linda",
+            "surname": "Hancock",
+            "unallocated": false
+          },
+          "providerEmployee": {
+            "forenames": "Sheila Linda",
+            "surname": "Hancock"
+          },
+          "partitionArea": "string",
+          "softDeleted": true,
+          "team": {
+            "code": "C01T04",
+            "description": "OMU A",
+            "telephone": "OMU A",
+            "localDeliveryUnit": {
+              "code": "string",
+              "description": "string"
+            },
+            "district": {
+              "code": "string",
+              "description": "string"
+            },
+            "borough": {
+              "code": "string",
+              "description": "string"
+            }
+          },
+          "probationArea": {
+            "probationAreaId": 0,
+            "code": "string",
+            "description": "string",
+            "nps": true,
+            "organisation": {
+              "code": "string",
+              "description": "string"
+            },
+            "institution": {
+              "institutionId": 0,
+              "isEstablishment": true,
+              "code": "string",
+              "description": "string",
+              "institutionName": "string",
+              "establishmentType": {
+                "code": "string",
+                "description": "string"
+              },
+              "isPrivate": true,
+              "nomsPrisonInstitutionCode": "string"
+            },
+            "teams": [
+              {
+                "providerTeamId": 0,
+                "teamId": 0,
+                "code": "string",
+                "description": "string",
+                "name": "string",
+                "isPrivate": true,
+                "externalProvider": {
+                  "code": "string",
+                  "description": "string"
+                },
+                "scProvider": {
+                  "code": "string",
+                  "description": "string"
+                },
+                "localDeliveryUnit": {
+                  "code": "string",
+                  "description": "string"
+                },
+                "district": {
+                  "code": "string",
+                  "description": "string"
+                },
+                "borough": {
+                  "code": "string",
+                  "description": "string"
+                }
+              }
+            ]
+          },
+          "fromDate": "1996-04-01",
+          "toDate": "1996-04-01",
+          "active": true,
+          "allocationReason": {
+            "code": "string",
+            "description": "string"
+          }
+        }
+      ],
+      "softDeleted": true,
+      "currentDisposal": "string",
+      "partitionArea": "string",
+      "currentRestriction": true,
+      "restrictionMessage": "string",
+      "currentExclusion": true,
+      "exclusionMessage": "string",
+      "highlight": {
+        "surname": [
+          "Smith"
+        ],
+        "offenderAliases.surname": [
+          "SMITH"
+        ]
+      },
+      "accessDenied": true,
+      "currentTier": "string",
+      "activeProbationManagedSentence": true,
+      "mappa": {
+        "level": 0,
+        "levelDescription": "string",
+        "category": 0,
+        "categoryDescription": "string",
+        "startDate": "1996-04-01",
+        "reviewDate": "1996-04-01",
+        "team": {
+          "code": "string",
+          "description": "string"
+        },
+        "officer": {
+          "code": "AN001A",
+          "forenames": "Sheila Linda",
+          "surname": "Hancock",
+          "unallocated": false
+        },
+        "probationArea": {
+          "code": "string",
+          "description": "string"
+        },
+        "notes": "string"
+      },
+      "probationStatus": {
+        "status": "string",
+        "previouslyKnownTerminationDate": "1996-04-01",
+        "inBreach": true,
+        "preSentenceActivity": true,
+        "awaitingPsr": true
+      },
+      "age": 0
+    }
+  ],
+  "pageable": {
+    "offset": 0,
+    "pageSize": 0,
+    "pageNumber": 0,
+    "paged": true,
+    "sort": {
+      "empty": true,
+      "sorted": true,
+      "unsorted": true
+    },
+    "unpaged": true
+  },
+  "total": 0,
+  "totalPages": 0,
+  "totalElements": 0,
+  "last": true,
+  "size": 0,
+  "number": 0,
+  "numberOfElements": 0,
+  "first": true,
+  "empty": true,
+  "sort": {
+    "empty": true,
+    "sorted": true,
+    "unsorted": true
+  },
+  "page": {
+    "size": 0,
+    "number": 0,
+    "totalElements": 0,
+    "totalPages": 0
+  }
+}
