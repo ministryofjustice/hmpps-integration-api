@@ -8,7 +8,7 @@ data:
   override.yaml: |
     authorisation:
       consumers:
-        pmcphee:
+        zkhan:
           roles:
             - "status-only"
   {{- end -}}
