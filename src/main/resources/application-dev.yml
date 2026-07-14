@@ -254,7 +254,6 @@ authorisation:
       oboConfig:
         strategy: "entra"
         required: true
-        verification-strategy: "azuread"
 
 hmpps.sqs:
   queues:
