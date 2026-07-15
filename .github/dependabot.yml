@@ -64,9 +64,9 @@ updates:
           - "*"
       patch:
         cooldown:
-          default-days: 7
+          default-days: 3
         update-types:
-          - "minor"
+          - "patch"
         patterns:
           - "*"
 
