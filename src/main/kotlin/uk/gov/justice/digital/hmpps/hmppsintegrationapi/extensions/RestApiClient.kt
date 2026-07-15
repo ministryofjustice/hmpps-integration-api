@@ -43,7 +43,7 @@ class RestApiClient(
     responseType: KClass<T>,
     headers: Map<String, String> = mapOf(),
     options: RestApiOptions? = null,
-  ): RestApiResponse<T> = request(HttpMethod.GET, path, null, headers, options ?: defaultOptions, responseType)
+  ): RestApiResponse<T> = request(HttpMethod.GET, path, null, headers, options, responseType)
 
   fun <T : Any> post(
     path: String,
@@ -51,14 +51,14 @@ class RestApiClient(
     responseType: KClass<T>,
     headers: Map<String, String> = mapOf(),
     options: RestApiOptions? = null,
-  ): RestApiResponse<T> = request(HttpMethod.POST, path, requestBody, headers, options ?: defaultOptions, responseType)
+  ): RestApiResponse<T> = request(HttpMethod.POST, path, requestBody, headers, options, responseType)
 
   fun <T : Any> getList(
     path: String,
     responseType: KClass<T>,
     headers: Map<String, String> = mapOf(),
     options: RestApiOptions? = null,
-  ): RestApiResponse<List<T>> = requestForList(HttpMethod.GET, path, null, headers, options ?: defaultOptions, responseType)
+  ): RestApiResponse<List<T>> = requestForList(HttpMethod.GET, path, null, headers, options, responseType)
 
   fun <T : Any> postForList(
     path: String,
@@ -66,20 +66,19 @@ class RestApiClient(
     responseType: KClass<T>,
     headers: Map<String, String> = mapOf(),
     options: RestApiOptions? = null,
-  ): RestApiResponse<List<T>> = requestForList(HttpMethod.POST, path, requestBody, headers, options ?: defaultOptions, responseType)
+  ): RestApiResponse<List<T>> = requestForList(HttpMethod.POST, path, requestBody, headers, options, responseType)
 
   internal fun <T : Any> request(
     method: HttpMethod,
     path: String,
     requestBody: Any? = null,
     headers: Map<String, String>,
-    opts: RestApiOptions,
+    options: RestApiOptions? = null,
     responseType: KClass<T>,
   ): RestApiResponse<T> {
+    val opts = options ?: defaultOptions
     try {
-      val request = buildRequest(method, path, requestBody, headers, opts)
-
-      val responseSpec = retrieveWithOptionalRetry(request, path, opts)
+      val responseSpec = buildRequestWithOptionalRetry(method, path, requestBody, headers, opts)
 
       var mono = responseSpec.bodyToMono(responseType.java)
 
@@ -98,13 +97,12 @@ class RestApiClient(
     path: String,
     requestBody: Any? = null,
     headers: Map<String, String>,
-    opts: RestApiOptions,
+    options: RestApiOptions?,
     responseType: KClass<T>,
   ): RestApiResponse<List<T>> {
+    val opts = options ?: defaultOptions
     try {
-      val request = buildRequest(method, path, requestBody, headers, opts)
-
-      val responseSpec = retrieveWithOptionalRetry(request, path, opts)
+      val responseSpec = buildRequestWithOptionalRetry(method, path, requestBody, headers, opts)
 
       var flux = responseSpec.bodyToFlux(responseType.java)
 
@@ -116,6 +114,19 @@ class RestApiClient(
     } catch (e: Exception) {
       return wrapError(e)
     }
+  }
+
+  private fun buildRequestWithOptionalRetry(
+    method: HttpMethod,
+    path: String,
+    requestBody: Any?,
+    headers: Map<String, String>,
+    opts: RestApiOptions,
+  ): WebClient.ResponseSpec {
+    val request = buildRequest(method, path, requestBody, headers, opts)
+
+    val responseSpec = retrieveWithOptionalRetry(request, path, opts)
+    return responseSpec
   }
 
   internal fun retrieveWithOptionalRetry(
