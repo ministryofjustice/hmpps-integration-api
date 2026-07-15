@@ -44,13 +44,9 @@ class RestApiClient(
   ): RestApiResponse<T> {
     val opts = options ?: defaultOptions
 
-    val request =
-      webClient(opts)
-        .method(HttpMethod.GET)
-        .uri(path)
-        .headers(mapHeaders(headers))
-
     try {
+      val request = buildRequest(path, headers, opts)
+
       var responseSpec = request.retrieve()
 
       responseSpec = addOptionalRetry(opts, responseSpec, path)
@@ -62,14 +58,27 @@ class RestApiClient(
       val data = mono.block()
 
       return RestApiResponse(apiName, HttpStatus.OK, data)
-    } catch (e: WebClientResponseException) {
-      return RestApiResponse(apiName, HttpStatus.valueOf(e.statusCode.value()), null, listOf(e))
-    } catch (e: DecodingException) {
-      return RestApiResponse(apiName, HttpStatus.OK, null, listOf(e))
     } catch (e: Exception) {
-      return RestApiResponse(apiName, null, null, listOf(e))
+      return wrapError(e)
     }
   }
+
+  internal fun buildRequest(
+    path: String,
+    headers: Map<String, String>,
+    opts: RestApiOptions,
+  ): WebClient.RequestBodySpec =
+    webClient(opts)
+      .method(HttpMethod.GET)
+      .uri(path)
+      .headers(mapHeaders(headers))
+
+  internal fun <T : Any> wrapError(e: Exception): RestApiResponse<T> =
+    when (e) {
+      is WebClientResponseException -> RestApiResponse(apiName, HttpStatus.valueOf(e.statusCode.value()), null, listOf(e))
+      is DecodingException -> RestApiResponse(apiName, HttpStatus.OK, null, listOf(e))
+      else -> RestApiResponse(apiName, null, null, listOf(e))
+    }
 
   internal fun <T : Any> addOptionalRetry(
     opts: RestApiOptions,
