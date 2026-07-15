@@ -34,6 +34,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Language
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NumberOfChildren
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResult
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonName
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonOnProbation
@@ -98,6 +99,7 @@ internal class PersonControllerTest(
       val dateOfBirth = person.dateOfBirth
       val contactDetails = person.contactDetails
       val identifiers = person.identifiers
+      val paginatedRequest = PaginatedRequest(1, 10)
 
       fun notFoundErrors(vararg upstreamApi: UpstreamApi) = upstreamApi.map { UpstreamApiError(causedBy = it, type = UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "MockError") }.toList()
 
@@ -113,7 +115,7 @@ internal class PersonControllerTest(
           Mockito.reset(getPersonsService)
           Mockito.reset(auditService)
 
-          whenever(getPersonsService.personAttributeSearch(eq(firstName), eq(lastName), eq(null), eq(dateOfBirth.toString()), eq(false), any<RequestContext>())).thenReturn(
+          whenever(getPersonsService.personAttributeSearch(eq(firstName), eq(lastName), eq(null), eq(dateOfBirth.toString()), eq(false), eq(paginatedRequest), any<RequestContext>())).thenReturn(
             Response(
               data =
                 listOf(
@@ -131,92 +133,92 @@ internal class PersonControllerTest(
         it("gets a person with matching search criteria") {
           val result = mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName&pnc_number=$pncNumber&date_of_birth=$dateOfBirth")
           result.response.status.shouldNotBe(HttpStatus.FORBIDDEN.value())
-          verify(getPersonsService, times(1)).personAttributeSearch(eq(firstName), eq(lastName), eq(pncNumber), eq(dateOfBirth.toString()), eq(false), any<RequestContext>())
+          verify(getPersonsService, times(1)).personAttributeSearch(eq(firstName), eq(lastName), eq(pncNumber), eq(dateOfBirth.toString()), eq(false), eq(paginatedRequest), any<RequestContext>())
         }
 
         it("gets a person with matching first name") {
           mockMvc.performAuthorised("$basePath?first_name=$firstName")
-          verify(getPersonsService, times(1)).personAttributeSearch(eq(firstName), eq(null), eq(null), eq(null), eq(false), any<RequestContext>())
+          verify(getPersonsService, times(1)).personAttributeSearch(eq(firstName), eq(null), eq(null), eq(null), eq(false), eq(paginatedRequest), any<RequestContext>())
         }
 
         it("gets a person with matching last name") {
           mockMvc.performAuthorised("$basePath?last_name=$lastName")
-          verify(getPersonsService, times(1)).personAttributeSearch(eq(null), eq(lastName), eq(null), eq(null), eq(false), any<RequestContext>())
+          verify(getPersonsService, times(1)).personAttributeSearch(eq(null), eq(lastName), eq(null), eq(null), eq(false), eq(paginatedRequest), any<RequestContext>())
         }
 
         it("gets a person with matching alias") {
           mockMvc.performAuthorised("$basePath?first_name=$firstName&search_within_aliases=true")
-          verify(getPersonsService, times(1)).personAttributeSearch(eq(firstName), eq(null), eq(null), eq(null), eq(true), any<RequestContext>())
+          verify(getPersonsService, times(1)).personAttributeSearch(eq(firstName), eq(null), eq(null), eq(null), eq(true), eq(paginatedRequest), any<RequestContext>())
         }
 
         it("gets a person with matching pncNumber") {
           mockMvc.performAuthorised("$basePath?pnc_number=$pncNumber")
-          verify(getPersonsService, times(1)).personAttributeSearch(eq(null), eq(null), eq(pncNumber), eq(null), eq(false), any<RequestContext>())
+          verify(getPersonsService, times(1)).personAttributeSearch(eq(null), eq(null), eq(pncNumber), eq(null), eq(false), eq(paginatedRequest), any<RequestContext>())
         }
 
         it("gets a person with matching date of birth") {
           mockMvc.performAuthorised("$basePath?date_of_birth=$dateOfBirth")
-          verify(getPersonsService, times(1)).personAttributeSearch(eq(null), eq(null), eq(null), eq(dateOfBirth.toString()), eq(false), any<RequestContext>())
+          verify(getPersonsService, times(1)).personAttributeSearch(eq(null), eq(null), eq(null), eq(dateOfBirth.toString()), eq(false), eq(paginatedRequest), any<RequestContext>())
         }
 
         it("defaults to not searching within aliases") {
           mockMvc.performAuthorised("$basePath?first_name=$firstName")
-          verify(getPersonsService, times(1)).personAttributeSearch(eq(firstName), eq(null), eq(null), eq(null), eq(false), any<RequestContext>())
+          verify(getPersonsService, times(1)).personAttributeSearch(eq(firstName), eq(null), eq(null), eq(null), eq(false), eq(paginatedRequest), any<RequestContext>())
         }
 
         it("calls attribute search when prisons filter is present and pnc number in search") {
           mockMvc.performAuthorised("$basePath?first_name=$firstName&pnc_number=$pncNumber")
           verify(getPersonsService, times(1))
-            .personAttributeSearch(eq(firstName), eq(null), eq(pncNumber), eq(null), eq(false), any<RequestContext>())
+            .personAttributeSearch(eq(firstName), eq(null), eq(pncNumber), eq(null), eq(false), eq(paginatedRequest), any<RequestContext>())
         }
 
         it("calls attribute search when prisons filter is present and pnc number in search") {
           mockMvc.performAuthorised("$basePath?first_name=$firstName&pnc_number=$pncNumber")
-          verify(getPersonsService, times(1)).personAttributeSearch(eq(firstName), eq(null), eq(pncNumber), eq(null), eq(false), any<RequestContext>())
+          verify(getPersonsService, times(1)).personAttributeSearch(eq(firstName), eq(null), eq(pncNumber), eq(null), eq(false), eq(paginatedRequest), any<RequestContext>())
         }
 
         it("passes supervision status filters from consumer config to service") {
           val requestContext = buildRequestContext(filters = ConsumerFilters(supervisionStatuses = listOf("PRISONS")))
-          whenever(getPersonsService.personAttributeSearch(eq(firstName), eq(null), eq(pncNumber), eq(null), eq(false), any<RequestContext>())).thenReturn(Response(data = emptyList()))
+          whenever(getPersonsService.personAttributeSearch(eq(firstName), eq(null), eq(pncNumber), eq(null), eq(false), eq(paginatedRequest), any<RequestContext>())).thenReturn(Response(data = emptyList()))
 
           mockMvc.performAuthorisedWithCN("$basePath?first_name=$firstName&pnc_number=$pncNumber", "supervision-status-prison-only")
 
-          verify(getPersonsService, times(1)).personAttributeSearch(eq(firstName), eq(null), eq(pncNumber), eq(null), eq(false), any<RequestContext>())
+          verify(getPersonsService, times(1)).personAttributeSearch(eq(firstName), eq(null), eq(pncNumber), eq(null), eq(false), eq(paginatedRequest), any<RequestContext>())
         }
 
         it("gets a person with matching search criteria") {
           mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName&pnc_number=$pncNumber&date_of_birth=$dateOfBirth")
-          verify(getPersonsService, times(1)).personAttributeSearch(eq(firstName), eq(lastName), eq(pncNumber), eq(dateOfBirth.toString()), eq(false), any<RequestContext>())
+          verify(getPersonsService, times(1)).personAttributeSearch(eq(firstName), eq(lastName), eq(pncNumber), eq(dateOfBirth.toString()), eq(false), eq(paginatedRequest), any<RequestContext>())
         }
 
         it("gets a person with matching first name") {
           mockMvc.performAuthorised("$basePath?first_name=$firstName")
-          verify(getPersonsService, times(1)).personAttributeSearch(eq(firstName), eq(null), eq(null), eq(null), eq(false), any<RequestContext>())
+          verify(getPersonsService, times(1)).personAttributeSearch(eq(firstName), eq(null), eq(null), eq(null), eq(false), eq(paginatedRequest), any<RequestContext>())
         }
 
         it("gets a person with matching last name") {
           mockMvc.performAuthorised("$basePath?last_name=$lastName")
-          verify(getPersonsService, times(1)).personAttributeSearch(eq(null), eq(lastName), eq(null), eq(null), eq(false), any<RequestContext>())
+          verify(getPersonsService, times(1)).personAttributeSearch(eq(null), eq(lastName), eq(null), eq(null), eq(false), eq(paginatedRequest), any<RequestContext>())
         }
 
         it("gets a person with matching alias") {
           mockMvc.performAuthorised("$basePath?first_name=$firstName&search_within_aliases=true")
-          verify(getPersonsService, times(1)).personAttributeSearch(eq(firstName), eq(null), eq(null), eq(null), eq(true), any<RequestContext>())
+          verify(getPersonsService, times(1)).personAttributeSearch(eq(firstName), eq(null), eq(null), eq(null), eq(true), eq(paginatedRequest), any<RequestContext>())
         }
 
         it("gets a person with matching pncNumber") {
           mockMvc.performAuthorised("$basePath?pnc_number=$pncNumber")
-          verify(getPersonsService, times(1)).personAttributeSearch(eq(null), eq(null), eq(pncNumber), eq(null), eq(false), any<RequestContext>())
+          verify(getPersonsService, times(1)).personAttributeSearch(eq(null), eq(null), eq(pncNumber), eq(null), eq(false), eq(paginatedRequest), any<RequestContext>())
         }
 
         it("gets a person with matching date of birth") {
           mockMvc.performAuthorised("$basePath?date_of_birth=$dateOfBirth")
-          verify(getPersonsService, times(1)).personAttributeSearch(eq(null), eq(null), eq(null), eq(dateOfBirth.toString()), eq(false), any<RequestContext>())
+          verify(getPersonsService, times(1)).personAttributeSearch(eq(null), eq(null), eq(null), eq(dateOfBirth.toString()), eq(false), eq(paginatedRequest), any<RequestContext>())
         }
 
         it("defaults to not searching within aliases") {
           mockMvc.performAuthorised("$basePath?first_name=$firstName")
-          verify(getPersonsService, times(1)).personAttributeSearch(eq(firstName), eq(null), eq(null), eq(null), eq(false), any<RequestContext>())
+          verify(getPersonsService, times(1)).personAttributeSearch(eq(firstName), eq(null), eq(null), eq(null), eq(false), eq(paginatedRequest), any<RequestContext>())
         }
 
         it("logs audit") {
@@ -230,8 +232,9 @@ internal class PersonControllerTest(
           )
         }
 
-        it("returns paginated results") {
-          whenever(getPersonsService.personAttributeSearch(eq(firstName), eq(lastName), eq(null), eq(dateOfBirth.toString()), eq(false), any<RequestContext>())).thenReturn(
+        // Test skipped as paginated results above page 1 are currently not supported
+        xit("returns paginated results") {
+          whenever(getPersonsService.personAttributeSearch(eq(firstName), eq(lastName), eq(null), eq(dateOfBirth.toString()), eq(false), eq(paginatedRequest), any<RequestContext>())).thenReturn(
             Response(
               data =
                 List(20) { i ->
@@ -256,7 +259,7 @@ internal class PersonControllerTest(
           val firstNameThatDoesNotExist = "Bob21345"
           val lastNameThatDoesNotExist = "Gun36773"
 
-          whenever(getPersonsService.personAttributeSearch(eq(firstNameThatDoesNotExist), eq(lastNameThatDoesNotExist), eq(null), eq(null), eq(false), any<RequestContext>())).thenReturn(
+          whenever(getPersonsService.personAttributeSearch(eq(firstNameThatDoesNotExist), eq(lastNameThatDoesNotExist), eq(null), eq(null), eq(false), eq(paginatedRequest), any<RequestContext>())).thenReturn(
             Response(
               data = emptyList(),
             ),
@@ -282,6 +285,18 @@ internal class PersonControllerTest(
           result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
           result.response.contentAsString.shouldContain("Invalid date format. Please use yyyy-MM-dd.")
         }
+
+        it("returns a 400 BAD REQUEST status code when trying get any page that isn't page 1 of results") {
+          val result = mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName&date_of_birth=$dateOfBirth&page=2")
+          result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+          result.response.contentAsString.shouldContain("Only the first page will be returned. The page size is restricted to 100 records. If this is insufficient, then please narrow your search criteria.")
+        }
+
+        it("returns a 400 BAD REQUEST status code when trying get more than 100 results per page") {
+          val result = mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName&date_of_birth=$dateOfBirth&perPage=101")
+          result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+          result.response.contentAsString.shouldContain("Only the first page will be returned. The page size is restricted to 100 records. If this is insufficient, then please narrow your search criteria.")
+        }
       }
 
       describe("GET $basePath return Internal Server Error when Upstream api throw unexpected error") {
@@ -291,7 +306,7 @@ internal class PersonControllerTest(
         }
 
         it("fails with the appropriate error when an upstream service is down") {
-          whenever(getPersonsService.personAttributeSearch(eq(firstName), eq(lastName), eq(pncNumber), eq(dateOfBirth.toString()), eq(false), any<RequestContext>())).doThrow(
+          whenever(getPersonsService.personAttributeSearch(eq(firstName), eq(lastName), eq(pncNumber), eq(dateOfBirth.toString()), eq(false), eq(paginatedRequest), any<RequestContext>())).doThrow(
             WebClientResponseException(500, "MockError", null, null, null, null),
           )
 

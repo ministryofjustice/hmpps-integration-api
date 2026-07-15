@@ -18,6 +18,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
@@ -38,6 +39,7 @@ import java.time.LocalDate
 )
 class PrisonerOffenderSearchGatewayTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
+  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
   private val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
 ) : DescribeSpec(
     {
@@ -408,6 +410,30 @@ class PrisonerOffenderSearchGatewayTest(
         it("returns a prisoner by attributes") {
           prisonerOffenderSearchApiMockServer.stubForPost(
             "/attribute-search",
+            objectMapper.writeValueAsString(request),
+            File(
+              "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/AttributeSearch.json",
+            ).readText(),
+          )
+
+          val response = prisonerOffenderSearchGateway.attributeSearch(request)
+          response.data.shouldNotBeNull()
+          response.data.content.size
+            .shouldBe(1)
+          response.data.content[0]
+            .prisonId
+            .shouldBe(prisonId)
+          response.data.content[0]
+            .cellLocation
+            .shouldBe(cellLocation)
+
+          prisonerOffenderSearchApiMockServer.assertValidationPassed()
+        }
+
+        it("returns a prisoner by attributes sending page information when feature enabled") {
+          whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.USE_PROBATION_SEARCH_FOR_PERSON_SEARCH)).thenReturn(true)
+          prisonerOffenderSearchApiMockServer.stubForPost(
+            "/attribute-search?page=0&size=10",
             objectMapper.writeValueAsString(request),
             File(
               "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/AttributeSearch.json",

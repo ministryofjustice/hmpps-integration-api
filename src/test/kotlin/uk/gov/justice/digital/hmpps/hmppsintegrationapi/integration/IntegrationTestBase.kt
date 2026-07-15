@@ -430,6 +430,7 @@ abstract class IntegrationTestBase {
       activitiesMockServer.stop()
       prisonerBaseLocationMockServer.stop()
       corePersonRecordMockServer.stop()
+      probationSearchMockServer.stop()
       manageUsersMockServer.stop()
     }
   }
