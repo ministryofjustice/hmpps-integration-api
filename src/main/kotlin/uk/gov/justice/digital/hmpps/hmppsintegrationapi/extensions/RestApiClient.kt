@@ -46,11 +46,9 @@ class RestApiClient(
     val opts = options ?: defaultOptions
 
     try {
-      val request = buildRequest(path, headers, opts)
+      val request = buildRequest(HttpMethod.GET, path, headers, opts)
 
-      var responseSpec = request.retrieve()
-
-      responseSpec = addOptionalRetry(opts, responseSpec, path)
+      val responseSpec = retrieveWithOptionalRetry(request, path, opts)
 
       var mono = responseSpec.bodyToMono(responseType.java)
 
@@ -73,11 +71,9 @@ class RestApiClient(
     val opts = options ?: defaultOptions
 
     try {
-      val request = buildRequest(path, headers, opts)
+      val request = buildRequest(HttpMethod.GET, path, headers, opts)
 
-      var responseSpec = request.retrieve()
-
-      responseSpec = addOptionalRetry(opts, responseSpec, path)
+      val responseSpec = retrieveWithOptionalRetry(request, path, opts)
 
       var flux = responseSpec.bodyToFlux(responseType.java)
 
@@ -91,13 +87,30 @@ class RestApiClient(
     }
   }
 
+  internal fun retrieveWithOptionalRetry(
+    request: WebClient.RequestBodySpec,
+    path: String,
+    opts: RestApiOptions,
+  ): WebClient.ResponseSpec {
+    val responseSpec = request.retrieve()
+
+    return if (opts.retryAttempts > 0) {
+      responseSpec.onStatus({ status -> status.value() in retryCodes }) { response ->
+        retryError(response, apiName, HttpMethod.GET, path)
+      }
+    } else {
+      responseSpec
+    }
+  }
+
   internal fun buildRequest(
+    method: HttpMethod,
     path: String,
     headers: Map<String, String>,
     opts: RestApiOptions,
   ): WebClient.RequestBodySpec =
     webClient(opts)
-      .method(HttpMethod.GET)
+      .method(method)
       .uri(path)
       .headers(mapHeaders(headers))
 
@@ -126,19 +139,6 @@ class RestApiClient(
       flux.retryWhen(retrySpec(opts))
     } else {
       flux
-    }
-
-  internal fun addOptionalRetry(
-    opts: RestApiOptions,
-    responseSpec: WebClient.ResponseSpec,
-    path: String,
-  ): WebClient.ResponseSpec =
-    if (opts.retryAttempts > 0) {
-      responseSpec.onStatus({ status -> status.value() in retryCodes }) { response ->
-        retryError(response, apiName, HttpMethod.GET, path)
-      }
-    } else {
-      responseSpec
     }
 
   private fun mapHeaders(headers: Map<String, String>): Consumer<HttpHeaders> = { header -> headers.forEach { requestHeader -> header.set(requestHeader.key, requestHeader.value) } }

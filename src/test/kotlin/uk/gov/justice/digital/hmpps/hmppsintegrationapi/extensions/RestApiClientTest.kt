@@ -158,22 +158,16 @@ class RestApiClientTest :
         defaultClient.isSafeToRetry(error500) shouldBe false
       }
 
-      it("can create a non-retryable request") {
-        val spec = mock(WebClient.ResponseSpec::class.java)
-
-        val spec2 = defaultClient.addOptionalRetry(RestApiOptions(retryAttempts = 0), spec, "")
-
-        spec2 shouldNotBe null
-        spec2 shouldBe spec
-      }
-
       it("can create a retryable request") {
-        val spec = mock(WebClient.ResponseSpec::class.java)
-        whenever(spec.onStatus(any(), any())).thenReturn(spec)
+        val requestSpec: WebClient.RequestBodySpec = mock()
+        val mockResponse: WebClient.ResponseSpec = mock()
+        whenever(requestSpec.retrieve()).thenReturn(mockResponse)
+        whenever(mockResponse.onStatus(any(), any())).thenReturn(mockResponse)
+        val options = RestApiOptions(retryAttempts = 1)
 
-        val spec2 = defaultClient.addOptionalRetry(RestApiOptions(retryAttempts = 1), spec, "")
+        val responseSpec = defaultClient.retrieveWithOptionalRetry(requestSpec, "/", options)
 
-        spec2 shouldNotBe null
+        responseSpec shouldNotBe null
       }
     }
   })
