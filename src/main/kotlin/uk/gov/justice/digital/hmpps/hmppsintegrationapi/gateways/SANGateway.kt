@@ -19,7 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 
 @Component
 class SANGateway(
-  @Value("\${services.san.base-url}") baseUrl: String,
+  @Value("\${services.san.base-url}") val baseUrl: String,
   val features: FeatureFlagConfig = FeatureFlagConfig(),
   val apiClient: RestApiClient? = null,
 ) : UpstreamGateway {
@@ -85,7 +85,7 @@ class SANGateway(
     }
   }
 
-  internal fun apiClient() = apiClient ?: RestApiClient(UpstreamApi.SAN.name, "Test API")
+  internal fun apiClient() = apiClient ?: RestApiClient(UpstreamApi.SAN.name, baseUrl)
 
   internal fun wrapErrors(errors: List<Exception>): List<UpstreamApiError> = errors.map { mapError(it) }
 
