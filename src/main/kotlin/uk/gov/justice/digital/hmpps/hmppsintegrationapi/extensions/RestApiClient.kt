@@ -68,7 +68,7 @@ class RestApiClient(
     options: RestApiOptions? = null,
   ): RestApiResponse<List<T>> = requestForList(HttpMethod.POST, path, requestBody, headers, options ?: defaultOptions, responseType)
 
-  private fun <T : Any> request(
+  internal fun <T : Any> request(
     method: HttpMethod,
     path: String,
     requestBody: Any? = null,
@@ -141,7 +141,7 @@ class RestApiClient(
     headers: Map<String, String>,
     opts: RestApiOptions,
   ): WebClient.RequestBodySpec {
-    var spec =
+    val spec =
       webClient(opts)
         .method(method)
         .uri(path)

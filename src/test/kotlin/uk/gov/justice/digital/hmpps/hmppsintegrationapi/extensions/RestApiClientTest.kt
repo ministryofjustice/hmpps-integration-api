@@ -29,6 +29,7 @@ class RestApiClientTest :
   DescribeSpec({
     describe("basic RestApiClient functionality") {
       val defaultClient = RestApiClient("TestAPI", "http://localhost")
+      val nonRetryOptions = RestApiOptions(retryAttempts = 0)
       val error500 = WebClientResponseException(500, "Server error 543", null, null, null)
       val decodingError = DecodingException("Decoding error 987")
       val genericError = RuntimeException("Generic error 555")
@@ -70,8 +71,7 @@ class RestApiClientTest :
       it("should handle a successful GET request") {
         val webClient = buildMockClient("It works!")
 
-        val options = RestApiOptions(retryAttempts = 0)
-        val client = RestApiClient("TestAPI", "http://localhost:8765", webClient = webClient, defaultOptions = options)
+        val client = RestApiClient("TestAPI", "http://localhost:8765", nonRetryOptions, webClient)
 
         val response = client.get("/test", String::class)
 
@@ -82,9 +82,7 @@ class RestApiClientTest :
 
       it("should handle a successful GET request with list responses") {
         val webClient = buildMockClient("Lists work!")
-
-        val options = RestApiOptions(retryAttempts = 0)
-        val client = RestApiClient("TestAPI", "http://localhost:8765", webClient = webClient, defaultOptions = options)
+        val client = RestApiClient("TestAPI", "http://localhost:8765", nonRetryOptions, webClient)
 
         val response = client.getList("/test", String::class)
 
@@ -93,11 +91,31 @@ class RestApiClientTest :
         response.data shouldBe listOf("Lists work!")
       }
 
+      it("should handle a POST request") {
+        val webClient = buildMockClient("POST works")
+        val client = RestApiClient("TestAPI", "http://localhost:8765", nonRetryOptions, webClient)
+
+        val response = client.post("/test", "Query details", String::class)
+
+        response.status shouldBe HttpStatus.OK
+        response.errors.size shouldBe 0
+        response.data shouldBe "POST works"
+      }
+
+      it("should handle a POST with a list response") {
+        val webClient = buildMockClient("Lists work!")
+        val client = RestApiClient("TestAPI", "http://localhost:8765", nonRetryOptions, webClient)
+
+        val response = client.postForList("/test", "Query details", String::class)
+
+        response.status shouldBe HttpStatus.OK
+        response.errors.size shouldBe 0
+        response.data shouldBe listOf("Lists work!")
+      }
+
       it("should handle HTTP errors") {
         val webClient = buildMockClient("It fails", error500)
-
-        val options = RestApiOptions(retryAttempts = 0)
-        val client = RestApiClient("TestAPI", "http://localhost:8765", webClient = webClient, defaultOptions = options)
+        val client = RestApiClient("TestAPI", "http://localhost:8765", nonRetryOptions, webClient)
 
         val response = client.get("/test", String::class)
 
@@ -109,9 +127,7 @@ class RestApiClientTest :
 
       it("should handle decoding errors") {
         val webClient = buildMockClient("It fails", decodingError)
-
-        val options = RestApiOptions(retryAttempts = 0)
-        val client = RestApiClient("TestAPI", "http://localhost:8765", webClient = webClient, defaultOptions = options)
+        val client = RestApiClient("TestAPI", "http://localhost:8765", nonRetryOptions, webClient)
 
         val response = client.get("/test", String::class)
 
@@ -122,9 +138,7 @@ class RestApiClientTest :
 
       it("should handle generic errors") {
         val webClient = buildMockClient("It fails", genericError)
-
-        val options = RestApiOptions(retryAttempts = 0)
-        val client = RestApiClient("TestAPI", "http://localhost:8765", webClient = webClient, defaultOptions = options)
+        val client = RestApiClient("TestAPI", "http://localhost:8765", nonRetryOptions, webClient)
 
         val response = client.get("/test", String::class)
 
