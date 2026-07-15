@@ -38,10 +38,12 @@ class RestApiClientTest :
         retrySuccess: Boolean = false,
       ): WebClient {
         val webClient = mock(WebClient::class.java, RETURNS_DEEP_STUBS)
-        val requestSpec = mock(WebClient.RequestBodySpec::class.java)
-        val responseSpec = mock(WebClient.ResponseSpec::class.java)
-        val mono: Mono<String> = mock(Mono::class.java) as Mono<String>
+        val requestSpec: WebClient.RequestBodySpec = mock()
+        val responseSpec: WebClient.ResponseSpec = mock()
+        val mono: Mono<String> = mock()
+
         whenever(webClient.method(any()).uri(anyString()).headers(any())).thenReturn(requestSpec)
+
         if (httpError == null) {
           whenever(requestSpec.retrieve()).thenReturn(responseSpec)
         } else {
@@ -51,8 +53,10 @@ class RestApiClientTest :
             whenever(requestSpec.retrieve()).thenThrow(httpError)
           }
         }
+
         whenever(responseSpec.bodyToMono(String::class.java)).thenReturn(mono)
         whenever(mono.block()).thenReturn(responseBody)
+
         return webClient
       }
 
