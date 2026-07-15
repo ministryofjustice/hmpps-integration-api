@@ -13,6 +13,7 @@ import org.springframework.web.reactive.function.client.ExchangeStrategies
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientRequestException
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.netty.http.client.HttpClient
 import reactor.util.retry.Retry
@@ -63,6 +64,33 @@ class RestApiClient(
     }
   }
 
+  fun <T : Any> getList(
+    path: String,
+    responseType: KClass<T>,
+    headers: Map<String, String> = mapOf(),
+    options: RestApiOptions? = null,
+  ): RestApiResponse<List<T>> {
+    val opts = options ?: defaultOptions
+
+    try {
+      val request = buildRequest(path, headers, opts)
+
+      var responseSpec = request.retrieve()
+
+      responseSpec = addOptionalRetry(opts, responseSpec, path)
+
+      var flux = responseSpec.bodyToFlux(responseType.java)
+
+      flux = addOptionalRetry(opts, flux)
+
+      val data = flux.collectList().block() as List<T>
+
+      return RestApiResponse(apiName, HttpStatus.OK, data = data)
+    } catch (e: Exception) {
+      return wrapError(e)
+    }
+  }
+
   internal fun buildRequest(
     path: String,
     headers: Map<String, String>,
@@ -88,6 +116,16 @@ class RestApiClient(
       mono.retryWhen(retrySpec(opts))
     } else {
       mono
+    }
+
+  internal fun <T : Any> addOptionalRetry(
+    opts: RestApiOptions,
+    flux: Flux<T>,
+  ): Flux<T> =
+    if (opts.retryAttempts > 0) {
+      flux.retryWhen(retrySpec(opts))
+    } else {
+      flux
     }
 
   internal fun addOptionalRetry(
@@ -165,7 +203,7 @@ class RestApiClient(
 data class RestApiResponse<T>(
   val apiName: String?,
   val status: HttpStatus?,
-  val data: T?,
+  val data: T? = null,
   var errors: List<Exception> = emptyList(),
 )
 

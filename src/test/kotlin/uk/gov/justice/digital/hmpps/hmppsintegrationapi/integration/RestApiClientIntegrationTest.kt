@@ -46,6 +46,27 @@ class RestApiClientIntegrationTest :
         response.data!!.name shouldBe "Tester 123"
       }
 
+      it("Should handle a list responses") {
+        mockServer.stubGetTest(
+          "/api/1234",
+          """
+              [
+                {"name": "Tester 123"}
+              ]
+            """.removeWhitespaceAndNewlines(),
+          HttpStatus.OK,
+        )
+        val client = RestApiClient("Test API", mockServer.baseUrl())
+
+        val response = client.getList("/api/1234", TestItem::class)
+
+        response.apiName shouldBe "Test API"
+        response.status shouldBe HttpStatus.OK
+        response.errors.size shouldBe 0
+        response.data!!.size shouldBe 1
+        response.data[0].name shouldBe "Tester 123"
+      }
+
       it("Should handle not-found errors") {
         mockServer.stubGetTest(
           "/api/4567",

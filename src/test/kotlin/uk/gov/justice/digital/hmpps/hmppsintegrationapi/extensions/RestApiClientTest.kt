@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 /**
@@ -41,6 +42,7 @@ class RestApiClientTest :
         val requestSpec: WebClient.RequestBodySpec = mock()
         val responseSpec: WebClient.ResponseSpec = mock()
         val mono: Mono<String> = mock()
+        val flux: Flux<String> = mock()
 
         whenever(webClient.method(any()).uri(anyString()).headers(any())).thenReturn(requestSpec)
 
@@ -57,6 +59,11 @@ class RestApiClientTest :
         whenever(responseSpec.bodyToMono(String::class.java)).thenReturn(mono)
         whenever(mono.block()).thenReturn(responseBody)
 
+        whenever(responseSpec.bodyToFlux(String::class.java)).thenReturn(flux)
+        val listMono: Mono<List<String>> = mock()
+        whenever(flux.collectList()).thenReturn(listMono)
+        whenever(listMono.block()).thenReturn(listOf(responseBody!!))
+
         return webClient
       }
 
@@ -71,6 +78,19 @@ class RestApiClientTest :
         response.status shouldBe HttpStatus.OK
         response.errors.size shouldBe 0
         response.data shouldBe "It works!"
+      }
+
+      it("should handle a successful GET request with list responses") {
+        val webClient = buildMockClient("Lists work!")
+
+        val options = RestApiOptions(retryAttempts = 0)
+        val client = RestApiClient("TestAPI", "http://localhost:8765", webClient = webClient, defaultOptions = options)
+
+        val response = client.getList("/test", String::class)
+
+        response.status shouldBe HttpStatus.OK
+        response.errors.size shouldBe 0
+        response.data shouldBe listOf("Lists work!")
       }
 
       it("should handle HTTP errors") {
