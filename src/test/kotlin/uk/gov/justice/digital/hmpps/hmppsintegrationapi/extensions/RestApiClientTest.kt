@@ -183,5 +183,12 @@ class RestApiClientTest :
 
         responseSpec shouldNotBe null
       }
+
+      it("can set up auth headers") {
+        val headers = defaultClient.authHeaders("JKDSHF8GASKJDSFH")
+        headers shouldNotBe null
+        headers.size shouldBe 1
+        headers["Authorization"] shouldBe "Bearer JKDSHF8GASKJDSFH"
+      }
     }
   })

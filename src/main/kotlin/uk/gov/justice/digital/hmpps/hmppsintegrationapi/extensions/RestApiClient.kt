@@ -68,6 +68,11 @@ class RestApiClient(
     options: RestApiOptions? = null,
   ): RestApiResponse<List<T>> = requestForList(HttpMethod.POST, path, requestBody, headers, options, responseType)
 
+  fun authHeaders(authToken: String): Map<String, String> =
+    mapOf(
+      "Authorization" to "Bearer $authToken",
+    )
+
   internal fun <T : Any> request(
     method: HttpMethod,
     path: String,
