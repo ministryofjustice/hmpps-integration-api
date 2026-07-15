@@ -4,6 +4,11 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    cooldown:
+      semver-minor-days: 7
+      semver-patch-days: 3
+      exclude:
+        - "uk.gov.justice.*"
     groups:
       minor:
         update-types:
@@ -22,6 +27,9 @@ updates:
     directory: "/tech-docs"
     schedule:
       interval: "weekly"
+    cooldown:
+      semver-minor-days: 7
+      semver-patch-days: 3
     groups:
       minor:
         update-types:
@@ -38,6 +46,10 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 3
+      exclude:
+        - "ministryofjustice/*"
     groups:
       minor:
         update-types:
