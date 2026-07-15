@@ -2,19 +2,36 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.RETURNS_DEEP_STUBS
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
+import org.springframework.core.codec.DecodingException
+import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
+import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Mono
 
+/**
+ * Pure Kotlin unit tests for the RestApiClient.
+ *
+ * Because the underlying WebClient and HttpClient classes are so hard to mock
+ * these tests mainly focus on verifying the internal helper methods. Testing of
+ * the primary functionality, other than some very basic paths, is left for
+ * integration tests.
+ */
 class RestApiClientTest :
   DescribeSpec({
     describe("basic RestApiClient functionality") {
+      val defaultClient = RestApiClient("TestAPI", "http://localhost")
+      val error500 = WebClientResponseException(500, "Server error 543", null, null, null)
+      val decodingError = DecodingException("Decoding error 987")
+      val genericError = RuntimeException("Generic error 555")
+
       fun buildMockClient(
         responseBody: String?,
         httpError: Exception? = null,
@@ -53,7 +70,7 @@ class RestApiClientTest :
       }
 
       it("should handle HTTP errors") {
-        val webClient = buildMockClient("It fails", WebClientResponseException(500, "Server error 543", null, null, null))
+        val webClient = buildMockClient("It fails", error500)
 
         val options = RestApiOptions(retryAttempts = 0)
         val client = RestApiClient("TestAPI", "http://localhost:8765", webClient = webClient, defaultOptions = options)
@@ -64,6 +81,75 @@ class RestApiClientTest :
         response.errors.size shouldBe 1
         response.errors[0].message shouldBe "500 Server error 543"
         response.data shouldBe null
+      }
+
+      it("should handle decoding errors") {
+        val webClient = buildMockClient("It fails", decodingError)
+
+        val options = RestApiOptions(retryAttempts = 0)
+        val client = RestApiClient("TestAPI", "http://localhost:8765", webClient = webClient, defaultOptions = options)
+
+        val response = client.get("/test", String::class)
+
+        response.errors.size shouldBe 1
+        response.errors[0].message shouldBe "Decoding error 987"
+        response.data shouldBe null
+      }
+
+      it("should handle generic errors") {
+        val webClient = buildMockClient("It fails", genericError)
+
+        val options = RestApiOptions(retryAttempts = 0)
+        val client = RestApiClient("TestAPI", "http://localhost:8765", webClient = webClient, defaultOptions = options)
+
+        val response = client.get("/test", String::class)
+
+        response.errors.size shouldBe 1
+        response.errors[0].message shouldBe "Generic error 555"
+      }
+
+      it("can build a WebClient") {
+        val options = RestApiOptions(retryAttempts = 0)
+
+        val webClient = defaultClient.webClient(options)
+
+        webClient shouldNotBe null
+      }
+
+      it("can build a RetrySpec") {
+        val options = RestApiOptions(retryAttempts = 77)
+        defaultClient.retrySpec(options) shouldNotBe null
+      }
+
+      it("can build a RetryError") {
+        val response = mock(ClientResponse::class.java)
+        whenever(response.statusCode()).thenReturn(HttpStatus.INTERNAL_SERVER_ERROR)
+
+        val error = defaultClient.retryError(response, "SomeAPI", HttpMethod.GET, "http://localhost:8765")
+
+        error shouldNotBe null
+      }
+
+      it("should not retry a 500 error") {
+        defaultClient.isSafeToRetry(error500) shouldBe false
+      }
+
+      it("can create a non-retryable request") {
+        val spec = mock(WebClient.ResponseSpec::class.java)
+
+        val spec2 = defaultClient.addOptionalRetry(RestApiOptions(retryAttempts = 0), spec, "")
+
+        spec2 shouldNotBe null
+        spec2 shouldBe spec
+      }
+
+      it("can create a retryable request") {
+        val spec = mock(WebClient.ResponseSpec::class.java)
+        whenever(spec.onStatus(any(), any())).thenReturn(spec)
+
+        val spec2 = defaultClient.addOptionalRetry(RestApiOptions(retryAttempts = 1), spec, "")
+
+        spec2 shouldNotBe null
       }
     }
   })

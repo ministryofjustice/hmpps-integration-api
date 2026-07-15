@@ -53,18 +53,11 @@ class RestApiClient(
     try {
       var responseSpec = request.retrieve()
 
-      if (opts.retryAttempts > 0) {
-        responseSpec =
-          responseSpec.onStatus({ status -> status.value() in retryCodes }) { response ->
-            retryError(response, apiName, HttpMethod.GET, path)
-          }
-      }
+      responseSpec = addOptionalRetry(opts, responseSpec, path)
 
       var mono = responseSpec.bodyToMono(responseType.java)
 
-      if (opts.retryAttempts > 0) {
-        mono = mono.retryWhen(retrySpec(opts))
-      }
+      mono = addOptionalRetry(opts, mono)
 
       val data = mono.block()
 
@@ -78,11 +71,34 @@ class RestApiClient(
     }
   }
 
+  internal fun <T : Any> addOptionalRetry(
+    opts: RestApiOptions,
+    mono: Mono<T>,
+  ): Mono<T> =
+    if (opts.retryAttempts > 0) {
+      mono.retryWhen(retrySpec(opts))
+    } else {
+      mono
+    }
+
+  internal fun addOptionalRetry(
+    opts: RestApiOptions,
+    responseSpec: WebClient.ResponseSpec,
+    path: String,
+  ): WebClient.ResponseSpec =
+    if (opts.retryAttempts > 0) {
+      responseSpec.onStatus({ status -> status.value() in retryCodes }) { response ->
+        retryError(response, apiName, HttpMethod.GET, path)
+      }
+    } else {
+      responseSpec
+    }
+
   private fun mapHeaders(headers: Map<String, String>): Consumer<HttpHeaders> = { header -> headers.forEach { requestHeader -> header.set(requestHeader.key, requestHeader.value) } }
 
-  private fun isSafeToRetry(throwable: Throwable) = throwable is ResponseException || throwable is WebClientRequestException
+  internal fun isSafeToRetry(throwable: Throwable) = throwable is ResponseException || throwable is WebClientRequestException
 
-  private fun retrySpec(opts: RestApiOptions) =
+  internal fun retrySpec(opts: RestApiOptions) =
     Retry
       .backoff(opts.retryAttempts, opts.initialBackOffDuration)
       .filter { throwable -> isSafeToRetry(throwable) }
@@ -115,7 +131,7 @@ class RestApiClient(
         configurer.defaultCodecs().maxInMemorySize(-1)
       }.build()
 
-  private fun webClient(options: RestApiOptions) =
+  internal fun webClient(options: RestApiOptions) =
     webClient ?: WebClient
       .builder()
       .baseUrl(baseUrl)
@@ -123,7 +139,7 @@ class RestApiClient(
       .exchangeStrategies(strategies)
       .build()
 
-  fun retryError(
+  internal fun retryError(
     response: ClientResponse,
     upstreamApi: String,
     method: HttpMethod,
