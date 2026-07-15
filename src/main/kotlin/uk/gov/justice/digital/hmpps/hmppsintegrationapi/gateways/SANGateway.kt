@@ -40,7 +40,7 @@ class SANGateway(
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
   fun getPlanCreationSchedules(prisonerNumber: String): Response<PlanCreationSchedules> {
-    if (features.isEnabled(FeatureFlagConfig.SAN_GATEWAY_USES_RESTAPICLIENT)) {
+    if (features.isEnabled(FeatureFlagConfig.RESTAPICLIENT_FOR_SAN_GATEWAY)) {
       return getPlanCreationSchedules2(prisonerNumber)
     }
 

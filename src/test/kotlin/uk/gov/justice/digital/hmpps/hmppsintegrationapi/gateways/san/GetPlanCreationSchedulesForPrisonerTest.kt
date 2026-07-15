@@ -16,7 +16,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.SAN_GATEWAY_USES_RESTAPICLIENT
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.RESTAPICLIENT_FOR_SAN_GATEWAY
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiClient
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
@@ -128,7 +128,7 @@ class GetPlanCreationSchedulesForPrisonerTest(
         val authToken = "ABC123"
         val headers = mapOf("Authorization" to "Bearer $authToken")
 
-        val features = FeatureFlagConfig(mapOf(SAN_GATEWAY_USES_RESTAPICLIENT to true))
+        val features = FeatureFlagConfig(mapOf(RESTAPICLIENT_FOR_SAN_GATEWAY to true))
 
         val authGateway: HmppsAuthGateway = mock()
         whenever(authGateway.getClientToken("SAN")).thenReturn(authToken)
