@@ -5,6 +5,7 @@ updates:
     schedule:
       interval: "weekly"
     cooldown:
+      semver-major-days: 30
       semver-minor-days: 7
       semver-patch-days: 3
       exclude:
@@ -12,6 +13,7 @@ updates:
     groups:
       minor:
         update-types:
+          - "major"
           - "minor"
           - "patch"
         patterns:
@@ -28,11 +30,13 @@ updates:
     schedule:
       interval: "weekly"
     cooldown:
+      semver-major-days: 30
       semver-minor-days: 7
       semver-patch-days: 3
     groups:
       minor:
         update-types:
+          - "major"
           - "minor"
           - "patch"
         patterns:
@@ -47,13 +51,22 @@ updates:
     schedule:
       interval: "weekly"
     cooldown:
-      default-days: 3
+      default-days: 30 # Covers major
       exclude:
         - "ministryofjustice/*"
     groups:
       minor:
+        cooldown:
+          default-days: 7
         update-types:
           - "minor"
-          - "patch"
         patterns:
           - "*"
+      patch:
+        cooldown:
+          default-days: 7
+        update-types:
+          - "minor"
+        patterns:
+          - "*"
+
