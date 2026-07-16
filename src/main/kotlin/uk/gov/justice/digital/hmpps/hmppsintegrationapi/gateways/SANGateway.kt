@@ -38,7 +38,7 @@ class SANGateway(
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
   fun getPlanCreationSchedules(prisonerNumber: String): Response<PlanCreationSchedules> {
-    if (features.isEnabled(FeatureFlagConfig.RESTAPICLIENT_FOR_SAN_GATEWAY)) {
+    if (useRestApiClient()) {
       return getPlanCreationSchedules2(prisonerNumber)
     }
 
@@ -81,7 +81,7 @@ class SANGateway(
   }
 
   fun getReviewSchedules(prisonerNumber: String): Response<PlanReviewSchedules> {
-    if (features.isEnabled(FeatureFlagConfig.RESTAPICLIENT_FOR_SAN_GATEWAY)) {
+    if (useRestApiClient()) {
       return getReviewSchedules2(prisonerNumber)
     }
 
@@ -129,6 +129,8 @@ class SANGateway(
       "Authorization" to "Bearer $token",
     )
   }
+
+  internal fun useRestApiClient() = features.isEnabled(FeatureFlagConfig.RESTAPICLIENT_FOR_SAN_GATEWAY)
 }
 
 @Configuration
