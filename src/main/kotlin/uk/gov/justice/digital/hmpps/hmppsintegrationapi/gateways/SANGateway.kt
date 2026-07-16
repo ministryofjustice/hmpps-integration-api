@@ -2,6 +2,8 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatusCode
@@ -21,7 +23,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 class SANGateway(
   @Value("\${services.san.base-url}") val baseUrl: String,
   val features: FeatureFlagConfig = FeatureFlagConfig(),
-  val apiClient: RestApiClient? = null,
+  val sanRestClient: RestApiClient? = null,
 ) : UpstreamGateway {
   override fun metaData() =
     GatewayMetadata(
@@ -69,7 +71,7 @@ class SANGateway(
 
   fun getPlanCreationSchedules2(prisonerNumber: String): Response<PlanCreationSchedules> {
     val result =
-      apiClient().get(
+      sanRestClient!!.get(
         "/profile/$prisonerNumber/plan-creation-schedule?includeAllHistory=true",
         PlanCreationSchedules::class,
         authenticationHeader(),
@@ -84,8 +86,6 @@ class SANGateway(
       )
     }
   }
-
-  internal fun apiClient() = apiClient ?: RestApiClient(UpstreamApi.SAN.name, baseUrl)
 
   internal fun wrapErrors(errors: List<Exception>): List<UpstreamApiError> = errors.map { mapError(it) }
 
@@ -133,4 +133,12 @@ class SANGateway(
       "Authorization" to "Bearer $token",
     )
   }
+}
+
+@Configuration
+class RestClientConfig {
+  @Bean("sanRestClient")
+  fun sanRestClient(
+    @Value("\${services.san.base-url}") baseUrl: String,
+  ): RestApiClient = RestApiClient(UpstreamApi.SAN.name, baseUrl)
 }
