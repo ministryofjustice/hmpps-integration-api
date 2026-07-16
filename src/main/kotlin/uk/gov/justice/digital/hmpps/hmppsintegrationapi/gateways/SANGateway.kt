@@ -104,6 +104,10 @@ class SANGateway(
     }
 
   fun getReviewSchedules(prisonerNumber: String): Response<PlanReviewSchedules> {
+    if (features.isEnabled(FeatureFlagConfig.RESTAPICLIENT_FOR_SAN_GATEWAY)) {
+      return getReviewSchedules2(prisonerNumber)
+    }
+
     val result =
       webClient.request<PlanReviewSchedules>(
         HttpMethod.GET,
@@ -124,6 +128,24 @@ class SANGateway(
           errors = result.errors,
         )
       }
+    }
+  }
+
+  fun getReviewSchedules2(prisonerNumber: String): Response<PlanReviewSchedules> {
+    val result =
+      sanRestClient!!.get(
+        "/profile/$prisonerNumber/reviews/review-schedules?includeAllHistory=true",
+        PlanReviewSchedules::class,
+        authenticationHeader(),
+      )
+
+    return if (result.errors.isEmpty()) {
+      Response(data = result.data!!)
+    } else {
+      Response(
+        data = PlanReviewSchedules(listOf()),
+        errors = wrapErrors(result.errors),
+      )
     }
   }
 
