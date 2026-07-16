@@ -1,7 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -27,10 +25,6 @@ class SANGateway(
   val features: FeatureFlagConfig = FeatureFlagConfig(),
   val sanRestClient: RestApiClient? = null,
 ) : UpstreamGateway {
-  companion object {
-    val log: Logger = LoggerFactory.getLogger(this::class.java)
-  }
-
   override fun metaData() =
     GatewayMetadata(
       summary = "Support for Additional Needs",
@@ -48,9 +42,7 @@ class SANGateway(
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
   fun getPlanCreationSchedules(prisonerNumber: String): Response<PlanCreationSchedules> {
-    val useRestApiClient = features.isEnabled(FeatureFlagConfig.RESTAPICLIENT_FOR_SAN_GATEWAY)
-    log.info("Getting plan creation schedules for $prisonerNumber ($useRestApiClient)")
-    if (useRestApiClient) {
+    if (features.isEnabled(FeatureFlagConfig.RESTAPICLIENT_FOR_SAN_GATEWAY)) {
       return getPlanCreationSchedules2(prisonerNumber)
     }
 
