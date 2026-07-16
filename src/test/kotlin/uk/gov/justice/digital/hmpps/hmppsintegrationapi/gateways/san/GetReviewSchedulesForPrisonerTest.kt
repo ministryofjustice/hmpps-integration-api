@@ -3,21 +3,34 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.prisonerAlerts
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import org.mockito.Mockito
+import org.mockito.Mockito.mock
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.isNull
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
+import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.RESTAPICLIENT_FOR_SAN_GATEWAY
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiClient
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.SANGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PlanReviewSchedule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PlanReviewScheduleStatus
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PlanReviewSchedules
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import java.time.LocalDate
+import java.time.OffsetDateTime
 import java.util.UUID
 
 @ActiveProfiles("test")
@@ -107,6 +120,52 @@ class GetReviewSchedulesForPrisonerTest(
         schedule.reviewCompletedByJobRole.shouldBe(null)
         schedule.exemptionReason.shouldBe(null)
         schedule.version.shouldBe(1)
+      }
+
+      it("can use the RestApiClient") {
+        val ref = UUID.randomUUID()
+        val authToken = "ABC123"
+        val headers = mapOf("Authorization" to "Bearer $authToken")
+
+        val features = FeatureFlagConfig(mapOf(RESTAPICLIENT_FOR_SAN_GATEWAY to true))
+
+        val authGateway: HmppsAuthGateway = mock()
+        whenever(authGateway.getClientToken("SAN")).thenReturn(authToken)
+
+        val apiClient: RestApiClient = mock()
+        whenever(apiClient.get(eq(path), eq(PlanReviewSchedules::class), eq(headers), isNull())).thenReturn(
+          RestApiResponse(
+            "Test",
+            HttpStatus.OK,
+            PlanReviewSchedules(
+              listOf(
+                PlanReviewSchedule(
+                  reference = ref,
+                  status = PlanReviewScheduleStatus.COMPLETED,
+                  deadlineDate = LocalDate.now(),
+                  createdBy = "person",
+                  createdByDisplayName = "Person",
+                  createdAt = OffsetDateTime.now().minusDays(3),
+                  createdAtPrison = "ABC",
+                  updatedBy = "person",
+                  updatedByDisplayName = "Person",
+                  updatedAt = OffsetDateTime.now().minusDays(1),
+                  updatedAtPrison = "ABC",
+                ),
+              ),
+            ),
+          ),
+        )
+        val gateway = SANGateway("http://localhost", features, apiClient)
+        gateway.hmppsAuthGateway = authGateway
+
+        val response = gateway.getReviewSchedules(prisonerNumber)
+
+        response shouldNotBe null
+        response.errors.size shouldBe 0
+        response.data shouldNotBe null
+        response.data.planReviewSchedules.size shouldBe 1
+        response.data.planReviewSchedules[0].reference shouldBe ref
       }
     },
   )
