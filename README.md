@@ -115,7 +115,7 @@ using IntelliJ but other IDEs will prove similar.
 
     # Install pre-commit
     pipx install pre-commit
-   
+
     # Install gitleaks
     brew install prek gitleaks
 
@@ -172,7 +172,7 @@ using [docker-compose](https://docs.docker.com/compose/).
 
     Each service is then accessible at:
     - [http://localhost:8080](http://localhost:8080) for this application
-    - [http://localhost:4010](http://localhost:4010) to [http://localhost:40XX]() for mocked HMPPS APIs
+    - [http://localhost:4010](http://localhost:4010) to [http://localhost:40XX](<>) for mocked HMPPS APIs
     - [http://localhost:9090](http://localhost:9090) for the HMPPS Auth service
 
 2.  To call the integration-api, you need to pass a distinguished name in the `subject-distinguished-name` header. The `CN` attribute should match the client you wish to access the service as.
