@@ -910,6 +910,13 @@ internal class GetPersonServiceTest :
           val result = getPersonService.getNomisNumber(nomsNumber, noneOnlyConsumerFilter)
           result.data.shouldBe(NomisNumber(nomsNumber))
         }
+
+        it("Returns nomis number when providing hmpps id") {
+          whenever(prisonerOffenderSearchGateway.getPrisonOffender(crnNumber)).thenReturn(Response(data = prisonerWithPrisonId, errors = emptyList()))
+
+          val result = getPersonService.getNomisNumber(crnNumber, allSupervisionStatusConsumerFilter)
+          result.data.shouldBe(NomisNumber(nomsNumber))
+        }
       }
 
       describe("Use CPR to retrieve Nomis number") {

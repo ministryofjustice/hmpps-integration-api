@@ -259,7 +259,7 @@ class GetPersonService(
     val nomisNumber = id.data ?: return Response(data = null, errors = id.errors)
 
     ensurePermittedPrisonerLocation(nomisNumber, filters)
-    ensurePermittedSupervisionStatus(nomisNumber, filters)
+    ensurePermittedSupervisionStatus(nomisNumber, hmppsId, filters)
 
     return Response(
       data = NomisNumber(nomisNumber),
@@ -268,12 +268,13 @@ class GetPersonService(
 
   private fun ensurePermittedSupervisionStatus(
     nomisId: String,
+    hmppsId: String,
     filters: ConsumerFilters?,
   ) {
     when {
       filters?.hasSupervisionStatusesFilter() != true -> return
       filters.supervisionStatuses!!.containsAll(setOf("PRISONS", "PROBATION", "NONE")) -> return
-      !filters.supervisionStatuses.contains(getPersonSupervisionStatus(nomisId)) -> {
+      !filters.supervisionStatuses.contains(getPersonSupervisionStatus(nomisId, hmppsId)) -> {
         throw FilterViolationException("SupervisionStatus filter restricts access to the requested prisoner's supervision status")
       }
     }
@@ -329,13 +330,16 @@ class GetPersonService(
     return supervisionStatus
   }
 
-  fun getPersonSupervisionStatus(nomisId: String): String {
+  fun getPersonSupervisionStatus(
+    nomisId: String,
+    hmppsId: String,
+  ): String {
     val status = getPersonFromPrisonerOffenderSearch(nomisId)?.status ?: return "UNKNOWN"
 
     if (status.startsWith("ACTIVE")) {
       return "PRISONS"
     }
-    val probationData = getPersonFromDelius(nomisId, true)
+    val probationData = getPersonFromDelius(hmppsId, true)
     return when (probationData.data?.underActiveSupervision) {
       true -> "PROBATION"
       false -> "NONE"
