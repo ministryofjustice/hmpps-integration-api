@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.prisonerAlerts
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.san
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.nulls.shouldNotBeNull
@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.RESTAPICLIENT_FOR_SAN_GATEWAY
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiClient
@@ -166,6 +167,34 @@ class GetReviewSchedulesForPrisonerTest(
         response.data shouldNotBe null
         response.data.planReviewSchedules.size shouldBe 1
         response.data.planReviewSchedules[0].reference shouldBe ref
+      }
+
+      it("can can handle errors with the RestApiClient") {
+        val authToken = "ABC123"
+        val headers = mapOf("Authorization" to "Bearer $authToken")
+
+        val features = FeatureFlagConfig(mapOf(RESTAPICLIENT_FOR_SAN_GATEWAY to true))
+
+        val authGateway: HmppsAuthGateway = mock()
+        whenever(authGateway.getClientToken("SAN")).thenReturn(authToken)
+
+        val apiClient: RestApiClient = mock()
+        whenever(apiClient.get(eq(path), eq(PlanReviewSchedules::class), eq(headers), isNull())).thenReturn(
+          RestApiResponse(
+            "Test",
+            HttpStatus.NOT_FOUND,
+            null,
+            listOf(WebClientResponseException(404, "PlanReviewSchedules not found", null, null, null)),
+          ),
+        )
+        val gateway = SANGateway("http://localhost", features, apiClient)
+        gateway.hmppsAuthGateway = authGateway
+
+        val response = gateway.getReviewSchedules(prisonerNumber)
+
+        response shouldNotBe null
+        response.errors.size shouldBe 1
+        response.errors[0].description shouldBe "404 PlanReviewSchedules not found"
       }
     },
   )
