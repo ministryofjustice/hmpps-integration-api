@@ -5,10 +5,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
-import org.springframework.http.HttpStatusCode
 import org.springframework.stereotype.Component
-import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiClient
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
@@ -17,7 +14,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PlanCreatio
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PlanReviewSchedules
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 
 @Component
 class SANGateway(
@@ -80,28 +76,9 @@ class SANGateway(
     return if (result.errors.isEmpty()) {
       Response(data = result.data!!)
     } else {
-      Response(
-        data = PlanCreationSchedules(listOf()),
-        errors = wrapErrors(result.errors),
-      )
+      Response.error(result.errors, PlanCreationSchedules(listOf()))
     }
   }
-
-  internal fun wrapErrors(errors: List<Exception>): List<UpstreamApiError> = errors.map { mapError(it) }
-
-  internal fun mapError(error: Exception): UpstreamApiError =
-    when (error) {
-      is WebClientResponseException -> UpstreamApiError(UpstreamApi.SAN, mapStatus(error.statusCode), error.message)
-      else -> UpstreamApiError(UpstreamApi.SAN, UpstreamApiError.Type.INTERNAL_SERVER_ERROR, error.message)
-    }
-
-  internal fun mapStatus(status: HttpStatusCode): UpstreamApiError.Type =
-    when (status) {
-      HttpStatus.NOT_FOUND -> UpstreamApiError.Type.ENTITY_NOT_FOUND
-      HttpStatus.BAD_REQUEST -> UpstreamApiError.Type.BAD_REQUEST
-      HttpStatus.FORBIDDEN -> UpstreamApiError.Type.FORBIDDEN
-      else -> UpstreamApiError.Type.INTERNAL_SERVER_ERROR
-    }
 
   fun getReviewSchedules(prisonerNumber: String): Response<PlanReviewSchedules> {
     if (features.isEnabled(FeatureFlagConfig.RESTAPICLIENT_FOR_SAN_GATEWAY)) {
@@ -142,10 +119,7 @@ class SANGateway(
     return if (result.errors.isEmpty()) {
       Response(data = result.data!!)
     } else {
-      Response(
-        data = PlanReviewSchedules(listOf()),
-        errors = wrapErrors(result.errors),
-      )
+      Response.error(result.errors, PlanReviewSchedules(listOf()))
     }
   }
 
