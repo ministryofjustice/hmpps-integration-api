@@ -1,9 +1,4 @@
 repos:
-  - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.17.0
-    hooks:
-      - id: gitleaks
-
   - repo: local
     hooks:
       - id: ktlint-format
@@ -23,3 +18,8 @@ repos:
         stages: [pre-commit]
         always_run: true
         pass_filenames: false
+
+  - repo: https://github.com/ministryofjustice/devsecops-hooks
+    rev: 53d252e406bae2bbbd0c0f3205b72870a02c9b3f
+    hooks:
+      - id: baseline
