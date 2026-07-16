@@ -910,6 +910,17 @@ internal class GetPersonServiceTest :
           val result = getPersonService.getNomisNumber(nomsNumber, noneOnlyConsumerFilter)
           result.data.shouldBe(NomisNumber(nomsNumber))
         }
+
+        it("Supervision status check calls NDelius with CRN and Prisons with nomis number for probation only supervision status") {
+          whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerInactiveOut, errors = emptyList()))
+
+          val result = getPersonService.getNomisNumber(crnNumber, probationOnlyConsumerFilter)
+
+          verify(prisonerOffenderSearchGateway, times(1)).getPrisonOffender(nomsNumber)
+          verify(deliusGateway, times(2)).getOffender(crnNumber, null)
+
+          result.data.shouldBe(NomisNumber(nomsNumber))
+        }
       }
 
       describe("Use CPR to retrieve Nomis number") {
