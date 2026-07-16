@@ -115,6 +115,9 @@ using IntelliJ but other IDEs will prove similar.
 
     # Install pre-commit
     pipx install pre-commit
+   
+    # Install gitleaks
+    brew install prek gitleaks
 
     # Install hooks into .git/hooks
     pre-commit install
