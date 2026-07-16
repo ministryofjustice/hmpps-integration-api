@@ -24,7 +24,7 @@ jobs:
 
       - name: Run Gitleaks Scan
         run: |
-          gitleaks detect --verbose --redact
+          gitleaks detect --verbose --redact --log-opts="${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }}"
 
       - name: Set up Java
         uses: actions/setup-java@0f481fcb613427c0f801b606911222b5b6f3083a # v5
