@@ -911,10 +911,14 @@ internal class GetPersonServiceTest :
           result.data.shouldBe(NomisNumber(nomsNumber))
         }
 
-        it("Returns nomis number when providing hmpps id") {
-          whenever(prisonerOffenderSearchGateway.getPrisonOffender(crnNumber)).thenReturn(Response(data = prisonerWithPrisonId, errors = emptyList()))
+        it("Supervision status check calls NDelius with CRN and Prisons with nomis number for probation only supervision status") {
+          whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerInactiveOut, errors = emptyList()))
 
-          val result = getPersonService.getNomisNumber(crnNumber, allSupervisionStatusConsumerFilter)
+          val result = getPersonService.getNomisNumber(crnNumber, probationOnlyConsumerFilter)
+
+          verify(prisonerOffenderSearchGateway, times(1)).getPrisonOffender(nomsNumber)
+          verify(deliusGateway, times(2)).getOffender(crnNumber, null)
+
           result.data.shouldBe(NomisNumber(nomsNumber))
         }
       }
