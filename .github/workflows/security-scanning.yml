@@ -2,7 +2,7 @@ name: Security Scanning
 on: pull_request
 
 jobs:
-  security-and-lint:
+  secrets-scanning:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
