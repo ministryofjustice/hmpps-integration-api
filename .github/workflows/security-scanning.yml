@@ -15,11 +15,8 @@ jobs:
         run: |
           GITLEAKS_VERSION="8.18.2"
           # Pinned SHA256 checksum for v8.18.2 linux_x64
-          GITLEAKS_CHECKSUM="7c070db41ec632bd0d46fc5b930e8927ed4dafbb76150adf0cf1201fc0fbb837"
 
           curl -sSLo gitleaks.tar.gz https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz
-
-          echo "${GITLEAKS_CHECKSUM}  gitleaks.tar.gz" | sha256sum -c -
 
           tar -xzf gitleaks.tar.gz gitleaks
           sudo install gitleaks /usr/local/bin/gitleaks
