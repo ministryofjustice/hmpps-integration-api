@@ -2,6 +2,8 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import io.netty.channel.ChannelOption
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.core.codec.DecodingException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -36,6 +38,10 @@ class RestApiClient(
   val defaultOptions: RestApiOptions = RestApiOptions(),
   val webClient: WebClient? = null,
 ) {
+  companion object {
+    val log: Logger = LoggerFactory.getLogger(this::class.java)
+  }
+
   val retryCodes = listOf(502, 503, 504, 522, 599, 499, 408)
 
   fun <T : Any> get(
@@ -157,6 +163,7 @@ class RestApiClient(
     headers: Map<String, String>,
     opts: RestApiOptions,
   ): WebClient.RequestBodySpec {
+    log.info("RestApiClient calling $method $path")
     val spec =
       webClient(opts)
         .method(method)
