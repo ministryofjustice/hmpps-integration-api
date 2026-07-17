@@ -60,17 +60,11 @@ internal class NeedsControllerTest(
                       21,
                       33,
                     ),
-                  identifiedNeeds =
+                  needs =
                     listOf(
                       Need(type = "EDUCATION_TRAINING_AND_EMPLOYABILITY"),
                       Need(type = "FINANCIAL_MANAGEMENT_AND_INCOME"),
-                    ),
-                  notIdentifiedNeeds =
-                    listOf(
                       Need(type = "RELATIONSHIPS"),
-                    ),
-                  unansweredNeeds =
-                    listOf(
                       Need(type = "LIFESTYLE_AND_ASSOCIATES"),
                       Need(type = "DRUG_MISUSE"),
                       Need(type = "ALCOHOL_MISUSE"),
@@ -108,46 +102,36 @@ internal class NeedsControllerTest(
             """
           "data": {
                "assessedOn": "2021-05-29T11:21:33",
-               "identifiedNeeds": [
+               "needs": [
                   {
                     "type": "EDUCATION_TRAINING_AND_EMPLOYABILITY",
                      "riskOfHarm": null,
-                     "riskOfReoffending": null,
-                     "severity": null
+                     "riskOfReoffending": null
                   },
                   {
                     "type": "FINANCIAL_MANAGEMENT_AND_INCOME",
                      "riskOfHarm": null,
-                     "riskOfReoffending": null,
-                     "severity": null
-                  }
-                ],
-                "notIdentifiedNeeds": [
+                     "riskOfReoffending": null
+                  },
                   {
                     "type": "RELATIONSHIPS",
                      "riskOfHarm": null,
-                     "riskOfReoffending": null,
-                     "severity": null
-                  }
-                ],
-                "unansweredNeeds": [
+                     "riskOfReoffending": null
+                  },
                   {
                     "type": "LIFESTYLE_AND_ASSOCIATES",
                     "riskOfHarm": null,
-                    "riskOfReoffending": null,
-                    "severity": null
+                    "riskOfReoffending": null
                   },
                   {
                     "type": "DRUG_MISUSE",
                      "riskOfHarm": null,
-                      "riskOfReoffending": null,
-                      "severity": null
+                      "riskOfReoffending": null
                   },
                   {
                     "type": "ALCOHOL_MISUSE",
                      "riskOfHarm": null,
-                     "riskOfReoffending": null,
-                     "severity": null
+                     "riskOfReoffending": null
                   }
                 ]
             }

@@ -1,0 +1,110 @@
+{
+  "needs": [
+    {
+      "section": "DRUG_MISUSE",
+      "name": "Drug Misuse",
+      "needStatus": "IDENTIFIED_NEED",
+      "riskOfHarm": false,
+      "riskOfReoffending": false,
+      "score": 8,
+      "oasysThreshold": {
+        "standard": 2
+      }
+    },
+    {
+      "section": "ACCOMMODATION",
+      "name": "Accommodation",
+      "needStatus": "NOT_IDENTIFIED_NEED",
+      "riskOfHarm": false,
+      "riskOfReoffending": false,
+      "score": 0,
+      "oasysThreshold": {
+        "standard": 2
+      }
+    },
+    {
+      "section": "EDUCATION_TRAINING_AND_EMPLOYABILITY",
+      "name": "Education, Training and Employability",
+      "needStatus": "NOT_IDENTIFIED_NEED",
+      "riskOfHarm": false,
+      "riskOfReoffending": false,
+      "score": 0,
+      "oasysThreshold": {
+        "standard": 3
+      }
+    },
+    {
+      "section": "RELATIONSHIPS",
+      "name": "Relationships",
+      "needStatus": "NOT_IDENTIFIED_NEED",
+      "riskOfHarm": false,
+      "riskOfReoffending": false,
+      "score": 0,
+      "oasysThreshold": {
+        "standard": 2
+      }
+    },
+    {
+      "section": "LIFESTYLE_AND_ASSOCIATES",
+      "name": "Lifestyle and Associates",
+      "needStatus": "NOT_IDENTIFIED_NEED",
+      "riskOfHarm": false,
+      "riskOfReoffending": false,
+      "score": 0,
+      "oasysThreshold": {
+        "standard": 2
+      }
+    },
+    {
+      "section": "ALCOHOL_MISUSE",
+      "name": "Alcohol Misuse",
+      "needStatus": "NOT_IDENTIFIED_NEED",
+      "riskOfHarm": false,
+      "riskOfReoffending": false,
+      "score": 0,
+      "oasysThreshold": {
+        "standard": 4
+      }
+    },
+    {
+      "section": "THINKING_AND_BEHAVIOUR",
+      "name": "Thinking and Behaviour",
+      "needStatus": "NOT_IDENTIFIED_NEED",
+      "riskOfHarm": false,
+      "riskOfReoffending": false,
+      "score": 0,
+      "oasysThreshold": {
+        "standard": 4
+      }
+    },
+    {
+      "section": "ATTITUDE",
+      "name": "Attitudes",
+      "needStatus": "NOT_IDENTIFIED_NEED",
+      "riskOfHarm": false,
+      "riskOfReoffending": false,
+      "score": 0,
+      "oasysThreshold": {
+        "standard": 2
+      }
+    },
+    {
+      "section": "FINANCE",
+      "name": "Finance",
+      "needStatus": "UNSCORED_NEED",
+      "riskOfHarm": false,
+      "riskOfReoffending": false,
+      "oasysThreshold": {}
+    },
+    {
+      "section": "EMOTIONAL_WELLBEING",
+      "name": "Emotional Well-being",
+      "needStatus": "UNSCORED_NEED",
+      "riskOfHarm": false,
+      "riskOfReoffending": false,
+      "oasysThreshold": {}
+    }
+  ],
+  "assessmentVersion": "OASYS",
+  "assessedOn": "2023-02-13T12:43:38"
+}

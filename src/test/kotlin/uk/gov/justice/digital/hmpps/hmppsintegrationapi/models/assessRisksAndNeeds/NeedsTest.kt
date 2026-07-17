@@ -14,14 +14,11 @@ class NeedsTest :
           val arnNeeds =
             ArnNeeds(
               assessedOn = LocalDateTime.parse("2000-11-27T10:15:41"),
-              identifiedNeeds =
+              needs =
                 listOf(
                   ArnNeed(section = "EDUCATION_TRAINING_AND_EMPLOYABILITY"),
                   ArnNeed(section = "FINANCIAL_MANAGEMENT_AND_INCOME"),
-                ),
-              notIdentifiedNeeds = listOf(ArnNeed(section = "RELATIONSHIPS")),
-              unansweredNeeds =
-                listOf(
+                  ArnNeed(section = "RELATIONSHIPS"),
                   ArnNeed(section = "LIFESTYLE_AND_ASSOCIATES"),
                   ArnNeed(section = "DRUG_MISUSE"),
                   ArnNeed(section = "ALCOHOL_MISUSE"),
@@ -31,19 +28,11 @@ class NeedsTest :
           val integrationApiNeeds = arnNeeds.toNeeds()
 
           integrationApiNeeds.assessedOn.shouldBe(arnNeeds.assessedOn)
-          integrationApiNeeds.identifiedNeeds.shouldBe(
+          integrationApiNeeds.needs.shouldBe(
             listOf(
               Need(type = "EDUCATION_TRAINING_AND_EMPLOYABILITY"),
               Need(type = "FINANCIAL_MANAGEMENT_AND_INCOME"),
-            ),
-          )
-          integrationApiNeeds.notIdentifiedNeeds.shouldBe(
-            listOf(
               Need(type = "RELATIONSHIPS"),
-            ),
-          )
-          integrationApiNeeds.unansweredNeeds.shouldBe(
-            listOf(
               Need(type = "LIFESTYLE_AND_ASSOCIATES"),
               Need(type = "DRUG_MISUSE"),
               Need(type = "ALCOHOL_MISUSE"),
@@ -59,9 +48,7 @@ class NeedsTest :
           integrationApiNeeds.shouldBe(
             Needs(
               assessedOn = null,
-              identifiedNeeds = emptyList(),
-              notIdentifiedNeeds = emptyList(),
-              unansweredNeeds = emptyList(),
+              needs = emptyList(),
             ),
           )
         }

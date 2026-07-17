@@ -67,20 +67,14 @@ internal class GetNeedsForPersonServiceTest(
         val needs =
           Needs(
             assessedOn = LocalDateTime.now(),
-            identifiedNeeds =
+            needs =
               listOf(
-                Need(type = "EDUCATION_TRAINING_AND_EMPLOYABILITY", riskOfHarm = null, riskOfReoffending = false, severity = "MINOR"),
-                Need(type = "FINANCIAL_MANAGEMENT_AND_INCOME", riskOfHarm = false, riskOfReoffending = true, severity = "MINOR"),
-              ),
-            notIdentifiedNeeds =
-              listOf(
-                Need(type = "RELATIONSHIPS", riskOfHarm = null, riskOfReoffending = true, severity = "SEVERE"),
-              ),
-            unansweredNeeds =
-              listOf(
-                Need(type = "LIFESTYLE_AND_ASSOCIATES", riskOfHarm = null, riskOfReoffending = true, severity = "SEVERE"),
-                Need(type = "DRUG_MISUSE", riskOfHarm = true, riskOfReoffending = true, severity = "SEVERE"),
-                Need(type = "ALCOHOL_MISUSE", riskOfHarm = false, riskOfReoffending = false, severity = "MINOR"),
+                Need(type = "DRUG_MISUSE", riskOfHarm = null, riskOfReoffending = false),
+                Need(type = "ACCOMMODATION", riskOfHarm = false, riskOfReoffending = true),
+                Need(type = "EDUCATION_TRAINING_AND_EMPLOYABILITY", riskOfHarm = null, riskOfReoffending = true),
+                Need(type = "RELATIONSHIPS", riskOfHarm = null, riskOfReoffending = true),
+                Need(type = "DRUG_MISUSE", riskOfHarm = true, riskOfReoffending = true),
+                Need(type = "ALCOHOL_MISUSE", riskOfHarm = false, riskOfReoffending = false),
               ),
           )
 
