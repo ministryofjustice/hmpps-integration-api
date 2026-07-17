@@ -38,7 +38,6 @@ class PrisonTimelineController(
     description =
       "Provides a summary of the periods this prisoner has been in prison. <br />" +
         "It includes the dates of each period, the prison and the reason for the movement. Each entry is divided into periods of time spent in prison separated by periods when the were out either via a release or a temporary absence (periods at court are not included). <br />" +
-        "<b>Applicable filters</b>: <ul><li>prisons</li><li>supervisionStatuses</li></ul> <br />" +
         "<b>Outward Type be one of the following values:</b> <ul><li>REL (Released)</li><li>TAP (Temporary Absence)</li></ul>" +
         "<b>Inward Type be one of the following values:</b> <ul><li>ADM (Admission)</li><li>TAP (Temporary Absence)</li></ul>",
     responses = [
