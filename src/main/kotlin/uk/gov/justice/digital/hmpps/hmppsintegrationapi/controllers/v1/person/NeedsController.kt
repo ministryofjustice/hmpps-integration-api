@@ -30,8 +30,8 @@ class NeedsController(
   @Operation(
     summary = "Returns the criminogenic needs and non-criminogenic needs associated with a person.",
     description =
-        "Criminogenic needs are dynamic factors that are directly linked to criminal behaviour.<br /> <br />" +
-        "Eight criminogenic needs are measured in OASys: Accommodation, Employability, Relationships, Lifestyle and Associates, Drug Misuse, Alcohol Misuse, Thinking & Behaviour and Attitudes.<br />" +
+      "Criminogenic needs are dynamic factors that are directly linked to criminal behaviour.<br /> <br />" +
+        "Eight criminogenic needs are measured in OASys: Accommodation, Employability, Relationships, Lifestyle and Associates, Drug Misuse, Alcohol Misuse, Thinking & Behaviour and Attitudes.<br /><br />" +
         "Non-criminogenic needs are individual traits, personal issues, or life challenges that cause personal distress or require support but have no direct influence on an individual's likelihood of committing a crime or reoffending.<br /><br />" +
         "Two non-criminogenic are held in OASys: Finance and Emotional Well-being",
     responses = [
