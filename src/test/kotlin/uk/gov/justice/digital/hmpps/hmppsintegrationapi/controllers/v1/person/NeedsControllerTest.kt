@@ -106,38 +106,32 @@ internal class NeedsControllerTest(
                   {
                     "type": "EDUCATION_TRAINING_AND_EMPLOYABILITY",
                      "riskOfHarm": null,
-                     "riskOfReoffending": null,
-                     "severity": null
+                     "riskOfReoffending": null
                   },
                   {
                     "type": "FINANCIAL_MANAGEMENT_AND_INCOME",
                      "riskOfHarm": null,
-                     "riskOfReoffending": null,
-                     "severity": null
+                     "riskOfReoffending": null
                   },
                   {
                     "type": "RELATIONSHIPS",
                      "riskOfHarm": null,
-                     "riskOfReoffending": null,
-                     "severity": null
+                     "riskOfReoffending": null
                   },
                   {
                     "type": "LIFESTYLE_AND_ASSOCIATES",
                     "riskOfHarm": null,
-                    "riskOfReoffending": null,
-                    "severity": null
+                    "riskOfReoffending": null
                   },
                   {
                     "type": "DRUG_MISUSE",
                      "riskOfHarm": null,
-                      "riskOfReoffending": null,
-                      "severity": null
+                      "riskOfReoffending": null
                   },
                   {
                     "type": "ALCOHOL_MISUSE",
                      "riskOfHarm": null,
-                     "riskOfReoffending": null,
-                     "severity": null
+                     "riskOfReoffending": null
                   }
                 ]
             }

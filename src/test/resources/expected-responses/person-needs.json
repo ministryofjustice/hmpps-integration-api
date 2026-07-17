@@ -5,53 +5,43 @@
       {
         "type": "DRUG_MISUSE",
         "riskOfHarm": false,
-        "riskOfReoffending": false,
-        "severity": null
+        "riskOfReoffending": false
       }, {
         "type": "ACCOMMODATION",
         "riskOfHarm": false,
-        "riskOfReoffending": false,
-        "severity": null
+        "riskOfReoffending": false
       }, {
         "type": "EDUCATION_TRAINING_AND_EMPLOYABILITY",
         "riskOfHarm": false,
-        "riskOfReoffending": false,
-        "severity": null
+        "riskOfReoffending": false
       }, {
         "type": "RELATIONSHIPS",
         "riskOfHarm": false,
-        "riskOfReoffending": false,
-        "severity": null
+        "riskOfReoffending": false
       }, {
         "type": "LIFESTYLE_AND_ASSOCIATES",
         "riskOfHarm": false,
-        "riskOfReoffending": false,
-        "severity": null
+        "riskOfReoffending": false
       }, {
         "type": "ALCOHOL_MISUSE",
         "riskOfHarm": false,
-        "riskOfReoffending": false,
-        "severity": null
+        "riskOfReoffending": false
       }, {
         "type": "THINKING_AND_BEHAVIOUR",
         "riskOfHarm": false,
-        "riskOfReoffending": false,
-        "severity": null
+        "riskOfReoffending": false
       }, {
         "type": "ATTITUDE",
         "riskOfHarm": false,
-        "riskOfReoffending": false,
-        "severity": null
+        "riskOfReoffending": false
       }, {
         "type": "FINANCE",
         "riskOfHarm": false,
-        "riskOfReoffending": false,
-        "severity": null
+        "riskOfReoffending": false
       }, {
         "type": "EMOTIONAL_WELLBEING",
         "riskOfHarm": false,
-        "riskOfReoffending": false,
-        "severity": null
+        "riskOfReoffending": false
       }
     ]
   }

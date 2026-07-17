@@ -28,18 +28,17 @@ class NeedsController(
 ) {
   @GetMapping("{hmppsId}/needs")
   @Operation(
-    summary = """
-      Returns the criminogenic needs and non-criminogenic needs associated with a person. This endpoint does not serve LAO (Limited Access Offender) data.
-
-      Note: Criminogenic needs are dynamic factors that are directly linked to criminal behaviour.
-      Eight criminogenic needs are measured in OASys: Accommodation, Employability, Relationships, Lifestyle and Associates, Drug Misuse, Alcohol Misuse, Thinking & Behaviour and Attitudes.
-      These are scored according to whether there is “no need”, “some need” or “severe need”, and a need is identified in a specific section based on calculations around these scores.
-            However, the process by which needs are assessed is changing as early as next year (2024), specifically moving to a strength-based model that seeks to identify and develop the strengths of people with convictions. As a consequence of this, the information provided by this endpoint will also change.
-      Non-criminogenic needs are individual traits, personal issues, or life challenges that cause personal distress or require support but have no direct influence on an individual's likelihood of committing a crime or reoffending.
-      Two non-criminogenic are held in OASys: Finance and Emotional Well-being
-    """,
+    summary = "Returns the criminogenic needs and non-criminogenic needs associated with a person.",
+    description =
+      "Criminogenic needs are scored, non-criminogenic are not scored. <br /><br />" +
+        "Criminogenic needs are dynamic factors that are directly linked to criminal behaviour.<br /> <br />" +
+        "Eight criminogenic needs are measured in OASys: Accommodation, Employability, Relationships, Lifestyle and Associates, Drug Misuse, Alcohol Misuse, Thinking & Behaviour and Attitudes.<br />" +
+        "These are scored according to whether there is “no need”, “some need” or “severe need”, and a need is identified in a specific section based on calculations around these scores.<br />" +
+        "However, the process by which needs are assessed is changing as early as next year (2024), specifically moving to a strength-based model that seeks to identify and develop the strengths of people with convictions. As a consequence of this, the information provided by this endpoint will also change.<br /><br />" +
+        "Non-criminogenic needs are individual traits, personal issues, or life challenges that cause personal distress or require support but have no direct influence on an individual's likelihood of committing a crime or reoffending.<br /><br />" +
+        "Two non-criminogenic are held in OASys: Finance and Emotional Well-being",
     responses = [
-      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found criminogenic needs for a person with the provided HMPPS ID."),
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found needs for a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],

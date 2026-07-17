@@ -69,12 +69,12 @@ internal class GetNeedsForPersonServiceTest(
             assessedOn = LocalDateTime.now(),
             needs =
               listOf(
-                Need(type = "DRUG_MISUSE", riskOfHarm = null, riskOfReoffending = false, severity = "MINOR"),
-                Need(type = "ACCOMMODATION", riskOfHarm = false, riskOfReoffending = true, severity = "MINOR"),
-                Need(type = "EDUCATION_TRAINING_AND_EMPLOYABILITY", riskOfHarm = null, riskOfReoffending = true, severity = "SEVERE"),
-                Need(type = "RELATIONSHIPS", riskOfHarm = null, riskOfReoffending = true, severity = "SEVERE"),
-                Need(type = "DRUG_MISUSE", riskOfHarm = true, riskOfReoffending = true, severity = "SEVERE"),
-                Need(type = "ALCOHOL_MISUSE", riskOfHarm = false, riskOfReoffending = false, severity = "MINOR"),
+                Need(type = "DRUG_MISUSE", riskOfHarm = null, riskOfReoffending = false),
+                Need(type = "ACCOMMODATION", riskOfHarm = false, riskOfReoffending = true),
+                Need(type = "EDUCATION_TRAINING_AND_EMPLOYABILITY", riskOfHarm = null, riskOfReoffending = true),
+                Need(type = "RELATIONSHIPS", riskOfHarm = null, riskOfReoffending = true),
+                Need(type = "DRUG_MISUSE", riskOfHarm = true, riskOfReoffending = true),
+                Need(type = "ALCOHOL_MISUSE", riskOfHarm = false, riskOfReoffending = false),
               ),
           )
 

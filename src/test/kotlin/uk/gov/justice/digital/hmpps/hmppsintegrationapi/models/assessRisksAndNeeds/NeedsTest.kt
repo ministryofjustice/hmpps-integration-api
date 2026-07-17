@@ -18,6 +18,7 @@ class NeedsTest :
                 listOf(
                   ArnNeed(section = "EDUCATION_TRAINING_AND_EMPLOYABILITY"),
                   ArnNeed(section = "FINANCIAL_MANAGEMENT_AND_INCOME"),
+                  ArnNeed(section = "RELATIONSHIPS"),
                   ArnNeed(section = "LIFESTYLE_AND_ASSOCIATES"),
                   ArnNeed(section = "DRUG_MISUSE"),
                   ArnNeed(section = "ALCOHOL_MISUSE"),
