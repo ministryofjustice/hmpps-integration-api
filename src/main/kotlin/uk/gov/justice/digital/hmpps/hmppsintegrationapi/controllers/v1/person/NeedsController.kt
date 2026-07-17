@@ -31,9 +31,9 @@ class NeedsController(
     summary = "Returns the criminogenic needs and non-criminogenic needs associated with a person.",
     description =
       "Criminogenic needs are dynamic factors that are directly linked to criminal behaviour.<br /> <br />" +
-        "Eight criminogenic needs are measured in OASys: Accommodation, Employability, Relationships, Lifestyle and Associates, Drug Misuse, Alcohol Misuse, Thinking & Behaviour and Attitudes.<br /><br />" +
+        "Eight criminogenic needs are measured: Accommodation, Employability, Relationships, Lifestyle and Associates, Drug Misuse, Alcohol Misuse, Thinking & Behaviour and Attitudes.<br /><br />" +
         "Non-criminogenic needs are individual traits, personal issues, or life challenges that cause personal distress or require support but have no direct influence on an individual's likelihood of committing a crime or reoffending.<br /><br />" +
-        "Two non-criminogenic are held in OASys: Finance and Emotional Well-being",
+        "There are two non-criminogenic needs: Finance and Emotional Well-being",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found needs for a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
