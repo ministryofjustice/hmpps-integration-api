@@ -26,6 +26,8 @@ spring:
 
 springdoc:
   default-produces-media-type: application/json
+  paths-to-exclude:
+    - /queue-admin/**
 
 server:
   port: 8080
