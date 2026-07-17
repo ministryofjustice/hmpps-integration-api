@@ -6,7 +6,5 @@ import java.time.LocalDateTime
 data class Needs(
   @Schema(description = "Needs assessment completion date", example = "2023-09-05T10:15:41")
   val assessedOn: LocalDateTime? = null,
-  val identifiedNeeds: List<Need> = emptyList(),
-  val notIdentifiedNeeds: List<Need> = emptyList(),
-  val unansweredNeeds: List<Need> = emptyList(),
+  val needs: List<Need> = emptyList(),
 )

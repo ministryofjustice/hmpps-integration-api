@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Need
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Needs
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import java.io.File
 import java.time.LocalDateTime
 
 @ActiveProfiles("test")
@@ -43,35 +44,9 @@ class GetNeedsForPersonTest(
         Mockito.reset(hmppsAuthGateway)
         assessRisksAndNeedsApiMockServer.stubForGet(
           path,
-          """
-              {
-                "assessedOn": "2023-02-13T12:43:38",
-                "identifiedNeeds": [
-                  {
-                    "section": "EDUCATION_TRAINING_AND_EMPLOYABILITY"
-                  },
-                  {
-                    "section": "FINANCIAL_MANAGEMENT_AND_INCOME"
-                  }
-                ],
-                "notIdentifiedNeeds": [
-                  {
-                    "section": "RELATIONSHIPS"
-                  }
-                ],
-                "unansweredNeeds": [
-                  {
-                    "section": "LIFESTYLE_AND_ASSOCIATES"
-                  },
-                  {
-                    "section": "DRUG_MISUSE"
-                  },
-                  {
-                    "section": "ALCOHOL_MISUSE"
-                  }
-                ]
-              }
-          """,
+          File(
+            "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/assessrisksandneeds/fixtures/GetNeedsResponse.json",
+          ).readText(),
         )
 
         Mockito.reset(hmppsAuthGateway)
@@ -94,57 +69,19 @@ class GetNeedsForPersonTest(
         response.data.shouldBe(
           Needs(
             assessedOn = LocalDateTime.of(2023, 2, 13, 12, 43, 38),
-            identifiedNeeds =
+            needs =
               listOf(
-                Need(type = "EDUCATION_TRAINING_AND_EMPLOYABILITY"),
-                Need(type = "FINANCIAL_MANAGEMENT_AND_INCOME"),
+                Need(type = "DRUG_MISUSE", riskOfHarm = false, riskOfReoffending = false),
+                Need(type = "ACCOMMODATION", riskOfHarm = false, riskOfReoffending = false),
+                Need(type = "EDUCATION_TRAINING_AND_EMPLOYABILITY", riskOfHarm = false, riskOfReoffending = false),
+                Need(type = "RELATIONSHIPS", riskOfHarm = false, riskOfReoffending = false),
+                Need(type = "LIFESTYLE_AND_ASSOCIATES", riskOfHarm = false, riskOfReoffending = false),
+                Need(type = "ALCOHOL_MISUSE", riskOfHarm = false, riskOfReoffending = false),
+                Need(type = "THINKING_AND_BEHAVIOUR", riskOfHarm = false, riskOfReoffending = false),
+                Need(type = "ATTITUDE", riskOfHarm = false, riskOfReoffending = false),
+                Need(type = "FINANCE", riskOfHarm = false, riskOfReoffending = false),
+                Need(type = "EMOTIONAL_WELLBEING", riskOfHarm = false, riskOfReoffending = false),
               ),
-            notIdentifiedNeeds =
-              listOf(
-                Need(type = "RELATIONSHIPS"),
-              ),
-            unansweredNeeds =
-              listOf(
-                Need(type = "LIFESTYLE_AND_ASSOCIATES"),
-                Need(type = "DRUG_MISUSE"),
-                Need(type = "ALCOHOL_MISUSE"),
-              ),
-          ),
-        )
-      }
-
-      it("returns an empty list when a needs section has no data") {
-        assessRisksAndNeedsApiMockServer.stubForGet(
-          path,
-          """
-           {
-              "assessedOn": "2023-02-13T12:43:38",
-              "identifiedNeeds": [
-                {
-                  "section": "EDUCATION_TRAINING_AND_EMPLOYABILITY"
-                },
-                {
-                  "section": "FINANCIAL_MANAGEMENT_AND_INCOME"
-                }
-              ],
-              "notIdentifiedNeeds": [],
-              "unansweredNeeds": []
-           }
-          """,
-        )
-
-        val response = assessRisksAndNeedsGateway.getNeedsForPerson(deliusCrn)
-
-        response.data.shouldBe(
-          Needs(
-            assessedOn = LocalDateTime.of(2023, 2, 13, 12, 43, 38),
-            identifiedNeeds =
-              listOf(
-                Need(type = "EDUCATION_TRAINING_AND_EMPLOYABILITY"),
-                Need(type = "FINANCIAL_MANAGEMENT_AND_INCOME"),
-              ),
-            notIdentifiedNeeds = emptyList(),
-            unansweredNeeds = emptyList(),
           ),
         )
       }

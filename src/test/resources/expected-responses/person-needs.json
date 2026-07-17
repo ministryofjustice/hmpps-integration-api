@@ -1,0 +1,58 @@
+{
+  "data": {
+    "assessedOn": "2023-02-13T12:43:38",
+    "needs": [
+      {
+        "type": "DRUG_MISUSE",
+        "riskOfHarm": false,
+        "riskOfReoffending": false,
+        "severity": null
+      }, {
+        "type": "ACCOMMODATION",
+        "riskOfHarm": false,
+        "riskOfReoffending": false,
+        "severity": null
+      }, {
+        "type": "EDUCATION_TRAINING_AND_EMPLOYABILITY",
+        "riskOfHarm": false,
+        "riskOfReoffending": false,
+        "severity": null
+      }, {
+        "type": "RELATIONSHIPS",
+        "riskOfHarm": false,
+        "riskOfReoffending": false,
+        "severity": null
+      }, {
+        "type": "LIFESTYLE_AND_ASSOCIATES",
+        "riskOfHarm": false,
+        "riskOfReoffending": false,
+        "severity": null
+      }, {
+        "type": "ALCOHOL_MISUSE",
+        "riskOfHarm": false,
+        "riskOfReoffending": false,
+        "severity": null
+      }, {
+        "type": "THINKING_AND_BEHAVIOUR",
+        "riskOfHarm": false,
+        "riskOfReoffending": false,
+        "severity": null
+      }, {
+        "type": "ATTITUDE",
+        "riskOfHarm": false,
+        "riskOfReoffending": false,
+        "severity": null
+      }, {
+        "type": "FINANCE",
+        "riskOfHarm": false,
+        "riskOfReoffending": false,
+        "severity": null
+      }, {
+        "type": "EMOTIONAL_WELLBEING",
+        "riskOfHarm": false,
+        "riskOfReoffending": false,
+        "severity": null
+      }
+    ]
+  }
+}
