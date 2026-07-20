@@ -33,7 +33,18 @@ class NeedsController(
       "Criminogenic needs are dynamic factors that are directly linked to criminal behaviour.<br /> <br />" +
         "Eight criminogenic needs are measured: Accommodation, Employability, Relationships, Lifestyle and Associates, Drug Misuse, Alcohol Misuse, Thinking & Behaviour and Attitudes.<br /><br />" +
         "Non-criminogenic needs are individual traits, personal issues, or life challenges that cause personal distress or require support but have no direct influence on an individual's likelihood of committing a crime or reoffending.<br /><br />" +
-        "There are two non-criminogenic needs: Finance and Emotional Well-being",
+        "There are two non-criminogenic needs: Finance and Emotional Well-being. <br /><br />" +
+        "The following needs type codes can be returned from this endpoint. <br /> <br />" +
+        "- ACCOMMODATION </br>" +
+        "- EDUCATION_TRAINING_AND_EMPLOYABILITY </br>" +
+        "- RELATIONSHIPS </br>" +
+        "- LIFESTYLE_AND_ASSOCIATES </br>" +
+        "- DRUG_MISUSE </br>" +
+        "- ALCOHOL_MISUSE </br>" +
+        "- THINKING_AND_BEHAVIOUR </br>" +
+        "- ATTITUDE </br>" +
+        "- FINANCE </br>" +
+        "- EMOTIONAL_WELLBEING </br>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found needs for a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
