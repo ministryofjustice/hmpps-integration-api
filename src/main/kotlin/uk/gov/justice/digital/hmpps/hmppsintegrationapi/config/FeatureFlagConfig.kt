@@ -90,7 +90,7 @@ fun mergeFeatures(
 ): FeatureFlagConfig {
   val flags = mutableMapOf<String, Boolean>()
   flags.putAll(features.flags)
-  if (featureValues != null) {
+  if (!featureValues.isNullOrEmpty()) {
     val overrideValues = featureValues.split(",")
     for (override in overrideValues) {
       val parts = override.split("=")

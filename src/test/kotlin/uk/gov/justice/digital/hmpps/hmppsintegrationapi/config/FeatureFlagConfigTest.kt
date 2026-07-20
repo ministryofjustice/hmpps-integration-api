@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.config
 
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -93,5 +94,28 @@ class FeatureFlagConfigTest : ConfigTest() {
         .filterNot { it in flagsInCode }
         .toSet()
     assertTrue(notInCode.isEmpty(), "The following flags have been left in config: ${notInCode.joinToString(",")}")
+  }
+
+  @Test
+  fun `overrides can be merged into configuration`() {
+    val config1 = FeatureFlagConfig(mapOf("flag-a" to true, "flag-b" to false))
+    val overrides = "flag-b=true,flag-c=false"
+
+    val config2 = mergeFeatures(config1, overrides)
+
+    assertEquals(config2.flags, mapOf("flag-a" to true, "flag-b" to true, "flag-c" to false))
+  }
+
+  @Test
+  fun `null and empty overrides are ignored`() {
+    val config1 = FeatureFlagConfig(mapOf("flag-a" to true, "flag-b" to false))
+
+    val config2 = mergeFeatures(config1, null)
+
+    assertEquals(config2.flags, config1.flags)
+
+    val config3 = mergeFeatures(config1, "")
+
+    assertEquals(config3.flags, config1.flags)
   }
 }
