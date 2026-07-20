@@ -9,6 +9,7 @@ data class ConsumerConfig(
   val notes: String? = null,
   val queueName: String? = null,
   val oboConfig: OboConfig? = null,
+  val allowFeatureOverride: Boolean = false,
 ) {
   fun permissions(): List<String>? = include
 }

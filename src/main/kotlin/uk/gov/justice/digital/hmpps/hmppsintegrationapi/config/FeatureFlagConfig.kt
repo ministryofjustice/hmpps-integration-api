@@ -73,3 +73,29 @@ data class FeatureFlagConfig(
     }
   }
 }
+
+/**
+ * Merge a set of feature settings into a feature flag configuration.
+ *
+ * The new values are specified as a comma separated list of key/value pairs
+ * with the key and value separated by an equals sign.
+ *
+ * e.g. `first.feature=true,feature.two=false`
+ *
+ * Returns a new FeatureFlagConfig object, leaving the original unchanged.
+ */
+fun mergeFeatures(
+  features: FeatureFlagConfig,
+  featureValues: String?,
+): FeatureFlagConfig {
+  val flags = mutableMapOf<String, Boolean>()
+  flags.putAll(features.flags)
+  if (featureValues != null) {
+    val overrideValues = featureValues.split(",")
+    for (override in overrideValues) {
+      val parts = override.split("=")
+      flags[parts[0]] = parts[1].toBoolean()
+    }
+  }
+  return FeatureFlagConfig(flags)
+}

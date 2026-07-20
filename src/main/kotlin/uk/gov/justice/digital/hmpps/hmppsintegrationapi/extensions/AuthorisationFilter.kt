@@ -12,6 +12,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.mergeFeatures
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
@@ -92,6 +93,8 @@ class AuthorisationFilter(
       return
     }
 
+    val requestFeatures = featuresWithOverrides(features, consumerConfig, request.getHeader("X-Feature-Override"))
+
     // Authorise request
 
     val filters = authorisationService.allFilters(clientName)
@@ -99,7 +102,7 @@ class AuthorisationFilter(
 
     val requestedPath = req.requestURI
 
-    val context = RequestContext(clientName, consumerConfig, filters, features, oboUsername)
+    val context = RequestContext(clientName, consumerConfig, filters, requestFeatures, oboUsername)
     request.setAttribute("requestContext", context)
 
     if (authorisationService.hasAccess(clientName, requestedPath)) {
@@ -118,6 +121,24 @@ class AuthorisationFilter(
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Unable to authorise $requestedPath for $clientName")
     }
   }
+
+  /**
+   * Override feature flags based on request headers if the consumer is permitted to do this.
+   *
+   * If not permitted, returns the original feature config.
+   *
+   * The original feature config is not modified in either case.
+   */
+  internal fun featuresWithOverrides(
+    environmentFeatures: FeatureFlagConfig,
+    consumerConfig: ConsumerConfig,
+    overrides: String?,
+  ): FeatureFlagConfig =
+    if (consumerConfig.allowFeatureOverride) {
+      mergeFeatures(environmentFeatures, overrides)
+    } else {
+      environmentFeatures
+    }
 
   fun extractConsumerName(subjectDistinguishedName: String?): String? {
     if (subjectDistinguishedName.isNullOrEmpty()) {
