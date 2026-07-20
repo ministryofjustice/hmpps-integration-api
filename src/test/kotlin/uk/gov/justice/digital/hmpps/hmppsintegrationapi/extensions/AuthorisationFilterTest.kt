@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServlet
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
@@ -475,5 +476,23 @@ class AuthorisationFilterTest {
     val finalFilter = mock(Filter::class.java)
     mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
     verify(mockTelemetryService, times(0)).setSpanAttribute(eq("certExpiryDate"), any())
+  }
+
+  @Test
+  fun `feature overrides allowed`() {
+    val features = FeatureFlagConfig(mapOf("flag-a" to false, "flag-b" to false))
+    val consumerConfig = ConsumerConfig(allowFeatureOverride = true)
+    val requestConfig = authorisationFilter.featuresWithOverrides(features, consumerConfig, "flag-a=true")
+
+    assertEquals(requestConfig.flags, mapOf("flag-a" to true, "flag-b" to false))
+  }
+
+  @Test
+  fun `feature overrides denied`() {
+    val features = FeatureFlagConfig(mapOf("flag-a" to false, "flag-b" to false))
+    val consumerConfig = ConsumerConfig(allowFeatureOverride = false)
+    val requestConfig = authorisationFilter.featuresWithOverrides(features, consumerConfig, "flag-a=true")
+
+    assertEquals(requestConfig.flags, mapOf("flag-a" to false, "flag-b" to false))
   }
 }

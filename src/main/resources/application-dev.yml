@@ -159,6 +159,7 @@ authorisation:
       oboConfig:
         strategy: "unsigned"
         required: false
+      allowFeatureOverride: true
     smoke-test-limited-access:
       notes: "Automated post-deployment smoke tests (some access denied)"
       roles:
