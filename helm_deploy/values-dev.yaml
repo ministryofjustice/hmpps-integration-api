@@ -24,7 +24,7 @@ generic-service:
   volumes:
     - name: config-volume
       configMap:
-        name: authorisation-config
+        name: authorisation-yaml
         items:
           - key: authorisation.yaml
             path: authorisation.yaml
