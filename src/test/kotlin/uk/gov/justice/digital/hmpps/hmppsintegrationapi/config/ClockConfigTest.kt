@@ -27,7 +27,7 @@ class ClockConfigTest {
   }
 
   @Test
-  fun `localDateTimeToInstant converts winter date correctly`() {
+  fun `ukDateTimeToInstant converts winter date correctly`() {
     val inputDate = "2023-12-08T15:50:37"
     val expectedInstant = "2023-12-08T15:50:37Z"
 
@@ -37,7 +37,7 @@ class ClockConfigTest {
   }
 
   @Test
-  fun `localDateTimeToInstant converts summer date correctly handling BST`() {
+  fun `ukDateTimeToInstant converts summer date correctly handling BST`() {
     val inputDate = "2023-07-08T15:50:37"
     // The resulting instant should be 1 hour behind local time in July
     val expectedInstant = "2023-07-08T14:50:37Z"
@@ -45,5 +45,12 @@ class ClockConfigTest {
     val result = ukDateTimeToInstant(inputDate)
 
     assertEquals(expectedInstant, result)
+  }
+
+  @Test
+  fun `ukDateTimeToInstant returns null if null value is provided`() {
+    val result = ukDateTimeToInstant(null)
+
+    assertEquals(null, result)
   }
 }

@@ -14,7 +14,11 @@ class ClockConfiguration {
 
 fun fixedClock(): Clock = Clock.fixed(Clock.systemDefaultZone().instant(), ZoneId.systemDefault())
 
-fun ukDateTimeToInstant(dateTime: String): String {
+fun ukDateTimeToInstant(dateTime: String?): String? {
+  if (dateTime.isNullOrEmpty()) {
+    return null
+  }
+
   val local = LocalDateTime.parse(dateTime)
   val instant = local.atZone(ZoneId.of("Europe/London")).toInstant()
   return instant.toString()

@@ -54,19 +54,19 @@ fun PrisonApiPrisonTimeline.convertDatesToInstant(): PrisonApiPrisonTimeline =
   this.apply {
     prisonPeriod.forEach { period ->
       // Convert PrisonPeriodEntry dates
-      period.entryDate = period.entryDate?.let { ukDateTimeToInstant(it) }
-      period.releaseDate = period.releaseDate?.let { ukDateTimeToInstant(it) }
+      period.entryDate = ukDateTimeToInstant(period.entryDate)
+      period.releaseDate = ukDateTimeToInstant(period.releaseDate)
 
       // Convert MovementDatesEntry dates
       period.movementDates.forEach { movement ->
-        movement.dateInToPrison = movement.dateInToPrison?.let { ukDateTimeToInstant(it) }
-        movement.dateOutOfPrison = movement.dateOutOfPrison?.let { ukDateTimeToInstant(it) }
+        movement.dateInToPrison = ukDateTimeToInstant(movement.dateInToPrison)
+        movement.dateOutOfPrison = ukDateTimeToInstant(movement.dateOutOfPrison)
       }
 
       // Convert TransfersEntry dates
       period.transfers.forEach { transfer ->
-        transfer.dateInToPrison = transfer.dateInToPrison?.let { ukDateTimeToInstant(it) }
-        transfer.dateOutOfPrison = transfer.dateOutOfPrison?.let { ukDateTimeToInstant(it) }
+        transfer.dateInToPrison = ukDateTimeToInstant(transfer.dateInToPrison)
+        transfer.dateOutOfPrison = ukDateTimeToInstant(transfer.dateOutOfPrison)
       }
     }
   }
