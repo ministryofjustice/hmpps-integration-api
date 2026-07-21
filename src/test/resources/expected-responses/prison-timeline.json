@@ -4,16 +4,16 @@
     "prisonPeriod":
     [
       {
-        "entryDate":"2021-07-05T10:35:17",
-        "releaseDate":"2021-07-05T10:35:17",
+        "entryDate":"2021-07-05T09:35:17Z",
+        "releaseDate":"2021-07-05T09:35:17Z",
         "movementDates":
         [
           {
             "reasonInToPrison":"Unconvicted Remand",
-            "dateInToPrison":"2021-07-05T10:35:17",
+            "dateInToPrison":"2021-07-05T09:35:17Z",
             "inwardType":"ADM",
             "reasonOutOfPrison":"Conditional Release (CJA91) -SH Term>1YR",
-            "dateOutOfPrison":"2021-07-05T10:35:17",
+            "dateOutOfPrison":"2021-07-05T09:35:17Z",
             "outwardType":"REL",
             "admittedIntoPrisonId":"MDI",
             "releaseFromPrisonId":"MDI"
@@ -22,8 +22,8 @@
         "transfers":
         [
           {
-            "dateOutOfPrison":"2021-07-05T10:35:17",
-            "dateInToPrison":"2021-07-05T10:35:17",
+            "dateOutOfPrison":"2021-07-05T09:35:17Z",
+            "dateInToPrison":"2021-07-05T09:35:17Z",
             "transferReason":"Compassionate Transfer",
             "fromPrisonId":"WWI",
             "toPrisonId":"BXI"

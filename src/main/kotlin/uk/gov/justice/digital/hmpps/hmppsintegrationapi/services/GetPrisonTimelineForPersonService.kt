@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiPrisonTimeline
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.convertDatesToInstant
 
 @Service
 class GetPrisonTimelineForPersonService(
@@ -36,7 +37,7 @@ class GetPrisonTimelineForPersonService(
     }
 
     return Response(
-      data = prisonTimelineResponse.data,
+      data = prisonTimelineResponse.data?.convertDatesToInstant(),
     )
   }
 }
