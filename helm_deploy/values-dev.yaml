@@ -19,15 +19,15 @@ generic-service:
   volumeMounts:
     # subPath ensures only this specific file is added to the folder
     - name: config-volume
-      mountPath: /app/test-override.yaml
-      subPath: test-override.yaml
+      mountPath: /app/authorisation.yaml
+      subPath: authorisation.yaml
   volumes:
     - name: config-volume
       configMap:
-        name: yaml-override-config
+        name: authorisation-config
         items:
-          - key: override.yaml
-            path: test-override.yaml
+          - key: authorisation.yaml
+            path: authorisation.yaml
 
   namespace_secrets:
     hmpps-auth:
