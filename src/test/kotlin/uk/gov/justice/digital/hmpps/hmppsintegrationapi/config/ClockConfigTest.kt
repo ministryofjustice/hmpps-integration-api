@@ -31,7 +31,7 @@ class ClockConfigTest {
     val inputDate = "2023-12-08T15:50:37"
     val expectedInstant = "2023-12-08T15:50:37Z"
 
-    val result = localDateTimeToInstant(inputDate)
+    val result = ukDateTimeToInstant(inputDate)
 
     assertEquals(expectedInstant, result)
   }
@@ -42,7 +42,7 @@ class ClockConfigTest {
     // The resulting instant should be 1 hour behind local time in July
     val expectedInstant = "2023-07-08T14:50:37Z"
 
-    val result = localDateTimeToInstant(inputDate)
+    val result = ukDateTimeToInstant(inputDate)
 
     assertEquals(expectedInstant, result)
   }

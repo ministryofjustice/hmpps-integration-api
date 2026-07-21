@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi
 
 import io.swagger.v3.oas.annotations.media.Schema
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.localDateTimeToInstant
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ukDateTimeToInstant
 
 data class PrisonApiPrisonTimeline(
   var prisonPeriod: List<PrisonPeriodEntry> = emptyList(),
@@ -54,19 +54,19 @@ fun PrisonApiPrisonTimeline.convertDatesToInstant(): PrisonApiPrisonTimeline =
   this.apply {
     prisonPeriod.forEach { period ->
       // Convert PrisonPeriodEntry dates
-      period.entryDate = period.entryDate?.let { localDateTimeToInstant(it) }
-      period.releaseDate = period.releaseDate?.let { localDateTimeToInstant(it) }
+      period.entryDate = period.entryDate?.let { ukDateTimeToInstant(it) }
+      period.releaseDate = period.releaseDate?.let { ukDateTimeToInstant(it) }
 
       // Convert MovementDatesEntry dates
       period.movementDates.forEach { movement ->
-        movement.dateInToPrison = movement.dateInToPrison?.let { localDateTimeToInstant(it) }
-        movement.dateOutOfPrison = movement.dateOutOfPrison?.let { localDateTimeToInstant(it) }
+        movement.dateInToPrison = movement.dateInToPrison?.let { ukDateTimeToInstant(it) }
+        movement.dateOutOfPrison = movement.dateOutOfPrison?.let { ukDateTimeToInstant(it) }
       }
 
       // Convert TransfersEntry dates
       period.transfers.forEach { transfer ->
-        transfer.dateInToPrison = transfer.dateInToPrison?.let { localDateTimeToInstant(it) }
-        transfer.dateOutOfPrison = transfer.dateOutOfPrison?.let { localDateTimeToInstant(it) }
+        transfer.dateInToPrison = transfer.dateInToPrison?.let { ukDateTimeToInstant(it) }
+        transfer.dateOutOfPrison = transfer.dateOutOfPrison?.let { ukDateTimeToInstant(it) }
       }
     }
   }
