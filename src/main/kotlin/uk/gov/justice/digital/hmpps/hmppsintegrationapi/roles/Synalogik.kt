@@ -8,6 +8,7 @@ val synalogik =
       -"/v1/prison/prisoners"
       -"/v1/prison/prisoners/{hmppsId}"
       -"/v1/persons/{hmppsId}/addresses"
+      -"/v1/persons/{hmppsId}/prison-timeline"
       -"/v1/hmpps/reference-data"
       -"/v1/status"
     }
