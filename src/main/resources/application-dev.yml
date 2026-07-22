@@ -152,21 +152,6 @@ authorisation:
     jbetton:
       roles:
         - "full-access"
-    smoke-test-full-access:
-      notes: "Automated post-deployment smoke tests (happy path)"
-      roles:
-        - "full-access"
-      oboConfig:
-        strategy: "unsigned"
-        required: false
-      allowFeatureOverride: true
-    smoke-test-limited-access:
-      notes: "Automated post-deployment smoke tests (some access denied)"
-      roles:
-        - "private-prison"
-    smoke-test-no-access:
-      notes: "Automated post-deployment smoke tests (all access denied)"
-      roles:
     test:
       notes: "Used for testing queues in dev"
       roles:
