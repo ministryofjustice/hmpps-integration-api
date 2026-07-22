@@ -3,10 +3,10 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.5.7"
-  kotlin("plugin.spring") version "2.4.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.1"
+  kotlin("plugin.spring") version "2.4.10"
   id("dev.detekt") version "2.0.0-alpha.5"
-  id("org.jetbrains.kotlinx.kover") version "0.9.8"
+  id("org.jetbrains.kotlinx.kover") version "0.9.9"
 }
 
 configurations.register("koverCli") {
@@ -59,7 +59,7 @@ dependencies {
   testImplementation("io.kotest:kotest-runner-junit5-jvm:6.2.2")
   testImplementation("io.kotest:kotest-assertions-core-jvm:6.2.2")
   testImplementation("io.kotest:kotest-extensions-spring:6.2.2")
-  add("koverCli", "org.jetbrains.kotlinx:kover-cli:0.9.8")
+  add("koverCli", "org.jetbrains.kotlinx:kover-cli:0.9.9")
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
   testImplementation("org.mockito:mockito-core:5.23.0")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
