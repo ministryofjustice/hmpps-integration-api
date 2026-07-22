@@ -234,14 +234,6 @@ authorisation:
       notes: "See client list in Confluence"
       roles:
         - "synalogik"
-    jaiu-onboarding-optimisation:
-      notes: "See client list in Confluence"
-      roles:
-        - "person-lookup"
-      oboConfig:
-        strategy: "entra"
-        required: true
-        verification-strategy: "azuread"
 
 hmpps.sqs:
   queues:
