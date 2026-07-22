@@ -65,17 +65,17 @@ class AuthorisationServiceTest : ConfigTest() {
 
   @Test
   fun `has permission`() {
-    assertTrue(getAuthService("dev").hasAccess("smoke-test-full-access", "/v1/status"))
+    assertTrue(getAuthService("test").hasAccess("automated-test-client", "/v1/status"))
   }
 
   @Test
   fun `has permission to specific path`() {
-    assertTrue(getAuthService("dev").hasAccess("smoke-test-full-access", "/v1/persons/ABC123"))
+    assertTrue(getAuthService("test").hasAccess("automated-test-client", "/v1/persons/ABC123"))
   }
 
   @Test
   fun `does not have permission`() {
-    assertFalse(getAuthService("dev").hasAccess("smoke-test-limited-access", "/v9/status"))
+    assertFalse(getAuthService("test").hasAccess("automated-test-client", "/v9/status"))
   }
 
   @Test
