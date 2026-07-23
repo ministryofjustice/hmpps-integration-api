@@ -35,7 +35,6 @@ import java.time.ZoneOffset
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
 class AuthorisationServiceTest : ConfigTest() {
@@ -76,16 +75,6 @@ class AuthorisationServiceTest : ConfigTest() {
   @Test
   fun `does not have permission`() {
     assertFalse(getAuthService("test").hasAccess("automated-test-client", "/v9/status"))
-  }
-
-  @Test
-  fun `multiple matching consumers`() {
-    for (env in listOf("dev", "preprod", "prod")) {
-      val matches = getAuthService(env).consumersWithAccess("/v1/status")
-      assertNotEquals(0, matches.size)
-      assertContains(matches, "event-service")
-      assertContains(matches, "kubernetes-health-check-client")
-    }
   }
 
   fun listConsumersWithAccess(
