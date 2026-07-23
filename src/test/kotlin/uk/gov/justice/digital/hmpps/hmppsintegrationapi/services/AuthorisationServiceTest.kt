@@ -78,16 +78,6 @@ class AuthorisationServiceTest : ConfigTest() {
     assertFalse(getAuthService("test").hasAccess("automated-test-client", "/v9/status"))
   }
 
-  @Test
-  fun `multiple matching consumers`() {
-    for (env in listOf("dev", "preprod", "prod")) {
-      val matches = getAuthService(env).consumersWithAccess("/v1/status")
-      assertNotEquals(0, matches.size)
-      assertContains(matches, "event-service")
-      assertContains(matches, "kubernetes-health-check-client")
-    }
-  }
-
   fun listConsumersWithAccess(
     environment: String,
     endpoint: String,

@@ -85,6 +85,8 @@ feature-flag:
   limited-access-notifications-enabled: true
   deduplicate-events: true
 
+#authorisation.consumers - now defined in the configuration repository
+
 hmpps.sqs:
   queues:
     hmppsdomainqueue:
