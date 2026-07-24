@@ -76,7 +76,7 @@ class SANGateway(
     return if (result.errors.isEmpty()) {
       Response(data = result.data!!)
     } else {
-      Response.error(result.errors, PlanCreationSchedules(listOf()))
+      Response.error(UpstreamApi.SAN, result.errors, PlanCreationSchedules(listOf()))
     }
   }
 
@@ -119,7 +119,7 @@ class SANGateway(
     return if (result.errors.isEmpty()) {
       Response(data = result.data!!)
     } else {
-      Response.error(result.errors, PlanReviewSchedules(listOf()))
+      Response.error(UpstreamApi.SAN, result.errors, PlanReviewSchedules(listOf()))
     }
   }
 

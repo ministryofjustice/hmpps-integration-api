@@ -12,9 +12,10 @@ data class Response<T>(
     fun <T> merge(responses: List<Response<List<T>>>): Response<List<T>> = Response(data = responses.flatMap { it.data }, errors = responses.flatMap { it.errors })
 
     fun <T> error(
+      api: UpstreamApi,
       errors: List<Exception>,
       emptyValue: T,
-    ): Response<T> = Response(emptyValue, wrapErrors(errors))
+    ): Response<T> = Response(emptyValue, wrapErrors(api, errors))
   }
 
   fun hasError(type: UpstreamApiError.Type): Boolean = this.errors.any { it.type == type }
@@ -33,12 +34,18 @@ data class DataResponse<T>(
 
 inline fun <reified T> Response<T>.withoutNotFound() = Response(data = data, errors = errors.filter { it.type != UpstreamApiError.Type.ENTITY_NOT_FOUND })
 
-fun wrapErrors(errors: List<Exception>): List<UpstreamApiError> = errors.map { mapError(it) }
+fun wrapErrors(
+  api: UpstreamApi,
+  errors: List<Exception>,
+): List<UpstreamApiError> = errors.map { mapError(it, api) }
 
-fun mapError(error: Exception): UpstreamApiError =
+fun mapError(
+  error: Exception,
+  api: UpstreamApi,
+): UpstreamApiError =
   when (error) {
-    is WebClientResponseException -> UpstreamApiError(UpstreamApi.SAN, mapStatus(error.statusCode), error.message)
-    else -> UpstreamApiError(UpstreamApi.SAN, UpstreamApiError.Type.INTERNAL_SERVER_ERROR, error.message)
+    is WebClientResponseException -> UpstreamApiError(api, mapStatus(error.statusCode), error.message)
+    else -> UpstreamApiError(api, UpstreamApiError.Type.INTERNAL_SERVER_ERROR, error.message)
   }
 
 fun mapStatus(status: HttpStatusCode): UpstreamApiError.Type =
