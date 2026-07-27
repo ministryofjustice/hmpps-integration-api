@@ -118,6 +118,7 @@ const get_endpoints = [
   `/v1/prison/prisoners/${attendancesHmppsId}/activities/attendances?startDate=${attendancesStartDate}&endDate=${attendancesEndDate}`,
   `/v1/activities/schedule/${scheduleId}/waiting-list-applications`,
   `/v1/activities/schedule/${scheduleId}/suitability-criteria`,
+  `/v1/persons/${hmppsId}/court-cases"`,
 ];
 
 const postEducationUpdateEndpoint = `/v1/persons/${hmppsId}/education/status`
@@ -808,6 +809,7 @@ function verify_obo_access(hmppsId) {
     validate_get_request_with_obo(`/v1/persons/${hmppsId}/addresses`)
     validate_get_request_with_obo(`/v1/persons/${hmppsId}/contacts`)
     validate_get_request_with_obo(`/v1/persons/${hmppsId}/prison-timeline`)
+    validate_get_request_with_obo(`/v1/persons/${hmppsId}/court-cases`)
   });
 }
 

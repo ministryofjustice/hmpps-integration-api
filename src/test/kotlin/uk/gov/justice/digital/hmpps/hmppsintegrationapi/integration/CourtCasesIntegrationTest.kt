@@ -23,6 +23,8 @@ class CourtCasesIntegrationTest : IntegrationTestBase() {
           """.trimIndent(),
         ),
       )
+
+    remandAndSentencingMockServer.assertValidationPassed()
   }
 
   @Test
