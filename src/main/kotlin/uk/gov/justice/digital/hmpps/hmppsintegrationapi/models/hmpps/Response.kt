@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
 import org.springframework.http.HttpStatus
-import org.springframework.http.HttpStatusCode
 import org.springframework.web.reactive.function.client.WebClientResponseException
 
 data class Response<T>(
@@ -44,14 +43,15 @@ fun mapError(
   api: UpstreamApi,
 ): UpstreamApiError =
   when (error) {
-    is WebClientResponseException -> UpstreamApiError(api, mapStatus(error.statusCode), error.message)
+    is WebClientResponseException -> UpstreamApiError(api, mapStatus(error), error.message)
     else -> UpstreamApiError(api, UpstreamApiError.Type.INTERNAL_SERVER_ERROR, error.message)
   }
 
-fun mapStatus(status: HttpStatusCode): UpstreamApiError.Type =
-  when (status) {
+fun mapStatus(error: WebClientResponseException): UpstreamApiError.Type =
+  when (error.statusCode) {
     HttpStatus.NOT_FOUND -> UpstreamApiError.Type.ENTITY_NOT_FOUND
     HttpStatus.BAD_REQUEST -> UpstreamApiError.Type.BAD_REQUEST
     HttpStatus.FORBIDDEN -> UpstreamApiError.Type.FORBIDDEN
-    else -> UpstreamApiError.Type.INTERNAL_SERVER_ERROR
+    HttpStatus.CONFLICT -> UpstreamApiError.Type.CONFLICT
+    else -> throw error
   }
