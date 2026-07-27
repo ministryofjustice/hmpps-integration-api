@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CourtCasesSummary
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.CourtCaseService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
@@ -40,7 +40,7 @@ class CourtCaseController(
   fun getCourtCases(
     @Parameter(description = "HMPPS identifier", example = "A1234AA") @PathVariable hmppsId: String,
     @RequestAttribute requestContext: RequestContext?,
-  ): Response<CourtCasesSummary?> {
+  ): DataResponse<CourtCasesSummary?> {
     val response = courtCaseService.getCourtCaseDetails(hmppsId, requestContext)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
@@ -52,6 +52,6 @@ class CourtCaseController(
     }
 
     auditService.createEvent("COURT_CASES_SUMMARY", mapOf("hmppsId" to hmppsId))
-    return response
+    return DataResponse(response.data)
   }
 }
