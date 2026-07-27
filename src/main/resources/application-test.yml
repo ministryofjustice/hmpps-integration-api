@@ -70,6 +70,8 @@ services:
     base-url: http://localhost:4033
   manage-users:
     base-url: http://localhost:4034
+  remand-and-sentencing:
+    base-url: https://remand-and-sentencing-api.hmpps.service.justice.gov.uk
 
 hmpps.sqs:
   provider: localstack

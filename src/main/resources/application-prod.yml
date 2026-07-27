@@ -49,6 +49,8 @@ services:
     base-url: https://probation-offender-search.hmpps.service.justice.gov.uk
   manage-users:
     base-url: https://manage-users-api.hmpps.service.justice.gov.uk
+  remand-and-sentencing:
+    base-url: https://remand-and-sentencing-api.hmpps.service.justice.gov.uk
 
 feature-flag:
   # API Config

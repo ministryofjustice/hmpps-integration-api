@@ -1,0 +1,373 @@
+{
+  "courtCases": [
+    {
+      "prisonerId": "string",
+      "courtCaseUuid": "string",
+      "status": "ACTIVE",
+      "latestAppearance": {
+        "appearanceUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "outcome": {
+          "outcomeUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "outcomeName": "string",
+          "nomisCode": "string",
+          "outcomeType": "string",
+          "displayOrder": 0,
+          "relatedChargeOutcomeUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "isSubList": true,
+          "dispositionCode": "string",
+          "status": "ACTIVE",
+          "warrantType": "string"
+        },
+        "courtCode": "string",
+        "courtCaseReference": "string",
+        "criminalAppealOfficeReference": "string",
+        "appearanceDate": "2026-07-24",
+        "warrantType": "string",
+        "nextCourtAppearance": {
+          "appearanceDate": "2026-07-24",
+          "appearanceTime": "07:44:26.04770063",
+          "courtCode": "string",
+          "appearanceType": {
+            "appearanceTypeUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "description": "string",
+            "displayOrder": 0,
+            "hasSubtypes": true
+          },
+          "futureSkeletonAppearanceUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "courtAppearanceSubType": {
+            "appearanceSubtypeUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "description": "string",
+            "displayOrder": 0,
+            "appearanceTypeUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+          }
+        },
+        "charges": [
+          {
+            "chargeUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "offenceCode": "string",
+            "offenceStartDate": "2026-07-24",
+            "offenceEndDate": "2026-07-24",
+            "outcome": {
+              "outcomeUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+              "outcomeName": "string",
+              "nomisCode": "string",
+              "outcomeType": "string",
+              "displayOrder": 0,
+              "dispositionCode": "string",
+              "status": "ACTIVE"
+            },
+            "aggravatingFactors": [
+              {
+                "code": "string",
+                "title": "string",
+                "description": "string",
+                "displayOrder": 0
+              }
+            ],
+            "sentence": {
+              "sentenceUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+              "chargeNumber": "string",
+              "periodLengths": [
+                {
+                  "years": 0,
+                  "months": 0,
+                  "weeks": 0,
+                  "days": 0,
+                  "periodOrder": "string",
+                  "periodLengthType": "SENTENCE_LENGTH",
+                  "legacyData": {
+                    "lifeSentence": true,
+                    "sentenceTermCode": "string",
+                    "sentenceTermDescription": "string"
+                  },
+                  "periodLengthUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                }
+              ],
+              "sentenceServeType": "string",
+              "sentenceType": {
+                "sentenceTypeUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                "description": "string",
+                "classification": "STANDARD",
+                "hintText": "string",
+                "displayOrder": 0
+              },
+              "convictionDate": "2026-07-24",
+              "fineAmount": {
+                "fineAmount": 0
+              },
+              "legacyData": {
+                "sentenceCalcType": "string",
+                "sentenceCategory": "string",
+                "sentenceTypeDesc": "string",
+                "postedDate": "string",
+                "active": true,
+                "nomisLineReference": "string",
+                "bookingId": 0
+              },
+              "consecutiveToSentenceUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+              "hasRecall": true
+            },
+            "legacyData": {
+              "postedDate": "string",
+              "nomisOutcomeCode": "string",
+              "outcomeDescription": "string",
+              "outcomeDispositionCode": "string",
+              "outcomeConvictionFlag": true,
+              "offenceDescription": "string"
+            },
+            "mergedFromCase": {
+              "caseReference": "string",
+              "courtCode": "string",
+              "warrantDate": "2026-07-24",
+              "mergedFromDate": "2026-07-24"
+            },
+            "createdAt": "2026-07-24T10:43:26.154Z"
+          }
+        ],
+        "overallSentenceLength": {
+          "years": 0,
+          "months": 0,
+          "weeks": 0,
+          "days": 0,
+          "periodOrder": "string",
+          "periodLengthType": "SENTENCE_LENGTH",
+          "legacyData": {
+            "lifeSentence": true,
+            "sentenceTermCode": "string",
+            "sentenceTermDescription": "string"
+          },
+          "periodLengthUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        },
+        "overallConvictionDate": "2026-07-24",
+        "legacyData": {
+          "postedDate": "string",
+          "nomisOutcomeCode": "string",
+          "outcomeDescription": "string",
+          "nextEventDateTime": "2026-07-24T10:43:26.154Z",
+          "appearanceTime": "07:44:26.04770063",
+          "outcomeDispositionCode": "string",
+          "outcomeConvictionFlag": true,
+          "nomisAppearanceTypeCode": "string",
+          "comments": "string"
+        },
+        "documents": [
+          {
+            "documentUUID": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "documentType": "string",
+            "fileName": "string",
+            "courtDataIngested": true
+          }
+        ],
+        "source": "NOMIS",
+        "deleteStatus": "SUPPORTED",
+        "periodLengths": [
+          {
+            "years": 0,
+            "months": 0,
+            "weeks": 0,
+            "days": 0,
+            "periodOrder": "string",
+            "periodLengthType": "SENTENCE_LENGTH",
+            "legacyData": {
+              "lifeSentence": true,
+              "sentenceTermCode": "string",
+              "sentenceTermDescription": "string"
+            },
+            "periodLengthUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+          }
+        ]
+      },
+      "appearances": [
+        {
+          "appearanceUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "outcome": {
+            "outcomeUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "outcomeName": "string",
+            "nomisCode": "string",
+            "outcomeType": "string",
+            "displayOrder": 0,
+            "relatedChargeOutcomeUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "isSubList": true,
+            "dispositionCode": "string",
+            "status": "ACTIVE",
+            "warrantType": "string"
+          },
+          "courtCode": "string",
+          "courtCaseReference": "string",
+          "criminalAppealOfficeReference": "string",
+          "appearanceDate": "2026-07-24",
+          "warrantType": "string",
+          "nextCourtAppearance": {
+            "appearanceDate": "2026-07-24",
+            "appearanceTime": "07:44:26.04770063",
+            "courtCode": "string",
+            "appearanceType": {
+              "appearanceTypeUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+              "description": "string",
+              "displayOrder": 0,
+              "hasSubtypes": true
+            },
+            "futureSkeletonAppearanceUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "courtAppearanceSubType": {
+              "appearanceSubtypeUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+              "description": "string",
+              "displayOrder": 0,
+              "appearanceTypeUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+            }
+          },
+          "charges": [
+            {
+              "chargeUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+              "offenceCode": "string",
+              "offenceStartDate": "2026-07-24",
+              "offenceEndDate": "2026-07-24",
+              "outcome": {
+                "outcomeUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                "outcomeName": "string",
+                "nomisCode": "string",
+                "outcomeType": "string",
+                "displayOrder": 0,
+                "dispositionCode": "string",
+                "status": "ACTIVE"
+              },
+              "aggravatingFactors": [
+                {
+                  "code": "string",
+                  "title": "string",
+                  "description": "string",
+                  "displayOrder": 0
+                }
+              ],
+              "sentence": {
+                "sentenceUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                "chargeNumber": "string",
+                "periodLengths": [
+                  {
+                    "years": 0,
+                    "months": 0,
+                    "weeks": 0,
+                    "days": 0,
+                    "periodOrder": "string",
+                    "periodLengthType": "SENTENCE_LENGTH",
+                    "legacyData": {
+                      "lifeSentence": true,
+                      "sentenceTermCode": "string",
+                      "sentenceTermDescription": "string"
+                    },
+                    "periodLengthUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                  }
+                ],
+                "sentenceServeType": "string",
+                "sentenceType": {
+                  "sentenceTypeUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                  "description": "string",
+                  "classification": "STANDARD",
+                  "hintText": "string",
+                  "displayOrder": 0
+                },
+                "convictionDate": "2026-07-24",
+                "fineAmount": {
+                  "fineAmount": 0
+                },
+                "legacyData": {
+                  "sentenceCalcType": "string",
+                  "sentenceCategory": "string",
+                  "sentenceTypeDesc": "string",
+                  "postedDate": "string",
+                  "active": true,
+                  "nomisLineReference": "string",
+                  "bookingId": 0
+                },
+                "consecutiveToSentenceUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                "hasRecall": true
+              },
+              "legacyData": {
+                "postedDate": "string",
+                "nomisOutcomeCode": "string",
+                "outcomeDescription": "string",
+                "outcomeDispositionCode": "string",
+                "outcomeConvictionFlag": true,
+                "offenceDescription": "string"
+              },
+              "mergedFromCase": {
+                "caseReference": "string",
+                "courtCode": "string",
+                "warrantDate": "2026-07-24",
+                "mergedFromDate": "2026-07-24"
+              },
+              "createdAt": "2026-07-24T10:43:26.154Z"
+            }
+          ],
+          "overallSentenceLength": {
+            "years": 0,
+            "months": 0,
+            "weeks": 0,
+            "days": 0,
+            "periodOrder": "string",
+            "periodLengthType": "SENTENCE_LENGTH",
+            "legacyData": {
+              "lifeSentence": true,
+              "sentenceTermCode": "string",
+              "sentenceTermDescription": "string"
+            },
+            "periodLengthUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+          },
+          "overallConvictionDate": "2026-07-24",
+          "legacyData": {
+            "postedDate": "string",
+            "nomisOutcomeCode": "string",
+            "outcomeDescription": "string",
+            "nextEventDateTime": "2026-07-24T10:43:26.154Z",
+            "appearanceTime": "07:44:26.04770063",
+            "outcomeDispositionCode": "string",
+            "outcomeConvictionFlag": true,
+            "nomisAppearanceTypeCode": "string",
+            "comments": "string"
+          },
+          "documents": [
+            {
+              "documentUUID": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+              "documentType": "string",
+              "fileName": "string",
+              "courtDataIngested": true
+            }
+          ],
+          "source": "NOMIS",
+          "deleteStatus": "SUPPORTED",
+          "periodLengths": [
+            {
+              "years": 0,
+              "months": 0,
+              "weeks": 0,
+              "days": 0,
+              "periodOrder": "string",
+              "periodLengthType": "SENTENCE_LENGTH",
+              "legacyData": {
+                "lifeSentence": true,
+                "sentenceTermCode": "string",
+                "sentenceTermDescription": "string"
+              },
+              "periodLengthUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+            }
+          ]
+        }
+      ],
+      "legacyData": {
+        "caseReferences": [
+          {
+            "offenderCaseReference": "string",
+            "updatedDate": "2026-07-24T10:43:26.155Z",
+            "source": "NOMIS"
+          }
+        ],
+        "bookingId": 0
+      },
+      "mergedToCaseDetails": {
+        "mergedToDate": "2026-07-24",
+        "caseReference": "string",
+        "courtCode": "string",
+        "warrantDate": "2026-07-24"
+      }
+    }
+  ]
+}
