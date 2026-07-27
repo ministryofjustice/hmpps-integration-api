@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
 
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -37,7 +38,7 @@ class CourtCaseController(
     ],
   )
   fun getCourtCases(
-    @PathVariable hmppsId: String,
+    @Parameter(description = "HMPPS identifier", example = "A1234AA") @PathVariable hmppsId: String,
     @RequestAttribute requestContext: RequestContext?,
   ): Response<CourtCasesSummary?> {
     val response = courtCaseService.getCourtCaseDetails(hmppsId, requestContext)
