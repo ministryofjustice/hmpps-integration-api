@@ -2,8 +2,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
@@ -131,12 +129,4 @@ class SANGateway(
   }
 
   internal fun useRestApiClient() = features.isEnabled(FeatureFlagConfig.RESTAPICLIENT_FOR_SAN_GATEWAY)
-}
-
-@Configuration
-class RestClientConfig {
-  @Bean("sanRestClient")
-  fun sanRestClient(
-    @Value("\${services.san.base-url}") baseUrl: String,
-  ): RestApiClient = RestApiClient(UpstreamApi.SAN.name, baseUrl)
 }

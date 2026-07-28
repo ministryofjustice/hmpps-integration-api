@@ -24,3 +24,4 @@ updateOpenApiSpec "https://learningandworkprogress-api-dev.hmpps.service.justice
 updateOpenApiSpec "https://prisoner-base-location-api-dev.hmpps.service.justice.gov.uk/v3/api-docs" "../src/test/resources/openapi-specs/prisoner-base-location.json"
 updateOpenApiSpec "https://probation-offender-search-dev.hmpps.service.justice.gov.uk/v3/api-docs" "../src/test/resources/openapi-specs/probation-offender-search.json"
 updateOpenApiSpec "https://manage-users-api-dev.hmpps.service.justice.gov.uk/v3/api-docs" "../src/test/resources/openapi-specs/manage-users.json"
+updateOpenApiSpec "https://remand-and-sentencing-api-dev.hmpps.service.justice.gov.uk/v3/api-docs" "../src/test/resources/openapi-specs/remand-and-sentencing.json"

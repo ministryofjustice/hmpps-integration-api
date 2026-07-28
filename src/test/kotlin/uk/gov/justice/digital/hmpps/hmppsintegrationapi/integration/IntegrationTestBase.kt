@@ -196,6 +196,7 @@ abstract class IntegrationTestBase {
     val arnsMockServer = ApiMockServer.create(UpstreamApi.ARNS_INTEGRATION_TEST)
     val probationSearchMockServer = ApiMockServer.create(UpstreamApi.PROBATION_OFFENDER_SEARCH)
     val manageUsersMockServer = ApiMockServer.create(UpstreamApi.MANAGE_USERS)
+    val remandAndSentencingMockServer = ApiMockServer.create(UpstreamApi.REMAND_AND_SENTENCING)
 
     @BeforeEach
     fun setUp() {
@@ -410,12 +411,18 @@ abstract class IntegrationTestBase {
       )
 
       probationSearchMockServer.start()
-
       managePomCaseMockServer.start()
       plpMockServer.start()
       sanMockServer.start()
       activitiesMockServer.start()
       prisonerBaseLocationMockServer.start()
+      remandAndSentencingMockServer.start()
+      remandAndSentencingMockServer.stubForGet(
+        "/person/$nomsId/sentenced-court-cases",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/remandAndSentencing/fixtures/SentencedCourtCasesResponse.json",
+        ).readText(),
+      )
     }
 
     @AfterAll
@@ -432,6 +439,7 @@ abstract class IntegrationTestBase {
       corePersonRecordMockServer.stop()
       probationSearchMockServer.stop()
       manageUsersMockServer.stop()
+      remandAndSentencingMockServer.stop()
     }
   }
 
