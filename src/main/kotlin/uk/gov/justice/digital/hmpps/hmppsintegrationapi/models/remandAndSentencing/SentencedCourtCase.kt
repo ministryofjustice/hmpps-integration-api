@@ -14,6 +14,7 @@ data class RasSentencedCourtCase(
 data class RasCourtAppearance(
   val outcome: RasCourtAppearanceOutcome? = null,
   val appearanceDate: LocalDate? = null,
+  val courtCode: String? = null,
   val charges: List<RasCharge> = emptyList(),
 )
 

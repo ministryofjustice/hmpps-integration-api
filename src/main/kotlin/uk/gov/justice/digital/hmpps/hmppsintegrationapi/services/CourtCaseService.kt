@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.RemandAndSentencingGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CourtCasesSummary
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CourtOutcome
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -34,6 +35,14 @@ class CourtCaseService(
         }.mapNotNull { it.sentence?.convictionDate }
         .minOrNull()
 
-    return Response(CourtCasesSummary(dateOfFirstConviction = dateOfFirstConviction))
+    val allCourtAppearances = sentencedCourtCases.data.courtCases.flatMap { case ->
+      (case.appearances + listOf(case.latestAppearance))
+    }.sortedByDescending { it?.appearanceDate }
+
+    val courtOutcome = allCourtAppearances.firstOrNull()?.outcome?.let { CourtOutcome(it.outcomeType, it.outcomeName) }
+
+    val courtCode = allCourtAppearances.firstOrNull { it?.outcome?.outcomeType == "SENTENCING" }?.courtCode
+
+    return Response(CourtCasesSummary(dateOfFirstConviction = dateOfFirstConviction, courtOutcome = courtOutcome, courtCode = courtCode))
   }
 }
