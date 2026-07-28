@@ -49,6 +49,8 @@ services:
     base-url: https://probation-offender-search-preprod.hmpps.service.justice.gov.uk
   manage-users:
     base-url: https://manage-users-api-preprod.hmpps.service.justice.gov.uk
+  court-register:
+    base-url: https://court-register-api-preprod.hmpps.service.justice.gov.uk
   remand-and-sentencing:
     base-url: https://remand-and-sentencing-api-preprod.hmpps.service.justice.gov.uk
 

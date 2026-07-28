@@ -37,6 +37,7 @@ services:
   core-person-record.base-url: http://localhost:4031
   probation-offender-search.base-url: http://localhost:4033
   manage-users.base-url: http://localhost:4034
+  court-register.base-url: http://localhost:4035
   remand-and-sentencing.base-url: http://localhost:4036
 
 hmpps.sqs:

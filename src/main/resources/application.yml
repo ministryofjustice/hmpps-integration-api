@@ -110,6 +110,8 @@ services:
     base-url: http://localhost:4031
   probation-offender-search:
     base-url: http://localhost:4033
+  court-register:
+    base-url: http://localhost:4035
   remand-and-sentencing:
     base-url: http://localhost:4036
 

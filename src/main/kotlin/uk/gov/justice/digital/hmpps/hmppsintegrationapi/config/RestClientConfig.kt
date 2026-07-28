@@ -17,4 +17,9 @@ class RestClientConfig {
   fun rasRestClient(
     @Value("\${services.remand-and-sentencing.base-url}") baseUrl: String,
   ): RestApiClient = RestApiClient(UpstreamApi.REMAND_AND_SENTENCING.name, baseUrl)
+
+  @Bean("courtRegisterRestClient")
+  fun courtRegisterRestClient(
+    @Value("\${services.court-register.base-url}") baseUrl: String,
+  ): RestApiClient = RestApiClient(UpstreamApi.COURT_REGISTER.name, baseUrl)
 }
