@@ -7,6 +7,7 @@ import kotlin.test.Test
 
 class CourtReferenceIntegrationTest : IntegrationTestBase() {
   private final val path = "/v1/hmpps/reference-data/courts/ACCRYC"
+  private final val badPath = "/v1/hmpps/reference-data/courts/ACCRYY"
 
   @Test
   fun `can get court when pass down a court id`() {
@@ -32,24 +33,24 @@ class CourtReferenceIntegrationTest : IntegrationTestBase() {
   @Test
   fun `returns a 404 from court`() {
     courtRegisterMockServer.stubForGet(
-      "/courts/id/ACCRYC",
+      "/courts/id/ACCRYY",
       "",
       HttpStatus.NOT_FOUND,
     )
     callApi(
-      path,
+      badPath,
     ).andExpect(status().isNotFound)
   }
 
   @Test
   fun `returns a 500 from court`() {
     courtRegisterMockServer.stubForGet(
-      "/courts/id/ACCRYC",
+      "/courts/id/ACCRYY",
       "",
       HttpStatus.INTERNAL_SERVER_ERROR,
     )
     callApi(
-      path,
+      badPath,
     ).andExpect(status().isInternalServerError)
   }
 }
