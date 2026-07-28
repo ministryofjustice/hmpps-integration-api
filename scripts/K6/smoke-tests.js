@@ -97,6 +97,7 @@ const day = today.getDate().toString().padStart(2, '0');
 const todayFormatted = `${year}-${month}-${day}`
 const attendancesStartDate = "2025-07-04"
 const attendancesEndDate = "2025-07-11"
+const courtId = "ACCRYC"
 
 // These endpoints don't work with the primary HMPPS ID
 const get_endpoints = [
@@ -119,6 +120,7 @@ const get_endpoints = [
   `/v1/activities/schedule/${scheduleId}/waiting-list-applications`,
   `/v1/activities/schedule/${scheduleId}/suitability-criteria`,
   `/v1/persons/${hmppsId}/court-cases`,
+  `/v1/hmpps/reference-data/courts/${courtId}`
 ];
 
 const postEducationUpdateEndpoint = `/v1/persons/${hmppsId}/education/status`
@@ -810,6 +812,7 @@ function verify_obo_access(hmppsId) {
     validate_get_request_with_obo(`/v1/persons/${hmppsId}/contacts`)
     validate_get_request_with_obo(`/v1/persons/${hmppsId}/prison-timeline`)
     validate_get_request_with_obo(`/v1/persons/${hmppsId}/court-cases`)
+    validate_get_request_with_obo(`/v1/hmpps/reference-data/courts/${courtId}`)
   });
 }
 

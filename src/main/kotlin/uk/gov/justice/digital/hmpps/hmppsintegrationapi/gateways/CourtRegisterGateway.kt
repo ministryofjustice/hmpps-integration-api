@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiClient
@@ -24,7 +23,6 @@ class CourtRegisterGateway(
       slackChannel = "#calculate_release_dates_public_channel",
     )
 
-  @Autowired
   fun getCourt(
     courtId: String,
     requestContext: RequestContext?,

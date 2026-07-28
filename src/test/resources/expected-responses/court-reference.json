@@ -1,0 +1,11 @@
+{
+  "courtId": "ACCRYC",
+  "courtName": "Accrington Youth Court",
+  "courtDescription": "Accrington Youth Court",
+  "type": {
+    "courtType": "COU",
+    "courtName": "County Court/County Divorce Ct"
+  },
+  "active": true,
+  "cpCourtUuid": "faa91bb2-19cb-384b-bcc1-06d31d12cc67"
+}
