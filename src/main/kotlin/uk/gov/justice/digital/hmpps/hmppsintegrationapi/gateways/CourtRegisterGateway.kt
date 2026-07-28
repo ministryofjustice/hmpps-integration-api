@@ -1,9 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiClient
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Court
@@ -12,9 +10,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 
 @Component
 class CourtRegisterGateway(
-  @Value("\${services.court-register.base-url}") val baseUrl: String,
-  val features: FeatureFlagConfig = FeatureFlagConfig(),
-  val courtRegisterRestClient: RestApiClient? = null,
+  val courtRegisterRestClient: RestApiClient,
+  var hmppsAuthGateway: HmppsAuthGateway,
 ) : UpstreamGateway {
   override fun metaData() =
     GatewayMetadata(
@@ -28,8 +25,6 @@ class CourtRegisterGateway(
     )
 
   @Autowired
-  lateinit var hmppsAuthGateway: HmppsAuthGateway
-
   fun getCourt(
     courtId: String,
     requestContext: RequestContext?,
