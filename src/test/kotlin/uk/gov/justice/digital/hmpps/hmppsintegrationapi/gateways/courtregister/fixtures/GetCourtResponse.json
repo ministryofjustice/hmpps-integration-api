@@ -7,5 +7,28 @@
     "courtName": "County Court/County Divorce Ct"
   },
   "active": true,
-  "cpCourtUuid": "faa91bb2-19cb-384b-bcc1-06d31d12cc67"
+  "cpCourtUuid": "faa91bb2-19cb-384b-bcc1-06d31d12cc67",
+  "buildings": [
+    {
+      "id": 10000,
+      "courtId": "ACCRYC",
+      "subCode": "AAABBB",
+      "addressLine1": "Crown House",
+      "addressLine2": "452 West Street",
+      "addressLine3": "Swansea",
+      "addressLine4": "West Cross",
+      "addressLine5": "South Glamorgan",
+      "postcode": "SA3 4HT",
+      "contacts": [
+        {
+          "id": 10000,
+          "courtId": "ACCRYC",
+          "buildingId": 12312,
+          "type": "TEL",
+          "detail": "555 55555"
+        }
+      ],
+      "active": true
+    }
+  ]
 }

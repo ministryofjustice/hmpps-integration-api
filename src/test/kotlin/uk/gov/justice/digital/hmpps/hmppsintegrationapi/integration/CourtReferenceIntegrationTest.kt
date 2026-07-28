@@ -9,7 +9,7 @@ class CourtReferenceIntegrationTest : IntegrationTestBase() {
   private final val path = "/v1/hmpps/reference-data/courts/ACCRYC"
 
   @Test
-  fun `can get court cases summary when passing a crn`() {
+  fun `can get court when pass down a court id`() {
     callApi(
       path,
     ).andExpect(status().isOk)
@@ -25,10 +25,12 @@ class CourtReferenceIntegrationTest : IntegrationTestBase() {
           """.trimIndent(),
         ),
       )
+
+    courtRegisterMockServer.assertValidationPassed()
   }
 
   @Test
-  fun `returns a 404 from remand and sentencing`() {
+  fun `returns a 404 from court`() {
     courtRegisterMockServer.stubForGet(
       "/courts/id/ACCRYC",
       "",
@@ -40,7 +42,7 @@ class CourtReferenceIntegrationTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `returns a 500 from remand and sentencing`() {
+  fun `returns a 500 from court`() {
     courtRegisterMockServer.stubForGet(
       "/courts/id/ACCRYC",
       "",
