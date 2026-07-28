@@ -61,6 +61,7 @@ val roleConstants =
       -"/v1/hmpps/id/nomis-number/by-hmpps-id/{hmppsId}"
       -"/v1/hmpps/id/nomis-number/{nomisNumber}"
       -"/v1/hmpps/reference-data"
+      -"/v1/hmpps/reference-data/courts/{courtId}"
       -"/v1/images/{id}"
       -"/v1/persons"
       -"/v1/persons/{hmppsId}"

@@ -72,8 +72,8 @@ services:
     base-url: http://localhost:4033
   manage-users:
     base-url: http://localhost:4034
-  remand-and-sentencing:
-    base-url: http://localhost:4036
+  court-register:
+    base-url: http://localhost:4035
 
 hmpps.sqs:
   provider: localstack
@@ -130,6 +130,8 @@ feature-flag:
   contact-linked-prisoners-endpoint-enabled: true
   prison-timeline-endpoint-enabled: true
   restapiclient-for-san-gateway: true
+  restapiclient-for-court-register-gateway: true
+  courts_endpoint_enabled: true
   # Events Config
   enable-delete-processed-events: true
   enable-publish-pending-events: true
