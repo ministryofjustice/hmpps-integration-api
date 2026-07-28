@@ -57,6 +57,8 @@ services:
     base-url: https://manage-users-api-dev.hmpps.service.justice.gov.uk
   court-register:
     base-url: https://court-register-api-dev.hmpps.service.justice.gov.uk
+  remand-and-sentencing:
+    base-url: https://remand-and-sentencing-api-dev.hmpps.service.justice.gov.uk
 
 feature-flag:
   # API Config
@@ -76,8 +78,6 @@ feature-flag:
   prison-timeline-endpoint-enabled: true
   use-probation-search-for-person-search: true
   restapiclient-for-san-gateway: true
-  restapiclient-for-court-register-gateway: true
-  courts_endpoint_enabled: true
   # Events Config
   enable-delete-processed-events: true
   enable-publish-pending-events: true

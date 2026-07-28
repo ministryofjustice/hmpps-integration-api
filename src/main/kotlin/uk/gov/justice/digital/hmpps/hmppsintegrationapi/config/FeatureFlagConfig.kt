@@ -36,8 +36,6 @@ data class FeatureFlagConfig(
     const val PRISON_TIMELINE_ENDPOINT_ENABLED = "prison-timeline-endpoint-enabled"
     const val USE_PROBATION_SEARCH_FOR_PERSON_SEARCH = "use-probation-search-for-person-search"
     const val RESTAPICLIENT_FOR_SAN_GATEWAY = "restapiclient-for-san-gateway"
-    const val RESTAPICLIENT_FOR_COURT_REGISTER_GATEWAYY = "restapiclient-for-court-register-gateway"
-    const val COURTS_ENDPOINT_ENABLED = "courts_endpoint_enabled"
 
     // Events feature flags
     const val ENABLE_DELETE_PROCESSED_EVENTS = "enable-delete-processed-events"

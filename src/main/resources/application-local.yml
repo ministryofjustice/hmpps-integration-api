@@ -38,6 +38,7 @@ services:
   probation-offender-search.base-url: http://localhost:4033
   manage-users.base-url: http://localhost:4034
   court-register.base-url: http://localhost:4035
+  remand-and-sentencing.base-url: http://localhost:4036
 
 hmpps.sqs:
   provider: localstack
@@ -84,8 +85,6 @@ feature-flag:
   contact-linked-prisoners-endpoint-enabled: true
   prison-timeline-endpoint-enabled: true
   use-probation-search-for-person-search: false
-  restapiclient-for-court-register-gateway: true
-  courts_endpoint_enabled: true
   # Events Config
   enable-delete-processed-events: false
   enable-publish-pending-events: false

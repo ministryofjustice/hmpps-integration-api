@@ -2,15 +2,10 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
-import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiClient
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Court
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -32,43 +27,10 @@ class CourtRegisterGateway(
       slackChannel = "#calculate_release_dates_public_channel",
     )
 
-  private val webClient = WebClientWrapper(baseUrl)
-
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
   fun getCourt(
-    courtId: String,
-    requestContext: RequestContext?,
-  ): Response<Court?> {
-    if (useRestApiClient()) {
-      return getCourtWithRestClient(courtId, requestContext)
-    }
-
-    val result =
-      webClient.request<Court>(
-        HttpMethod.GET,
-        "/courts/id/$courtId",
-        authenticationHeader(requestContext),
-        UpstreamApi.COURT_REGISTER,
-      )
-
-    return when (result) {
-      is WebClientWrapperResponse.Success -> {
-        val court = result.data
-        Response(data = court)
-      }
-
-      is WebClientWrapperResponse.Error -> {
-        Response(
-          data = null,
-          errors = result.errors,
-        )
-      }
-    }
-  }
-
-  fun getCourtWithRestClient(
     courtId: String,
     requestContext: RequestContext?,
   ): Response<Court?> {
@@ -94,14 +56,4 @@ class CourtRegisterGateway(
       "Authorization" to "Bearer $token",
     )
   }
-
-  internal fun useRestApiClient() = features.isEnabled(FeatureFlagConfig.RESTAPICLIENT_FOR_COURT_REGISTER_GATEWAYY)
-}
-
-@Configuration
-class RestClientConfigCourtRegister {
-  @Bean("courtRegisterRestClient")
-  fun courtRegisterRestClient(
-    @Value("\${services.court-register.base-url}") baseUrl: String,
-  ): RestApiClient = RestApiClient(UpstreamApi.COURT_REGISTER.name, baseUrl)
 }
