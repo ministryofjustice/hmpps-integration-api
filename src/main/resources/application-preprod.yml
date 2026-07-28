@@ -1,3 +1,7 @@
+spring:
+  config:
+    import: "optional:file:/app/authorisation.yaml"
+
 services:
   int-api:
     base-url: https://preprod.integration-api.hmpps.service.justice.gov.uk
@@ -81,59 +85,7 @@ feature-flag:
   limited-access-notifications-enabled: true
   deduplicate-events: true
 
-authorisation:
-  consumers:
-    ctrlo:
-      notes: "See client list in Confluence"
-      roles:
-        - "status-only"
-      queueName: "ctrlosubscriberqueue"
-    moj-pes:
-      notes: "See client list in Confluence"
-      roles:
-        - "status-only"
-    kubernetes-health-check-client:
-      notes: "Kubernetes cluster automated healthchecks"
-      roles:
-        - "hmpps-system"
-    event-service:
-      notes: "HMPPS External Events service"
-      roles:
-        - "hmpps-system"
-    meganexus:
-      notes: "See client list in Confluence"
-      roles:
-        - "status-only"
-      queueName: "plpsubscriberqueue"
-    pnd:
-      notes: "See client list in Confluence"
-      roles:
-        - "status-only"
-      queueName: "pndsubscriberqueue"
-    pmcphee:
-      notes: "ExtApi developer"
-      roles:
-        - "status-only"
-    smoke-test:
-      notes: "Post-deployment smoke tests"
-      roles:
-        - "hmpps-system"
-    smartinbox:
-      notes: "See client list in Confluence"
-      roles:
-        - "status-only"
-    prisonerfacing:
-      notes: "See client list in Confluence"
-      roles:
-        - "status-only"
-    enhanced-reception-checks:
-      notes: "See client list in Confluence"
-      roles:
-        - "enhanced-reception-checks"
-    community-campus:
-      notes: "See client list in Confluence"
-      roles:
-        - "status-only"
+#authorisation.consumers - now defined in the configuration repository
 
 hmpps.sqs:
   queues:
