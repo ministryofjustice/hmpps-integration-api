@@ -17,7 +17,7 @@ class CourtRegisterGateway(
       summary = "This is a standardised list of court data that can be shared between courts and prisons",
       developerPortalId = "DPS109",
       developerPortalUrl = "https://developer-portal.hmpps.service.justice.gov.uk/products/court-register-prisons",
-      apiDocUrl = "https://court-register-api-dev.hmpps.service.justice.gov.uk/swagger-ui/index.htm",
+      apiDocUrl = "https://court-register-api-dev.hmpps.service.justice.gov.uk/swagger-ui/index.html",
       apiSpecUrl = "https://court-register-api-dev.hmpps.service.justice.gov.uk/v3/api-docs",
       gitHubRepoUrl = "https://github.com/ministryofjustice/hmpps-court-register-api",
       slackChannel = "#calculate_release_dates_public_channel",
