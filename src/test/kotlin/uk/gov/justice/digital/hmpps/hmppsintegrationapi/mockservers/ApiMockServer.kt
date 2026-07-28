@@ -43,6 +43,7 @@ class ApiMockServer(
           UpstreamApi.ARNS_INTEGRATION_TEST -> ApiMockServerConfig(4032, "assess-risks-and-needs.json", overrideBindType = false, lenientDateValidation = true)
           UpstreamApi.PROBATION_OFFENDER_SEARCH -> ApiMockServerConfig(4033, "probation-offender-search.json")
           UpstreamApi.MANAGE_USERS -> ApiMockServerConfig(4034, "manage-users.json")
+          UpstreamApi.COURT_REGISTER -> ApiMockServerConfig(4035, "court_register.json")
           UpstreamApi.REMAND_AND_SENTENCING -> ApiMockServerConfig(4036, "remand-and-sentencing.json", true)
           // USE PRISM
           UpstreamApi.PRISON_API -> ApiMockServerConfig(4000)
