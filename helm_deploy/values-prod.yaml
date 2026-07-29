@@ -15,6 +15,18 @@ generic-service:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
     SENTRY_ENVIRONMENT: prod
 
+  volumeMounts:
+    - name: config-volume
+      mountPath: /app/authorisation.yaml
+      subPath: authorisation.yaml
+  volumes:
+    - name: config-volume
+      configMap:
+        name: authorisation-yaml
+        items:
+          - key: authorisation.yaml
+            path: authorisation.yaml
+
   namespace_secrets:
     hmpps-auth:
       CLIENT_ID: "client-id"

@@ -1,3 +1,7 @@
+spring:
+  config:
+    import: "optional:file:/app/authorisation.yaml"
+
 services:
   int-api:
     base-url: https://integration-api.hmpps.service.justice.gov.uk
@@ -83,56 +87,7 @@ feature-flag:
   limited-access-notifications-enabled: true
   deduplicate-events: true
 
-authorisation:
-  consumers:
-    ctrlo:
-      notes: "See client list in Confluence"
-      roles:
-        - "ctrlo"
-      queueName: "ctrlosubscriberqueue"
-    moj-pes:
-      notes: "See client list in Confluence"
-      roles:
-        - "moj-prisoner-education"
-    kubernetes-health-check-client:
-      notes: "Kubernetes cluster automated healthchecks"
-      roles:
-        - "hmpps-system"
-    event-service:
-      notes: "HMPPS External Events service"
-      roles:
-        - "hmpps-system"
-    meganexus:
-      notes: "See client list in Confluence"
-      roles:
-        - "curious"
-      queueName: "plpsubscriberqueue"
-    pnd:
-      notes: "See client list in Confluence"
-      roles:
-        - "police"
-      queueName: "pndsubscriberqueue"
-    smoke-test:
-      notes: "Post-deployment smoke tests"
-      roles:
-        - "hmpps-system"
-    smartinbox:
-      notes: "See client list in Confluence"
-      roles:
-        - "smartinbox"
-    prisonerfacing:
-      notes: "See client list in Confluence"
-      roles:
-        - "moj-prisoner-facing"
-    community-campus:
-      notes: "See client list in Confluence"
-      roles:
-        - "community-payback"
-    daso:
-      notes: "See client list in Confluence"
-      roles:
-        - "daso"
-      queueName: "dasosubscriberqueue"
+#authorisation.consumers - now defined in the configuration repository
 
 hmpps.sqs:
   queues:
