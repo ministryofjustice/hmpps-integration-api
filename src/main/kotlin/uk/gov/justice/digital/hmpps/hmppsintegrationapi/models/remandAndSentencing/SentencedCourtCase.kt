@@ -42,6 +42,7 @@ data class RasSentence(
 enum class CourtOutComeType {
   SENTENCING,
   APPEAL,
+  REMAND,
   OTHER,
   ;
 
