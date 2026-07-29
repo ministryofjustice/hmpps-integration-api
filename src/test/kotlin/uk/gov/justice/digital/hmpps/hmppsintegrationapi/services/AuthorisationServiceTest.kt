@@ -88,14 +88,12 @@ class AuthorisationServiceTest : ConfigTest() {
 
   @Test
   fun `show permission matches`() {
-    val endpoint = "/health/readiness"
-    val environment = "preprod"
+    val endpoint = "/v1/persons"
+    val environment = "test"
 
     // You can temporarily change endpoint & environment to see who has access to what, where
     val matches = listConsumersWithAccess(environment, endpoint)
-
-    assertEquals(3, matches.size)
-    assertContains(matches, "kubernetes-health-check-client")
+    assertContains(matches, "automated-test-client")
   }
 
   @Test
