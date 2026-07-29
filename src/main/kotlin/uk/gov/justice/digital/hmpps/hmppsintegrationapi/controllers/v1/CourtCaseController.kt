@@ -30,7 +30,6 @@ class CourtCaseController(
   @GetMapping
   @Operation(
     summary = "Returns a summary of an offenders court case history.",
-    description = "",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found court cases summary."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),

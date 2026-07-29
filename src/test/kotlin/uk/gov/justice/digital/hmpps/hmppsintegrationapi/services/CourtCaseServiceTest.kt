@@ -9,12 +9,15 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.RemandAndSentencingGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CourtOutcome
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.remandAndSentencing.CourtOutComeType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.remandAndSentencing.RasCharge
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.remandAndSentencing.RasCourtAppearance
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.remandAndSentencing.RasCourtAppearanceOutcome
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.remandAndSentencing.RasSentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.remandAndSentencing.RasSentencedCourtCase
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.remandAndSentencing.RasSentencedCourtCases
@@ -49,12 +52,18 @@ class CourtCaseServiceTest {
             RasCourtAppearance(
               charges =
                 listOf(RasCharge(sentence = RasSentence(convictionDate = LocalDate.of(2021, 4, 12)))),
+              outcome = RasCourtAppearanceOutcome(outcomeType = CourtOutComeType.APPEAL.name, outcomeName = "Appeal"),
+              appearanceDate = LocalDate.of(2021, 1, 25),
+              courtCode = "COURT2",
             ),
           appearances =
             listOf(
               RasCourtAppearance(
                 charges =
                   listOf(RasCharge(sentence = RasSentence(convictionDate = LocalDate.of(2020, 2, 19)))),
+                outcome = RasCourtAppearanceOutcome(outcomeType = CourtOutComeType.SENTENCING.name, outcomeName = "Imprisonment"),
+                appearanceDate = LocalDate.of(2020, 2, 18),
+                courtCode = "COURT1",
               ),
             ),
         ),
@@ -68,8 +77,17 @@ class CourtCaseServiceTest {
   }
 
   @Test
-  fun `successfully returns a court case history summary including the earliest conviction date`() {
-    courtCaseService.getCourtCaseDetails("X123456", requestContext).data?.dateOfFirstConviction shouldBe LocalDate.of(2020, 2, 19)
+  fun `successfully returns a court case history summary`() {
+    val courtCaseSummary = courtCaseService.getCourtCaseDetails("X123456", requestContext).data
+
+    courtCaseSummary?.dateOfFirstConviction shouldBe LocalDate.of(2020, 2, 19)
+    courtCaseSummary?.courtOutcome shouldBe CourtOutcome(CourtOutComeType.APPEAL, "Appeal")
+    courtCaseSummary?.courtCode shouldBe "COURT1"
+  }
+
+  @Test
+  fun `returns a OTHER court outcome type with an unknown outcome type`() {
+    CourtOutComeType.from("notKnownType").shouldBe(CourtOutComeType.OTHER)
   }
 
   @Test

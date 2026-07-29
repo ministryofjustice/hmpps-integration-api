@@ -17,7 +17,12 @@ class CourtCasesIntegrationTest : IntegrationTestBase() {
           {
             "data":
               {
-                "dateOfFirstConviction":"2026-07-24"
+                "dateOfFirstConviction":"2026-07-24",
+                "courtOutcome": {
+                  "outcomeType": "APPEAL",
+                  "outcomeName": "Appeal"
+                },
+                "courtCode":"COURT2"
               }
           }
           """.trimIndent(),

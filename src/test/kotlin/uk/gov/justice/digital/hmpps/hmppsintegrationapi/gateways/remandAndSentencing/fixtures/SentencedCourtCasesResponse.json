@@ -8,9 +8,9 @@
         "appearanceUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
         "outcome": {
           "outcomeUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-          "outcomeName": "string",
+          "outcomeName": "Appeal",
           "nomisCode": "string",
-          "outcomeType": "string",
+          "outcomeType": "APPEAL",
           "displayOrder": 0,
           "relatedChargeOutcomeUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
           "isSubList": true,
@@ -18,7 +18,7 @@
           "status": "ACTIVE",
           "warrantType": "string"
         },
-        "courtCode": "string",
+        "courtCode": "COURT2",
         "courtCaseReference": "string",
         "criminalAppealOfficeReference": "string",
         "appearanceDate": "2026-07-24",
@@ -182,9 +182,9 @@
           "appearanceUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
           "outcome": {
             "outcomeUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-            "outcomeName": "string",
+            "outcomeName": "Imprisonment",
             "nomisCode": "string",
-            "outcomeType": "string",
+            "outcomeType": "SENTENCING",
             "displayOrder": 0,
             "relatedChargeOutcomeUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
             "isSubList": true,
@@ -192,10 +192,10 @@
             "status": "ACTIVE",
             "warrantType": "string"
           },
-          "courtCode": "string",
+          "courtCode": "COURT2",
           "courtCaseReference": "string",
           "criminalAppealOfficeReference": "string",
-          "appearanceDate": "2026-07-24",
+          "appearanceDate": "2025-07-24",
           "warrantType": "string",
           "nextCourtAppearance": {
             "appearanceDate": "2026-07-24",
