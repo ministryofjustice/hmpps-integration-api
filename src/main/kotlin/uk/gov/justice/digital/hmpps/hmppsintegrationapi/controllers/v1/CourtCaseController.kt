@@ -30,7 +30,17 @@ class CourtCaseController(
   @GetMapping
   @Operation(
     summary = "Returns a summary of an offenders court case history.",
-    description = "",
+    description =
+      "Returns information regarding an individuals court case history.<br /> <br />" +
+        "This returns: <br />" +
+        "- The date of their first conviction <br />" +
+        "- The court code of their latest sentenced outcome <br />" +
+        "- The outcome of their last court appearance including outcome name and outcome code. e.g Imprisonment (SENTENCING), Appeal (APPEAL) or Remand (Remand) <br /><br />" +
+        "The following outcome type codes are supported: <br />" +
+        "- SENTENCING </br>" +
+        "- APPEAL </br>" +
+        "- REMAND </br>" +
+        "- OTHER  </br>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found court cases summary."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),

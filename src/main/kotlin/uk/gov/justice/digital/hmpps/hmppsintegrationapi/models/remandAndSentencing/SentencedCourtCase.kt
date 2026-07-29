@@ -38,3 +38,14 @@ data class RasCharge(
 data class RasSentence(
   val convictionDate: LocalDate? = null,
 )
+
+enum class CourtOutComeType {
+  SENTENCING,
+  APPEAL,
+  OTHER,
+  ;
+
+  companion object {
+    fun from(type: String?): CourtOutComeType = CourtOutComeType.entries.firstOrNull { it.name == type } ?: OTHER
+  }
+}

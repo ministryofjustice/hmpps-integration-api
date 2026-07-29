@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CourtOutcom
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.remandAndSentencing.CourtOutComeType
 
 @Service
 class CourtCaseService(
@@ -35,13 +36,15 @@ class CourtCaseService(
         }.mapNotNull { it.sentence?.convictionDate }
         .minOrNull()
 
-    val allCourtAppearances = sentencedCourtCases.data.courtCases.flatMap { case ->
-      (case.appearances + listOf(case.latestAppearance))
-    }.sortedByDescending { it?.appearanceDate }
+    val allCourtAppearances =
+      sentencedCourtCases.data.courtCases
+        .flatMap { case ->
+          (case.appearances + listOf(case.latestAppearance))
+        }.sortedByDescending { it?.appearanceDate }
 
-    val courtOutcome = allCourtAppearances.firstOrNull()?.outcome?.let { CourtOutcome(it.outcomeType, it.outcomeName) }
+    val courtOutcome = allCourtAppearances.firstOrNull()?.outcome?.let { CourtOutcome(CourtOutComeType.from(it.outcomeType), it.outcomeName) }
 
-    val courtCode = allCourtAppearances.firstOrNull { it?.outcome?.outcomeType == "SENTENCING" }?.courtCode
+    val courtCode = allCourtAppearances.firstOrNull { it?.outcome?.outcomeType == CourtOutComeType.SENTENCING.name }?.courtCode
 
     return Response(CourtCasesSummary(dateOfFirstConviction = dateOfFirstConviction, courtOutcome = courtOutcome, courtCode = courtCode))
   }

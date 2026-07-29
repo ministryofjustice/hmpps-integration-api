@@ -17,9 +17,11 @@ import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CourtCasesSummary
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CourtOutcome
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.remandAndSentencing.CourtOutComeType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.CourtCaseService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.time.LocalDate
@@ -43,7 +45,7 @@ internal class CourtCaseControllerTest(
           Mockito.reset(auditService)
           whenever(courtCaseService.getCourtCaseDetails(any(), any())).thenReturn(
             Response(
-              data = CourtCasesSummary(dateOfFirstConviction = LocalDate.of(2021, 2, 14)),
+              data = CourtCasesSummary(dateOfFirstConviction = LocalDate.of(2021, 2, 14), courtCode = "COURT2", courtOutcome = CourtOutcome(CourtOutComeType.SENTENCING, "Imprisonment")),
             ),
           )
         }
@@ -59,6 +61,9 @@ internal class CourtCaseControllerTest(
         it("returns a court cases summary") {
           val result = mockMvc.performAuthorised(path)
           result.response.contentAsString.shouldContainJsonKeyValue("$.data.dateOfFirstConviction", "2021-02-14")
+          result.response.contentAsString.shouldContainJsonKeyValue("$.data.courtCode", "COURT2")
+          result.response.contentAsString.shouldContainJsonKeyValue("$.data.courtOutcome.outcomeType", "SENTENCING")
+          result.response.contentAsString.shouldContainJsonKeyValue("$.data.courtOutcome.outcomeName", "Imprisonment")
         }
 
         it("returns a 404") {
