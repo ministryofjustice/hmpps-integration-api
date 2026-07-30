@@ -30,7 +30,8 @@ class AssessmentSummaryController(
 ) {
   @GetMapping("{hmppsId}/assessment-summary")
   @Operation(
-    summary = "Returns ",
+    summary = "Returns assessment summary for person",
+    description = "Assessments that need to be countersigned will not be shown as complete until they are countersigned.",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found the most recent completed assessment for the provided HMPPS ID."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),

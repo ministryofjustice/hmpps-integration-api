@@ -135,7 +135,7 @@ class AssessRisksAndNeedsGateway(
     val result =
       webClient.request<ArnAssessmentSummary>(
         HttpMethod.GET,
-        "/assessment-summary/$id",
+        "/assessments/mapps/crn/$id",
         authenticationHeader(),
         UpstreamApi.ASSESS_RISKS_AND_NEEDS,
         forbiddenAsError = true,

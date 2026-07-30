@@ -32,8 +32,8 @@ class AssessmentSummaryTest(
   val assessRisksAndNeedsGateway: AssessRisksAndNeedsGateway,
 ) : DescribeSpec(
     {
-      val deliusCrn = "X777776"
-      val path = "/assessment-summary/$deliusCrn"
+      val deliusCrn = "X123456"
+      val path = "/assessments/mapps/crn/$deliusCrn"
       val assessRisksAndNeedsApiMockServer = ApiMockServer.create(UpstreamApi.ASSESS_RISKS_AND_NEEDS)
 
       beforeEach {
