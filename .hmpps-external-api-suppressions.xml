@@ -13,4 +13,15 @@
     <packageUrl regex="true">^pkg:maven/org\.jetbrains\.intellij\.deps\.kotlinx/kotlinx-coroutines-core-jvm@.*$</packageUrl>
     <vulnerabilityName>CVE-2026-53914</vulnerabilityName>
   </suppress>
+  <suppress until="2026-10-01Z">
+    <notes><![CDATA[
+    Suppressed until 2.4.20 is released (due September 2026).
+    <notes><![CDATA[
+    This only affects the kotlin build cache, and we use the gradle build cache that has built in encryption anyway.
+    Bundled with detekt which is only used for static code analysis
+    file name: kotlinx-coroutines-core-jvm-1.10.2-intellij-1.jar
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.jetbrains\.intellij\.deps\.kotlinx/kotlinx-coroutines-core-jvm@.*$</packageUrl>
+    <vulnerabilityName>CVE-2020-29582</vulnerabilityName>
+  </suppress>
 </suppressions>
