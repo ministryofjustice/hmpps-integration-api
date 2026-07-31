@@ -662,6 +662,7 @@ function verify_risk_endpoints(hmppsId) {
     validate_get_request(`/v1/persons/${hmppsId}/risks/serious-harm`);
     validate_get_request(`/v1/persons/${hmppsId}/risks/dynamic`);
     validate_get_request(`/v1/persons/${hmppsId}/risks/categories`);
+    validate_get_request(`/v1/persons/${hmppsId}/assessment-summary`);
 
     validate_risks_scores_details(hmppsId);
 
@@ -814,7 +815,6 @@ function verify_obo_access(hmppsId) {
     validate_get_request_with_obo(`/v1/persons/${hmppsId}/prison-timeline`)
     validate_get_request_with_obo(`/v1/persons/${hmppsId}/court-cases`)
     validate_get_request_with_obo(`/v1/hmpps/reference-data/courts/${courtId}`)
-    validate_get_request_with_obo(`/v1/persons/${hmppsId}/assessment-summary`)
   });
 }
 
