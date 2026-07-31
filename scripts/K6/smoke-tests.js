@@ -121,7 +121,6 @@ const get_endpoints = [
   `/v1/activities/schedule/${scheduleId}/suitability-criteria`,
   `/v1/persons/${hmppsId}/court-cases`,
   `/v1/hmpps/reference-data/courts/${courtId}`
-  `/v1/persons/${hmppsId}/assessment-summary`
 ];
 
 const postEducationUpdateEndpoint = `/v1/persons/${hmppsId}/education/status`
