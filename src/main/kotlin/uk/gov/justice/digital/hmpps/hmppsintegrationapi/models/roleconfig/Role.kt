@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mappa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mappaCat4
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mojPrisonerEducation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mojPrisonerFacing
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mojProbationRiskManagement
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.personLookup
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.police
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.prisonerEscortCustodyService
@@ -178,4 +179,5 @@ val roles =
     enhancedReceptionChecks,
     synalogik,
     personLookup,
+    mojProbationRiskManagement,
   ).associateBy { it.name }
