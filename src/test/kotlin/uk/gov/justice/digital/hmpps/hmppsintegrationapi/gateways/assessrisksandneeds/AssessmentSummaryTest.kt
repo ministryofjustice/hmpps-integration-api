@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.assessrisksand
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeInstanceOf
 import org.mockito.Mockito
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
@@ -11,6 +12,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.AssessRisksAndNeedsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
@@ -32,8 +34,10 @@ class AssessmentSummaryTest(
   val assessRisksAndNeedsGateway: AssessRisksAndNeedsGateway,
 ) : DescribeSpec(
     {
-      val deliusCrn = "X777776"
-      val path = "/assessment-summary/$deliusCrn"
+      val deliusCrn = "X123456"
+      val deliusIncompleteDataCrn = "X123457"
+      val path = "/assessments/mapps/crn/$deliusCrn"
+      val pathIncompleteData = "/assessments/mapps/crn/$deliusIncompleteDataCrn"
       val assessRisksAndNeedsApiMockServer = ApiMockServer.create(UpstreamApi.ASSESS_RISKS_AND_NEEDS)
 
       beforeEach {
@@ -43,6 +47,13 @@ class AssessmentSummaryTest(
           path,
           File(
             "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/assessrisksandneeds/fixtures/AssessmentSummaryResponse.json",
+          ).readText(),
+        )
+
+        assessRisksAndNeedsApiMockServer.stubForGet(
+          pathIncompleteData,
+          File(
+            "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/assessrisksandneeds/fixtures/AssessmentSummaryIncompleteResponse.json",
           ).readText(),
         )
 
@@ -87,6 +98,14 @@ class AssessmentSummaryTest(
         assessRisksAndNeedsApiMockServer.stubForGet(path, "", HttpStatus.NOT_FOUND)
         val response = assessRisksAndNeedsGateway.getAssessmentSummary(deliusCrn)
         response.errors.shouldContain(UpstreamApiError(UpstreamApi.ASSESS_RISKS_AND_NEEDS, UpstreamApiError.Type.ENTITY_NOT_FOUND))
+      }
+
+      it("returns a entity not found exception for no valid assessment summary's with missing completed dates") {
+        try {
+          assessRisksAndNeedsGateway.getAssessmentSummary(deliusIncompleteDataCrn)
+        } catch (e: Exception) {
+          e.shouldBeInstanceOf<EntityNotFoundException>().message.shouldBe("No assessment summary found")
+        }
       }
 
       it("returns a forbidden error") {

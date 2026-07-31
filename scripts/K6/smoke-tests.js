@@ -661,6 +661,7 @@ function verify_risk_endpoints(hmppsId) {
     validate_get_request(`/v1/persons/${hmppsId}/risks/serious-harm`);
     validate_get_request(`/v1/persons/${hmppsId}/risks/dynamic`);
     validate_get_request(`/v1/persons/${hmppsId}/risks/categories`);
+    validate_get_request(`/v1/persons/${hmppsId}/assessment-summary`);
 
     validate_risks_scores_details(hmppsId);
 

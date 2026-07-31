@@ -71,7 +71,7 @@ feature-flag:
   epf-gateway-disabled: true
   cpr-enabled: true
   use-assessment-summary-endpoint: true
-  use-stubbed-assessment-summary: true
+  use-stubbed-assessment-summary: false
   contact-search-endpoint-enabled: true
   address-search-endpoint-enabled: true
   contact-linked-prisoners-endpoint-enabled: true

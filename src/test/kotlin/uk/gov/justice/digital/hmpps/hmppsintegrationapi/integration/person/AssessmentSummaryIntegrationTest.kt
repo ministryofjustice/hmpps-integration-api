@@ -47,7 +47,7 @@ class AssessmentSummaryIntegrationTest : IntegrationTestBase() {
   fun setUp() {
     arnsMockServer.start()
     arnsMockServer.stubForGet(
-      "/assessment-summary/$crn",
+      "/assessments/mapps/crn/$crn",
       File(
         "$gatewaysFolder/assessrisksandneeds/fixtures/AssessmentSummaryResponse.json",
       ).readText(),
@@ -92,7 +92,7 @@ class AssessmentSummaryIntegrationTest : IntegrationTestBase() {
   @Test
   fun `returns a 404`() {
     arnsMockServer.stubForGet(
-      "/assessment-summary/$crn",
+      "/assessments/mapps/crn/$crn",
       "",
       HttpStatus.NOT_FOUND,
     )
