@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds
 
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AssessmentSummary
 import java.time.LocalDateTime
 
@@ -10,14 +11,16 @@ data class ArnAssessmentSummary(
     val latestAssessment =
       this.assessments
         ?.filter { it.dateCompleted != null }
-        ?.maxByOrNull { it.dateCompleted!! }
+        ?.sortedByDescending { it.dateCompleted }
+        ?.firstOrNull()
+        ?: throw EntityNotFoundException("No assessment summary found")
     return AssessmentSummary(
-      latestAssessment?.initiationDate,
-      latestAssessment?.dateCompleted,
-      latestAssessment?.assessmentType,
-      latestAssessment?.assessmentStatus,
-      latestAssessment?.assessorName,
-      latestAssessment?.countersignerName,
+      latestAssessment.initiationDate,
+      latestAssessment.dateCompleted,
+      latestAssessment.assessmentType,
+      latestAssessment.assessmentStatus,
+      latestAssessment.assessorName,
+      latestAssessment.countersignerName,
     )
   }
 }
