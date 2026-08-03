@@ -29,7 +29,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.REDACTION_MASKING_TEXT
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.REDACTION_MASKING_TEXT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetDynamicRisksForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService

@@ -5,10 +5,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.fixedClock
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.IntegrationEventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.normalisePath
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.JwksOboService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.OboService

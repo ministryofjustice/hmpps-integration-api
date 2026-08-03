@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.servlet.HandlerMapping
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionContext
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 

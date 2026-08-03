@@ -1,7 +1,9 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.redactors
+
 import com.fasterxml.jackson.databind.ObjectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionContext
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 
 class PersonSearchResponseLaoRedaction(

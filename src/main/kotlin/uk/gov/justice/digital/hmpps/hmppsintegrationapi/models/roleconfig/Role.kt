@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionPolicy
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.allEndpoints
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.cats
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.communityPayback

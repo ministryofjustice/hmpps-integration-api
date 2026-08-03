@@ -12,6 +12,7 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.defaultObjectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.fixedClock
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.IntegrationEventStatus
@@ -19,7 +20,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.JdbcTe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.EventNotificationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.SendEventsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.objectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import java.time.LocalDateTime
 
@@ -80,7 +80,7 @@ class SendEventServiceTest {
         status = IntegrationEventStatus.PENDING.name,
         lastModifiedDatetime = lastModifiedDateTime,
       )
-    val jsonObject = objectMapper.writeValueAsString(event)
+    val jsonObject = defaultObjectMapper.writeValueAsString(event)
     val expected =
       """
       {

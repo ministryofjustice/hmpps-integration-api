@@ -23,9 +23,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.defaultObjectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.PersonSearchRequest
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.objectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithPrisonFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService.Companion.attributeSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.createUnsignedJwt
@@ -100,7 +100,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
       val searchRequest = PersonSearchRequest(firstName, lastName)
       probationSearchMockServer.stubForPost(
         searchRequest.uriString(1, 10),
-        objectMapper.writeValueAsString(searchRequest.toMap()),
+        defaultObjectMapper.writeValueAsString(searchRequest.toMap()),
         File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/probationoffendersearch/fixtures/PaginatedOffenderSearchResponse.json").readText(),
       )
 

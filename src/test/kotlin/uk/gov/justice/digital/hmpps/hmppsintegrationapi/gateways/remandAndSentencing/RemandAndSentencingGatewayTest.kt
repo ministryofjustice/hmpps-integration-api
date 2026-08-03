@@ -9,6 +9,7 @@ import org.mockito.kotlin.isNull
 import org.mockito.kotlin.whenever
 import org.springframework.http.HttpStatus
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.defaultObjectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiClient
@@ -20,7 +21,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.remandAndSentencing.RasSentencedCourtCases
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.objectMapper
 import java.io.File
 import kotlin.test.Test
 
@@ -30,7 +30,7 @@ class RemandAndSentencingGatewayTest {
   val remandAndSentencingGateway = RemandAndSentencingGateway(mockRasRestClient, mockHmppsAuthGateway)
   val requestContext = buildRequestContext()
   val rasSentencedCourtCases: RasSentencedCourtCases =
-    objectMapper.readValue(
+    defaultObjectMapper.readValue(
       File(
         "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/remandAndSentencing/fixtures/SentencedCourtCasesResponse.json",
       ).readText(),
