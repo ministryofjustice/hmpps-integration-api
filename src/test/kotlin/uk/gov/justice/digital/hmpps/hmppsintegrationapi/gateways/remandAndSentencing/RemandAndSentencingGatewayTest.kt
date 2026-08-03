@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContex
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiClient
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.defaultObjectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.RemandAndSentencingGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
@@ -20,7 +21,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.remandAndSentencing.RasSentencedCourtCases
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.objectMapper
 import java.io.File
 import kotlin.test.Test
 
@@ -30,7 +30,7 @@ class RemandAndSentencingGatewayTest {
   val remandAndSentencingGateway = RemandAndSentencingGateway(mockRasRestClient, mockHmppsAuthGateway)
   val requestContext = buildRequestContext()
   val rasSentencedCourtCases: RasSentencedCourtCases =
-    objectMapper.readValue(
+    defaultObjectMapper.readValue(
       File(
         "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/remandAndSentencing/fixtures/SentencedCourtCasesResponse.json",
       ).readText(),

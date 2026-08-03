@@ -18,8 +18,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.Integrat
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.JdbcTemplateEventNotificationRepository
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.EventNotificationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.SendEventsService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.defaultObjectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.objectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import java.time.LocalDateTime
 
@@ -80,7 +80,7 @@ class SendEventServiceTest {
         status = IntegrationEventStatus.PENDING.name,
         lastModifiedDatetime = lastModifiedDateTime,
       )
-    val jsonObject = objectMapper.writeValueAsString(event)
+    val jsonObject = defaultObjectMapper.writeValueAsString(event)
     val expected =
       """
       {

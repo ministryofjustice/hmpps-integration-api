@@ -12,6 +12,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.defaultObjectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
@@ -19,7 +20,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMoc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AddressSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.objectMapper
 import java.io.File
 
 @ActiveProfiles("test")
@@ -58,7 +58,7 @@ class PostAddressesSearchTest(
             File(
               fixturesPath,
             ).readText(),
-          reqBody = objectMapper.writeValueAsString(requestBody),
+          reqBody = defaultObjectMapper.writeValueAsString(requestBody),
         )
 
         Mockito.reset(hmppsAuthGateway)
@@ -97,7 +97,7 @@ class PostAddressesSearchTest(
           probationOffenderSearchMockServer.stubForPost(
             path,
             resBody = "",
-            reqBody = objectMapper.writeValueAsString(requestBody),
+            reqBody = defaultObjectMapper.writeValueAsString(requestBody),
             status = HttpStatus.NOT_FOUND,
           )
           val addressResponse = probationOffenderSearchGateway.addressSearch(requestBody, maxResults, buildRequestContext())
@@ -109,7 +109,7 @@ class PostAddressesSearchTest(
           probationOffenderSearchMockServer.stubForPost(
             path,
             resBody = "",
-            reqBody = objectMapper.writeValueAsString(requestBody),
+            reqBody = defaultObjectMapper.writeValueAsString(requestBody),
             status = HttpStatus.BAD_REQUEST,
           )
           val addressResponse = probationOffenderSearchGateway.addressSearch(requestBody, maxResults, buildRequestContext())

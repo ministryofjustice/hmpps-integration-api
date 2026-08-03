@@ -1,25 +1,12 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.MapperFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.defaultObjectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.JsonPathResponseRedaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.LaoRejectRedaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.PersonSearchResponseLaoRedaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.ResponseRedaction
-
-val objectMapper: ObjectMapper =
-  ObjectMapper()
-    .registerKotlinModule()
-    .registerModule(JavaTimeModule())
-    .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-    .configure(MapperFeature.REQUIRE_HANDLERS_FOR_JAVA8_TIMES, false)
-    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
 fun redactionPolicy(
   name: String,
@@ -99,7 +86,7 @@ class JsonPathResponseRedactionBuilder {
   fun build(): List<JsonPathResponseRedaction> =
     redactions.map { (path, type) ->
       JsonPathResponseRedaction(
-        objectMapper = objectMapper,
+        objectMapper = defaultObjectMapper,
         type = type,
         endpoints = endpoints,
         redactions = listOf(path),
@@ -131,7 +118,7 @@ class PersonSearchLaoRedactionBuilder {
   fun build(): List<PersonSearchResponseLaoRedaction> =
     redactions.map { (path, type) ->
       PersonSearchResponseLaoRedaction(
-        objectMapper = objectMapper,
+        objectMapper = defaultObjectMapper,
         type = type,
         redactions = listOf(path),
       )

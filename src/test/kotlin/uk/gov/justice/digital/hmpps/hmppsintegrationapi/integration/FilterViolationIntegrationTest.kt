@@ -3,11 +3,11 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.whenever
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.defaultObjectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.objectMapper
 import java.io.File
 
 class FilterViolationIntegrationTest : IntegrationTestBase() {
@@ -16,7 +16,7 @@ class FilterViolationIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `prisons only - throws a filter violation exception when UNKNOWN`() {
-    val posPrisoner = objectMapper.readValue(File("$gatewaysFolder/prisoneroffendersearch/fixtures/PrisonerByIdResponse.json").readText(), POSPrisoner::class.java)
+    val posPrisoner = defaultObjectMapper.readValue(File("$gatewaysFolder/prisoneroffendersearch/fixtures/PrisonerByIdResponse.json").readText(), POSPrisoner::class.java)
     val posPrisonerUnknownStatus = posPrisoner.copy(status = null)
     whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsId)).thenReturn(Response(data = posPrisonerUnknownStatus))
     callApiWithCN(addressPath, "supervision-status-prison-only")

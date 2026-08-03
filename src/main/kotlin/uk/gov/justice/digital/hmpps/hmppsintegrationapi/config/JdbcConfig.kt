@@ -7,7 +7,7 @@ import org.springframework.data.convert.WritingConverter
 import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.Metadata
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.objectMapper
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.defaultObjectMapper
 
 @Configuration
 class JdbcConfig(
@@ -24,11 +24,11 @@ class JdbcConfig(
 @Component
 @WritingConverter
 class MetadataWritingConverter : Converter<Metadata, String> {
-  override fun convert(source: Metadata): String = objectMapper.writeValueAsString(source)
+  override fun convert(source: Metadata): String = defaultObjectMapper.writeValueAsString(source)
 }
 
 @Component
 @ReadingConverter
 class MetadataReadingConverter : Converter<String, Metadata> {
-  override fun convert(source: String): Metadata = objectMapper.readValue(source, Metadata::class.java)
+  override fun convert(source: String): Metadata = defaultObjectMapper.readValue(source, Metadata::class.java)
 }

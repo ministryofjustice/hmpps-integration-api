@@ -8,11 +8,11 @@ import com.jayway.jsonpath.Option
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito.mock
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.defaultObjectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.Offender
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionContext
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.objectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
 private val mapper = ObjectMapper().registerKotlinModule()
@@ -38,7 +38,7 @@ class JsonPathResponseRedactionTest :
             )
 
           val result = redaction.apply("policyName", RedactionContext("/any/uri", accessFor, telemetryService), response)
-          val doc = JsonPath.using(config).parse(objectMapper.writeValueAsString(result))
+          val doc = JsonPath.using(config).parse(defaultObjectMapper.writeValueAsString(result))
 
           doc.read<String>("$.data.firstName") shouldBe "fName"
           doc.read<String>("$.data.middleNames") shouldBe "**REDACTED**"
@@ -54,7 +54,7 @@ class JsonPathResponseRedactionTest :
             )
 
           val result = redaction.apply("policyName", RedactionContext("/v1/persons/123/licences/conditions", accessFor, telemetryService, "crn"), response)
-          val doc = JsonPath.using(config).parse(objectMapper.writeValueAsString(result))
+          val doc = JsonPath.using(config).parse(defaultObjectMapper.writeValueAsString(result))
 
           doc.read<String>("$.data.firstName") shouldBe "fName"
           doc.read<String>("$.data.middleNames") shouldBe null
@@ -70,7 +70,7 @@ class JsonPathResponseRedactionTest :
             )
 
           val result = redaction.apply("policyName", RedactionContext("/v1/persons/123/licences/conditions", accessFor, telemetryService), response)
-          val doc = JsonPath.using(config).parse(objectMapper.writeValueAsString(result))
+          val doc = JsonPath.using(config).parse(defaultObjectMapper.writeValueAsString(result))
 
           doc.read<String>("$.data.middleNames") shouldBe listOf("mName") // unchanged
         }
@@ -86,7 +86,7 @@ class JsonPathResponseRedactionTest :
 
           // Should not throw
           val result = redaction.apply("policyName", RedactionContext("/any/uri", accessFor, telemetryService), response)
-          val doc = JsonPath.using(config).parse(objectMapper.writeValueAsString(result))
+          val doc = JsonPath.using(config).parse(defaultObjectMapper.writeValueAsString(result))
 
           doc.read<Int>("$.data.firstName") shouldBe "fName"
         }
