@@ -30,7 +30,7 @@ class DomainEventIdentitiesResolver(
         if (it.existsInDelius) {
           return crn
         }
-        throw EntityNotFoundException("Person with crn $crn not found")
+        throw EntityNotFoundException("Person with crn $crn not found, with event type ${hmppsEvent.eventType}")
       }
     }
 
