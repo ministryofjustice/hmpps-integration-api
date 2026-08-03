@@ -1104,7 +1104,6 @@ internal class GetPersonServiceTest :
         it("should identify a CRN") {
           getPersonService.identifyHmppsId("X688624") shouldBe IdentifierType.CRN
           getPersonService.identifyHmppsId("X963105") shouldBe IdentifierType.CRN
-
         }
         it("should identify a NOMS number") {
           getPersonService.identifyHmppsId("A4433DZ") shouldBe IdentifierType.NOMS
