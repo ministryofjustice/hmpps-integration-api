@@ -1,7 +1,7 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.policies
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionType.REMOVE
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.redactionPolicy
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.redactionPolicy
 
 val unusedKeyDatesRedactions =
   redactionPolicy(

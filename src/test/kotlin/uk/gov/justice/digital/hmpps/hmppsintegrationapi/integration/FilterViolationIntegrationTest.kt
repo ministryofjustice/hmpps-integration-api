@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.objectMapper
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.objectMapper
 import java.io.File
 
 class FilterViolationIntegrationTest : IntegrationTestBase() {

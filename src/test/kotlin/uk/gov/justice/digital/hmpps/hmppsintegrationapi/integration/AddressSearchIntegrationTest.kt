@@ -6,9 +6,8 @@ import org.mockito.kotlin.whenever
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AddressSearchRequest
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.objectMapper
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.objectMapper
 import java.io.File
 
 class AddressSearchIntegrationTest : IntegrationTestBase() {

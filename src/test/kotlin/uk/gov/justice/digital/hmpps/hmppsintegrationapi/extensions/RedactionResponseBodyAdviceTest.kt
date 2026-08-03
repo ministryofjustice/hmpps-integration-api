@@ -32,7 +32,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.R
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.ResponseRedaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionContext
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.redactionPolicy
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.redactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 

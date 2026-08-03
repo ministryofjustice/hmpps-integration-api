@@ -1,10 +1,10 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.laoRedactionPolicy
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.personResponsibleOfficerRedactions
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.riskScores.generalRiskScoreRedactions
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.risksTextRedactions
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.unusedKeyDatesRedactions
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.policies.laoRedactionPolicy
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.policies.personResponsibleOfficerRedactions
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.policies.riskScores.generalRiskScoreRedactions
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.policies.risksTextRedactions
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.policies.unusedKeyDatesRedactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
 
 val police =

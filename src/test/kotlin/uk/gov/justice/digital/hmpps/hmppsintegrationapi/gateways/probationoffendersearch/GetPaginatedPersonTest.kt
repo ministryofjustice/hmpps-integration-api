@@ -18,7 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMoc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.PersonSearchRequest
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.objectMapper
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.objectMapper
 import java.io.File
 
 @ActiveProfiles("test")

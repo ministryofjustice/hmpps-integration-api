@@ -12,7 +12,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAcc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.Offender
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionContext
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.objectMapper
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.objectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
 private val mapper = ObjectMapper().registerKotlinModule()

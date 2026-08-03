@@ -19,7 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.repository.JdbcTe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.EventNotificationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.services.SendEventsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.dsl.objectMapper
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.objectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import java.time.LocalDateTime
 

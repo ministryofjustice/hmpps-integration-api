@@ -24,7 +24,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ConfigTest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.oboconfig.OboConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.laoRedactionPolicy
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.policies.laoRedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.JwksOboService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.UnsignedJwtOboService
