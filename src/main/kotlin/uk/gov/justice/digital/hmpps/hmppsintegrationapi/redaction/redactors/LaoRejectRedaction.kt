@@ -1,8 +1,9 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.redactors
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.normalisePath
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionContext
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.ResponseRedaction
 
 class LaoRejectRedaction(
   val paths: List<String>? = null,

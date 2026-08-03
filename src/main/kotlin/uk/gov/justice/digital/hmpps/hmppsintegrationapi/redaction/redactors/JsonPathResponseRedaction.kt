@@ -1,11 +1,15 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.redactors
+
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.jayway.jsonpath.Configuration
 import com.jayway.jsonpath.DocumentContext
 import com.jayway.jsonpath.JsonPath
 import com.jayway.jsonpath.Option
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.normalisePath
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.REDACTION_MASKING_TEXT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionContext
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionType
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.ResponseRedaction
 
 open class JsonPathResponseRedaction(
   open val objectMapper: ObjectMapper,

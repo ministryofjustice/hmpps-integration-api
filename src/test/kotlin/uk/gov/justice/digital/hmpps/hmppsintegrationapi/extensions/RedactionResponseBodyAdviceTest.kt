@@ -27,11 +27,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessF
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionPolicy
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionType.MASK
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.ResponseRedaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionContext
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolicy
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionType.MASK
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.ResponseRedaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.redactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService

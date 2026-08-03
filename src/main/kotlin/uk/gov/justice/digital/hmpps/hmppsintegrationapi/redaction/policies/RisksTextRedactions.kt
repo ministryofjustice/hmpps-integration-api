@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.policies
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionType.MASK
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionType.MASK
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.redactionPolicy
 
 val risksTextRedactions =

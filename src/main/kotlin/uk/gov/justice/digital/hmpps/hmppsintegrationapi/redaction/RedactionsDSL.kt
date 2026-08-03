@@ -1,12 +1,9 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.defaultObjectMapper
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.JsonPathResponseRedaction
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.LaoRejectRedaction
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.PersonSearchResponseLaoRedaction
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionPolicy
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionType
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.ResponseRedaction
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.redactors.JsonPathResponseRedaction
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.redactors.LaoRejectRedaction
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.redactors.PersonSearchResponseLaoRedaction
 
 fun redactionPolicy(
   name: String,

@@ -1,8 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig.RedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolicy
 import kotlin.collections.MutableList
 
 class RoleConstants(

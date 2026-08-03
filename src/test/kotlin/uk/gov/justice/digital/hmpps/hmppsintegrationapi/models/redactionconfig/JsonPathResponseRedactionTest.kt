@@ -12,7 +12,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.defaultObject
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.Offender
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.REDACTION_MASKING_TEXT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionContext
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionType
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.redactors.JsonPathResponseRedaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
 private val mapper = ObjectMapper().registerKotlinModule()
@@ -105,7 +108,7 @@ class JsonPathResponseRedactionTest :
 
           doc.jsonString() shouldBe
             """
-            {"data":{"a":"A","b":{"c":"$REDACTION_MASKING_TEXT"}}}
+            {"data":{"a":"A","b":{"c":"${REDACTION_MASKING_TEXT}"}}}
             """.trimIndent()
         }
 
@@ -123,7 +126,7 @@ class JsonPathResponseRedactionTest :
 
           doc.jsonString() shouldBe
             """
-            {"data":{"a":"A","b":{"c":"$REDACTION_MASKING_TEXT"},"c":"$REDACTION_MASKING_TEXT"}}
+            {"data":{"a":"A","b":{"c":"${REDACTION_MASKING_TEXT}"},"c":"${REDACTION_MASKING_TEXT}"}}
             """.trimIndent()
         }
 

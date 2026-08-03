@@ -1,6 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.redactionconfig
-
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionContext
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction
 
 interface ResponseRedaction {
   fun apply(
