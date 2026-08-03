@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.defaultObjectMapper
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.defaultObjectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.redactors.JsonPathResponseRedaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.redactors.LaoRejectRedaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.redactors.PersonSearchResponseLaoRedaction

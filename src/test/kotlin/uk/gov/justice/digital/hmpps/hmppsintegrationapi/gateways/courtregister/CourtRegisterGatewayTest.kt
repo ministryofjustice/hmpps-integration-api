@@ -9,11 +9,11 @@ import org.mockito.kotlin.isNull
 import org.mockito.kotlin.whenever
 import org.springframework.http.HttpStatus
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.defaultObjectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiClient
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiResponse
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.defaultObjectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CourtRegisterGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer

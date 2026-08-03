@@ -8,7 +8,7 @@ import com.jayway.jsonpath.Option
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito.mock
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.defaultObjectMapper
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.defaultObjectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.Offender

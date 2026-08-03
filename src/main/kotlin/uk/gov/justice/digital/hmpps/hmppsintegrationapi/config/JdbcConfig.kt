@@ -7,7 +7,6 @@ import org.springframework.data.convert.WritingConverter
 import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.Metadata
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.defaultObjectMapper
 
 @Configuration
 class JdbcConfig(

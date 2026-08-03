@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.config
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.MapperFeature
