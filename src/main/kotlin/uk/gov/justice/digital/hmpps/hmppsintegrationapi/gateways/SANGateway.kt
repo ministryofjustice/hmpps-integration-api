@@ -40,7 +40,7 @@ class SANGateway(
     prisonerNumber: String,
     requestContext: RequestContext?,
   ): Response<PlanCreationSchedules> {
-    if (useRestApiClient()) {
+    if (useRestApiClient(requestContext)) {
       return getPlanCreationSchedules2(prisonerNumber, requestContext)
     }
 
@@ -89,7 +89,7 @@ class SANGateway(
     prisonerNumber: String,
     requestContext: RequestContext?,
   ): Response<PlanReviewSchedules> {
-    if (useRestApiClient()) {
+    if (useRestApiClient(requestContext)) {
       return getReviewSchedules2(prisonerNumber, requestContext)
     }
 
@@ -141,5 +141,5 @@ class SANGateway(
     )
   }
 
-  internal fun useRestApiClient() = features.isEnabled(FeatureFlagConfig.RESTAPICLIENT_FOR_SAN_GATEWAY)
+  internal fun useRestApiClient(requestContext: RequestContext?): Boolean = requestContext?.featureFlags?.isEnabled(FeatureFlagConfig.RESTAPICLIENT_FOR_SAN_GATEWAY) ?: false
 }
