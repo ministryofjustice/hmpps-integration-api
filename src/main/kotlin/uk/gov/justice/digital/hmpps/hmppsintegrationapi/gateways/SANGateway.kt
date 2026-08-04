@@ -141,5 +141,5 @@ class SANGateway(
     )
   }
 
-  internal fun useRestApiClient(requestContext: RequestContext?): Boolean = requestContext?.featureFlags?.isEnabled(FeatureFlagConfig.RESTAPICLIENT_FOR_SAN_GATEWAY) ?: false
+  internal fun useRestApiClient(requestContext: RequestContext?): Boolean = requestContext?.featureFlags?.isEnabled(FeatureFlagConfig.RESTAPICLIENT_FOR_SAN_GATEWAY) ?: features.isEnabled(FeatureFlagConfig.RESTAPICLIENT_FOR_SAN_GATEWAY)
 }
