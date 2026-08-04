@@ -9,9 +9,11 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import io.swagger.v3.oas.annotations.tags.Tags
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PlanCreationSchedules
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PlanReviewSchedules
@@ -42,8 +44,9 @@ class SANController(
   )
   fun getPlanCreationSchedule(
     @Parameter(description = "A HMPPS id", example = "A123123") @PathVariable hmppsId: String,
+    @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<PlanCreationSchedules> {
-    val response = getSANPLanScheduleForPersonService.getPlanCreationSchedules(hmppsId)
+    val response = getSANPLanScheduleForPersonService.getPlanCreationSchedules(hmppsId, requestContext)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
@@ -63,8 +66,9 @@ class SANController(
   )
   fun getReviewSchedule(
     @Parameter(description = "A HMPPS id", example = "A123123") @PathVariable hmppsId: String,
+    @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<PlanReviewSchedules> {
-    val response = getSANReviewScheduleForPersonService.getReviewSchedules(hmppsId)
+    val response = getSANReviewScheduleForPersonService.getReviewSchedules(hmppsId, requestContext)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")

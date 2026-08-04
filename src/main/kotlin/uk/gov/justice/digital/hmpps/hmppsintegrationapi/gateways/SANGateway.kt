@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiClient
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
@@ -35,16 +36,19 @@ class SANGateway(
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  fun getPlanCreationSchedules(prisonerNumber: String): Response<PlanCreationSchedules> {
+  fun getPlanCreationSchedules(
+    prisonerNumber: String,
+    requestContext: RequestContext?,
+  ): Response<PlanCreationSchedules> {
     if (useRestApiClient()) {
-      return getPlanCreationSchedules2(prisonerNumber)
+      return getPlanCreationSchedules2(prisonerNumber, requestContext)
     }
 
     val result =
       webClient.request<PlanCreationSchedules>(
         HttpMethod.GET,
         "/profile/$prisonerNumber/plan-creation-schedule?includeAllHistory=true",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.SAN,
       )
 
@@ -63,12 +67,15 @@ class SANGateway(
     }
   }
 
-  fun getPlanCreationSchedules2(prisonerNumber: String): Response<PlanCreationSchedules> {
+  fun getPlanCreationSchedules2(
+    prisonerNumber: String,
+    requestContext: RequestContext?,
+  ): Response<PlanCreationSchedules> {
     val result =
       sanRestClient!!.get(
         "/profile/$prisonerNumber/plan-creation-schedule?includeAllHistory=true",
         PlanCreationSchedules::class,
-        authenticationHeader(),
+        authenticationHeader(requestContext),
       )
 
     return if (result.errors.isEmpty()) {
@@ -78,16 +85,19 @@ class SANGateway(
     }
   }
 
-  fun getReviewSchedules(prisonerNumber: String): Response<PlanReviewSchedules> {
+  fun getReviewSchedules(
+    prisonerNumber: String,
+    requestContext: RequestContext?,
+  ): Response<PlanReviewSchedules> {
     if (useRestApiClient()) {
-      return getReviewSchedules2(prisonerNumber)
+      return getReviewSchedules2(prisonerNumber, requestContext)
     }
 
     val result =
       webClient.request<PlanReviewSchedules>(
         HttpMethod.GET,
         "/profile/$prisonerNumber/reviews/review-schedules?includeAllHistory=true",
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.SAN,
       )
 
@@ -106,12 +116,15 @@ class SANGateway(
     }
   }
 
-  fun getReviewSchedules2(prisonerNumber: String): Response<PlanReviewSchedules> {
+  fun getReviewSchedules2(
+    prisonerNumber: String,
+    requestContext: RequestContext?,
+  ): Response<PlanReviewSchedules> {
     val result =
       sanRestClient!!.get(
         "/profile/$prisonerNumber/reviews/review-schedules?includeAllHistory=true",
         PlanReviewSchedules::class,
-        authenticationHeader(),
+        authenticationHeader(requestContext),
       )
 
     return if (result.errors.isEmpty()) {
@@ -121,8 +134,8 @@ class SANGateway(
     }
   }
 
-  private fun authenticationHeader(): Map<String, String> {
-    val token = hmppsAuthGateway.getClientToken("SAN")
+  private fun authenticationHeader(requestContext: RequestContext? = null): Map<String, String> {
+    val token = hmppsAuthGateway.getClientToken("SAN", requestContext)
     return mapOf(
       "Authorization" to "Bearer $token",
     )
