@@ -17,7 +17,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 @Component
 class SANGateway(
   @Value("\${services.san.base-url}") val baseUrl: String,
-  val features: FeatureFlagConfig = FeatureFlagConfig(),
   val sanRestClient: RestApiClient? = null,
 ) : UpstreamGateway {
   override fun metaData() =
@@ -38,7 +37,7 @@ class SANGateway(
 
   fun getPlanCreationSchedules(
     prisonerNumber: String,
-    requestContext: RequestContext?,
+    requestContext: RequestContext,
   ): Response<PlanCreationSchedules> {
     if (useRestApiClient(requestContext)) {
       return getPlanCreationSchedules2(prisonerNumber, requestContext)
@@ -69,7 +68,7 @@ class SANGateway(
 
   fun getPlanCreationSchedules2(
     prisonerNumber: String,
-    requestContext: RequestContext?,
+    requestContext: RequestContext,
   ): Response<PlanCreationSchedules> {
     val result =
       sanRestClient!!.get(
@@ -87,7 +86,7 @@ class SANGateway(
 
   fun getReviewSchedules(
     prisonerNumber: String,
-    requestContext: RequestContext?,
+    requestContext: RequestContext,
   ): Response<PlanReviewSchedules> {
     if (useRestApiClient(requestContext)) {
       return getReviewSchedules2(prisonerNumber, requestContext)
@@ -118,7 +117,7 @@ class SANGateway(
 
   fun getReviewSchedules2(
     prisonerNumber: String,
-    requestContext: RequestContext?,
+    requestContext: RequestContext,
   ): Response<PlanReviewSchedules> {
     val result =
       sanRestClient!!.get(
@@ -134,12 +133,12 @@ class SANGateway(
     }
   }
 
-  private fun authenticationHeader(requestContext: RequestContext? = null): Map<String, String> {
+  private fun authenticationHeader(requestContext: RequestContext): Map<String, String> {
     val token = hmppsAuthGateway.getClientToken("SAN", requestContext)
     return mapOf(
       "Authorization" to "Bearer $token",
     )
   }
 
-  internal fun useRestApiClient(requestContext: RequestContext?): Boolean = requestContext?.featureFlags?.isEnabled(FeatureFlagConfig.RESTAPICLIENT_FOR_SAN_GATEWAY) ?: features.isEnabled(FeatureFlagConfig.RESTAPICLIENT_FOR_SAN_GATEWAY)
+  internal fun useRestApiClient(requestContext: RequestContext): Boolean = requestContext.featureFlags.isEnabled(FeatureFlagConfig.RESTAPICLIENT_FOR_SAN_GATEWAY)
 }

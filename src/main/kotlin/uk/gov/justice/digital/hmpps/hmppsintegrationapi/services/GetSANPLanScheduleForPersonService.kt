@@ -14,7 +14,7 @@ class GetSANPLanScheduleForPersonService(
 ) {
   fun getPlanCreationSchedules(
     hmppsId: String,
-    requestContext: RequestContext?,
+    requestContext: RequestContext,
   ): Response<PlanCreationSchedules> {
     val response = getPersonService.getNomisNumber(hmppsId = hmppsId)
 

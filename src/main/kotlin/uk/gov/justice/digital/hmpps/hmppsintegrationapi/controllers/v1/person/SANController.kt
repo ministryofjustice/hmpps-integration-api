@@ -44,7 +44,7 @@ class SANController(
   )
   fun getPlanCreationSchedule(
     @Parameter(description = "A HMPPS id", example = "A123123") @PathVariable hmppsId: String,
-    @RequestAttribute requestContext: RequestContext?,
+    @RequestAttribute requestContext: RequestContext,
   ): DataResponse<PlanCreationSchedules> {
     val response = getSANPLanScheduleForPersonService.getPlanCreationSchedules(hmppsId, requestContext)
 
@@ -66,7 +66,7 @@ class SANController(
   )
   fun getReviewSchedule(
     @Parameter(description = "A HMPPS id", example = "A123123") @PathVariable hmppsId: String,
-    @RequestAttribute requestContext: RequestContext?,
+    @RequestAttribute requestContext: RequestContext,
   ): DataResponse<PlanReviewSchedules> {
     val response = getSANReviewScheduleForPersonService.getReviewSchedules(hmppsId, requestContext)
 

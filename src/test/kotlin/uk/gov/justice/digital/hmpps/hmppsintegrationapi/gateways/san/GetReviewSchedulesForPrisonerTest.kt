@@ -131,9 +131,10 @@ class GetReviewSchedulesForPrisonerTest(
         val headers = mapOf("Authorization" to "Bearer $authToken")
 
         val features = FeatureFlagConfig(mapOf(RESTAPICLIENT_FOR_SAN_GATEWAY to true))
+        val flagRequestContext = buildRequestContext("testUser", featureFlags = features)
 
         val authGateway: HmppsAuthGateway = mock()
-        whenever(authGateway.getClientToken("SAN", requestContext)).thenReturn(authToken)
+        whenever(authGateway.getClientToken("SAN", flagRequestContext)).thenReturn(authToken)
 
         val apiClient: RestApiClient = mock()
         whenever(apiClient.get(eq(path), eq(PlanReviewSchedules::class), eq(headers), isNull())).thenReturn(
@@ -159,10 +160,10 @@ class GetReviewSchedulesForPrisonerTest(
             ),
           ),
         )
-        val gateway = SANGateway("http://localhost", features, apiClient)
+        val gateway = SANGateway("http://localhost", apiClient)
         gateway.hmppsAuthGateway = authGateway
 
-        val response = gateway.getReviewSchedules(prisonerNumber, requestContext)
+        val response = gateway.getReviewSchedules(prisonerNumber, flagRequestContext)
 
         response shouldNotBe null
         response.errors.size shouldBe 0
@@ -176,9 +177,10 @@ class GetReviewSchedulesForPrisonerTest(
         val headers = mapOf("Authorization" to "Bearer $authToken")
 
         val features = FeatureFlagConfig(mapOf(RESTAPICLIENT_FOR_SAN_GATEWAY to true))
+        val flagRequestContext = buildRequestContext("testUser", featureFlags = features)
 
         val authGateway: HmppsAuthGateway = mock()
-        whenever(authGateway.getClientToken("SAN", requestContext)).thenReturn(authToken)
+        whenever(authGateway.getClientToken("SAN", flagRequestContext)).thenReturn(authToken)
 
         val apiClient: RestApiClient = mock()
         whenever(apiClient.get(eq(path), eq(PlanReviewSchedules::class), eq(headers), isNull())).thenReturn(
@@ -189,10 +191,10 @@ class GetReviewSchedulesForPrisonerTest(
             listOf(WebClientResponseException(404, "PlanReviewSchedules not found", null, null, null)),
           ),
         )
-        val gateway = SANGateway("http://localhost", features, apiClient)
+        val gateway = SANGateway("http://localhost", apiClient)
         gateway.hmppsAuthGateway = authGateway
 
-        val response = gateway.getReviewSchedules(prisonerNumber, requestContext)
+        val response = gateway.getReviewSchedules(prisonerNumber, flagRequestContext)
 
         response shouldNotBe null
         response.errors.size shouldBe 1
