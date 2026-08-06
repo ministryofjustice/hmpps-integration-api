@@ -17,6 +17,7 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.RESTAPICLIENT_FOR_SAN_GATEWAY
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiClient
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
@@ -45,6 +46,7 @@ class GetPlanCreationSchedulesForPrisonerTest(
       val apiMockServer = ApiMockServer.create(UpstreamApi.SAN)
       val prisonerNumber = "G4887VE"
       val path = "/profile/$prisonerNumber/plan-creation-schedule?includeAllHistory=true"
+      val requestContext = buildRequestContext("testUser")
 
       fun responseJson() =
         """
@@ -102,7 +104,7 @@ class GetPlanCreationSchedulesForPrisonerTest(
         )
 
         Mockito.reset(hmppsAuthGateway)
-        whenever(hmppsAuthGateway.getClientToken("SAN")).thenReturn(HmppsAuthMockServer.TOKEN)
+        whenever(hmppsAuthGateway.getClientToken("SAN", requestContext)).thenReturn(HmppsAuthMockServer.TOKEN)
       }
 
       afterTest {
@@ -110,13 +112,13 @@ class GetPlanCreationSchedulesForPrisonerTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        sanGateway.getPlanCreationSchedules(prisonerNumber)
+        sanGateway.getPlanCreationSchedules(prisonerNumber, requestContext)
 
-        verify(hmppsAuthGateway, times(1)).getClientToken("SAN")
+        verify(hmppsAuthGateway, times(1)).getClientToken("SAN", requestContext)
       }
 
       it("returns plan creation schedules for the matching person ID") {
-        val response = sanGateway.getPlanCreationSchedules(prisonerNumber)
+        val response = sanGateway.getPlanCreationSchedules(prisonerNumber, requestContext)
         response.data.shouldNotBeNull()
         response.data.planCreationSchedules.size
           .shouldBe(2)
@@ -129,9 +131,10 @@ class GetPlanCreationSchedulesForPrisonerTest(
         val headers = mapOf("Authorization" to "Bearer $authToken")
 
         val features = FeatureFlagConfig(mapOf(RESTAPICLIENT_FOR_SAN_GATEWAY to true))
+        val flagRequestContext = buildRequestContext("testUser", featureFlags = features)
 
         val authGateway: HmppsAuthGateway = mock()
-        whenever(authGateway.getClientToken("SAN")).thenReturn(authToken)
+        whenever(authGateway.getClientToken("SAN", flagRequestContext)).thenReturn(authToken)
 
         val apiClient: RestApiClient = mock()
         whenever(apiClient.get(eq(path), eq(PlanCreationSchedules::class), eq(headers), isNull())).thenReturn(
@@ -161,11 +164,11 @@ class GetPlanCreationSchedulesForPrisonerTest(
           ),
         )
 
-        val gateway = SANGateway("http://localhost", features, apiClient)
+        val gateway = SANGateway("http://localhost", apiClient)
         gateway.hmppsAuthGateway = authGateway
 
         // When
-        val response = gateway.getPlanCreationSchedules(prisonerNumber)
+        val response = gateway.getPlanCreationSchedules(prisonerNumber, flagRequestContext)
 
         // Then
         response.errors.size shouldBe 0
