@@ -69,8 +69,13 @@ class AuthorisationFilter(
         oboService?.extractUsername(it)
       }
 
+    val consumerConfig: ConsumerConfig? = authorisationService.consumers()[clientName]
+
+    val featureOverrides = request.getHeader("X-Feature-Override")
+    val requestFeatures = featuresWithOverrides(features, consumerConfig, featureOverrides)
+
     // Set App insights request attributes
-    setSpanAttributes(clientName, certificateSerialNumber, oboUsername ?: onBehalfOf, certificateExpiryDate)
+    setSpanAttributes(clientName, certificateSerialNumber, oboUsername ?: onBehalfOf, certificateExpiryDate, featureOverrides)
 
     if (authorisationService.requiresObo(clientName)) {
       if (oboUsername.isNullOrEmpty()) {
@@ -85,15 +90,10 @@ class AuthorisationFilter(
       }
     }
 
-    // Set filters
-    val consumerConfig: ConsumerConfig? = authorisationService.consumers()[clientName]
-
     if (consumerConfig == null) {
       response.sendError(HttpServletResponse.SC_FORBIDDEN, "No consumer authorisation config found for $clientName")
       return
     }
-
-    val requestFeatures = featuresWithOverrides(features, consumerConfig, request.getHeader("X-Feature-Override"))
 
     // Authorise request
 
@@ -131,10 +131,10 @@ class AuthorisationFilter(
    */
   internal fun featuresWithOverrides(
     environmentFeatures: FeatureFlagConfig,
-    consumerConfig: ConsumerConfig,
+    consumerConfig: ConsumerConfig?,
     overrides: String?,
   ): FeatureFlagConfig =
-    if (consumerConfig.allowFeatureOverride) {
+    if (consumerConfig?.allowFeatureOverride ?: false) {
       mergeFeatures(environmentFeatures, overrides)
     } else {
       environmentFeatures
@@ -210,10 +210,12 @@ class AuthorisationFilter(
     certSerialNumber: String?,
     onBehalfOf: String?,
     certExpiryDate: String?,
+    featureOverrides: String?,
   ) {
     telemetryService.setSpanAttribute("clientId", clientId)
     certSerialNumber?.let { telemetryService.setSpanAttribute("certSerialNumber", certSerialNumber) }
     certExpiryDate?.let { telemetryService.setSpanAttribute("certExpiryDate", certExpiryDate) }
     onBehalfOf?.let { telemetryService.setSpanAttribute("onBehalfOf", onBehalfOf) }
+    featureOverrides?.let { telemetryService.setSpanAttribute("featureOverrides", featureOverrides) }
   }
 }
