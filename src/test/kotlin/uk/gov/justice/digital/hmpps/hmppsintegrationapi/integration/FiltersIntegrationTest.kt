@@ -20,7 +20,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.CertificateInfo
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.CertificateService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
-import kotlin.test.Test
 
 @AutoConfigureMockMvc
 class FiltersIntegrationTest : IntegrationTestBase() {
