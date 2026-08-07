@@ -23,9 +23,9 @@ class CertificateService(
     commonName: String,
     rawSerialNum: String?,
     rawExpiryTime: String?,
-  ): CertificateSummary {
+  ): CertificateInfo {
     val serNum = extractCertificateSerialNumber(rawSerialNum)
-    return CertificateSummary(
+    return CertificateInfo(
       extractCertificateSerialNumber(rawSerialNum),
       commonName,
       serNum != null && certificateRevoked(certificateRevocationList(), serNum, commonName),
@@ -159,7 +159,7 @@ class CertificateService(
   fun certificateRevocationList() = authorisationConfig.certificateRevocationList
 }
 
-data class CertificateSummary(
+data class CertificateInfo(
   val seriaNumber: String? = null,
   val commonName: String? = null,
   val isRevoked: Boolean = false,

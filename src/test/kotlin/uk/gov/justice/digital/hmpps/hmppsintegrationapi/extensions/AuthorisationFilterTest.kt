@@ -28,7 +28,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.CertificateService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.CertificateSummary
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.CertificateInfo
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ManageUsersService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.OboService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
@@ -66,7 +66,7 @@ class AuthorisationFilterTest {
     whenever(mockRequest.getHeader("subject-distinguished-name")).thenReturn(exampleSubjectDistinguishedName)
     whenever(mockRequest.getHeader("cert-serial-number")).thenReturn(CERT_SERIAL_RAW)
     whenever(mockRequest.getHeader("cert-expiry-date")).thenReturn("May 20 00:30:10 2046 GMT")
-    val certInfo = CertificateSummary(CERT_SERIAL_FORMATTED, exampleConsumer, false, Instant.now().plusSeconds(3600))
+    val certInfo = CertificateInfo(CERT_SERIAL_FORMATTED, exampleConsumer, false, Instant.now().plusSeconds(3600))
     whenever(certificateService.validateCertificate(any(), any(), any())).thenReturn(certInfo)
   }
 
@@ -240,7 +240,7 @@ class AuthorisationFilterTest {
   @Test
   fun `Forbidden if certificate serial number is in the certificate revocation list and feature flag is enabled`() {
     whenever(certificateService.validateCertificate(any(), any(), any())).thenReturn(
-      CertificateSummary(
+      CertificateInfo(
         CERT_SERIAL_FORMATTED,
         exampleConsumer,
         true,
@@ -408,7 +408,7 @@ class AuthorisationFilterTest {
   @Test
   fun `handles a NULL certificate serial number header`() {
     whenever(certificateService.validateCertificate(any(), any(), any())).thenReturn(
-      CertificateSummary(
+      CertificateInfo(
         null,
         exampleConsumer,
         false,
@@ -479,7 +479,7 @@ class AuthorisationFilterTest {
   @Test
   fun `returns the default consumer name when there is a default consumer name and no subject distinguished name`() {
     whenever(certificateService.validateCertificate(any(), any(), any())).thenReturn(
-      CertificateSummary(
+      CertificateInfo(
         CERT_SERIAL_FORMATTED,
         null,
         false,
@@ -495,7 +495,7 @@ class AuthorisationFilterTest {
   @Test
   fun `handles a cert-expiry-date header `() {
     whenever(certificateService.validateCertificate(any(), any(), any())).thenReturn(
-      CertificateSummary(
+      CertificateInfo(
         CERT_SERIAL_FORMATTED,
         exampleConsumer,
         false,
@@ -510,7 +510,7 @@ class AuthorisationFilterTest {
   @Test
   fun `handles a null cert-expiry-date header `() {
     whenever(certificateService.validateCertificate(any(), any(), any())).thenReturn(
-      CertificateSummary(
+      CertificateInfo(
         CERT_SERIAL_FORMATTED,
         exampleConsumer,
         false,
