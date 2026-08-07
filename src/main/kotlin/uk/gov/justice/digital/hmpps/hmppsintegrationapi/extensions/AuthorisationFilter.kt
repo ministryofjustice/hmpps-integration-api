@@ -53,18 +53,12 @@ class AuthorisationFilter(
     // Set the client name in the request
     req.setAttribute("clientName", clientName)
 
-    val certInfo = certificateService.validateCertificate(subjectDistinguishedName, req.getHeader("cert-serial-number"), req.getHeader("cert-expiry-date"))
+    val certInfo = certificateService.validateCertificate(clientName, req.getHeader("cert-serial-number"), req.getHeader("cert-expiry-date"))
 
-    // Get the cert serial number
-//    val certificateSerialNumber = certificateService.extractCertificateSerialNumber(req.getHeader("cert-serial-number"))
-//    if (certificateSerialNumber != null && certificateService.certificateRevoked(certificateService.certificateRevocationList(), certificateSerialNumber, clientName)) {
     if (certInfo.isRevoked) {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Certificate with serial number ${certInfo.seriaNumber} has been revoked")
       return
     }
-
-    // Get certificate expiry date
-//    val certificateExpiryDate = req.getHeader("cert-expiry-date")?.let { certificateService.processCertificateExpiryDate(it, clientName) }
 
     // Get the on behalf of token
     val onBehalfOf = req.getHeader("X-On-Behalf-Of")
