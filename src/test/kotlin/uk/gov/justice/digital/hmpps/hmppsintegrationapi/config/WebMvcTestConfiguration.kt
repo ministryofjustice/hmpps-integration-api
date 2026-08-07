@@ -47,5 +47,5 @@ class WebMvcTestConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
-  fun certificateService(): CertificateService = CertificateService(config())
+  fun certificateService(): CertificateService = CertificateService(config(), telemetryService(), clock())
 }

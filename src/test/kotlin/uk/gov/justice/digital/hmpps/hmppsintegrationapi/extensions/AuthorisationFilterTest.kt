@@ -468,7 +468,7 @@ class AuthorisationFilterTest {
   @Test
   fun `handles a cert-expiry-date header `() {
     whenever(mockRequest.getHeader("cert-expiry-date")).thenReturn("May 9 00:30:10 2026 GMT")
-    whenever(authorisationService.processCertificateExpiryDate(any(), any())).thenReturn("2026-05-09T00:30:10Z")
+    whenever(certificateService.processCertificateExpiryDate(any(), any())).thenReturn("2026-05-09T00:30:10Z")
     val finalFilter = mock(Filter::class.java)
     mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
     verify(mockTelemetryService, times(1)).setSpanAttribute("certExpiryDate", "2026-05-09T00:30:10Z")

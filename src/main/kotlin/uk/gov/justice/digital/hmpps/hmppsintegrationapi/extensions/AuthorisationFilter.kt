@@ -60,7 +60,7 @@ class AuthorisationFilter(
     }
 
     // Get certificate expiry date
-    val certificateExpiryDate = req.getHeader("cert-expiry-date")?.let { authorisationService.processCertificateExpiryDate(it, clientName) }
+    val certificateExpiryDate = req.getHeader("cert-expiry-date")?.let { certificateService.processCertificateExpiryDate(it, clientName) }
 
     // Get the on behalf of token
     val onBehalfOf = req.getHeader("X-On-Behalf-Of")
