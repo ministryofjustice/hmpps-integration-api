@@ -24,11 +24,11 @@ class CertificateService(
     rawSerialNum: String?,
     rawExpiryTime: String?,
   ): CertificateInfo {
-    val serNum = extractCertificateSerialNumber(rawSerialNum)
+    val serialNumber = extractCertificateSerialNumber(rawSerialNum)
     return CertificateInfo(
-      extractCertificateSerialNumber(rawSerialNum),
+      serialNumber,
       commonName,
-      serNum != null && certificateRevoked(certificateRevocationList(), serNum, commonName),
+      certificateRevoked(serialNumber, commonName),
       processCertificateExpiryDate(rawExpiryTime, commonName),
     )
   }
@@ -45,11 +45,13 @@ class CertificateService(
    * The first entry would apply globally. The second entry would only apply to a consumer with name a-consumer
    */
   fun certificateRevoked(
-    certificateRevocationList: List<String>,
-    certificateSerialNumber: String,
+    certificateSerialNumber: String? = null,
     consumerName: String,
   ): Boolean {
-    certificateRevocationList.forEach {
+    if (certificateSerialNumber == null) {
+      return false
+    }
+    certificateRevocationList().forEach {
       val entry = it.split("/")
       val serialNumber = entry[0]
       val thisConsumerOnly = if (entry.size > 1) entry[1] else null
