@@ -27,6 +27,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.CertificateService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ManageUsersService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.OboService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
@@ -48,8 +49,9 @@ class AuthorisationFilterTest {
   private val featureFlagConfig = mock(FeatureFlagConfig::class.java)
   private val mockTelemetryService = mock(TelemetryService::class.java)
   private val mockManageUsersService = mock(ManageUsersService::class.java)
+  private val certificateService = mock(CertificateService::class.java)
   private val roleConfig = ConsumerConfig(roles = listOf("private-prison"), filters = ConsumerFilters(prisons = listOf("MDI")))
-  private val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, featureFlagConfig)
+  private val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, featureFlagConfig, certificateService)
 
   @BeforeEach
   fun setup() {
@@ -102,7 +104,7 @@ class AuthorisationFilterTest {
     finalFilter: Filter = mock(Filter::class.java),
   ): MockFilterChain =
     mockFilterChain(
-      AuthorisationFilter(authService, mockTelemetryService, featureFlagConfig),
+      AuthorisationFilter(authService, mockTelemetryService, featureFlagConfig, certificateService),
       finalFilter,
     )
 
@@ -116,7 +118,7 @@ class AuthorisationFilterTest {
 
     val chain =
       mockFilterChain(
-        AuthorisationFilter(authService, mockTelemetryService, featureFlagConfig),
+        AuthorisationFilter(authService, mockTelemetryService, featureFlagConfig, certificateService),
         finalFilter,
       )
 
@@ -136,7 +138,7 @@ class AuthorisationFilterTest {
         mockTelemetryService,
         mockManageUsersService,
       )
-    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, featureFlagConfig)
+    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, featureFlagConfig, certificateService)
     val finalFilter = mock(Filter::class.java)
 
     mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
@@ -156,7 +158,7 @@ class AuthorisationFilterTest {
         mockManageUsersService,
       )
     // invalid Role Config
-    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, featureFlagConfig)
+    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, featureFlagConfig, certificateService)
     val finalFilter = mock(Filter::class.java)
 
     mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
@@ -172,7 +174,7 @@ class AuthorisationFilterTest {
     val req = mockRequest("GET", invalidPath)
     req.setAttribute("clientName", exampleConsumer)
 
-    val chain = mockFilterChain(AuthorisationFilter(authService, mockTelemetryService, featureFlagConfig))
+    val chain = mockFilterChain(AuthorisationFilter(authService, mockTelemetryService, featureFlagConfig, certificateService))
 
     chain.doFilter(req, resp)
 
@@ -183,7 +185,7 @@ class AuthorisationFilterTest {
   @Test
   fun `generates error when subject distinguished name is null in the request`() {
     whenever(mockRequest.getHeader("subject-distinguished-name")).thenReturn(null)
-    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, featureFlagConfig)
+    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, featureFlagConfig, certificateService)
     authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
 
     verify(mockResponse, times(1)).sendError(403, "No subject-distinguished-name header provided for authorisation")
@@ -201,7 +203,7 @@ class AuthorisationFilterTest {
         mockManageUsersService,
       )
     // invalid Role Config
-    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, featureFlagConfig)
+    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, featureFlagConfig, certificateService)
     whenever(mockChain.doFilter(mockRequest, mockResponse)).thenThrow(ServletException(LimitedAccessException()))
 
     authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
@@ -220,7 +222,7 @@ class AuthorisationFilterTest {
         mockTelemetryService,
         mockManageUsersService,
       )
-    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, featureFlagConfig)
+    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, featureFlagConfig, certificateService)
     whenever(mockChain.doFilter(mockRequest, mockResponse)).thenThrow(ServletException(LimitedAccessException()))
 
     authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
@@ -230,10 +232,11 @@ class AuthorisationFilterTest {
 
   @Test
   fun `Forbidden if certificate serial number is in the certificate revocation list and feature flag is enabled`() {
+    whenever(certificateService.extractCertificateSerialNumber(any())).thenReturn(CERT_SERIAL_FORMATTED)
     whenever(authorisationService.certificateRevocationList()).thenReturn(listOf(CERT_SERIAL_FORMATTED, "TEST_SERIAL_NUMBER_2"))
     whenever(authorisationService.consumers()).thenReturn(mapOf(exampleConsumer to ConsumerConfig(include = emptyList(), filters = ConsumerFilters(prisons = null), roles = exampleRoles)))
     val resp = MockHttpServletResponse()
-    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, featureFlagConfig)
+    val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, featureFlagConfig, certificateService)
     mockFilterChain(authorisationFilter).doFilter(mockRequest, resp)
     assertThat(resp.status).isEqualTo(403)
     assertThat(resp.errorMessage).isEqualTo("Certificate with serial number 01:AD:3E:D8:7D:D5:AA:84:F5:2D:83:E7:87:E9:90:E4:84:C5:2C:90 has been revoked")
@@ -383,6 +386,7 @@ class AuthorisationFilterTest {
 
   @Test
   fun `handles a certificate serial number header`() {
+    whenever(certificateService.extractCertificateSerialNumber(any())).thenReturn(CERT_SERIAL_FORMATTED)
     val finalFilter = mock(Filter::class.java)
     mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
     verify(mockTelemetryService, times(1)).setSpanAttribute("certSerialNumber", CERT_SERIAL_FORMATTED)

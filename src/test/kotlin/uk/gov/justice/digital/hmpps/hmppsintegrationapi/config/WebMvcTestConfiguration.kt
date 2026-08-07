@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithLaoRedactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.CertificateService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ManageUsersService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import java.time.Clock
@@ -43,4 +44,8 @@ class WebMvcTestConfiguration {
   @Bean
   @ConditionalOnMissingBean
   fun authorisationService(): AuthorisationService = AuthorisationService(config(), telemetryService(), manageUsersService(), clock())
+
+  @Bean
+  @ConditionalOnMissingBean
+  fun certificateService(): CertificateService = CertificateService(config())
 }

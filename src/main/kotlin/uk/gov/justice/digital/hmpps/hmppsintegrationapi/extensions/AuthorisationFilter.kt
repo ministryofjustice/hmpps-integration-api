@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.mergeFeatures
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.CertificateService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import java.io.IOException
 
@@ -25,6 +26,7 @@ class AuthorisationFilter(
   private val authorisationService: AuthorisationService,
   private val telemetryService: TelemetryService,
   private val features: FeatureFlagConfig,
+  private val certificateService: CertificateService,
 ) : Filter {
   companion object {
     private val log = LoggerFactory.getLogger(this::class.java)
@@ -51,7 +53,7 @@ class AuthorisationFilter(
     req.setAttribute("clientName", clientName)
 
     // Get the cert serial number
-    val certificateSerialNumber = extractCertificateSerialNumber(req.getHeader("cert-serial-number"))
+    val certificateSerialNumber = certificateService.extractCertificateSerialNumber(req.getHeader("cert-serial-number"))
     if (certificateSerialNumber != null && certificateRevoked(authorisationService.certificateRevocationList(), certificateSerialNumber, clientName)) {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Certificate with serial number $certificateSerialNumber has been revoked")
       return
@@ -153,24 +155,6 @@ class AuthorisationFilter(
     }
     return match.groupValues[1]
   }
-
-  /**
-   * Converts the certificate serial number sent in the header into hex format
-   * e.g 9572494320151578633330348943480876283449388176
-   * becomes 01:7B:EB:77:06:DB:11:F5:2E:B6:F7:37:7B:A9:E0:E4:84:C5:2C:A3
-   */
-  fun extractCertificateSerialNumber(serialNumber: String?): String? =
-    serialNumber?.let {
-      runCatching {
-        serialNumber.toBigInteger().toByteArray().toHexString(
-          format =
-            HexFormat {
-              upperCase = true
-              bytes.byteSeparator = ":"
-            },
-        )
-      }.getOrNull()
-    }
 
   /**
    * Checks whether the certificate serial number exists in the certificate revocation list in application.yaml
