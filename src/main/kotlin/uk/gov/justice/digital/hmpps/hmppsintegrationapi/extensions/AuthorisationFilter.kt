@@ -19,6 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationSe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.CertificateService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import java.io.IOException
+import java.time.Instant
 
 @Component
 @EnableConfigurationProperties(AuthorisationConfig::class)
@@ -52,17 +53,18 @@ class AuthorisationFilter(
     // Set the client name in the request
     req.setAttribute("clientName", clientName)
 
-    certificateService.validateCertificate(req.getHeader("cert-serial-number"), req.getHeader("cert-expiry-date"))
+    val certInfo = certificateService.validateCertificate(subjectDistinguishedName, req.getHeader("cert-serial-number"), req.getHeader("cert-expiry-date"))
 
     // Get the cert serial number
-    val certificateSerialNumber = certificateService.extractCertificateSerialNumber(req.getHeader("cert-serial-number"))
-    if (certificateSerialNumber != null && certificateRevoked(certificateService.certificateRevocationList(), certificateSerialNumber, clientName)) {
-      res.sendError(HttpServletResponse.SC_FORBIDDEN, "Certificate with serial number $certificateSerialNumber has been revoked")
+//    val certificateSerialNumber = certificateService.extractCertificateSerialNumber(req.getHeader("cert-serial-number"))
+//    if (certificateSerialNumber != null && certificateService.certificateRevoked(certificateService.certificateRevocationList(), certificateSerialNumber, clientName)) {
+    if (certInfo.isRevoked) {
+      res.sendError(HttpServletResponse.SC_FORBIDDEN, "Certificate with serial number ${certInfo.seriaNumber} has been revoked")
       return
     }
 
     // Get certificate expiry date
-    val certificateExpiryDate = req.getHeader("cert-expiry-date")?.let { certificateService.processCertificateExpiryDate(it, clientName) }
+//    val certificateExpiryDate = req.getHeader("cert-expiry-date")?.let { certificateService.processCertificateExpiryDate(it, clientName) }
 
     // Get the on behalf of token
     val onBehalfOf = req.getHeader("X-On-Behalf-Of")
@@ -79,7 +81,7 @@ class AuthorisationFilter(
     val requestFeatures = featuresWithOverrides(features, consumerConfig, featureOverrides)
 
     // Set App insights request attributes
-    setSpanAttributes(clientName, certificateSerialNumber, oboUsername ?: onBehalfOf, certificateExpiryDate, featureOverrides)
+    setSpanAttributes(clientName, certInfo.seriaNumber, oboUsername ?: onBehalfOf, certInfo.expiresAt, featureOverrides)
 
     if (authorisationService.requiresObo(clientName)) {
       if (oboUsername.isNullOrEmpty()) {
@@ -158,49 +160,16 @@ class AuthorisationFilter(
     return match.groupValues[1]
   }
 
-  /**
-   * Checks whether the certificate serial number exists in the certificate revocation list in application.yaml
-   * If the entry contains a "/" then the entry only applies to the consumer name that follows the "/"
-   * e.g for these 2 entries in application.yaml
-   * authorisation:
-   *  certificate-revocation-list:
-   *    - 01:7b:eb:77:06:db:11:f5:2e:b6:f7:37:7b:a9:e0:e4:84:c5:2c:a3
-   *    - 01/a-consumer
-   *
-   * The first entry would apply globally. The second entry would only apply to a consumer with name a-consumer
-   */
-  fun certificateRevoked(
-    certificateRevocationList: List<String>,
-    certificateSerialNumber: String,
-    consumerName: String,
-  ): Boolean {
-    certificateRevocationList.forEach {
-      val entry = it.split("/")
-      val serialNumber = entry[0]
-      val thisConsumerOnly = if (entry.size > 1) entry[1] else null
-      if (thisConsumerOnly != null) {
-        if (serialNumber.equals(certificateSerialNumber, ignoreCase = true) && thisConsumerOnly == consumerName) {
-          return true
-        }
-      } else {
-        if (serialNumber.equals(certificateSerialNumber, ignoreCase = true)) {
-          return true
-        }
-      }
-    }
-    return false
-  }
-
   private fun setSpanAttributes(
     clientId: String,
     certSerialNumber: String?,
     onBehalfOf: String?,
-    certExpiryDate: String?,
+    certExpiryDate: Instant?,
     featureOverrides: String?,
   ) {
     telemetryService.setSpanAttribute("clientId", clientId)
     certSerialNumber?.let { telemetryService.setSpanAttribute("certSerialNumber", certSerialNumber) }
-    certExpiryDate?.let { telemetryService.setSpanAttribute("certExpiryDate", certExpiryDate) }
+    certExpiryDate?.let { telemetryService.setSpanAttribute("certExpiryDate", certExpiryDate.toString()) }
     onBehalfOf?.let { telemetryService.setSpanAttribute("onBehalfOf", onBehalfOf) }
     featureOverrides?.let { telemetryService.setSpanAttribute("featureOverrides", featureOverrides) }
   }

@@ -32,64 +32,64 @@ class CertificateServiceTest : ConfigTest() {
 
   @Test
   fun `does not alert for a 1 digit day cert-expiry-date that expires in over 30 days`() {
-    val dateString = certificateService.processCertificateExpiryDate("Jun 8 12:30:10 2026 GMT", "consumer-name")
-    assertEquals("2026-06-08T12:30:10Z", dateString)
+    val expires = certificateService.processCertificateExpiryDate("Jun 8 12:30:10 2026 GMT", "consumer-name")
+    assertEquals("2026-06-08T12:30:10Z", expires.toString())
     verify(mockTelemetryService, times(0)).captureMessage(any())
   }
 
   @Test
   fun `alerts a 2 digit day cert-expiry-date that expires in 30 days`() {
-    val dateString = certificateService.processCertificateExpiryDate("Jun 7 12:30:10 2026 GMT", "consumer-name")
-    assertEquals("2026-06-07T12:30:10Z", dateString)
+    val exprires = certificateService.processCertificateExpiryDate("Jun 7 12:30:10 2026 GMT", "consumer-name")
+    assertEquals("2026-06-07T12:30:10Z", exprires.toString())
     verify(mockTelemetryService, times(1)).captureMessage("The certificate for consumer-name will expire in under 30 days (Jun 7 12:30:10 2026 GMT)")
   }
 
   @Test
   fun `alerts a cert-expiry-date that expires in 21 days`() {
-    val dateString = certificateService.processCertificateExpiryDate("May 29 00:30:10 2026 GMT", "consumer-name")
-    assertEquals("2026-05-29T00:30:10Z", dateString)
+    val expires = certificateService.processCertificateExpiryDate("May 29 00:30:10 2026 GMT", "consumer-name")
+    assertEquals("2026-05-29T00:30:10Z", expires.toString())
     verify(mockTelemetryService, times(1)).captureMessage("The certificate for consumer-name will expire in under 3 weeks (May 29 00:30:10 2026 GMT)")
   }
 
   @Test
   fun `alerts for a cert-expiry-date that expires in 20 days`() {
-    val dateString = certificateService.processCertificateExpiryDate("May 28 00:30:10 2026 GMT", "consumer-name")
-    assertEquals("2026-05-28T00:30:10Z", dateString)
+    val expires = certificateService.processCertificateExpiryDate("May 28 00:30:10 2026 GMT", "consumer-name")
+    assertEquals("2026-05-28T00:30:10Z", expires.toString())
     verify(mockTelemetryService, times(1)).captureMessage("The certificate for consumer-name will expire in under 3 weeks (May 28 00:30:10 2026 GMT)")
   }
 
   @Test
   fun `alerts for a cert-expiry-date that expires in 14 days`() {
-    val dateString = certificateService.processCertificateExpiryDate("May 22 00:30:10 2026 GMT", "consumer-name")
-    assertEquals("2026-05-22T00:30:10Z", dateString)
+    val expires = certificateService.processCertificateExpiryDate("May 22 00:30:10 2026 GMT", "consumer-name")
+    assertEquals("2026-05-22T00:30:10Z", expires.toString())
     verify(mockTelemetryService, times(1)).captureMessage("The certificate for consumer-name will expire in under 2 weeks (May 22 00:30:10 2026 GMT)")
   }
 
   @Test
   fun `does not alert for a cert-expiry-date that expires in 12 days`() {
-    val dateString = certificateService.processCertificateExpiryDate("May 20 00:30:10 2026 GMT", "consumer-name")
-    assertEquals("2026-05-20T00:30:10Z", dateString)
+    val expires = certificateService.processCertificateExpiryDate("May 20 00:30:10 2026 GMT", "consumer-name")
+    assertEquals("2026-05-20T00:30:10Z", expires.toString())
     verify(mockTelemetryService, times(1)).captureMessage("The certificate for consumer-name will expire in under 2 weeks (May 20 00:30:10 2026 GMT)")
   }
 
   @Test
   fun `alerts for a cert-expiry-date that expires in 7 days`() {
-    val dateString = certificateService.processCertificateExpiryDate("May 15 00:30:10 2026 GMT", "consumer-name")
-    assertEquals("2026-05-15T00:30:10Z", dateString)
+    val expires = certificateService.processCertificateExpiryDate("May 15 00:30:10 2026 GMT", "consumer-name")
+    assertEquals("2026-05-15T00:30:10Z", expires.toString())
     verify(mockTelemetryService, times(1)).captureMessage("The certificate for consumer-name will expire in 7 days (May 15 00:30:10 2026 GMT)")
   }
 
   @Test
   fun `alerts for a cert-expiry-date header that expires in 1 day`() {
-    val dateString = certificateService.processCertificateExpiryDate("May 9 00:30:10 2026 GMT", "consumer-name")
-    assertEquals("2026-05-09T00:30:10Z", dateString)
+    val expires = certificateService.processCertificateExpiryDate("May 9 00:30:10 2026 GMT", "consumer-name")
+    assertEquals("2026-05-09T00:30:10Z", expires.toString())
     verify(mockTelemetryService, times(1)).captureMessage("The certificate for consumer-name will expire in 1 day (May 9 00:30:10 2026 GMT)")
   }
 
   @Test
   fun `alerts for a cert-expiry-date header that expires in 0 days`() {
-    val dateString = certificateService.processCertificateExpiryDate("May 8 00:30:10 2026 GMT", "consumer-name")
-    assertEquals("2026-05-08T00:30:10Z", dateString)
+    val expires = certificateService.processCertificateExpiryDate("May 8 00:30:10 2026 GMT", "consumer-name")
+    assertEquals("2026-05-08T00:30:10Z", expires.toString())
     verify(mockTelemetryService, times(1)).captureMessage("The certificate for consumer-name will expire in 0 days (May 8 00:30:10 2026 GMT)")
   }
 
@@ -104,8 +104,8 @@ class CertificateServiceTest : ConfigTest() {
 
   @Test
   fun `handles an SSL single digit day date with multiple spaces`() {
-    val dateString = certificateService.processCertificateExpiryDate("Jan  8 11:23:46 2027 GMT", "consumer-name")
-    assertEquals("2027-01-08T11:23:46Z", dateString)
+    val expires = certificateService.processCertificateExpiryDate("Jan  8 11:23:46 2027 GMT", "consumer-name")
+    assertEquals("2027-01-08T11:23:46Z", expires.toString())
   }
 
   @Test

@@ -5,13 +5,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.fixedClock
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import java.time.Clock
+import java.time.Instant
 import java.time.LocalDate
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Locale
 import kotlin.math.ceil
-import kotlin.time.Instant
 
 @Component
 class CertificateService(
@@ -20,9 +20,51 @@ class CertificateService(
   private val clock: Clock = fixedClock(),
 ) {
   fun validateCertificate(
-    serialNum: String?,
-    expiry: String?,
-  ): CertificateSummary = CertificateSummary()
+    commonName: String,
+    rawSerialNum: String?,
+    rawExpiryTime: String?,
+  ): CertificateSummary {
+    val serNum = extractCertificateSerialNumber(rawSerialNum)
+    return CertificateSummary(
+      extractCertificateSerialNumber(rawSerialNum),
+      commonName,
+      serNum != null && certificateRevoked(certificateRevocationList(), serNum, commonName),
+      processCertificateExpiryDate(rawExpiryTime, commonName),
+    )
+  }
+
+  /**
+   * Checks whether the certificate serial number exists in the certificate revocation list in application.yaml
+   * If the entry contains a "/" then the entry only applies to the consumer name that follows the "/"
+   * e.g for these 2 entries in application.yaml
+   * authorisation:
+   *  certificate-revocation-list:
+   *    - 01:7b:eb:77:06:db:11:f5:2e:b6:f7:37:7b:a9:e0:e4:84:c5:2c:a3
+   *    - 01/a-consumer
+   *
+   * The first entry would apply globally. The second entry would only apply to a consumer with name a-consumer
+   */
+  fun certificateRevoked(
+    certificateRevocationList: List<String>,
+    certificateSerialNumber: String,
+    consumerName: String,
+  ): Boolean {
+    certificateRevocationList.forEach {
+      val entry = it.split("/")
+      val serialNumber = entry[0]
+      val thisConsumerOnly = if (entry.size > 1) entry[1] else null
+      if (thisConsumerOnly != null) {
+        if (serialNumber.equals(certificateSerialNumber, ignoreCase = true) && thisConsumerOnly == consumerName) {
+          return true
+        }
+      } else {
+        if (serialNumber.equals(certificateSerialNumber, ignoreCase = true)) {
+          return true
+        }
+      }
+    }
+    return false
+  }
 
   /**
    * Converts the certificate serial number sent in the header into hex format
@@ -54,9 +96,12 @@ class CertificateService(
    */
 
   fun processCertificateExpiryDate(
-    certExpiryDate: String,
+    certExpiryDate: String?,
     consumerName: String,
-  ): String? {
+  ): Instant? {
+    if (certExpiryDate == null) {
+      return null
+    }
     val expiryDateTime =
       try {
         // OpenSSL notAfter date still uses 2 characters for a single digit day (with the first blank). eg Jan  8 12:30:10 2026 GMT
@@ -70,7 +115,7 @@ class CertificateService(
       }
     return expiryDateTime?.let {
       checkExpiryDate(expiryDateTime, certExpiryDate, consumerName)
-      expiryDateTime.toString()
+      expiryDateTime
     }
   }
 
@@ -115,6 +160,8 @@ class CertificateService(
 }
 
 data class CertificateSummary(
+  val seriaNumber: String? = null,
+  val commonName: String? = null,
   val isRevoked: Boolean = false,
   val expiresAt: Instant? = null,
 )
