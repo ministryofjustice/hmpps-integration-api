@@ -84,8 +84,6 @@ class AuthorisationService(
 
   fun consumers() = authorisationConfig.consumers
 
-  fun certificateRevocationList() = authorisationConfig.certificateRevocationList
-
   fun defaultConsumerName() = authorisationConfig.defaultConsumerName
 
   fun redactionPolicies(consumerName: String): List<RedactionPolicy> =

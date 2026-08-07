@@ -52,9 +52,11 @@ class AuthorisationFilter(
     // Set the client name in the request
     req.setAttribute("clientName", clientName)
 
+    certificateService.validateCertificate(req.getHeader("cert-serial-number"), req.getHeader("cert-expiry-date"))
+
     // Get the cert serial number
     val certificateSerialNumber = certificateService.extractCertificateSerialNumber(req.getHeader("cert-serial-number"))
-    if (certificateSerialNumber != null && certificateRevoked(authorisationService.certificateRevocationList(), certificateSerialNumber, clientName)) {
+    if (certificateSerialNumber != null && certificateRevoked(certificateService.certificateRevocationList(), certificateSerialNumber, clientName)) {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Certificate with serial number $certificateSerialNumber has been revoked")
       return
     }

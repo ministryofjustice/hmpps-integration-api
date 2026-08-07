@@ -110,9 +110,11 @@ class CertificateService(
       "The certificate for $consumerName will expire $durationMessage ($expiryDateTime)"
     }
   }
+
+  fun certificateRevocationList() = authorisationConfig.certificateRevocationList
 }
 
-class CertificateSummary {
-  val isRevoked: Boolean = false
-  val expiresAt: Instant? = null
-}
+data class CertificateSummary(
+  val isRevoked: Boolean = false,
+  val expiresAt: Instant? = null,
+)

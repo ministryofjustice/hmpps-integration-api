@@ -233,7 +233,7 @@ class AuthorisationFilterTest {
   @Test
   fun `Forbidden if certificate serial number is in the certificate revocation list and feature flag is enabled`() {
     whenever(certificateService.extractCertificateSerialNumber(any())).thenReturn(CERT_SERIAL_FORMATTED)
-    whenever(authorisationService.certificateRevocationList()).thenReturn(listOf(CERT_SERIAL_FORMATTED, "TEST_SERIAL_NUMBER_2"))
+    whenever(certificateService.certificateRevocationList()).thenReturn(listOf(CERT_SERIAL_FORMATTED, "TEST_SERIAL_NUMBER_2"))
     whenever(authorisationService.consumers()).thenReturn(mapOf(exampleConsumer to ConsumerConfig(include = emptyList(), filters = ConsumerFilters(prisons = null), roles = exampleRoles)))
     val resp = MockHttpServletResponse()
     val authorisationFilter = AuthorisationFilter(authorisationService, mockTelemetryService, featureFlagConfig, certificateService)
@@ -244,7 +244,7 @@ class AuthorisationFilterTest {
 
   @Test
   fun `NOT Forbidden if certificate serial number is in the certificate revocation list and feature flag is enabled`() {
-    whenever(authorisationService.certificateRevocationList()).thenReturn(listOf("TEST_SERIAL_NUMBER_3", "TEST_SERIAL_NUMBER_4"))
+    whenever(certificateService.certificateRevocationList()).thenReturn(listOf("TEST_SERIAL_NUMBER_3", "TEST_SERIAL_NUMBER_4"))
     val resp = MockHttpServletResponse()
     mockFilterChain(authorisationFilter).doFilter(mockRequest, resp)
     assertThat(resp.errorMessage).isNotEqualTo("Certificate with serial number 01:AD:3E:D8:7D:D5:AA:84:F5:2D:83:E7:87:E9:90:E4:84:C5:2C:90 has been revoked")
