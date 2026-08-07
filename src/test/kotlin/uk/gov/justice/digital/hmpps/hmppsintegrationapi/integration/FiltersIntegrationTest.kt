@@ -9,6 +9,7 @@ import org.mockito.ArgumentCaptor
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
+import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.whenever
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
@@ -16,6 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.AuthorisationFilter
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.MappaCategory
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.CertificateInfo
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.CertificateService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import kotlin.test.Test
@@ -27,6 +29,7 @@ class FiltersIntegrationTest : IntegrationTestBase() {
   val mockResponse = mock(HttpServletResponse::class.java)
   val mockChain = mock(FilterChain::class.java)
   val mockTelemetryService = mock(TelemetryService::class.java)
+  val mockCertificateService = mock(CertificateService::class.java)
   val features: FeatureFlagConfig = mock()
 
   lateinit var filtersExtractionFilter: AuthorisationFilter
@@ -39,7 +42,7 @@ class FiltersIntegrationTest : IntegrationTestBase() {
         authorisationService,
         mockTelemetryService,
         features,
-        mock(CertificateService::class.java),
+        mockCertificateService,
       )
     whenever(mockRequest.getHeader("cert-serial-number")).thenReturn(certSerialNumber)
   }
@@ -54,6 +57,7 @@ class FiltersIntegrationTest : IntegrationTestBase() {
     //      filters:
     //        mappa-categories:
     //          - "*"
+    whenever(mockCertificateService.validateCertificate(any(), any(), any())).thenReturn(CertificateInfo())
     whenever(mockRequest.getHeader("subject-distinguished-name")).thenReturn("C=GB,ST=London,L=London,O=Home Office,CN=automated-test-client-mappa")
     filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)
     verify(mockRequest, times(1)).setAttribute(eq("filters"), filtersCapture.capture())
@@ -70,6 +74,7 @@ class FiltersIntegrationTest : IntegrationTestBase() {
     //    filters:
     //      mappa-categories:
     //        - CAT1
+    whenever(mockCertificateService.validateCertificate(any(), any(), any())).thenReturn(CertificateInfo())
     whenever(mockRequest.getHeader("subject-distinguished-name")).thenReturn("C=GB,ST=London,L=London,O=Home Office,CN=automated-test-client-mappa-2")
     filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)
     verify(mockRequest, times(1)).setAttribute(eq("filters"), filtersCapture.capture())
