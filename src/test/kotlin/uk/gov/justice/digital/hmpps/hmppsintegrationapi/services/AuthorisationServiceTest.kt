@@ -445,25 +445,4 @@ class AuthorisationServiceTest : ConfigTest() {
       )
     assertEquals(true, service.verifyUsername("testUsername", "consumer-name"))
   }
-
-//  @DisplayName("Handle certificate expiry date")
-//  @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-//  @Nested
-//  inner class TestCertificateExpiry {
-//    private val fixedClock: Clock = Clock.fixed(LocalDateTime.of(2026, 5, 8, 12, 30, 10).toInstant(ZoneOffset.UTC), ZoneId.systemDefault())
-//
-//    val authorisationService =
-//      AuthorisationService(
-//        AuthorisationConfig(),
-//        mockTelemetryService,
-//        mockManageUsersService,
-//        fixedClock,
-//      )
-//
-//    @BeforeEach
-//    fun setUp() {
-//      reset(mockTelemetryService)
-//    }
-//
-//  }
 }
