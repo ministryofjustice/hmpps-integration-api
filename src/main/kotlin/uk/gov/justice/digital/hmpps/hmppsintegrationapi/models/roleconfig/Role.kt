@@ -9,13 +9,29 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.curious
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.daso
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.constants
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.enhancedReceptionChecks
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extHmppsPublicProtection
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extHmppsPublicProtectionCat4
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extHmppsSeriousHarm
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extPrisonsCourseCompletion
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extPrisonsCrimeData
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extPrisonsEducation
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extPrisonsEscortCustody
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extPrisonsPrisonerFinance
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extPrisonsPrivatePrison
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extProbationPoliceIntelligence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.fullAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.fullAccessLaoRedactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.hmppsSystem
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mappa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mappaCat4
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mojHmppsPersonLookup
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mojPrisonerEducation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mojPrisonerFacing
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mojPrisonsEducation
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mojPrisonsPrisonerFacing
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mojPrisonsPrisonerImage
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mojPrisonsWarrantReceipt
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mojProbationCaseProposal
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mojProbationRiskManagement
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.personLookup
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.police
@@ -180,4 +196,20 @@ val roles =
     synalogik,
     personLookup,
     mojProbationRiskManagement,
+    extHmppsSeriousHarm,
+    extPrisonsCourseCompletion,
+    mojProbationCaseProposal,
+    mojPrisonsPrisonerImage,
+    extPrisonsEscortCustody,
+    mojHmppsPersonLookup,
+    extPrisonsPrivatePrison,
+    extHmppsPublicProtection,
+    extHmppsPublicProtectionCat4,
+    extPrisonsEducation,
+    mojPrisonsEducation,
+    extProbationPoliceIntelligence,
+    mojPrisonsPrisonerFacing,
+    mojPrisonsWarrantReceipt,
+    extPrisonsPrisonerFinance,
+    extPrisonsCrimeData,
   ).associateBy { it.name }

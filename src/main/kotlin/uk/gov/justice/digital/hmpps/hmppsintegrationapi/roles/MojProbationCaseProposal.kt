@@ -1,0 +1,17 @@
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles
+
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.policies.riskScores.epfRiskScoreRedactions
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
+
+val mojProbationCaseProposal =
+  role("moj-probation-case-proposal") {
+    permissions {
+      -"/v1/epf/person-details/{hmppsId}/{eventNumber}"
+      -"/v1/status"
+      -"/v1/persons/{hmppsId}/access-limitations"
+      -"/v1/persons/{hmppsId}/risks/scores"
+    }
+    redactionPolicies {
+      -epfRiskScoreRedactions
+    }
+  }
