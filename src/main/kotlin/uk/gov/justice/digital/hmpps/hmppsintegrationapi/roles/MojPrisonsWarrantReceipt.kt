@@ -1,0 +1,21 @@
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles
+
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.policies.personSearchIdOnly
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
+
+val mojPrisonsWarrantReceipt =
+  role("moj-prisons-warrant-receipt") {
+    permissions {
+      -"/v1/status"
+      -"/v1/persons"
+      -"/v1/persons/{hmppsId}/prisoner-base-location"
+    }
+    filters {
+      supervisionStatuses {
+        -"PRISONS"
+      }
+    }
+    redactionPolicies {
+      -personSearchIdOnly
+    }
+  }
