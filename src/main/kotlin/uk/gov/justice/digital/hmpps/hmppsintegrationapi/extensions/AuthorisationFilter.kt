@@ -146,12 +146,7 @@ class AuthorisationFilter(
       // Default consumer name should only be set for the local profile
       return authorisationService.defaultConsumerName()
     }
-    val match = Regex("^.*,CN=(.*)$").find(subjectDistinguishedName)
-
-    if (match?.groupValues == null) {
-      return null
-    }
-    return match.groupValues[1]
+    return certificateService.extractConsumerName(subjectDistinguishedName)
   }
 
   private fun setSpanAttributes(

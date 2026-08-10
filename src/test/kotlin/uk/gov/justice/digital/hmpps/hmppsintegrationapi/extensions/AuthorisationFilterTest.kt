@@ -68,6 +68,7 @@ class AuthorisationFilterTest {
     whenever(mockRequest.getHeader("cert-expiry-date")).thenReturn("May 20 00:30:10 2046 GMT")
     val certInfo = CertificateInfo(CERT_SERIAL_FORMATTED, exampleConsumer, false, Instant.now().plusSeconds(3600))
     whenever(certificateService.validateCertificate(any(), any(), any())).thenReturn(certInfo)
+    whenever(certificateService.extractConsumerName(eq(exampleSubjectDistinguishedName))).thenReturn(exampleConsumer)
   }
 
   fun mockRequest(
@@ -267,13 +268,13 @@ class AuthorisationFilterTest {
   fun `can get subject distinguished name from request and set as consumer name `() {
     // From ConsumerNameExtractionFilterTest
     val resp = MockHttpServletResponse()
-    val req = mockRequest("GET", examplePath, "O=test,CN=sam", CERT_SERIAL_RAW)
+    val req = mockRequest("GET", examplePath)
 
     val chain = fullMockFilterChain(authorisationService)
 
     chain.doFilter(req, resp)
 
-    assertThat(req.getAttribute("clientName")).isEqualTo("sam")
+    assertThat(req.getAttribute("clientName")).isEqualTo("consumer-name")
   }
 
   @Test
@@ -302,7 +303,7 @@ class AuthorisationFilterTest {
         mockManageUsersService,
       )
 
-    val req = mockRequest("GET", examplePath, "O=test,CN=consumer-name")
+    val req = mockRequest("GET", examplePath)
 
     val chain = fullMockFilterChain(authorisationService)
 
@@ -329,7 +330,7 @@ class AuthorisationFilterTest {
         mockManageUsersService,
       )
 
-    val req = mockRequest("GET", examplePath, "O=test,CN=consumer-name")
+    val req = mockRequest("GET", examplePath)
 
     val chain = fullMockFilterChain(authorisationService)
 
@@ -354,7 +355,7 @@ class AuthorisationFilterTest {
         mockManageUsersService,
       )
 
-    val req = mockRequest("GET", examplePath, "O=test,CN=consumer-name")
+    val req = mockRequest("GET", examplePath)
 
     val chain = fullMockFilterChain(authorisationService)
 
@@ -367,14 +368,14 @@ class AuthorisationFilterTest {
   fun `auth filter chain test`() {
     val resp = MockHttpServletResponse()
     val finalFilter = mock(Filter::class.java)
-    val authService = mockAuthService("sam")
-    val req = mockRequest("GET", examplePath, "O=test,CN=sam", CERT_SERIAL_RAW)
+    val authService = mockAuthService(exampleConsumer)
+    val req = mockRequest("GET", examplePath)
 
     val chain = fullMockFilterChain(authService, finalFilter)
 
     chain.doFilter(req, resp)
 
-    assertThat(req.getAttribute("clientName")).isEqualTo("sam")
+    assertThat(req.getAttribute("clientName")).isEqualTo(exampleConsumer)
     assertThat(req.getAttribute("filters")).isEqualTo(ConsumerFilters(prisons = listOf("MDI")))
     assertThat(resp.status).isEqualTo(200)
     verify(finalFilter, times(1)).doFilter(eq(req), eq(resp), any())

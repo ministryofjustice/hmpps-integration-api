@@ -159,6 +159,15 @@ class CertificateService(
   }
 
   fun certificateRevocationList() = authorisationConfig.certificateRevocationList
+
+  fun extractConsumerName(subjectDistinguishedName: String): String? {
+    val match = Regex("^.*,CN=(.*)$").find(subjectDistinguishedName)
+
+    if (match?.groupValues == null) {
+      return null
+    }
+    return match.groupValues[1]
+  }
 }
 
 data class CertificateInfo(
