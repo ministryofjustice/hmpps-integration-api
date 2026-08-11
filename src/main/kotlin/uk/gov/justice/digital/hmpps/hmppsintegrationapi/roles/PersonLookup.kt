@@ -6,7 +6,6 @@ val personLookup =
   role("person-lookup") {
     permissions {
       -"/v1/persons"
-      -"/v1/persons/{hmppsId}"
       -"/v1/status"
     }
   }
