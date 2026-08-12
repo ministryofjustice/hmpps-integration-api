@@ -67,7 +67,7 @@ class AuthorisationFilterTest {
     whenever(mockRequest.getHeader("cert-serial-number")).thenReturn(CERT_SERIAL_RAW)
     whenever(mockRequest.getHeader("cert-expiry-date")).thenReturn("May 20 00:30:10 2046 GMT")
     val certInfo = CertificateInfo(CERT_SERIAL_FORMATTED, exampleConsumer, false, Instant.now().plusSeconds(3600))
-    whenever(certificateService.validateCertificate(any(), any(), any())).thenReturn(certInfo)
+    whenever(certificateService.getCertificateInfo(any(), any(), any())).thenReturn(certInfo)
     whenever(certificateService.extractConsumerName(eq(exampleSubjectDistinguishedName))).thenReturn(exampleConsumer)
   }
 
@@ -240,7 +240,7 @@ class AuthorisationFilterTest {
 
   @Test
   fun `Forbidden if certificate serial number is in the certificate revocation list and feature flag is enabled`() {
-    whenever(certificateService.validateCertificate(any(), any(), any())).thenReturn(
+    whenever(certificateService.getCertificateInfo(any(), any(), any())).thenReturn(
       CertificateInfo(
         CERT_SERIAL_FORMATTED,
         exampleConsumer,
@@ -408,7 +408,7 @@ class AuthorisationFilterTest {
 
   @Test
   fun `handles a NULL certificate serial number header`() {
-    whenever(certificateService.validateCertificate(any(), any(), any())).thenReturn(
+    whenever(certificateService.getCertificateInfo(any(), any(), any())).thenReturn(
       CertificateInfo(
         null,
         exampleConsumer,
@@ -479,7 +479,7 @@ class AuthorisationFilterTest {
 
   @Test
   fun `returns the default consumer name when there is a default consumer name and no subject distinguished name`() {
-    whenever(certificateService.validateCertificate(any(), any(), any())).thenReturn(
+    whenever(certificateService.getCertificateInfo(any(), any(), any())).thenReturn(
       CertificateInfo(
         CERT_SERIAL_FORMATTED,
         null,
@@ -495,7 +495,7 @@ class AuthorisationFilterTest {
 
   @Test
   fun `handles a cert-expiry-date header `() {
-    whenever(certificateService.validateCertificate(any(), any(), any())).thenReturn(
+    whenever(certificateService.getCertificateInfo(any(), any(), any())).thenReturn(
       CertificateInfo(
         CERT_SERIAL_FORMATTED,
         exampleConsumer,
@@ -510,7 +510,7 @@ class AuthorisationFilterTest {
 
   @Test
   fun `handles a null cert-expiry-date header `() {
-    whenever(certificateService.validateCertificate(any(), any(), any())).thenReturn(
+    whenever(certificateService.getCertificateInfo(any(), any(), any())).thenReturn(
       CertificateInfo(
         CERT_SERIAL_FORMATTED,
         exampleConsumer,

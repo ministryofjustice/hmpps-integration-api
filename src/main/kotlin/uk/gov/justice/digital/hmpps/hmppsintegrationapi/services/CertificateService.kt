@@ -19,7 +19,7 @@ class CertificateService(
   private val telemetryService: TelemetryService,
   private val clock: Clock = fixedClock(),
 ) {
-  fun validateCertificate(
+  fun getCertificateInfo(
     commonName: String,
     rawSerialNum: String?,
     rawExpiryTime: String?,

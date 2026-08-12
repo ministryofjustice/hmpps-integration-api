@@ -56,7 +56,7 @@ class FiltersIntegrationTest : IntegrationTestBase() {
     //      filters:
     //        mappa-categories:
     //          - "*"
-    whenever(mockCertificateService.validateCertificate(any(), any(), any())).thenReturn(CertificateInfo())
+    whenever(mockCertificateService.getCertificateInfo(any(), any(), any())).thenReturn(CertificateInfo())
     whenever(mockRequest.getHeader("subject-distinguished-name")).thenReturn("C=GB,ST=London,L=London,O=Home Office,CN=automated-test-client-mappa")
     filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)
     verify(mockRequest, times(1)).setAttribute(eq("filters"), filtersCapture.capture())

@@ -53,7 +53,7 @@ class AuthorisationFilter(
     // Set the client name in the request
     req.setAttribute("clientName", clientName)
 
-    val certInfo = certificateService.validateCertificate(clientName, req.getHeader("cert-serial-number"), req.getHeader("cert-expiry-date"))
+    val certInfo = certificateService.getCertificateInfo(clientName, req.getHeader("cert-serial-number"), req.getHeader("cert-expiry-date"))
 
     if (certInfo.isRevoked) {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Certificate with serial number ${certInfo.seriaNumber} has been revoked")
