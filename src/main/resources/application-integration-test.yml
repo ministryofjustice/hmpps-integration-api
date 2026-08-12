@@ -132,7 +132,7 @@ feature-flag:
   contact-linked-prisoners-endpoint-enabled: true
   prison-timeline-endpoint-enabled: true
   restapiclient-for-san-gateway: true
-  restapiclient-for-prison-api-gateway: true
+  restapiclient-for-prison-api-gateway: false
   # Events Config
   enable-delete-processed-events: true
   enable-publish-pending-events: true
