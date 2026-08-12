@@ -400,7 +400,7 @@ class AuthorisationFilterTest {
 
   @Test
   fun `handles a certificate serial number header`() {
-    whenever(certificateService.extractCertificateSerialNumber(any())).thenReturn(CERT_SERIAL_FORMATTED)
+    whenever(certificateService.toHexFormat(any())).thenReturn(CERT_SERIAL_FORMATTED)
     val finalFilter = mock(Filter::class.java)
     mockFilterChain(authorisationFilter, finalFilter).doFilter(mockRequest, mockResponse)
     verify(mockTelemetryService, times(1)).setSpanAttribute("certSerialNumber", CERT_SERIAL_FORMATTED)
