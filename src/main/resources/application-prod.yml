@@ -76,6 +76,7 @@ feature-flag:
   prison-timeline-endpoint-enabled: false
   use-probation-search-for-person-search: false
   restapiclient-for-san-gateway: true
+  restapiclient-for-prison-api-gateway: false
   # Events Config
   enable-delete-processed-events: true
   enable-publish-pending-events: true
