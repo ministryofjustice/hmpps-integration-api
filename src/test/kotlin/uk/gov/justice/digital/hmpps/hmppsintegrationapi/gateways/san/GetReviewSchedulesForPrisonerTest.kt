@@ -19,7 +19,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.RESTAPICLIENT_FOR_SAN_GATEWAY
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.defaultObjectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiClient
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiResponse
@@ -74,8 +73,6 @@ class GetReviewSchedulesForPrisonerTest(
           ]
       }
           """.removeWhitespaceAndNewlines()
-
-      val responseData = defaultObjectMapper.readValue(responseJson(), PlanReviewSchedules::class.java)
 
       beforeEach {
         apiMockServer.start()
@@ -138,7 +135,7 @@ class GetReviewSchedulesForPrisonerTest(
 
         val apiClient: RestApiClient = mock()
         whenever(apiClient.get(eq(path), eq(PlanReviewSchedules::class), eq(headers), isNull()))
-          .thenReturn(RestApiResponse("?", HttpStatus.OK, responseData))
+          .thenReturn(RestApiResponse("?", HttpStatus.OK, RestApiClient.mapResponse(responseJson(), PlanReviewSchedules::class)))
 
         val gateway = SANGateway("http://localhost", apiClient)
         gateway.hmppsAuthGateway = authGateway

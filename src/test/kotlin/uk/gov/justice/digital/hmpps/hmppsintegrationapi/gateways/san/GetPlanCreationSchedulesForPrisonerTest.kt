@@ -17,7 +17,6 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.RESTAPICLIENT_FOR_SAN_GATEWAY
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.defaultObjectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiClient
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiResponse
@@ -93,8 +92,6 @@ class GetPlanCreationSchedulesForPrisonerTest(
 }
           """.removeWhitespaceAndNewlines()
 
-      val responseData = defaultObjectMapper.readValue(responseJson(), PlanCreationSchedules::class.java)
-
       beforeEach {
         apiMockServer.start()
         apiMockServer.stubForGet(
@@ -136,7 +133,7 @@ class GetPlanCreationSchedulesForPrisonerTest(
 
         val apiClient: RestApiClient = mock()
         whenever(apiClient.get(eq(path), eq(PlanCreationSchedules::class), eq(headers), isNull()))
-          .thenReturn(RestApiResponse("?", HttpStatus.OK, responseData))
+          .thenReturn(RestApiResponse("?", HttpStatus.OK, RestApiClient.mapResponse(responseJson(), PlanCreationSchedules::class)))
 
         val gateway = SANGateway("http://localhost", apiClient)
         gateway.hmppsAuthGateway = authGateway
