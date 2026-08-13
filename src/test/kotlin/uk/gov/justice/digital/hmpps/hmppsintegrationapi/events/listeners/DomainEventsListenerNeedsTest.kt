@@ -10,7 +10,7 @@ class DomainEventsListenerNeedsTest : DomainEventsListenerTestCase() {
   private val crn = "X777776"
 
   @Test
-  fun `will process and save a assessment summary notification with the correct status`() {
+  fun `will process and save a NEEDS_CHANGED notification with the correct status`() {
     // Arrange
     val eventType = "assessment.summary.produced"
     val message = ASSESSMENT_SUMMARY_PRODUCED
@@ -29,7 +29,7 @@ class DomainEventsListenerNeedsTest : DomainEventsListenerTestCase() {
   }
 
   @Test
-  fun `will NOT create a assessment summary notification when incorrect status`() {
+  fun `will NOT create a NEEDS_CHANGED notification when incorrect status`() {
     // Arrange
     val eventType = "assessment.summary.produced"
     val message = ASSESSMENT_SUMMARY_PRODUCED_LOCKED_INCOMPLETE
