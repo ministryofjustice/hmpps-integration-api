@@ -17,6 +17,7 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.RESTAPICLIENT_FOR_SAN_GATEWAY
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.defaultObjectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiClient
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiResponse
@@ -25,13 +26,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGatewa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.SANGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PlanCreationSchedule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PlanCreationSchedules
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PlanCreationStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-import java.time.LocalDate
-import java.time.OffsetDateTime
-import java.util.UUID
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -96,6 +93,8 @@ class GetPlanCreationSchedulesForPrisonerTest(
 }
           """.removeWhitespaceAndNewlines()
 
+      val responseData = defaultObjectMapper.readValue(responseJson(), PlanCreationSchedules::class.java)
+
       beforeEach {
         apiMockServer.start()
         apiMockServer.stubForGet(
@@ -126,7 +125,6 @@ class GetPlanCreationSchedulesForPrisonerTest(
 
       it("can use the RestApiClient") {
         // Given
-        val ref = UUID.randomUUID()
         val authToken = "ABC123"
         val headers = mapOf("Authorization" to "Bearer $authToken")
 
@@ -137,32 +135,8 @@ class GetPlanCreationSchedulesForPrisonerTest(
         whenever(authGateway.getClientToken("SAN", flagRequestContext)).thenReturn(authToken)
 
         val apiClient: RestApiClient = mock()
-        whenever(apiClient.get(eq(path), eq(PlanCreationSchedules::class), eq(headers), isNull())).thenReturn(
-          RestApiResponse(
-            "Test",
-            HttpStatus.OK,
-            PlanCreationSchedules(
-              planCreationSchedules =
-                listOf(
-                  PlanCreationSchedule(
-                    reference = ref,
-                    status = PlanCreationStatus.COMPLETED,
-                    createdBy = "person",
-                    createdByDisplayName = "Person",
-                    createdAt = OffsetDateTime.now().minusDays(1),
-                    createdAtPrison = "XYZ",
-                    updatedBy = "person",
-                    updatedByDisplayName = "Person",
-                    updatedAt = OffsetDateTime.now(),
-                    updatedAtPrison = "XYZ",
-                    deadlineDate = LocalDate.now(),
-                    needSources = emptyList(),
-                    version = 1,
-                  ),
-                ),
-            ),
-          ),
-        )
+        whenever(apiClient.get(eq(path), eq(PlanCreationSchedules::class), eq(headers), isNull()))
+          .thenReturn(RestApiResponse("?", HttpStatus.OK, responseData))
 
         val gateway = SANGateway("http://localhost", apiClient)
         gateway.hmppsAuthGateway = authGateway
@@ -172,9 +146,11 @@ class GetPlanCreationSchedulesForPrisonerTest(
 
         // Then
         response.errors.size shouldBe 0
-        response.data.planCreationSchedules.size shouldBe 1
-        response.data.planCreationSchedules[0].status shouldBe PlanCreationStatus.COMPLETED
-        response.data.planCreationSchedules[0].reference shouldBe ref
+        response.data.planCreationSchedules.size shouldBe 2
+        response.data.planCreationSchedules[0].status shouldBe PlanCreationStatus.SCHEDULED
+        response.data.planCreationSchedules[0]
+          .reference
+          .toString() shouldBe "44052fd9-bf6c-41bc-8308-6839a7048836"
       }
     },
   )

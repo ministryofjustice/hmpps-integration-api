@@ -19,6 +19,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.RESTAPICLIENT_FOR_SAN_GATEWAY
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.defaultObjectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiClient
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiResponse
@@ -27,12 +28,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGatewa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.SANGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PlanReviewSchedule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PlanReviewScheduleStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PlanReviewSchedules
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-import java.time.LocalDate
-import java.time.OffsetDateTime
 import java.util.UUID
 
 @ActiveProfiles("test")
@@ -76,6 +74,8 @@ class GetReviewSchedulesForPrisonerTest(
           ]
       }
           """.removeWhitespaceAndNewlines()
+
+      val responseData = defaultObjectMapper.readValue(responseJson(), PlanReviewSchedules::class.java)
 
       beforeEach {
         apiMockServer.start()
@@ -137,29 +137,9 @@ class GetReviewSchedulesForPrisonerTest(
         whenever(authGateway.getClientToken("SAN", flagRequestContext)).thenReturn(authToken)
 
         val apiClient: RestApiClient = mock()
-        whenever(apiClient.get(eq(path), eq(PlanReviewSchedules::class), eq(headers), isNull())).thenReturn(
-          RestApiResponse(
-            "Test",
-            HttpStatus.OK,
-            PlanReviewSchedules(
-              listOf(
-                PlanReviewSchedule(
-                  reference = ref,
-                  status = PlanReviewScheduleStatus.COMPLETED,
-                  deadlineDate = LocalDate.now(),
-                  createdBy = "person",
-                  createdByDisplayName = "Person",
-                  createdAt = OffsetDateTime.now().minusDays(3),
-                  createdAtPrison = "ABC",
-                  updatedBy = "person",
-                  updatedByDisplayName = "Person",
-                  updatedAt = OffsetDateTime.now().minusDays(1),
-                  updatedAtPrison = "ABC",
-                ),
-              ),
-            ),
-          ),
-        )
+        whenever(apiClient.get(eq(path), eq(PlanReviewSchedules::class), eq(headers), isNull()))
+          .thenReturn(RestApiResponse("?", HttpStatus.OK, responseData))
+
         val gateway = SANGateway("http://localhost", apiClient)
         gateway.hmppsAuthGateway = authGateway
 
@@ -169,7 +149,9 @@ class GetReviewSchedulesForPrisonerTest(
         response.errors.size shouldBe 0
         response.data shouldNotBe null
         response.data.planReviewSchedules.size shouldBe 1
-        response.data.planReviewSchedules[0].reference shouldBe ref
+        response.data.planReviewSchedules[0]
+          .reference
+          .toString() shouldBe "39ee07c2-1607-42af-a2e8-af6215505ad9"
       }
 
       it("can can handle errors with the RestApiClient") {
