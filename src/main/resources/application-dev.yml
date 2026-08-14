@@ -138,3 +138,6 @@ hmpps.sqs:
       queueName: ${DASO_QUEUE_NAME}
       queueArn: ${DASO_QUEUE_ARN}
       subscribeTopicId: integrationeventtopic
+
+  certificate-revocation-list:
+    - 17:8E:F3:0D:BA:D0:AC:C9:0B:70:C3:2A:D6:D4:EB:B5:8C:02:1D:D9
