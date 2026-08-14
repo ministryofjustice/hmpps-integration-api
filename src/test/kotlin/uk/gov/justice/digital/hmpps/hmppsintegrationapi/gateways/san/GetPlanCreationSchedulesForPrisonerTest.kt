@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.SANGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PlanCreationSchedules
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PlanCreationStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 
 @ActiveProfiles("test")
@@ -123,9 +124,13 @@ class GetPlanCreationSchedulesForPrisonerTest(
         val response = gateway.getPlanCreationSchedules(prisonerNumber, flagRequestContext)
 
         // Then
+        response.errors.size shouldBe 0
         response.data.shouldNotBeNull()
-        response.data.planCreationSchedules.size
-          .shouldBe(2)
+        response.data.planCreationSchedules.size shouldBe 2
+        response.data.planCreationSchedules[0].status shouldBe PlanCreationStatus.SCHEDULED
+        response.data.planCreationSchedules[0]
+          .reference
+          .toString() shouldBe "44052fd9-bf6c-41bc-8308-6839a7048836"
       }
     },
   )
