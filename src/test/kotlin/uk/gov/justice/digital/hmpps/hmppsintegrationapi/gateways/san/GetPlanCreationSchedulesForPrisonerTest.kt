@@ -108,10 +108,10 @@ class GetPlanCreationSchedulesForPrisonerTest(
         val authToken = "ABC123"
         val headers = mapOf("Authorization" to "Bearer $authToken")
 
-        val flagRequestContext = buildRequestContext("testUser")
+        val requestContext = buildRequestContext("testUser")
 
         val authGateway: HmppsAuthGateway = mock()
-        whenever(authGateway.getClientToken("SAN", flagRequestContext)).thenReturn(authToken)
+        whenever(authGateway.getClientToken("SAN", requestContext)).thenReturn(authToken)
 
         val apiClient: RestApiClient = mock()
         whenever(apiClient.get(eq(path), eq(PlanCreationSchedules::class), eq(headers), isNull()))
@@ -121,7 +121,7 @@ class GetPlanCreationSchedulesForPrisonerTest(
         gateway.hmppsAuthGateway = authGateway
 
         // When
-        val response = gateway.getPlanCreationSchedules(prisonerNumber, flagRequestContext)
+        val response = gateway.getPlanCreationSchedules(prisonerNumber, requestContext)
 
         // Then
         response.errors.size shouldBe 0

@@ -89,10 +89,10 @@ class GetReviewSchedulesForPrisonerTest(
         val authToken = "ABC123"
         val headers = mapOf("Authorization" to "Bearer $authToken")
 
-        val flagRequestContext = buildRequestContext("testUser")
+        val requestContext = buildRequestContext("testUser")
 
         val authGateway: HmppsAuthGateway = mock()
-        whenever(authGateway.getClientToken("SAN", flagRequestContext)).thenReturn(authToken)
+        whenever(authGateway.getClientToken("SAN", requestContext)).thenReturn(authToken)
 
         val apiClient: RestApiClient = mock()
         whenever(apiClient.get(eq(path), eq(PlanReviewSchedules::class), eq(headers), isNull()))
@@ -101,7 +101,7 @@ class GetReviewSchedulesForPrisonerTest(
         val gateway = SANGateway("http://localhost", apiClient)
         gateway.hmppsAuthGateway = authGateway
 
-        val response = gateway.getReviewSchedules(prisonerNumber, flagRequestContext)
+        val response = gateway.getReviewSchedules(prisonerNumber, requestContext)
 
         response.data.shouldNotBeNull()
         val schedules = response.data.planReviewSchedules
