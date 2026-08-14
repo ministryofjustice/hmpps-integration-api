@@ -40,6 +40,22 @@ class RestApiClient(
 ) {
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
+
+    private val mapper: JsonMapper =
+      JsonMapper
+        .builder()
+        .configureForJackson2()
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        .configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false)
+        .changeDefaultPropertyInclusion { it.withValueInclusion(JsonInclude.Include.NON_NULL) }
+        .changeDefaultPropertyInclusion { it.withContentInclusion(JsonInclude.Include.NON_NULL) }
+        .addModule(KotlinModule.Builder().build())
+        .build()
+
+    fun <T : Any> mapResponse(
+      jsonText: String,
+      responseType: KClass<T>,
+    ): T = mapper.readValue(jsonText, responseType.java)
   }
 
   val retryCodes = listOf(502, 503, 504, 522, 599, 499, 408)
@@ -219,17 +235,6 @@ class RestApiClient(
       .create()
       .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, options.connectTimeoutMillis)
       .responseTimeout(Duration.ofSeconds(options.responseTimeoutSeconds))
-
-  private val mapper: JsonMapper =
-    JsonMapper
-      .builder()
-      .configureForJackson2()
-      .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-      .configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false)
-      .changeDefaultPropertyInclusion { it.withValueInclusion(JsonInclude.Include.NON_NULL) }
-      .changeDefaultPropertyInclusion { it.withContentInclusion(JsonInclude.Include.NON_NULL) }
-      .addModule(KotlinModule.Builder().build())
-      .build()
 
   private val strategies =
     ExchangeStrategies
