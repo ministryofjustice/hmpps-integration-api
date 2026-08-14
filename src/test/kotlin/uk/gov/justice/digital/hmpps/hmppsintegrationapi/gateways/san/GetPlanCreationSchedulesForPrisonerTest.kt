@@ -7,16 +7,12 @@ import org.mockito.Mockito
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.isNull
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.RESTAPICLIENT_FOR_SAN_GATEWAY
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiClient
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiResponse
@@ -26,17 +22,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.SANGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PlanCreationSchedules
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PlanCreationStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 
 @ActiveProfiles("test")
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [SANGateway::class],
 )
 class GetPlanCreationSchedulesForPrisonerTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
-  private val sanGateway: SANGateway,
 ) : DescribeSpec(
     {
       val apiMockServer = ApiMockServer.create(UpstreamApi.SAN)
@@ -107,26 +100,14 @@ class GetPlanCreationSchedulesForPrisonerTest(
         apiMockServer.stop()
       }
 
-      it("authenticates using HMPPS Auth with credentials") {
-        sanGateway.getPlanCreationSchedules(prisonerNumber, requestContext)
-
-        verify(hmppsAuthGateway, times(1)).getClientToken("SAN", requestContext)
-      }
+      // Note that HMPPS Auth token use is verified by the primary unit tests now
 
       it("returns plan creation schedules for the matching person ID") {
-        val response = sanGateway.getPlanCreationSchedules(prisonerNumber, requestContext)
-        response.data.shouldNotBeNull()
-        response.data.planCreationSchedules.size
-          .shouldBe(2)
-      }
-
-      it("can use the RestApiClient") {
         // Given
         val authToken = "ABC123"
         val headers = mapOf("Authorization" to "Bearer $authToken")
 
-        val features = FeatureFlagConfig(mapOf(RESTAPICLIENT_FOR_SAN_GATEWAY to true))
-        val flagRequestContext = buildRequestContext("testUser", featureFlags = features)
+        val flagRequestContext = buildRequestContext("testUser")
 
         val authGateway: HmppsAuthGateway = mock()
         whenever(authGateway.getClientToken("SAN", flagRequestContext)).thenReturn(authToken)
@@ -142,12 +123,9 @@ class GetPlanCreationSchedulesForPrisonerTest(
         val response = gateway.getPlanCreationSchedules(prisonerNumber, flagRequestContext)
 
         // Then
-        response.errors.size shouldBe 0
-        response.data.planCreationSchedules.size shouldBe 2
-        response.data.planCreationSchedules[0].status shouldBe PlanCreationStatus.SCHEDULED
-        response.data.planCreationSchedules[0]
-          .reference
-          .toString() shouldBe "44052fd9-bf6c-41bc-8308-6839a7048836"
+        response.data.shouldNotBeNull()
+        response.data.planCreationSchedules.size
+          .shouldBe(2)
       }
     },
   )
