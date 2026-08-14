@@ -69,7 +69,7 @@ class RiskPredictorScoresIntegrationTest : IntegrationTestBase() {
       getExpectedResponse("arns-risk-predictor-scores-new-v1-only-decimals.json"),
     )
 
-    callApiWithCN("$basePath/$crn/risks/scores", "epf")
+    callApiWithCN("$basePath/$crn/risks/scores", "redaction-moj-probation-case-proposal")
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("person-risk-scores-v1-epf-decimals.json"), JsonCompareMode.STRICT))
     arnsMockServer.assertValidationPassed()
@@ -82,7 +82,7 @@ class RiskPredictorScoresIntegrationTest : IntegrationTestBase() {
       getExpectedResponse("arns-risk-predictor-scores-new-v2-only-decimals.json"),
     )
 
-    callApiWithCN("$basePath/$crn/risks/scores", "epf")
+    callApiWithCN("$basePath/$crn/risks/scores", "redaction-moj-probation-case-proposal")
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("person-risk-scores-v2-epf-decimals.json"), JsonCompareMode.STRICT))
     arnsMockServer.assertValidationPassed()

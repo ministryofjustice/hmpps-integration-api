@@ -222,7 +222,7 @@ authorisation:
       filters:
         supervisionStatuses:
           - PROBATION
-    epf:
+    redaction-moj-probation-case-proposal:
       roles:
         - "moj-probation-case-proposal"
     role-based-redacted-client:
