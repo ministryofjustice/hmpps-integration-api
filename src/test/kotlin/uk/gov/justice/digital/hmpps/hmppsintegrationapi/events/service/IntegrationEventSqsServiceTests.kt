@@ -143,7 +143,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
           consumers:
             tester:
               roles:
-                - private-prison
+                - ext-prisons-private-prison
               filters:
                 prisons:
                  - MKI
@@ -166,7 +166,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
           consumers:
             tester:
               roles:
-                - private-prison
+                - ext-prisons-private-prison
               filters:
                 prisons:
                   - MKI
@@ -211,7 +211,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
           consumers:
             tester:
               roles:
-                - private-prison
+                - ext-prisons-private-prison
               filters:
                 supervisionStatuses:
                   - PRISONS
@@ -226,7 +226,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
           consumers:
             tester:
               roles:
-                - private-prison
+                - ext-prisons-private-prison
               filters:
                 supervisionStatuses:
                   - PRISONS
@@ -241,7 +241,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
           consumers:
             tester:
               roles:
-                - private-prison
+                - ext-prisons-private-prison
               filters:
                 supervisionStatuses:
                   - PRISONS
@@ -256,7 +256,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
           consumers:
             tester:
               roles:
-                - private-prison
+                - ext-prisons-private-prison
           """.trimIndent(),
           null,
           "PROBATION",
@@ -268,7 +268,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
           consumers:
             tester:
               roles:
-                - private-prison
+                - ext-prisons-private-prison
               filters:
                 prisons:
                   - MKI
@@ -284,7 +284,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
           consumers:
             tester:
               roles:
-                - private-prison
+                - ext-prisons-private-prison
               filters:
                 prisons:
                   - MKI
@@ -299,7 +299,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
           consumers:
             tester:
               roles:
-                - private-prison
+                - ext-prisons-private-prison
               filters:
                 prisons:
                   - MKI
@@ -314,7 +314,7 @@ class IntegrationEventSqsServiceTests : ConfigTest() {
           consumers:
             tester:
               roles:
-                - private-prison
+                - ext-prisons-private-prison
           """.trimIndent(),
           "MKI",
           null,

@@ -162,7 +162,7 @@ authorisation:
       queueName: "testqueue"
     private-prison-only:
       roles:
-        - "private-prison"
+        - "ext-prisons-private-prison"
       queueName: "testqueue"
     limited-case-notes:
       roles:
