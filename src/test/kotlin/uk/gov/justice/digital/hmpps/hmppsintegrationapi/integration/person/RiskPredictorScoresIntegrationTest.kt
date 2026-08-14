@@ -29,7 +29,7 @@ class RiskPredictorScoresIntegrationTest : IntegrationTestBase() {
       getExpectedResponse("arns-risk-predictor-scores-new-v2-only.json"),
     )
 
-    callApi("$basePath/$crn/risks/scores")
+    callApiWithCN("$basePath/$crn/risks/scores", "all-endpoints")
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("person-risk-scores-v2.json"), JsonCompareMode.STRICT))
     arnsMockServer.assertValidationPassed()
@@ -42,7 +42,7 @@ class RiskPredictorScoresIntegrationTest : IntegrationTestBase() {
       getExpectedResponse("arns-risk-predictor-scores-new-v1-and-v2.json"),
     )
 
-    callApi("$basePath/$crn/risks/scores")
+    callApiWithCN("$basePath/$crn/risks/scores", "all-endpoints")
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("person-risk-scores-v1-and-v2.json"), JsonCompareMode.STRICT))
     arnsMockServer.assertValidationPassed()
@@ -56,7 +56,7 @@ class RiskPredictorScoresIntegrationTest : IntegrationTestBase() {
       getExpectedResponse("arns-risk-predictor-scores-new-v1-only-decimals.json"),
     )
 
-    callApi("$basePath/$crn/risks/scores")
+    callApiWithCN("$basePath/$crn/risks/scores", "all-endpoints")
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("person-risk-scores-v1.json"), JsonCompareMode.STRICT))
     arnsMockServer.assertValidationPassed()
