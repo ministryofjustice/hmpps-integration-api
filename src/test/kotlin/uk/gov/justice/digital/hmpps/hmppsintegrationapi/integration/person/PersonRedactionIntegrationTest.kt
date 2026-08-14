@@ -109,7 +109,7 @@ class PersonRedactionIntegrationTest : IntegrationTestBase() {
           .andExpect(jsonPath("$.data.prisonerOffenderSearch.pncId").isRedacted())
           .andExpect(jsonPath("$.data.probationOffenderSearch").doesNotExist())
 
-        verifyRedactionEvent("prison-education", "role-based-redacted-client", times(1), removes = 1)
+        verifyRedactionEvent("moj-prisons-education", "role-based-redacted-client", times(1), removes = 1)
         prisonerOffenderSearchMockServer.assertValidationPassed()
       }
     }

@@ -278,6 +278,9 @@ authorisation:
     ext-probation-police-intelligence:
       roles:
         - "ext-probation-police-intelligence"
+    moj-prisons-education:
+      roles:
+        - "moj-prisons-education"
 
   certificate-revocation-list:
     - 01:7b:eb:77:06:db:11:f5:2e:b6:f7:37:7b:a9:e0:e4:84:c5:2c:a3

@@ -50,7 +50,7 @@ class PersonResponsibleOfficerIntegrationTest : IntegrationTestBase() {
       "/api/allocation/$nomsIdFromProbation/primary_pom",
       File("$gatewaysFolder/managePOMcase/fixtures/GetPrimaryPOMResponse.json").readText(),
     )
-    callApiWithCN("$basePath/$nomsIdFromProbation/person-responsible-officer", "police")
+    callApiWithCN("$basePath/$nomsIdFromProbation/person-responsible-officer", "ext-probation-police-intelligence")
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("person-responsible-officer-redacted.json")))
 
