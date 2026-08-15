@@ -19,11 +19,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiRespon
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.SANGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PlanCreationSchedules
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PlanCreationStatus
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -33,10 +30,11 @@ class GetPlanCreationSchedulesForPrisonerTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
 ) : DescribeSpec(
     {
-      val apiMockServer = ApiMockServer.create(UpstreamApi.SAN)
       val prisonerNumber = "G4887VE"
       val path = "/profile/$prisonerNumber/plan-creation-schedule?includeAllHistory=true"
       val requestContext = buildRequestContext("testUser")
+      val authToken = "ABC123"
+      val headers = mapOf("Authorization" to "Bearer $authToken")
 
       fun responseJson() =
         """
@@ -87,38 +85,19 @@ class GetPlanCreationSchedulesForPrisonerTest(
           """.removeWhitespaceAndNewlines()
 
       beforeEach {
-        apiMockServer.start()
-        apiMockServer.stubForGet(
-          path,
-          responseJson(),
-        )
-
         Mockito.reset(hmppsAuthGateway)
-        whenever(hmppsAuthGateway.getClientToken("SAN", requestContext)).thenReturn(HmppsAuthMockServer.TOKEN)
-      }
-
-      afterTest {
-        apiMockServer.stop()
+        whenever(hmppsAuthGateway.getClientToken("SAN", requestContext)).thenReturn(authToken)
       }
 
       // Note that HMPPS Auth token use is verified by the primary unit tests now
 
       it("returns plan creation schedules for the matching person ID") {
         // Given
-        val authToken = "ABC123"
-        val headers = mapOf("Authorization" to "Bearer $authToken")
-
-        val requestContext = buildRequestContext("testUser")
-
-        val authGateway: HmppsAuthGateway = mock()
-        whenever(authGateway.getClientToken("SAN", requestContext)).thenReturn(authToken)
-
         val apiClient: RestApiClient = mock()
         whenever(apiClient.get(eq(path), eq(PlanCreationSchedules::class), eq(headers), isNull()))
           .thenReturn(RestApiResponse("?", HttpStatus.OK, RestApiClient.mapResponse(responseJson(), PlanCreationSchedules::class)))
 
-        val gateway = SANGateway("http://localhost", apiClient)
-        gateway.hmppsAuthGateway = authGateway
+        val gateway = SANGateway("http://localhost", apiClient, hmppsAuthGateway)
 
         // When
         val response = gateway.getPlanCreationSchedules(prisonerNumber, requestContext)

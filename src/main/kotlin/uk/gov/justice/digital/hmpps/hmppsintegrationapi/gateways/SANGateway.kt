@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
@@ -13,7 +12,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 @Component
 class SANGateway(
   @Value("\${services.san.base-url}") val baseUrl: String,
-  val sanRestClient: RestApiClient? = null,
+  val sanRestClient: RestApiClient,
+  val hmppsAuthGateway: HmppsAuthGateway,
 ) : UpstreamGateway {
   override fun metaData() =
     GatewayMetadata(
@@ -25,9 +25,6 @@ class SANGateway(
       gitHubRepoUrl = "https://github.com/ministryofjustice/hmpps-support-additional-needs-api",
       slackChannel = "#education-skills-work-employment-dev",
     )
-
-  @Autowired
-  lateinit var hmppsAuthGateway: HmppsAuthGateway
 
   fun getPlanCreationSchedules(
     prisonerNumber: String,

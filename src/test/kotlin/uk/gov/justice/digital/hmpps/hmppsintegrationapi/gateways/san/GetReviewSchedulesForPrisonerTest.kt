@@ -21,11 +21,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiRespon
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.SANGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PlanReviewScheduleStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PlanReviewSchedules
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import java.util.UUID
 
 @ActiveProfiles("test")
@@ -36,10 +33,11 @@ class GetReviewSchedulesForPrisonerTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
 ) : DescribeSpec(
     {
-      val apiMockServer = ApiMockServer.create(UpstreamApi.SAN)
       val prisonerNumber = "G4887VE"
       val path = "/profile/$prisonerNumber/reviews/review-schedules?includeAllHistory=true"
       val requestContext = buildRequestContext("testUser")
+      val authToken = "ABC123"
+      val headers = mapOf("Authorization" to "Bearer $authToken")
 
       fun responseJson() =
         """
@@ -69,37 +67,18 @@ class GetReviewSchedulesForPrisonerTest(
           """.removeWhitespaceAndNewlines()
 
       beforeEach {
-        apiMockServer.start()
-        apiMockServer.stubForGet(
-          path,
-          responseJson(),
-        )
-
         Mockito.reset(hmppsAuthGateway)
-        whenever(hmppsAuthGateway.getClientToken("SAN", requestContext)).thenReturn(HmppsAuthMockServer.TOKEN)
-      }
-
-      afterTest {
-        apiMockServer.stop()
+        whenever(hmppsAuthGateway.getClientToken("SAN", requestContext)).thenReturn(authToken)
       }
 
       // Note that HMPPS Auth token use is verified by the primary unit tests now
 
       it("returns review schedules") {
-        val authToken = "ABC123"
-        val headers = mapOf("Authorization" to "Bearer $authToken")
-
-        val requestContext = buildRequestContext("testUser")
-
-        val authGateway: HmppsAuthGateway = mock()
-        whenever(authGateway.getClientToken("SAN", requestContext)).thenReturn(authToken)
-
         val apiClient: RestApiClient = mock()
         whenever(apiClient.get(eq(path), eq(PlanReviewSchedules::class), eq(headers), isNull()))
           .thenReturn(RestApiResponse("?", HttpStatus.OK, RestApiClient.mapResponse(responseJson(), PlanReviewSchedules::class)))
 
-        val gateway = SANGateway("http://localhost", apiClient)
-        gateway.hmppsAuthGateway = authGateway
+        val gateway = SANGateway("http://localhost", apiClient, hmppsAuthGateway)
 
         val response = gateway.getReviewSchedules(prisonerNumber, requestContext)
 
@@ -128,14 +107,6 @@ class GetReviewSchedulesForPrisonerTest(
       }
 
       it("can can handle errors responses") {
-        val authToken = "ABC123"
-        val headers = mapOf("Authorization" to "Bearer $authToken")
-
-        val flagRequestContext = buildRequestContext("testUser")
-
-        val authGateway: HmppsAuthGateway = mock()
-        whenever(authGateway.getClientToken("SAN", flagRequestContext)).thenReturn(authToken)
-
         val apiClient: RestApiClient = mock()
         whenever(apiClient.get(eq(path), eq(PlanReviewSchedules::class), eq(headers), isNull())).thenReturn(
           RestApiResponse(
@@ -145,10 +116,9 @@ class GetReviewSchedulesForPrisonerTest(
             listOf(WebClientResponseException(404, "PlanReviewSchedules not found", null, null, null)),
           ),
         )
-        val gateway = SANGateway("http://localhost", apiClient)
-        gateway.hmppsAuthGateway = authGateway
+        val gateway = SANGateway("http://localhost", apiClient, hmppsAuthGateway)
 
-        val response = gateway.getReviewSchedules(prisonerNumber, flagRequestContext)
+        val response = gateway.getReviewSchedules(prisonerNumber, requestContext)
 
         response shouldNotBe null
         response.errors.size shouldBe 1
