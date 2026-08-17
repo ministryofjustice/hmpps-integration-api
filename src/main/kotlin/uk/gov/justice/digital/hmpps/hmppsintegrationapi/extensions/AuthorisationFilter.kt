@@ -78,7 +78,7 @@ class AuthorisationFilter(
     setSpanAttributes(clientName, certInfo.seriaNumber, oboUsername ?: onBehalfOf, certInfo.expiresAt, featureOverrides)
 
     if (consumerConfig?.isSuspended == true) {
-      res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access suspended")
+      res.sendError(HttpServletResponse.SC_FORBIDDEN, "Access suspended")
       return
     }
 
