@@ -79,6 +79,7 @@ class AuthorisationFilter(
 
     if (consumerConfig?.isSuspended == true) {
       res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access suspended")
+      return
     }
 
     if (authorisationService.requiresObo(clientName)) {
