@@ -20,7 +20,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonerAlerts.PA
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonerAlerts.PAPaginatedAlerts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonerAlerts.PASort
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithPndAlerts
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithPoliceIntelligenceAlerts
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
@@ -240,15 +240,15 @@ internal class GetAlertsForPersonServiceTest(
       describe("getAlertsForPnd") {
 
         it("calls the gateway with a list of alertCodes") {
-          val filters = ConsumerFilters(alertCodes = testRoleWithPndAlerts.filters?.alertCodes)
+          val filters = ConsumerFilters(alertCodes = testRoleWithPoliceIntelligenceAlerts.filters?.alertCodes)
           whenever(prisonerAlertsGateway.getPrisonerAlertsForCodes(hmppsId, page, perPage, filters.alertCodes!!)).thenReturn(
             Response(
               data = paginatedAlerts,
             ),
           )
           whenever(personService.getNomisNumber(hmppsId, filters)).thenReturn(Response(data = NomisNumber(hmppsId)))
-          getAlertsForPersonService.getAlerts(hmppsId, ConsumerFilters(alertCodes = testRoleWithPndAlerts.filters?.alertCodes), page, perPage)
-          verify(prisonerAlertsGateway, times(1)).getPrisonerAlertsForCodes(hmppsId, page, perPage, testRoleWithPndAlerts.filters?.alertCodes!!)
+          getAlertsForPersonService.getAlerts(hmppsId, ConsumerFilters(alertCodes = testRoleWithPoliceIntelligenceAlerts.filters?.alertCodes), page, perPage)
+          verify(prisonerAlertsGateway, times(1)).getPrisonerAlertsForCodes(hmppsId, page, perPage, testRoleWithPoliceIntelligenceAlerts.filters?.alertCodes!!)
         }
 
         it("calls the gateway without a list of alertCodes") {

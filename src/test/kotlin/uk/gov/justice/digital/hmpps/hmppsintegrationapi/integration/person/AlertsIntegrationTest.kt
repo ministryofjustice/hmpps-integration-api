@@ -11,7 +11,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithLaoRedactions
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithPndAlerts
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithPoliceIntelligenceAlerts
 import java.io.File
 
 class AlertsIntegrationTest : IntegrationTestBase() {
@@ -40,12 +40,12 @@ class AlertsIntegrationTest : IntegrationTestBase() {
 
     @Test
     fun `returns alerts for a person with alert filters`() {
-      whenever(authorisationConfig.roles).thenReturn(mapOf("full-access" to testRoleWithPndAlerts))
+      whenever(authorisationConfig.roles).thenReturn(mapOf("full-access" to testRoleWithPoliceIntelligenceAlerts))
       callApi(path)
         .andExpect(status().isOk)
         .andExpect(content().json(getExpectedResponse("person-alerts")))
 
-      verify(alertsGateway, times(1)).getPrisonerAlertsForCodes(nomsId, 1, 10, testRoleWithPndAlerts.filters?.alertCodes!!, false)
+      verify(alertsGateway, times(1)).getPrisonerAlertsForCodes(nomsId, 1, 10, testRoleWithPoliceIntelligenceAlerts.filters?.alertCodes!!, false)
     }
 
     @Test
