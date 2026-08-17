@@ -77,6 +77,10 @@ class AuthorisationFilter(
     // Set App insights request attributes
     setSpanAttributes(clientName, certInfo.seriaNumber, oboUsername ?: onBehalfOf, certInfo.expiresAt, featureOverrides)
 
+    if (consumerConfig?.isSuspended == true) {
+      res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access suspended")
+    }
+
     if (authorisationService.requiresObo(clientName)) {
       if (oboUsername.isNullOrEmpty()) {
         res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "On Behalf Of username unavailable for $clientName")
