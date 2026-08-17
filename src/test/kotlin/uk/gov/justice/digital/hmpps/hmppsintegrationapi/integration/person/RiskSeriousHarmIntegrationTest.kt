@@ -34,7 +34,7 @@ class RiskSeriousHarmIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `returns serious harm risks for a person with redactions`() {
-    callApiWithCN("$basePath/$nomsIdFromProbation/risks/serious-harm", "police")
+    callApiWithCN("$basePath/$nomsIdFromProbation/risks/serious-harm", "ext-probation-police-intelligence")
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("risk-serious-harm-redacted.json")))
   }

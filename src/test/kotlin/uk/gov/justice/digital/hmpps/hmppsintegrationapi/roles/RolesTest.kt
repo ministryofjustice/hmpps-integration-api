@@ -29,34 +29,34 @@ class RolesTest {
   }
 
   @Test
-  fun `Private Prison Role filters prisons is null`() {
-    assertThat(roles["private-prison"]?.filters?.prisons).isNull()
+  fun `ext-prisons-private-prison Role filters prisons is null`() {
+    assertThat(roles["ext-prisons-private-prison"]?.filters?.prisons).isNull()
   }
 
   @Test
-  fun `Mappa role has all 4 mappa categories`() {
-    assertThat(roles["mappa"]?.filters?.mappaCategories).isEqualTo(listOf("*"))
+  fun `ext-hmpps-public-protection role has all 4 mappa categories`() {
+    assertThat(roles["ext-hmpps-public-protection"]?.filters?.mappaCategories).isEqualTo(listOf("*"))
   }
 
   @Test
-  fun `Mappa Cat 4 role has only category 4`() {
-    assertThat(roles["mappa-cat4"]?.filters?.mappaCategories).isEqualTo(listOf(MappaCategory.CAT4))
+  fun `ext-hmpps-public-protection-cat4 role has only category 4`() {
+    assertThat(roles["ext-hmpps-public-protection-cat4"]?.filters?.mappaCategories).isEqualTo(listOf(MappaCategory.CAT4))
   }
 
   @Test
-  fun `private-prison role does not have any mappa category filters `() {
-    assertThat(roles["private-prison"]?.filters?.mappaCategories).isNull()
+  fun `ext-prisons-private-prison role does not have any mappa category filters `() {
+    assertThat(roles["ext-prisons-private-prison"]?.filters?.mappaCategories).isNull()
   }
 
   @Test
-  fun `prisoner-finance role has an empty prison filter`() {
-    assertThat(roles["prisoner-finance"]?.filters?.hasPrisonFilter()).isEqualTo(true)
-    assertThat(roles["prisoner-finance"]?.filters?.prisons).isEmpty()
+  fun `ext-prisons-prisoner-finance role has an empty prison filter`() {
+    assertThat(roles["ext-prisons-prisoner-finance"]?.filters?.hasPrisonFilter()).isEqualTo(true)
+    assertThat(roles["ext-prisons-prisoner-finance"]?.filters?.prisons).isEmpty()
   }
 
   @Test
-  fun `prisoner-escort-custody-service has a null prison filter`() {
-    assertThat(roles["prisoner-escort-custody-service"]?.filters?.hasPrisonFilter()).isNotEqualTo(true)
-    assertThat(roles["prisoner-escort-custody-service"]?.filters?.prisons).isNull()
+  fun `ext-prisons-escort-custody has a null prison filter`() {
+    assertThat(roles["ext-prisons-escort-custody"]?.filters?.hasPrisonFilter()).isNotEqualTo(true)
+    assertThat(roles["ext-prisons-escort-custody"]?.filters?.prisons).isNull()
   }
 }
