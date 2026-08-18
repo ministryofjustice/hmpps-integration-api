@@ -19,7 +19,7 @@ class IntegrationEventTypeTest {
    */
   @Test
   fun `should have all event types expected`() {
-    val expectedEventTypesHashCode = 857483132
+    val expectedEventTypesHashCode = 1995054195
 
     val actualEventTypesHashCode =
       IntegrationEventType.entries

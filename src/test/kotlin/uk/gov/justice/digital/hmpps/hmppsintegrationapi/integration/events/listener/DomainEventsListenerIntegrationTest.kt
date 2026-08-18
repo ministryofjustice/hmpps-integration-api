@@ -574,7 +574,6 @@ class DomainEventsListenerIntegrationTest : IntegrationTestWithEventsQueueBase()
       IntegrationEventType.PERSON_IEP_LEVEL_CHANGED.name,
       IntegrationEventType.PERSON_VISIT_RESTRICTIONS_CHANGED.name,
       IntegrationEventType.PERSON_ALERTS_CHANGED.name,
-      IntegrationEventType.PERSON_PND_ALERTS_CHANGED.name,
       IntegrationEventType.PERSON_RESPONSIBLE_OFFICER_CHANGED.name,
     )
     hmppsIds.shouldContainOnly(crn)

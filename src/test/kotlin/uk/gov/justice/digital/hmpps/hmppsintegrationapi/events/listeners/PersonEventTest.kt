@@ -115,7 +115,6 @@ class PersonEventTest : DomainEventsListenerTestCase() {
       IntegrationEventType.PERSON_IEP_LEVEL_CHANGED.toString(),
       IntegrationEventType.PERSON_VISIT_RESTRICTIONS_CHANGED.toString(),
       IntegrationEventType.PERSON_ALERTS_CHANGED.toString(),
-      IntegrationEventType.PERSON_PND_ALERTS_CHANGED.toString(),
       IntegrationEventType.PERSON_RESPONSIBLE_OFFICER_CHANGED.toString(),
     )
   }
