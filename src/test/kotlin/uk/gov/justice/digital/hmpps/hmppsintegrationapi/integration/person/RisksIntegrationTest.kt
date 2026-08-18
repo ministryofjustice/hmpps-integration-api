@@ -38,8 +38,8 @@ class RisksIntegrationTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `notes are redacted for dynamic risks for police role`() {
-    callApiWithCN("$basePath/$crn/risks/dynamic", "police")
+  fun `notes are redacted for dynamic risks for ext-probation-police-intelligence role`() {
+    callApiWithCN("$basePath/$crn/risks/dynamic", "ext-probation-police-intelligence")
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("person-risk-dynamic-text-redacted.json")))
   }
