@@ -74,9 +74,8 @@ feature-flag:
   address-search-endpoint-enabled: false
   contact-linked-prisoners-endpoint-enabled: false
   prison-timeline-endpoint-enabled: false
-  use-probation-search-for-person-search: false
-  restapiclient-for-san-gateway: true
   restapiclient-for-prison-api-gateway: false
+  use-probation-search-for-person-search: true
   # Events Config
   enable-delete-processed-events: true
   enable-publish-pending-events: true
