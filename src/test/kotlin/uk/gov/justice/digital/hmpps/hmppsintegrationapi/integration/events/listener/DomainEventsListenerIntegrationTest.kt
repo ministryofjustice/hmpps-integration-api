@@ -600,7 +600,6 @@ class DomainEventsListenerIntegrationTest : IntegrationTestWithEventsQueueBase()
       "https://localhost:8443/v1/persons/$crn/iep-level",
       "https://localhost:8443/v1/persons/$crn/visit-restrictions",
       "https://localhost:8443/v1/persons/$crn/alerts",
-      "https://localhost:8443/v1/pnd/persons/$crn/alerts",
       "https://localhost:8443/v1/persons/$crn/person-responsible-officer",
     )
   }
