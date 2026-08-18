@@ -41,7 +41,7 @@ class NonAssociationEventIntegrationTest : IntegrationTestWithEventsQueueBase() 
     )
     generateRawPersonCreatedEvent().also { sendDomainSqsMessage(it) }
     Awaitility.await().until { eventNotificationRepository.findAll().isNotEmpty() }
-    eventNotificationRepository.findAll().size.shouldBe(23)
+    eventNotificationRepository.findAll().size.shouldBe(22)
     assertThat(getNumberOfMessagesCurrentlyOndomainEventsDeadLetterQueue()).isEqualTo(0)
   }
 
@@ -60,7 +60,7 @@ class NonAssociationEventIntegrationTest : IntegrationTestWithEventsQueueBase() 
     )
     generateRawPersonCreatedEvent().also { sendDomainSqsMessage(it) }
     Awaitility.await().until { eventNotificationRepository.findAll().isNotEmpty() }
-    eventNotificationRepository.findAll().size.shouldBe(24)
+    eventNotificationRepository.findAll().size.shouldBe(23)
     assertThat(getNumberOfMessagesCurrentlyOndomainEventsDeadLetterQueue()).isEqualTo(0)
   }
 

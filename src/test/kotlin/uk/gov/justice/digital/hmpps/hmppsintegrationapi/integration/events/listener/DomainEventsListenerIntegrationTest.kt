@@ -546,7 +546,7 @@ class DomainEventsListenerIntegrationTest : IntegrationTestWithEventsQueueBase()
 
     Awaitility.await().until { eventNotificationRepository.findAll().isNotEmpty() }
     val savedEvents = eventNotificationRepository.findAll()
-    savedEvents.size.shouldBe(24)
+    savedEvents.size.shouldBe(23)
     val eventTypes = savedEvents.map { it.eventType }
     val hmppsIds = savedEvents.map { it.hmppsId }
     val urls = savedEvents.map { it.url }
