@@ -36,7 +36,7 @@ read_certificate_arguments() {
   echo "Environment: (dev, preprod or prod)"
   read environment
 
-  echo "Client identifier (no spaces, lowercase) that will be used for authorisation: e.g. mapps"
+  echo "Client identifier (no spaces, lowercase) that will be used for authorisation"
   read client
 
   echo "Do you wish to use a CSR that has been supplied by the client?"

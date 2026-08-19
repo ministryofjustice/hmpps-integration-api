@@ -165,20 +165,21 @@ Within the [Cloud Platform Environments GitHub repository](https://github.com/mi
 2. Add new client filter list secret. example [secret.tf](https://github.com/ministryofjustice/cloud-platform-environments/pull/22091/files#diff-bc13dba50c430d2a667e5b867d2798770e5e8c48697407d93e2febedb3ff46dc)
 3. At this point, submit the first PR (Follow steps 3-8 in [Create an API key](#create-an-api-key) to merge branch to main.).
 4. Update the secret for the filter policy:
-   1. Login to the [AWS Console](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/accessing-the-cloud-console.html), navigate to Secrets Manager and navigate to the secret created in the previous step by search using the secret description. e.g. MAPPS event filter list Pre-prod
+   1. Login to the [AWS Console](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/accessing-the-cloud-console.html), navigate to Secrets Manager and navigate to the secret created in the previous step by search using the secret description. e.g.
+      {consumer} event filter list Pre-prod
    2. Click on the secret and then click on Retrieve secret value. If this is your first time accessing the new secret, you will see an error Failed to get the secret value.
    3. Click on Set secret Value, and set the Plaintext value as: {"eventType":["default"]}. Setting filter to default will block subscriber receiving any messages. Event notifier will update the subscriber and AWS secret with actual filter list later.
    4. Save the change
 5. Create new [Cloud Platform Environments GitHub repository](https://github.com/ministryofjustice/cloud-platform-environments/tree/main) branch for the second pull request.
-6. Add new client subscriber terraform file. Example: [event-subscriber-mapps.tf](https://github.com/ministryofjustice/cloud-platform-environments/pull/22091/files#diff-4046866c9398b1db59a427052406a08c2adab45aadbc278f16232157a636f451)
-7. Rename client name "mapps" to new client name
+6. Add new client subscriber terraform file. Example: [event-subscriber-{consumer}.tf](https://github.com/ministryofjustice/cloud-platform-environments/pull/22091/files#diff-4046866c9398b1db59a427052406a08c2adab45aadbc278f16232157a636f451)
+7. Rename client name to new client name
 8. Update terraform to load the secret value from AWS and update filter_policy value. Follow [Example](https://github.com/ministryofjustice/cloud-platform-environments/pull/22111/files). Note: The name of aws_secretsmanager_secret module has to be same as the secret name created and can be found in AWS secrets manager.
 9. Add a client queue mapping. Example: [locals.tf](https://github.com/ministryofjustice/cloud-platform-environments/blob/6e6ad3d6c8bd070b3ba65ce8568fa79c2cfe4e30/namespaces/live.cloud-platform.service.justice.gov.uk/hmpps-integration-api-dev/resources/locals.tf#L13)
 10. Follow steps 3-8 in [Create an API key](#create-an-api-key) to merge branch to main.
 11. Retrieve the client queue name and ARN with the following command:
     ```bash
     kubectl -n hmpps-integration-api-[environment] get secrets [your queue secret name] -o json
-    # E.g. kubectl -n hmpps-integration-api-dev get secrets event-mapps-queue  -o json
+    # E.g. kubectl -n hmpps-integration-api-dev get secrets event-{consumer}-queue  -o json
     ```
 12. Send the client queue name and ARN to the consumer
 13. Follow the steps in the [Integration Events repository](https://github.com/ministryofjustice/hmpps-integration-events/blob/main/docs/guides/setting-up-a-new-consumer.md) to ensure the queue is populated with events.
