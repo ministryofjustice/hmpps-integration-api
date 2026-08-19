@@ -5,7 +5,10 @@ import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.ints.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
+import org.mockito.Mockito.mock
 import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.isNull
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
@@ -14,13 +17,18 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.RESTAPICLIENT_FOR_PRISON_API_GATEWAY
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiClient
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiPrisonTimeline
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonPeriodEntry
 import java.io.File
 import kotlin.collections.count
 
@@ -85,6 +93,43 @@ class GetPrisonTimelineForPersonTest(
           .first()
           .type
           .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+      }
+
+      it("can use the RestApiClient") {
+        // Given
+        val authToken = "ABC123"
+        val headers = mapOf("Authorization" to "Bearer $authToken")
+
+        val features = FeatureFlagConfig(mapOf(RESTAPICLIENT_FOR_PRISON_API_GATEWAY to true))
+        val requestContext = buildRequestContext("testUser", featureFlags = features)
+
+        val authGateway: HmppsAuthGateway = mock()
+        whenever(authGateway.getClientToken("NOMIS", requestContext)).thenReturn(authToken)
+
+        val apiClient: RestApiClient = mock()
+        whenever(apiClient.get(eq(prisonTimelinePath), eq(PrisonApiPrisonTimeline::class), eq(headers), isNull())).thenReturn(
+          RestApiResponse(
+            "Test",
+            HttpStatus.OK,
+            PrisonApiPrisonTimeline(
+              listOf(
+                PrisonPeriodEntry(),
+              ),
+            ),
+          ),
+        )
+
+        val gateway = PrisonApiGateway("http://localhost", features, apiClient)
+        gateway.hmppsAuthGateway = authGateway
+
+        // When
+        val response = gateway.getPrisonTimelineForPerson(offenderNo, requestContext)
+
+        // Then
+        response.data
+          ?.prisonPeriod
+          ?.count()
+          ?.shouldBeGreaterThan(0)
       }
     },
   )

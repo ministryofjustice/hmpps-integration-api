@@ -100,7 +100,7 @@ class PrisonApiGateway(
   ): Response<List<ImageMetadata>> {
     val result =
       prisonApiRestClient!!.get(
-        "api/images/offenders/$id",
+        "/api/images/offenders/$id",
         Array<PrisonApiImageDetail>::class,
         authenticationHeader(requestContext),
       )
