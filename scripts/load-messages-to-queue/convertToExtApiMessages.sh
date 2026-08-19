@@ -2,14 +2,14 @@
 ##
 ## Converts the results of a CSV file exported from Application Insights
 ## into an integration event capable of being loaded into an hmpps-integration-api event queue
-## e.g
+## e.g appInsights.csv
 ##
 ##"2026-08-14T17:00:02.000000","PRISONER_BASE_LOCATION_CHANGED","v1/persons/A1234AB/prisoner-base-location",A1234AB,LPI
 ##"2026-08-14T17:00:04.000000","PERSON_EDUCATION_ASSESSMENTS_CHANGED","v1/persons/A123456/education/assessments",A123456,
 ##
 ## Usage:
 ## ./convertToExtApiMessages.sh -e <ENV> -f <INPUT>
-## e.g ./convertToExtApiMessages.sh -e dev -f sqlResults.txt > eventMessages.txt
+## e.g ./convertToExtApiMessages.sh -e dev -f appInsights.csv > eventMessages.txt
 ## returns
 ## at `eventMessages.txt`
 ## {"Type":"Notification","MessageId":"f8b6adb8-1762-4b4d-b14c-3e223f5566e4","TopicArn":"","Message":"{\"eventId\":166,\"hmppsId\":\"A1234AB\",\"eventType\":\"PRISONER_BASE_LOCATION_CHANGED\",\"prisonId\":\"LPI\",\"url\":\"https://dev.integration-api.hmpps.service.justice.gov.uk/v1/persons/A1234AB/prisoner-base-location\",\"lastModifiedDateTime\":\"2017-03-15T15:47:51.000000\"}","Timestamp":"2025-09-24T09:39:24.000Z","SignatureVersion":"1","Signature":"...","SigningCertURL":"...","UnsubscribeURL":"...","MessageAttributes":{"eventType":{"Type":"String","Value":"PRISONER_BASE_LOCATION_CHANGED"}}}
