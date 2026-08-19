@@ -75,7 +75,7 @@ jobs:
             build/kover
             build/reports/tests
       - name: Publish Test Report
-        uses: ctrf-io/github-test-reporter@e500b992f936420eb633c91644cf10d4d71df700
+        uses: ctrf-io/github-test-reporter@9ad85b91f851ff39e7da5f82981d30b9e637e163
         with:
           report-path: './build/test-results/unitTest/*.xml'
           use-suite-name: true
@@ -124,7 +124,7 @@ jobs:
             build/reports/tests
             build/kover
       - name: Publish Test Report
-        uses: ctrf-io/github-test-reporter@e500b992f936420eb633c91644cf10d4d71df700
+        uses: ctrf-io/github-test-reporter@9ad85b91f851ff39e7da5f82981d30b9e637e163
         with:
           report-path: './build/test-results/integrationTest/*.xml'
           use-suite-name: true
@@ -181,7 +181,7 @@ jobs:
         run: ./gradlew createCoverageReport
       - name: Add coverage report to PR
         id: kover
-        uses: mi-kas/kover-report@ea8425161dd880a7dea9e76b3c89cf168b1d1162 # v2.5
+        uses: mi-kas/kover-report@fe40bd3712cf57dd19bfb0c16ccb0472a0478dae # v2.6
         with:
           path: |
             ${{ github.workspace }}/coverage/report.xml
