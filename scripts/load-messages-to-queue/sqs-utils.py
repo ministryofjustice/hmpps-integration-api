@@ -5,6 +5,7 @@ import time
 
 sqs = boto3.client("sqs", region_name="eu-west-2")
 
+
 def send_sqs_messages(queue_url):
     """
     Send messages to the specified SQS queue. Reads each line from stdin,
@@ -36,6 +37,7 @@ def send_sqs_messages(queue_url):
             failure += 1
 
     print(f"Successfully sent {success} messages. Failures={failure}")
+
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
