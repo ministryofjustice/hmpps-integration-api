@@ -65,4 +65,8 @@ data class ConsumerFilters(
   fun hasPrisons(): Boolean = hasPrisonFilter() || supervisionStatuses?.contains(SupervisionStatus.PRISONS.name) == true
 
   fun hasProbation(): Boolean = supervisionStatuses?.contains(SupervisionStatus.PROBATION.name) == true
+
+  fun canAccessPrisons() = !hasSupervisionStatusesFilter() || hasPrisons()
+
+  fun canAccessProbation() = !hasSupervisionStatusesFilter() || hasProbation()
 }

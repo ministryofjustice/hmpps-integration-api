@@ -24,8 +24,10 @@ class GetOffencesForPersonService(
     var nomisOffences: Response<List<Offence>> = Response(data = emptyList())
     var nDeliusOffences: Response<List<Offence>> = Response(data = emptyList())
 
-    if (requestContext?.filters?.hasPrisonFilter() == true) {
-      personResponse = getPersonService.getPersonWithPrisonFilter(hmppsId, requestContext.filters)
+    val filters = requestContext?.filters
+
+    if (filters?.hasPrisonFilter() == true) {
+      personResponse = getPersonService.getPersonWithPrisonFilter(hmppsId, filters)
       nomisNumber = personResponse.data?.identifiers?.nomisNumber ?: return Response(data = emptyList(), errors = personResponse.errors)
       nomisOffences = prisonApiGateway.getOffencesForPerson(nomisNumber, requestContext)
 
@@ -38,11 +40,11 @@ class GetOffencesForPersonService(
       nomisNumber = personResponse.data?.identifiers?.nomisNumber
       val deliusCrn = personResponse.data?.identifiers?.deliusCrn
 
-      if (nomisNumber != null) {
+      if (nomisNumber != null && (filters == null || filters.canAccessPrisons())) {
         nomisOffences = prisonApiGateway.getOffencesForPerson(nomisNumber, requestContext)
       }
 
-      if (deliusCrn != null) {
+      if (deliusCrn != null && (filters == null || filters.canAccessProbation())) {
         nDeliusOffences = nDeliusGateway.getOffencesForPerson(deliusCrn, requestContext)
       }
 
