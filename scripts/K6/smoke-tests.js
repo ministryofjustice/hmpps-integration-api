@@ -649,10 +649,6 @@ function verify_prisons_endpoints(nomisNumber) {
   })
 }
 
-function verify_pnd_alerts(hmppsId) {
-  validate_get_request(`/v1/pnd/persons/${hmppsId}/alerts`,)
-}
-
 function verify_risk_endpoints(hmppsId) {
   group('risk', () => {
     let res = validate_get_request(`/v1/persons/${hmppsId}/status-information`);
@@ -851,8 +847,6 @@ function structured_verification_test(hmppsId) {
   verify_risk_endpoints(hmppsId);
 
   verify_epf(hmppsId);
-
-  verify_pnd_alerts(hmppsId);
 
   verify_education_san(hmppsId);
 
