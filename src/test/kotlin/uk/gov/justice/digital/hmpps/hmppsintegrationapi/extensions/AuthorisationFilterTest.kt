@@ -541,4 +541,24 @@ class AuthorisationFilterTest {
 
     assertEquals(requestConfig.flags, mapOf("flag-a" to false, "flag-b" to false))
   }
+
+  @Test
+  fun `suspended consumers do not have API access`() {
+    val req = mockRequest("GET", "/v1/status", "O=test,CN=suspended")
+    val resp = MockHttpServletResponse()
+
+    whenever(certificateService.extractConsumerName(any())).thenReturn("suspended")
+    whenever(authorisationService.consumers()).thenReturn(
+      mapOf(
+        "suspended" to ConsumerConfig(isSuspended = true),
+      ),
+    )
+
+    val chain = mockFilterChain(AuthorisationFilter(authorisationService, mockTelemetryService, featureFlagConfig, certificateService))
+
+    chain.doFilter(req, resp)
+
+    assertThat(resp.status).isEqualTo(403)
+    assertThat(resp.errorMessage).contains("Access suspended")
+  }
 }

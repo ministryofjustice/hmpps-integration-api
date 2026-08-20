@@ -36,14 +36,20 @@ class EventNotificationService(
     var messagesSent = 0
     authorisationService.consumersWithQueue().forEach { consumer ->
       if (isEventApplicable(consumer, event)) {
-        val queueName = authorisationService.consumers()[consumer]?.queueName!!
+        val consumer = authorisationService.consumers()[consumer]
+        val queueName = consumer?.queueName!!
         try {
           val message =
             DirectSQSMessage(
               message = objectMapper.writeValueAsString(event),
               messageAttributes = SQSMessageAttributes(EventType(event.eventType)),
             )
-          queueService.sendMessageToQueue(objectMapper.writeValueAsString(message), queueName)
+          val messageText = objectMapper.writeValueAsString(message)
+          if (consumer.isSuspended) {
+            logSuspendedConsumerNotification(messageText, queueName)
+          } else {
+            queueService.sendMessageToQueue(messageText, queueName)
+          }
           messagesSent++
           log.debug("Successfully published event ${event.eventType} to $queueName")
         } catch (ex: Exception) {
@@ -53,6 +59,13 @@ class EventNotificationService(
       }
     }
     log.info("Event ${event.eventType} successfully sent to $messagesSent queues")
+  }
+
+  fun logSuspendedConsumerNotification(
+    messageText: String,
+    queueName: String,
+  ) {
+    log.warn("Not sending notification to suspended consumer $queueName : $messageText")
   }
 
   /**

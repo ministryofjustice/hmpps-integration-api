@@ -10,6 +10,7 @@ data class ConsumerConfig(
   val queueName: String? = null,
   val oboConfig: OboConfig? = null,
   val allowFeatureOverride: Boolean = false,
+  val isSuspended: Boolean = false,
 ) {
   fun permissions(): List<String>? = include
 }
