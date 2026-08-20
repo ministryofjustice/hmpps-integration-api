@@ -237,7 +237,7 @@ internal class GetAlertsForPersonServiceTest(
         response.errors.shouldBe(errors)
       }
 
-      describe("getAlertsForPnd") {
+      describe("getAlertsWithFilter") {
 
         it("calls the gateway with a list of alertCodes") {
           val filters = ConsumerFilters(alertCodes = testRoleWithPoliceIntelligenceAlerts.filters?.alertCodes)

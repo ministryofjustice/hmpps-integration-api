@@ -546,7 +546,7 @@ class DomainEventsListenerIntegrationTest : IntegrationTestWithEventsQueueBase()
 
     Awaitility.await().until { eventNotificationRepository.findAll().isNotEmpty() }
     val savedEvents = eventNotificationRepository.findAll()
-    savedEvents.size.shouldBe(24)
+    savedEvents.size.shouldBe(23)
     val eventTypes = savedEvents.map { it.eventType }
     val hmppsIds = savedEvents.map { it.hmppsId }
     val urls = savedEvents.map { it.url }
@@ -574,7 +574,6 @@ class DomainEventsListenerIntegrationTest : IntegrationTestWithEventsQueueBase()
       IntegrationEventType.PERSON_IEP_LEVEL_CHANGED.name,
       IntegrationEventType.PERSON_VISIT_RESTRICTIONS_CHANGED.name,
       IntegrationEventType.PERSON_ALERTS_CHANGED.name,
-      IntegrationEventType.PERSON_PND_ALERTS_CHANGED.name,
       IntegrationEventType.PERSON_RESPONSIBLE_OFFICER_CHANGED.name,
     )
     hmppsIds.shouldContainOnly(crn)
@@ -601,7 +600,6 @@ class DomainEventsListenerIntegrationTest : IntegrationTestWithEventsQueueBase()
       "https://localhost:8443/v1/persons/$crn/iep-level",
       "https://localhost:8443/v1/persons/$crn/visit-restrictions",
       "https://localhost:8443/v1/persons/$crn/alerts",
-      "https://localhost:8443/v1/pnd/persons/$crn/alerts",
       "https://localhost:8443/v1/persons/$crn/person-responsible-officer",
     )
   }

@@ -145,40 +145,6 @@ val ALERT_EVENTS =
     DomainEventName.Person.Alert.DELETED,
   )
 
-val PND_ALERT_TYPES =
-  listOf(
-    "BECTER",
-    "HA",
-    "XA",
-    "XCA",
-    "XEL",
-    "XELH",
-    "XER",
-    "XHT",
-    "XILLENT",
-    "XIS",
-    "XR",
-    "XRF",
-    "XSA",
-    "HA2",
-    "RCS",
-    "RDV",
-    "RKC",
-    "RPB",
-    "RPC",
-    "RSS",
-    "RST",
-    "RDP",
-    "REG",
-    "RLG",
-    "ROP",
-    "RRV",
-    "RTP",
-    "RYP",
-    "HS",
-    "SC",
-  )
-
 val LICENCE_CONDITION_EVENTS =
   listOf(
     DomainEventName.CreateAndVaryALicence.Licence.ACTIVATED,
@@ -466,11 +432,6 @@ enum class IntegrationEventType(
     "v1/persons/{hmppsId}/alerts",
     { NEW_PERSON_EVENTS.contains(it.eventType) || ALERT_EVENTS.contains(it.eventType) },
     description = "Person Alerts Changed",
-  ),
-  PERSON_PND_ALERTS_CHANGED(
-    "v1/pnd/persons/{hmppsId}/alerts",
-    { NEW_PERSON_EVENTS.contains(it.eventType) || ALERT_EVENTS.contains(it.eventType) && PND_ALERT_TYPES.contains(it.additionalInformation!!.alertCode) },
-    description = "Person PND Alerts Changed",
   ),
   PERSON_CASE_NOTES_CHANGED(
     "v1/persons/{hmppsId}/case-notes",

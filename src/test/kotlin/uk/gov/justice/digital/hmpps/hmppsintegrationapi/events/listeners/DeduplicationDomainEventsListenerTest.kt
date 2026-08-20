@@ -152,19 +152,6 @@ class DeduplicationDomainEventsListenerTest : DomainEventsListenerTestCase() {
       hmppsEventRawMessage = sqsNotificationHelper.generateRawHmppsDomainEvent(registerTypeCode = "NOTMAPP"),
     )
 
-  @Test
-  fun `when alert event matches multiple filters using generator, both services should be called`() {
-    val hmppsEventRawMessage = sqsNotificationHelper.generateRawHmppsDomainEventWithAlertCode(eventType = "person.alert.created", alertCode = "HA")
-    val expectedNotificationTypes =
-      arrayOf(
-        "PERSON_PND_ALERTS_CHANGED",
-        "PERSON_ALERTS_CHANGED",
-      )
-    assumeIdentities(hmppsId = crn)
-
-    onDomainEventShouldCreateEventNotifications(hmppsEventRawMessage, *expectedNotificationTypes)
-  }
-
   @Nested
   inner class GivenErrorOfEventExecution {
     private val error = IllegalStateException("Something went wrong")

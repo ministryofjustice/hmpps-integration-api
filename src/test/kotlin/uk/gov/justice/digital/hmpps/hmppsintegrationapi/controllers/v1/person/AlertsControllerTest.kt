@@ -296,57 +296,5 @@ internal class AlertsControllerTest(
           )
         }
       }
-
-      describe("GET $pndPath") {
-        beforeTest {
-
-          Mockito.reset(getAlertsForPersonService)
-          Mockito.reset(auditService)
-          Mockito.reset(featureFlagConfig)
-
-          whenever(getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)).thenReturn(
-            Response(
-              data = toPaginatedAlerts(listOf(alert)),
-            ),
-          )
-        }
-
-        it("returns a 200 OK status code for PND") {
-          val result = mockMvc.performAuthorised(pndPath)
-          result.response.status.shouldBe(HttpStatus.OK.value())
-        }
-
-        it("logs audit for PND") {
-          mockMvc.performAuthorised(pndPath)
-
-          verify(
-            auditService,
-            VerificationModeFactory.times(1),
-          ).createEvent("GET_PERSON_ALERTS", mapOf("hmppsId" to hmppsId))
-        }
-
-        it("gets the alerts for PND for a person with the matching ID") {
-          mockMvc.performAuthorised(pndPath)
-          verify(getAlertsForPersonService, times(1)).getAlerts(hmppsId, filters, page, perPage)
-        }
-      }
-      describe("GET with alert codes $pndPath") {
-        beforeTest {
-          Mockito.reset(getAlertsForPersonService)
-          Mockito.reset(auditService)
-          Mockito.reset(featureFlagConfig)
-
-          whenever(getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage)).thenReturn(
-            Response(
-              data = toPaginatedAlerts(listOf(alert)),
-            ),
-          )
-        }
-        it("gets the alerts for PND with code filter for a person with the matching ID") {
-          mockMvc.performAuthorised(pndPath)
-
-          verify(getAlertsForPersonService, times(1)).getAlerts(hmppsId, filters, page, perPage)
-        }
-      }
     },
   )
