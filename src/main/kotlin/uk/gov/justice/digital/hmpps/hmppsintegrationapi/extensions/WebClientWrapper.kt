@@ -32,7 +32,7 @@ class WebClientWrapper(
   val retryAttempts: Long = 3L,
   val initialBackOffDuration: Duration = Duration.ofSeconds(3),
 ) {
-  val CREATE_TRANSACTION_RETRY_HTTP_CODES = listOf(502, 503, 504, 522, 599, 499, 408)
+  val CREATE_TRANSACTION_RETRY_HTTP_CODES = RestApiClient.retryCodes
 
   val httpClient =
     HttpClient
