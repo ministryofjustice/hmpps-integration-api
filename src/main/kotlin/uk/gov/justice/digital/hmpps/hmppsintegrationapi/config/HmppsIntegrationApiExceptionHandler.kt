@@ -126,7 +126,7 @@ class HmppsIntegrationApiExceptionHandler {
 
   @ExceptionHandler(ForbiddenByUpstreamServiceException::class, LimitedAccessException::class)
   fun handleAuthenticationFailedException(e: ForbiddenByUpstreamServiceException): ResponseEntity<ErrorResponse> {
-    logAndCapture("Forbidden to complete action by upstream service: {}", e)
+    logInfo("Forbidden to complete action by upstream service: {}", e, false)
     return ResponseEntity
       .status(FORBIDDEN)
       .body(
@@ -140,7 +140,7 @@ class HmppsIntegrationApiExceptionHandler {
 
   @ExceptionHandler(FilterViolationException::class)
   fun handleFilterViolationException(e: FilterViolationException): ResponseEntity<ErrorResponse> {
-    logAndCapture("Access to requested resource restricted by consumer filter: ${e.message}", e)
+    logInfo("Access to requested resource restricted by consumer filter: ${e.message}", e, false)
     return ResponseEntity
       .status(NOT_FOUND)
       .body(
