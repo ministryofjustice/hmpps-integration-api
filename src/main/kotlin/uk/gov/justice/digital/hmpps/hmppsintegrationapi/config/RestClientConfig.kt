@@ -22,4 +22,9 @@ class RestClientConfig {
   fun courtRegisterRestClient(
     @Value("\${services.court-register.base-url}") baseUrl: String,
   ): RestApiClient = RestApiClient(UpstreamApi.COURT_REGISTER.name, baseUrl)
+
+  @Bean("prisonApiRestClient")
+  fun prisonApiRestClient(
+    @Value("\${services.prison-api.base-url}") baseUrl: String,
+  ): RestApiClient = RestApiClient(UpstreamApi.PRISON_API.name, baseUrl)
 }
