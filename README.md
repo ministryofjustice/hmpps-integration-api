@@ -76,7 +76,7 @@ This solution is dependent on:
 
 These things depend upon this solution:
 
-- Consumer Applications (MAPPS)
+- Consumer Applications
 
 ### Data Analysis Tooling
 
