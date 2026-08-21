@@ -221,6 +221,12 @@ authorisation:
       filters:
         supervisionStatuses:
           - PROBATION
+    supervision-status-none:
+      roles:
+        - "all-endpoints"
+      filters:
+        supervisionStatuses:
+          - NONE
     redaction-moj-probation-case-proposal:
       roles:
         - "moj-probation-case-proposal"

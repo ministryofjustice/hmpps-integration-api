@@ -1,0 +1,11 @@
+{
+  "data": [],
+  "pagination": {
+    "isLastPage": true,
+    "count": 0,
+    "page": 1,
+    "perPage": 10,
+    "totalCount": 0,
+    "totalPages": 0
+  }
+}

@@ -33,6 +33,27 @@ class OffencesIntegrationTest : IntegrationTestBase() {
   }
 
   @Test
+  fun `returns offences for a consumer with PROBATION supervision status`() {
+    callApiWithCN("$basePath/$nomsId/offences", cn = "supervision-status-probation-only")
+      .andExpect(status().isOk)
+      .andExpect(content().json(getExpectedResponse("person-probation-offences.json")))
+  }
+
+  @Test
+  fun `returns offences for a consumer with PRISONS supervision status`() {
+    callApiWithCN("$basePath/$nomsId/offences", cn = "supervision-status-prison-only")
+      .andExpect(status().isOk)
+      .andExpect(content().json(getExpectedResponse("person-prison-offences.json")))
+  }
+
+  @Test
+  fun `returns offences for a consumer with NONE supervision status`() {
+    callApiWithCN("$basePath/$nomsId/offences", cn = "supervision-status-none")
+      .andExpect(status().isOk)
+      .andExpect(content().json(getExpectedResponse("noResults.json")))
+  }
+
+  @Test
   fun `returns not found (404) for a person with empty prison filter`() {
     /* e.g.
     no-prisons:

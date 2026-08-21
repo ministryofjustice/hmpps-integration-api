@@ -4,12 +4,15 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
@@ -20,6 +23,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.SupervisionStatus
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -60,12 +64,12 @@ internal class GetOffencesForPersonServiceTest(
             data = personFromProbationOffenderSearch,
           ),
         )
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, requestContext.filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(eq(hmppsId), any<ConsumerFilters>())).thenReturn(
           Response(
             data = personFromProbationOffenderSearch,
           ),
         )
-        whenever(prisonApiGateway.getOffencesForPerson(nomisNumber, requestContext)).thenReturn(
+        whenever(prisonApiGateway.getOffencesForPerson(eq(nomisNumber), any<RequestContext>())).thenReturn(
           Response(
             data =
               listOf(
@@ -75,7 +79,7 @@ internal class GetOffencesForPersonServiceTest(
               ),
           ),
         )
-        whenever(nDeliusGateway.getOffencesForPerson(deliusCrn, requestContext)).thenReturn(
+        whenever(nDeliusGateway.getOffencesForPerson(eq(deliusCrn), any<RequestContext>())).thenReturn(
           Response(
             data =
               listOf(
@@ -97,6 +101,51 @@ internal class GetOffencesForPersonServiceTest(
         val result = getOffencesForPersonService.execute(hmppsId, requestContext)
         result.shouldBe(
           Response(data = listOf(prisonOffence1, prisonOffence2, prisonOffence3, probationOffence1, probationOffence2, probationOffence3)),
+        )
+      }
+
+      it("Returns only probation offences given a hmppsId and a PROBATION supervision status") {
+        val consumerFilters = ConsumerFilters(supervisionStatuses = listOf(SupervisionStatus.PROBATION.name))
+        val requestContext = buildRequestContext("testUser", filters = consumerFilters)
+        whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
+          Response(
+            data = personFromProbationOffenderSearch,
+          ),
+        )
+
+        val result = getOffencesForPersonService.execute(hmppsId, requestContext)
+        result.shouldBe(
+          Response(data = listOf(probationOffence1, probationOffence2, probationOffence3)),
+        )
+      }
+
+      it("Returns empty list when NONE supervision status") {
+        val consumerFilters = ConsumerFilters(supervisionStatuses = listOf(SupervisionStatus.NONE.name))
+        val requestContext = buildRequestContext("testUser", filters = consumerFilters)
+        whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
+          Response(
+            data = personFromProbationOffenderSearch,
+          ),
+        )
+
+        val result = getOffencesForPersonService.execute(hmppsId, requestContext)
+        result.shouldBe(
+          Response(data = emptyList()),
+        )
+      }
+
+      it("Returns only prison offences given a hmppsId and a PRISONS supervision status") {
+        val consumerFilters = ConsumerFilters(supervisionStatuses = listOf(SupervisionStatus.PRISONS.name))
+        val requestContext = buildRequestContext("testUser", filters = consumerFilters)
+        whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
+          Response(
+            data = personFromProbationOffenderSearch,
+          ),
+        )
+
+        val result = getOffencesForPersonService.execute(hmppsId, requestContext)
+        result.shouldBe(
+          Response(data = listOf(prisonOffence1, prisonOffence2, prisonOffence3)),
         )
       }
 
