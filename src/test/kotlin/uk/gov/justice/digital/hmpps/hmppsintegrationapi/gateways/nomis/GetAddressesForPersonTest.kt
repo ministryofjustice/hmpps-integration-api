@@ -176,11 +176,11 @@ class GetAddressesForPersonTest(
         whenever(authGateway.getClientToken("NOMIS", requestContext)).thenReturn(authToken)
 
         val apiClient: RestApiClient = mock()
-        whenever(apiClient.get(eq(addressPath), eq(Array<PrisonApiAddress>::class), eq(headers), isNull())).thenReturn(
+        whenever(apiClient.getList(eq(addressPath), eq(PrisonApiAddress::class), eq(headers), isNull())).thenReturn(
           RestApiResponse(
             "Test",
             HttpStatus.OK,
-            arrayOf(
+            listOf(
               PrisonApiAddress(
                 country = null,
                 county = null,

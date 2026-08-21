@@ -99,9 +99,9 @@ class PrisonApiGateway(
     requestContext: RequestContext? = null,
   ): Response<List<ImageMetadata>> {
     val result =
-      prisonApiRestClient!!.get(
+      prisonApiRestClient!!.getList(
         "/api/images/offenders/$id",
-        Array<PrisonApiImageDetail>::class,
+        PrisonApiImageDetail::class,
         authenticationHeader(requestContext),
       )
 
@@ -187,9 +187,9 @@ class PrisonApiGateway(
     requestContext: RequestContext? = null,
   ): Response<List<Address>> {
     val result =
-      prisonApiRestClient!!.get(
+      prisonApiRestClient!!.getList(
         "/api/offenders/$id/addresses",
-        Array<PrisonApiAddress>::class,
+        PrisonApiAddress::class,
         authenticationHeader(requestContext),
       )
 
@@ -233,9 +233,9 @@ class PrisonApiGateway(
     requestContext: RequestContext? = null,
   ): Response<List<Offence>> {
     val result =
-      prisonApiRestClient!!.get(
+      prisonApiRestClient!!.getList(
         "/api/bookings/offenderNo/$id/offenceHistory",
-        Array<PrisonApiOffenceHistoryDetail>::class,
+        PrisonApiOffenceHistoryDetail::class,
         authenticationHeader(requestContext),
       )
 
@@ -279,9 +279,9 @@ class PrisonApiGateway(
     context: RequestContext? = null,
   ): Response<List<Sentence>> {
     val result =
-      prisonApiRestClient!!.get(
+      prisonApiRestClient!!.getList(
         "/api/offender-sentences/booking/$id/sentences-and-offences",
-        Array<PrisonApiSentence>::class,
+        PrisonApiSentence::class,
         authenticationHeader(context),
       )
 
@@ -325,9 +325,9 @@ class PrisonApiGateway(
     requestContext: RequestContext? = null,
   ): Response<List<PrisonApiBooking>> {
     val result =
-      prisonApiRestClient!!.get(
+      prisonApiRestClient!!.getList(
         "/api/offender-sentences?offenderNo=$id",
-        Array<PrisonApiBooking>::class,
+        PrisonApiBooking::class,
         authenticationHeader(requestContext),
       )
 
@@ -575,9 +575,9 @@ class PrisonApiGateway(
     requestContext: RequestContext? = null,
   ): Response<List<PrisonApiReferenceCode>> {
     val result =
-      prisonApiRestClient!!.get(
+      prisonApiRestClient!!.getList(
         "/api/reference-domains/domains/$domain/codes",
-        Array<PrisonApiReferenceCode>::class,
+        PrisonApiReferenceCode::class,
         authenticationHeaderForCategories(requestContext),
       )
 
@@ -976,9 +976,9 @@ class PrisonApiGateway(
     requestContext: RequestContext? = null,
   ): Response<List<PrisonApiAssessmentSummary>> {
     val result =
-      prisonApiRestClient!!.get(
+      prisonApiRestClient!!.getList(
         "/api/offender-assessments/csra/$nomisNumber",
-        Array<PrisonApiAssessmentSummary>::class,
+        PrisonApiAssessmentSummary::class,
         authenticationHeader(requestContext),
       )
 

@@ -165,11 +165,11 @@ class GetReasonableAdjustmentTest(
           ),
         )
 
-        whenever(apiClient.get(eq(domainPath), eq(Array<PrisonApiReferenceCode>::class), any(), isNull())).thenReturn(
+        whenever(apiClient.getList(eq(domainPath), eq(PrisonApiReferenceCode::class), any(), isNull())).thenReturn(
           RestApiResponse(
             "Test",
             HttpStatus.OK,
-            arrayOf(
+            listOf(
               PrisonApiReferenceCode(
                 "a",
                 "a",

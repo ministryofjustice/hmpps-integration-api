@@ -129,11 +129,11 @@ class GetOffencesForPersonTest(
         whenever(authGateway.getClientToken("NOMIS", requestContext)).thenReturn(authToken)
 
         val apiClient: RestApiClient = mock()
-        whenever(apiClient.get(eq(offenceHistoryPath), eq(Array<PrisonApiOffenceHistoryDetail>::class), eq(headers), isNull())).thenReturn(
+        whenever(apiClient.getList(eq(offenceHistoryPath), eq(PrisonApiOffenceHistoryDetail::class), eq(headers), isNull())).thenReturn(
           RestApiResponse(
             "Test",
             HttpStatus.OK,
-            arrayOf(
+            listOf(
               PrisonApiOffenceHistoryDetail(
                 offenceCode = "123",
                 offenceDescription = "123",

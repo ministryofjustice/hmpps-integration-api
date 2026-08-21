@@ -172,11 +172,11 @@ class GetSentencesForPersonTest(
         whenever(authGateway.getClientToken("NOMIS", null)).thenReturn(authToken)
 
         val apiClient: RestApiClient = mock()
-        whenever(apiClient.get(eq(sentecesAndOffencesPath), eq(Array<PrisonApiSentence>::class), eq(headers), isNull())).thenReturn(
+        whenever(apiClient.getList(eq(sentecesAndOffencesPath), eq(PrisonApiSentence::class), eq(headers), isNull())).thenReturn(
           RestApiResponse(
             "Test",
             HttpStatus.OK,
-            arrayOf(
+            listOf(
               PrisonApiSentence(
                 fineAmount = 1,
               ),

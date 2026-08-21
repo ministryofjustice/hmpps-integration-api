@@ -142,11 +142,11 @@ class GetImageMetadataForPersonTest(
       whenever(authGateway.getClientToken("NOMIS", null)).thenReturn(authToken)
 
       val apiClient: RestApiClient = mock()
-      whenever(apiClient.get(eq(imagePath), eq(Array<PrisonApiImageDetail>::class), eq(headers), isNull())).thenReturn(
+      whenever(apiClient.getList(eq(imagePath), eq(PrisonApiImageDetail::class), eq(headers), isNull())).thenReturn(
         RestApiResponse(
           "Test",
           HttpStatus.OK,
-          arrayOf(
+          listOf(
             PrisonApiImageDetail(
               imageId = 24299,
               active = true,
