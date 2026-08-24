@@ -39,6 +39,7 @@ import kotlin.collections.count
 class GetPrisonTimelineForPersonTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
+  @MockitoBean val restApiClient: RestApiClient,
   private val prisonApiGateway: PrisonApiGateway,
 ) : DescribeSpec(
     {

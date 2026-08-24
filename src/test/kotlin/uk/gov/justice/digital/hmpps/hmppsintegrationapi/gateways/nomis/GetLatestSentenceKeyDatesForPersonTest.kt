@@ -36,6 +36,7 @@ import java.time.LocalDate
 class GetLatestSentenceKeyDatesForPersonTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
+  @MockitoBean val restApiClient: RestApiClient,
   private val prisonApiGateway: PrisonApiGateway,
 ) : DescribeSpec(
     {

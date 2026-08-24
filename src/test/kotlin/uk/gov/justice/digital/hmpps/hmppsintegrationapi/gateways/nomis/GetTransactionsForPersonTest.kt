@@ -38,6 +38,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 class GetTransactionsForPersonTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
+  @MockitoBean val restApiClient: RestApiClient,
   val prisonApiGateway: PrisonApiGateway,
 ) : DescribeSpec(
     {

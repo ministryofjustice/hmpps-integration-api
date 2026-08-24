@@ -37,6 +37,7 @@ import java.time.LocalDateTime
 class GetImageMetadataForPersonTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
+  @MockitoBean val restApiClient: RestApiClient,
   private val prisonApiGateway: PrisonApiGateway,
 ) : DescribeSpec({
     val nomisApiMockServer = ApiMockServer.create(UpstreamApi.PRISON_API)

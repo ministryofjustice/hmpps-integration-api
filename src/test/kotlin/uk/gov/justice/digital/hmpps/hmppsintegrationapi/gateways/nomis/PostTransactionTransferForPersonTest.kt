@@ -40,6 +40,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.NomisTr
 class PostTransactionTransferForPersonTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
+  @MockitoBean val restApiClient: RestApiClient,
   val prisonApiGateway: PrisonApiGateway,
 ) : DescribeSpec({
     val nomisApiMockServer = ApiMockServer.create(UpstreamApi.PRISON_API)

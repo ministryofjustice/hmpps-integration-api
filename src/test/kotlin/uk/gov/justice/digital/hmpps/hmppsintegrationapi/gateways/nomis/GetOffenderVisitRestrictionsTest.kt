@@ -39,6 +39,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.NomisOf
 class GetOffenderVisitRestrictionsTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
+  @MockitoBean val restApiClient: RestApiClient,
   val prisonApiGateway: PrisonApiGateway,
 ) : DescribeSpec(
     {

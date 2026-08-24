@@ -48,7 +48,7 @@ import java.nio.charset.StandardCharsets
 class PrisonApiGateway(
   @Value("\${services.prison-api.base-url}") val baseUrl: String,
   val featureFlag: FeatureFlagConfig,
-  val prisonApiRestClient: RestApiClient? = null,
+  val prisonApiRestClient: RestApiClient,
 ) : UpstreamGateway {
   override fun metaData() =
     GatewayMetadata(
@@ -99,7 +99,7 @@ class PrisonApiGateway(
     requestContext: RequestContext? = null,
   ): Response<List<ImageMetadata>> {
     val result =
-      prisonApiRestClient!!.getList(
+      prisonApiRestClient.getList(
         "/api/images/offenders/$id",
         PrisonApiImageDetail::class,
         authenticationHeader(requestContext),
@@ -140,7 +140,7 @@ class PrisonApiGateway(
     requestContext: RequestContext? = null,
   ): Response<ByteArray> {
     val result =
-      prisonApiRestClient!!.get(
+      prisonApiRestClient.get(
         "/api/images/$id/data",
         ByteArray::class,
         authenticationHeader(requestContext),
@@ -187,7 +187,7 @@ class PrisonApiGateway(
     requestContext: RequestContext? = null,
   ): Response<List<Address>> {
     val result =
-      prisonApiRestClient!!.getList(
+      prisonApiRestClient.getList(
         "/api/offenders/$id/addresses",
         PrisonApiAddress::class,
         authenticationHeader(requestContext),
@@ -233,7 +233,7 @@ class PrisonApiGateway(
     requestContext: RequestContext? = null,
   ): Response<List<Offence>> {
     val result =
-      prisonApiRestClient!!.getList(
+      prisonApiRestClient.getList(
         "/api/bookings/offenderNo/$id/offenceHistory",
         PrisonApiOffenceHistoryDetail::class,
         authenticationHeader(requestContext),
@@ -279,7 +279,7 @@ class PrisonApiGateway(
     context: RequestContext? = null,
   ): Response<List<Sentence>> {
     val result =
-      prisonApiRestClient!!.getList(
+      prisonApiRestClient.getList(
         "/api/offender-sentences/booking/$id/sentences-and-offences",
         PrisonApiSentence::class,
         authenticationHeader(context),
@@ -325,7 +325,7 @@ class PrisonApiGateway(
     requestContext: RequestContext? = null,
   ): Response<List<PrisonApiBooking>> {
     val result =
-      prisonApiRestClient!!.getList(
+      prisonApiRestClient.getList(
         "/api/offender-sentences?offenderNo=$id",
         PrisonApiBooking::class,
         authenticationHeader(requestContext),
@@ -376,7 +376,7 @@ class PrisonApiGateway(
     requestContext: RequestContext? = null,
   ): Response<SentenceAdjustment?> {
     val result =
-      prisonApiRestClient!!.get(
+      prisonApiRestClient.get(
         "/api/offenders/$id/booking/latest/sentence-summary",
         PrisonApiSentenceSummary::class,
         authenticationHeader(requestContext),
@@ -428,7 +428,7 @@ class PrisonApiGateway(
     requestContext: RequestContext? = null,
   ): Response<SentenceKeyDates?> {
     val result =
-      prisonApiRestClient!!.get(
+      prisonApiRestClient.get(
         "/api/offenders/$id/sentences",
         PrisonApiOffenderSentence::class,
         authenticationHeader(requestContext),
@@ -475,7 +475,7 @@ class PrisonApiGateway(
     requestContext: RequestContext? = null,
   ): Response<RiskCategory?> {
     val result =
-      prisonApiRestClient!!.get(
+      prisonApiRestClient.get(
         "/api/offenders/$id",
         PrisonApiInmateDetail::class,
         authenticationHeaderForCategories(requestContext),
@@ -528,7 +528,7 @@ class PrisonApiGateway(
     val codes = treatmentCodes.map { "type=${URLEncoder.encode(it.code, StandardCharsets.UTF_8)}" }.toList()
     val params = codes.joinToString(separator = "&", prefix = "?")
     val result =
-      prisonApiRestClient!!.get(
+      prisonApiRestClient.get(
         "/api/bookings/$booking/reasonable-adjustments$params",
         PrisonApiReasonableAdjustments::class,
         authenticationHeaderForCategories(requestContext),
@@ -575,7 +575,7 @@ class PrisonApiGateway(
     requestContext: RequestContext? = null,
   ): Response<List<PrisonApiReferenceCode>> {
     val result =
-      prisonApiRestClient!!.getList(
+      prisonApiRestClient.getList(
         "/api/reference-domains/domains/$domain/codes",
         PrisonApiReferenceCode::class,
         authenticationHeaderForCategories(requestContext),
@@ -624,7 +624,7 @@ class PrisonApiGateway(
     requestContext: RequestContext? = null,
   ): Response<PrisonApiAccounts?> {
     val result =
-      prisonApiRestClient!!.get(
+      prisonApiRestClient.get(
         "/api/v1/prison/$prisonId/offenders/$nomisNumber/accounts",
         PrisonApiAccounts::class,
         authenticationHeader(requestContext),
@@ -678,7 +678,7 @@ class PrisonApiGateway(
     requestContext: RequestContext? = null,
   ): Response<Transactions?> {
     val result =
-      prisonApiRestClient!!.get(
+      prisonApiRestClient.get(
         "/api/transactions/prison/$prisonId/offenders/$nomisNumber/accounts/$accountCode?from_date=$fromDate&to_date=$toDate",
         Transactions::class,
         authenticationHeader(requestContext),
@@ -728,7 +728,7 @@ class PrisonApiGateway(
     requestContext: RequestContext? = null,
   ): Response<Transaction?> {
     val result =
-      prisonApiRestClient!!.get(
+      prisonApiRestClient.get(
         "/api/v1/prison/$prisonId/offenders/$nomisNumber/transactions/$clientUniqueRef",
         Transaction::class,
         authenticationHeader(requestContext),
@@ -780,7 +780,7 @@ class PrisonApiGateway(
     requestContext: RequestContext? = null,
   ): Response<PrisonApiTransactionResponse?> {
     val result =
-      prisonApiRestClient!!.post(
+      prisonApiRestClient.post(
         "/api/v1/prison/$prisonId/offenders/$nomisNumber/transactions",
         transactionRequest.toApiConformingMap(),
         PrisonApiTransactionResponse::class,
@@ -833,7 +833,7 @@ class PrisonApiGateway(
     requestContext: RequestContext? = null,
   ): Response<NomisTransactionTransferResponse?> {
     val result =
-      prisonApiRestClient!!.post(
+      prisonApiRestClient.post(
         "/api/finance/prison/$prisonId/offenders/$nomisNumber/transfer-to-savings",
         transactionTransferRequest.toApiConformingMap(),
         NomisTransactionTransferResponse::class,
@@ -881,7 +881,7 @@ class PrisonApiGateway(
     requestContext: RequestContext? = null,
   ): Response<List<PersonVisitRestriction>?> {
     val result =
-      prisonApiRestClient!!.get(
+      prisonApiRestClient.get(
         "/api/offenders/$offenderNumber/offender-restrictions",
         NomisOffenderVisitRestrictions::class,
         authenticationHeader(requestContext),
@@ -929,7 +929,7 @@ class PrisonApiGateway(
     requestContext: RequestContext? = null,
   ): Response<VisitBalances?> {
     val result =
-      prisonApiRestClient!!.get(
+      prisonApiRestClient.get(
         "/api/bookings/offenderNo/$offenderNumber/visit/balances",
         VisitBalances::class,
         authenticationHeader(requestContext),
@@ -976,7 +976,7 @@ class PrisonApiGateway(
     requestContext: RequestContext? = null,
   ): Response<List<PrisonApiAssessmentSummary>> {
     val result =
-      prisonApiRestClient!!.getList(
+      prisonApiRestClient.getList(
         "/api/offender-assessments/csra/$nomisNumber",
         PrisonApiAssessmentSummary::class,
         authenticationHeader(requestContext),
@@ -1022,7 +1022,7 @@ class PrisonApiGateway(
     requestContext: RequestContext? = null,
   ): Response<PrisonApiPrisonTimeline?> {
     val result =
-      prisonApiRestClient!!.get(
+      prisonApiRestClient.get(
         "/api/offenders/$nomisNumber/prison-timeline",
         PrisonApiPrisonTimeline::class,
         authenticationHeader(requestContext),

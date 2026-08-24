@@ -39,6 +39,7 @@ import java.time.LocalDate
 class GetReasonableAdjustmentTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
+  @MockitoBean val restApiClient: RestApiClient,
   private val prisonApiGateway: PrisonApiGateway,
 ) : DescribeSpec(
     {
