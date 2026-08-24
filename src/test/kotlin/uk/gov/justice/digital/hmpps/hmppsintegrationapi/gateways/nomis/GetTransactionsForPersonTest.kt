@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.nomis
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldHaveSize
-import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.Mockito.mock
@@ -26,7 +25,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGatewa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Type
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -50,12 +48,8 @@ class GetTransactionsForPersonTest(
       val fromDate = "2019-04-01"
       val toDate = "2019-04-05"
       val transactionsPath = "/api/transactions/prison/$prisonId/offenders/$nomisNumber/accounts/$accountCode?from_date=$fromDate&to_date=$toDate"
-
-      beforeEach {
-        nomisApiMockServer.start()
-        nomisApiMockServer.stubForGet(
-          transactionsPath,
-          """
+      val responseJson =
+        """
         {
           "transactions": [
             {
@@ -71,7 +65,13 @@ class GetTransactionsForPersonTest(
           ]
         }
 
-        """.removeWhitespaceAndNewlines(),
+        """.removeWhitespaceAndNewlines()
+
+      beforeEach {
+        nomisApiMockServer.start()
+        nomisApiMockServer.stubForGet(
+          transactionsPath,
+          responseJson,
         )
 
         Mockito.reset(hmppsAuthGateway)
@@ -170,22 +170,7 @@ class GetTransactionsForPersonTest(
           RestApiResponse(
             "Test",
             HttpStatus.OK,
-            Transactions(
-              listOf(
-                Transaction(
-                  id = "123",
-                  type =
-                    Type(
-                      code = "123",
-                      desc = "123",
-                    ),
-                  description = "123",
-                  amount = 123,
-                  date = "123",
-                  clientUniqueRef = "123",
-                ),
-              ),
-            ),
+            RestApiClient.mapResponse(responseJson, Transactions::class),
           ),
         )
 
@@ -203,7 +188,39 @@ class GetTransactionsForPersonTest(
           )
 
         // Then
-        response.data.shouldNotBeNull()
+        response.errors.shouldBeEmpty()
+        response.data
+          ?.transactions
+          ?.get(0)
+          ?.id
+          .shouldBe("204564839-3")
+        response.data
+          ?.transactions
+          ?.get(0)
+          ?.type
+          ?.code
+          .shouldBe("spends")
+        response.data
+          ?.transactions
+          ?.get(0)
+          ?.type
+          ?.desc
+          .shouldBe("Spends account code")
+        response.data
+          ?.transactions
+          ?.get(0)
+          ?.description
+          .shouldBe("Transfer In Regular from caseload PVR")
+        response.data
+          ?.transactions
+          ?.get(0)
+          ?.amount
+          .shouldBe(12345)
+        response.data
+          ?.transactions
+          ?.get(0)
+          ?.date
+          .shouldBe("2016-10-21")
       }
     },
   )

@@ -46,12 +46,7 @@ class GetAddressesForPersonTest(
       val offenderNo = "abc123"
       val addressPath = "/api/offenders/$offenderNo/addresses"
       val requestContext = buildRequestContext("testUser")
-
-      beforeEach {
-        nomisApiMockServer.start()
-        nomisApiMockServer.stubForGet(
-          addressPath,
-          """
+      val responseJson = """
           [
             {
               "postalCode": "SE1 1TZ",
@@ -96,7 +91,13 @@ class GetAddressesForPersonTest(
               ]
             }
           ]
-        """,
+        """
+
+      beforeEach {
+        nomisApiMockServer.start()
+        nomisApiMockServer.stubForGet(
+          addressPath,
+          responseJson,
         )
 
         Mockito.reset(hmppsAuthGateway)
@@ -180,24 +181,7 @@ class GetAddressesForPersonTest(
           RestApiResponse(
             "Test",
             HttpStatus.OK,
-            listOf(
-              PrisonApiAddress(
-                country = null,
-                county = null,
-                endDate = null,
-                locality = null,
-                noFixedAddress = true,
-                startDate = null,
-                street = null,
-                town = null,
-                addressType = null,
-                flat = null,
-                postalCode = null,
-                premise = null,
-                addressUsages = emptyList(),
-                comment = null,
-              ),
-            ),
+            RestApiClient.mapListResponse(responseJson, PrisonApiAddress::class),
           ),
         )
 

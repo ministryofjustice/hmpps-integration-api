@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.nomis
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldHaveSize
-import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.Mockito.mock
@@ -49,7 +48,26 @@ class GetSentencesForPersonTest(
       val offenderNo = "zyx987"
       val someBookingId = 1
       val sentecesAndOffencesPath = "/api/offender-sentences/booking/$someBookingId/sentences-and-offences"
-      var sentencesPath = "/api/offender-sentences?offenderNo=$offenderNo"
+      val sentencesPath = "/api/offender-sentences?offenderNo=$offenderNo"
+      val responseJson =
+        """
+        [
+          {
+            "fineAmount": "40",
+            "sentenceDate": "2001-01-01",
+            "sentenceStatus": "A",
+            "sentenceTypeDescription": "ORA CJA03 Standard Determinate Sentence",
+            "terms": [
+                {
+                  "years": 1,
+                  "months": 2,
+                  "weeks": 3,
+                  "days": 4
+                }
+              ]
+          }
+        ]
+        """.removeWhitespaceAndNewlines()
       beforeEach {
         nomisApiMockServer.start()
         nomisApiMockServer.stubForGet(
@@ -176,11 +194,7 @@ class GetSentencesForPersonTest(
           RestApiResponse(
             "Test",
             HttpStatus.OK,
-            listOf(
-              PrisonApiSentence(
-                fineAmount = 1,
-              ),
-            ),
+            RestApiClient.mapListResponse(responseJson, PrisonApiSentence::class),
           ),
         )
 
@@ -191,7 +205,29 @@ class GetSentencesForPersonTest(
         val response = gateway.getSentencesForBooking(someBookingId)
 
         // Then
-        response.data.shouldNotBeNull()
+        response.data.shouldBe(
+          listOf(
+            generateTestSentence(
+              dateOfSentencing = LocalDate.parse("2001-01-01"),
+              description = "ORA CJA03 Standard Determinate Sentence",
+              fineAmount = 40,
+              isActive = true,
+              isCustodial = true,
+              length =
+                SentenceLength(
+                  terms =
+                    listOf(
+                      SentenceTerm(
+                        years = 1,
+                        months = 2,
+                        weeks = 3,
+                        days = 4,
+                      ),
+                    ),
+                ),
+            ),
+          ),
+        )
       }
     },
   )

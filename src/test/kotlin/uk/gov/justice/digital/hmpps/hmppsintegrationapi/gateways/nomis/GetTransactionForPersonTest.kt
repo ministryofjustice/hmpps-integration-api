@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.nomis
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldHaveSize
-import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.Mockito.mock
@@ -47,12 +46,8 @@ class GetTransactionForPersonTest(
       val prisonId = "XYZ"
       val clientUniqueRef = "client_unique_ref"
       val transactionPath = "/api/v1/prison/$prisonId/offenders/$nomisNumber/transactions/$clientUniqueRef"
-
-      beforeEach {
-        nomisApiMockServer.start()
-        nomisApiMockServer.stubForGet(
-          transactionPath,
-          """
+      val responseJson =
+        """
         {
           "id": "204564839-3",
           "type": {
@@ -63,7 +58,13 @@ class GetTransactionForPersonTest(
           "amount": 12345,
           "date": "2016-10-21"
         }
-        """.removeWhitespaceAndNewlines(),
+        """.removeWhitespaceAndNewlines()
+
+      beforeEach {
+        nomisApiMockServer.start()
+        nomisApiMockServer.stubForGet(
+          transactionPath,
+          responseJson,
         )
 
         Mockito.reset(hmppsAuthGateway)
@@ -146,18 +147,7 @@ class GetTransactionForPersonTest(
           RestApiResponse(
             "Test",
             HttpStatus.OK,
-            Transaction(
-              id = "123",
-              type =
-                Type(
-                  code = "123",
-                  desc = "123",
-                ),
-              description = "123",
-              amount = 123,
-              date = "123",
-              clientUniqueRef = "123",
-            ),
+            RestApiClient.mapResponse(responseJson, Transaction::class),
           ),
         )
 
@@ -173,7 +163,27 @@ class GetTransactionForPersonTest(
           )
 
         // Then
-        response.data.shouldNotBeNull()
+        response.errors.shouldBeEmpty()
+        response.data
+          ?.id
+          .shouldBe("204564839-3")
+        response.data
+          ?.type
+          ?.code
+          .shouldBe("spends")
+        response.data
+          ?.type
+          ?.desc
+          .shouldBe("Spends account code")
+        response.data
+          ?.description
+          .shouldBe("Transfer In Regular from caseload PVR")
+        response.data
+          ?.amount
+          .shouldBe(12345)
+        response.data
+          ?.date
+          .shouldBe("2016-10-21")
       }
     },
   )

@@ -28,7 +28,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMoc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiPrisonTimeline
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonPeriodEntry
 import java.io.File
 import kotlin.collections.count
 
@@ -47,13 +46,15 @@ class GetPrisonTimelineForPersonTest(
       val offenderNo = "A7748DZ"
       val prisonTimelinePath = "/api/offenders/$offenderNo/prison-timeline"
       val requestContext = buildRequestContext("testUser")
+      val responseJson =
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/nomis/fixtures/GetPrisonTimelineForPersonResponse.json",
+        ).readText()
       beforeEach {
         nomisApiMockServer.start()
         nomisApiMockServer.stubForGet(
           prisonTimelinePath,
-          File(
-            "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/nomis/fixtures/GetPrisonTimelineForPersonResponse.json",
-          ).readText(),
+          responseJson,
         )
 
         Mockito.reset(hmppsAuthGateway)
@@ -111,11 +112,7 @@ class GetPrisonTimelineForPersonTest(
           RestApiResponse(
             "Test",
             HttpStatus.OK,
-            PrisonApiPrisonTimeline(
-              listOf(
-                PrisonPeriodEntry(),
-              ),
-            ),
+            RestApiClient.mapResponse(responseJson, PrisonApiPrisonTimeline::class),
           ),
         )
 

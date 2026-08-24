@@ -56,6 +56,15 @@ class RestApiClient(
       jsonText: String,
       responseType: KClass<T>,
     ): T = mapper.readValue(jsonText, responseType.java)
+
+    fun <T : Any> mapListResponse(
+      jsonText: String,
+      responseType: KClass<T>,
+    ): List<T> {
+      val listType = mapper.typeFactory.constructCollectionType(List::class.java, responseType.java)
+
+      return mapper.readValue(jsonText, listType)
+    }
   }
 
   val retryCodes = listOf(502, 503, 504, 522, 599, 499, 408)

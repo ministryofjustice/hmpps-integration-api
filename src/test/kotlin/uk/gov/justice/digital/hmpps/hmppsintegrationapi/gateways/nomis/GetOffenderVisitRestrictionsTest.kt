@@ -30,7 +30,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMoc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.NomisOffenderVisitRestrictions
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.OffenderRestriction
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -46,12 +45,8 @@ class GetOffenderVisitRestrictionsTest(
       val nomisApiMockServer = ApiMockServer.create(UpstreamApi.PRISON_API)
       val offenderNo = "zyx987"
       val offenderRestrictionsPath = "/api/offenders/$offenderNo/offender-restrictions"
-
-      beforeEach {
-        nomisApiMockServer.start()
-        nomisApiMockServer.stubForGet(
-          offenderRestrictionsPath,
-          """
+      val responseJson =
+        """
             {
               "bookingId": 9007199254740991,
               "offenderRestrictions": [
@@ -66,7 +61,13 @@ class GetOffenderVisitRestrictionsTest(
                 }
               ]
             }
-        """.removeWhitespaceAndNewlines(),
+        """.removeWhitespaceAndNewlines()
+
+      beforeEach {
+        nomisApiMockServer.start()
+        nomisApiMockServer.stubForGet(
+          offenderRestrictionsPath,
+          responseJson,
         )
 
         Mockito.reset(hmppsAuthGateway)
@@ -153,20 +154,7 @@ class GetOffenderVisitRestrictionsTest(
           RestApiResponse(
             "Test",
             HttpStatus.OK,
-            NomisOffenderVisitRestrictions(
-              114217,
-              listOf(
-                OffenderRestriction(
-                  restrictionId = 123,
-                  comment = "123",
-                  restrictionType = "123",
-                  restrictionTypeDescription = "123",
-                  startDate = "123",
-                  expiryDate = "123",
-                  active = true,
-                ),
-              ),
-            ),
+            RestApiClient.mapResponse(responseJson, NomisOffenderVisitRestrictions::class),
           ),
         )
 

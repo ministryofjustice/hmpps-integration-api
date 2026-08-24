@@ -44,18 +44,20 @@ class GetAccountsForPersonTest(
       val nomisNumber = "AA1234Z"
       val prisonId = "XYZ"
       val accountsPath = "/api/v1/prison/$prisonId/offenders/$nomisNumber/accounts"
-
-      beforeEach {
-        nomisApiMockServer.start()
-        nomisApiMockServer.stubForGet(
-          accountsPath,
-          """
+      val responseJson =
+        """
           {
               "spends": 114217,
               "savings": 2234,
               "cash": 1000
           }
-        """.removeWhitespaceAndNewlines(),
+        """.removeWhitespaceAndNewlines()
+
+      beforeEach {
+        nomisApiMockServer.start()
+        nomisApiMockServer.stubForGet(
+          accountsPath,
+          responseJson,
         )
 
         Mockito.reset(hmppsAuthGateway)
@@ -128,11 +130,7 @@ class GetAccountsForPersonTest(
           RestApiResponse(
             "Test",
             HttpStatus.OK,
-            PrisonApiAccounts(
-              114217,
-              2234,
-              1000,
-            ),
+            RestApiClient.mapResponse(responseJson, PrisonApiAccounts::class),
           ),
         )
 

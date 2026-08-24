@@ -42,11 +42,7 @@ class GetImageMetadataForPersonTest(
     val nomisApiMockServer = ApiMockServer.create(UpstreamApi.PRISON_API)
     val offenderNo = "abc123"
     val imagePath = "/api/images/offenders/$offenderNo"
-    beforeEach {
-      nomisApiMockServer.start()
-      nomisApiMockServer.stubForGet(
-        imagePath,
-        """
+    val responseJson = """
         [
           {
             "imageId": 24213,
@@ -65,7 +61,12 @@ class GetImageMetadataForPersonTest(
             "imageType": "OFF_BKG"
           }
         ]
-      """,
+      """
+    beforeEach {
+      nomisApiMockServer.start()
+      nomisApiMockServer.stubForGet(
+        imagePath,
+        responseJson,
       )
 
       Mockito.reset(hmppsAuthGateway)
@@ -146,16 +147,7 @@ class GetImageMetadataForPersonTest(
         RestApiResponse(
           "Test",
           HttpStatus.OK,
-          listOf(
-            PrisonApiImageDetail(
-              imageId = 24299,
-              active = true,
-              captureDateTime = LocalDateTime.parse("2010-08-27T16:35:00"),
-              imageView = "FACE",
-              imageOrientation = "FRONT",
-              imageType = "OFF_BKG",
-            ),
-          ),
+          RestApiClient.mapListResponse(responseJson, PrisonApiImageDetail::class),
         ),
       )
 
@@ -173,5 +165,12 @@ class GetImageMetadataForPersonTest(
       response.data[0].view.shouldBe("FACE")
       response.data[0].orientation.shouldBe("FRONT")
       response.data[0].type.shouldBe("OFF_BKG")
+
+      response.data[1].id.shouldBe(24213)
+      response.data[1].active.shouldBe(true)
+      response.data[1].captureDateTime.shouldBe(LocalDateTime.parse("2008-08-27T16:35:00"))
+      response.data[1].view.shouldBe("FACE")
+      response.data[1].orientation.shouldBe("FRONT")
+      response.data[1].type.shouldBe("OFF_BKG")
     }
   })

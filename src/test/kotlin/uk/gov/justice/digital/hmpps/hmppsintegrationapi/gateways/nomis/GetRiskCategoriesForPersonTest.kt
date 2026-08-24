@@ -44,11 +44,8 @@ class GetRiskCategoriesForPersonTest(
       val nomisApiMockServer = ApiMockServer.create(UpstreamApi.PRISON_API)
       val offenderNo = "A7796DY"
       val offenderPath = "/api/offenders/$offenderNo"
-      beforeEach {
-        nomisApiMockServer.start()
-        nomisApiMockServer.stubForGet(
-          offenderPath,
-          """
+      val responseJson =
+        """
             {
             "offenderNo": "A7796DY",
             "assessments": [
@@ -57,7 +54,12 @@ class GetRiskCategoriesForPersonTest(
                 }
              ]
             }
-          """.removeWhitespaceAndNewlines(),
+          """.removeWhitespaceAndNewlines()
+      beforeEach {
+        nomisApiMockServer.start()
+        nomisApiMockServer.stubForGet(
+          offenderPath,
+          responseJson,
         )
 
         Mockito.reset(hmppsAuthGateway)
@@ -104,7 +106,7 @@ class GetRiskCategoriesForPersonTest(
           RestApiResponse(
             "Test",
             HttpStatus.OK,
-            PrisonApiInmateDetail(),
+            RestApiClient.mapResponse(responseJson, PrisonApiInmateDetail::class),
           ),
         )
 
@@ -115,7 +117,8 @@ class GetRiskCategoriesForPersonTest(
         val response = gateway.getRiskCategoriesForPerson(offenderNo)
 
         // Then
-        response.data?.shouldNotBeNull()
+        response.data.shouldNotBeNull()
+        response.errors.shouldHaveSize(0)
       }
     },
   )

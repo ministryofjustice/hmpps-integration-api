@@ -25,8 +25,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiPrisonTerm
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiSentenceAdjustment
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiSentenceSummary
 
 @ActiveProfiles("test")
@@ -43,11 +41,7 @@ class GetLatestSentenceAdjustmentsForPersonTest(
       val nomisApiMockServer = ApiMockServer.create(UpstreamApi.PRISON_API)
       val offenderNo = "abc123"
       val sentenceSummaryPath = "/api/offenders/$offenderNo/booking/latest/sentence-summary"
-      beforeEach {
-        nomisApiMockServer.start()
-        nomisApiMockServer.stubForGet(
-          sentenceSummaryPath,
-          """
+      val responseJson = """
           {
             "prisonerNumber": "A1234AA",
             "latestPrisonTerm": {
@@ -65,7 +59,12 @@ class GetLatestSentenceAdjustmentsForPersonTest(
               }
             }
           }
-        """,
+        """
+      beforeEach {
+        nomisApiMockServer.start()
+        nomisApiMockServer.stubForGet(
+          sentenceSummaryPath,
+          responseJson,
         )
 
         Mockito.reset(hmppsAuthGateway)
@@ -128,22 +127,7 @@ class GetLatestSentenceAdjustmentsForPersonTest(
           RestApiResponse(
             "Test",
             HttpStatus.OK,
-            PrisonApiSentenceSummary(
-              PrisonApiPrisonTerm(
-                PrisonApiSentenceAdjustment(
-                  additionalDaysAwarded = 12,
-                  unlawfullyAtLarge = 10,
-                  lawfullyAtLarge = 2,
-                  restoredAdditionalDaysAwarded = 0,
-                  specialRemission = 11,
-                  recallSentenceRemand = 1,
-                  recallSentenceTaggedBail = 3,
-                  remand = 6,
-                  taggedBail = 3,
-                  unusedRemand = 6,
-                ),
-              ),
-            ),
+            RestApiClient.mapResponse(responseJson, PrisonApiSentenceSummary::class),
           ),
         )
 

@@ -44,17 +44,18 @@ class GetReferenceDomainsTest(
       val nomisApiMockServer = ApiMockServer.create(UpstreamApi.PRISON_API)
       val testDomain = "abc"
       val domainPath = "/api/reference-domains/domains/$testDomain/codes"
-      beforeEach {
-        nomisApiMockServer.start()
-        nomisApiMockServer.stubForGet(
-          domainPath,
-          """
+      val responseJson = """
           [
             {"domain":"abc", "code":"a"},
             {"domain":"abc", "code":"b"},
             {"domain":"abc", "code":"c"}
           ]
-        """,
+        """
+      beforeEach {
+        nomisApiMockServer.start()
+        nomisApiMockServer.stubForGet(
+          domainPath,
+          responseJson,
         )
 
         Mockito.reset(hmppsAuthGateway)
@@ -118,11 +119,7 @@ class GetReferenceDomainsTest(
           RestApiResponse(
             "Test",
             HttpStatus.OK,
-            listOf(
-              PrisonApiReferenceCode(
-                "123",
-              ),
-            ),
+            RestApiClient.mapListResponse(responseJson, PrisonApiReferenceCode::class),
           ),
         )
 

@@ -42,19 +42,21 @@ class GetVisitBalancesForPersonTest(
     val nomisApiMockServer = ApiMockServer.create(UpstreamApi.PRISON_API)
     val offenderNumber = "G2996UX"
     val visitBalancesPath = "/api/bookings/offenderNo/$offenderNumber/visit/balances"
-
-    beforeEach {
-      nomisApiMockServer.start()
-      nomisApiMockServer.stubForGet(
-        visitBalancesPath,
-        """
+    val responseJson =
+      """
         {
           "remainingVo": 1073741824,
           "remainingPvo": 1073741824,
           "latestIepAdjustDate": "2025-03-04",
           "latestPrivIepAdjustDate": "2025-03-04"
         }
-        """.removeWhitespaceAndNewlines(),
+        """.removeWhitespaceAndNewlines()
+
+    beforeEach {
+      nomisApiMockServer.start()
+      nomisApiMockServer.stubForGet(
+        visitBalancesPath,
+        responseJson,
       )
 
       Mockito.reset(hmppsAuthGateway)
@@ -125,10 +127,7 @@ class GetVisitBalancesForPersonTest(
         RestApiResponse(
           "Test",
           HttpStatus.OK,
-          VisitBalances(
-            remainingVo = 123,
-            remainingPvo = 123,
-          ),
+          RestApiClient.mapResponse(responseJson, VisitBalances::class),
         ),
       )
 
@@ -140,5 +139,6 @@ class GetVisitBalancesForPersonTest(
 
       // Then
       response.data.shouldNotBeNull()
+      response.data?.remainingVo.shouldBe(1073741824)
     }
   })

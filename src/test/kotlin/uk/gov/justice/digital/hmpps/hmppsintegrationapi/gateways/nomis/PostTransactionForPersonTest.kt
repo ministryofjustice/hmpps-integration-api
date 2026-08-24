@@ -52,6 +52,12 @@ class PostTransactionForPersonTest(
     val clientUniqueRef = "CLIENT121131-0_11"
     val type = "CANT"
     val exampleTransaction = TransactionRequest(type, description, amount, clientTransactionId, clientUniqueRef)
+    val responseJson =
+      """
+        {
+          "id": "6179604-1"
+        }
+        """.removeWhitespaceAndNewlines()
 
     beforeEach {
       nomisApiMockServer.start()
@@ -67,11 +73,7 @@ class PostTransactionForPersonTest(
       nomisApiMockServer.stubForPost(
         path,
         asJsonString(exampleTransaction.toApiConformingMap()),
-        """
-        {
-          "id": "6179604-1"
-        }
-        """.removeWhitespaceAndNewlines(),
+        responseJson,
       )
 
       prisonApiGateway.postTransactionForPerson(
@@ -87,11 +89,7 @@ class PostTransactionForPersonTest(
       nomisApiMockServer.stubForPost(
         path,
         asJsonString(exampleTransaction.toApiConformingMap()),
-        """
-        {
-          "id": "6179604-1"
-        }
-        """.removeWhitespaceAndNewlines(),
+        responseJson,
       )
 
       val response =
@@ -157,9 +155,7 @@ class PostTransactionForPersonTest(
         RestApiResponse(
           "Test",
           HttpStatus.OK,
-          PrisonApiTransactionResponse(
-            "6179604-1",
-          ),
+          RestApiClient.mapResponse(responseJson, PrisonApiTransactionResponse::class),
         ),
       )
 

@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.nomis
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.collections.shouldBeEmpty
-import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.Mockito.mock
@@ -28,7 +27,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiReasonableAdjustment
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiReasonableAdjustments
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiReferenceCode
 import java.time.LocalDate
@@ -48,22 +46,15 @@ class GetReasonableAdjustmentTest(
       val bookingId = "mockBooking"
       val domainPath = "/api/reference-domains/domains/HEALTH_TREAT/codes"
       var reasonableAdjustmentPath = "/api/bookings/$bookingId/reasonable-adjustments?type=a&type=b&type=c"
-      beforeEach {
-        nomisApiMockServer.start()
-        nomisApiMockServer.stubForGet(
-          domainPath,
-          """
+      val responseDomainJson = """
           [
             {"domain":"abc", "code":"a"},
             {"domain":"abc", "code":"b"},
             {"domain":"abc", "code":"c"}
           ]
-        """,
-        )
+        """
 
-        nomisApiMockServer.stubForGet(
-          reasonableAdjustmentPath,
-          """
+      val responseAdjustmentJson = """
             { "reasonableAdjustments":[
                 {
                       "treatmentCode": "WHEELCHR_ACC",
@@ -74,7 +65,17 @@ class GetReasonableAdjustmentTest(
                  }
               ]
            }
-        """,
+        """
+      beforeEach {
+        nomisApiMockServer.start()
+        nomisApiMockServer.stubForGet(
+          domainPath,
+          responseDomainJson,
+        )
+
+        nomisApiMockServer.stubForGet(
+          reasonableAdjustmentPath,
+          responseAdjustmentJson,
         )
 
         Mockito.reset(hmppsAuthGateway)
@@ -151,62 +152,18 @@ class GetReasonableAdjustmentTest(
         whenever(authGateway.getClientToken("NOMIS", null)).thenReturn(authToken)
 
         val apiClient: RestApiClient = mock()
-        whenever(apiClient.get(eq(reasonableAdjustmentPath), eq(PrisonApiReasonableAdjustments::class), any(), isNull())).thenReturn(
-          RestApiResponse(
-            "Test",
-            HttpStatus.OK,
-            PrisonApiReasonableAdjustments(
-              listOf(
-                PrisonApiReasonableAdjustment(
-                  treatmentCode = "abc",
-                ),
-              ),
-            ),
-          ),
-        )
-
         whenever(apiClient.getList(eq(domainPath), eq(PrisonApiReferenceCode::class), any(), isNull())).thenReturn(
           RestApiResponse(
             "Test",
             HttpStatus.OK,
-            listOf(
-              PrisonApiReferenceCode(
-                "a",
-                "a",
-                "a",
-                "a",
-                "a",
-                "a",
-                1,
-                "a",
-                LocalDate.parse("2010-06-21"),
-                listOf(PrisonApiReferenceCode()),
-              ),
-              PrisonApiReferenceCode(
-                "b",
-                "b",
-                "b",
-                "b",
-                "b",
-                "b",
-                2,
-                "b",
-                LocalDate.parse("2010-06-21"),
-                listOf(PrisonApiReferenceCode()),
-              ),
-              PrisonApiReferenceCode(
-                "c",
-                "c",
-                "c",
-                "c",
-                "c",
-                "c",
-                3,
-                "c",
-                LocalDate.parse("2010-06-21"),
-                listOf(PrisonApiReferenceCode()),
-              ),
-            ),
+            RestApiClient.mapListResponse(responseDomainJson, PrisonApiReferenceCode::class),
+          ),
+        )
+        whenever(apiClient.get(eq(reasonableAdjustmentPath), eq(PrisonApiReasonableAdjustments::class), any(), isNull())).thenReturn(
+          RestApiResponse(
+            "Test",
+            HttpStatus.OK,
+            RestApiClient.mapResponse(responseAdjustmentJson, PrisonApiReasonableAdjustments::class),
           ),
         )
 
@@ -217,7 +174,27 @@ class GetReasonableAdjustmentTest(
         val response = gateway.getReasonableAdjustments(bookingId)
 
         // Then
-        response.data.shouldNotBeEmpty()
+        response.data.count().shouldBe(1)
+        response.data
+          .first()
+          .treatmentCode
+          .shouldBe("WHEELCHR_ACC")
+        response.data
+          .first()
+          .commentText
+          .shouldBe("abcd")
+        response.data
+          .first()
+          .startDate
+          .shouldBe(LocalDate.parse("2010-06-21"))
+        response.data
+          .first()
+          .endDate
+          .shouldBe(LocalDate.parse("2010-06-21"))
+        response.data
+          .first()
+          .treatmentDescription
+          .shouldBe("Wheelchair accessibility")
       }
     },
   )

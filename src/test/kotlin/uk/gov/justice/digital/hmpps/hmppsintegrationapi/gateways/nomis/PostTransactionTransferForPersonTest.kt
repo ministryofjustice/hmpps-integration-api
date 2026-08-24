@@ -30,8 +30,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMoc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionTransferRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.CreditTransaction
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.DebitTransaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.NomisTransactionTransferResponse
 
 @ActiveProfiles("test")
@@ -55,6 +53,18 @@ class PostTransactionTransferForPersonTest(
     val fromAccount = "spends"
     val toAccount = "savings"
     val exampleTransfer = TransactionTransferRequest(description, amount, clientTransactionId, clientUniqueRef, fromAccount, toAccount)
+    val responseJson =
+      """
+        {
+            "debitTransaction": {
+              "id": "6179604-1"
+            },
+            "creditTransaction": {
+              "id": "6179604-1"
+            },
+            "transactionId": 6179604
+          }
+        """.removeWhitespaceAndNewlines()
 
     beforeEach {
       nomisApiMockServer.start()
@@ -70,17 +80,7 @@ class PostTransactionTransferForPersonTest(
       nomisApiMockServer.stubForPost(
         path,
         asJsonString(exampleTransfer.toApiConformingMap()),
-        """
-        {
-            "debitTransaction": {
-              "id": "6179604-1"
-            },
-            "creditTransaction": {
-              "id": "6179604-1"
-            },
-            "transactionId": 6179604
-          }
-        """.removeWhitespaceAndNewlines(),
+        responseJson,
       )
 
       prisonApiGateway.postTransactionTransferForPerson(
@@ -96,17 +96,7 @@ class PostTransactionTransferForPersonTest(
       nomisApiMockServer.stubForPost(
         path,
         asJsonString(exampleTransfer.toApiConformingMap()),
-        """
-          {
-            "debitTransaction": {
-              "id": "6179604-1"
-            },
-            "creditTransaction": {
-              "id": "6179604-1"
-            },
-            "transactionId": 6179604
-          }
-        """.removeWhitespaceAndNewlines(),
+        responseJson,
       )
 
       val response =
@@ -209,11 +199,7 @@ class PostTransactionTransferForPersonTest(
         RestApiResponse(
           "Test",
           HttpStatus.OK,
-          NomisTransactionTransferResponse(
-            DebitTransaction("6179604-1"),
-            CreditTransaction("6179604-1"),
-            6179604,
-          ),
+          RestApiClient.mapResponse(responseJson, NomisTransactionTransferResponse::class),
         ),
       )
 

@@ -46,11 +46,8 @@ class GetOffencesForPersonTest(
       val offenderNo = "zyx987"
       val offenceHistoryPath = "/api/bookings/offenderNo/$offenderNo/offenceHistory"
       val requestContext = buildRequestContext("testUser")
-      beforeEach {
-        nomisApiMockServer.start()
-        nomisApiMockServer.stubForGet(
-          offenceHistoryPath,
-          """
+      val responseJson =
+        """
           [
             {
               "bookingId": 9887889,
@@ -70,7 +67,12 @@ class GetOffencesForPersonTest(
               "caseId": 99
             }
           ]
-        """.removeWhitespaceAndNewlines(),
+        """.removeWhitespaceAndNewlines()
+      beforeEach {
+        nomisApiMockServer.start()
+        nomisApiMockServer.stubForGet(
+          offenceHistoryPath,
+          responseJson,
         )
 
         Mockito.reset(hmppsAuthGateway)
@@ -133,13 +135,7 @@ class GetOffencesForPersonTest(
           RestApiResponse(
             "Test",
             HttpStatus.OK,
-            listOf(
-              PrisonApiOffenceHistoryDetail(
-                offenceCode = "123",
-                offenceDescription = "123",
-                statuteCode = "123",
-              ),
-            ),
+            RestApiClient.mapListResponse(responseJson, PrisonApiOffenceHistoryDetail::class),
           ),
         )
 
