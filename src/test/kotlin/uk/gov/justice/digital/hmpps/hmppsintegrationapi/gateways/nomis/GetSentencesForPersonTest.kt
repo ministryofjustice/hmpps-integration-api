@@ -5,7 +5,10 @@ import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
+import org.mockito.Mockito.mock
 import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.isNull
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
@@ -13,6 +16,10 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.RESTAPICLIENT_FOR_PRISON_API_GATEWAY
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiClient
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
@@ -23,6 +30,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceLen
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceTerm
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiSentence
 import java.time.LocalDate
 
 @ActiveProfiles("test")
@@ -32,6 +40,8 @@ import java.time.LocalDate
 )
 class GetSentencesForPersonTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
+  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
+  @MockitoBean val restApiClient: RestApiClient,
   val prisonApiGateway: PrisonApiGateway,
 ) : DescribeSpec(
     {
@@ -39,7 +49,26 @@ class GetSentencesForPersonTest(
       val offenderNo = "zyx987"
       val someBookingId = 1
       val sentecesAndOffencesPath = "/api/offender-sentences/booking/$someBookingId/sentences-and-offences"
-      var sentencesPath = "/api/offender-sentences?offenderNo=$offenderNo"
+      val sentencesPath = "/api/offender-sentences?offenderNo=$offenderNo"
+      val responseJson =
+        """
+        [
+          {
+            "fineAmount": "40",
+            "sentenceDate": "2001-01-01",
+            "sentenceStatus": "A",
+            "sentenceTypeDescription": "ORA CJA03 Standard Determinate Sentence",
+            "terms": [
+                {
+                  "years": 1,
+                  "months": 2,
+                  "weeks": 3,
+                  "days": 4
+                }
+              ]
+          }
+        ]
+        """.removeWhitespaceAndNewlines()
       beforeEach {
         nomisApiMockServer.start()
         nomisApiMockServer.stubForGet(
@@ -149,6 +178,57 @@ class GetSentencesForPersonTest(
           .first()
           .type
           .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+      }
+
+      it("can use the RestApiClient") {
+        // Given
+        val authToken = "ABC123"
+        val headers = mapOf("Authorization" to "Bearer $authToken")
+
+        val features = FeatureFlagConfig(mapOf(RESTAPICLIENT_FOR_PRISON_API_GATEWAY to true))
+
+        val authGateway: HmppsAuthGateway = mock()
+        whenever(authGateway.getClientToken("NOMIS", null)).thenReturn(authToken)
+
+        val apiClient: RestApiClient = mock()
+        whenever(apiClient.getList(eq(sentecesAndOffencesPath), eq(PrisonApiSentence::class), eq(headers), isNull())).thenReturn(
+          RestApiResponse(
+            "Test",
+            HttpStatus.OK,
+            RestApiClient.mapListResponse(responseJson, PrisonApiSentence::class),
+          ),
+        )
+
+        val gateway = PrisonApiGateway("http://localhost", features, apiClient)
+        gateway.hmppsAuthGateway = authGateway
+
+        // When
+        val response = gateway.getSentencesForBooking(someBookingId)
+
+        // Then
+        response.data.shouldBe(
+          listOf(
+            generateTestSentence(
+              dateOfSentencing = LocalDate.parse("2001-01-01"),
+              description = "ORA CJA03 Standard Determinate Sentence",
+              fineAmount = 40,
+              isActive = true,
+              isCustodial = true,
+              length =
+                SentenceLength(
+                  terms =
+                    listOf(
+                      SentenceTerm(
+                        years = 1,
+                        months = 2,
+                        weeks = 3,
+                        days = 4,
+                      ),
+                    ),
+                ),
+            ),
+          ),
+        )
       }
     },
   )
