@@ -132,6 +132,7 @@ feature-flag:
   contact-linked-prisoners-endpoint-enabled: true
   prison-timeline-endpoint-enabled: true
   restapiclient-for-prison-api-gateway: false
+  person-search-v2-enabled: true
   # Events Config
   enable-delete-processed-events: true
   enable-publish-pending-events: true
