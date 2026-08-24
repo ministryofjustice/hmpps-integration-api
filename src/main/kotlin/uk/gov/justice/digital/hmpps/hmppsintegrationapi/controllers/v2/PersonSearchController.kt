@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v2
 
+import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -31,6 +32,7 @@ class PersonSearchController(
   private val auditService: AuditService,
   private val personSearchService: PersonSearchService,
 ) {
+  @Hidden
   @FeatureFlag(name = FeatureFlagConfig.PERSON_SEARCH_V2_ENABLED)
   @PostMapping
   @Tags(Tag(name = "Person Search"))

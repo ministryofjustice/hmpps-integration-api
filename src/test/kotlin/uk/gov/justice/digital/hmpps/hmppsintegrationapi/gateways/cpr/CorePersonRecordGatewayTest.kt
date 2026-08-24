@@ -9,6 +9,7 @@ import io.kotest.matchers.string.shouldContain
 import jakarta.validation.ValidationException
 import org.mockito.Mockito
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.isNull
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -21,6 +22,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.util.ReflectionTestUtils
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CorePersonRecordGateway
@@ -56,6 +58,9 @@ class CorePersonRecordGatewayTest(
         whenever(hmppsAuthGateway.getClientToken("CORE_PERSON_RECORD")).thenReturn(
           HmppsAuthMockServer.Companion.TOKEN,
         )
+        whenever(hmppsAuthGateway.getClientToken(eq("CORE_PERSON_RECORD"), any<RequestContext>())).thenReturn(
+          HmppsAuthMockServer.Companion.TOKEN,
+        )
         cprMockServer.stubForGet(
           "/person/probation/$crn",
           File(
@@ -67,17 +72,6 @@ class CorePersonRecordGatewayTest(
           "/person/prison/$nomsId",
           File(
             "$gatewaysFolder/cpr/fixtures/core-person-record-response.json",
-          ).readText(),
-          HttpStatus.OK,
-        )
-
-        cprMockServer.stubForPost(
-          "/person/search",
-          File(
-            "$gatewaysFolder/cpr/fixtures/core-person-record-search-request.json",
-          ).readText(),
-          File(
-            "$gatewaysFolder/cpr/fixtures/core-person-record-search-response.json",
           ).readText(),
           HttpStatus.OK,
         )
@@ -125,6 +119,16 @@ class CorePersonRecordGatewayTest(
 
       it("upstream API returns core person record search results") {
         val requestContext = buildRequestContext()
+        cprMockServer.stubForPost(
+          "/person/search",
+          File(
+            "$gatewaysFolder/cpr/fixtures/core-person-record-search-request.json",
+          ).readText(),
+          File(
+            "$gatewaysFolder/cpr/fixtures/core-person-record-search-response.json",
+          ).readText(),
+          HttpStatus.OK,
+        )
         val request =
           jacksonObjectMapper().readValue(
             File(
