@@ -227,6 +227,17 @@ const postAllocationData = JSON.stringify({
   testEvent: "TestEvent"
 })
 
+const personSearchV2Endpoint = `/v2/persons`
+const personSearchV2Request = JSON.stringify({
+  firstName: "Joan",
+  lastName: "Balistreri",
+  dateOfBirth: "1972-04-04",
+  firstNameAliases: [],
+  lastNameAliases: [],
+  dateOfBirthAliases: [],
+  postcodes: []
+})
+
 
 function verify_get_endpoints() {
   for (const endpoint of get_endpoints) {
@@ -295,6 +306,13 @@ function verify_post_endpoints() {
     [`POST ${postAllocationEndpoint} returns 200`]: (r) => r.status === 200,
   })) {
     exec.test.fail(`${postAllocationEndpoint} caused the test to fail`)
+  }
+
+  const personSearchV2Res = http.post(`${baseUrl}${personSearchV2Endpoint}`, personSearchV2Request, params);
+  if (!check(personSearchV2Res, {
+    [`POST ${personSearchV2Endpoint} returns 200`]: (r) => r.status === 200,
+  })) {
+    exec.test.fail(`${personSearchV2Endpoint} caused the test to fail`)
   }
 }
 
