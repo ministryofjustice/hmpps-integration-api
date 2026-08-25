@@ -3,11 +3,13 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.cpr
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import jakarta.validation.ValidationException
 import org.mockito.Mockito
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.isNull
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -20,13 +22,17 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.util.ReflectionTestUtils
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CorePersonRecordGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase.Companion.gatewaysFolder
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.CorePersonRecordSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService.IdentifierType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.TestConstants.DEFAULT_CRN
 import java.io.File
@@ -50,6 +56,9 @@ class CorePersonRecordGatewayTest(
         cprMockServer.start()
         Mockito.reset(hmppsAuthGateway)
         whenever(hmppsAuthGateway.getClientToken("CORE_PERSON_RECORD")).thenReturn(
+          HmppsAuthMockServer.Companion.TOKEN,
+        )
+        whenever(hmppsAuthGateway.getClientToken(eq("CORE_PERSON_RECORD"), any<RequestContext>())).thenReturn(
           HmppsAuthMockServer.Companion.TOKEN,
         )
         cprMockServer.stubForGet(
@@ -106,6 +115,58 @@ class CorePersonRecordGatewayTest(
             corePersonRecordGateway.corePersonRecordFor(IdentifierType.NOMS, crn)
           }
         response.message.shouldContain("Invalid request to core person record /person/prison/$crn")
+      }
+
+      it("upstream API returns core person record search results") {
+        val requestContext = buildRequestContext()
+        cprMockServer.stubForPost(
+          "/person/search",
+          File(
+            "$gatewaysFolder/cpr/fixtures/core-person-record-search-request.json",
+          ).readText(),
+          File(
+            "$gatewaysFolder/cpr/fixtures/core-person-record-search-response.json",
+          ).readText(),
+          HttpStatus.OK,
+        )
+        val request =
+          jacksonObjectMapper().readValue(
+            File(
+              "$gatewaysFolder/cpr/fixtures/core-person-record-search-request.json",
+            ).readText(),
+            CorePersonRecordSearchRequest::class.java,
+          )
+
+        val response = corePersonRecordGateway.corePersonRecordSearch(request, requestContext)
+        response.data
+          ?.data[0]
+          ?.identifiers
+          ?.crn
+          .shouldBe("A123456")
+      }
+
+      it("upstream API returns a bad request for a core person record search") {
+        val requestContext = buildRequestContext()
+        val request =
+          jacksonObjectMapper().readValue(
+            File(
+              "$gatewaysFolder/cpr/fixtures/core-person-record-search-invalid-request.json",
+            ).readText(),
+            CorePersonRecordSearchRequest::class.java,
+          )
+
+        cprMockServer.stubForPost(
+          "/person/search",
+          File(
+            "$gatewaysFolder/cpr/fixtures/core-person-record-search-invalid-request.json",
+          ).readText(),
+          "",
+          HttpStatus.BAD_REQUEST,
+        )
+
+        val response = corePersonRecordGateway.corePersonRecordSearch(request, requestContext)
+        response.data shouldBe null
+        response.errors.shouldContain(UpstreamApiError(causedBy = UpstreamApi.CORE_PERSON_RECORD, type = UpstreamApiError.Type.BAD_REQUEST))
       }
 
       it("upstream API returns an unexpected exception, throw RuntimeException") {

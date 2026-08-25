@@ -8,9 +8,13 @@ import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Companion.GATEWAY_CACHE
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.CorePersonRecord
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.CorePersonRecordSearchRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.CorePersonRecordSearchResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService.IdentifierType
@@ -34,8 +38,8 @@ class CorePersonRecordGateway(
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  private fun authenticationHeader(): Map<String, String> {
-    val token = hmppsAuthGateway.getClientToken("CORE_PERSON_RECORD")
+  private fun authenticationHeader(requestContext: RequestContext? = null): Map<String, String> {
+    val token = hmppsAuthGateway.getClientToken("CORE_PERSON_RECORD", requestContext)
     return mapOf(
       "Authorization" to "Bearer $token",
     )
@@ -64,7 +68,7 @@ class CorePersonRecordGateway(
 
     return when (result) {
       is WebClientWrapperResponse.Success -> {
-        return result.data
+        result.data
       }
       is WebClientWrapperResponse.Error -> {
         when (result.errors.map { it.type }.firstOrNull()) {
@@ -72,6 +76,35 @@ class CorePersonRecordGateway(
           UpstreamApiError.Type.ENTITY_NOT_FOUND -> throw EntityNotFoundException("Could not find core person record at $uri")
           else -> throw RuntimeException("Error retrieving core person record from $uri with error ${result.errors.map { it.type }.joinToString(",")}")
         }
+      }
+    }
+  }
+
+  fun corePersonRecordSearch(
+    corePersonRecordSearchRequest: CorePersonRecordSearchRequest,
+    requestContext: RequestContext,
+  ): Response<CorePersonRecordSearchResponse?> {
+    val uri = "/person/search"
+    val result =
+      webClient.request<CorePersonRecordSearchResponse>(
+        HttpMethod.POST,
+        uri,
+        authenticationHeader(requestContext),
+        UpstreamApi.CORE_PERSON_RECORD,
+        requestBody = corePersonRecordSearchRequest.toMap(),
+        badRequestAsError = true,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
       }
     }
   }
