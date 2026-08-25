@@ -82,7 +82,7 @@ class CorePersonRecordGateway(
 
   fun corePersonRecordSearch(
     corePersonRecordSearchRequest: CorePersonRecordSearchRequest,
-    requestContext: RequestContext? = null,
+    requestContext: RequestContext,
   ): Response<CorePersonRecordSearchResponse?> {
     val uri = "/person/search"
     val result =

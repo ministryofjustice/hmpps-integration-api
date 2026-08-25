@@ -45,7 +45,7 @@ class PersonSearchController(
     ],
   )
   fun personSearch(
-    @RequestAttribute requestContext: RequestContext?,
+    @RequestAttribute requestContext: RequestContext,
     @Valid @RequestBody request: CorePersonRecordSearchRequest,
   ): DataResponse<List<CorePersonRecordSearchResponseItem>> {
     val response = personSearchService.personSearch(request, requestContext)

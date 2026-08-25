@@ -13,7 +13,7 @@ class PersonSearchService(
 ) {
   fun personSearch(
     request: CorePersonRecordSearchRequest,
-    requestContext: RequestContext? = null,
+    requestContext: RequestContext,
   ): Response<List<CorePersonRecordSearchResponseItem>?> {
     val response = corePersonRecordGateway.corePersonRecordSearch(request, requestContext)
     if (response.errors.isNotEmpty()) {
