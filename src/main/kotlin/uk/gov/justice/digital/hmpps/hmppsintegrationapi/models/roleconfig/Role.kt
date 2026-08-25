@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.fullAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.fullAccessLaoRedactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.hmppsSystem
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mojHmppsPersonLookup
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mojHmppsPersonLookupV2
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mojPrisonsEducation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mojPrisonsPrisonerFacing
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mojPrisonsPrisonerImage
@@ -168,6 +169,7 @@ val roles =
     mojPrisonsPrisonerImage,
     extPrisonsEscortCustody,
     mojHmppsPersonLookup,
+    mojHmppsPersonLookupV2,
     extPrisonsPrivatePrison,
     extHmppsPublicProtection,
     extHmppsPublicProtectionCat4,

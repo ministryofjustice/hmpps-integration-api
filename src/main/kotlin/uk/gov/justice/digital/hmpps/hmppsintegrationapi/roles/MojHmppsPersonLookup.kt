@@ -9,3 +9,12 @@ val mojHmppsPersonLookup =
       -"/v1/status"
     }
   }
+
+val mojHmppsPersonLookupV2 =
+  role("moj-hmpps-person-lookup-v2") {
+    permissions {
+      -"/v2/persons"
+      -"/v1/persons"
+      -"/v1/status"
+    }
+  }
