@@ -24,7 +24,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionTransferRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.MovementItem
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.NomisOffenderVisitRestrictions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.NomisTransactionTransferResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiAccounts
@@ -1019,33 +1018,6 @@ class PrisonApiGateway(
     }
   }
 
-  fun getMovementsForPerson(
-    nomisNumber: String,
-    requestContext: RequestContext?,
-  ): Response<PrisonApiMovements?> {
-    val result =
-      webClient.request<Array<MovementItem>>(
-        HttpMethod.GET,
-        "/api/movements/offender/$nomisNumber?movementTypes=TRN&movementTypes=CRT&allBookings=true",
-        authenticationHeader(requestContext),
-        UpstreamApi.PRISON_API,
-      )
-    return when (result) {
-      is WebClientWrapperResponse.Success -> {
-        Response(data = PrisonApiMovements(result.data.toList()))
-      }
-
-      is WebClientWrapperResponse.Error -> {
-        Response(
-          data = null,
-          errors = result.errors,
-        )
-      }
-    }
-  }
-
-  private fun authenticationHeader(context: RequestContext? = null): Map<String, String> {
-    val token = hmppsAuthGateway.getClientToken("NOMIS", context)
   fun getPrisonTimelineForPerson2(
     nomisNumber: String,
     requestContext: RequestContext? = null,
@@ -1054,6 +1026,24 @@ class PrisonApiGateway(
       prisonApiRestClient.get(
         "/api/offenders/$nomisNumber/prison-timeline",
         PrisonApiPrisonTimeline::class,
+        authenticationHeader(requestContext),
+      )
+
+    return if (result.errors.isEmpty()) {
+      Response(data = result.data)
+    } else {
+      Response.error(UpstreamApi.PRISON_API, result.errors, null)
+    }
+  }
+
+  fun getMovementsForPerson(
+    nomisNumber: String,
+    requestContext: RequestContext?,
+  ): Response<PrisonApiMovements?> {
+    val result =
+      prisonApiRestClient.get(
+        "/api/movements/offender/$nomisNumber?movementTypes=TRN&movementTypes=CRT&allBookings=true",
+        PrisonApiMovements::class,
         authenticationHeader(requestContext),
       )
 

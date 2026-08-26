@@ -6,7 +6,7 @@ import java.time.format.DateTimeParseException
 data class PrisonApiMovements(
   val movements: List<MovementItem> = emptyList(),
 ) {
-  fun toResponse(): PrisonApiMovementsResponse {
+  fun toResponse(): PrisonerMovementsResponse {
     val latestTRN =
       movements
         .filter { it.movementType == "TRN" }
@@ -22,7 +22,7 @@ data class PrisonApiMovements(
         .filter { it.directionCode == "OUT" }
         .maxWithOrNull(compareBy(nullsFirst()) { it.parsedMovementDateTime() })
 
-    return PrisonApiMovementsResponse(
+    return PrisonerMovementsResponse(
       transferReason = latestTRN?.movementReason,
       movementCode = latestTRN?.movementReasonCode,
       toAgencyDescription = latestTRN?.toAgencyDescription,

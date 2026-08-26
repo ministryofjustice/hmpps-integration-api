@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGatewa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiMovementsResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonerMovementsResponse
 
 @Service
 class GetMovementService(
@@ -17,7 +17,7 @@ class GetMovementService(
   fun getMovement(
     hmppsId: String,
     requestContext: RequestContext?,
-  ): Response<PrisonApiMovementsResponse?> {
+  ): Response<PrisonerMovementsResponse?> {
     val personResponse = getPersonService.getNomisNumber(hmppsId, requestContext?.filters)
 
     if (personResponse.errors.isNotEmpty()) {

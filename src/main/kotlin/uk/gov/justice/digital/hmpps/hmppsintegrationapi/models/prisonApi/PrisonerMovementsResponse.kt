@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi
 
 import io.swagger.v3.oas.annotations.media.Schema
 
-class PrisonApiMovementsResponse(
+class PrisonerMovementsResponse(
   @Schema(example = "Normal Transfer")
   val transferReason: String? = null,
   @Schema(example = "NOTR")

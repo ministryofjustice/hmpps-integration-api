@@ -18,7 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContex
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiMovementsResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonerMovementsResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetMovementService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
@@ -42,7 +42,7 @@ class MovementsController(
   fun getPersonMovementSummary(
     @Parameter(description = "The HMPPS ID of the person", example = "A1234AA") @PathVariable hmppsId: String,
     @RequestAttribute requestContext: RequestContext?,
-  ): DataResponse<PrisonApiMovementsResponse> {
+  ): DataResponse<PrisonerMovementsResponse> {
     val response = getMovementService.getMovement(hmppsId, requestContext)
     ensureResponse(hmppsId, response)
 
@@ -53,7 +53,7 @@ class MovementsController(
 
   private fun ensureResponse(
     hmppsId: String,
-    response: Response<PrisonApiMovementsResponse?>,
+    response: Response<PrisonerMovementsResponse?>,
   ) {
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
