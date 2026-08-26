@@ -40,7 +40,7 @@ dependencies {
   implementation("org.springframework:spring-aop")
   implementation("org.aspectj:aspectjweaver")
   implementation("tools.jackson.module:jackson-module-kotlin:3.2.2")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.4.0") {
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.4.1") {
     exclude("org.springframework.security", "spring-security-config")
     exclude("org.springframework.security", "spring-security-core")
     exclude("org.springframework.security", "spring-security-crypto")
@@ -82,7 +82,7 @@ dependencies {
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
   testImplementation(kotlin("test"))
   testImplementation("io.mockk:mockk:1.14.11")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:6.1.0")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:6.2.0")
 }
 
 java {
