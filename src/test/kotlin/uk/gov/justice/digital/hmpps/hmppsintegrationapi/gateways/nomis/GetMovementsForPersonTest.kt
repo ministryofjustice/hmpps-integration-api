@@ -7,8 +7,8 @@ import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.Mockito.mock
 import org.mockito.internal.verification.VerificationModeFactory
-import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
+import org.mockito.kotlin.isNull
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiClient
@@ -23,10 +24,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiRespon
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiMovements
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.MovementItem
 import java.io.File
 import kotlin.collections.count
 
@@ -51,23 +51,23 @@ class GetMovementsForPersonTest(
         ).readText()
       val apiClient: RestApiClient = mock()
       val gateway = PrisonApiGateway("http://localhost", featureFlagConfig, apiClient)
+      gateway.hmppsAuthGateway = hmppsAuthGateway
+
+      val authToken = "ABC123"
+      val headers = mapOf("Authorization" to "Bearer $authToken")
 
       beforeEach {
         nomisApiMockServer.start()
         Mockito.reset(hmppsAuthGateway)
         Mockito.reset(apiClient)
-        whenever(hmppsAuthGateway.getClientToken("NOMIS", requestContext)).thenReturn(HmppsAuthMockServer.TOKEN)
-        whenever(apiClient.get(eq(prisonTimelinePath), eq(PrisonApiMovements::class), any(), any()))
-          .thenReturn(
-            RestApiResponse(
-              "Test",
-              HttpStatus.OK,
-              RestApiClient.mapResponse(
-                responseJson,
-                PrisonApiMovements::class,
-              ),
-            ),
-          )
+        whenever(hmppsAuthGateway.getClientToken("NOMIS", requestContext)).thenReturn(authToken)
+        whenever(apiClient.getList(eq(prisonTimelinePath), eq(MovementItem::class), eq(headers), isNull())).thenReturn(
+          RestApiResponse(
+            "Test",
+            HttpStatus.OK,
+            RestApiClient.mapListResponse(responseJson, MovementItem::class),
+          ),
+        )
       }
 
       afterTest {
@@ -90,8 +90,14 @@ class GetMovementsForPersonTest(
       }
 
       it("returns an error when 404 NOT FOUND is returned") {
-        nomisApiMockServer.stubForGet(prisonTimelinePath, "", HttpStatus.NOT_FOUND)
-
+        whenever(apiClient.getList(eq(prisonTimelinePath), eq(MovementItem::class), eq(headers), isNull())).thenReturn(
+          RestApiResponse(
+            "Test",
+            HttpStatus.NOT_FOUND,
+            null,
+            errors = listOf(WebClientResponseException(404, "Not Found", null, null, null, null)),
+          ),
+        )
         val response = gateway.getMovementsForPerson(offenderNo, requestContext)
 
         response.errors.shouldHaveSize(1)
