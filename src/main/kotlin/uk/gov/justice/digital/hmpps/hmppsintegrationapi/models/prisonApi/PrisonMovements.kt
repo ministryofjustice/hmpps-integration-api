@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi
 
+import java.time.Instant
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeParseException
 
 data class PrisonApiMovements(
@@ -45,13 +47,14 @@ data class MovementItem(
   val movementReason: String? = null,
   val movementReasonCode: String? = null,
 ) {
-  fun parsedMovementDateTime(): LocalDateTime? {
+  fun parsedMovementDateTime(): Instant? {
     if (movementDate.isNullOrBlank() || movementTime.isNullOrBlank()) {
       return null
     }
 
     return try {
-      LocalDateTime.parse("${movementDate}T$movementTime")
+      val local = LocalDateTime.parse("${movementDate}T$movementTime")
+      return local.atZone(ZoneId.of("Europe/London")).toInstant()
     } catch (e: DateTimeParseException) {
       null
     }

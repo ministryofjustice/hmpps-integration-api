@@ -13,10 +13,10 @@ class PrisonerMovementsResponse(
   val receivedFromDescription: String? = null,
   @Schema(example = "Millsike (HMP)")
   val establishmentName: String? = null,
-  @Schema(example = "2026-07-14T12:41:05")
+  @Schema(example = "2026-07-14T12:41:05.784Z")
   val movementDateTime: String? = null,
   @Schema(example = "Moorland (HMP & YOI)")
   val courtName: String? = null,
-  @Schema(example = "2026-07-14T12:41:05")
+  @Schema(example = "2026-07-14T12:41:05.784Z")
   val dateOfFirstMovement: String? = null,
 )
