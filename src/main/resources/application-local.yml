@@ -85,6 +85,7 @@ feature-flag:
   contact-linked-prisoners-endpoint-enabled: true
   prison-timeline-endpoint-enabled: true
   use-probation-search-for-person-search: false
+  person-search-v2-enabled: true
   # Events Config
   enable-delete-processed-events: false
   enable-publish-pending-events: false

@@ -6,7 +6,11 @@ import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
+import org.mockito.Mockito.mock
 import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.isNull
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
@@ -14,6 +18,10 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.RESTAPICLIENT_FOR_PRISON_API_GATEWAY
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiClient
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
@@ -22,6 +30,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMoc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionTransferRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.NomisTransactionTransferResponse
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -30,6 +39,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 )
 class PostTransactionTransferForPersonTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
+  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
+  @MockitoBean val restApiClient: RestApiClient,
   val prisonApiGateway: PrisonApiGateway,
 ) : DescribeSpec({
     val nomisApiMockServer = ApiMockServer.create(UpstreamApi.PRISON_API)
@@ -43,6 +54,18 @@ class PostTransactionTransferForPersonTest(
     val fromAccount = "spends"
     val toAccount = "savings"
     val exampleTransfer = TransactionTransferRequest(description, amount, clientTransactionId, clientUniqueRef, fromAccount, toAccount)
+    val responseJson =
+      """
+        {
+            "debitTransaction": {
+              "id": "6179604-1"
+            },
+            "creditTransaction": {
+              "id": "6179604-1"
+            },
+            "transactionId": 6179604
+          }
+        """.removeWhitespaceAndNewlines()
 
     beforeEach {
       nomisApiMockServer.start()
@@ -58,17 +81,7 @@ class PostTransactionTransferForPersonTest(
       nomisApiMockServer.stubForPost(
         path,
         asJsonString(exampleTransfer.toApiConformingMap()),
-        """
-        {
-            "debitTransaction": {
-              "id": "6179604-1"
-            },
-            "creditTransaction": {
-              "id": "6179604-1"
-            },
-            "transactionId": 6179604
-          }
-        """.removeWhitespaceAndNewlines(),
+        responseJson,
       )
 
       prisonApiGateway.postTransactionTransferForPerson(
@@ -84,17 +97,7 @@ class PostTransactionTransferForPersonTest(
       nomisApiMockServer.stubForPost(
         path,
         asJsonString(exampleTransfer.toApiConformingMap()),
-        """
-          {
-            "debitTransaction": {
-              "id": "6179604-1"
-            },
-            "creditTransaction": {
-              "id": "6179604-1"
-            },
-            "transactionId": 6179604
-          }
-        """.removeWhitespaceAndNewlines(),
+        responseJson,
       )
 
       val response =
@@ -180,6 +183,50 @@ class PostTransactionTransferForPersonTest(
           ),
         ),
       )
+    }
+
+    it("can use the RestApiClient") {
+      // Given
+      val authToken = "ABC123"
+      val headers = mapOf("Authorization" to "Bearer $authToken")
+
+      val features = FeatureFlagConfig(mapOf(RESTAPICLIENT_FOR_PRISON_API_GATEWAY to true))
+
+      val authGateway: HmppsAuthGateway = mock()
+      whenever(authGateway.getClientToken("NOMIS", null)).thenReturn(authToken)
+
+      val apiClient: RestApiClient = mock()
+      whenever(apiClient.post(eq(path), any(), eq(NomisTransactionTransferResponse::class), eq(headers), isNull())).thenReturn(
+        RestApiResponse(
+          "Test",
+          HttpStatus.OK,
+          RestApiClient.mapResponse(responseJson, NomisTransactionTransferResponse::class),
+        ),
+      )
+
+      val gateway = PrisonApiGateway("http://localhost", features, apiClient)
+      gateway.hmppsAuthGateway = authGateway
+
+      // When
+      val response =
+        gateway.postTransactionTransferForPerson(
+          prisonId,
+          nomisNumber,
+          exampleTransfer,
+        )
+
+      // Then
+      response.errors.shouldBeEmpty()
+      response.data.shouldNotBeNull()
+      response.data!!
+        .transactionId
+        .shouldBe(6179604)
+      response.data!!
+        .debitTransaction.id
+        .shouldBe("6179604-1")
+      response.data!!
+        .creditTransaction.id
+        .shouldBe("6179604-1")
     }
   })
 

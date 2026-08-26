@@ -227,6 +227,17 @@ const postAllocationData = JSON.stringify({
   testEvent: "TestEvent"
 })
 
+const personSearchV2Endpoint = `/v2/persons`
+const personSearchV2Request = JSON.stringify({
+  firstName: "Joan",
+  lastName: "Balistreri",
+  dateOfBirth: "1972-04-04",
+  firstNameAliases: [],
+  lastNameAliases: [],
+  dateOfBirthAliases: [],
+  postcodes: []
+})
+
 
 function verify_get_endpoints() {
   for (const endpoint of get_endpoints) {
@@ -295,6 +306,13 @@ function verify_post_endpoints() {
     [`POST ${postAllocationEndpoint} returns 200`]: (r) => r.status === 200,
   })) {
     exec.test.fail(`${postAllocationEndpoint} caused the test to fail`)
+  }
+
+  const personSearchV2Res = http.post(`${baseUrl}${personSearchV2Endpoint}`, personSearchV2Request, params);
+  if (!check(personSearchV2Res, {
+    [`POST ${personSearchV2Endpoint} returns 200`]: (r) => r.status === 200,
+  })) {
+    exec.test.fail(`${personSearchV2Endpoint} caused the test to fail`)
   }
 }
 
@@ -649,10 +667,6 @@ function verify_prisons_endpoints(nomisNumber) {
   })
 }
 
-function verify_pnd_alerts(hmppsId) {
-  validate_get_request(`/v1/pnd/persons/${hmppsId}/alerts`,)
-}
-
 function verify_risk_endpoints(hmppsId) {
   group('risk', () => {
     let res = validate_get_request(`/v1/persons/${hmppsId}/status-information`);
@@ -852,8 +866,6 @@ function structured_verification_test(hmppsId) {
   verify_risk_endpoints(hmppsId);
 
   verify_epf(hmppsId);
-
-  verify_pnd_alerts(hmppsId);
 
   verify_education_san(hmppsId);
 

@@ -84,7 +84,7 @@ class SentencesIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `returns latest redacted sentence key dates and adjustments for an person when redaction policy is present`() {
-    callApiWithCN("$basePath/$nomsIdFromProbation/sentences/latest-key-dates-and-adjustments", "police")
+    callApiWithCN("$basePath/$nomsIdFromProbation/sentences/latest-key-dates-and-adjustments", "ext-probation-police-intelligence")
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("person-sentence-key-dates-redacted.json")))
   }

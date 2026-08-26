@@ -145,40 +145,6 @@ val ALERT_EVENTS =
     DomainEventName.Person.Alert.DELETED,
   )
 
-val PND_ALERT_TYPES =
-  listOf(
-    "BECTER",
-    "HA",
-    "XA",
-    "XCA",
-    "XEL",
-    "XELH",
-    "XER",
-    "XHT",
-    "XILLENT",
-    "XIS",
-    "XR",
-    "XRF",
-    "XSA",
-    "HA2",
-    "RCS",
-    "RDV",
-    "RKC",
-    "RPB",
-    "RPC",
-    "RSS",
-    "RST",
-    "RDP",
-    "REG",
-    "RLG",
-    "ROP",
-    "RRV",
-    "RTP",
-    "RYP",
-    "HS",
-    "SC",
-  )
-
 val LICENCE_CONDITION_EVENTS =
   listOf(
     DomainEventName.CreateAndVaryALicence.Licence.ACTIVATED,
@@ -197,6 +163,8 @@ val RISK_SCORE_TYPES =
 val ROSH_TYPES = listOf(DomainEventName.Assessment.Summary.PRODUCED)
 
 val ASSESSMENT_SUMMARY_TYPES = listOf(DomainEventName.Assessment.Summary.PRODUCED)
+
+val NEEDS_TYPES = listOf(DomainEventName.Assessment.Summary.PRODUCED)
 
 val PROBATION_STATUS_REGISTER_TYPES = listOf(SERIOUS_FURTHER_OFFENCE_CODE, WARRANT_SUMMONS_CODE)
 
@@ -400,6 +368,11 @@ enum class IntegrationEventType(
     featureFlag = FeatureFlagConfig.USE_ASSESSMENT_SUMMARY_ENDPOINT,
     description = "Assessment Summary Changed",
   ),
+  NEEDS_CHANGED(
+    "v1/persons/{hmppsId}/needs",
+    { NEEDS_TYPES.contains(it.eventType) && it.isCompletedAssessmentEvent() },
+    description = "Needs Changed",
+  ),
   PLP_INDUCTION_SCHEDULE_CHANGED(
     "v1/persons/{hmppsId}/plp-induction-schedule/history",
     { PLP_INDUCTION_SCHEDULE_EVENTS.contains(it.eventType) },
@@ -459,11 +432,6 @@ enum class IntegrationEventType(
     "v1/persons/{hmppsId}/alerts",
     { NEW_PERSON_EVENTS.contains(it.eventType) || ALERT_EVENTS.contains(it.eventType) },
     description = "Person Alerts Changed",
-  ),
-  PERSON_PND_ALERTS_CHANGED(
-    "v1/pnd/persons/{hmppsId}/alerts",
-    { NEW_PERSON_EVENTS.contains(it.eventType) || ALERT_EVENTS.contains(it.eventType) && PND_ALERT_TYPES.contains(it.additionalInformation!!.alertCode) },
-    description = "Person PND Alerts Changed",
   ),
   PERSON_CASE_NOTES_CHANGED(
     "v1/persons/{hmppsId}/case-notes",

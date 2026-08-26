@@ -8,8 +8,6 @@ import org.mockito.Mockito
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.isNull
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.http.HttpStatus
@@ -17,38 +15,29 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.web.reactive.function.client.WebClientResponseException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.RESTAPICLIENT_FOR_SAN_GATEWAY
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiClient
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.SANGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PlanReviewSchedule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PlanReviewScheduleStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PlanReviewSchedules
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-import java.time.LocalDate
-import java.time.OffsetDateTime
 import java.util.UUID
 
 @ActiveProfiles("test")
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [SANGateway::class],
 )
 class GetReviewSchedulesForPrisonerTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
-  private val sanGateway: SANGateway,
 ) : DescribeSpec(
     {
-      val apiMockServer = ApiMockServer.create(UpstreamApi.SAN)
       val prisonerNumber = "G4887VE"
       val path = "/profile/$prisonerNumber/reviews/review-schedules?includeAllHistory=true"
       val requestContext = buildRequestContext("testUser")
+      val authToken = "ABC123"
+      val headers = mapOf("Authorization" to "Bearer $authToken")
 
       fun responseJson() =
         """
@@ -78,28 +67,20 @@ class GetReviewSchedulesForPrisonerTest(
           """.removeWhitespaceAndNewlines()
 
       beforeEach {
-        apiMockServer.start()
-        apiMockServer.stubForGet(
-          path,
-          responseJson(),
-        )
-
         Mockito.reset(hmppsAuthGateway)
-        whenever(hmppsAuthGateway.getClientToken("SAN", requestContext)).thenReturn(HmppsAuthMockServer.TOKEN)
+        whenever(hmppsAuthGateway.getClientToken("SAN", requestContext)).thenReturn(authToken)
       }
 
-      afterTest {
-        apiMockServer.stop()
-      }
-
-      it("authenticates using HMPPS Auth with credentials") {
-        sanGateway.getPlanCreationSchedules(prisonerNumber, requestContext)
-
-        verify(hmppsAuthGateway, times(1)).getClientToken("SAN", requestContext)
-      }
+      // Note that HMPPS Auth token use is verified by the primary unit tests now
 
       it("returns review schedules") {
-        val response = sanGateway.getReviewSchedules(prisonerNumber, requestContext)
+        val apiClient: RestApiClient = mock()
+        whenever(apiClient.get(eq(path), eq(PlanReviewSchedules::class), eq(headers), isNull()))
+          .thenReturn(RestApiResponse("?", HttpStatus.OK, RestApiClient.mapResponse(responseJson(), PlanReviewSchedules::class)))
+
+        val gateway = SANGateway("http://localhost", apiClient, hmppsAuthGateway)
+
+        val response = gateway.getReviewSchedules(prisonerNumber, requestContext)
 
         response.data.shouldNotBeNull()
         val schedules = response.data.planReviewSchedules
@@ -125,63 +106,7 @@ class GetReviewSchedulesForPrisonerTest(
         schedule.version.shouldBe(1)
       }
 
-      it("can use the RestApiClient") {
-        val ref = UUID.randomUUID()
-        val authToken = "ABC123"
-        val headers = mapOf("Authorization" to "Bearer $authToken")
-
-        val features = FeatureFlagConfig(mapOf(RESTAPICLIENT_FOR_SAN_GATEWAY to true))
-        val flagRequestContext = buildRequestContext("testUser", featureFlags = features)
-
-        val authGateway: HmppsAuthGateway = mock()
-        whenever(authGateway.getClientToken("SAN", flagRequestContext)).thenReturn(authToken)
-
-        val apiClient: RestApiClient = mock()
-        whenever(apiClient.get(eq(path), eq(PlanReviewSchedules::class), eq(headers), isNull())).thenReturn(
-          RestApiResponse(
-            "Test",
-            HttpStatus.OK,
-            PlanReviewSchedules(
-              listOf(
-                PlanReviewSchedule(
-                  reference = ref,
-                  status = PlanReviewScheduleStatus.COMPLETED,
-                  deadlineDate = LocalDate.now(),
-                  createdBy = "person",
-                  createdByDisplayName = "Person",
-                  createdAt = OffsetDateTime.now().minusDays(3),
-                  createdAtPrison = "ABC",
-                  updatedBy = "person",
-                  updatedByDisplayName = "Person",
-                  updatedAt = OffsetDateTime.now().minusDays(1),
-                  updatedAtPrison = "ABC",
-                ),
-              ),
-            ),
-          ),
-        )
-        val gateway = SANGateway("http://localhost", apiClient)
-        gateway.hmppsAuthGateway = authGateway
-
-        val response = gateway.getReviewSchedules(prisonerNumber, flagRequestContext)
-
-        response shouldNotBe null
-        response.errors.size shouldBe 0
-        response.data shouldNotBe null
-        response.data.planReviewSchedules.size shouldBe 1
-        response.data.planReviewSchedules[0].reference shouldBe ref
-      }
-
-      it("can can handle errors with the RestApiClient") {
-        val authToken = "ABC123"
-        val headers = mapOf("Authorization" to "Bearer $authToken")
-
-        val features = FeatureFlagConfig(mapOf(RESTAPICLIENT_FOR_SAN_GATEWAY to true))
-        val flagRequestContext = buildRequestContext("testUser", featureFlags = features)
-
-        val authGateway: HmppsAuthGateway = mock()
-        whenever(authGateway.getClientToken("SAN", flagRequestContext)).thenReturn(authToken)
-
+      it("can can handle errors responses") {
         val apiClient: RestApiClient = mock()
         whenever(apiClient.get(eq(path), eq(PlanReviewSchedules::class), eq(headers), isNull())).thenReturn(
           RestApiResponse(
@@ -191,10 +116,9 @@ class GetReviewSchedulesForPrisonerTest(
             listOf(WebClientResponseException(404, "PlanReviewSchedules not found", null, null, null)),
           ),
         )
-        val gateway = SANGateway("http://localhost", apiClient)
-        gateway.hmppsAuthGateway = authGateway
+        val gateway = SANGateway("http://localhost", apiClient, hmppsAuthGateway)
 
-        val response = gateway.getReviewSchedules(prisonerNumber, flagRequestContext)
+        val response = gateway.getReviewSchedules(prisonerNumber, requestContext)
 
         response shouldNotBe null
         response.errors.size shouldBe 1

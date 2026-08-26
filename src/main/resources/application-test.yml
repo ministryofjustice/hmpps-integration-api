@@ -114,7 +114,8 @@ feature-flag:
   contact-linked-prisoners-endpoint-enabled: true
   prison-timeline-endpoint-enabled: true
   use-probation-search-for-person-search: false
-  restapiclient-for-san-gateway: false
+  restapiclient-for-prison-api-gateway: false
+  person-search-v2-enabled: true
   # Events Config
   enable-delete-processed-events: false
   enable-publish-pending-events: false
@@ -162,7 +163,7 @@ authorisation:
       queueName: "testqueue"
     private-prison-only:
       roles:
-        - "private-prison"
+        - "ext-prisons-private-prison"
       queueName: "testqueue"
     limited-case-notes:
       roles:

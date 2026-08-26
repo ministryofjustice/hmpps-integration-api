@@ -1,0 +1,36 @@
+{
+  "data": [
+    {
+      "serviceSource": "NDELIUS",
+      "systemSource": "PROBATION_SYSTEMS",
+      "cjsCode": null,
+      "hoCode": "string",
+      "courtDates": ["2026-02-09"],
+      "courtName": "string",
+      "description": "string",
+      "endDate": null,
+      "startDate": "2026-02-09",
+      "statuteCode": null
+    },
+    {
+      "serviceSource": "NDELIUS",
+      "systemSource": "PROBATION_SYSTEMS",
+      "cjsCode": null,
+      "hoCode": "string",
+      "courtDates": ["2026-02-09"],
+      "courtName": "string",
+      "description": "string",
+      "endDate": null,
+      "startDate": "2026-02-09",
+      "statuteCode": null
+    }
+  ],
+  "pagination": {
+    "isLastPage": true,
+    "count": 2,
+    "page": 1,
+    "perPage": 10,
+    "totalCount": 2,
+    "totalPages": 1
+  }
+}

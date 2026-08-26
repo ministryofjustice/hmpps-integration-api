@@ -1,0 +1,26 @@
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr
+
+data class CPRAddress(
+  val cprAddressId: String? = null,
+  val noFixedAbode: Boolean? = null,
+  val startDate: String? = null,
+  val startDateTime: String? = null,
+  val endDate: String? = null,
+  val endDateTime: String? = null,
+  val postcode: String? = null,
+  val subBuildingName: String? = null,
+  val buildingName: String? = null,
+  val buildingNumber: String? = null,
+  val thoroughfareName: String? = null,
+  val dependentLocality: String? = null,
+  val postTown: String? = null,
+  val county: String? = null,
+  val country: String? = null,
+  val countryCode: String? = null,
+  val uprn: String? = null,
+  val status: CPRAddressStatus? = null,
+  val comment: String? = null,
+  val typeVerified: Boolean? = null,
+  val usages: List<CPRAddressUsage>? = null,
+  val contacts: List<CPRAddressContact>? = null,
+)

@@ -2,7 +2,7 @@
 title: HMPPS Integration Events
 weight: 6
 owner_slack: "#hmpps-integration-api-alerts"
-last_reviewed_on: 2026-06-19
+last_reviewed_on: 2026-08-21
 review_in: 2 months
 ---
 
@@ -99,6 +99,11 @@ It details the endpoints the events relate to, and information about what trigge
 * **Endpoint:** `/v1/persons/{hmppsId}/assessment-summary`
 * **Event ID:** `ASSESSMENT_SUMMARY_CHANGE`
 
+### Needs Changed
+
+* **Endpoint:** `/v1/persons/{hmppsId}/needs`
+* **Event ID:** `NEEDS_CHANGED`
+
 ### PLP Induction Schedule Changed
 
 * **Endpoint:** `/v1/persons/{hmppsId}/plp-induction-schedule/history`
@@ -158,11 +163,6 @@ It details the endpoints the events relate to, and information about what trigge
 
 * **Endpoint:** `/v1/persons/{hmppsId}/alerts`
 * **Event ID:** `PERSON_ALERTS_CHANGED`
-
-### Person PND Alerts Changed
-
-* **Endpoint:** `/v1/pnd/persons/{hmppsId}/alerts`
-* **Event ID:** `PERSON_PND_ALERTS_CHANGED`
 
 ### Person Case Notes Changed
 

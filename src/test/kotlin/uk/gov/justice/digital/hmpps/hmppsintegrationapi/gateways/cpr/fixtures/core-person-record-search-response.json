@@ -1,0 +1,135 @@
+{
+  "data": [
+    {
+      "name": {
+        "firstName": "John",
+        "middleNames": "Brian",
+        "lastName": "Doe",
+        "dateOfBirth": "1998-08-24"
+      },
+      "aliases": [
+        {
+          "firstName": "Jon",
+          "lastName": "do",
+          "middleNames": "Morgain",
+          "title": {
+            "code": "MR",
+            "description": "Mr"
+          },
+          "sex": {
+            "code": "M",
+            "description": "Male"
+          }
+        }
+      ],
+      "addresses": [
+        {
+          "cprAddressId": "ec4c7479-218c-4f11-a02d-edd749820679",
+          "noFixedAbode": false,
+          "startDate": "2020-02-26",
+          "startDateTime": "2026-02-26T11:08:46.347Z",
+          "endDate": "2023-07-15",
+          "endDateTime": "2026-07-15T11:08:46.347Z",
+          "postcode": "SW1H 9AJ",
+          "subBuildingName": "Sub building 2",
+          "buildingName": "Main Building",
+          "buildingNumber": "102",
+          "thoroughfareName": "Petty France",
+          "dependentLocality": "Westminster",
+          "postTown": "London",
+          "county": "Greater London",
+          "country": "United Kingdom of Great Britain and Northern Ireland (the)",
+          "countryCode": "GBR",
+          "uprn": "100120991537",
+          "status": {
+            "code": "M",
+            "description": "Main"
+          },
+          "comment": "Some comment",
+          "typeVerified": false,
+          "usages": [
+            {
+              "code": "CURFEW",
+              "description": "Curfew Order",
+              "isActive": true
+            }
+          ],
+          "contacts": [
+            {
+              "type": {
+                "code": "HOME",
+                "description": "Home"
+              },
+              "value": "+44 20 7946 0000",
+              "extension": "1234"
+            }
+          ]
+        }
+      ],
+      "identifiers": {
+        "crn": "A123456",
+        "prisonNumber": "MKI",
+        "defendantId": "string",
+        "cid": "string",
+        "pncs": [
+          "string"
+        ],
+        "cros": [
+          "string"
+        ],
+        "nationalInsuranceNumbers": [
+          "string"
+        ],
+        "driverLicenseNumbers": [
+          "string"
+        ],
+        "arrestSummonsNumbers": [
+          "string"
+        ],
+        "otherIdentifiers": [
+          "string"
+        ]
+      },
+      "sourceSystem": "NOMIS",
+      "status": "TRUSTED",
+      "linkedRecords": [
+        {
+          "name": {
+            "firstName": "",
+            "middleNames": "",
+            "lastName": "",
+            "dateOfBirth": "1978-10-12"
+          },
+          "aliases": [],
+          "addresses": [],
+          "identifiers": {
+            "crn": "A123456",
+            "prisonNumber": "MKI",
+            "defendantId": "string",
+            "cid": "string",
+            "pncs": [
+              "string"
+            ],
+            "cros": [
+              "string"
+            ],
+            "nationalInsuranceNumbers": [
+              "string"
+            ],
+            "driverLicenseNumbers": [
+              "string"
+            ],
+            "arrestSummonsNumbers": [
+              "string"
+            ],
+            "otherIdentifiers": [
+              "string"
+            ]
+          },
+          "sourceSystem": "COMMON_PLATFORM",
+          "status": "TRUSTED"
+        }
+      ]
+    }
+  ]
+}
