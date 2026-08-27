@@ -58,7 +58,7 @@ class GetMovementsForPersonServiceTest(
                   "Moorland (HMP & YOI) CRT OUT",
                   "CRT",
                   "OUT",
-                  "2026-08-14",
+                  "2026-07-14",
                   "12:41:05",
                   "Normal Transfer CRT OUT",
                   "NOTR CRT OUT",
