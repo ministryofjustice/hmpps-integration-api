@@ -83,7 +83,7 @@ class GetMovementsForPersonServiceTest(
         result.data.toAgencyDescription.shouldBe("Moorland (HMP & YOI) TRN OUT")
         result.data.receivedFromDescription.shouldBe("Millsike (HMP) TRN OUT")
         result.data.establishmentName.shouldBe("Millsike (HMP) TRN OUT")
-        result.data.movementDateTime.shouldBe("2026-07-14T12:41:05")
+        result.data.movementDateTime.shouldBe("2026-07-14T11:41:05Z")
         result.data.courtName.shouldBe("Moorland (HMP & YOI) CRT OUT")
         result.data.dateOfFirstMovement.shouldBe("2026-07-14T11:41:05Z")
         result.errors.count().shouldBe(0)

@@ -48,7 +48,7 @@ internal class MovementsControllerTest(
                 "Moorland (HMP & YOI)",
                 "Millsike (HMP)",
                 "Millsike (HMP)",
-                "2026-07-14T12:41:05",
+                "2026-07-14T11:41:05Z",
                 "Moorland (HMP & YOI)",
                 "2026-08-14T12:41:05",
               ),
