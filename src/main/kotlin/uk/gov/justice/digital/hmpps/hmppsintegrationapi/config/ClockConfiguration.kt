@@ -3,10 +3,8 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.config
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import java.time.Clock
-import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.time.format.DateTimeParseException
 
 @Configuration
 class ClockConfiguration {
@@ -24,20 +22,4 @@ fun ukDateTimeToInstant(dateTime: String?): String? {
   val local = LocalDateTime.parse(dateTime)
   val instant = local.atZone(ZoneId.of("Europe/London")).toInstant()
   return instant.toString()
-}
-
-fun ukDateTimeToInstant(
-  date: String?,
-  time: String?,
-): Instant? {
-  if (date.isNullOrEmpty() || time.isNullOrEmpty()) {
-    return null
-  }
-
-  return try {
-    val local = LocalDateTime.parse("${date}T$time")
-    return local.atZone(ZoneId.of("Europe/London")).toInstant()
-  } catch (e: DateTimeParseException) {
-    null
-  }
 }
