@@ -21,8 +21,15 @@ class GetSentencesForPersonService(
     requestContext: RequestContext? = null,
   ): Response<List<Sentence>> {
     val filters = requestContext?.filters
-    val personResponse = getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters = filters)
-    if (personResponse.errors.isNotEmpty() && personResponse.data == null) {
+
+    val personResponse =
+      if (filters?.hasPrisonFilter() == true) {
+        getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters = filters)
+      } else {
+        getPersonService.getPerson(hmppsId = hmppsId)
+      }
+
+    if (personResponse.errors.isNotEmpty()) {
       return Response(data = emptyList(), errors = personResponse.errors)
     }
 
@@ -37,7 +44,7 @@ class GetSentencesForPersonService(
 
     var nomisSentenceResponse = Response<List<Sentence>>(data = emptyList())
     if (nomisNumber != null) {
-      val bookingIdsResponse = prisonApiGateway.getBookingIdsForPerson(nomisNumber)
+      val bookingIdsResponse = prisonApiGateway.getBookingIdsForPerson(nomisNumber, requestContext)
       if (bookingIdsResponse.errors.isNotEmpty()) {
         if (!bookingIdsResponse.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
           return Response(data = emptyList(), errors = bookingIdsResponse.errors)
