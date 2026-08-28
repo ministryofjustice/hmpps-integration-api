@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.kotlin.whenever
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.writeAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithLaoRedactions
 import java.io.File
@@ -17,6 +18,13 @@ class SentencesIntegrationTest : IntegrationTestBase() {
   fun setUp() {
     nDeliusMockServer.stubForGet(
       "/case/$crn/supervisions",
+      File(
+        "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/ndelius/fixtures/GetSupervisionsResponse.json",
+      ).readText(),
+    )
+
+    nDeliusMockServer.stubForGet(
+      "/case/$crnUnknownInPrison/supervisions",
       File(
         "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/ndelius/fixtures/GetSupervisionsResponse.json",
       ).readText(),
@@ -87,5 +95,21 @@ class SentencesIntegrationTest : IntegrationTestBase() {
     callApiWithCN("$basePath/$nomsIdFromProbation/sentences/latest-key-dates-and-adjustments", "ext-probation-police-intelligence")
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("person-sentence-key-dates-redacted.json")))
+  }
+
+  @Test
+  fun `returns sentences for a person with only a crn and no nomis Id`() {
+    val noPrisonIdPath = "$basePath/$crnUnknownInPrison/sentences"
+    nDeliusMockServer.stubForPost(
+      "/search/probation-cases",
+      writeAsJson(mapOf("crn" to crnUnknownInPrison)),
+      File(
+        "$gatewaysFolder/ndelius/fixtures/GetOffenderResponseNoNomis.json",
+      ).readText(),
+    )
+
+    callApi(noPrisonIdPath)
+      .andExpect(status().isOk)
+      .andExpect(content().json(getExpectedResponse("person-sentence-ndelius-only.json")))
   }
 }

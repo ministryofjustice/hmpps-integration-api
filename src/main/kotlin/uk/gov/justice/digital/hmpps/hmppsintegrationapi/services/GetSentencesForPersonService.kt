@@ -22,7 +22,7 @@ class GetSentencesForPersonService(
   ): Response<List<Sentence>> {
     val filters = requestContext?.filters
     val personResponse = getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters = filters)
-    if (personResponse.errors.isNotEmpty()) {
+    if (personResponse.errors.isNotEmpty() && personResponse.data == null) {
       return Response(data = emptyList(), errors = personResponse.errors)
     }
 

@@ -202,7 +202,7 @@ class GetPersonService(
         hmppsId
       } else {
         return Response(
-          data = null,
+          data = probationResponse.data,
           errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
         )
       }
