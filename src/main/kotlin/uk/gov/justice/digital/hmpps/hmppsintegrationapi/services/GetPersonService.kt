@@ -49,6 +49,16 @@ class GetPersonService(
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
   }
 
+  fun getPerson(hmppsId: String): Response<Person?> {
+    if (identifyHmppsId(hmppsId) == IdentifierType.UNKNOWN) {
+      return Response(
+        data = null,
+        errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.BAD_REQUEST, description = "Invalid HMPPS ID: $hmppsId")),
+      )
+    }
+    return execute(hmppsId)
+  }
+
   fun execute(hmppsId: String): Response<Person?> {
     val probationResponse = getProbationResponse(hmppsId)
     if (identifyHmppsId(hmppsId) == IdentifierType.NOMS && probationResponse.data == null) {
