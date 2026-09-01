@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.MovementDiary
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonerMovementsResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetMovementsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
@@ -47,5 +49,35 @@ class MovementsController(
     }
     auditService.createEvent("GET_MOVEMENTS_SUMMARY", mapOf("hmppsId" to hmppsId))
     return DataResponse(response.data)
+  }
+
+  @GetMapping("{hmppsId}/movements/transfer-summary")
+  @Operation(
+    summary = "Returns prisoner movements transfer summary.",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Returns prisoner movements with the provided HMPPS Id"),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  fun getPersonMovementSummary(
+    @Parameter(description = "A HMPPS id", example = "A1234AA") @PathVariable hmppsId: String,
+    @RequestAttribute requestContext: RequestContext?,
+  ): DataResponse<PrisonerMovementsResponse> {
+    val response = getMovementsService.getMovement(hmppsId, requestContext)
+    ensureResponse(hmppsId, response)
+
+    auditService.createEvent("GET_PERSON_MOVEMENT_SUMMARY", mapOf("hmppsId" to hmppsId))
+
+    return DataResponse(response.data!!)
+  }
+
+  private fun ensureResponse(
+    hmppsId: String,
+    response: Response<PrisonerMovementsResponse?>,
+  ) {
+    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Could not find person with id: $hmppsId")
+    }
   }
 }

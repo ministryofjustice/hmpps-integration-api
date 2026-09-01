@@ -24,6 +24,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionTransferRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.MovementItem
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.NomisOffenderVisitRestrictions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.NomisTransactionTransferResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiAccounts
@@ -32,6 +33,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonA
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiBooking
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiImageDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiInmateDetail
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiMovements
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiOffenceHistoryDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiOffenderSentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiPrisonTimeline
@@ -1031,6 +1033,24 @@ class PrisonApiGateway(
 
     return if (result.errors.isEmpty()) {
       Response(data = result.data)
+    } else {
+      Response.error(UpstreamApi.PRISON_API, result.errors, null)
+    }
+  }
+
+  fun getMovementsForPerson(
+    nomisNumber: String,
+    requestContext: RequestContext?,
+  ): Response<PrisonApiMovements?> {
+    val result =
+      prisonApiRestClient.getList(
+        "/api/movements/offender/$nomisNumber?movementTypes=TRN&movementTypes=CRT&allBookings=true",
+        MovementItem::class,
+        authenticationHeader(requestContext),
+      )
+
+    return if (result.errors.isEmpty() && result.data != null) {
+      Response(data = PrisonApiMovements(movements = result.data))
     } else {
       Response.error(UpstreamApi.PRISON_API, result.errors, null)
     }
