@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
@@ -29,6 +30,7 @@ class PersonResponsibleOfficerController(
   @Autowired val auditService: AuditService,
   @Autowired val getPrisonOffenderManagerForPersonService: GetPrisonOffenderManagerForPersonService,
   @Autowired val getCommunityOffenderManagerForPersonService: GetCommunityOffenderManagerForPersonService,
+  private val featureFlagConfig: FeatureFlagConfig,
 ) {
   @GetMapping("{hmppsId}/person-responsible-officer")
   @Operation(
@@ -45,13 +47,15 @@ class PersonResponsibleOfficerController(
     @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<PersonResponsibleOfficer> {
+    val fixEnabled = featureFlagConfig.isEnabled(FeatureFlagConfig.PERSON_RESPONSIBLE_OFFICER_FIX_ENABLED)
+
     val prisonOffenderManager = getPrisonOffenderManagerForPersonService.execute(hmppsId, requestContext?.filters)
 
     if (prisonOffenderManager.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Invalid HMPPS ID: $hmppsId")
     }
 
-    if (prisonOffenderManager.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+    if (prisonOffenderManager.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND) && !fixEnabled) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
 
@@ -61,7 +65,18 @@ class PersonResponsibleOfficerController(
       throw ValidationException("Invalid HMPPS ID: $hmppsId")
     }
 
-    if (communityOffenderManager.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+    if (communityOffenderManager.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND) && !fixEnabled) {
+      throw EntityNotFoundException("Could not find person with id: $hmppsId")
+    }
+
+    // Handle not found errors
+    if (fixEnabled &&
+      (prisonOffenderManager.data == null && communityOffenderManager.data == null) &&
+      (
+        prisonOffenderManager.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND) &&
+          communityOffenderManager.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+      )
+    ) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
 

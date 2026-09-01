@@ -134,6 +134,7 @@ feature-flag:
   restapiclient-for-prison-api-gateway: false
   person-search-v2-enabled: true
   sentence-no-nomis-fix-enabled: true
+  person-responsible-officer-fix-enabled: true
   # Events Config
   enable-delete-processed-events: true
   enable-publish-pending-events: true
