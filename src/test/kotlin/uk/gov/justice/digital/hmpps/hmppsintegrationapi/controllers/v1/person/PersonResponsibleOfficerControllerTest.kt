@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.person
 
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.mockito.Mockito
@@ -14,10 +15,14 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CommunityOffenderManager
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonResponsibleOfficer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonResponsibleOfficerName
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonResponsibleOfficerTeam
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Prison
@@ -37,6 +42,7 @@ internal class PersonResponsibleOfficerControllerTest(
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getCommunityOffenderManagerForPersonService: GetCommunityOffenderManagerForPersonService,
   @MockitoBean val getPrisonOffenderManagerForPersonService: GetPrisonOffenderManagerForPersonService,
+  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
 ) : DescribeSpec() {
   init {
     val hmppsId = "11111A"
@@ -57,7 +63,7 @@ internal class PersonResponsibleOfficerControllerTest(
             ),
           ),
         )
-
+        whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.PERSON_RESPONSIBLE_OFFICER_FIX_ENABLED)).thenReturn(false)
         whenever(getCommunityOffenderManagerForPersonService.execute(hmppsId, filters)).thenReturn(
           Response(
             CommunityOffenderManager(
@@ -170,6 +176,57 @@ internal class PersonResponsibleOfficerControllerTest(
           Response(
             data = null,
             errors = listOf(UpstreamApiError(UpstreamApi.NDELIUS, UpstreamApiError.Type.ENTITY_NOT_FOUND)),
+          ),
+        )
+
+        val result = mockMvc.performAuthorised(path)
+        result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+      }
+
+      it("returns a 200 with only community offender manager details when getPrisonOffenderManagerForPersonService returns a not found") {
+        whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.PERSON_RESPONSIBLE_OFFICER_FIX_ENABLED)).thenReturn(true)
+        whenever(getPrisonOffenderManagerForPersonService.execute(hmppsId, filters)).thenReturn(
+          Response(
+            data = null,
+            errors = listOf(UpstreamApiError(UpstreamApi.MANAGE_POM_CASE, UpstreamApiError.Type.ENTITY_NOT_FOUND)),
+          ),
+        )
+
+        val result = mockMvc.performAuthorised(path)
+        val res = result.response.contentAsJson<DataResponse<PersonResponsibleOfficer>>()
+        result.response.status.shouldBe(HttpStatus.OK.value())
+        res.data.prisonOffenderManager shouldBe null
+        res.data.communityOffenderManager.shouldNotBeNull()
+      }
+
+      it("returns a 200 with only prison offender manager when getCommunityOffenderManagerForPersonService returns a not found") {
+        whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.PERSON_RESPONSIBLE_OFFICER_FIX_ENABLED)).thenReturn(true)
+        whenever(getCommunityOffenderManagerForPersonService.execute(hmppsId, filters)).thenReturn(
+          Response(
+            data = null,
+            errors = listOf(UpstreamApiError(UpstreamApi.NDELIUS, UpstreamApiError.Type.ENTITY_NOT_FOUND)),
+          ),
+        )
+        val result = mockMvc.performAuthorised(path)
+        val res = result.response.contentAsJson<DataResponse<PersonResponsibleOfficer>>()
+        result.response.status.shouldBe(HttpStatus.OK.value())
+        res.data.prisonOffenderManager.shouldNotBeNull()
+        res.data.communityOffenderManager shouldBe null
+      }
+
+      it("returns a 404 not found when no data is returned and probation returns a not found") {
+        whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.PERSON_RESPONSIBLE_OFFICER_FIX_ENABLED)).thenReturn(true)
+        whenever(getCommunityOffenderManagerForPersonService.execute(hmppsId, filters)).thenReturn(
+          Response(
+            data = null,
+            errors = listOf(UpstreamApiError(UpstreamApi.NDELIUS, UpstreamApiError.Type.ENTITY_NOT_FOUND)),
+          ),
+        )
+
+        whenever(getPrisonOffenderManagerForPersonService.execute(hmppsId, filters)).thenReturn(
+          Response(
+            data = null,
+            errors = listOf(UpstreamApiError(UpstreamApi.MANAGE_POM_CASE, UpstreamApiError.Type.ENTITY_NOT_FOUND)),
           ),
         )
 

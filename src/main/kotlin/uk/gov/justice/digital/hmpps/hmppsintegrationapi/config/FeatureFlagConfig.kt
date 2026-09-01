@@ -38,6 +38,7 @@ data class FeatureFlagConfig(
     const val RESTAPICLIENT_FOR_PRISON_API_GATEWAY = "restapiclient-for-prison-api-gateway"
     const val PERSON_SEARCH_V2_ENABLED = "person-search-v2-enabled"
     const val SENTENCE_NO_NOMIS_FIX_ENABLED = "sentence-no-nomis-fix-enabled"
+    const val PERSON_RESPONSIBLE_OFFICER_FIX_ENABLED = "person-responsible-officer-fix-enabled"
 
     // Events feature flags
     const val ENABLE_DELETE_PROCESSED_EVENTS = "enable-delete-processed-events"
