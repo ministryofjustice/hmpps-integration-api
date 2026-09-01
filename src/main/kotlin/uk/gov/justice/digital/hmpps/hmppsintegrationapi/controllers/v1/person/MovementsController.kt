@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.MovementDiary
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonerMovementsResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetMovementsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
@@ -48,16 +50,8 @@ class MovementsController(
     auditService.createEvent("GET_MOVEMENTS_SUMMARY", mapOf("hmppsId" to hmppsId))
     return DataResponse(response.data)
   }
-}
 
-@RestController
-@RequestMapping("/v1")
-@Tags(Tag(name = "Persons"))
-class MovementsController(
-  @Autowired val getMovementService: GetMovementService,
-  @Autowired val auditService: AuditService,
-) {
-  @GetMapping("/persons/{hmppsId}/movements/transfer-summary")
+  @GetMapping("{hmppsId}/movements/transfer-summary")
   @Operation(
     summary = "Returns prisoner movements transfer summary.",
     responses = [
@@ -70,7 +64,7 @@ class MovementsController(
     @Parameter(description = "A HMPPS id", example = "A1234AA") @PathVariable hmppsId: String,
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<PrisonerMovementsResponse> {
-    val response = getMovementService.getMovement(hmppsId, requestContext)
+    val response = getMovementsService.getMovement(hmppsId, requestContext)
     ensureResponse(hmppsId, response)
 
     auditService.createEvent("GET_PERSON_MOVEMENT_SUMMARY", mapOf("hmppsId" to hmppsId))

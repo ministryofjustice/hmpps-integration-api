@@ -21,12 +21,12 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonA
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [GetMovementService::class],
+  classes = [GetMovementsService::class],
 )
 class GetMovementsForPersonServiceTest(
   @MockitoBean val prisonApiGateway: PrisonApiGateway,
   @MockitoBean val getPersonService: GetPersonService,
-  private val getMovementService: GetMovementService,
+  private val getMovementService: GetMovementsService,
 ) : DescribeSpec(
     {
       val hmppsId = "1234/56789B"

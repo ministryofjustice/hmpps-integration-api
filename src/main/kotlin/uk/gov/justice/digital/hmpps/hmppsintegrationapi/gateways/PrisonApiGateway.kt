@@ -1053,6 +1053,9 @@ class PrisonApiGateway(
       Response(data = PrisonApiMovements(movements = result.data))
     } else {
       Response.error(UpstreamApi.PRISON_API, result.errors, null)
+    }
+  }
+
   fun getScheduledMovements(
     nomisNumber: String,
     requestContext: RequestContext,

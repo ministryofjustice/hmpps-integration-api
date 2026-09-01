@@ -20,9 +20,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMo
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonerMovementsResponse
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetMovementService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.MovementDiary
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonerMovementsResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetMovementsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
@@ -94,7 +93,7 @@ internal class MovementsControllerTest(
 
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
         }
-      },
+      }
       describe("GET $pathTransfer") {
         beforeTest {
           Mockito.reset(getMovementService)
