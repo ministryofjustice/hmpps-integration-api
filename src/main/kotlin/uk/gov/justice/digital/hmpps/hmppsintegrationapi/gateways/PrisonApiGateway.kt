@@ -39,6 +39,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonA
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiPrisonTimeline
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiReasonableAdjustments
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiReferenceCode
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiScheduledEvents
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiSentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiSentenceSummary
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiTransactionResponse
@@ -1052,6 +1053,21 @@ class PrisonApiGateway(
       Response(data = PrisonApiMovements(movements = result.data))
     } else {
       Response.error(UpstreamApi.PRISON_API, result.errors, null)
+  fun getScheduledMovements(
+    nomisNumber: String,
+    requestContext: RequestContext,
+  ): Response<List<PrisonApiScheduledEvents>> {
+    val result =
+      prisonApiRestClient.getList(
+        "/api/offenders/$nomisNumber/scheduled-events",
+        PrisonApiScheduledEvents::class,
+        authenticationHeader(requestContext),
+      )
+
+    return if (result.errors.isEmpty()) {
+      Response(data = result.data!!.toList())
+    } else {
+      Response.error(UpstreamApi.PRISON_API, result.errors, emptyList())
     }
   }
 
