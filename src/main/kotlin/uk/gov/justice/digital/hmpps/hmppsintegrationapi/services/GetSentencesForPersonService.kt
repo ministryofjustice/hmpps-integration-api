@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
@@ -15,6 +16,7 @@ class GetSentencesForPersonService(
   @Autowired val prisonApiGateway: PrisonApiGateway,
   @Autowired val getPersonService: GetPersonService,
   @Autowired val nDeliusGateway: NDeliusGateway,
+  private val featureFlagConfig: FeatureFlagConfig,
 ) {
   fun execute(
     hmppsId: String,
@@ -23,7 +25,7 @@ class GetSentencesForPersonService(
     val filters = requestContext?.filters
 
     val personResponse =
-      if (filters?.hasPrisonFilter() == true) {
+      if (filters?.hasPrisonFilter() == true || !featureFlagConfig.isEnabled(FeatureFlagConfig.SENTENCE_NO_NOMIS_FIX_ENABLED)) {
         getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters = filters)
       } else {
         getPersonService.getPerson(hmppsId = hmppsId)

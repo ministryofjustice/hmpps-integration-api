@@ -79,6 +79,7 @@ feature-flag:
   use-probation-search-for-person-search: true
   restapiclient-for-prison-api-gateway: true
   person-search-v2-enabled: true
+  sentence-no-nomis-fix-enabled: true
   # Events Config
   enable-delete-processed-events: true
   enable-publish-pending-events: true

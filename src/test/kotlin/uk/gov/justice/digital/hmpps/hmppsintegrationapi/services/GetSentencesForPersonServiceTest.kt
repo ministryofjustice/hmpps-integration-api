@@ -7,6 +7,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
@@ -29,6 +30,7 @@ internal class GetSentencesForPersonServiceTest(
   @MockitoBean val prisonApiGateway: PrisonApiGateway,
   @MockitoBean val getPersonService: GetPersonService,
   @MockitoBean val nDeliusGateway: NDeliusGateway,
+  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
   private val getSentencesForPersonService: GetSentencesForPersonService,
 ) : DescribeSpec(
     {
@@ -96,6 +98,7 @@ internal class GetSentencesForPersonServiceTest(
         Mockito.reset(prisonApiGateway)
         Mockito.reset(nDeliusGateway)
         Mockito.reset(getPersonService)
+        whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.SENTENCE_NO_NOMIS_FIX_ENABLED)).thenReturn(true)
       }
 
       it("Person service error → Return person service error") {
@@ -148,6 +151,24 @@ internal class GetSentencesForPersonServiceTest(
 
         val result = getSentencesForPersonService.execute(hmppsId, noFilterRequestContext)
         result.shouldBe(Response(data = listOf(nDeliusSentence1, nDeliusSentence2)))
+      }
+
+      it("Fix not enabled - No Filter, No Nomis number + Delius crn, delius success → return 404") {
+
+        whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.SENTENCE_NO_NOMIS_FIX_ENABLED)).thenReturn(false)
+        val noFilterRequestContext = buildRequestContext(filters = null)
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, noFilterRequestContext.filters)).thenReturn(
+          Response(
+            data = null,
+            errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
+          ),
+        )
+        whenever(nDeliusGateway.getSentencesForPerson(personDeliusOnly.identifiers.deliusCrn!!, noFilterRequestContext)).thenReturn(
+          Response(data = listOf(nDeliusSentence1, nDeliusSentence2)),
+        )
+
+        val result = getSentencesForPersonService.execute(hmppsId, noFilterRequestContext)
+        result.shouldBe(Response(data = emptyList(), errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))))
       }
 
       it("No Nomis number + Delius crn, delius any error → return Delius error") {
