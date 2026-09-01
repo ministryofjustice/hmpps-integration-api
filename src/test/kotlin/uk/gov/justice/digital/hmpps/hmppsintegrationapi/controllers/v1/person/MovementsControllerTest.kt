@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.MovementDiary
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonerMovementsResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetMovementsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
@@ -34,10 +35,11 @@ internal class MovementsControllerTest(
 ) : DescribeSpec(
     {
       val hmppsId = "A123456"
-      val path = "/v1/persons/$hmppsId/movements/scheduled"
+      val pathScheduled = "/v1/persons/$hmppsId/movements/scheduled"
+      val pathTransfer = "/v1/persons/$hmppsId/movements/transfer-summary"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
-      describe("GET $path") {
+      describe("GET $pathScheduled") {
         beforeTest {
           Mockito.reset(getMovementService)
           whenever(getMovementService.getMovementsSummary(any(), any())).thenReturn(
@@ -55,17 +57,17 @@ internal class MovementsControllerTest(
         }
 
         it("returns a 200 OK status code") {
-          val result = mockMvc.performAuthorised(path)
+          val result = mockMvc.performAuthorised(pathScheduled)
           result.response.status.shouldBe(HttpStatus.OK.value())
         }
 
         it("gets movements summary for a person with the matching ID") {
-          mockMvc.performAuthorised(path)
+          mockMvc.performAuthorised(pathScheduled)
           verify(getMovementService, VerificationModeFactory.times(1)).getMovementsSummary(eq(hmppsId), any())
         }
 
         it("logs audit") {
-          mockMvc.performAuthorised(path)
+          mockMvc.performAuthorised(pathScheduled)
 
           verify(
             auditService,
@@ -87,7 +89,65 @@ internal class MovementsControllerTest(
             ),
           )
 
-          val result = mockMvc.performAuthorised(path)
+          val result = mockMvc.performAuthorised(pathScheduled)
+
+          result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+        }
+      }
+      describe("GET $pathTransfer") {
+        beforeTest {
+          Mockito.reset(getMovementService)
+          whenever(getMovementService.getMovement(any(), any())).thenReturn(
+            Response(
+              PrisonerMovementsResponse(
+                "Normal Transfer",
+                "NOTR",
+                "Moorland (HMP & YOI)",
+                "Millsike (HMP)",
+                "Millsike (HMP)",
+                "2026-07-14T11:41:05Z",
+                "Moorland (HMP & YOI)",
+                "2026-08-14T12:41:05",
+              ),
+            ),
+          )
+          Mockito.reset(auditService)
+        }
+
+        it("returns a 200 OK status code") {
+          val result = mockMvc.performAuthorised(pathTransfer)
+          result.response.status.shouldBe(HttpStatus.OK.value())
+        }
+
+        it("gets movements summary for a person with the matching ID") {
+          mockMvc.performAuthorised(pathTransfer)
+          verify(getMovementService, VerificationModeFactory.times(1)).getMovement(eq(hmppsId), any())
+        }
+
+        it("logs audit") {
+          mockMvc.performAuthorised(pathTransfer)
+
+          verify(
+            auditService,
+            VerificationModeFactory.times(1),
+          ).createEvent("GET_PERSON_MOVEMENT_SUMMARY", mapOf("hmppsId" to hmppsId))
+        }
+
+        it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
+          whenever(getMovementService.getMovement(eq(hmppsId), any())).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.PRISON_API,
+                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                  ),
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorised(pathTransfer)
 
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
         }
