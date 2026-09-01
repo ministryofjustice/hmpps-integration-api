@@ -15,11 +15,11 @@ data class CourtCasesSummary(
 )
 
 data class Appearance(
-  @Schema(description = "The date of appearance", example = "2022-10-01")
+  @Schema(description = "The date of the appearance", example = "2022-10-01")
   val dateOfAppearance: LocalDate? = null,
   @Schema(description = "The outcome of the court appearance")
   val courtOutcome: CourtOutcome? = null,
-  @Schema(description = "The court code of court appearance", example = "ACCRYC")
+  @Schema(description = "The court code of the court appearance", example = "ACCRYC")
   val courtCode: String? = null,
 )
 
