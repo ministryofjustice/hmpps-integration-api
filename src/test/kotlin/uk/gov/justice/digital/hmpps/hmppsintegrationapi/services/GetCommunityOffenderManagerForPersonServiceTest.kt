@@ -10,6 +10,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CommunityOffenderManager
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
@@ -27,6 +28,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbati
 class GetCommunityOffenderManagerForPersonServiceTest(
   @MockitoBean val nDeliusGateway: NDeliusGateway,
   @MockitoBean val getPersonService: GetPersonService,
+  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
   private val getCommunityOffenderManagerForPersonService: GetCommunityOffenderManagerForPersonService,
 ) : DescribeSpec(
     {
@@ -57,7 +59,7 @@ class GetCommunityOffenderManagerForPersonServiceTest(
       beforeEach {
         Mockito.reset(getPersonService)
         Mockito.reset(nDeliusGateway)
-
+        whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.PERSON_RESPONSIBLE_OFFICER_FIX_ENABLED)).thenReturn(false)
         whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filter)).thenReturn(Response(person))
         whenever(nDeliusGateway.getCommunityOffenderManagerForPerson(crn = deliusCrn)).thenReturn(Response(communityOffenderManager))
       }
@@ -75,6 +77,18 @@ class GetCommunityOffenderManagerForPersonServiceTest(
         )
 
         val result = getCommunityOffenderManagerForPersonService.execute(hmppsId, filter)
+        result.shouldBe(Response(data = communityOffenderManager))
+      }
+
+      it("Calls get person service when fix enabled and no filter present") {
+        whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.PERSON_RESPONSIBLE_OFFICER_FIX_ENABLED)).thenReturn(true)
+        whenever(getPersonService.getPerson(hmppsId)).thenReturn(
+          Response(
+            data = person,
+          ),
+        )
+
+        val result = getCommunityOffenderManagerForPersonService.execute(hmppsId, null)
         result.shouldBe(Response(data = communityOffenderManager))
       }
 

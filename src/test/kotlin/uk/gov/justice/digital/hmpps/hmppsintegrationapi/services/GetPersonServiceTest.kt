@@ -4,6 +4,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.equality.shouldBeEqualToComparingFields
@@ -1192,6 +1193,39 @@ internal class GetPersonServiceTest :
           whenever(deliusGateway.getOffender(any(), eq(null))).thenReturn(Response(data = Offender("Test", "Test", activeProbationManagedSentence = false, otherIds = OtherIds())))
           val result = getPersonService.getSupervisionStatus(crnNumber)
           result.shouldBe(SupervisionStatus.NONE)
+        }
+      }
+
+      describe("getPerson()") {
+        it("returns a 400 if the hmppsId is not valid") {
+          val result = getPersonService.getPerson("INVALID")
+          result.data?.shouldBe(null)
+          result.errors.shouldContain(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.BAD_REQUEST, description = "Invalid HMPPS ID: INVALID"))
+        }
+
+        it("returns a person from Probation Offender Search") {
+          whenever(deliusGateway.getOffender(id = crnNumber)).thenReturn(Response(data = personOnProbation))
+
+          val result = getPersonService.getPerson(crnNumber)
+          verify(deliusGateway, times(1)).getOffender(crnNumber)
+          result.data?.shouldBeEqualToComparingFields(personOnProbation.toPersonOnProbation())
+        }
+
+        it("returns null when a person isn't found in probation offender search") {
+          whenever(deliusGateway.getOffender(id = crnNumber)).thenReturn(Response(data = null))
+
+          val result = getPersonService.getPerson(crnNumber)
+          result.data.shouldBe(null)
+        }
+
+        it("gets a person from Prison Offender Search when hmpps id is noms number and not found in probation search") {
+          val result = getPersonService.getPerson(nomsNumber)
+          verify(deliusGateway).getOffender(nomsNumber)
+          verify(prisonerOffenderSearchGateway).getPrisonOffender(nomsNumber)
+          result.data.shouldNotBeNull()
+          result.data.firstName.shouldBe(prisoner.firstName)
+          result.data.lastName.shouldBe(prisoner.lastName)
+          result.data.dateOfBirth.shouldBe(prisoner.dateOfBirth)
         }
       }
     },
