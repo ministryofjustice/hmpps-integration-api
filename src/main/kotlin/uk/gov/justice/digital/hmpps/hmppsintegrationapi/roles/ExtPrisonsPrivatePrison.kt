@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles
 
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.policies.laoRedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
 
 val extPrisonsPrivatePrison =
@@ -69,5 +70,9 @@ val extPrisonsPrivatePrison =
       -"/v1/activities/schedule/{scheduleId}/waiting-list-applications"
       -"/v1/persons/{hmppsId}/risks/serious-harm"
       -"/v1/status"
+    }
+
+    redactionPolicies {
+      -laoRedactionPolicy
     }
   }
