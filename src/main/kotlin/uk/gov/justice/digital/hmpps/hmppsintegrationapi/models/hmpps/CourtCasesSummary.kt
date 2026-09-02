@@ -11,6 +11,16 @@ data class CourtCasesSummary(
   val courtOutcome: CourtOutcome? = null,
   @Schema(description = "The court code of latest sentenced outcome", example = "ACCRYC")
   val courtCode: String? = null,
+  val allAppearances: List<Appearance> = emptyList(),
+)
+
+data class Appearance(
+  @Schema(description = "The date of the appearance", example = "2022-10-01")
+  val appearanceDate: LocalDate? = null,
+  @Schema(description = "The outcome of the court appearance")
+  val courtOutcome: CourtOutcome? = null,
+  @Schema(description = "The court code of the court appearance", example = "ACCRYC")
+  val courtCode: String? = null,
 )
 
 data class CourtOutcome(
