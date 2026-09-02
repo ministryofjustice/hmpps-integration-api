@@ -236,7 +236,7 @@ authorisation:
         - "moj-probation-case-proposal"
     role-based-redacted-client:
       roles:
-        - "ext-prisons-education"
+        - "test-role-education-redaction-policy"
       filters:
     lao-role-based-redacted-client:
       roles:

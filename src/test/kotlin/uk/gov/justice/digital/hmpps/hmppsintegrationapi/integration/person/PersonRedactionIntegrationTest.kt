@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.writeAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleEducationRedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithIdOnlyRedaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.testRoleWithLaoRedactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService.Companion.attributeSearchRequest
@@ -86,6 +87,11 @@ class PersonRedactionIntegrationTest : IntegrationTestBase() {
     @DisplayName("And Role based Redaction is required")
     inner class AndRoleBasedRedactionIsRequired {
       private val clientNameWithRoleBaseRedaction = "role-based-redacted-client"
+
+      @BeforeEach
+      fun setUp() {
+        whenever(authorisationConfig.roles).thenReturn(mapOf("test-role-education-redaction-policy" to testRoleEducationRedactionPolicy))
+      }
 
       @Test
       fun `return a person from Prisoner Offender Search with some data redacted`() {
