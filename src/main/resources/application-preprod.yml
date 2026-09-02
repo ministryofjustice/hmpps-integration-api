@@ -78,7 +78,7 @@ feature-flag:
   use-probation-search-for-person-search: true
   person-search-v2-enabled: false
   sentence-no-nomis-fix-enabled: true
-  person-responsible-officer-fix-enabled: false
+  person-responsible-officer-fix-enabled: true
   # Events Config
   enable-delete-processed-events: true
   enable-publish-pending-events: true
