@@ -14,7 +14,7 @@ val mojProbationRiskManagement =
       -"/v1/persons/{hmppsId}"
       -"/v1/persons/{hmppsId}/offences"
       -"/v1/persons/{hmppsId}/sentences/latest-key-dates-and-adjustments"
-      -"/v1/persons/addresses/{hmppsID}"
+      -"/v1/persons/addresses/{hmppsId}"
     }
     filters {
       supervisionStatuses {
