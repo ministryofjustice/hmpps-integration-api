@@ -28,7 +28,7 @@ data class RasSentencedCourtCases(
     val allAppearances =
       allCourtAppearances.map { case ->
         Appearance(
-          dateOfAppearance = case?.appearanceDate,
+          appearanceDate = case?.appearanceDate,
           courtCode = case?.courtCode,
           courtOutcome = case?.outcome?.let { CourtOutcome(CourtOutComeType.from(it.outcomeType), it.outcomeName) },
         )
