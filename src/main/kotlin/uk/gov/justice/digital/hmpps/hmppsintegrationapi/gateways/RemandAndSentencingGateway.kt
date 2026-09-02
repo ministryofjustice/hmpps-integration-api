@@ -17,7 +17,7 @@ class RemandAndSentencingGateway(
       summary = "HMPPS Remand and Sentencing",
       developerPortalId = "DPS014",
       developerPortalUrl = "https://developer-portal.hmpps.service.justice.gov.uk/components/hmpps-remand-and-sentencing-api",
-      apiDocUrl = "https://remand-and-sentencing-api-dev.hmpps.service.justice.gov.uk//swagger-ui/index.html",
+      apiDocUrl = "https://remand-and-sentencing-api-dev.hmpps.service.justice.gov.uk/swagger-ui/index.html",
       apiSpecUrl = "https://remand-and-sentencing-api-dev.hmpps.service.justice.gov.uk/v3/api-docs",
       gitHubRepoUrl = "https://github.com/ministryofjustice/hmpps-remand-and-sentencing-api",
       slackChannel = "#calculate_release_dates_public_channel",

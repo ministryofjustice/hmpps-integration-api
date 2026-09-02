@@ -1,8 +1,10 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 
 import org.springframework.http.HttpStatus
+import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.io.File
 import kotlin.test.Test
 
 class CourtCasesIntegrationTest : IntegrationTestBase() {
@@ -13,19 +15,8 @@ class CourtCasesIntegrationTest : IntegrationTestBase() {
     ).andExpect(status().isOk)
       .andExpect(
         MockMvcResultMatchers.content().json(
-          """
-          {
-            "data":
-              {
-                "dateOfFirstConviction":"2026-07-24",
-                "courtOutcome": {
-                  "outcomeType": "APPEAL",
-                  "outcomeName": "Appeal"
-                },
-                "courtCode":"COURT2"
-              }
-          }
-          """.trimIndent(),
+          File("src/test/resources/expected-responses/court-cases.json").readText(),
+          JsonCompareMode.STRICT,
         ),
       )
 

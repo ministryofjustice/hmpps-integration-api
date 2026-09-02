@@ -83,6 +83,11 @@ class CourtCaseServiceTest {
     courtCaseSummary?.dateOfFirstConviction shouldBe LocalDate.of(2020, 2, 19)
     courtCaseSummary?.courtOutcome shouldBe CourtOutcome(CourtOutComeType.APPEAL, "Appeal")
     courtCaseSummary?.courtCode shouldBe "COURT1"
+
+    courtCaseSummary?.allAppearances?.size shouldBe 4
+    courtCaseSummary?.allAppearances[0]?.appearanceDate shouldBe LocalDate.of(2021, 1, 25)
+    courtCaseSummary?.allAppearances[0]?.courtOutcome shouldBe CourtOutcome(CourtOutComeType.APPEAL, "Appeal")
+    courtCaseSummary?.allAppearances[0]?.courtCode shouldBe "COURT2"
   }
 
   @Test

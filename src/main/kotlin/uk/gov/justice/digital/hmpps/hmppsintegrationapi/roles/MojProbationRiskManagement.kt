@@ -7,9 +7,14 @@ val mojProbationRiskManagement =
     permissions {
       -"/v1/status"
       -"/v1/persons/{hmppsId}/access-limitations"
+      -"/v1/persons/{hmppsId}/addresses"
+      -"/v1/persons/{hmppsId}/person-responsible-officer"
+      -"/v1/persons/{hmppsId}/protected-characteristics"
+      -"/v1/persons/{hmppsId}/risks/mappadetail"
       -"/v1/persons/{hmppsId}/risks/serious-harm"
       -"/v1/persons/{hmppsId}"
       -"/v1/persons/{hmppsId}/offences"
+      -"/v1/persons/{hmppsId}/sentences/latest-key-dates-and-adjustments"
     }
     filters {
       supervisionStatuses {

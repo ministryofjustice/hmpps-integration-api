@@ -1,10 +1,47 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.remandAndSentencing
 
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Appearance
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CourtCasesSummary
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CourtOutcome
 import java.time.LocalDate
 
 data class RasSentencedCourtCases(
   val courtCases: List<RasSentencedCourtCase> = emptyList(),
-)
+) {
+  fun toCourtCasesSummary(): CourtCasesSummary {
+    val allCourtAppearances =
+      this.courtCases
+        .flatMap { case ->
+          (case.appearances + listOf(case.latestAppearance)).distinct()
+        }.sortedByDescending { it?.appearanceDate }
+
+    val dateOfFirstConviction =
+      this.courtCases
+        .flatMap { case ->
+          (case.latestAppearance?.charges?.map { it } ?: emptyList()) + case.appearances.flatMap { it.charges }
+        }.mapNotNull { it.sentence?.convictionDate }
+        .minOrNull()
+
+    val courtOutcome = allCourtAppearances.firstOrNull()?.outcome?.let { CourtOutcome(CourtOutComeType.from(it.outcomeType), it.outcomeName) }
+    val courtCode = allCourtAppearances.firstOrNull { it?.outcome?.outcomeType == CourtOutComeType.SENTENCING.name }?.courtCode
+
+    val allAppearances =
+      allCourtAppearances.map { case ->
+        Appearance(
+          appearanceDate = case?.appearanceDate,
+          courtCode = case?.courtCode,
+          courtOutcome = case?.outcome?.let { CourtOutcome(CourtOutComeType.from(it.outcomeType), it.outcomeName) },
+        )
+      }
+
+    return CourtCasesSummary(
+      courtOutcome = courtOutcome,
+      dateOfFirstConviction = dateOfFirstConviction,
+      courtCode = courtCode,
+      allAppearances = allAppearances,
+    )
+  }
+}
 
 data class RasSentencedCourtCase(
   val latestAppearance: RasCourtAppearance? = null,
