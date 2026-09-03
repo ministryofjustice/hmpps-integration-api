@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.whenever
+import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.writeAsJson
@@ -35,7 +36,7 @@ class SentencesIntegrationTest : IntegrationTestBase() {
   fun `returns sentences for a person`() {
     callApi(path)
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("person-sentence")))
+      .andExpect(content().json(getExpectedResponse("person-sentence.json"), JsonCompareMode.STRICT))
   }
 
   @Test
@@ -60,7 +61,7 @@ class SentencesIntegrationTest : IntegrationTestBase() {
   fun `returns latest sentence key dates and adjustments for a person`() {
     callApi("$path/latest-key-dates-and-adjustments")
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("person-sentence-key-dates")))
+      .andExpect(content().json(getExpectedResponse("person-sentence-key-dates"), JsonCompareMode.STRICT))
   }
 
   @Test
@@ -87,14 +88,14 @@ class SentencesIntegrationTest : IntegrationTestBase() {
     whenever(authorisationConfig.roles).thenReturn(mapOf("full-access" to testRoleWithLaoRedactions))
     callApi("$path/latest-key-dates-and-adjustments")
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("person-sentence-key-dates")))
+      .andExpect(content().json(getExpectedResponse("person-sentence-key-dates"), JsonCompareMode.STRICT))
   }
 
   @Test
   fun `returns latest redacted sentence key dates and adjustments for an person when redaction policy is present`() {
     callApiWithCN("$basePath/$nomsIdFromProbation/sentences/latest-key-dates-and-adjustments", "ext-probation-police-intelligence")
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("person-sentence-key-dates-redacted.json")))
+      .andExpect(content().json(getExpectedResponse("person-sentence-key-dates-redacted.json"), JsonCompareMode.STRICT))
   }
 
   @Test
@@ -110,6 +111,6 @@ class SentencesIntegrationTest : IntegrationTestBase() {
 
     callApi(noPrisonIdPath)
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("person-sentence-ndelius-only.json")))
+      .andExpect(content().json(getExpectedResponse("person-sentence-ndelius-only.json"), JsonCompareMode.STRICT))
   }
 }

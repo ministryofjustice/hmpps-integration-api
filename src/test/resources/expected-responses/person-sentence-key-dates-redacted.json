@@ -33,6 +33,7 @@
       "startDate": "2010-02-03"
     },
     "actualParoleDate": "2020-02-03",
-    "releaseOnTemporaryLicenceDate": "2020-02-03"
+    "releaseOnTemporaryLicenceDate": "2020-02-03",
+    "tariffDate":"2020-02-03"
   }
 }

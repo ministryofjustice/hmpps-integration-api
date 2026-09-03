@@ -24,7 +24,6 @@ class SupervisionsTest :
                 supervisions =
                   listOf(
                     NDeliusSupervision(
-                      custodial = true,
                       mainOffence = NDeliusMainOffence(description = "foobar", code = "05800", date = "2000-01-02"),
                       additionalOffences =
                         listOf(
@@ -33,7 +32,6 @@ class SupervisionsTest :
                       courtAppearances = listOf(NDeliusCourtAppearance(date = "2009-07-07T00:00:00+01:00", court = "London Magistrates Court")),
                     ),
                     NDeliusSupervision(
-                      custodial = true,
                       mainOffence = NDeliusMainOffence(description = "barbaz", code = "05800", date = "2003-03-03"),
                       additionalOffences =
                         listOf(
@@ -97,7 +95,6 @@ class SupervisionsTest :
                 supervisions =
                   listOf(
                     NDeliusSupervision(
-                      custodial = true,
                       mainOffence = NDeliusMainOffence(description = "foobar", code = "05800", date = "2000-01-02"),
                       additionalOffences = listOf(NDeliusAdditionalOffence(description = "additionalFoo", code = "12345")),
                       courtAppearances = listOf(NDeliusCourtAppearance(date = "2009-07-07T00:00:00+01:00", court = "London Magistrates Court")),
@@ -141,7 +138,6 @@ class SupervisionsTest :
                 supervisions =
                   listOf(
                     NDeliusSupervision(
-                      custodial = true,
                       mainOffence = NDeliusMainOffence(description = "foobar", code = "05800", date = "2000-01-02"),
                       additionalOffences =
                         listOf(
@@ -190,13 +186,11 @@ class SupervisionsTest :
                 supervisions =
                   listOf(
                     NDeliusSupervision(
-                      custodial = true,
                       mainOffence = NDeliusMainOffence(description = "foobar", code = "05800", date = "2019-09-09"),
                       additionalOffences = emptyList(),
                       courtAppearances = listOf(NDeliusCourtAppearance(date = "2009-07-07T00:00:00+01:00", court = "London Magistrates Court")),
                     ),
                     NDeliusSupervision(
-                      custodial = true,
                       mainOffence = NDeliusMainOffence(description = "barbaz", code = "05800", date = "2020-02-03"),
                       additionalOffences = emptyList(),
                       courtAppearances = listOf(NDeliusCourtAppearance(date = "2010-07-07T00:00:00+01:00", court = "London Magistrates Court")),
@@ -242,24 +236,24 @@ class SupervisionsTest :
               listOf(
                 NDeliusSupervision(
                   active = true,
-                  custodial = true,
                   sentence =
                     NDeliusSentence(
                       date = "2009-07-07",
-                      description = "CJA - Community Order",
+                      description = "A Custodial Sentence",
                       length = 10,
                       lengthUnits = "years",
+                      custodial = true,
                     ),
                 ),
                 NDeliusSupervision(
                   active = false,
-                  custodial = true,
                   sentence =
                     NDeliusSentence(
                       date = "2010-07-07",
-                      description = "CJA - Suspended Sentence Order",
+                      description = "Another Custodial Sentence",
                       length = 4,
                       lengthUnits = "weeks",
+                      custodial = true,
                     ),
                 ),
               ),
@@ -275,7 +269,7 @@ class SupervisionsTest :
                 serviceSource = UpstreamApi.NDELIUS,
                 systemSource = SystemSource.PROBATION_SYSTEMS,
                 dateOfSentencing = LocalDate.parse("2009-07-07"),
-                description = "CJA - Community Order",
+                description = "A Custodial Sentence",
                 length =
                   SentenceLength(
                     duration = 10,
@@ -288,7 +282,7 @@ class SupervisionsTest :
                 systemSource = SystemSource.PROBATION_SYSTEMS,
                 dateOfSentencing = LocalDate.parse("2010-07-07"),
                 isActive = false,
-                description = "CJA - Suspended Sentence Order",
+                description = "Another Custodial Sentence",
                 length =
                   SentenceLength(
                     duration = 4,
@@ -306,7 +300,7 @@ class SupervisionsTest :
               communityManager = NDeliusCommunityManager(),
               mappaDetail = NDeliusMappaDetail(),
               listOf(
-                NDeliusSupervision(custodial = true),
+                NDeliusSupervision(),
               ),
               dynamicRisks = listOf(NDeliusDynamicRisk(code = "RCCO", description = "Child stuff", startDate = "2010-07-07")),
               personStatus = listOf(NDeliusPersonStatus()),
@@ -317,7 +311,7 @@ class SupervisionsTest :
               serviceSource = UpstreamApi.NDELIUS,
               systemSource = SystemSource.PROBATION_SYSTEMS,
               isActive = null,
-              isCustodial = true,
+              isCustodial = false,
               description = null,
               dateOfSentencing = null,
               length =
@@ -336,7 +330,7 @@ class SupervisionsTest :
             NDeliusSupervisions(
               communityManager = NDeliusCommunityManager(),
               mappaDetail = NDeliusMappaDetail(),
-              listOf(NDeliusSupervision(custodial = true)),
+              listOf(NDeliusSupervision()),
               dynamicRisks =
                 listOf(
                   NDeliusDynamicRisk(
