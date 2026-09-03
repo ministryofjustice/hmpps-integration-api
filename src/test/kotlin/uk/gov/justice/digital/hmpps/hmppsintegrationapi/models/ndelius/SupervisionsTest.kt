@@ -269,7 +269,7 @@ class SupervisionsTest :
                 serviceSource = UpstreamApi.NDELIUS,
                 systemSource = SystemSource.PROBATION_SYSTEMS,
                 dateOfSentencing = LocalDate.parse("2009-07-07"),
-                description = "CJA - Community Order",
+                description = "A Custodial Sentence",
                 length =
                   SentenceLength(
                     duration = 10,
@@ -282,7 +282,7 @@ class SupervisionsTest :
                 systemSource = SystemSource.PROBATION_SYSTEMS,
                 dateOfSentencing = LocalDate.parse("2010-07-07"),
                 isActive = false,
-                description = "CJA - Suspended Sentence Order",
+                description = "Another Custodial Sentence",
                 length =
                   SentenceLength(
                     duration = 4,
