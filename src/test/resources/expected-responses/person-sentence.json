@@ -41,9 +41,9 @@
         "serviceSource": "NDELIUS",
         "systemSource": "PROBATION_SYSTEMS",
         "dateOfSentencing": "2009-09-01",
-        "description": "CJA - Suspended Sentence Order",
+        "description": "Custodial Sentence",
         "isActive": true,
-        "isCustodial": false,
+        "isCustodial": true,
         "fineAmount": null,
         "length": {
           "duration": 12,

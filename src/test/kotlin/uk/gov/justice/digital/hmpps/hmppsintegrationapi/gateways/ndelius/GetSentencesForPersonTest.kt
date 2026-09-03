@@ -86,9 +86,9 @@ class GetSentencesForPersonTest(
               serviceSource = UpstreamApi.NDELIUS,
               systemSource = SystemSource.PROBATION_SYSTEMS,
               dateOfSentencing = LocalDate.parse("2009-09-01"),
-              description = "CJA - Suspended Sentence Order",
+              description = "Custodial Sentence",
               isActive = true,
-              isCustodial = false,
+              isCustodial = true,
               length =
                 SentenceLength(
                   duration = 12,

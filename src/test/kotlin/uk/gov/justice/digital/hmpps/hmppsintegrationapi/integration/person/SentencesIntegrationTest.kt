@@ -35,7 +35,7 @@ class SentencesIntegrationTest : IntegrationTestBase() {
   fun `returns sentences for a person`() {
     callApi(path)
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("person-sentence")))
+      .andExpect(content().json(getExpectedResponse("person-sentence.json")))
   }
 
   @Test
