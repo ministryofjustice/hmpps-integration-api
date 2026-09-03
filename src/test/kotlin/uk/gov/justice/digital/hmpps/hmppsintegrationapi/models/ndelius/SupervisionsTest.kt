@@ -239,7 +239,7 @@ class SupervisionsTest :
                   sentence =
                     NDeliusSentence(
                       date = "2009-07-07",
-                      description = "CJA - Community Order",
+                      description = "A Custodial Sentence",
                       length = 10,
                       lengthUnits = "years",
                       custodial = true,
@@ -250,7 +250,7 @@ class SupervisionsTest :
                   sentence =
                     NDeliusSentence(
                       date = "2010-07-07",
-                      description = "CJA - Suspended Sentence Order",
+                      description = "Another Custodial Sentence",
                       length = 4,
                       lengthUnits = "weeks",
                       custodial = true,
