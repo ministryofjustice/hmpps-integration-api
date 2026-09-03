@@ -9,7 +9,6 @@ val mojHmppsPersonLookup =
       -"/v1/persons"
       -"/v1/status"
     }
-
     redactionPolicies {
       -laoRedactionPolicy
     }
@@ -22,7 +21,6 @@ val mojHmppsPersonLookupV2 =
       -"/v1/persons"
       -"/v1/status"
     }
-
     redactionPolicies {
       -laoRedactionPolicy
     }

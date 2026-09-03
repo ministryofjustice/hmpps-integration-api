@@ -11,7 +11,6 @@ val mojPrisonsPrisonerFacing =
       -"/v1/persons/{hmppsId}/cell-location"
       -"/v1/status"
     }
-
     redactionPolicies {
       -laoRedactionPolicy
     }

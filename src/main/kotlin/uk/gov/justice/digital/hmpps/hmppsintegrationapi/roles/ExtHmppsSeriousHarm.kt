@@ -9,7 +9,6 @@ val extHmppsSeriousHarm =
       -"/v1/persons/{hmppsId}/risks/serious-harm"
       -"/v1/status"
     }
-
     redactionPolicies {
       -laoRedactionPolicy
     }
