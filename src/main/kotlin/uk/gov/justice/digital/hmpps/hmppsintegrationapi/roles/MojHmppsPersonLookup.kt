@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.policies.laoRedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.role
 
 val mojHmppsPersonLookup =
@@ -8,9 +7,6 @@ val mojHmppsPersonLookup =
     permissions {
       -"/v1/persons"
       -"/v1/status"
-    }
-    redactionPolicies {
-      -laoRedactionPolicy
     }
   }
 
@@ -20,8 +16,5 @@ val mojHmppsPersonLookupV2 =
       -"/v2/persons"
       -"/v1/persons"
       -"/v1/status"
-    }
-    redactionPolicies {
-      -laoRedactionPolicy
     }
   }
