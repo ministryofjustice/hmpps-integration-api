@@ -26,6 +26,7 @@ class CacheConfig {
     const val GATEWAY_CACHE = "GATEWAY_CACHE"
     const val TOKEN_CACHE = "TOKEN_CACHE"
     const val HMPPS_AUTH_USERS = "HMPPS_AUTH_USERS"
+    const val HMPPS_NOMIS_ROLES = "HMPPS_NOMIS_ROLES"
   }
 
   @Bean
@@ -64,9 +65,21 @@ class CacheConfig {
     )
 
   @Bean
+  fun hmppsNomisRolesCache(): CaffeineCache =
+    CaffeineCache(
+      HMPPS_NOMIS_ROLES,
+      Caffeine
+        .newBuilder()
+        .maximumSize(100)
+        .recordStats()
+        .expireAfterWrite(Duration.ofMinutes(5))
+        .build(),
+    )
+
+  @Bean
   fun caffeineCacheManager(): CacheManager {
     val cacheManager = SimpleCacheManager()
-    val caches = listOf(gatewayCache(), tokenCache(), hmppsAuthUsersCache())
+    val caches = listOf(gatewayCache(), tokenCache(), hmppsAuthUsersCache(), hmppsNomisRolesCache())
     cacheManager.setCaches(caches)
     return cacheManager
   }

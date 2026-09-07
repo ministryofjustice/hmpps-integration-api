@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.manageUsers
 
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.collections.shouldContain
+import io.kotest.matchers.collections.shouldHaveSize
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
@@ -16,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.NomisRole
 import java.io.File
 import kotlin.test.assertEquals
 
@@ -32,12 +35,22 @@ class ManageUsersTest(
       val manageUsersMockServer = ApiMockServer.create(UpstreamApi.MANAGE_USERS)
       val path = "/users/search?username=testUser&authSources=azuread"
 
+      val nomisUsername = "NOMIS_TEST_USERNAME"
+      val rolesPath = "/users/$nomisUsername/roles"
+
       beforeEach {
         manageUsersMockServer.start()
         manageUsersMockServer.stubForGet(
           path,
           File(
             "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/UserFoundResponse.json",
+          ).readText(),
+        )
+
+        manageUsersMockServer.stubForGet(
+          rolesPath,
+          File(
+            "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/NomisUserRolesFoundResponse.json",
           ).readText(),
         )
 
@@ -65,6 +78,27 @@ class ManageUsersTest(
           HttpStatus.BAD_REQUEST,
         )
         val response = manageUsersGateway.findUser("testUser", listOf("azuread"))
+        assertEquals(null, response.data)
+        assertEquals(UpstreamApiError.Type.BAD_REQUEST, response.errors[0].type)
+        assertEquals(UpstreamApi.MANAGE_USERS, response.errors[0].causedBy)
+      }
+
+      it("successfully finds roles for a user") {
+        val response = manageUsersGateway.getRoles("NOMIS_TEST_USERNAME")
+        val roles = response.data
+        roles?.shouldHaveSize(3)
+        roles?.shouldContain(NomisRole("GLOBAL_SEARCH"))
+        roles?.shouldContain(NomisRole("TEST_ROLE_1"))
+        roles?.shouldContain(NomisRole("TEST_ROLE_2"))
+      }
+
+      it("find roles returns a 400 ") {
+        manageUsersMockServer.stubForGet(
+          "/users/erroringUsername/roles",
+          "",
+          HttpStatus.BAD_REQUEST,
+        )
+        val response = manageUsersGateway.getRoles("erroringUsername")
         assertEquals(null, response.data)
         assertEquals(UpstreamApiError.Type.BAD_REQUEST, response.errors[0].type)
         assertEquals(UpstreamApi.MANAGE_USERS, response.errors[0].causedBy)
