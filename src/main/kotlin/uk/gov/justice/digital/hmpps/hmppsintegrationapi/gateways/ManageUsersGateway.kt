@@ -6,6 +6,7 @@ import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Companion.HMPPS_AUTH_USERS
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Companion.HMPPS_NOMIS_ROLES
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -73,7 +74,7 @@ class ManageUsersGateway(
     }
   }
 
-  @Cacheable(HMPPS_AUTH_USERS, keyGenerator = "gatewayKeyGenerator")
+  @Cacheable(HMPPS_NOMIS_ROLES, keyGenerator = "gatewayKeyGenerator")
   fun getRoles(username: String): Response<List<NomisRole>?> {
     val uri =
       UriComponentsBuilder
