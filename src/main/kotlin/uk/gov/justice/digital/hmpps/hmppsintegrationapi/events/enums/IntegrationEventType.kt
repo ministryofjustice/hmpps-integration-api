@@ -284,7 +284,6 @@ val PRISON_CAPACITY_EVENTS =
     DomainEventName.LocationsInsidePrison.Location.DELETED,
     DomainEventName.LocationsInsidePrison.Location.DEACTIVATED,
     DomainEventName.LocationsInsidePrison.Location.REACTIVATED,
-    DomainEventName.LocationsInsidePrison.Location.AMENDED,
     DomainEventName.LocationsInsidePrison.SignedOpCapacity.AMENDED,
   )
 
