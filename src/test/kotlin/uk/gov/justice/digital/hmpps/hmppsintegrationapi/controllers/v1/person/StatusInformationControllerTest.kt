@@ -47,7 +47,7 @@ internal class StatusInformationControllerTest(
       val path = "/v1/persons/$hmppsId/status-information"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
       val laoOkCrn = "R654321"
-      val laoFailureCrn = "R754321"
+      val laoRecordNotFoundCrn = "R754321"
 
       describe("GET $path") {
         beforeTest {
@@ -217,8 +217,8 @@ internal class StatusInformationControllerTest(
           )
         }
 
-        it("fails with the appropriate error when LAO context has failed to be retrieved") {
-          whenever(getStatusInformationForPersonService.execute(laoFailureCrn)).thenReturn(
+        it("does not fail lao checks when record not found in NDelius") {
+          whenever(getStatusInformationForPersonService.execute(laoRecordNotFoundCrn)).thenReturn(
             Response(
               data =
                 listOf(
@@ -233,13 +233,20 @@ internal class StatusInformationControllerTest(
             ),
           )
 
-          val response = mockMvc.performAuthorisedWithCN("/v1/persons/$laoFailureCrn/status-information", "consumer-with-lao-redactions")
+          val response = mockMvc.performAuthorisedWithCN("/v1/persons/$laoRecordNotFoundCrn/status-information", "consumer-with-lao-redactions")
 
-          assert(response.response.status == 500)
-          assert(
-            response.response.contentAsString.equals(
-              "{\"status\":500,\"errorCode\":null,\"userMessage\":\"LAO Check failed\",\"developerMessage\":\"LAO Check failed\",\"moreInfo\":null}",
-            ),
+          response.response.contentAsString.shouldContain(
+            """
+          "data": [
+            {
+              "code": "WRSM",
+              "description": "Warrant/Summons - Outstanding warrant or summons",
+              "startDate": "2022-09-01",
+              "reviewDate": "2024-12-23",
+              "notes": "A lot of notes"
+            }
+          ]
+        """.removeWhitespaceAndNewlines(),
           )
         }
       }

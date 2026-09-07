@@ -218,17 +218,6 @@ internal class RiskPredictorScoresControllerTest(
             ),
           )
         }
-
-        it("fails with the appropriate error when LAO context has failed to be retrieved") {
-          val response = mockMvc.performAuthorisedWithCN("/v1/persons/$laoFailureCrn/risks/scores", "consumer-with-lao-redactions")
-
-          assert(response.response.status == 500)
-          assert(
-            response.response.contentAsString.equals(
-              "{\"status\":500,\"errorCode\":null,\"userMessage\":\"LAO Check failed\",\"developerMessage\":\"LAO Check failed\",\"moreInfo\":null}",
-            ),
-          )
-        }
       }
     },
   )

@@ -218,8 +218,10 @@ class RedactionResponseBodyAdviceTest {
         Arguments.of(true, false, "crn", "**REDACTED**", false),
         // Case is an lao and not an LAO only rejection - should continue to MASK
         Arguments.of(true, true, "crn", "**REDACTED**", false),
-        // Unable to find a crn in order to redact - throws exception
-        Arguments.of(true, true, null, "", true),
+        // Unable to find a crn from unknown number in order to redact - should not mask
+        Arguments.of(false, true, "nomisNumber", "unmaskedValue", false),
+        // Unable to find a crn from nothing  in order to redact - should not mask
+        Arguments.of(false, true, null, "", true),
       )
   }
 
