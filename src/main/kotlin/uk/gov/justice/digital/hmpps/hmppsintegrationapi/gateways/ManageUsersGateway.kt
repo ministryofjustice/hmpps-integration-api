@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Compa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.NomisRole
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.PaginatedUsers
 
 @Component
@@ -49,6 +50,38 @@ class ManageUsersGateway(
 
     val result =
       webClient.request<PaginatedUsers>(
+        HttpMethod.GET,
+        uri,
+        authenticationHeader(),
+        UpstreamApi.MANAGE_USERS,
+        badRequestAsError = true,
+      )
+
+    return when (result) {
+      is WebClientWrapper.WebClientWrapperResponse.Success -> {
+        Response(
+          data = result.data,
+        )
+      }
+
+      is WebClientWrapper.WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  @Cacheable(HMPPS_AUTH_USERS, keyGenerator = "gatewayKeyGenerator")
+  fun getRoles(username: String): Response<List<NomisRole>?> {
+    val uri =
+      UriComponentsBuilder
+        .fromUriString("/users/$username/roles")
+        .toUriString()
+
+    val result =
+      webClient.requestList<NomisRole>(
         HttpMethod.GET,
         uri,
         authenticationHeader(),
