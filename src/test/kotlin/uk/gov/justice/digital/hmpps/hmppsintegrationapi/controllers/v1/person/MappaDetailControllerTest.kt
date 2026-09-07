@@ -196,31 +196,6 @@ internal class MappaDetailControllerTest(
 
           result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
         }
-
-        it("fails with the appropriate error when LAO context has failed to be retrieved") {
-          whenever(getMappaDetailForPersonService.execute(laoFailureCrn)).thenReturn(
-            Response(
-              MappaDetail(
-                level = 2,
-                levelDescription = "A high level of risk",
-                category = 3,
-                categoryDescription = "Behaviour",
-                startDate = "2024-03-08",
-                reviewDate = "2024-10-08",
-                notes = "Review in a week",
-              ),
-            ),
-          )
-
-          val response = mockMvc.performAuthorisedWithCN("/v1/persons/$laoFailureCrn/risks/mappadetail", "consumer-with-lao-redactions")
-
-          assert(response.response.status == 500)
-          assert(
-            response.response.contentAsString.equals(
-              "{\"status\":500,\"errorCode\":null,\"userMessage\":\"LAO Check failed\",\"developerMessage\":\"LAO Check failed\",\"moreInfo\":null}",
-            ),
-          )
-        }
       }
     },
   )

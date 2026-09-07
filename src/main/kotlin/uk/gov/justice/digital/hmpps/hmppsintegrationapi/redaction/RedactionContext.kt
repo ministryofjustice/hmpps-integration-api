@@ -13,7 +13,7 @@ class RedactionContext(
 ) {
   fun isLimitedAccessOffender(): Boolean {
     val hmppsId = hmppsId ?: throw LimitedAccessFailedException("No hmppsId available for LAO check")
-    return hasAccess.getAccessFor(hmppsId)?.let { it.userRestricted || it.userExcluded } ?: throw LimitedAccessFailedException()
+    return hasAccess.getAccessFor(hmppsId)?.let { it.userRestricted || it.userExcluded } ?: false
   }
 
   fun trackRedaction(

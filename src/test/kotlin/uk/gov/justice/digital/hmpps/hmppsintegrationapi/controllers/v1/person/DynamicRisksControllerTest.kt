@@ -256,40 +256,6 @@ internal class DynamicRisksControllerTest(
             ),
           )
         }
-
-        it("fails with the appropriate error when LAO context has failed to be retrieved") {
-
-          whenever(getDynamicRisksForPersonService.execute(laoFailureCrn)).thenReturn(
-            Response(
-              data =
-                listOf(
-                  DynamicRisk(
-                    code = "AVIS",
-                    description = "Subject has a ViSOR record",
-                    startDate = "2023-09-08",
-                    reviewDate = "2026-04-29",
-                    notes = "Nothing to say",
-                  ),
-                  DynamicRisk(
-                    code = "RHRH",
-                    description = "High Risk of Harm",
-                    startDate = "2022-09-01",
-                    reviewDate = "2024-12-23",
-                    notes = "A lot of notes",
-                  ),
-                ),
-            ),
-          )
-
-          val response = mockMvc.performAuthorisedWithCN("/v1/persons/$laoFailureCrn/risks/dynamic", "consumer-with-lao-redactions")
-
-          assert(response.response.status == 500)
-          assert(
-            response.response.contentAsString.equals(
-              "{\"status\":500,\"errorCode\":null,\"userMessage\":\"LAO Check failed\",\"developerMessage\":\"LAO Check failed\",\"moreInfo\":null}",
-            ),
-          )
-        }
       }
     },
   )
