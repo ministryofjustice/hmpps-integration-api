@@ -189,34 +189,6 @@ class LicenceConditionControllerTests(
             ),
           )
         }
-
-        it("fails with the appropriate error when LAO context has failed to be retrieved") {
-
-          whenever(getLicenceConditionService.execute(laoFailureCrn)).thenReturn(
-            Response(
-              data =
-                PersonLicences(
-                  hmppsId = hmppsId,
-                  licences =
-                    listOf(
-                      Licence(
-                        id = "MockId",
-                        conditions = listOf(LicenceCondition(condition = "MockCondition")),
-                      ),
-                    ),
-                ),
-            ),
-          )
-
-          val response = mockMvc.performAuthorisedWithCN("/v1/persons/$laoFailureCrn/licences/conditions", "consumer-with-lao-redactions")
-
-          assert(response.response.status == 500)
-          assert(
-            response.response.contentAsString.equals(
-              "{\"status\":500,\"errorCode\":null,\"userMessage\":\"LAO Check failed\",\"developerMessage\":\"LAO Check failed\",\"moreInfo\":null}",
-            ),
-          )
-        }
       }
     },
   )

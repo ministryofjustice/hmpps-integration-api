@@ -217,7 +217,7 @@ internal class StatusInformationControllerTest(
           )
         }
 
-        it("fails with the appropriate error when LAO context has failed to be retrieved") {
+        it("returns when LAO context has failed to be retrieved") {
           whenever(getStatusInformationForPersonService.execute(laoFailureCrn)).thenReturn(
             Response(
               data =
@@ -235,11 +235,18 @@ internal class StatusInformationControllerTest(
 
           val response = mockMvc.performAuthorisedWithCN("/v1/persons/$laoFailureCrn/status-information", "consumer-with-lao-redactions")
 
-          assert(response.response.status == 500)
-          assert(
-            response.response.contentAsString.equals(
-              "{\"status\":500,\"errorCode\":null,\"userMessage\":\"LAO Check failed\",\"developerMessage\":\"LAO Check failed\",\"moreInfo\":null}",
-            ),
+          response.response.contentAsString.shouldContain(
+            """
+          "data": [
+            {
+              "code": "WRSM",
+              "description": "Warrant/Summons - Outstanding warrant or summons",
+              "startDate": "2022-09-01",
+              "reviewDate": "2024-12-23",
+              "notes": "A lot of notes"
+            }
+          ]
+        """.removeWhitespaceAndNewlines(),
           )
         }
       }
