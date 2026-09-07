@@ -47,7 +47,7 @@ internal class StatusInformationControllerTest(
       val path = "/v1/persons/$hmppsId/status-information"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
       val laoOkCrn = "R654321"
-      val laoFailureCrn = "R754321"
+      val laoRecordNotFoundCrn = "R754321"
 
       describe("GET $path") {
         beforeTest {
@@ -217,8 +217,8 @@ internal class StatusInformationControllerTest(
           )
         }
 
-        it("returns when LAO context has failed to be retrieved") {
-          whenever(getStatusInformationForPersonService.execute(laoFailureCrn)).thenReturn(
+        it("does not fail lao checks when record not found in NDelius") {
+          whenever(getStatusInformationForPersonService.execute(laoRecordNotFoundCrn)).thenReturn(
             Response(
               data =
                 listOf(
@@ -233,7 +233,7 @@ internal class StatusInformationControllerTest(
             ),
           )
 
-          val response = mockMvc.performAuthorisedWithCN("/v1/persons/$laoFailureCrn/status-information", "consumer-with-lao-redactions")
+          val response = mockMvc.performAuthorisedWithCN("/v1/persons/$laoRecordNotFoundCrn/status-information", "consumer-with-lao-redactions")
 
           response.response.contentAsString.shouldContain(
             """
