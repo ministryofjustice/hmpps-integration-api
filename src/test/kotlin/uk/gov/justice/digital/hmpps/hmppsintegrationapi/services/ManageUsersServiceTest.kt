@@ -145,4 +145,23 @@ class ManageUsersServiceTest {
     )
     assertFalse(service.hasApplicableRole("testName"))
   }
+
+  @Test
+  fun `hasApplicableRole returns false when null data returned from findUser`() {
+    whenever(manageUsersGateway.findUser(any(), any())).thenReturn(
+      Response(data = null, errors = emptyList()),
+    )
+    assertFalse(service.hasApplicableRole("testName"))
+  }
+
+  @Test
+  fun `hasApplicableRole returns false when null data returned from getRoles`() {
+    whenever(manageUsersGateway.findUser(any(), any())).thenReturn(
+      Response(PaginatedUsers(listOf(HmppsAuthUser("testName2", "nomis", locked = true))), errors = emptyList()),
+    )
+    whenever(manageUsersGateway.getRoles(any())).thenReturn(
+      Response(data = null, errors = emptyList()),
+    )
+    assertFalse(service.hasApplicableRole("testName"))
+  }
 }
