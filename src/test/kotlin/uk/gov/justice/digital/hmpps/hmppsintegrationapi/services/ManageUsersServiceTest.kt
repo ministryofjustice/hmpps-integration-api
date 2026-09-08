@@ -157,7 +157,7 @@ class ManageUsersServiceTest {
   @Test
   fun `hasApplicableRole returns false when null data returned from getRoles`() {
     whenever(manageUsersGateway.findUser(any(), any())).thenReturn(
-      Response(PaginatedUsers(listOf(HmppsAuthUser("testName2", "nomis", locked = true))), errors = emptyList()),
+      Response(PaginatedUsers(listOf(HmppsAuthUser("testName2", "nomis", locked = false))), errors = emptyList()),
     )
     whenever(manageUsersGateway.getRoles(any())).thenReturn(
       Response(data = null, errors = emptyList()),

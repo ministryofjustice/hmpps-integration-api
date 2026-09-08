@@ -21,23 +21,28 @@ class ManageUsersService(
     usersResponse.errors.forEach {
       throw RuntimeException("Call to ${it.causedBy.name} failed with error: ${it.type.name}")
     }
-    return usersResponse.data?.content?.any { it.enabled && !it.locked } ?: false
+    return usersResponse.data != null && usersResponse.data.content.any { it.enabled && !it.locked }
   }
 
   fun hasApplicableRole(username: String): Boolean {
     val usersResponse = manageUsersGateway.findUser(username, listOf(NOMIS_AUTH_SOURCE))
+
     usersResponse.errors.forEach {
       throw RuntimeException("Call to ${it.causedBy.name} findUser failed with error: ${it.type.name}")
     }
 
+    if (usersResponse.data == null) {
+      return false
+    }
+
     val roles =
-      usersResponse.data?.content?.filter { !it.locked }?.flatMap { user ->
+      usersResponse.data.content.filter { !it.locked }.flatMap { user ->
         val rolesResponse = manageUsersGateway.getRoles(user.username)
         rolesResponse.errors.forEach {
           throw RuntimeException("Call to ${it.causedBy.name} getRoles failed with error: ${it.type.name}")
         }
         rolesResponse.data ?: emptyList()
-      } ?: emptyList()
+      }
 
     return roles.contains(NomisRole(NOMIS_GLOBAL_SEARCH_ROLE))
   }
