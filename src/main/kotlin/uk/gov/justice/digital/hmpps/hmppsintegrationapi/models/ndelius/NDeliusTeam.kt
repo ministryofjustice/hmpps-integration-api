@@ -5,4 +5,5 @@ data class NDeliusTeam(
   val description: String? = null,
   val email: String? = null,
   val telephoneNumber: String? = null,
+  val provider: NDeliusProvider? = null,
 )

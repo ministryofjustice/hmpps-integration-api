@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
+import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
@@ -14,14 +15,14 @@ class PersonResponsibleOfficerIntegrationTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `returns needs for a person`() {
+  fun `returns responsible officer for a person`() {
     managePomCaseMockServer.stubForGet(
       "/api/allocation/$nomsId/primary_pom",
       File("$gatewaysFolder/managePOMcase/fixtures/GetPrimaryPOMResponse.json").readText(),
     )
     callApi("$basePath/$nomsId/person-responsible-officer")
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("person-responsible-officer")))
+      .andExpect(content().json(getExpectedResponse("person-responsible-officer"), JsonCompareMode.STRICT))
 
     managePomCaseMockServer.assertValidationPassed()
   }
@@ -45,14 +46,14 @@ class PersonResponsibleOfficerIntegrationTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `returns redacted needs for a person`() {
+  fun `returns redacted responsible officer for a person`() {
     managePomCaseMockServer.stubForGet(
       "/api/allocation/$nomsIdFromProbation/primary_pom",
       File("$gatewaysFolder/managePOMcase/fixtures/GetPrimaryPOMResponse.json").readText(),
     )
     callApiWithCN("$basePath/$nomsIdFromProbation/person-responsible-officer", "ext-probation-police-intelligence")
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("person-responsible-officer-redacted.json")))
+      .andExpect(content().json(getExpectedResponse("person-responsible-officer-redacted.json"), JsonCompareMode.STRICT))
 
     managePomCaseMockServer.assertValidationPassed()
   }
