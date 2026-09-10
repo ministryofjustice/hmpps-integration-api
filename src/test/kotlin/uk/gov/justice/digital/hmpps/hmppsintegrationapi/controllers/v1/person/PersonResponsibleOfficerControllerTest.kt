@@ -25,6 +25,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataRespons
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonResponsibleOfficer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonResponsibleOfficerName
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonResponsibleOfficerTeam
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonResponsibleOfficerTeamProvider
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Prison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonOffenderManager
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -76,6 +77,7 @@ internal class PersonResponsibleOfficerControllerTest(
                   description = "Description",
                   email = "email_again@email.com",
                   telephoneNumber = "01234567890",
+                  provider = PersonResponsibleOfficerTeamProvider(code = "PROV1", description = "Provider Description"),
                 ),
             ),
           ),
@@ -127,7 +129,11 @@ internal class PersonResponsibleOfficerControllerTest(
                         "code": "PrisonCode2",
                         "description": "Description",
                         "email": "email_again@email.com",
-                        "telephoneNumber": "01234567890"
+                        "telephoneNumber": "01234567890",
+                        "provider": {
+                            "code": "PROV1",
+                            "description": "Provider Description"
+                        }
                     }
                 }
             }
