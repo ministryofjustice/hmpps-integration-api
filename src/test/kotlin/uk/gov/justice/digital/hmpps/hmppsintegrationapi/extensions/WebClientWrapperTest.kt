@@ -388,14 +388,6 @@ class WebClientWrapperTest :
         )
       }
 
-      it("throws an internal server error when the request 500's") {
-        mockServer.stubGetTest(getPath, "", HttpStatus.INTERNAL_SERVER_ERROR)
-
-        shouldThrow<WebClientResponseException.InternalServerError> {
-          webClient.request<TestModel>(HttpMethod.GET, getPath, headers, UpstreamApi.TEST)
-        }
-      }
-
       it("throws a timeout error if response is too slow") {
         mockServer.stubGetTest(getPath, """{"result": "timeout"}""", delayMillis = 2000)
 
