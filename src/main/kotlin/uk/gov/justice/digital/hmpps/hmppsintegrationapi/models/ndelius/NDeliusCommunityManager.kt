@@ -14,20 +14,29 @@ data class NDeliusCommunityManager(
   val team: NDeliusTeam = NDeliusTeam(),
   val allocated: Boolean? = null,
 ) {
-  fun toCommunityOffenderManager(): CommunityOffenderManager =
+  fun toCommunityOffenderManager(useProvider: Boolean? = false): CommunityOffenderManager =
     (
       CommunityOffenderManager(
         name = PersonResponsibleOfficerName(forename = this.name.forename, surname = this.name.surname),
         email = this.email,
         telephoneNumber = this.telephoneNumber,
         team =
-          PersonResponsibleOfficerTeam(
-            code = this.team.code,
-            description = this.team.description,
-            email = this.team.email,
-            telephoneNumber = this.team.telephoneNumber,
-            provider = this.team.provider?.let { PersonResponsibleOfficerTeamProvider(it.code, it.description) },
-          ),
+          if (useProvider == true) {
+            PersonResponsibleOfficerTeam(
+              code = this.team.code,
+              description = this.team.description,
+              email = this.team.email,
+              telephoneNumber = this.team.telephoneNumber,
+              provider = this.team.provider?.let { PersonResponsibleOfficerTeamProvider(it.code, it.description) },
+            )
+          } else {
+            PersonResponsibleOfficerTeam(
+              code = this.team.code,
+              description = this.team.description,
+              email = this.team.email,
+              telephoneNumber = this.team.telephoneNumber,
+            )
+          },
       )
     )
 }

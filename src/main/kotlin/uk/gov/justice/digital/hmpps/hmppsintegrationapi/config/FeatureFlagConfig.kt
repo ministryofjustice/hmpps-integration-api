@@ -39,6 +39,7 @@ data class FeatureFlagConfig(
     const val PERSON_SEARCH_V2_ENABLED = "person-search-v2-enabled"
     const val SENTENCE_NO_NOMIS_FIX_ENABLED = "sentence-no-nomis-fix-enabled"
     const val PERSON_RESPONSIBLE_OFFICER_FIX_ENABLED = "person-responsible-officer-fix-enabled"
+    const val INCLUDE_PROVIDER_IN_RESPONSIBLE_OFFICER_TEAM = "include-provider-in-responsible-officer-team"
 
     // Events feature flags
     const val ENABLE_DELETE_PROCESSED_EVENTS = "enable-delete-processed-events"
