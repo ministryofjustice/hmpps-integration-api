@@ -15,8 +15,8 @@
       "email": "string",
       "telephoneNumber": "string",
       "provider": {
-        "code": "string",
-        "description": "string"
+        "code": "PROV1",
+        "description": "Provider Description"
       }
     },
     "allocated": true

@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CommunityOf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonResponsibleOfficerName
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonResponsibleOfficerTeam
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonResponsibleOfficerTeamProvider
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -49,6 +50,7 @@ class GetCommunityOffenderManagerForPersonServiceTest(
               description = "Service description",
               email = "email2@email2.com",
               telephoneNumber = "07XXXXXXXXX",
+              provider = PersonResponsibleOfficerTeamProvider(code = "PROV1", description = "Provider description"),
             ),
         )
 

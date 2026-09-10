@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Companion.GATEWAY_CACHE
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.EPF_ENDPOINT_INCLUDES_LAO
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.INCLUDE_PROVIDER_IN_RESPONSIBLE_OFFICER_TEAM
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
@@ -187,7 +188,7 @@ class NDeliusGateway(
       )
     return when (result) {
       is WebClientWrapperResponse.Success -> {
-        Response(data = result.data?.communityManager?.toCommunityOffenderManager())
+        Response(data = result.data.communityManager.toCommunityOffenderManager(useProvider = featureFlag.isEnabled(INCLUDE_PROVIDER_IN_RESPONSIBLE_OFFICER_TEAM)))
       }
 
       is WebClientWrapperResponse.Error -> {

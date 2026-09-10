@@ -135,6 +135,7 @@ feature-flag:
   person-search-v2-enabled: true
   sentence-no-nomis-fix-enabled: true
   person-responsible-officer-fix-enabled: true
+  include-provider-in-responsible-officer-team: true
   # Events Config
   enable-delete-processed-events: true
   enable-publish-pending-events: true
