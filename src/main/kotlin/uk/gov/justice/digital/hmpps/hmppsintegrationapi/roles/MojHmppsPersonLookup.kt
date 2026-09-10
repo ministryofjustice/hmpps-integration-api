@@ -17,9 +17,17 @@ val mojHmppsPersonLookup =
 val mojHmppsPersonLookupV2 =
   role("moj-hmpps-person-lookup-v2") {
     permissions {
-      -"/v2/persons"
+      -"/v1/addresses"
+      -"/v1/contacts"
+      -"/v1/contacts/{contactId}/linked-prisoners"
       -"/v1/persons"
+      -"/v1/persons/{hmppsId}"
+      -"/v1/persons/{hmppsId}/addresses"
+      -"/v1/persons/{hmppsId}/contacts"
+      -"/v1/persons/{hmppsId}/offences"
+      -"/v1/persons/{hmppsId}/sentences"
       -"/v1/status"
+      -"/v2/persons"
     }
     redactionPolicies {
       -laoRedactionPolicy
