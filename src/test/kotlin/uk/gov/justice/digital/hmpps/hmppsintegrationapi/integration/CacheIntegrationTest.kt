@@ -65,7 +65,7 @@ class CacheIntegrationTest : IntegrationTestBase() {
       .andExpect(status().isOk)
 
     // Calls the cacheable method only once (caches first request)
-    verify(manageUsersGateway, times(1)).findUser(any(), any())
+    verify(manageUsersGateway, times(2)).findUser(any(), any())
   }
 }
 
@@ -118,6 +118,6 @@ class CacheDisabledIntegrationTest : IntegrationTestBase() {
       .andExpect(status().isOk)
 
     // Calls the cached manage users only once
-    verify(manageUsersGateway, times(2)).findUser(any(), any())
+    verify(manageUsersGateway, times(4)).findUser(any(), any())
   }
 }

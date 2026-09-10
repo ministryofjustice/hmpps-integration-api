@@ -93,6 +93,10 @@ class AuthorisationFilter(
         res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Not authorized")
         return
       }
+
+      val hasHmppsAuthRole = authorisationService.verifyHmppsRole(oboUsername)
+      log.info("On Behalf Of username $oboUsername has applicable HMPPS Role?: $hasHmppsAuthRole")
+      telemetryService.trackEvent("OboHmppsRoleEvent", mapOf("clientId" to clientName, "oboUsername" to oboUsername, "hasHmppsAuthRole" to hasHmppsAuthRole.toString()))
     }
 
     if (consumerConfig == null) {
