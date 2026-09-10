@@ -19,6 +19,14 @@ val mojHmppsPersonLookupV2 =
     permissions {
       -"/v2/persons"
       -"/v1/persons"
+      -"/v1/persons/{hmppsId}"
+      -"/v1/persons/{hmppsId}/addresses"
+      -"/v1/persons/{hmppsId}/contacts"
+      -"/v1/persons/{hmppsId}/offences"
+      -"/v1/persons/{hmppsId}/sentences"
+      -"/v1/contacts"
+      -"/v1/contacts/{contactId}/linked-prisoners"
+      -"/v1/addresses"
       -"/v1/status"
     }
     redactionPolicies {
