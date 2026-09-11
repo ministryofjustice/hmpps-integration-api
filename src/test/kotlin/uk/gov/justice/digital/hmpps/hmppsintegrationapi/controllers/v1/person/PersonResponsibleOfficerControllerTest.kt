@@ -64,7 +64,6 @@ internal class PersonResponsibleOfficerControllerTest(
             ),
           ),
         )
-        whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.PERSON_RESPONSIBLE_OFFICER_FIX_ENABLED)).thenReturn(false)
         whenever(getCommunityOffenderManagerForPersonService.execute(hmppsId, filters)).thenReturn(
           Response(
             CommunityOffenderManager(
@@ -153,18 +152,6 @@ internal class PersonResponsibleOfficerControllerTest(
         result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
       }
 
-      it("returns a 404 when getPrisonOffenderManagerForPersonService returns a not found") {
-        whenever(getPrisonOffenderManagerForPersonService.execute(hmppsId, filters)).thenReturn(
-          Response(
-            data = null,
-            errors = listOf(UpstreamApiError(UpstreamApi.MANAGE_POM_CASE, UpstreamApiError.Type.ENTITY_NOT_FOUND)),
-          ),
-        )
-
-        val result = mockMvc.performAuthorised(path)
-        result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
-      }
-
       it("returns a 400 when getCommunityOffenderManagerForPersonService returns a bad request") {
         whenever(getCommunityOffenderManagerForPersonService.execute(hmppsId, filters)).thenReturn(
           Response(
@@ -177,20 +164,7 @@ internal class PersonResponsibleOfficerControllerTest(
         result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
       }
 
-      it("returns a 404 when getCommunityOffenderManagerForPersonService returns a not found") {
-        whenever(getCommunityOffenderManagerForPersonService.execute(hmppsId, filters)).thenReturn(
-          Response(
-            data = null,
-            errors = listOf(UpstreamApiError(UpstreamApi.NDELIUS, UpstreamApiError.Type.ENTITY_NOT_FOUND)),
-          ),
-        )
-
-        val result = mockMvc.performAuthorised(path)
-        result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
-      }
-
       it("returns a 200 with only community offender manager details when getPrisonOffenderManagerForPersonService returns a not found") {
-        whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.PERSON_RESPONSIBLE_OFFICER_FIX_ENABLED)).thenReturn(true)
         whenever(getPrisonOffenderManagerForPersonService.execute(hmppsId, filters)).thenReturn(
           Response(
             data = null,
@@ -206,7 +180,6 @@ internal class PersonResponsibleOfficerControllerTest(
       }
 
       it("returns a 200 with only prison offender manager when getCommunityOffenderManagerForPersonService returns a not found") {
-        whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.PERSON_RESPONSIBLE_OFFICER_FIX_ENABLED)).thenReturn(true)
         whenever(getCommunityOffenderManagerForPersonService.execute(hmppsId, filters)).thenReturn(
           Response(
             data = null,
@@ -221,7 +194,6 @@ internal class PersonResponsibleOfficerControllerTest(
       }
 
       it("returns a 404 not found when no data is returned and probation returns a not found") {
-        whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.PERSON_RESPONSIBLE_OFFICER_FIX_ENABLED)).thenReturn(true)
         whenever(getCommunityOffenderManagerForPersonService.execute(hmppsId, filters)).thenReturn(
           Response(
             data = null,

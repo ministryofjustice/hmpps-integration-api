@@ -20,6 +20,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonRespo
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationOnlyPersona
 
 @ContextConfiguration(
@@ -56,12 +57,11 @@ class GetCommunityOffenderManagerForPersonServiceTest(
 
       val deliusCrn = person.identifiers.deliusCrn!!
       val hmppsId = deliusCrn
-      val filter = null
+      val filter = ConsumerFilters(prisons = listOf("MKI"))
 
       beforeEach {
         Mockito.reset(getPersonService)
         Mockito.reset(nDeliusGateway)
-        whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.PERSON_RESPONSIBLE_OFFICER_FIX_ENABLED)).thenReturn(false)
         whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filter)).thenReturn(Response(person))
         whenever(nDeliusGateway.getCommunityOffenderManagerForPerson(crn = deliusCrn)).thenReturn(Response(communityOffenderManager))
       }
@@ -83,7 +83,6 @@ class GetCommunityOffenderManagerForPersonServiceTest(
       }
 
       it("Calls get person service when fix enabled and no filter present") {
-        whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.PERSON_RESPONSIBLE_OFFICER_FIX_ENABLED)).thenReturn(true)
         whenever(getPersonService.getPerson(hmppsId)).thenReturn(
           Response(
             data = person,
