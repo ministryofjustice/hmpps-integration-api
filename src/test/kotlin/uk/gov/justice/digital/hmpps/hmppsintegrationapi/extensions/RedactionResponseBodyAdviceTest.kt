@@ -23,6 +23,8 @@ import org.springframework.http.server.ServerHttpRequest
 import org.springframework.http.server.ServerHttpResponse
 import org.springframework.http.server.ServletServerHttpRequest
 import org.springframework.http.server.ServletServerHttpResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_LAO_ENABLED_BY_DEFAULT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
@@ -41,6 +43,7 @@ class RedactionResponseBodyAdviceTest {
   private lateinit var authorisationService: AuthorisationService
   private lateinit var accessFor: GetCaseAccess
   private lateinit var telemetryService: TelemetryService
+  private lateinit var featureFlagConfig: FeatureFlagConfig
   private lateinit var advice: RedactionResponseBodyAdvice
 
   private val roleName = "private-prison"
@@ -70,7 +73,10 @@ class RedactionResponseBodyAdviceTest {
       listOf(globalPolicy),
     )
 
-    advice = RedactionResponseBodyAdvice(authorisationService, accessFor, telemetryService)
+    featureFlagConfig = mock(FeatureFlagConfig::class.java)
+    whenever(featureFlagConfig.isEnabled(USE_LAO_ENABLED_BY_DEFAULT)).thenReturn(true)
+
+    advice = RedactionResponseBodyAdvice(authorisationService, accessFor, telemetryService, featureFlagConfig)
   }
 
   // -------------------------------------------------------------

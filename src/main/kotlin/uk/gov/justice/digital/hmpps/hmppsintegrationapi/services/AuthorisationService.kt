@@ -194,6 +194,8 @@ class AuthorisationService(
 
   fun requiresObo(consumerName: String): Boolean = authorisationConfig.consumers[consumerName]?.oboConfig?.required == true
 
+  fun allowLao(consumerName: String): Boolean = authorisationConfig.consumers[consumerName]?.allowLao == true
+
   /**
    * Reduces a list of list<Any> (mixed) type to a flattened list of specified Enum type
    * If any of the items is a wild card then null is returned
