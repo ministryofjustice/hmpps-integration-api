@@ -61,7 +61,6 @@ class GetCommunityOffenderManagerForPersonServiceTest(
       beforeEach {
         Mockito.reset(getPersonService)
         Mockito.reset(nDeliusGateway)
-        whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.PERSON_RESPONSIBLE_OFFICER_FIX_ENABLED)).thenReturn(false)
         whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filter)).thenReturn(Response(person))
         whenever(nDeliusGateway.getCommunityOffenderManagerForPerson(crn = deliusCrn)).thenReturn(Response(communityOffenderManager))
       }
@@ -83,7 +82,6 @@ class GetCommunityOffenderManagerForPersonServiceTest(
       }
 
       it("Calls get person service when fix enabled and no filter present") {
-        whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.PERSON_RESPONSIBLE_OFFICER_FIX_ENABLED)).thenReturn(true)
         whenever(getPersonService.getPerson(hmppsId)).thenReturn(
           Response(
             data = person,
