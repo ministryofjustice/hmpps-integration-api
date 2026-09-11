@@ -79,4 +79,18 @@ class PersonResponsibleOfficerIntegrationTest : IntegrationTestBase() {
 
     managePomCaseMockServer.assertValidationPassed()
   }
+
+  @Test
+  fun `returns only the community officer for a person who is in prison when the consumer has a supervision status of PROBATION`() {
+    nDeliusMockServer.stubForGet(
+      "/case/${Companion.crnNotActiveInProbation}/supervisions",
+      File(
+        "$gatewaysFolder/ndelius/fixtures/SupervisionsResponse.json",
+      ).readText(),
+    )
+
+    callApiWithCN("$basePath/$crnNotActiveInProbation/person-responsible-officer", "ext-probation-police-intelligence")
+      .andExpect(status().isOk)
+      .andExpect(content().json(getExpectedResponse("person-responsible-officer-redacted.json"), JsonCompareMode.STRICT))
+  }
 }
