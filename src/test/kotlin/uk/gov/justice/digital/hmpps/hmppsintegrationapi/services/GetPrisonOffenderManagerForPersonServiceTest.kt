@@ -17,6 +17,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonOffen
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.SupervisionStatus
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -104,6 +106,27 @@ class GetPrisonOffenderManagerForPersonServiceTest(
         val result = getPrisonOffenderManagerForPersonService.execute(hmppsId, filters)
         result.data.shouldBe(null)
         result.errors.shouldBe(errors)
+      }
+
+      it("Should return a 404 response if called with a PROBATION filter") {
+        val errors =
+          listOf(
+            UpstreamApiError(
+              causedBy = UpstreamApi.PRISON_API,
+              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+            ),
+          )
+        val filters = ConsumerFilters(supervisionStatuses = listOf(SupervisionStatus.PROBATION.name))
+        val result = getPrisonOffenderManagerForPersonService.execute(hmppsId, filters)
+        result.data.shouldBe(null)
+        result.errors.shouldBe(errors)
+      }
+
+      it("Returns a prison offender manager if called with a PRISONS filter") {
+        val filters = ConsumerFilters(supervisionStatuses = listOf(SupervisionStatus.PRISONS.name))
+        whenever(getPersonService.getNomisNumber(hmppsId = hmppsId, filters)).thenReturn(Response(NomisNumber(nomisNumber)))
+        val result = getPrisonOffenderManagerForPersonService.execute(hmppsId, filters)
+        result.shouldBe(Response(data = prisonOffenderManager))
       }
     },
   )

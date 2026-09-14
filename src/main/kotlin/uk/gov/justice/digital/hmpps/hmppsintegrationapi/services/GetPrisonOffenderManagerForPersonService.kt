@@ -18,6 +18,11 @@ class GetPrisonOffenderManagerForPersonService(
     hmppsId: String,
     filters: ConsumerFilters?,
   ): Response<PrisonOffenderManager?> {
+    // If the consumer does not have prison access then return 404 so that probation data is still returned
+    if (filters?.canAccessPrisons() == false) {
+      return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
+    }
+
     val personResponse = getPersonService.getNomisNumber(hmppsId, filters)
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = personResponse.errors)
