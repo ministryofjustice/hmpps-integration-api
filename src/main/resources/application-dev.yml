@@ -141,3 +141,7 @@ hmpps.sqs:
       queueName: ${DASO_QUEUE_NAME}
       queueArn: ${DASO_QUEUE_ARN}
       subscribeTopicId: integrationeventtopic
+    unilinksubscriberqueue:
+      queueName: ${UNILINK_QUEUE_NAME}
+      queueArn: ${UNILINK_QUEUE_ARN}
+      subscribeTopicId: integrationeventtopic
