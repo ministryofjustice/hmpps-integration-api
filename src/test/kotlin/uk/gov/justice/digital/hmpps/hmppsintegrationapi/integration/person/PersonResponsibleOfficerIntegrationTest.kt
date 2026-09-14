@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
@@ -10,10 +9,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationT
 import java.io.File
 
 class PersonResponsibleOfficerIntegrationTest : IntegrationTestBase() {
-  @BeforeEach
-  fun setup() {
-  }
-
   @AfterEach
   fun resetValidators() {
     managePomCaseMockServer.resetValidator()
