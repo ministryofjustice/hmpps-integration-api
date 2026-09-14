@@ -62,10 +62,9 @@ class PersonIntegrationTest : IntegrationTestBase() {
 
     @Test
     fun `returns a list of persons using first name and last name as search parameters`() {
-      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.USE_LAO_ENABLED_BY_DEFAULT)).thenReturn(false)
       val queryParams = "first_name=$firstName&last_name=$lastName"
 
-      callApi("$basePath?$queryParams")
+      callApiWithCN("$basePath?$queryParams", "consumer-with-allow-lao")
         .andExpect(status().isOk)
         .andExpect(content().json(getExpectedResponse("person-name-search-response.json"), JsonCompareMode.STRICT))
 
@@ -84,9 +83,20 @@ class PersonIntegrationTest : IntegrationTestBase() {
     }
 
     @Test
+    fun `return a list of persons using first name and last name as search parameters with lao enabled by default feature flag off`() {
+      val queryParams = "first_name=$firstName&last_name=$lastName"
+      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.USE_LAO_ENABLED_BY_DEFAULT)).thenReturn(false)
+
+      callApi("$basePath?$queryParams")
+        .andExpect(status().isOk)
+        .andExpect(content().json(getExpectedResponse("person-name-search-response.json"), JsonCompareMode.STRICT))
+
+      prisonerOffenderSearchMockServer.assertValidationPassed()
+    }
+
+    @Test
     fun `returns a list of persons using pnc number search with consumer filters`() {
       whenever(authorisationConfig.roles).thenReturn(mapOf("full-access" to testRoleWithPrisonFilters))
-      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.USE_LAO_ENABLED_BY_DEFAULT)).thenReturn(false)
       val pncNumber = "2003/13116M"
 
       val expectedRequest = attributeSearchRequest(firstName, lastName, pncNumber, consumerFilters = testRoleWithPrisonFilters.filters!!)
@@ -111,7 +121,6 @@ class PersonIntegrationTest : IntegrationTestBase() {
     @Test
     fun `returns a person from Prisoner Offender Search and Probation Offender Search using probation offender search`() {
       whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.USE_PROBATION_SEARCH_FOR_PERSON_SEARCH)).thenReturn(true)
-      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.USE_LAO_ENABLED_BY_DEFAULT)).thenReturn(false)
       val searchRequest = PersonSearchRequest(firstName, lastName)
       probationSearchMockServer.stubForPost(
         searchRequest.uriString(1, 10),
@@ -120,7 +129,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
       )
 
       val queryParams = "first_name=$firstName&last_name=$lastName"
-      callApi("$basePath?$queryParams")
+      callApiWithCN("$basePath?$queryParams", "consumer-with-allow-lao")
         .andExpect(status().isOk)
         .andExpect(content().json(getExpectedResponse("person-name-search-probation-and-prison-response.json"), JsonCompareMode.STRICT))
 
