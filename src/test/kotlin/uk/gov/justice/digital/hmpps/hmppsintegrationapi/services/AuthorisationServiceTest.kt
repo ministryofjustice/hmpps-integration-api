@@ -430,7 +430,7 @@ class AuthorisationServiceTest : ConfigTest() {
   }
 
   @Test
-  fun `verifyUsername returns false if oboConfig does have a verification strategy and user IS verified`() {
+  fun `verifyUsername returns true if oboConfig does have a verification strategy and user IS verified`() {
     whenever(mockManageUsersService.usernameExists("testUsername", listOf("testStrategy"))).thenReturn(true)
     val service =
       AuthorisationService(
@@ -444,5 +444,39 @@ class AuthorisationServiceTest : ConfigTest() {
         mockManageUsersService,
       )
     assertEquals(true, service.verifyUsername("testUsername", "consumer-name"))
+  }
+
+  @Test
+  fun `verifyHmppsRole returns true if manage users service hasApplicableRole returns true`() {
+    whenever(mockManageUsersService.hasApplicableRole("testUsername")).thenReturn(true)
+    val service =
+      AuthorisationService(
+        AuthorisationConfig(
+          mapOf(
+            "consumer-name" to
+              ConsumerConfig(oboConfig = OboConfig("test", verificationStrategy = "testStrategy")),
+          ),
+        ),
+        mockTelemetryService,
+        mockManageUsersService,
+      )
+    assertEquals(true, service.verifyHmppsRole("testUsername"))
+  }
+
+  @Test
+  fun `verifyHmppsRole returns false if manage users service hasApplicableRole returns false`() {
+    whenever(mockManageUsersService.hasApplicableRole("testUsername")).thenReturn(false)
+    val service =
+      AuthorisationService(
+        AuthorisationConfig(
+          mapOf(
+            "consumer-name" to
+              ConsumerConfig(oboConfig = OboConfig("test", verificationStrategy = "testStrategy")),
+          ),
+        ),
+        mockTelemetryService,
+        mockManageUsersService,
+      )
+    assertEquals(false, service.verifyHmppsRole("testUsername"))
   }
 }

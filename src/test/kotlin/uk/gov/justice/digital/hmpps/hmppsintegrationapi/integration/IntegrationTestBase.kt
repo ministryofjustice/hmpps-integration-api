@@ -411,6 +411,20 @@ abstract class IntegrationTestBase {
         ).readText(),
       )
 
+      manageUsersMockServer.stubForGet(
+        "/users/search?username=testName&authSources=nomis",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/NomisUserFoundResponse.json",
+        ).readText(),
+      )
+
+      manageUsersMockServer.stubForGet(
+        "/users/testUser/roles",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/NomisUserRolesFoundResponse.json",
+        ).readText(),
+      )
+
       probationSearchMockServer.start()
       managePomCaseMockServer.start()
       plpMockServer.start()

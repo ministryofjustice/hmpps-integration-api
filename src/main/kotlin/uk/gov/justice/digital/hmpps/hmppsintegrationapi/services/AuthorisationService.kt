@@ -192,6 +192,8 @@ class AuthorisationService(
     return manageUsersService.usernameExists(username, listOf(authSource))
   }
 
+  fun verifyHmppsRole(username: String): Boolean = manageUsersService.hasApplicableRole(username)
+
   fun requiresObo(consumerName: String): Boolean = authorisationConfig.consumers[consumerName]?.oboConfig?.required == true
 
   /**

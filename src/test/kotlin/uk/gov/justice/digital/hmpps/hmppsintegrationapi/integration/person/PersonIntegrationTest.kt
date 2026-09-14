@@ -118,7 +118,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
       callApiWithCN("$basePath?$queryParams", "obo-unsigned", oboValue = createUnsignedJwt())
       val uri = argumentCaptor<String>()
       verify(authSpy, atLeast(1)).getResponseBodySpec(eq(HttpMethod.POST), uri.capture(), anyMap(), eq(null))
-      val authRequestStrings = uri.allValues
+      val authRequestStrings = uri.allValues.filter { it.contains("username=") }
       // Gets an auth token for deliusGateway.getPersons and prisonerOffenderSearchGateway.attributeSearch passing the username
       assertThat(authRequestStrings.size).isEqualTo(2)
       authRequestStrings.forEach {
