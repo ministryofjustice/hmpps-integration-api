@@ -397,6 +397,58 @@ class AuthorisationServiceTest : ConfigTest() {
   }
 
   @Test
+  fun `returns true if allowLao has a value and is set to true`() {
+    val service =
+      AuthorisationService(
+        AuthorisationConfig(
+          mapOf(
+            "consumer-name" to
+              ConsumerConfig(
+                allowLao = true,
+              ),
+          ),
+        ),
+        mockTelemetryService,
+        mockManageUsersService,
+      )
+    assertEquals(true, service.allowLao("consumer-name"))
+  }
+
+  @Test
+  fun `returns false if allowLao has a value and is set to false`() {
+    val service =
+      AuthorisationService(
+        AuthorisationConfig(
+          mapOf(
+            "consumer-name" to
+              ConsumerConfig(
+                allowLao = false,
+              ),
+          ),
+        ),
+        mockTelemetryService,
+        mockManageUsersService,
+      )
+    assertEquals(false, service.allowLao("consumer-name"))
+  }
+
+  @Test
+  fun `returns false if allowLao has no value`() {
+    val service =
+      AuthorisationService(
+        AuthorisationConfig(
+          mapOf(
+            "consumer-name" to
+              ConsumerConfig(),
+          ),
+        ),
+        mockTelemetryService,
+        mockManageUsersService,
+      )
+    assertEquals(false, service.allowLao("consumer-name"))
+  }
+
+  @Test
   fun `verifyUsername returns true if oboConfig does not have a verification strategy`() {
     val service =
       AuthorisationService(

@@ -14,9 +14,12 @@ import org.springframework.http.server.ServletServerHttpResponse
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.servlet.HandlerMapping
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_LAO_ENABLED_BY_DEFAULT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolicy
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.policies.laoRedactionPolicy
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
@@ -25,6 +28,7 @@ class RedactionResponseBodyAdvice(
   val authorisationService: AuthorisationService,
   val accessFor: GetCaseAccess,
   val telemetryService: TelemetryService,
+  val featureFlagConfig: FeatureFlagConfig,
 ) : ResponseBodyAdvice<Any> {
   val config: Configuration =
     Configuration
@@ -63,10 +67,21 @@ class RedactionResponseBodyAdvice(
       }
     val requestUri = servletRequest.requestURI
     val consumerName = servletRequest.getAttribute("clientName") as? String
-    val redactionPolicies = authorisationService.redactionPolicies(consumerName!!)
+    val redactionPolicies = getRedactionPolicies(consumerName)
     val hmppsId = servletRequest.getAttribute("hmppsId") as? String
     val redactionContext = RedactionContext(requestUri, accessFor, telemetryService, hmppsId, consumerName)
     return applyPolicies(redactionContext, body, redactionPolicies)
+  }
+
+  fun getRedactionPolicies(consumerName: String?): List<RedactionPolicy> {
+    val redactionPolicies = authorisationService.redactionPolicies(consumerName!!)
+    if (!featureFlagConfig.isEnabled(USE_LAO_ENABLED_BY_DEFAULT)) {
+      return redactionPolicies
+    }
+    if (!authorisationService.allowLao(consumerName) && !redactionPolicies.contains(laoRedactionPolicy)) {
+      return redactionPolicies + laoRedactionPolicy
+    }
+    return redactionPolicies
   }
 
   fun applyPolicies(

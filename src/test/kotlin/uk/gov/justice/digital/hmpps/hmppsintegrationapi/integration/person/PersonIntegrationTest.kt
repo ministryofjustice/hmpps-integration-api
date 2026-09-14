@@ -19,6 +19,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.http.HttpMethod
+import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -63,9 +64,32 @@ class PersonIntegrationTest : IntegrationTestBase() {
     fun `returns a list of persons using first name and last name as search parameters`() {
       val queryParams = "first_name=$firstName&last_name=$lastName"
 
+      callApiWithCN("$basePath?$queryParams", "consumer-with-allow-lao")
+        .andExpect(status().isOk)
+        .andExpect(content().json(getExpectedResponse("person-name-search-response.json"), JsonCompareMode.STRICT))
+
+      prisonerOffenderSearchMockServer.assertValidationPassed()
+    }
+
+    @Test
+    fun `return a list of persons using first name and last name as search parameters with lao redactions`() {
+      val queryParams = "first_name=$firstName&last_name=$lastName"
+
       callApi("$basePath?$queryParams")
         .andExpect(status().isOk)
-        .andExpect(content().json(getExpectedResponse("person-name-search-response.json")))
+        .andExpect(content().json(getExpectedResponse("person-name-search-response-lao-redactions.json"), JsonCompareMode.STRICT))
+
+      prisonerOffenderSearchMockServer.assertValidationPassed()
+    }
+
+    @Test
+    fun `return a list of persons using first name and last name as search parameters with lao enabled by default feature flag off`() {
+      val queryParams = "first_name=$firstName&last_name=$lastName"
+      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.USE_LAO_ENABLED_BY_DEFAULT)).thenReturn(false)
+
+      callApi("$basePath?$queryParams")
+        .andExpect(status().isOk)
+        .andExpect(content().json(getExpectedResponse("person-name-search-response.json"), JsonCompareMode.STRICT))
 
       prisonerOffenderSearchMockServer.assertValidationPassed()
     }
@@ -89,7 +113,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
 
       callApi("$basePath?$queryParams")
         .andExpect(status().isOk)
-        .andExpect(content().json(getExpectedResponse("person-name-pnc-search-response.json")))
+        .andExpect(content().json(getExpectedResponse("person-name-pnc-search-response.json"), JsonCompareMode.STRICT))
 
       prisonerOffenderSearchMockServer.assertValidationPassed()
     }
@@ -105,9 +129,9 @@ class PersonIntegrationTest : IntegrationTestBase() {
       )
 
       val queryParams = "first_name=$firstName&last_name=$lastName"
-      callApi("$basePath?$queryParams")
+      callApiWithCN("$basePath?$queryParams", "consumer-with-allow-lao")
         .andExpect(status().isOk)
-        .andExpect(content().json(getExpectedResponse("person-name-search-probation-and-prison-response.json")))
+        .andExpect(content().json(getExpectedResponse("person-name-search-probation-and-prison-response.json"), JsonCompareMode.STRICT))
 
       prisonerOffenderSearchMockServer.assertValidationPassed()
     }
@@ -144,7 +168,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
     fun `returns a person from Prisoner Offender Search and Probation Offender Search`() {
       callApi("$basePath/$crn")
         .andExpect(status().isOk)
-        .andExpect(content().json(getExpectedResponse("person-offender-and-probation-search-response.json")))
+        .andExpect(content().json(getExpectedResponse("person-offender-and-probation-search-response.json"), JsonCompareMode.STRICT))
 
       prisonerOffenderSearchMockServer.assertValidationPassed()
     }
@@ -219,7 +243,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
     fun `returns image metadata for a person`() {
       callApi("$basePath/$nomsId/images")
         .andExpect(status().isOk)
-        .andExpect(content().json(getExpectedResponse("person-image-meta-data")))
+        .andExpect(content().json(getExpectedResponse("person-image-meta-data"), JsonCompareMode.STRICT))
     }
 
     @Test
@@ -387,7 +411,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
     fun `returns a prisoner's physical characteristics`() {
       callApi(path)
         .andExpect(status().isOk)
-        .andExpect(content().json(getExpectedResponse("physical-characteristics")))
+        .andExpect(content().json(getExpectedResponse("physical-characteristics"), JsonCompareMode.STRICT))
     }
 
     @Test
@@ -417,7 +441,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
     fun `returns a prisoner's care needs`() {
       callApi(path)
         .andExpect(status().isOk)
-        .andExpect(content().json(getExpectedResponse("personal-care-needs")))
+        .andExpect(content().json(getExpectedResponse("personal-care-needs"), JsonCompareMode.STRICT))
     }
 
     @Test
@@ -483,7 +507,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
       )
       callApi(path)
         .andExpect(status().isOk)
-        .andExpect(content().json(getExpectedResponse("person-education")))
+        .andExpect(content().json(getExpectedResponse("person-education"), JsonCompareMode.STRICT))
     }
 
     @Test

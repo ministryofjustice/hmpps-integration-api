@@ -11,6 +11,7 @@ data class ConsumerConfig(
   val oboConfig: OboConfig? = null,
   val allowFeatureOverride: Boolean = false,
   val isSuspended: Boolean = false,
+  val allowLao: Boolean = false,
 ) {
   fun permissions(): List<String>? = include
 }

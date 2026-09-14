@@ -88,6 +88,7 @@ feature-flag:
   person-search-v2-enabled: true
   sentence-no-nomis-fix-enabled: true
   include-provider-in-responsible-officer-team: true
+  use-lao-enabled-by-default: true
   # Events Config
   enable-delete-processed-events: false
   enable-publish-pending-events: false

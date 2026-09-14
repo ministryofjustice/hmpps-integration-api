@@ -32,14 +32,14 @@
       "restrictionMessage":null,
       "currentExclusion":null,
       "exclusionMessage":null
-    }
-  ],"pagination":
-{
-  "isLastPage":true,
-  "count":1,
-  "page":1,
-  "perPage":10,
-  "totalCount":1,
-  "totalPages":1
-}
+    }],
+  "pagination":
+  {
+    "isLastPage":true,
+    "count":1,
+    "page":1,
+    "perPage":10,
+    "totalCount":1,
+    "totalPages":1
+  }
 }

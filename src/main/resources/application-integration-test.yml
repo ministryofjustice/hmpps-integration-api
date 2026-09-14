@@ -135,6 +135,7 @@ feature-flag:
   person-search-v2-enabled: true
   sentence-no-nomis-fix-enabled: true
   include-provider-in-responsible-officer-team: true
+  use-lao-enabled-by-default: true
   # Events Config
   enable-delete-processed-events: true
   enable-publish-pending-events: true
@@ -290,6 +291,10 @@ authorisation:
     moj-prisons-education:
       roles:
         - "moj-prisons-education"
+    consumer-with-allow-lao:
+      roles:
+        - "all-endpoints"
+      allowLao: true
 
   certificate-revocation-list:
     - 01:7b:eb:77:06:db:11:f5:2e:b6:f7:37:7b:a9:e0:e4:84:c5:2c:a3
