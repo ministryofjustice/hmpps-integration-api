@@ -133,7 +133,6 @@ feature-flag:
   prison-timeline-endpoint-enabled: true
   restapiclient-for-prison-api-gateway: false
   person-search-v2-enabled: true
-  sentence-no-nomis-fix-enabled: true
   use-lao-enabled-by-default: true
   # Events Config
   enable-delete-processed-events: true
