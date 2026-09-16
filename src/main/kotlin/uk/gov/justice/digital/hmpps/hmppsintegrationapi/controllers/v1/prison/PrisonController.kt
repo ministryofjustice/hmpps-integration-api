@@ -145,6 +145,7 @@ class PrisonController(
   }
 
   @GetMapping("/{prisonId}/visit/search")
+  @Tag(name = "Visits")
   @Operation(
     summary = "Searches for visits by prisonId and criteria.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",

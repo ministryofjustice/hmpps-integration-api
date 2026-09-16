@@ -36,7 +36,6 @@ class PrisonerContactsController(
   @Autowired val auditService: AuditService,
 ) {
   @GetMapping("{hmppsId}/contacts")
-  @Tag(name = "Reception")
   @Operation(
     summary = "Returns a prisoners contacts.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
@@ -70,7 +69,6 @@ class PrisonerContactsController(
 
   @FeatureFlag(name = USE_EMERGENCY_CONTACTS_ENDPOINT)
   @GetMapping("{hmppsId}/emergency-contacts")
-  @Tag(name = "Reception")
   @Operation(
     deprecated = true,
     summary = "Returns a prisoner's emergency or next of kin contacts.",

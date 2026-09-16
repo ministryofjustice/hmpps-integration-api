@@ -32,6 +32,7 @@ class VisitRestrictionsController(
   @Autowired val getVisitorRestrictionsService: GetVisitorRestrictionsService,
 ) {
   @GetMapping("/visit-restrictions")
+  @Tag(name = "Visits")
   @Operation(
     summary = "Gets visit restrictions for a prisoner.",
     description = "Returns a prisoner's visit restrictions. Only returns the visit restrictions for the prisoner's most recent booking.",
@@ -70,6 +71,7 @@ class VisitRestrictionsController(
     ],
   )
   @GetMapping("/visitor/{contactId}/restrictions")
+  @Tag(name = "Contacts")
   fun getVisitorRestrictions(
     @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
     @Parameter(description = "A contact ID") @PathVariable contactId: String,
