@@ -37,7 +37,6 @@ data class FeatureFlagConfig(
     const val USE_PROBATION_SEARCH_FOR_PERSON_SEARCH = "use-probation-search-for-person-search"
     const val RESTAPICLIENT_FOR_PRISON_API_GATEWAY = "restapiclient-for-prison-api-gateway"
     const val PERSON_SEARCH_V2_ENABLED = "person-search-v2-enabled"
-    const val SENTENCE_NO_NOMIS_FIX_ENABLED = "sentence-no-nomis-fix-enabled"
     const val USE_LAO_ENABLED_BY_DEFAULT = "use-lao-enabled-by-default"
 
     // Events feature flags
