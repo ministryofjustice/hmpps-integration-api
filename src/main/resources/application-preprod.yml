@@ -70,13 +70,13 @@ feature-flag:
   cpr-enabled: true
   use-assessment-summary-endpoint: false
   use-stubbed-assessment-summary: false
-  contact-search-endpoint-enabled: true
-  address-search-endpoint-enabled: true
-  contact-linked-prisoners-endpoint-enabled: true
+  contact-search-endpoint-enabled: false
+  address-search-endpoint-enabled: false
+  contact-linked-prisoners-endpoint-enabled: false
   prison-timeline-endpoint-enabled: false
   restapiclient-for-prison-api-gateway: false
   use-probation-search-for-person-search: true
-  person-search-v2-enabled: true
+  person-search-v2-enabled: false
   sentence-no-nomis-fix-enabled: true
   use-lao-enabled-by-default: true
   # Events Config
