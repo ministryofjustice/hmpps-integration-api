@@ -120,7 +120,7 @@ class CorePersonRecordGatewayTest(
       it("upstream API returns core person record search results") {
         val requestContext = buildRequestContext()
         cprMockServer.stubForPost(
-          "/person/search",
+          "/person/vetting/search",
           File(
             "$gatewaysFolder/cpr/fixtures/core-person-record-search-request.json",
           ).readText(),
@@ -156,7 +156,7 @@ class CorePersonRecordGatewayTest(
           )
 
         cprMockServer.stubForPost(
-          "/person/search",
+          "/person/vetting/search",
           File(
             "$gatewaysFolder/cpr/fixtures/core-person-record-search-invalid-request.json",
           ).readText(),

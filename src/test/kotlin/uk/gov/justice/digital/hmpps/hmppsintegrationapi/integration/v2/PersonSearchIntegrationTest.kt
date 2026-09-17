@@ -30,7 +30,7 @@ class PersonSearchIntegrationTest : IntegrationTestBase() {
   @BeforeEach
   fun setup() {
     corePersonRecordMockServer.stubForPost(
-      "/person/search",
+      "/person/vetting/search",
       resBody = response,
       reqBody = request,
     )
@@ -46,7 +46,7 @@ class PersonSearchIntegrationTest : IntegrationTestBase() {
   @Test
   fun `upstream returns a 404 for a person search`() {
     corePersonRecordMockServer.stubForPost(
-      "/person/search",
+      "/person/vetting/search",
       resBody = "",
       reqBody = invalidRequest,
       status = HttpStatus.NOT_FOUND,
@@ -59,7 +59,7 @@ class PersonSearchIntegrationTest : IntegrationTestBase() {
   @Test
   fun `upstream returns a 400 for a person search`() {
     corePersonRecordMockServer.stubForPost(
-      "/person/search",
+      "/person/vetting/search",
       resBody = "",
       reqBody = invalidRequest,
       status = HttpStatus.BAD_REQUEST,

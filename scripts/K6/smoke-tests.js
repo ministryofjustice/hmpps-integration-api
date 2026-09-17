@@ -308,12 +308,12 @@ function verify_post_endpoints() {
     exec.test.fail(`${postAllocationEndpoint} caused the test to fail`)
   }
 
-//  const personSearchV2Res = http.post(`${baseUrl}${personSearchV2Endpoint}`, personSearchV2Request, params);
-//  if (!check(personSearchV2Res, {
-//    [`POST ${personSearchV2Endpoint} returns 200`]: (r) => r.status === 200,
-//  })) {
-//    exec.test.fail(`${personSearchV2Endpoint} caused the test to fail`)
-//  }
+  const personSearchV2Res = http.post(`${baseUrl}${personSearchV2Endpoint}`, personSearchV2Request, params);
+  if (!check(personSearchV2Res, {
+    [`POST ${personSearchV2Endpoint} returns 200`]: (r) => r.status === 200,
+  })) {
+    exec.test.fail(`${personSearchV2Endpoint} caused the test to fail`)
+  }
 }
 
 function verify_web_application_firewall_request(path) {
