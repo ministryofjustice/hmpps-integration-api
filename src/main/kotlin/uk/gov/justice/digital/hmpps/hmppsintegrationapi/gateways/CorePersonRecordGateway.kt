@@ -84,7 +84,7 @@ class CorePersonRecordGateway(
     corePersonRecordSearchRequest: CorePersonRecordSearchRequest,
     requestContext: RequestContext,
   ): Response<CorePersonRecordSearchResponse?> {
-    val uri = "/person/search"
+    val uri = "/person/vetting/search"
     val result =
       webClient.request<CorePersonRecordSearchResponse>(
         HttpMethod.POST,
