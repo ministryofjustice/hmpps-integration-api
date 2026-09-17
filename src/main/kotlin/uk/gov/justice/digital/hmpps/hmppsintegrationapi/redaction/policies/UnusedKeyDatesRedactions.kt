@@ -27,6 +27,7 @@ val unusedKeyDatesRedactions =
           -("$.data.dtoPostRecallRelease" to REMOVE)
           -("$.data.tariffEarlyRemovalSchemeEligibilityDate" to REMOVE)
           -("$.data.topupSupervision" to REMOVE)
+          -("$.data.sentence.effectiveEndDate" to REMOVE)
         }
       }
     }
