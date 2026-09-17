@@ -1,8 +1,11 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 
+import org.assertj.core.api.Assertions.assertThat
+import org.mockito.ArgumentMatchers.anyMap
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.atLeast
 import org.mockito.kotlin.eq
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
@@ -156,5 +159,50 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
     )
     callApiWithCN("$basePath/$crn", "obo-unsigned-verified", oboValue = createUnsignedJwt())
       .andExpect(MockMvcResultMatchers.status().isUnauthorized)
+  }
+
+  @Test
+  fun `an obo username is verified and has the required role - logs hasHmppsAuthRole is true to app insights `() {
+    manageUsersMockServer.stubForGet(
+      "/users/search?username=testName&authSources=azuread",
+      File(
+        "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/UserFoundResponse.json",
+      ).readText(),
+    )
+
+    callApiWithCN("$basePath/$crn", "obo-unsigned-verified", oboValue = createUnsignedJwt())
+      .andExpect(MockMvcResultMatchers.status().isOk)
+
+    val eventCaptor = argumentCaptor<Map<String, String>>()
+    verify(telemetryService, times(1)).trackEvent(eq("OboHmppsRoleEvent"), eventCaptor.capture(), anyMap())
+    val firstValue = eventCaptor.firstValue
+    val event = firstValue
+    assertThat(event["hasHmppsAuthRole"]).isEqualTo("true")
+  }
+
+  @Test
+  fun `an obo username is verified and does not have the required role - logs hasHmppsAuthRole is false to app insights `() {
+    manageUsersMockServer.stubForGet(
+      "/users/search?username=testName&authSources=azuread",
+      File(
+        "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/UserFoundResponse.json",
+      ).readText(),
+    )
+
+    manageUsersMockServer.stubForGet(
+      "/users/testUser/roles",
+      File(
+        "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/NomisUserRolesWithoutGlobalSearch.json",
+      ).readText(),
+    )
+
+    callApiWithCN("$basePath/$crn", "obo-unsigned-verified", oboValue = createUnsignedJwt())
+      .andExpect(MockMvcResultMatchers.status().isOk)
+
+    val eventCaptor = argumentCaptor<Map<String, String>>()
+    verify(telemetryService, times(1)).trackEvent(eq("OboHmppsRoleEvent"), eventCaptor.capture(), anyMap())
+    val firstValue = eventCaptor.firstValue
+    val event = firstValue
+    assertThat(event["hasHmppsAuthRole"]).isEqualTo("false")
   }
 }
