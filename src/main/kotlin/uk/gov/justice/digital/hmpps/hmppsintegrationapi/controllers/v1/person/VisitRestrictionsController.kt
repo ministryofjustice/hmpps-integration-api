@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
-import io.swagger.v3.oas.annotations.tags.Tags
 import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
@@ -26,13 +25,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 
 @RestController
 @RequestMapping("/v1/persons/{hmppsId}")
-@Tags(value = [Tag(name = "Persons"), Tag(name = "Visits")])
+@Tag(name = "Persons")
 class VisitRestrictionsController(
   @Autowired val auditService: AuditService,
   @Autowired val getVisitRestrictionsForPersonService: GetVisitRestrictionsForPersonService,
   @Autowired val getVisitorRestrictionsService: GetVisitorRestrictionsService,
 ) {
   @GetMapping("/visit-restrictions")
+  @Tag(name = "Visits")
   @Operation(
     summary = "Gets visit restrictions for a prisoner.",
     description = "Returns a prisoner's visit restrictions. Only returns the visit restrictions for the prisoner's most recent booking.",
@@ -71,6 +71,7 @@ class VisitRestrictionsController(
     ],
   )
   @GetMapping("/visitor/{contactId}/restrictions")
+  @Tag(name = "Contacts")
   fun getVisitorRestrictions(
     @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
     @Parameter(description = "A contact ID") @PathVariable contactId: String,
