@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CorePersonRecordGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.CorePersonRecordSearchRequest
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.CorePersonRecordSearchResponseItem
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.CorePersonRecordSearchResponseGroup
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 
 @Service
@@ -14,7 +14,7 @@ class PersonSearchService(
   fun personSearch(
     request: CorePersonRecordSearchRequest,
     requestContext: RequestContext,
-  ): Response<List<CorePersonRecordSearchResponseItem>?> {
+  ): Response<List<CorePersonRecordSearchResponseGroup>?> {
     val response = corePersonRecordGateway.corePersonRecordSearch(request, requestContext)
     if (response.errors.isNotEmpty()) {
       return Response(data = null, errors = response.errors)

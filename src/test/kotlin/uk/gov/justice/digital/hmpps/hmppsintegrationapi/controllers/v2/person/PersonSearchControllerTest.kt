@@ -24,6 +24,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMo
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase.Companion.gatewaysFolder
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.CPRName
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.CorePersonRecordSearchRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.CorePersonRecordSearchResponseGroup
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.CorePersonRecordSearchResponseItem
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -57,7 +58,13 @@ internal class PersonSearchControllerTest(
           Mockito.reset(personSearchService)
           whenever(personSearchService.personSearch(eq(request), any<RequestContext>())).thenReturn(
             Response(
-              listOf(CorePersonRecordSearchResponseItem(CPRName("John", "Brian", "Doe"))),
+              listOf(
+                CorePersonRecordSearchResponseGroup(
+                  listOf(
+                    CorePersonRecordSearchResponseItem(CPRName("John", "Brian", "Doe")),
+                  ),
+                ),
+              ),
             ),
           )
           Mockito.reset(auditService)
@@ -66,8 +73,9 @@ internal class PersonSearchControllerTest(
         it("returns a 200 OK status code") {
           val result = mockMvc.performAuthorisedPost(path, request)
           result.response.status.shouldBe(HttpStatus.OK.value())
-          val response = result.response.contentAsJson<DataResponse<List<CorePersonRecordSearchResponseItem>>>()
+          val response = result.response.contentAsJson<DataResponse<List<CorePersonRecordSearchResponseGroup>>>()
           response.data[0]
+            .results[0]
             .name
             ?.firstName
             .shouldBe("John")

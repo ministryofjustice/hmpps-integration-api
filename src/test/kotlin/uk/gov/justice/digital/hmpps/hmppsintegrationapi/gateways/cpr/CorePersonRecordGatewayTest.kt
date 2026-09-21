@@ -125,7 +125,7 @@ class CorePersonRecordGatewayTest(
             "$gatewaysFolder/cpr/fixtures/core-person-record-search-request.json",
           ).readText(),
           File(
-            "$gatewaysFolder/cpr/fixtures/core-person-record-search-response.json",
+            "$gatewaysFolder/cpr/fixtures/core-person-record-search-response-new.json",
           ).readText(),
           HttpStatus.OK,
         )
@@ -140,6 +140,7 @@ class CorePersonRecordGatewayTest(
         val response = corePersonRecordGateway.corePersonRecordSearch(request, requestContext)
         response.data
           ?.data[0]
+          ?.results[0]
           ?.identifiers
           ?.crn
           .shouldBe("A123456")

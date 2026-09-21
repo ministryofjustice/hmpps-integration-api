@@ -19,7 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFound
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.CorePersonRecordSearchRequest
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.CorePersonRecordSearchResponseItem
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.CorePersonRecordSearchResponseGroup
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
@@ -47,7 +47,7 @@ class PersonSearchController(
   fun personSearch(
     @RequestAttribute requestContext: RequestContext,
     @Valid @RequestBody request: CorePersonRecordSearchRequest,
-  ): DataResponse<List<CorePersonRecordSearchResponseItem>> {
+  ): DataResponse<List<CorePersonRecordSearchResponseGroup>> {
     val response = personSearchService.personSearch(request, requestContext)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
