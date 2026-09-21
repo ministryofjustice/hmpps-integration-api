@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CorePersonRecor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.CPRName
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.CorePersonRecordSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.CorePersonRecordSearchResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.CorePersonRecordSearchResponseGroup
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.CorePersonRecordSearchResponseItem
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -19,7 +20,17 @@ class PersonSearchServiceTest {
   val corePersonRecordGateway: CorePersonRecordGateway = mock(CorePersonRecordGateway::class.java)
   val service = PersonSearchService(corePersonRecordGateway)
   val requestContext = buildRequestContext()
-  val successResponse = CorePersonRecordSearchResponse(data = listOf(CorePersonRecordSearchResponseItem(CPRName("John", "Brian", "Doe"))))
+  val successResponse =
+    CorePersonRecordSearchResponse(
+      data =
+        listOf(
+          CorePersonRecordSearchResponseGroup(
+            listOf(
+              CorePersonRecordSearchResponseItem(CPRName("John", "Brian", "Doe")),
+            ),
+          ),
+        ),
+    )
 
   @Test
   fun `should successfully search for a person`() {
@@ -28,14 +39,17 @@ class PersonSearchServiceTest {
     val response = service.personSearch(request, requestContext)
     response.data
       ?.get(0)
+      ?.results[0]
       ?.name
       ?.firstName shouldEqual "John"
     response.data
       ?.get(0)
+      ?.results[0]
       ?.name
       ?.middleNames shouldEqual "Brian"
     response.data
       ?.get(0)
+      ?.results[0]
       ?.name
       ?.lastName shouldEqual "Doe"
   }
