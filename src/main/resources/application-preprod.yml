@@ -60,6 +60,7 @@ services:
 
 feature-flag:
   # API Config
+  up3-case-status-update-enabled: false
   course-completion-event-enabled: false
   use-active-alerts-endpoint: false
   use-contact-events-endpoint: false

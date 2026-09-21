@@ -100,6 +100,7 @@ hmpps.sqs:
 
 feature-flag:
   # API Config
+  up3-case-status-update-enabled: true
   course-completion-event-enabled: true
   use-active-alerts-endpoint: false
   use-contact-events-endpoint: true

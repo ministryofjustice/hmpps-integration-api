@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.method.annotation.HandlerMethodValidationException
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.CaseStatusValidationException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ConflictFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.DeprecatedApiException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
@@ -76,6 +77,20 @@ class HmppsIntegrationApiExceptionHandler {
           status = HttpStatus.BAD_REQUEST,
           developerMessage = "Type mismatch: ${e.message}",
           userMessage = "Invalid input type for '${e.name}'",
+        ),
+      )
+  }
+
+  @ExceptionHandler(CaseStatusValidationException::class)
+  fun handleCaseStatusValidationException(e: CaseStatusValidationException): ResponseEntity<ErrorResponse> {
+    logInfo("Case status validation failure", e, false)
+    return ResponseEntity
+      .status(HttpStatus.UNPROCESSABLE_ENTITY)
+      .body(
+        ErrorResponse(
+          status = HttpStatus.UNPROCESSABLE_ENTITY,
+          developerMessage = e.message,
+          userMessage = e.message,
         ),
       )
   }
