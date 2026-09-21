@@ -26,7 +26,7 @@ class CacheConfig {
     const val GATEWAY_CACHE = "GATEWAY_CACHE"
     const val TOKEN_CACHE = "TOKEN_CACHE"
     const val HMPPS_AUTH_USERS = "HMPPS_AUTH_USERS"
-    const val HMPPS_NOMIS_ROLES = "HMPPS_NOMIS_ROLES"
+    const val HMPPS_PRISON_USERS = "HMPPS_PRISON_USERS"
   }
 
   @Bean
@@ -65,9 +65,9 @@ class CacheConfig {
     )
 
   @Bean
-  fun hmppsNomisRolesCache(): CaffeineCache =
+  fun hmppsPrisonUsersCache(): CaffeineCache =
     CaffeineCache(
-      HMPPS_NOMIS_ROLES,
+      HMPPS_PRISON_USERS,
       Caffeine
         .newBuilder()
         .maximumSize(100)
@@ -79,7 +79,7 @@ class CacheConfig {
   @Bean
   fun caffeineCacheManager(): CacheManager {
     val cacheManager = SimpleCacheManager()
-    val caches = listOf(gatewayCache(), tokenCache(), hmppsAuthUsersCache(), hmppsNomisRolesCache())
+    val caches = listOf(gatewayCache(), tokenCache(), hmppsAuthUsersCache(), hmppsPrisonUsersCache())
     cacheManager.setCaches(caches)
     return cacheManager
   }
