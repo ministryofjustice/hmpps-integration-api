@@ -1,0 +1,22 @@
+[
+  {
+    "username": "TEST_USER",
+    "activeCaseloadId": "ABC",
+    "dpsRoleCodes": [
+      "ROLE_1",
+      "ROLE_2",
+      "ROLE_3"
+    ],
+    "enabled": true
+  },
+  {
+    "username": "TEST2_USER",
+    "activeCaseloadId": "MDI",
+    "dpsRoleCodes": [
+      "ROLE_4",
+      "ROLE_5",
+      "ROLE_6"
+    ],
+    "enabled": true
+  }
+]

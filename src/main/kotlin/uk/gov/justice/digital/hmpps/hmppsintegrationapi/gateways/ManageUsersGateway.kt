@@ -6,11 +6,11 @@ import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Companion.HMPPS_AUTH_USERS
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Companion.HMPPS_NOMIS_ROLES
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Companion.HMPPS_PRISON_USERS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.NomisRole
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsPrisonUser
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.PaginatedUsers
 
 @Component
@@ -74,15 +74,15 @@ class ManageUsersGateway(
     }
   }
 
-  @Cacheable(HMPPS_NOMIS_ROLES, keyGenerator = "gatewayKeyGenerator")
-  fun getRoles(username: String): Response<List<NomisRole>?> {
+  @Cacheable(HMPPS_PRISON_USERS, keyGenerator = "gatewayKeyGenerator")
+  fun getPrisonUsersByEmail(emailAddress: String): Response<List<HmppsPrisonUser>?> {
     val uri =
       UriComponentsBuilder
-        .fromUriString("/users/$username/roles")
+        .fromUriString("/prisonusers/by-email/$emailAddress/details")
         .toUriString()
 
     val result =
-      webClient.requestList<NomisRole>(
+      webClient.requestList<HmppsPrisonUser>(
         HttpMethod.GET,
         uri,
         authenticationHeader(),
