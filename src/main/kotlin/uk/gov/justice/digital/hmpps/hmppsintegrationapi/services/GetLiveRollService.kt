@@ -20,10 +20,10 @@ class GetLiveRollService(
   ): Response<PaginatedLiveRoll?> {
     val response = prisonerOffenderSearchGateway.getPersonsFromPrisonId(prisonId, page, size, requestContext)
 
-    if (response.data?.content?.size == 0) {
+    if (!response.data?.content?.isNotEmpty()!! && !response.errors.isNotEmpty()) {
       throw EntityNotFoundException("Prison ID $prisonId did not return any persons")
     }
 
-    return Response(data = response.data?.toPaginatedLiveRoll(), errors = response.errors)
+    return Response(data = response.data.toPaginatedLiveRoll(), errors = response.errors)
   }
 }

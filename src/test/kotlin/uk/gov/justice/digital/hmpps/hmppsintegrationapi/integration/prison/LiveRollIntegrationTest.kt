@@ -8,7 +8,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationT
 
 class LiveRollIntegrationTest : IntegrationTestBase() {
   final val path = "/v1/prison/$prisonId/live-roll"
-  final val pathNotFound = "/v1/prison/not-found/live-roll"
+  final val pathBad = "/v1/prison/not-found/live-roll"
+  final val pathNotFound = "/v1/prison/$emptyPrisonId/live-roll"
   final val page = 1
   final val size = 10
   val pathWithQueryParams = "?page=$page&size=$size"
@@ -24,5 +25,11 @@ class LiveRollIntegrationTest : IntegrationTestBase() {
   fun `missing prison results in a 404`() {
     callApi("$pathNotFound$pathWithQueryParams")
       .andExpect(status().isNotFound)
+  }
+
+  @Test
+  fun `missing prison results in a 500`() {
+    callApi("$pathBad$pathWithQueryParams")
+      .andExpect(status().isInternalServerError)
   }
 }

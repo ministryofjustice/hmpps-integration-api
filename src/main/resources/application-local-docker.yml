@@ -109,6 +109,7 @@ feature-flag:
   use-probation-search-for-person-search: false
   person-search-v2-enabled: true
   use-lao-enabled-by-default: true
+  live-roll-enabled: true
   # Events Config
   enable-delete-processed-events: false
   enable-publish-pending-events: false

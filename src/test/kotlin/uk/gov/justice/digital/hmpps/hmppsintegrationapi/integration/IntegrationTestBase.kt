@@ -156,6 +156,13 @@ abstract class IntegrationTestBase {
         "$gatewaysFolder/prisoneroffendersearch/fixtures/GetPersons.json",
       ).readText(),
     )
+
+    prisonerOffenderSearchMockServer.stubForGet(
+      "/prison/$emptyPrisonId/prisoners?page=0&size=10",
+      File(
+        "$gatewaysFolder/prisoneroffendersearch/fixtures/GetPersonsEmpty.json",
+      ).readText(),
+    )
   }
 
   final val basePath = "/v1/persons"
@@ -182,6 +189,7 @@ abstract class IntegrationTestBase {
     val nomsIdNotActiveInPrison = "A3646EB"
     val nomsIdNotActiveInPrisonOrProb = "A3646EC"
     val prisonId = "MKI"
+    val emptyPrisonId = "MKD"
 
     val crnActiveInProbation = "A654321"
     val crnNotActiveInProbation = "A765432"

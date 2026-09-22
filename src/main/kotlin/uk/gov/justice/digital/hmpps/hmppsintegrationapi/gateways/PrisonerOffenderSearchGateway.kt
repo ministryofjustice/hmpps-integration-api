@@ -82,12 +82,12 @@ class PrisonerOffenderSearchGateway(
     size: Int,
     requestContext: RequestContext? = null,
   ): Response<POSPaginatedPrisoners?> {
-    val queryString = "?page=${page - 1}&size=$size" // Build as url uri encode
+    val queryString = "page=${page - 1}&size=$size"
 
     val result =
       webClient.request<POSPaginatedPrisoners>(
         HttpMethod.GET,
-        "/prison/$prisonId/prisoners$queryString",
+        "/prison/$prisonId/prisoners?$queryString",
         authenticationHeader(requestContext),
         UpstreamApi.PRISONER_OFFENDER_SEARCH,
       )
