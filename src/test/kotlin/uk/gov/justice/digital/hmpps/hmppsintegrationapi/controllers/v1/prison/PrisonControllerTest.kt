@@ -40,6 +40,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitExternalSystemDetails
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitorSupport
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.interfaces.toPaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.locationsInsidePrison.LIPPrisonSummary
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
@@ -53,6 +54,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetResidentialD
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetResidentialHierarchyService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 import java.time.DayOfWeek
 import java.time.LocalDate
 
@@ -885,33 +887,33 @@ internal class PrisonControllerTest(
       }
 
       it("should return 200 when success") {
-        whenever(getLiveRollService.execute(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(Response(data = paginatedLiveRoll))
+        whenever(getLiveRollService.execute(eq(prisonId), eq(1), eq(10), any())).thenReturn(Response(data = paginatedLiveRoll))
         val result = mockMvc.performAuthorised(path)
         result.response.status.shouldBe(HttpStatus.OK.value())
-        result.response.contentAsJson<DataResponse<List<PrisonPayBand>>>().shouldBe(DataResponse(paginatedLiveRoll))
+        result.response.contentAsJson<PaginatedResponse<PersonInPrison>>().shouldBe(paginatedLiveRoll.toPaginatedResponse())
       }
 
       it("should call the audit service") {
-        whenever(getLiveRollService.execute(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(Response(data = paginatedLiveRoll))
+        whenever(getLiveRollService.execute(eq(prisonId), eq(1), eq(10), any())).thenReturn(Response(data = paginatedLiveRoll))
         mockMvc.performAuthorised(path)
         verify(
           auditService,
           times(1),
         ).createEvent(
-          "GET_PRISON_PAY_BANDS",
+          "LIVE_ROLL",
           mapOf("prisonId" to prisonId),
         )
       }
 
-      it("returns 400 when getPrisonPayBandsService returns bad request") {
-        whenever(getLiveRollService.execute(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(
+      it("returns 400 when getLiveRollService returns bad request") {
+        whenever(getLiveRollService.execute(eq(prisonId), eq(1), eq(10), any())).thenReturn(
           Response(
             data = null,
             errors =
               listOf(
                 UpstreamApiError(
                   type = UpstreamApiError.Type.BAD_REQUEST,
-                  causedBy = UpstreamApi.ACTIVITIES,
+                  causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
                 ),
               ),
           ),
@@ -921,15 +923,15 @@ internal class PrisonControllerTest(
         result.response.status.shouldBe(400)
       }
 
-      it("returns 404 when getPrisonPayBandsService returns not found") {
-        whenever(getLiveRollService.execute(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(
+      it("returns 404 when getLiveRollService returns not found") {
+        whenever(getLiveRollService.execute(eq(prisonId), eq(1), eq(10), any())).thenReturn(
           Response(
             data = null,
             errors =
               listOf(
                 UpstreamApiError(
                   type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                  causedBy = UpstreamApi.ACTIVITIES,
+                  causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
                 ),
               ),
           ),

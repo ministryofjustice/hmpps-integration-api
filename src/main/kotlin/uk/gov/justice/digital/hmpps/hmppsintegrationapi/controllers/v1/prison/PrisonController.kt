@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import io.swagger.v3.oas.annotations.tags.Tags
 import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestAttribute
@@ -400,18 +399,11 @@ class PrisonController(
   )
   fun getLiveRoll(
     @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
-    @Parameter(description = "The primary search term. Whe absent all prisoners will be returned at the prison", example = "john smith") @RequestParam(value = "term", required = false, defaultValue = "") term: String,
-    @Parameter(description = "Alert codes to filter by. Zero or more can be supplied. When multiple supplied the filter is effectively and OR", example = "XTACT") @RequestParam(value = "alerts", required = false, defaultValue = "") alerts: List<String>,
-    @Parameter(description = "Offenders with a DOB >= this date", example = "1970-01-02") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam(value = "fromDate", required = false) fromDate: LocalDate?,
-    @Parameter(description = "Offenders with a DOB <= this date", example = "1975-01-02") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam(value = "toDate", required = false) toDate: LocalDate?,
-    @Parameter(description = "Filter for the prisoners cell location. A block wing or cell can be specified. With prison id can be included or absent so HEI-3-1 and 3-1 are equivalent when the prison id is HEI", example = "3-1") @RequestParam(value = "cellLocationPrefix", required = false) cellLocationPrefix: String?,
-    @Parameter(description = "Filter for the prisoners on an incentive level.", example = "STD") @RequestParam(value = "incentiveLevelCode", required = false) incentiveLevelCode: String?,
-    @Parameter(description = "A list of fields to populate on the Prisoner record returned in the response. An empty list defaults to all fields.", example = "[prisonerNumber,firstName,aliases.firstName,currentIncentive.level.code]") @RequestParam(value = "responseFields", required = false) responseFields: List<String>? = null,
     @Parameter(description = "The page number", schema = Schema(minimum = "1")) @RequestParam(required = true, defaultValue = "1") page: Int,
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = true, defaultValue = "10") size: Int,
     @RequestAttribute requestContext: RequestContext?,
   ): PaginatedResponse<PersonInPrison> {
-    val response = getLiveRollService.execute(prisonId, term, alerts, fromDate, toDate, cellLocationPrefix, incentiveLevelCode, responseFields, page, size, requestContext)
+    val response = getLiveRollService.execute(prisonId, page, size, requestContext)
 
     if (response.hasErrorCausedBy(BAD_REQUEST, causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH)) {
       throw ValidationException("Invalid query parameters.")
@@ -423,7 +415,7 @@ class PrisonController(
 
     auditService.createEvent(
       "LIVE_ROLL",
-      mapOf("prisonId" to prisonId, "term" to term, "alerts" to alerts, "fromDate" to fromDate, "toDate" to toDate, "cellLocationPrefix" to cellLocationPrefix, "incentiveLevelCode" to incentiveLevelCode, "responseFields" to responseFields) as Map<String, String?>,
+      mapOf("prisonId" to prisonId) as Map<String, String?>,
     )
 
     return response.data.toPaginatedResponse()

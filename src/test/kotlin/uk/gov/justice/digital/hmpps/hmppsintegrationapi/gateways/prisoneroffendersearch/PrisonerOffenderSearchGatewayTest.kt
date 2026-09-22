@@ -473,5 +473,37 @@ class PrisonerOffenderSearchGatewayTest(
           shouldThrow<WebClientResponseException> { prisonerOffenderSearchGateway.attributeSearch(request) }
         }
       }
+
+      describe("#liveRollSearch") {
+        val prisonId = "MDI"
+        val path = "/prison/$prisonId/prisoners?page=0&size=10&"
+
+        beforeEach {
+          prisonerOffenderSearchApiMockServer.stubForGet(
+            path,
+            File(
+              "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/GetPersons.json",
+            ).readText(),
+          )
+        }
+
+        it("authenticates using HMPPS Auth with credentials") {
+          prisonerOffenderSearchGateway.getPersonsFromPrisonId(prisonId, 1, 10)
+          verify(hmppsAuthGateway, times(1)).getClientToken("Prisoner Offender Search")
+        }
+
+        it("returns a prisoners by prison id") {
+
+          val response = prisonerOffenderSearchGateway.getPersonsFromPrisonId(prisonId, 1, 10)
+          response.data.shouldNotBeNull()
+          response.data.content.size
+            .shouldBe(1)
+          response.data.content[0]
+            .prisonId
+            .shouldBe(prisonId)
+
+          prisonerOffenderSearchApiMockServer.assertValidationPassed()
+        }
+      }
     },
   )
