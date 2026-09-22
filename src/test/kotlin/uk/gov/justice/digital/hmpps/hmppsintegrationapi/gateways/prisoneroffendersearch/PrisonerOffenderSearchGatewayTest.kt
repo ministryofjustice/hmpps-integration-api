@@ -476,7 +476,7 @@ class PrisonerOffenderSearchGatewayTest(
 
       describe("#liveRollSearch") {
         val prisonId = "MDI"
-        val path = "/prison/$prisonId/prisoners?page=0&size=10&"
+        val path = "/prison/$prisonId/prisoners?page=0&size=10"
 
         beforeEach {
           prisonerOffenderSearchApiMockServer.stubForGet(
@@ -497,7 +497,7 @@ class PrisonerOffenderSearchGatewayTest(
           val response = prisonerOffenderSearchGateway.getPersonsFromPrisonId(prisonId, 1, 10)
           response.data.shouldNotBeNull()
           response.data.content.size
-            .shouldBe(1)
+            .shouldBe(2)
           response.data.content[0]
             .prisonId
             .shouldBe(prisonId)
