@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.nulls.shouldNotBeNull
+import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
@@ -93,5 +94,62 @@ internal class GetLiveRollServiceTest(
           requestContext = requestContext,
         )
       response.data.shouldNotBeNull()
+    }
+
+    it("will return 404 with no prisoners") {
+      whenever(
+        prisonerOffenderSearchGateway.getPersonsFromPrisonId(
+          "123",
+          page = 1,
+          size = 10,
+          requestContext = requestContext,
+        ),
+      ).thenReturn(
+        Response(
+          data =
+            POSPaginatedPrisoners(
+              content = emptyList(),
+              totalPages = 1,
+              totalElements = 0,
+              first = true,
+              last = true,
+              size = 0,
+              number = 0,
+              sort =
+                POSSort(
+                  empty = false,
+                  sorted = true,
+                  unsorted = false,
+                ),
+              numberOfElements = 0,
+              pageable =
+                POSPageable(
+                  offset = 1,
+                  sort =
+                    POSSort(
+                      empty = true,
+                      sorted = true,
+                      unsorted = false,
+                    ),
+                  pageSize = 10,
+                  pageNumber = 1,
+                  paged = true,
+                  unpaged = false,
+                ),
+              empty = true,
+            ),
+        ),
+      )
+      try {
+        getLiveRollService.execute(
+          "123",
+          page = 1,
+          size = 10,
+          requestContext = requestContext,
+        )
+      } catch (e: Exception) {
+        e.shouldNotBeNull()
+        e.message.shouldBe("Prison ID 123 did not return any persons")
+      }
     }
   })
