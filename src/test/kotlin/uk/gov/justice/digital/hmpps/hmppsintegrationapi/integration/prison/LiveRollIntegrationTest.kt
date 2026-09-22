@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.prison
 
 import org.junit.jupiter.api.Test
+import org.springframework.http.HttpStatus
 import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -29,6 +30,11 @@ class LiveRollIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `missing prison results in a 500`() {
+    prisonerOffenderSearchMockServer.stubForGet(
+      "/prison/not-found/prisoners?page=0&size=10",
+      "",
+      HttpStatus.INTERNAL_SERVER_ERROR,
+    )
     callApi("$pathBad$pathWithQueryParams")
       .andExpect(status().isInternalServerError)
   }

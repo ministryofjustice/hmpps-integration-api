@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDO
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
@@ -162,6 +163,7 @@ abstract class IntegrationTestBase {
       File(
         "$gatewaysFolder/prisoneroffendersearch/fixtures/GetPersonsEmpty.json",
       ).readText(),
+      HttpStatus.NOT_FOUND,
     )
   }
 
