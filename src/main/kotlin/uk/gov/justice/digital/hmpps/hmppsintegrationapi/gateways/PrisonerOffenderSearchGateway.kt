@@ -17,6 +17,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPaginatedPrisoners
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
+import java.time.LocalDate
+import kotlin.text.isNullOrBlank
 
 @Component
 class PrisonerOffenderSearchGateway(
@@ -70,6 +72,72 @@ class PrisonerOffenderSearchGateway(
       is WebClientWrapperResponse.Error -> {
         Response(
           data = emptyList(),
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getPersonsFromPrisonId(
+    prisonId: String,
+    term: String?,
+    alerts: List<String>?,
+    fromDate: LocalDate?,
+    toDate: LocalDate?,
+    cellLocationPrefix: String?,
+    incentiveLevelCode: String?,
+    responseFields: List<String>?,
+    page: Int,
+    size: Int,
+    requestContext: RequestContext? = null,
+  ): Response<POSPaginatedPrisoners?> {
+    var queryString = "?page=${page - 1}&size=$size&"
+
+    if (!term.isNullOrBlank()) {
+      queryString += "term=$term&"
+    }
+    if (!alerts.isNullOrEmpty()) {
+      alerts.forEach { alert ->
+        queryString += "&alerts=$alert&"
+      }
+    }
+    if (fromDate != null) {
+      queryString += "fromDob=$fromDate&"
+    }
+    if (toDate != null) {
+      queryString += "toDob=$toDate$"
+    }
+    if (!cellLocationPrefix.isNullOrBlank()) {
+      queryString += "cellLocationPrefix=$cellLocationPrefix&"
+    }
+    if (!incentiveLevelCode.isNullOrBlank()) {
+      queryString += "incentiveLevelCode=$incentiveLevelCode&"
+    }
+
+    if (!responseFields.isNullOrEmpty()) {
+      responseFields.forEach { responseField ->
+        queryString += "&responseFields=$responseField&"
+      }
+    }
+
+    val result =
+      webClient.request<POSPaginatedPrisoners>(
+        HttpMethod.GET,
+        "/prison/$prisonId/prisoners$queryString",
+        authenticationHeader(requestContext),
+        UpstreamApi.PRISONER_OFFENDER_SEARCH,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(
+          data = result.data,
+        )
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
           errors = result.errors,
         )
       }
