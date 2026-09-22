@@ -118,6 +118,7 @@ feature-flag:
   person-search-v2-enabled: true
   use-lao-enabled-by-default: true
   live-roll-enabled: true
+  prison-role-check-enabled: false
   # Events Config
   enable-delete-processed-events: false
   enable-publish-pending-events: false

@@ -24,6 +24,13 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
         "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/UserFoundResponse.json",
       ).readText(),
     )
+
+    manageUsersMockServer.stubForGet(
+      "/prisonusers/by-email/testName/details",
+      File(
+        "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/PrisonUsersResponse.json",
+      ).readText(),
+    )
   }
 
   @Test
@@ -174,13 +181,6 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `an obo user has access to the global search role when feature is enabled`() {
-    whenever(featureFlagConfig.isEnabled(PRISON_ROLE_CHECK_ENABLED)).thenReturn(true)
-    manageUsersMockServer.stubForGet(
-      "/prisonusers/by-email/testName/details",
-      File(
-        "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/PrisonUsersResponse.json",
-      ).readText(),
-    )
     callApiWithCN("$basePath/$crn", "obo-unsigned-verified", oboValue = createUnsignedJwt())
       .andExpect(MockMvcResultMatchers.status().isOk)
     val requestContext = argumentCaptor<RequestContext?>()
@@ -190,7 +190,6 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `an obo user does not have access to the global search role when feature is enabled`() {
-    whenever(featureFlagConfig.isEnabled(PRISON_ROLE_CHECK_ENABLED)).thenReturn(true)
     manageUsersMockServer.stubForGet(
       "/prisonusers/by-email/testName/details",
       File(
@@ -212,5 +211,21 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
     verify(authGateway, atLeast(1)).getClientToken(eq("Prisoner Offender Search"), requestContext.capture())
     assertThat(requestContext.firstValue?.oboUserHasPrisonRole).isEqualTo(null)
     assertThat(requestContext.firstValue?.oboUserName).isEqualTo(null)
+  }
+
+  @Test
+  fun `an obo user does not have the obo role flag set when feature is disabled`() {
+    whenever(featureFlagConfig.isEnabled(PRISON_ROLE_CHECK_ENABLED)).thenReturn(false)
+    manageUsersMockServer.stubForGet(
+      "/prisonusers/by-email/testName/details",
+      File(
+        "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/PrisonUsersResponseDisabled.json",
+      ).readText(),
+    )
+    callApiWithCN("$basePath/$crn", "obo-unsigned-verified", oboValue = createUnsignedJwt())
+      .andExpect(MockMvcResultMatchers.status().isOk)
+    val requestContext = argumentCaptor<RequestContext?>()
+    verify(authGateway, atLeast(1)).getClientToken(eq("Prisoner Offender Search"), requestContext.capture())
+    assertThat(requestContext.firstValue?.oboUserHasPrisonRole).isEqualTo(null)
   }
 }
