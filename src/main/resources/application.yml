@@ -117,6 +117,8 @@ services:
     base-url: http://localhost:4035
   remand-and-sentencing:
     base-url: http://localhost:4036
+  cemo:
+    base-url: http://localhost:4037
 
 authorisation:
   certificate-revocation-list:
@@ -149,3 +151,5 @@ hmpps.sqs:
   topics:
     integrationeventtopic:
       arn: ${INTEGRATION_EVENT_TOPIC_ARN}
+    emnotificationevents:
+      arn: ${EM_NOTIFICATION_EVENTS_TOPIC_ARN}

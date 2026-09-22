@@ -2,13 +2,19 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.CaseStatusValidationException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.UpstreamApiException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CemoGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.up3.CaseStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.up3.CaseStatusUpdate
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @Service
 class ReceiveCaseStatusService(
   private val auditService: AuditService,
+  private val cemoGateway: CemoGateway,
+  private val emNotificationEventPublisher: EmNotificationEventPublisher,
 ) {
   fun receive(
     caseId: String,
@@ -25,7 +31,18 @@ class ReceiveCaseStatusService(
       ),
     )
 
-    // TODO
+    val orderResponse = cemoGateway.getOrderByCaseId(caseId)
+    val order =
+      orderResponse.data
+        ?: throw UpstreamApiException(
+          upstreamApi = orderResponse.errors.firstOrNull()?.causedBy ?: UpstreamApi.CEMO,
+          errorType = orderResponse.errors.firstOrNull()?.type ?: UpstreamApiError.Type.ENTITY_NOT_FOUND,
+          resourceType = "order",
+          resourceId = caseId,
+          errors = orderResponse.errors,
+        )
+
+    emNotificationEventPublisher.publish(caseId, request, order)
   }
 
   private fun validate(
