@@ -12,8 +12,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.PRISON_ROLE_CHECK_ENABLED
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.mergeFeatures
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsPrisonRole
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.CertificateService
@@ -100,14 +102,21 @@ class AuthorisationFilter(
       return
     }
 
-    // Authorise request
+    val oboUserHasPrisonRole =
+      if (oboUsername != null && features.isEnabled(PRISON_ROLE_CHECK_ENABLED)) {
+        val hasRole = authorisationService.hasPrisonRole(oboUsername, HmppsPrisonRole.GLOBAL_SEARCH)
+        log.info("OBO User $oboUsername has prisons global search role? : $hasRole")
+        hasRole
+      } else {
+        null
+      }
 
     val filters = authorisationService.allFilters(clientName)
     request.setAttribute("filters", filters)
 
     val requestedPath = req.requestURI
 
-    val context = RequestContext(clientName, consumerConfig, filters, requestFeatures, oboUsername)
+    val context = RequestContext(clientName, consumerConfig, filters, requestFeatures, oboUsername, oboUserHasPrisonRole)
     request.setAttribute("requestContext", context)
 
     if (authorisationService.hasAccess(clientName, requestedPath)) {

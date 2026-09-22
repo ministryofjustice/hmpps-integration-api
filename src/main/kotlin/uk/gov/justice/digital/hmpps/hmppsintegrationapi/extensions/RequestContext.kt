@@ -20,6 +20,7 @@ data class RequestContext(
   val filters: ConsumerFilters?,
   val featureFlags: FeatureFlagConfig,
   val oboUserName: String? = null,
+  val oboUserHasPrisonRole: Boolean? = null,
 ) {
   companion object {
     fun buildRequestContext(
