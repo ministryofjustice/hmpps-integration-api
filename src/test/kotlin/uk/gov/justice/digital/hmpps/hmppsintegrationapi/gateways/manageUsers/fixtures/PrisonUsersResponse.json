@@ -15,7 +15,7 @@
     "dpsRoleCodes": [
       "ROLE_4",
       "ROLE_5",
-      "ROLE_6"
+      "GLOBAL_SEARCH"
     ],
     "enabled": true
   }
