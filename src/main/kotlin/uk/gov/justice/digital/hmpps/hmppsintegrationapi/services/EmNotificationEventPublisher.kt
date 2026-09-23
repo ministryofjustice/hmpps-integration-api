@@ -49,6 +49,8 @@ class EmNotificationEventPublisher(
           .builder()
           .topicArn(eventTopic.arn)
           .message(objectMapper.writeValueAsString(event))
+          .messageGroupId(messageGroupId(caseId))
+          .messageDeduplicationId(eventId)
           .eventTypeMessageAttributes(event.eventType)
           .build(),
       ).get()
@@ -90,5 +92,10 @@ class EmNotificationEventPublisher(
       )
     val digest = MessageDigest.getInstance("SHA-256").digest(canonicalPayload.toByteArray(StandardCharsets.UTF_8))
     return "sha256:${digest.joinToString("") { "%02x".format(it) }}"
+  }
+
+  private fun messageGroupId(caseId: String): String {
+    val digest = MessageDigest.getInstance("SHA-256").digest(caseId.toByteArray(StandardCharsets.UTF_8))
+    return "case:${digest.joinToString("") { "%02x".format(it) }}"
   }
 }

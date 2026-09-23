@@ -82,8 +82,8 @@ generic-service:
       DB_PASS: "database_password"
     hmpps-integration-events-topic:
       INTEGRATION_EVENT_TOPIC_ARN: "sns_arn"
-    hmpps-integration-em-notification-events-topic:
-      EM_NOTIFICATION_EVENTS_TOPIC_ARN: "sns_arn"
+    returns-events-sns-topic:
+      EM_NOTIFICATION_EVENTS_TOPIC_ARN: "topic_arn"
     hmpps-integration-api-domain-events-sqs-instance-output:
       HMPPS_DOMAIN_QUEUE_NAME: "sqs_name"
       HMPPS_DOMAIN_QUEUE_ARN: "sqs_arn"

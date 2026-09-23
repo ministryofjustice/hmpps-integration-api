@@ -31,7 +31,7 @@ class EmNotificationEventPublisherTest {
   private val objectMapper: ObjectMapper = defaultObjectMapper
   private val snsClient = mock<SnsAsyncClient>()
   private val queueService = mock<HmppsQueueService>()
-  private val topic = HmppsTopic("emnotificationevents", "arn:aws:sns:eu-west-2:000000000000:em-notification-events-topic", snsClient)
+  private val topic = HmppsTopic("emnotificationevents", "arn:aws:sns:eu-west-2:000000000000:returns-events.fifo", snsClient)
   private val clock = Clock.fixed(Instant.parse("2026-09-22T10:42:31Z"), ZoneOffset.UTC)
   private val publisher = EmNotificationEventPublisher(queueService, objectMapper, clock)
   private val request =
@@ -66,6 +66,9 @@ class EmNotificationEventPublisherTest {
     assertEquals("Already submitted", event["data"]["reasons"][0]["details"].textValue())
     assertEquals("2023-10-27T14:30Z", event["data"]["datetimeOfStatusChange"].textValue())
     assertTrue(event["eventId"].textValue().startsWith("sha256:"))
+    assertEquals(event["eventId"].textValue(), publishRequest.firstValue.messageDeduplicationId())
+    assertTrue(publishRequest.firstValue.messageGroupId().startsWith("case:"))
+    assertTrue(publishRequest.firstValue.messageGroupId().length <= 128)
     assertEquals(
       event["eventType"].textValue(),
       publishRequest.firstValue.messageAttributes()["eventType"]?.stringValue(),
@@ -87,6 +90,9 @@ class EmNotificationEventPublisherTest {
     val secondEventId = objectMapper.readTree(publishRequests.allValues[1].message())["eventId"].textValue()
 
     assertEquals(firstEventId, secondEventId)
+    assertEquals(firstEventId, publishRequests.allValues[0].messageDeduplicationId())
+    assertEquals(firstEventId, publishRequests.allValues[1].messageDeduplicationId())
+    assertEquals(publishRequests.allValues[0].messageGroupId(), publishRequests.allValues[1].messageGroupId())
   }
 
   @Test

@@ -92,7 +92,7 @@ hmpps.sqs:
     integrationeventtopic:
       arn: arn:aws:sns:eu-west-2:000000000000:integration-event-topic
     emnotificationevents:
-      arn: arn:aws:sns:eu-west-2:000000000000:em-notification-events-topic
+      arn: arn:aws:sns:eu-west-2:000000000000:returns-events.fifo
 
 feature-flag:
   # API Config
