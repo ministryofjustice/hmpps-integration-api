@@ -16,8 +16,17 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebMvcTestConfiguration
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CemoGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cemo.CemoOrderCaseSearchResult
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cemo.CemoOrderStatus
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cemo.CemoOrderVersion
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.EmNotificationEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ReceiveCaseStatusService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
+import java.util.UUID
 
 @WebMvcTest(controllers = [CaseStatusController::class])
 @Import(WebMvcTestConfiguration::class, ReceiveCaseStatusService::class)
@@ -26,6 +35,8 @@ class CaseStatusControllerTest(
   private val mockMvc: MockMvc,
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
   @MockitoBean val auditService: AuditService,
+  @MockitoBean val cemoGateway: CemoGateway,
+  @MockitoBean val emNotificationEventPublisher: EmNotificationEventPublisher,
 ) : DescribeSpec({
     val apiPath = "/v1/cases/case-123/status"
     val requestBody =
@@ -44,6 +55,14 @@ class CaseStatusControllerTest(
 
     beforeTest {
       whenever(featureFlagConfig.getConfigFlagValue(FeatureFlagConfig.UP3_CASE_STATUS_UPDATE_ENABLED)).thenReturn(true)
+      whenever(cemoGateway.getOrderByCaseId("case-123")).thenReturn(
+        Response(
+          CemoOrderCaseSearchResult(
+            UUID.randomUUID(),
+            listOf(CemoOrderVersion(CemoOrderStatus.SUBMITTED)),
+          ),
+        ),
+      )
     }
 
     describe("PUT /v1/cases/{caseId}/status") {
@@ -93,6 +112,60 @@ class CaseStatusControllerTest(
             .response
 
         response.status shouldBe HttpStatus.UNPROCESSABLE_ENTITY.value()
+      }
+
+      it("returns 400 for an unsupported status") {
+        val response =
+          mockMvc
+            .perform(
+              put(apiPath)
+                .header("subject-distinguished-name", "C=GB,O=Home Office,CN=automated-test-client")
+                .header("cert-serial-number", "9572494320151578633330348943480876283449388176")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody.replace("\"rejected\"", "\"unknown\"")),
+            ).andReturn()
+            .response
+
+        response.status shouldBe HttpStatus.BAD_REQUEST.value()
+      }
+
+      it("returns 404 when CEMO cannot find the case") {
+        whenever(cemoGateway.getOrderByCaseId("case-123")).thenReturn(
+          Response(null, listOf(UpstreamApiError(UpstreamApi.CEMO, UpstreamApiError.Type.ENTITY_NOT_FOUND))),
+        )
+
+        val response =
+          mockMvc
+            .perform(
+              put(apiPath)
+                .header("subject-distinguished-name", "C=GB,O=Home Office,CN=automated-test-client")
+                .header("cert-serial-number", "9572494320151578633330348943480876283449388176")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody),
+            ).andReturn()
+            .response
+
+        response.status shouldBe HttpStatus.NOT_FOUND.value()
+        response.contentAsString.contains("No order found for caseId case-123") shouldBe true
+      }
+
+      it("returns 500 when CEMO fails") {
+        whenever(cemoGateway.getOrderByCaseId("case-123")).thenReturn(
+          Response(null, listOf(UpstreamApiError(UpstreamApi.CEMO, UpstreamApiError.Type.INTERNAL_SERVER_ERROR))),
+        )
+
+        val response =
+          mockMvc
+            .perform(
+              put(apiPath)
+                .header("subject-distinguished-name", "C=GB,O=Home Office,CN=automated-test-client")
+                .header("cert-serial-number", "9572494320151578633330348943480876283449388176")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody),
+            ).andReturn()
+            .response
+
+        response.status shouldBe HttpStatus.INTERNAL_SERVER_ERROR.value()
       }
     }
   })

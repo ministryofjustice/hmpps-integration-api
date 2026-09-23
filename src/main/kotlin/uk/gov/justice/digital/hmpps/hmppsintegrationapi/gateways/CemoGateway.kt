@@ -43,6 +43,5 @@ class CemoGateway(
     }
   }
 
-  private fun authenticationHeader(): Map<String, String> =
-    mapOf("Authorization" to "Bearer ${hmppsAuthGateway.getClientToken("CEMO")}")
+  private fun authenticationHeader(): Map<String, String> = mapOf("Authorization" to "Bearer ${hmppsAuthGateway.getClientToken("CEMO")}")
 }

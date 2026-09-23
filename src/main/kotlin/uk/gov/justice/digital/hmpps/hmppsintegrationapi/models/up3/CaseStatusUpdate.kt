@@ -61,7 +61,7 @@ data class CaseStatusReason(
   @field:Size(max = 1000, message = "reason details must not exceed 1000 characters")
   @Schema(
     description = "Free-text explanation",
-    example = "Case was already submitted under ticket #4521.",
+    example = "Case was already submitted.",
   )
   val details: String? = null,
 )

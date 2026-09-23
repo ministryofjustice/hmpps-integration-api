@@ -29,7 +29,7 @@ class CaseStatusController(
   @ResponseStatus(HttpStatus.OK)
   @Operation(
     summary = "Receive a case status update from UP3",
-    description = "Receives a case status update and records its receipt for later CEMO validation.",
+    description = "Validates the case status update against CEMO and publishes it to the EM notification SNS topic before responding.",
     responses = [
       ApiResponse(
         responseCode = "200",
@@ -42,6 +42,11 @@ class CaseStatusController(
       ),
       ApiResponse(responseCode = "401", description = "Unauthorized."),
       ApiResponse(responseCode = "403", description = "Caller is not authorized to use this endpoint."),
+      ApiResponse(
+        responseCode = "404",
+        description = "No CEMO order was found for the case ID.",
+        content = [Content(schema = Schema(implementation = ErrorResponse::class))],
+      ),
       ApiResponse(
         responseCode = "422",
         description = "The status update violates a contract rule.",
