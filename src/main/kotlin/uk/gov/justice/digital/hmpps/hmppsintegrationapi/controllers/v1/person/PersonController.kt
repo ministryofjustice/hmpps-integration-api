@@ -284,7 +284,7 @@ class PersonController(
   }
 
   @GetMapping("{hmppsId}/visit-orders")
-  @Tag(name = "Visit")
+  @Tag(name = "Visits")
   @Operation(
     summary = "Returns the number of remaining visit orders a prisoner has.",
     responses = [
