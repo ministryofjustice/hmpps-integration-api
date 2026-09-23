@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContex
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ManageUsersGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.oboconfig.OboUser
 
 class CacheKeyTest {
   @Test
@@ -47,7 +48,7 @@ class CacheKeyTest {
         NDeliusGateway("", FeatureFlagConfig()),
         method,
         "A1234AA",
-        buildRequestContext(oboUserName = "oboUserName"),
+        buildRequestContext(oboUser = OboUser("oboUserName")),
       )
     assertThat(key).isEqualTo("uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway_getOffender_A1234AA_oboUserName")
   }

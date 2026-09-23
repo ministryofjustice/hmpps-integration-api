@@ -104,7 +104,8 @@ class GatewayKeyGenerator : KeyGenerator {
     params
       .filterIsInstance<RequestContext>()
       .firstOrNull()
-      ?.oboUserName
+      ?.oboUser
+      ?.username
       ?.let { stringParam.add(it) }
     return target.javaClass.name + "_" + method.name + "_" + stringParam.joinToString("_")
   }

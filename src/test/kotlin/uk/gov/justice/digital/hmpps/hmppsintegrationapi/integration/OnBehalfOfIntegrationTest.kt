@@ -89,8 +89,8 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
     verify(authGateway, atLeast(1)).getClientToken(eq("NOMIS"), requestContext.capture())
     val obUserName =
       requestContext.allValues
-        .filter { it?.oboUserName != null }
-        .map { it?.oboUserName }
+        .filter { it?.oboUser?.username != null }
+        .map { it?.oboUser?.username }
         .first()
     assertEquals("testName", obUserName)
   }
@@ -103,8 +103,8 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
     verify(authGateway, atLeast(1)).getClientToken(eq("nDelius"), requestContext.capture())
     val obUserName =
       requestContext.allValues
-        .filter { it?.oboUserName != null }
-        .map { it?.oboUserName }
+        .filter { it?.oboUser?.username != null }
+        .map { it?.oboUser?.username }
         .first()
     assertEquals("testName", obUserName)
   }
@@ -117,8 +117,8 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
     verify(authGateway, atLeast(1)).getClientToken(eq("Prisoner Offender Search"), requestContext.capture())
     val obUserName =
       requestContext.allValues
-        .filter { it?.oboUserName != null }
-        .map { it?.oboUserName }
+        .filter { it?.oboUser?.username != null }
+        .map { it?.oboUser?.username }
         .first()
     assertEquals("testName", obUserName)
   }
@@ -131,8 +131,8 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
     verify(authGateway, atLeast(1)).getClientToken(eq("nDelius"), requestContext.capture())
     val obUserName =
       requestContext.allValues
-        .filter { it?.oboUserName != null }
-        .map { it?.oboUserName }
+        .filter { it?.oboUser?.username != null }
+        .map { it?.oboUser?.username }
         .first()
     assertEquals("testName", obUserName)
   }
@@ -185,7 +185,7 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
       .andExpect(MockMvcResultMatchers.status().isOk)
     val requestContext = argumentCaptor<RequestContext?>()
     verify(authGateway, atLeast(1)).getClientToken(eq("Prisoner Offender Search"), requestContext.capture())
-    assertThat(requestContext.firstValue?.oboUserHasPrisonRole).isEqualTo(true)
+    assertThat(requestContext.firstValue?.oboUser?.hasPrisonRole).isEqualTo(true)
   }
 
   @Test
@@ -200,7 +200,7 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
       .andExpect(MockMvcResultMatchers.status().isOk)
     val requestContext = argumentCaptor<RequestContext?>()
     verify(authGateway, atLeast(1)).getClientToken(eq("Prisoner Offender Search"), requestContext.capture())
-    assertThat(requestContext.firstValue?.oboUserHasPrisonRole).isEqualTo(false)
+    assertThat(requestContext.firstValue?.oboUser?.hasPrisonRole).isEqualTo(false)
   }
 
   @Test
@@ -209,8 +209,8 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
       .andExpect(MockMvcResultMatchers.status().isOk)
     val requestContext = argumentCaptor<RequestContext?>()
     verify(authGateway, atLeast(1)).getClientToken(eq("Prisoner Offender Search"), requestContext.capture())
-    assertThat(requestContext.firstValue?.oboUserHasPrisonRole).isEqualTo(null)
-    assertThat(requestContext.firstValue?.oboUserName).isEqualTo(null)
+    assertThat(requestContext.firstValue?.oboUser?.hasPrisonRole).isEqualTo(null)
+    assertThat(requestContext.firstValue?.oboUser?.username).isEqualTo(null)
   }
 
   @Test
@@ -226,6 +226,6 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
       .andExpect(MockMvcResultMatchers.status().isOk)
     val requestContext = argumentCaptor<RequestContext?>()
     verify(authGateway, atLeast(1)).getClientToken(eq("Prisoner Offender Search"), requestContext.capture())
-    assertThat(requestContext.firstValue?.oboUserHasPrisonRole).isEqualTo(null)
+    assertThat(requestContext.firstValue?.oboUser?.hasPrisonRole).isEqualTo(null)
   }
 }

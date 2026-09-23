@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.mergeFeatures
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsPrisonRole
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.oboconfig.OboUser
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.CertificateService
@@ -116,7 +117,10 @@ class AuthorisationFilter(
 
     val requestedPath = req.requestURI
 
-    val context = RequestContext(clientName, consumerConfig, filters, requestFeatures, oboUsername, oboUserHasPrisonRole)
+    // Set oboUser
+    val oboUser = oboUsername?.let { OboUser(it, oboUserHasPrisonRole) }
+
+    val context = RequestContext(clientName, consumerConfig, filters, requestFeatures, oboUser)
     request.setAttribute("requestContext", context)
 
     if (authorisationService.hasAccess(clientName, requestedPath)) {
