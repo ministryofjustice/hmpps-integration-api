@@ -70,7 +70,7 @@
   "pagination": {
     "isLastPage": true,
     "count": 0,
-    "page": 0,
+    "page": 1,
     "perPage": 0,
     "totalCount": 0,
     "totalPages": 0
