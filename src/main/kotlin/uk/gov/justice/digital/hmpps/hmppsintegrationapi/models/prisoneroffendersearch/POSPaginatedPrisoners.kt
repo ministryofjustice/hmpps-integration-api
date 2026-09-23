@@ -24,7 +24,7 @@ data class POSPaginatedPrisoners(
       totalCount = this.totalElements,
       isLastPage = this.last,
       count = this.size,
-      page = this.pageable.pageNumber,
+      page = this.pageable.pageNumber + 1,
       perPage = this.pageable.pageSize,
     )
 }
