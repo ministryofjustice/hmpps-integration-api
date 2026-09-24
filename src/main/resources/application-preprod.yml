@@ -29,6 +29,8 @@ services:
     base-url: https://support-for-additional-needs-api-preprod.hmpps.service.justice.gov.uk
   non-associations:
     base-url: https://non-associations-api-preprod.hmpps.service.justice.gov.uk
+  personal-relationships:
+    base-url: https://personal-relationships-api-preprod.hmpps.service.justice.gov.uk
   manage-prison-visits:
     base-url: https://hmpps-manage-prison-visits-orchestration-preprod.prison.service.justice.gov.uk
   incentives:
