@@ -38,7 +38,7 @@ services:
   manage-users.base-url: http://localhost:4034
   court-register.base-url: http://localhost:4035
   remand-and-sentencing.base-url: http://localhost:4036
-  cemo.base-url: http://prism:4037
+  cemo.base-url: http://localhost:4037
 
 authorisation:
   consumers:

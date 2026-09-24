@@ -11,7 +11,6 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
-import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
@@ -21,7 +20,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import java.util.UUID
 
 @ActiveProfiles("test")
-@TestPropertySource(properties = ["services.cemo.base-url=http://localhost:4037"])
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
   classes = [CemoGateway::class],
