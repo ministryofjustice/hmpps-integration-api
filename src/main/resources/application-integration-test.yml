@@ -76,6 +76,8 @@ services:
     base-url: http://localhost:4035
   remand-and-sentencing:
     base-url: http://localhost:4036
+  cemo:
+    base-url: http://localhost:4037
 
 hmpps.sqs:
   provider: localstack
@@ -115,9 +117,12 @@ hmpps.sqs:
       arn: arn:aws:sns:eu-west-2:000000000000:domainevents-topic
     integrationeventtopic:
       arn: arn:aws:sns:eu-west-2:000000000000:integration_event_topic
+    emnotificationevents:
+      arn: arn:aws:sns:eu-west-2:000000000000:returns-events.fifo
 
 feature-flag:
   # API Config
+  up3-case-status-update-enabled: true
   course-completion-event-enabled: true
   use-active-alerts-endpoint: true
   use-contact-events-endpoint: true

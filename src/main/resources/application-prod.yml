@@ -59,9 +59,12 @@ services:
     base-url: https://court-register-api.hmpps.service.justice.gov.uk
   remand-and-sentencing:
     base-url: https://remand-and-sentencing-api.hmpps.service.justice.gov.uk
+  cemo:
+    base-url: https://hmpps-electronic-monitoring-create-an-order-api.hmpps.service.justice.gov.uk
 
 feature-flag:
   # API Config
+  up3-case-status-update-enabled: false
   course-completion-event-enabled: true
   use-active-alerts-endpoint: false
   use-contact-events-endpoint: false

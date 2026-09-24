@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extPrisonsEscortCu
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extPrisonsPrisonerFinance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extPrisonsPrivatePrison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extProbationPoliceIntelligence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extUp3CaseStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.fullAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.fullAccessLaoRedactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.hmppsSystem
@@ -56,6 +57,7 @@ val roleConstants =
       -"/v1/contacts"
       -"/v1/contacts/{contactId}"
       -"/v1/contacts/{contactId}/linked-prisoners"
+      -"/v1/cases/{caseId}/status"
       -"/v1/education/course-completion"
       -"/v1/epf/person-details/{hmppsId}/{eventNumber}"
       -"/v1/hmpps/id/by-nomis-number/{nomisNumber}"
@@ -183,4 +185,5 @@ val roles =
     mojPrisonsWarrantReceipt,
     extPrisonsPrisonerFinance,
     extPrisonsCrimeData,
+    extUp3CaseStatus,
   ).associateBy { it.name }

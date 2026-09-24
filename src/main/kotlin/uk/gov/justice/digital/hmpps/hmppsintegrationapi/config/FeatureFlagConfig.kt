@@ -20,6 +20,7 @@ data class FeatureFlagConfig(
 ) {
   companion object {
     // API feature flags
+    const val UP3_CASE_STATUS_UPDATE_ENABLED = "up3-case-status-update-enabled"
     const val COURSE_COMPLETION_EVENT = "course-completion-event-enabled"
     const val USE_ACTIVE_ALERTS_ENDPOINT = "use-active-alerts-endpoint"
     const val USE_CONTACT_EVENTS_ENDPOINT = "use-contact-events-endpoint"

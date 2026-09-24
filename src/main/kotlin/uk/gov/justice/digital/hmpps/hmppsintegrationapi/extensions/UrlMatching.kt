@@ -25,6 +25,7 @@ private val pathPlaceholders =
     "{jobId}",
     "{nomisNumber}",
     "{courtId}",
+    "{caseId}",
     "[^/]*",
     "[^/]+",
     ".*",

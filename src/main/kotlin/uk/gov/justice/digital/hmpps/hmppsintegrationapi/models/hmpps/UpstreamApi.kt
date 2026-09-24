@@ -31,4 +31,5 @@ enum class UpstreamApi {
   MANAGE_USERS,
   COURT_REGISTER,
   REMAND_AND_SENTENCING,
+  CEMO,
 }
