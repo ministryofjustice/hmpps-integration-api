@@ -24,7 +24,7 @@ class PersonSearchIntegrationTest : IntegrationTestBase() {
 
   val response =
     File(
-      "$gatewaysFolder/cpr/fixtures/core-person-record-search-response.json",
+      "$gatewaysFolder/cpr/fixtures/core-person-record-search-response-new.json",
     ).readText()
 
   @BeforeEach

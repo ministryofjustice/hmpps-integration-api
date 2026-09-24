@@ -18,7 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.NomisRole
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsPrisonUser
 import java.io.File
 import kotlin.test.assertEquals
 
@@ -36,7 +36,7 @@ class ManageUsersTest(
       val path = "/users/search?username=testUser&authSources=azuread"
 
       val nomisUsername = "NOMIS_TEST_USERNAME"
-      val rolesPath = "/users/$nomisUsername/roles"
+      val prisonUsersPath = "/prisonusers/by-email/test@test/details"
 
       beforeEach {
         manageUsersMockServer.start()
@@ -48,9 +48,9 @@ class ManageUsersTest(
         )
 
         manageUsersMockServer.stubForGet(
-          rolesPath,
+          prisonUsersPath,
           File(
-            "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/NomisUserRolesFoundResponse.json",
+            "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/PrisonUsersResponse.json",
           ).readText(),
         )
 
@@ -83,22 +83,21 @@ class ManageUsersTest(
         assertEquals(UpstreamApi.MANAGE_USERS, response.errors[0].causedBy)
       }
 
-      it("successfully finds roles for a user") {
-        val response = manageUsersGateway.getRoles("NOMIS_TEST_USERNAME")
-        val roles = response.data
-        roles?.shouldHaveSize(3)
-        roles?.shouldContain(NomisRole("GLOBAL_SEARCH"))
-        roles?.shouldContain(NomisRole("TEST_ROLE_1"))
-        roles?.shouldContain(NomisRole("TEST_ROLE_2"))
+      it("successfully finds prison user records for an email") {
+        val prisonUser = HmppsPrisonUser("TEST_USER", "ABC", listOf("ROLE_1", "ROLE_2", "ROLE_3"))
+        val response = manageUsersGateway.getPrisonUsersByEmail("test@test")
+        val roles = response.data!!
+        roles.shouldHaveSize(2)
+        roles.shouldContain(prisonUser)
       }
 
-      it("find roles returns a 400 ") {
+      it("prison users returns a 400 ") {
         manageUsersMockServer.stubForGet(
-          "/users/erroringUsername/roles",
+          "/prisonusers/by-email/error@test/details",
           "",
           HttpStatus.BAD_REQUEST,
         )
-        val response = manageUsersGateway.getRoles("erroringUsername")
+        val response = manageUsersGateway.getPrisonUsersByEmail("error@test")
         assertEquals(null, response.data)
         assertEquals(UpstreamApiError.Type.BAD_REQUEST, response.errors[0].type)
         assertEquals(UpstreamApi.MANAGE_USERS, response.errors[0].causedBy)

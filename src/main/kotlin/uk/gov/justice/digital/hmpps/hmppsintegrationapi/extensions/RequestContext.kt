@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.oboconfig.OboUser
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import kotlin.String
@@ -19,7 +20,7 @@ data class RequestContext(
   val consumerConfig: ConsumerConfig,
   val filters: ConsumerFilters?,
   val featureFlags: FeatureFlagConfig,
-  val oboUserName: String? = null,
+  val oboUser: OboUser? = null,
 ) {
   companion object {
     fun buildRequestContext(
@@ -27,7 +28,7 @@ data class RequestContext(
       consumerConfig: ConsumerConfig = ConsumerConfig(),
       filters: ConsumerFilters? = ConsumerFilters(),
       featureFlags: FeatureFlagConfig = FeatureFlagConfig(),
-      oboUserName: String? = null,
-    ) = RequestContext(consumerId, consumerConfig, filters, featureFlags, oboUserName)
+      oboUser: OboUser? = null,
+    ) = RequestContext(consumerId, consumerConfig, filters, featureFlags, oboUser)
   }
 }

@@ -15,9 +15,11 @@ import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonCapacity
@@ -32,6 +34,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.interfaces.toPaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCapacityForPrisonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetLiveRollService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonPayBandsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonRegimeService
@@ -58,6 +61,7 @@ class PrisonController(
   @Autowired val auditService: AuditService,
   @Autowired val getPrisonRegimeService: GetPrisonRegimeService,
   @Autowired val getPrisonPayBandsService: GetPrisonPayBandsService,
+  @Autowired val getLiveRollService: GetLiveRollService,
 ) {
   @GetMapping("/prisoners/{hmppsId}")
   @Tags(value = [Tag(name = "Prisoners"), Tag(name = "Reception")])
@@ -378,6 +382,45 @@ class PrisonController(
     )
 
     return DataResponse(data = response.data)
+  }
+
+  @GetMapping("/{prisonId}/live-roll")
+  @FeatureFlag(name = FeatureFlagConfig.LIVE_ROLL_ENABLED)
+  @Operation(
+    summary = "Searches for prisoners by prisonId.",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully performed the query on upstream APIs. An empty list is returned when no results are found."),
+      ApiResponse(
+        responseCode = "400",
+        description = "",
+        content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))],
+      ),
+      ApiResponse(responseCode = "403", content = [Content(schema = Schema(ref = "#/components/schemas/ForbiddenResponse"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  fun getLiveRoll(
+    @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
+    @Parameter(description = "The page number", schema = Schema(minimum = "1")) @RequestParam(required = true, defaultValue = "1") page: Int,
+    @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = true, defaultValue = "10") size: Int,
+    @RequestAttribute requestContext: RequestContext?,
+  ): PaginatedResponse<PersonInPrison> {
+    val response = getLiveRollService.execute(prisonId, page, size, requestContext)
+
+    if (response.hasErrorCausedBy(BAD_REQUEST, causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH)) {
+      throw ValidationException("Invalid query parameters.")
+    }
+
+    if (response.hasErrorCausedBy(ENTITY_NOT_FOUND, causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH)) {
+      throw EntityNotFoundException("Could not find prison with supplied query parameters.")
+    }
+
+    auditService.createEvent(
+      "LIVE_ROLL",
+      mapOf("prisonId" to prisonId) as Map<String, String?>,
+    )
+
+    return response.data.toPaginatedResponse()
   }
 
   private fun isValidISODateFormat(dateString: String): Boolean =

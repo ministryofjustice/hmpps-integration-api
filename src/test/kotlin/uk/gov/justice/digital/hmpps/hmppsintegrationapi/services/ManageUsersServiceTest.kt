@@ -10,6 +10,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsAuthUser
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsPrisonRole
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsPrisonUser
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.PaginatedUsers
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -63,5 +65,42 @@ class ManageUsersServiceTest {
         (service.usernameExists("testName2", listOf("delius")))
       }
     assertEquals("Call to MANAGE_USERS failed with error: BAD_REQUEST", error.message)
+  }
+
+  @Test
+  fun `email is associated with a valid role`() {
+    val prisonUser = HmppsPrisonUser("testName1", "ABC", listOf(HmppsPrisonRole.GLOBAL_SEARCH.name))
+    whenever(manageUsersGateway.getPrisonUsersByEmail(any())).thenReturn(Response(listOf(prisonUser), emptyList()))
+    assertTrue(service.hasPrisonRole("test@test", HmppsPrisonRole.GLOBAL_SEARCH))
+  }
+
+  @Test
+  fun `email is NOT associated with a valid role`() {
+    val prisonUser = HmppsPrisonUser("testName1", "ABC", listOf("ROLE_2"))
+    whenever(manageUsersGateway.getPrisonUsersByEmail(any())).thenReturn(Response(listOf(prisonUser), emptyList()))
+    assertFalse(service.hasPrisonRole("test@test", HmppsPrisonRole.GLOBAL_SEARCH))
+  }
+
+  @Test
+  fun `email is associated with a valid role but the account is NOT enabled`() {
+    val prisonUser = HmppsPrisonUser("testName1", "ABC", listOf(HmppsPrisonRole.GLOBAL_SEARCH.name), false)
+    whenever(manageUsersGateway.getPrisonUsersByEmail(any())).thenReturn(Response(listOf(prisonUser), emptyList()))
+    assertFalse(service.hasPrisonRole("test@test", HmppsPrisonRole.GLOBAL_SEARCH))
+  }
+
+  @Test
+  fun `find prison user fails with an error`() {
+    whenever(manageUsersGateway.getPrisonUsersByEmail(any())).thenReturn(Response(null, errors = listOf(UpstreamApiError(type = UpstreamApiError.Type.BAD_REQUEST, causedBy = UpstreamApi.MANAGE_USERS))))
+    val error =
+      assertThrows<RuntimeException> {
+        (service.hasPrisonRole("test@test", HmppsPrisonRole.GLOBAL_SEARCH))
+      }
+    assertEquals("Call to MANAGE_USERS failed with error: BAD_REQUEST", error.message)
+  }
+
+  @Test
+  fun `find prison user returns NO data`() {
+    whenever(manageUsersGateway.getPrisonUsersByEmail(any())).thenReturn(Response(null, errors = emptyList()))
+    assertFalse(service.hasPrisonRole("test@test", HmppsPrisonRole.GLOBAL_SEARCH))
   }
 }

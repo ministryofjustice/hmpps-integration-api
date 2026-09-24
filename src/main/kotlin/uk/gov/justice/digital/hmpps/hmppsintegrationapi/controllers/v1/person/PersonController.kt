@@ -253,7 +253,7 @@ class PersonController(
   }
 
   @GetMapping("{hmppsId}/iep-level")
-  @Tags(value = [Tag("Visits"), Tag("Activities")])
+  @Tag(name = "Activities")
   @Operation(
     summary = "Returns a prisoners IEP level.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
@@ -284,7 +284,7 @@ class PersonController(
   }
 
   @GetMapping("{hmppsId}/visit-orders")
-  @Tags(value = [Tag(name = "Visits"), Tag(name = "Reception")])
+  @Tag(name = "Visits")
   @Operation(
     summary = "Returns the number of remaining visit orders a prisoner has.",
     responses = [

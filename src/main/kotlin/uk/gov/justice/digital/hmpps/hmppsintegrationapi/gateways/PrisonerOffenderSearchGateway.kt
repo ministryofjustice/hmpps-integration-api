@@ -76,6 +76,38 @@ class PrisonerOffenderSearchGateway(
     }
   }
 
+  fun getPersonsFromPrisonId(
+    prisonId: String,
+    page: Int,
+    size: Int,
+    requestContext: RequestContext? = null,
+  ): Response<POSPaginatedPrisoners?> {
+    val queryString = "page=${page - 1}&size=$size"
+
+    val result =
+      webClient.request<POSPaginatedPrisoners>(
+        HttpMethod.GET,
+        "/prison/$prisonId/prisoners?$queryString",
+        authenticationHeader(requestContext),
+        UpstreamApi.PRISONER_OFFENDER_SEARCH,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(
+          data = result.data,
+        )
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
   fun getPrisonerDetails(
     firstName: String?,
     lastName: String?,

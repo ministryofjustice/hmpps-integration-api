@@ -40,6 +40,7 @@ val extPrisonsPrivatePrison =
       -"/v1/prison/{prisonId}/prisoners/{hmppsId}/non-associations"
       -"/v1/prison/{prisonId}/visit/search"
       -"/v1/prison/{prisonId}/residential-hierarchy"
+      -"/v1/prison/{prisonId}/live-roll"
       -"/v1/prison/{prisonId}/location/{key}"
       -"/v1/prison/{prisonId}/residential-details"
       -"/v1/prison/{prisonId}/capacity"

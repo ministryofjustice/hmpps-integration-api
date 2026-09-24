@@ -79,9 +79,10 @@ feature-flag:
   prison-timeline-endpoint-enabled: false
   restapiclient-for-prison-api-gateway: false
   use-probation-search-for-person-search: true
-  person-search-v2-enabled: true
-  sentence-no-nomis-fix-enabled: true
+  person-search-v2-enabled: false
   use-lao-enabled-by-default: true
+  live-roll-enabled: false
+  prison-role-check-enabled: false
   # Events Config
   enable-delete-processed-events: true
   enable-publish-pending-events: true

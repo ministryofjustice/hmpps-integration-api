@@ -1,10 +1,14 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.atLeast
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.PRISON_ROLE_CHECK_ENABLED
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.createUnsignedJwt
 import java.io.File
@@ -12,6 +16,23 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class OnBehalfOfIntegrationTest : IntegrationTestBase() {
+  @BeforeEach
+  fun setUp() {
+    manageUsersMockServer.stubForGet(
+      "/users/search?username=testName&authSources=azuread",
+      File(
+        "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/UserFoundResponse.json",
+      ).readText(),
+    )
+
+    manageUsersMockServer.stubForGet(
+      "/prisonusers/by-email/testName/details",
+      File(
+        "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/PrisonUsersResponse.json",
+      ).readText(),
+    )
+  }
+
   @Test
   fun `if oboConfig is empty, and no Jwt is provided, return ok`() {
     callApiWithCN("/v1/status", "obo-empty")
@@ -68,8 +89,8 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
     verify(authGateway, atLeast(1)).getClientToken(eq("NOMIS"), requestContext.capture())
     val obUserName =
       requestContext.allValues
-        .filter { it?.oboUserName != null }
-        .map { it?.oboUserName }
+        .filter { it?.oboUser?.username != null }
+        .map { it?.oboUser?.username }
         .first()
     assertEquals("testName", obUserName)
   }
@@ -82,8 +103,8 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
     verify(authGateway, atLeast(1)).getClientToken(eq("nDelius"), requestContext.capture())
     val obUserName =
       requestContext.allValues
-        .filter { it?.oboUserName != null }
-        .map { it?.oboUserName }
+        .filter { it?.oboUser?.username != null }
+        .map { it?.oboUser?.username }
         .first()
     assertEquals("testName", obUserName)
   }
@@ -96,8 +117,8 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
     verify(authGateway, atLeast(1)).getClientToken(eq("Prisoner Offender Search"), requestContext.capture())
     val obUserName =
       requestContext.allValues
-        .filter { it?.oboUserName != null }
-        .map { it?.oboUserName }
+        .filter { it?.oboUser?.username != null }
+        .map { it?.oboUser?.username }
         .first()
     assertEquals("testName", obUserName)
   }
@@ -110,8 +131,8 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
     verify(authGateway, atLeast(1)).getClientToken(eq("nDelius"), requestContext.capture())
     val obUserName =
       requestContext.allValues
-        .filter { it?.oboUserName != null }
-        .map { it?.oboUserName }
+        .filter { it?.oboUser?.username != null }
+        .map { it?.oboUser?.username }
         .first()
     assertEquals("testName", obUserName)
   }
@@ -156,5 +177,55 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
     )
     callApiWithCN("$basePath/$crn", "obo-unsigned-verified", oboValue = createUnsignedJwt())
       .andExpect(MockMvcResultMatchers.status().isUnauthorized)
+  }
+
+  @Test
+  fun `an obo user has access to the global search role when feature is enabled`() {
+    callApiWithCN("$basePath/$crn", "obo-unsigned-verified", oboValue = createUnsignedJwt())
+      .andExpect(MockMvcResultMatchers.status().isOk)
+    val requestContext = argumentCaptor<RequestContext?>()
+    verify(authGateway, atLeast(1)).getClientToken(eq("Prisoner Offender Search"), requestContext.capture())
+    assertThat(requestContext.firstValue?.oboUser?.hasPrisonRole).isEqualTo(true)
+  }
+
+  @Test
+  fun `an obo user does not have access to the global search role when feature is enabled`() {
+    manageUsersMockServer.stubForGet(
+      "/prisonusers/by-email/testName/details",
+      File(
+        "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/PrisonUsersResponseDisabled.json",
+      ).readText(),
+    )
+    callApiWithCN("$basePath/$crn", "obo-unsigned-verified", oboValue = createUnsignedJwt())
+      .andExpect(MockMvcResultMatchers.status().isOk)
+    val requestContext = argumentCaptor<RequestContext?>()
+    verify(authGateway, atLeast(1)).getClientToken(eq("Prisoner Offender Search"), requestContext.capture())
+    assertThat(requestContext.firstValue?.oboUser?.hasPrisonRole).isEqualTo(false)
+  }
+
+  @Test
+  fun `if no obo config then obo username and role flag is null`() {
+    callApiWithCN("$basePath/$crn", "obo-empty")
+      .andExpect(MockMvcResultMatchers.status().isOk)
+    val requestContext = argumentCaptor<RequestContext?>()
+    verify(authGateway, atLeast(1)).getClientToken(eq("Prisoner Offender Search"), requestContext.capture())
+    assertThat(requestContext.firstValue?.oboUser?.hasPrisonRole).isEqualTo(null)
+    assertThat(requestContext.firstValue?.oboUser?.username).isEqualTo(null)
+  }
+
+  @Test
+  fun `an obo user does not have the obo role flag set when feature is disabled`() {
+    whenever(featureFlagConfig.isEnabled(PRISON_ROLE_CHECK_ENABLED)).thenReturn(false)
+    manageUsersMockServer.stubForGet(
+      "/prisonusers/by-email/testName/details",
+      File(
+        "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/PrisonUsersResponseDisabled.json",
+      ).readText(),
+    )
+    callApiWithCN("$basePath/$crn", "obo-unsigned-verified", oboValue = createUnsignedJwt())
+      .andExpect(MockMvcResultMatchers.status().isOk)
+    val requestContext = argumentCaptor<RequestContext?>()
+    verify(authGateway, atLeast(1)).getClientToken(eq("Prisoner Offender Search"), requestContext.capture())
+    assertThat(requestContext.firstValue?.oboUser?.hasPrisonRole).isEqualTo(null)
   }
 }
