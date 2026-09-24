@@ -21,6 +21,10 @@ Providing a client certificate and key for mTLS is dependent on the tools used t
 
 Providing an API key can be done using an HTTP header called `x-api-key` with the value of the API key as the header value, ensuring it's not encoded in Base64. If a valid API key is not supplied a `403 Forbidden` HTTP response is returned.
 
+For details on how to obtain your certificate see our [Request Access Section](documentation/get-started/#request-access) section
+
+For details on how to renew your certificate see our [Certificate Renewal](documentation/get-started/#certificate-renewal) section.
+
 ### Example: Read from an API Endpoint
 
 To make an authenticated data request to the API using the client-specific TLS certificate, private key and API key:
