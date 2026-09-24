@@ -90,8 +90,9 @@ feature-flag:
   prison-timeline-endpoint-enabled: true
   use-probation-search-for-person-search: false
   person-search-v2-enabled: true
-  sentence-no-nomis-fix-enabled: true
   use-lao-enabled-by-default: true
+  live-roll-enabled: true
+  prison-role-check-enabled: true
   # Events Config
   enable-delete-processed-events: false
   enable-publish-pending-events: false

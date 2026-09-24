@@ -27,6 +27,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.HmppsAuthFaile
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.oboconfig.OboUser
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import kotlin.test.assertEquals
 
@@ -189,14 +190,14 @@ class HmppsAuthGatewayTest(
       val client = WebClientWrapper("http://localhost:3000")
       val wrapper = spy(client)
       ReflectionTestUtils.setField(hmppsAuthGateway, "webClientWrapper", wrapper)
-      val firstToken = hmppsAuthGateway.getClientToken("NOMIS", buildRequestContext(oboUserName = "testUser"))
+      val firstToken = hmppsAuthGateway.getClientToken("NOMIS", buildRequestContext(oboUser = OboUser("testUser")))
       val uri = argumentCaptor<String>()
       verify(wrapper, atLeast(1)).getResponseBodySpec(eq(HttpMethod.POST), uri.capture(), anyMap(), eq(null))
       assertEquals("/auth/oauth/token?grant_type=client_credentials&username=testUser", uri.firstValue)
       verify(telemetryService, times(1)).trackEvent("AuthTokenRequest")
 
       // Second request with obo username should be the same as the first
-      val secondToken = hmppsAuthGateway.getClientToken("NOMIS", buildRequestContext(oboUserName = "testUser"))
+      val secondToken = hmppsAuthGateway.getClientToken("NOMIS", buildRequestContext(oboUser = OboUser("testUser")))
       secondToken shouldBe firstToken
       verify(telemetryService, times(1)).trackEvent("AuthTokenCache")
     }

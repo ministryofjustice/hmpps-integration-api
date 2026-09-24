@@ -45,7 +45,6 @@ class ContactsController(
   private val contactSearchService: ContactSearchService,
 ) {
   @GetMapping("/{contactId}")
-  @Tag(name = "Visits")
   @Operation(
     summary = "Returns a contact by ID.",
     description = "",
@@ -78,7 +77,6 @@ class ContactsController(
   }
 
   @GetMapping("/{contactId}/linked-prisoners")
-  @Tag(name = "Visits")
   @Operation(
     summary = "Returns the linked prisoners for a contact id.",
     description = "",
@@ -112,7 +110,6 @@ class ContactsController(
   }
 
   @RequestMapping(method = [RequestMethod.GET, RequestMethod.POST])
-  @Tag(name = "Visits")
   @Operation(
     summary = "Search for a contact.",
     description =

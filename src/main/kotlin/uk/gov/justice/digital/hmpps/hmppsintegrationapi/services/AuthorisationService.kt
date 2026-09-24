@@ -5,6 +5,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.fixedClock
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.IntegrationEventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.normalisePath
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsPrisonRole
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
@@ -195,6 +196,11 @@ class AuthorisationService(
   fun requiresObo(consumerName: String): Boolean = authorisationConfig.consumers[consumerName]?.oboConfig?.required == true
 
   fun allowLao(consumerName: String): Boolean = authorisationConfig.consumers[consumerName]?.allowLao == true
+
+  fun hasPrisonRole(
+    emailAddress: String,
+    role: HmppsPrisonRole,
+  ): Boolean = manageUsersService.hasPrisonRole(emailAddress, role)
 
   /**
    * Reduces a list of list<Any> (mixed) type to a flattened list of specified Enum type
