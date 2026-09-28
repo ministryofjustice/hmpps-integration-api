@@ -10,6 +10,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doNothing
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -55,6 +56,25 @@ class CaseStatusIntegrationTest : IntegrationTestBase() {
     cemoMockServer.verify(getRequestedFor(urlEqualTo(cemoPath)))
     cemoMockServer.assertValidationPassed()
     verify(emNotificationEventPublisher).publish(eq(caseId), any())
+  }
+
+  @Test
+  fun `rejects an unrecognised status with 400 without calling CEMO or publishing`() {
+    val caseId = "case-123"
+
+    putApi(
+      "/v1/cases/$caseId/status",
+      """
+    {
+      "status": "banana",
+      "reasons": [{"section": "duplicate_submission", "details": "Already submitted"}],
+      "datetimeOfStatusChange": "2023-10-27T14:30:00Z"
+    }
+    """.trimIndent(),
+    ).andExpect(status().isBadRequest)
+
+    cemoMockServer.verify(0, getRequestedFor(urlEqualTo("/api/orders/search/by-case-id/$caseId")))
+    verifyNoInteractions(emNotificationEventPublisher)
   }
 
   companion object {

@@ -1,11 +1,10 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.cemo
 
-import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
-import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
+import com.github.tomakehurst.wiremock.client.WireMock
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
-import org.mockito.Mockito.reset
+import org.mockito.Mockito
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
@@ -13,7 +12,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.cemo.CemoGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cemo.CemoOrderStatus
@@ -27,8 +26,8 @@ import java.util.UUID
   classes = [CemoGateway::class],
 )
 class CemoGatewayTest(
-  @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
-  private val cemoGateway: CemoGateway,
+    @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
+    private val cemoGateway: CemoGateway,
 ) : DescribeSpec(
     {
       val cemoMockServer = ApiMockServer.create(UpstreamApi.CEMO)
@@ -36,8 +35,8 @@ class CemoGatewayTest(
       val path = "/api/orders/search/by-case-id/case-123"
 
       fun version(
-        versionId: Int,
-        status: CemoOrderStatus,
+          versionId: Int,
+          status: CemoOrderStatus,
       ): String =
         """
         {
@@ -60,7 +59,7 @@ class CemoGatewayTest(
 
       beforeEach {
         cemoMockServer.start()
-        reset(hmppsAuthGateway)
+          Mockito.reset(hmppsAuthGateway)
         whenever(hmppsAuthGateway.getClientToken("CEMO")).thenReturn(HmppsAuthMockServer.TOKEN)
       }
 
@@ -88,7 +87,7 @@ class CemoGatewayTest(
         response.data.versions.map { it.status } shouldBe listOf(CemoOrderStatus.IN_PROGRESS, CemoOrderStatus.SUBMITTED)
         verify(hmppsAuthGateway).getClientToken("CEMO")
         cemoMockServer.verify(
-          getRequestedFor(urlEqualTo(path)),
+            WireMock.getRequestedFor(WireMock.urlEqualTo(path)),
         )
         cemoMockServer.assertValidationPassed()
       }

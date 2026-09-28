@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.casestatus
 
-import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.Valid
@@ -10,13 +11,17 @@ import jakarta.validation.constraints.Size
 import java.time.OffsetDateTime
 
 data class CaseStatusUpdate(
-  @field:NotNull(message = "status must be supplied")
+  @field:NotBlank(message = "status must be supplied")
+  @field:ValidCaseStatus
+  @JsonProperty("status")
   @Schema(
+    name = "status",
     description = "New status for the case",
     example = "rejected",
     requiredMode = Schema.RequiredMode.REQUIRED,
+    allowableValues = ["approved", "rejected", "pending", "installed", "scheduled"],
   )
-  val status: CaseStatus,
+  val rawStatus: String,
   @Schema(description = "Reasons associated with the status change")
   val reasons: List<@Valid CaseStatusReason>? = null,
   @field:NotNull(message = "datetimeOfStatusChange must be supplied")
@@ -26,7 +31,12 @@ data class CaseStatusUpdate(
     requiredMode = Schema.RequiredMode.REQUIRED,
   )
   val datetimeOfStatusChange: OffsetDateTime,
-)
+) {
+  @get:JsonIgnore
+  @get:Schema(hidden = true)
+  val status: CaseStatus
+    get() = CaseStatus.fromValue(rawStatus)
+}
 
 enum class CaseStatus(
   @get:JsonValue val value: String,
@@ -40,11 +50,9 @@ enum class CaseStatus(
   ;
 
   companion object {
-    @JvmStatic
-    @JsonCreator
-    fun fromValue(value: String): CaseStatus =
-      entries.firstOrNull { it.value == value }
-        ?: UNKNOWN
+    fun fromValue(value: String): CaseStatus = entries.firstOrNull { it.value == value } ?: UNKNOWN
+
+    fun validValues(): List<String> = entries.filter { it != UNKNOWN }.map { it.value }
   }
 }
 

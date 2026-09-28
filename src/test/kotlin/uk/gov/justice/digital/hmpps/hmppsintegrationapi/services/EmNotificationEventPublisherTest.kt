@@ -36,7 +36,7 @@ class EmNotificationEventPublisherTest {
   private val publisher = EmNotificationEventPublisher(queueService, objectMapper, clock)
   private val request =
     CaseStatusUpdate(
-      status = CaseStatus.REJECTED,
+      rawStatus = CaseStatus.REJECTED.value,
       reasons = listOf(CaseStatusReason("duplicate_submission", "Already submitted")),
       datetimeOfStatusChange = Instant.parse("2023-10-27T14:30:00Z").atOffset(ZoneOffset.UTC),
     )
