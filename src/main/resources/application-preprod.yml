@@ -29,6 +29,8 @@ services:
     base-url: https://support-for-additional-needs-api-preprod.hmpps.service.justice.gov.uk
   non-associations:
     base-url: https://non-associations-api-preprod.hmpps.service.justice.gov.uk
+  personal-relationships:
+    base-url: https://personal-relationships-api-preprod.hmpps.service.justice.gov.uk
   manage-prison-visits:
     base-url: https://hmpps-manage-prison-visits-orchestration-preprod.prison.service.justice.gov.uk
   incentives:
@@ -79,7 +81,7 @@ feature-flag:
   prison-timeline-endpoint-enabled: false
   restapiclient-for-prison-api-gateway: false
   use-probation-search-for-person-search: true
-  person-search-v2-enabled: false
+  person-search-v2-enabled: true
   use-lao-enabled-by-default: true
   live-roll-enabled: false
   prison-role-check-enabled: false
