@@ -26,8 +26,8 @@ import java.util.UUID
   classes = [CemoGateway::class],
 )
 class CemoGatewayTest(
-    @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
-    private val cemoGateway: CemoGateway,
+  @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
+  private val cemoGateway: CemoGateway,
 ) : DescribeSpec(
     {
       val cemoMockServer = ApiMockServer.create(UpstreamApi.CEMO)
@@ -35,8 +35,8 @@ class CemoGatewayTest(
       val path = "/api/orders/search/by-case-id/case-123"
 
       fun version(
-          versionId: Int,
-          status: CemoOrderStatus,
+        versionId: Int,
+        status: CemoOrderStatus,
       ): String =
         """
         {
@@ -59,7 +59,7 @@ class CemoGatewayTest(
 
       beforeEach {
         cemoMockServer.start()
-          Mockito.reset(hmppsAuthGateway)
+        Mockito.reset(hmppsAuthGateway)
         whenever(hmppsAuthGateway.getClientToken("CEMO")).thenReturn(HmppsAuthMockServer.TOKEN)
       }
 
@@ -87,7 +87,7 @@ class CemoGatewayTest(
         response.data.versions.map { it.status } shouldBe listOf(CemoOrderStatus.IN_PROGRESS, CemoOrderStatus.SUBMITTED)
         verify(hmppsAuthGateway).getClientToken("CEMO")
         cemoMockServer.verify(
-            WireMock.getRequestedFor(WireMock.urlEqualTo(path)),
+          WireMock.getRequestedFor(WireMock.urlEqualTo(path)),
         )
         cemoMockServer.assertValidationPassed()
       }

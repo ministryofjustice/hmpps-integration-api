@@ -65,12 +65,12 @@ class CaseStatusIntegrationTest : IntegrationTestBase() {
     putApi(
       "/v1/cases/$caseId/status",
       """
-    {
-      "status": "banana",
-      "reasons": [{"section": "duplicate_submission", "details": "Already submitted"}],
-      "datetimeOfStatusChange": "2023-10-27T14:30:00Z"
-    }
-    """.trimIndent(),
+      {
+        "status": "banana",
+        "reasons": [{"section": "duplicate_submission", "details": "Already submitted"}],
+        "datetimeOfStatusChange": "2023-10-27T14:30:00Z"
+      }
+      """.trimIndent(),
     ).andExpect(status().isBadRequest)
 
     cemoMockServer.verify(0, getRequestedFor(urlEqualTo("/api/orders/search/by-case-id/$caseId")))

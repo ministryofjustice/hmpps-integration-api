@@ -42,7 +42,7 @@ class ReceiveCaseStatusServiceTest :
     fun request(
       status: CaseStatus = CaseStatus.REJECTED,
       reasons: List<CaseStatusReason>? = listOf(CaseStatusReason("duplicate_submission", "Duplicate")),
-    ) = CaseStatusUpdate(status.toString(), reasons, changedAt)
+    ) = CaseStatusUpdate(status.value, reasons, changedAt)
 
     describe("receive") {
       it("audits a valid case status update without recording reason details") {
