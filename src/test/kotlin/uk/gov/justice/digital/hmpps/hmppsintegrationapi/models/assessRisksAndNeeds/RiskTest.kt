@@ -19,11 +19,11 @@ class RiskTest :
 
           val integrationApiRisk = arnRisk.toRisk()
 
-          integrationApiRisk.risk.shouldBe(arnRisk.risk)
-          integrationApiRisk.previous.shouldBe(arnRisk.previous)
-          integrationApiRisk.previousConcernsText.shouldBe(arnRisk.previousConcernsText)
-          integrationApiRisk.current.shouldBe(arnRisk.current)
-          integrationApiRisk.currentConcernsText.shouldBe(arnRisk.currentConcernsText)
+          integrationApiRisk?.risk.shouldBe(arnRisk.risk)
+          integrationApiRisk?.previous.shouldBe(arnRisk.previous)
+          integrationApiRisk?.previousConcernsText.shouldBe(arnRisk.previousConcernsText)
+          integrationApiRisk?.current.shouldBe(arnRisk.current)
+          integrationApiRisk?.currentConcernsText.shouldBe(arnRisk.currentConcernsText)
         }
       }
     },

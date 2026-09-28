@@ -37,19 +37,19 @@ class RisksTest :
           integrationApiRisks.assessedOn.shouldBe(arnRisks.assessedOn)
           integrationApiRisks.riskToSelf.suicide
             ?.risk
-            .shouldBe(arnRisks.riskToSelf.suicide.risk)
+            .shouldBe(arnRisks.riskToSelf.suicide?.risk)
           integrationApiRisks.riskToSelf.selfHarm
             ?.risk
-            .shouldBe(arnRisks.riskToSelf.selfHarm.risk)
+            .shouldBe(arnRisks.riskToSelf.selfHarm?.risk)
           integrationApiRisks.riskToSelf.custody
             ?.risk
-            .shouldBe(arnRisks.riskToSelf.custody.risk)
+            .shouldBe(arnRisks.riskToSelf.custody?.risk)
           integrationApiRisks.riskToSelf.hostelSetting
             ?.risk
-            .shouldBe(arnRisks.riskToSelf.hostelSetting.risk)
+            .shouldBe(arnRisks.riskToSelf.hostelSetting?.risk)
           integrationApiRisks.riskToSelf.vulnerability
             ?.risk
-            .shouldBe(arnRisks.riskToSelf.vulnerability.risk)
+            .shouldBe(arnRisks.riskToSelf.vulnerability?.risk)
           integrationApiRisks.otherRisks.breachOfTrust.shouldBe(arnRisks.otherRisks.breachOfTrust)
           integrationApiRisks.summary.whoIsAtRisk.shouldBe(arnRisks.summary.whoIsAtRisk)
         }
