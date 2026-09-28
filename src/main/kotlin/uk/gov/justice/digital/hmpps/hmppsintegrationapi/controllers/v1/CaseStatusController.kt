@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ErrorResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.up3.CaseStatusUpdate
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.casestatus.CaseStatusUpdate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ReceiveCaseStatusService
 
 @RestController
@@ -28,7 +28,7 @@ class CaseStatusController(
   @PutMapping("/{caseId}/status")
   @ResponseStatus(HttpStatus.OK)
   @Operation(
-    summary = "Receive a case status update from UP3",
+    summary = "Receive a case status update",
     description = "Validates the case status update against CEMO and publishes it to the EM notification SNS topic before responding.",
     responses = [
       ApiResponse(
@@ -59,7 +59,7 @@ class CaseStatusController(
       ),
     ],
   )
-  @FeatureFlag(name = FeatureFlagConfig.UP3_CASE_STATUS_UPDATE_ENABLED)
+  @FeatureFlag(name = FeatureFlagConfig.CASE_STATUS_UPDATE_ENABLED)
   fun updateCaseStatus(
     @PathVariable caseId: String,
     @Valid @RequestBody request: CaseStatusUpdate,

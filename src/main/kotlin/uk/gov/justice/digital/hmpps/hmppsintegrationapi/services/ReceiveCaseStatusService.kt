@@ -5,11 +5,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.CaseStatusVali
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.UpstreamApiException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.cemo.CemoGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.casestatus.CaseStatus
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.casestatus.CaseStatusUpdate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cemo.CemoOrderStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.up3.CaseStatus
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.up3.CaseStatusUpdate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @Service
@@ -36,7 +36,7 @@ class ReceiveCaseStatusService(
     emNotificationEventPublisher.publish(caseId, request)
 
     auditService.createEvent(
-      "RECEIVE_UP3_CASE_STATUS",
+      "RECEIVE_CASE_STATUS_UPDATE",
       mapOf(
         "caseId" to caseId,
         "status" to request.status.value,

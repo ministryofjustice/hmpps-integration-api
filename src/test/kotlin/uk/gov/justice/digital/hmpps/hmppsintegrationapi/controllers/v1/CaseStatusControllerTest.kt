@@ -54,7 +54,7 @@ class CaseStatusControllerTest(
       """.trimIndent()
 
     beforeTest {
-      whenever(featureFlagConfig.getConfigFlagValue(FeatureFlagConfig.UP3_CASE_STATUS_UPDATE_ENABLED)).thenReturn(true)
+      whenever(featureFlagConfig.getConfigFlagValue(FeatureFlagConfig.CASE_STATUS_UPDATE_ENABLED)).thenReturn(true)
       whenever(cemoGateway.getOrderByCaseId("case-123")).thenReturn(
         Response(
           CemoOrderCaseSearchResult(
@@ -81,7 +81,7 @@ class CaseStatusControllerTest(
         response.status shouldBe HttpStatus.OK.value()
         response.contentAsString shouldBe ""
         verify(auditService).createEvent(
-          eq("RECEIVE_UP3_CASE_STATUS"),
+          eq("RECEIVE_CASE_STATUS_UPDATE"),
           any<Map<String, String?>>(),
         )
       }

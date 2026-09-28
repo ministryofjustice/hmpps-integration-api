@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import mu.KotlinLogging
 import org.springframework.stereotype.Component
 import software.amazon.awssdk.services.sns.model.PublishRequest
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.up3.CaseStatusReason
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.up3.CaseStatusUpdate
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.casestatus.CaseStatusReason
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.casestatus.CaseStatusUpdate
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import uk.gov.justice.hmpps.sqs.HmppsTopic
 import uk.gov.justice.hmpps.sqs.eventTypeMessageAttributes

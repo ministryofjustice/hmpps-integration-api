@@ -4,6 +4,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolic
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.allEndpoints
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.daso
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.constants
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extCaseStatusUpdate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extHmppsPublicProtection
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extHmppsPublicProtectionCat4
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extHmppsSeriousHarm
@@ -14,7 +15,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extPrisonsEscortCu
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extPrisonsPrisonerFinance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extPrisonsPrivatePrison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extProbationPoliceIntelligence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extUp3CaseStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.fullAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.fullAccessLaoRedactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.hmppsSystem
@@ -185,5 +185,5 @@ val roles =
     mojPrisonsWarrantReceipt,
     extPrisonsPrisonerFinance,
     extPrisonsCrimeData,
-    extUp3CaseStatus,
+    extCaseStatusUpdate,
   ).associateBy { it.name }

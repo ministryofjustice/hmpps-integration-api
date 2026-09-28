@@ -12,9 +12,9 @@ import software.amazon.awssdk.services.sns.SnsAsyncClient
 import software.amazon.awssdk.services.sns.model.PublishRequest
 import software.amazon.awssdk.services.sns.model.PublishResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.defaultObjectMapper
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.up3.CaseStatus
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.up3.CaseStatusReason
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.up3.CaseStatusUpdate
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.casestatus.CaseStatus
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.casestatus.CaseStatusReason
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.casestatus.CaseStatusUpdate
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import uk.gov.justice.hmpps.sqs.HmppsTopic
 import java.time.Clock

@@ -14,15 +14,15 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.CaseStatusVali
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.UpstreamApiException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.cemo.CemoGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.casestatus.CaseStatus
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.casestatus.CaseStatusReason
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.casestatus.CaseStatusUpdate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cemo.CemoOrderCaseSearchResult
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cemo.CemoOrderStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cemo.CemoOrderVersion
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.up3.CaseStatus
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.up3.CaseStatusReason
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.up3.CaseStatusUpdate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -51,7 +51,7 @@ class ReceiveCaseStatusServiceTest :
         service.receive("case-123", request())
 
         verify(auditService).createEvent(
-          eq("RECEIVE_UP3_CASE_STATUS"),
+          eq("RECEIVE_CASE_STATUS_UPDATE"),
           eq(
             mapOf(
               "caseId" to "case-123",
@@ -76,7 +76,7 @@ class ReceiveCaseStatusServiceTest :
         service.receive("case-123", update)
 
         verify(eventPublisher).publish("case-123", update)
-        verify(auditService).createEvent(eq("RECEIVE_UP3_CASE_STATUS"), any())
+        verify(auditService).createEvent(eq("RECEIVE_CASE_STATUS_UPDATE"), any())
       }
 
       it("rejects an order without a submitted version") {

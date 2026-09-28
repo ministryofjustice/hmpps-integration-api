@@ -25,7 +25,7 @@ spring:
         - "stdout"
 
 feature-flag:
-  up3-case-status-update-enabled: false
+  case-status-update-enabled: false
 
 springdoc:
   default-produces-media-type: application/json
