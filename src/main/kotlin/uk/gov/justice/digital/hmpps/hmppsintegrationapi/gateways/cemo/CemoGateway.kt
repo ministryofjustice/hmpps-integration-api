@@ -16,7 +16,7 @@ import java.nio.charset.StandardCharsets
 
 @Component
 class CemoGateway(
-    @Value("\${services.cemo.base-url}") baseUrl: String,
+  @Value("\${services.cemo.base-url}") baseUrl: String,
 ) : UpstreamGateway {
   private val webClient = WebClientWrapper(baseUrl)
 
@@ -24,10 +24,10 @@ class CemoGateway(
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
   override fun metaData() =
-      GatewayMetadata(
-          summary = "The Create an Electronic Monitoring Order API stores and submits electronic monitoring orders.",
-          gitHubRepoUrl = "https://github.com/ministryofjustice/hmpps-electronic-monitoring-create-an-order-api",
-      )
+    GatewayMetadata(
+      summary = "The Create an Electronic Monitoring Order API stores and submits electronic monitoring orders.",
+      gitHubRepoUrl = "https://github.com/ministryofjustice/hmpps-electronic-monitoring-create-an-order-api",
+    )
 
   fun getOrderByCaseId(caseId: String): Response<CemoOrderCaseSearchResult?> {
     val encodedCaseId = UriUtils.encodePathSegment(caseId, StandardCharsets.UTF_8)
