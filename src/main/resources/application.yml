@@ -151,5 +151,3 @@ hmpps.sqs:
   topics:
     integrationeventtopic:
       arn: ${INTEGRATION_EVENT_TOPIC_ARN}
-    emnotificationevents:
-      arn: ${EM_NOTIFICATION_EVENTS_TOPIC_ARN}

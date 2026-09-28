@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.cemo
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -6,7 +6,9 @@ import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import org.springframework.web.util.UriUtils
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.GatewayMetadata
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.UpstreamGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cemo.CemoOrderCaseSearchResult
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -14,7 +16,7 @@ import java.nio.charset.StandardCharsets
 
 @Component
 class CemoGateway(
-  @Value("\${services.cemo.base-url}") baseUrl: String,
+    @Value("\${services.cemo.base-url}") baseUrl: String,
 ) : UpstreamGateway {
   private val webClient = WebClientWrapper(baseUrl)
 
@@ -22,10 +24,10 @@ class CemoGateway(
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
   override fun metaData() =
-    GatewayMetadata(
-      summary = "The Create an Electronic Monitoring Order API stores and submits electronic monitoring orders.",
-      gitHubRepoUrl = "https://github.com/ministryofjustice/hmpps-electronic-monitoring-create-an-order-api",
-    )
+      GatewayMetadata(
+          summary = "The Create an Electronic Monitoring Order API stores and submits electronic monitoring orders.",
+          gitHubRepoUrl = "https://github.com/ministryofjustice/hmpps-electronic-monitoring-create-an-order-api",
+      )
 
   fun getOrderByCaseId(caseId: String): Response<CemoOrderCaseSearchResult?> {
     val encodedCaseId = UriUtils.encodePathSegment(caseId, StandardCharsets.UTF_8)
@@ -38,8 +40,8 @@ class CemoGateway(
       )
 
     return when (result) {
-      is WebClientWrapperResponse.Success -> Response(data = result.data)
-      is WebClientWrapperResponse.Error -> Response(data = null, errors = result.errors)
+      is WebClientWrapper.WebClientWrapperResponse.Success -> Response(data = result.data)
+      is WebClientWrapper.WebClientWrapperResponse.Error -> Response(data = null, errors = result.errors)
     }
   }
 

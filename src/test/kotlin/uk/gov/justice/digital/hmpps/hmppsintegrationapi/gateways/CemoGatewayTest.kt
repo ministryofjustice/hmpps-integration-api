@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 
 import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
+import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito.reset
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.cemo.CemoGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cemo.CemoOrderStatus
@@ -27,7 +29,7 @@ import java.util.UUID
 class CemoGatewayTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
   private val cemoGateway: CemoGateway,
-) : io.kotest.core.spec.style.DescribeSpec(
+) : DescribeSpec(
     {
       val cemoMockServer = ApiMockServer.create(UpstreamApi.CEMO)
       val orderId = UUID.fromString("11111111-1111-1111-1111-111111111111")

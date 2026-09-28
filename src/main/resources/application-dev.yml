@@ -99,6 +99,9 @@ feature-flag:
 #authorisation.consumers - now defined in the configuration repository
 
 hmpps.sqs:
+  topics:
+    emnotificationevents:
+      arn: ${EM_NOTIFICATION_EVENTS_TOPIC_ARN}
   queues:
     hmppsdomainqueue:
       queueName: ${HMPPS_DOMAIN_QUEUE_NAME}
