@@ -9,7 +9,6 @@ import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 import java.time.OffsetDateTime
 
-@Schema(name = "CaseStatusUpdate")
 data class CaseStatusUpdate(
   @field:NotNull(message = "status must be supplied")
   @Schema(
@@ -18,9 +17,8 @@ data class CaseStatusUpdate(
     requiredMode = Schema.RequiredMode.REQUIRED,
   )
   val status: CaseStatus,
-  @field:Valid
   @Schema(description = "Reasons associated with the status change")
-  val reasons: List<CaseStatusReason>? = null,
+  val reasons: List<@Valid CaseStatusReason>? = null,
   @field:NotNull(message = "datetimeOfStatusChange must be supplied")
   @Schema(
     description = "ISO 8601 timestamp of when the status changed",
@@ -38,6 +36,7 @@ enum class CaseStatus(
   PENDING("pending"),
   INSTALLED("installed"),
   SCHEDULED("scheduled"),
+  UNKNOWN("unknown"),
   ;
 
   companion object {
@@ -45,7 +44,7 @@ enum class CaseStatus(
     @JsonCreator
     fun fromValue(value: String): CaseStatus =
       entries.firstOrNull { it.value == value }
-        ?: throw IllegalArgumentException("Unsupported case status: $value")
+        ?: UNKNOWN
   }
 }
 

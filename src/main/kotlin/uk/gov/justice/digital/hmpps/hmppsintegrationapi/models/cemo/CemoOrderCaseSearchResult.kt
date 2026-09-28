@@ -18,4 +18,5 @@ enum class CemoOrderStatus {
   IN_PROGRESS,
   ERROR,
   SUBMITTED,
+  UNKNOWN,
 }

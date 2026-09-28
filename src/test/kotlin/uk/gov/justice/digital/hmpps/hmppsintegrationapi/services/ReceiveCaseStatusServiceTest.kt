@@ -11,8 +11,6 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.CaseStatusValidationException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.UpstreamApiException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.cemo.CemoGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.casestatus.CaseStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.casestatus.CaseStatusReason
@@ -95,7 +93,7 @@ class ReceiveCaseStatusServiceTest :
         verify(eventPublisher, never()).publish(any(), any())
       }
 
-      it("returns not found when CEMO cannot find the order") {
+      it("returns upstream errors when CEMO cannot find the order") {
         whenever(cemoGateway.getOrderByCaseId(any())).thenReturn(
           Response(
             data = null,
@@ -103,12 +101,13 @@ class ReceiveCaseStatusServiceTest :
           ),
         )
 
-        shouldThrow<EntityNotFoundException> {
-          service.receive("case-123", request())
-        }
+        val response = service.receive("case-123", request())
+
+        response.errors.single().type shouldBe UpstreamApiError.Type.ENTITY_NOT_FOUND
+        verify(eventPublisher, never()).publish(any(), any())
       }
 
-      it("returns an upstream error when CEMO fails") {
+      it("returns upstream errors when CEMO fails") {
         whenever(cemoGateway.getOrderByCaseId(any())).thenReturn(
           Response(
             data = null,
@@ -116,9 +115,24 @@ class ReceiveCaseStatusServiceTest :
           ),
         )
 
-        shouldThrow<UpstreamApiException> {
-          service.receive("case-123", request())
-        }
+        val response = service.receive("case-123", request())
+
+        response.errors.single().type shouldBe UpstreamApiError.Type.INTERNAL_SERVER_ERROR
+        verify(eventPublisher, never()).publish(any(), any())
+      }
+
+      it("returns a bad request error when CEMO rejects the case ID") {
+        whenever(cemoGateway.getOrderByCaseId(any())).thenReturn(
+          Response(
+            data = null,
+            errors = listOf(UpstreamApiError(UpstreamApi.CEMO, UpstreamApiError.Type.BAD_REQUEST)),
+          ),
+        )
+
+        val response = service.receive("case-123", request())
+
+        response.errors.single().type shouldBe UpstreamApiError.Type.BAD_REQUEST
+        verify(eventPublisher, never()).publish(any(), any())
       }
 
       it("rejects a rejected update without reasons") {

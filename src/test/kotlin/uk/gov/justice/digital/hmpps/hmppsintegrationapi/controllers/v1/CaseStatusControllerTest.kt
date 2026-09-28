@@ -114,7 +114,7 @@ class CaseStatusControllerTest(
         response.status shouldBe HttpStatus.UNPROCESSABLE_ENTITY.value()
       }
 
-      it("returns 400 for an unsupported status") {
+      it("uses unknown for an unrecognized status") {
         val response =
           mockMvc
             .perform(
@@ -122,11 +122,21 @@ class CaseStatusControllerTest(
                 .header("subject-distinguished-name", "C=GB,O=Home Office,CN=automated-test-client")
                 .header("cert-serial-number", "9572494320151578633330348943480876283449388176")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBody.replace("\"rejected\"", "\"unknown\"")),
+                .content(requestBody.replace("\"rejected\"", "\"new_status\"")),
             ).andReturn()
             .response
 
-        response.status shouldBe HttpStatus.BAD_REQUEST.value()
+        response.status shouldBe HttpStatus.OK.value()
+        verify(auditService).createEvent(
+          eq("RECEIVE_CASE_STATUS_UPDATE"),
+          eq(
+            mapOf(
+              "caseId" to "case-123",
+              "status" to "unknown",
+              "datetimeOfStatusChange" to "2023-10-27T14:30Z",
+            ),
+          ),
+        )
       }
 
       it("returns 404 when CEMO cannot find the case") {
@@ -166,6 +176,25 @@ class CaseStatusControllerTest(
             .response
 
         response.status shouldBe HttpStatus.INTERNAL_SERVER_ERROR.value()
+      }
+
+      it("returns 400 when CEMO rejects the case ID") {
+        whenever(cemoGateway.getOrderByCaseId("case-123")).thenReturn(
+          Response(null, listOf(UpstreamApiError(UpstreamApi.CEMO, UpstreamApiError.Type.BAD_REQUEST))),
+        )
+
+        val response =
+          mockMvc
+            .perform(
+              put(apiPath)
+                .header("subject-distinguished-name", "C=GB,O=Home Office,CN=automated-test-client")
+                .header("cert-serial-number", "9572494320151578633330348943480876283449388176")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody),
+            ).andReturn()
+            .response
+
+        response.status shouldBe HttpStatus.BAD_REQUEST.value()
       }
     }
   })
