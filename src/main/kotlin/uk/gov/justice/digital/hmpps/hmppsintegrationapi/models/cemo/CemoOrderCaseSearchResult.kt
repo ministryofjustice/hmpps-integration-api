@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cemo
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import java.util.UUID
 
@@ -18,5 +19,13 @@ enum class CemoOrderStatus {
   IN_PROGRESS,
   ERROR,
   SUBMITTED,
+  REJECTED,
   UNKNOWN,
+  ;
+
+  companion object {
+    @JvmStatic
+    @JsonCreator
+    fun fromValue(value: String): CemoOrderStatus = entries.firstOrNull { it.name == value } ?: UNKNOWN
+  }
 }

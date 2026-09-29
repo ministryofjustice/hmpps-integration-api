@@ -13,6 +13,7 @@ import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 import java.time.Clock
 import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 
 private val log = KotlinLogging.logger {}
 
@@ -21,6 +22,7 @@ class EmNotificationEventPublisher(
   private val hmppsQueueService: HmppsQueueService,
   private val objectMapper: ObjectMapper,
   private val clock: Clock = Clock.systemUTC(),
+  private val TIMESTAMP_FORMAT: DateTimeFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME,
 ) {
   internal val eventTopic by lazy { hmppsQueueService.findByTopicId("emnotificationevents") as HmppsTopic }
 
@@ -37,8 +39,8 @@ class EmNotificationEventPublisher(
           CaseStatusReturned(
             caseId = caseId,
             status = statusUpdate.status.value,
-            reasons = statusUpdate.reasons,
-            datetimeOfStatusChange = statusUpdate.datetimeOfStatusChange.toString(),
+            reasons = statusUpdate.reasons.orEmpty().map { CaseStatusReason(it.section, it.details) },
+            datetimeOfStatusChange = statusUpdate.datetimeOfStatusChange.format(TIMESTAMP_FORMAT),
           ),
       )
 

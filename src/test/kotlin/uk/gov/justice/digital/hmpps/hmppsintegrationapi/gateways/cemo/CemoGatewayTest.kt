@@ -100,5 +100,14 @@ class CemoGatewayTest(
         response.data shouldBe null
         response.errors.single().type shouldBe UpstreamApiError.Type.ENTITY_NOT_FOUND
       }
+
+      it("returns a bad-request error when CEMO returns 400") {
+        cemoMockServer.stubForGet(path, "", HttpStatus.BAD_REQUEST)
+
+        val response = cemoGateway.getOrderByCaseId("case-123")
+
+        response.data shouldBe null
+        response.errors.single().type shouldBe UpstreamApiError.Type.BAD_REQUEST
+      }
     },
   )

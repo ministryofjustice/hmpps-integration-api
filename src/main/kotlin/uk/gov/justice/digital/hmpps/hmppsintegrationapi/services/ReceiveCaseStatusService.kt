@@ -60,6 +60,10 @@ class ReceiveCaseStatusService(
       throw CaseStatusValidationException("caseId must not be blank")
     }
 
+    if (request.status != CaseStatus.REJECTED) {
+      throw CaseStatusValidationException("Only rejected case status updates are supported")
+    }
+
     val reasons = request.reasons.orEmpty()
 
     if (request.status == CaseStatus.REJECTED && reasons.isEmpty()) {

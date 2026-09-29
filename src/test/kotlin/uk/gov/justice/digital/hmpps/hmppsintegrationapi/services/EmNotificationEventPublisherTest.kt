@@ -64,7 +64,7 @@ class EmNotificationEventPublisherTest {
     assertEquals("rejected", event["data"]["status"].textValue())
     assertEquals("duplicate_submission", event["data"]["reasons"][0]["section"].textValue())
     assertEquals("Already submitted", event["data"]["reasons"][0]["details"].textValue())
-    assertEquals("2023-10-27T14:30Z", event["data"]["datetimeOfStatusChange"].textValue())
+    assertEquals("2023-10-27T14:30:00Z", event["data"]["datetimeOfStatusChange"].textValue())
     assertTrue(event["eventId"].textValue().startsWith("sha256:"))
     assertEquals(event["eventId"].textValue(), publishRequest.firstValue.messageDeduplicationId())
     assertTrue(publishRequest.firstValue.messageGroupId().startsWith("case:"))

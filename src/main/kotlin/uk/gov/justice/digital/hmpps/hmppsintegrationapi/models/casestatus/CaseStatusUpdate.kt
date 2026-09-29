@@ -19,7 +19,7 @@ data class CaseStatusUpdate(
     description = "New status for the case",
     example = "rejected",
     requiredMode = Schema.RequiredMode.REQUIRED,
-    allowableValues = ["approved", "rejected", "pending", "installed", "scheduled"],
+    allowableValues = ["rejected"],
   )
   val rawStatus: String,
   @Schema(description = "Reasons associated with the status change")

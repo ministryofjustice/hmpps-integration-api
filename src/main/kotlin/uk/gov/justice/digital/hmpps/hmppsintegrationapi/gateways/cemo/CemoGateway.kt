@@ -37,6 +37,7 @@ class CemoGateway(
         "/api/orders/search/by-case-id/$encodedCaseId",
         authenticationHeader(),
         UpstreamApi.CEMO,
+        badRequestAsError = true,
       )
 
     return when (result) {

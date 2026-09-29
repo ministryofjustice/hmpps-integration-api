@@ -93,6 +93,17 @@ class ReceiveCaseStatusServiceTest :
         verify(eventPublisher, never()).publish(any(), any())
       }
 
+      it("rejects a recognized status that the returns consumer does not support") {
+        val exception =
+          shouldThrow<CaseStatusValidationException> {
+            service.receive("case-123", request(status = CaseStatus.APPROVED))
+          }
+
+        exception.message shouldBe "Only rejected case status updates are supported"
+        verify(cemoGateway, never()).getOrderByCaseId(any())
+        verify(eventPublisher, never()).publish(any(), any())
+      }
+
       it("returns upstream errors when CEMO cannot find the order") {
         whenever(cemoGateway.getOrderByCaseId(any())).thenReturn(
           Response(
