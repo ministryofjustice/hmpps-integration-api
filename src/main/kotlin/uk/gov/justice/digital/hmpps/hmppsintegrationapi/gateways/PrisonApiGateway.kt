@@ -33,6 +33,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonA
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiBooking
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiImageDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiInmateDetail
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiLiveRoll
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiMovements
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiOffenceHistoryDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiOffenderSentence
@@ -1071,6 +1072,24 @@ class PrisonApiGateway(
       Response(data = result.data!!.toList())
     } else {
       Response.error(UpstreamApi.PRISON_API, result.errors, emptyList())
+    }
+  }
+
+  fun getLiveRoll(
+    prisonId: String,
+    requestContext: RequestContext,
+  ): Response<PrisonApiLiveRoll?> {
+    val result =
+      prisonApiRestClient.get(
+        "/api/v1/prison/$prisonId/live_roll",
+        PrisonApiLiveRoll::class,
+        authenticationHeader(requestContext),
+      )
+
+    return if (result.errors.isEmpty()) {
+      Response(data = result.data)
+    } else {
+      Response.error(UpstreamApi.PRISON_API, result.errors, null)
     }
   }
 

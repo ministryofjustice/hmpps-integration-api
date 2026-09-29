@@ -3,22 +3,20 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedLiveRoll
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiLiveRoll
 
 @Service
 class GetLiveRollService(
-  @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
+  @Autowired val prisonApiGateway: PrisonApiGateway,
 ) {
   fun execute(
     prisonId: String,
-    page: Int,
-    size: Int,
-    requestContext: RequestContext? = null,
-  ): Response<PaginatedLiveRoll?> {
-    val response = prisonerOffenderSearchGateway.getPersonsFromPrisonId(prisonId, page, size, requestContext)
+    requestContext: RequestContext,
+  ): Response<PrisonApiLiveRoll?> {
+    val response = prisonApiGateway.getLiveRoll(prisonId, requestContext)
 
-    return Response(data = response.data?.toPaginatedLiveRoll(), errors = response.errors)
+    return Response(data = response.data, errors = response.errors)
   }
 }

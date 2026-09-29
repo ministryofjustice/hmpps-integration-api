@@ -33,11 +33,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.ENTITY_NOT_FOUND
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.interfaces.toPaginatedResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiLiveRoll
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCapacityForPrisonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetLiveRollService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonPayBandsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonRegimeService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersByPrisonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetResidentialDetailsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetResidentialHierarchyService
@@ -61,6 +63,7 @@ class PrisonController(
   @Autowired val auditService: AuditService,
   @Autowired val getPrisonRegimeService: GetPrisonRegimeService,
   @Autowired val getPrisonPayBandsService: GetPrisonPayBandsService,
+  @Autowired val getPrisonersByPrisonService: GetPrisonersByPrisonService,
   @Autowired val getLiveRollService: GetLiveRollService,
 ) {
   @GetMapping("/prisoners/{hmppsId}")
@@ -384,7 +387,7 @@ class PrisonController(
     return DataResponse(data = response.data)
   }
 
-  @GetMapping("/{prisonId}/live-roll")
+  @GetMapping("/{prisonId}/prisoners")
   @FeatureFlag(name = FeatureFlagConfig.LIVE_ROLL_ENABLED)
   @Operation(
     summary = "Searches for prisoners by prisonId.",
@@ -399,13 +402,13 @@ class PrisonController(
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
   )
-  fun getLiveRoll(
+  fun getPrisonersByPrisonId(
     @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
     @Parameter(description = "The page number", schema = Schema(minimum = "1")) @RequestParam(required = true, defaultValue = "1") page: Int,
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = true, defaultValue = "10") size: Int,
     @RequestAttribute requestContext: RequestContext?,
   ): PaginatedResponse<PersonInPrison> {
-    val response = getLiveRollService.execute(prisonId, page, size, requestContext)
+    val response = getPrisonersByPrisonService.execute(prisonId, page, size, requestContext)
 
     if (response.hasErrorCausedBy(BAD_REQUEST, causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH)) {
       throw ValidationException("Invalid query parameters.")
@@ -416,11 +419,48 @@ class PrisonController(
     }
 
     auditService.createEvent(
-      "LIVE_ROLL",
+      "PRISONERS_BY_PRISON",
       mapOf("prisonId" to prisonId) as Map<String, String?>,
     )
 
     return response.data.toPaginatedResponse()
+  }
+
+  @GetMapping("/{prisonId}/live-roll")
+  @FeatureFlag(name = FeatureFlagConfig.LIVE_ROLL_ENABLED)
+  @Operation(
+    summary = "Gets a list prisoner ids by prisonId.",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully performed the query on upstream APIs. An empty list is returned when no results are found."),
+      ApiResponse(
+        responseCode = "400",
+        description = "",
+        content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))],
+      ),
+      ApiResponse(responseCode = "403", content = [Content(schema = Schema(ref = "#/components/schemas/ForbiddenResponse"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  fun getLiveRoll(
+    @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
+    @RequestAttribute requestContext: RequestContext,
+  ): DataResponse<PrisonApiLiveRoll?> {
+    val response = getLiveRollService.execute(prisonId, requestContext)
+
+    if (response.hasErrorCausedBy(BAD_REQUEST, causedBy = UpstreamApi.PRISON_API)) {
+      throw ValidationException("Invalid query parameters.")
+    }
+
+    if (response.hasErrorCausedBy(ENTITY_NOT_FOUND, causedBy = UpstreamApi.PRISON_API)) {
+      throw EntityNotFoundException("Could not find prison with supplied query parameters.")
+    }
+
+    auditService.createEvent(
+      "LIVE_ROLL",
+      mapOf("prisonId" to prisonId) as Map<String, String?>,
+    )
+
+    return DataResponse(data = response.data)
   }
 
   private fun isValidISODateFormat(dateString: String): Boolean =
