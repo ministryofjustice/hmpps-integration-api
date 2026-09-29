@@ -78,7 +78,7 @@ class CacheConfig {
     )
 
   @Bean
-  fun hmppsPrisonUserCaseload(): CaffeineCache =
+  fun hmppsPrisonUserCaseloadCache(): CaffeineCache =
     CaffeineCache(
       HMPPS_PRISON_USER_CASELOAD,
       Caffeine
@@ -92,7 +92,7 @@ class CacheConfig {
   @Bean
   fun caffeineCacheManager(): CacheManager {
     val cacheManager = SimpleCacheManager()
-    val caches = listOf(gatewayCache(), tokenCache(), hmppsAuthUsersCache(), hmppsPrisonUsersCache(), hmppsPrisonUserCaseload())
+    val caches = listOf(gatewayCache(), tokenCache(), hmppsAuthUsersCache(), hmppsPrisonUsersCache(), hmppsPrisonUserCaseloadCache())
     cacheManager.setCaches(caches)
     return cacheManager
   }

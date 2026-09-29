@@ -27,4 +27,9 @@ class RestClientConfig {
   fun prisonApiRestClient(
     @Value("\${services.prison-api.base-url}") baseUrl: String,
   ): RestApiClient = RestApiClient(UpstreamApi.PRISON_API.name, baseUrl)
+
+  @Bean("manageUsersRestClient")
+  fun manageUsersRestClient(
+    @Value("\${services.manage-users.base-url}") baseUrl: String,
+  ): RestApiClient = RestApiClient(UpstreamApi.MANAGE_USERS.name, baseUrl)
 }

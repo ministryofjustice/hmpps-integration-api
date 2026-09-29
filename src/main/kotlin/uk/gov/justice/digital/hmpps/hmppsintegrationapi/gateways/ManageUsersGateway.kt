@@ -8,6 +8,7 @@ import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Companion.HMPPS_AUTH_USERS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Companion.HMPPS_PRISON_USERS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Companion.HMPPS_PRISON_USER_CASELOAD
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiClient
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -19,6 +20,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.Pagin
 class ManageUsersGateway(
   @Value("\${services.manage-users.base-url}") baseUrl: String,
   private val hmppsAuthGateway: HmppsAuthGateway,
+  val manageUsersRestClient: RestApiClient,
 ) : UpstreamGateway {
   override fun metaData() =
     GatewayMetadata(
@@ -116,27 +118,16 @@ class ManageUsersGateway(
         .toUriString()
 
     val result =
-      webClient.request<HmppsPrisonUserCaseload>(
-        HttpMethod.GET,
+      manageUsersRestClient.get(
         uri,
+        HmppsPrisonUserCaseload::class,
         authenticationHeader(),
-        UpstreamApi.MANAGE_USERS,
-        badRequestAsError = true,
       )
 
-    return when (result) {
-      is WebClientWrapper.WebClientWrapperResponse.Success -> {
-        Response(
-          data = result.data,
-        )
-      }
-
-      is WebClientWrapper.WebClientWrapperResponse.Error -> {
-        Response(
-          data = null,
-          errors = result.errors,
-        )
-      }
+    return if (result.errors.isEmpty()) {
+      Response(data = result.data)
+    } else {
+      Response.error(UpstreamApi.PRISON_API, result.errors, null)
     }
   }
 }

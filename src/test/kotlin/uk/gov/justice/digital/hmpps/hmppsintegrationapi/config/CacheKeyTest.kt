@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import org.springframework.cache.CacheManager
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiClient
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ManageUsersGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
@@ -56,12 +57,13 @@ class CacheKeyTest {
   @Test
   fun `hmppsAuthUsersKeyGenerator generates key from username and authSources`() {
     val cacheManager: CacheManager = mock(CacheManager::class.java)
+    val restApiClient = mock(RestApiClient::class.java)
 
     val generator = HmppsAuthUsersKeyGenerator()
     val method = ManageUsersGateway::class.java.methods.firstOrNull { it.name == "findUser" }!!
     val key =
       generator.generate(
-        ManageUsersGateway("", HmppsAuthGateway(FeatureFlagConfig(), cacheManager, "")),
+        ManageUsersGateway("", HmppsAuthGateway(FeatureFlagConfig(), cacheManager, ""), restApiClient),
         method,
         "testUser",
         listOf("AUTH_AZUREAD"),
