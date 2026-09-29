@@ -7,10 +7,12 @@ import org.springframework.stereotype.Component
 import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Companion.HMPPS_AUTH_USERS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Companion.HMPPS_PRISON_USERS
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Companion.HMPPS_PRISON_USER_CASELOAD
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsPrisonUser
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsPrisonUserCaseload
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.PaginatedUsers
 
 @Component
@@ -83,6 +85,38 @@ class ManageUsersGateway(
 
     val result =
       webClient.requestList<HmppsPrisonUser>(
+        HttpMethod.GET,
+        uri,
+        authenticationHeader(),
+        UpstreamApi.MANAGE_USERS,
+        badRequestAsError = true,
+      )
+
+    return when (result) {
+      is WebClientWrapper.WebClientWrapperResponse.Success -> {
+        Response(
+          data = result.data,
+        )
+      }
+
+      is WebClientWrapper.WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  @Cacheable(HMPPS_PRISON_USER_CASELOAD, keyGenerator = "gatewayKeyGenerator")
+  fun getPrisonUserCaseload(username: String): Response<HmppsPrisonUserCaseload?> {
+    val uri =
+      UriComponentsBuilder
+        .fromUriString("/prisonusers/$username/caseloads")
+        .toUriString()
+
+    val result =
+      webClient.request<HmppsPrisonUserCaseload>(
         HttpMethod.GET,
         uri,
         authenticationHeader(),

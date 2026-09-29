@@ -1,0 +1,13 @@
+{
+  "username": "TEST2_USER",
+  "active": true,
+  "accountType": "GENERAL",
+  "activeCaseload": "BXI",
+  "caseloads": [
+    {
+      "id": "MKI",
+      "name": "Millsike (HMP)",
+      "function": "GENERAL"
+    }
+  ]
+}

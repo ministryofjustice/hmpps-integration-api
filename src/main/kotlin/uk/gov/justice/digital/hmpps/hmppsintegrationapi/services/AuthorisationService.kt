@@ -202,6 +202,8 @@ class AuthorisationService(
     role: HmppsPrisonRole,
   ): Boolean = manageUsersService.hasPrisonRole(emailAddress, role)
 
+  fun getPersonCaseload(emailAddress: String): List<String> = manageUsersService.userCaseload(emailAddress)
+
   /**
    * Reduces a list of list<Any> (mixed) type to a flattened list of specified Enum type
    * If any of the items is a wild card then null is returned

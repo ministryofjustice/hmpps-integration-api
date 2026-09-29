@@ -12,12 +12,14 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.OBO_CASELOAD_FILTER_ENABLED
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.PRISON_ROLE_CHECK_ENABLED
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.mergeFeatures
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsPrisonRole
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.oboconfig.OboUser
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.CertificateService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
@@ -112,7 +114,13 @@ class AuthorisationFilter(
         null
       }
 
-    val filters = authorisationService.allFilters(clientName)
+    var filters = authorisationService.allFilters(clientName)
+
+    // Update filters for obo
+    if (oboUsername != null && features.isEnabled(OBO_CASELOAD_FILTER_ENABLED)) {
+      filters = setOnBehalfOfFilters(oboUsername, oboUserHasPrisonRole, filters)
+    }
+
     request.setAttribute("filters", filters)
 
     val requestedPath = req.requestURI
@@ -138,6 +146,19 @@ class AuthorisationFilter(
     } else {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Unable to authorise $requestedPath for $clientName")
     }
+  }
+
+  fun setOnBehalfOfFilters(
+    oboUserName: String,
+    oboUserHasPrisonRole: Boolean?,
+    filters: ConsumerFilters?,
+  ): ConsumerFilters? {
+    if (oboUserHasPrisonRole == true) {
+      return filters
+    }
+    // Get the persons caseload
+    val caseload = authorisationService.getPersonCaseload(oboUserName)
+    return filters?.copy(prisons = caseload)
   }
 
   /**

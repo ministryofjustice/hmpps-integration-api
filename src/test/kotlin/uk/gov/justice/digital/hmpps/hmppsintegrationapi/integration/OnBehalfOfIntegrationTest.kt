@@ -26,7 +26,7 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
     )
 
     manageUsersMockServer.stubForGet(
-      "/prisonusers/by-email/testName/details",
+      "/prisonusers/by-email/TEST_USER/details",
       File(
         "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/PrisonUsersResponse.json",
       ).readText(),
@@ -228,4 +228,20 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
     verify(authGateway, atLeast(1)).getClientToken(eq("Prisoner Offender Search"), requestContext.capture())
     assertThat(requestContext.firstValue?.oboUser?.hasPrisonRole).isEqualTo(null)
   }
+
+//  @Test
+//  fun `an obo user does not have the role flag and is restricted to viewing only their caseload`() {
+//    whenever(featureFlagConfig.isEnabled(OBO_CASELOAD_FILTER_ENABLED).thenReturn(false)
+//    manageUsersMockServer.stubForGet(
+//      "/prisonusers/by-email/testName/details",
+//      File(
+//        "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/PrisonUsersResponseDisabled.json",
+//      ).readText(),
+//    )
+//    callApiWithCN("$basePath/$crn", "obo-unsigned-verified", oboValue = createUnsignedJwt())
+//      .andExpect(MockMvcResultMatchers.status().isOk)
+//    val requestContext = argumentCaptor<RequestContext?>()
+//    verify(authGateway, atLeast(1)).getClientToken(eq("Prisoner Offender Search"), requestContext.capture())
+//    assertThat(requestContext.firstValue?.oboUser?.hasPrisonRole).isEqualTo(null)
+//  }
 }
