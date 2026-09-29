@@ -20,7 +20,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.Pagin
 class ManageUsersGateway(
   @Value("\${services.manage-users.base-url}") baseUrl: String,
   private val hmppsAuthGateway: HmppsAuthGateway,
-  val manageUsersRestClient: RestApiClient,
+  private val manageUsersRestClient: RestApiClient,
 ) : UpstreamGateway {
   override fun metaData() =
     GatewayMetadata(
@@ -127,7 +127,7 @@ class ManageUsersGateway(
     return if (result.errors.isEmpty()) {
       Response(data = result.data)
     } else {
-      Response.error(UpstreamApi.PRISON_API, result.errors, null)
+      Response.error(UpstreamApi.MANAGE_USERS, result.errors, null)
     }
   }
 }

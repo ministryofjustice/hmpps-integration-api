@@ -8,10 +8,12 @@ import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
+import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.RestClientConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ManageUsersGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
@@ -28,6 +30,7 @@ import kotlin.test.assertEquals
   initializers = [ConfigDataApplicationContextInitializer::class],
   classes = [ManageUsersGateway::class],
 )
+@Import(RestClientConfig::class)
 class ManageUsersTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
   private val manageUsersGateway: ManageUsersGateway,
