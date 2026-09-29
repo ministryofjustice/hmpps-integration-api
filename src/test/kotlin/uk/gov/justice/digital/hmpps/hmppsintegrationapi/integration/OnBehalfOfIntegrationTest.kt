@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.createUnsignedJwt
 import java.io.File
+import kotlin.collections.emptyList
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -26,7 +27,7 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
     )
 
     manageUsersMockServer.stubForGet(
-      "/prisonusers/by-email/TEST_USER/details",
+      "/prisonusers/by-email/testName/details",
       File(
         "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/PrisonUsersResponse.json",
       ).readText(),
@@ -229,19 +230,35 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
     assertThat(requestContext.firstValue?.oboUser?.hasPrisonRole).isEqualTo(null)
   }
 
-//  @Test
-//  fun `an obo user does not have the role flag and is restricted to viewing only their caseload`() {
-//    whenever(featureFlagConfig.isEnabled(OBO_CASELOAD_FILTER_ENABLED).thenReturn(false)
-//    manageUsersMockServer.stubForGet(
-//      "/prisonusers/by-email/testName/details",
-//      File(
-//        "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/PrisonUsersResponseDisabled.json",
-//      ).readText(),
-//    )
-//    callApiWithCN("$basePath/$crn", "obo-unsigned-verified", oboValue = createUnsignedJwt())
-//      .andExpect(MockMvcResultMatchers.status().isOk)
-//    val requestContext = argumentCaptor<RequestContext?>()
-//    verify(authGateway, atLeast(1)).getClientToken(eq("Prisoner Offender Search"), requestContext.capture())
-//    assertThat(requestContext.firstValue?.oboUser?.hasPrisonRole).isEqualTo(null)
-//  }
+  @Test
+  fun `an obo user does not have access to the global search role and no caseloads found - prison filter set to empty list`() {
+    manageUsersMockServer.stubForGet(
+      "/prisonusers/by-email/testName/details",
+      File(
+        "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/PrisonUsersResponseDisabled.json",
+      ).readText(),
+    )
+    callApiWithCN("$basePath/$crn", "obo-unsigned-verified", oboValue = createUnsignedJwt())
+      .andExpect(MockMvcResultMatchers.status().isOk)
+    val requestContext = argumentCaptor<RequestContext?>()
+    verify(authGateway, atLeast(1)).getClientToken(eq("Prisoner Offender Search"), requestContext.capture())
+    assertThat(requestContext.firstValue?.oboUser?.hasPrisonRole).isEqualTo(false)
+    assertThat(requestContext.firstValue?.filters?.prisons).isEqualTo(emptyList<String>())
+  }
+
+  @Test
+  fun `an obo user does not have access to the global search role and caseloads found - prison filter set to empty list`() {
+    manageUsersMockServer.stubForGet(
+      "/prisonusers/by-email/testName/details",
+      File(
+        "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/PrisonUsersResponseNoRole.json",
+      ).readText(),
+    )
+    callApiWithCN("$basePath/$crn", "obo-unsigned-verified", oboValue = createUnsignedJwt())
+      .andExpect(MockMvcResultMatchers.status().isOk)
+    val requestContext = argumentCaptor<RequestContext?>()
+    verify(authGateway, atLeast(1)).getClientToken(eq("Prisoner Offender Search"), requestContext.capture())
+    assertThat(requestContext.firstValue?.oboUser?.hasPrisonRole).isEqualTo(false)
+    assertThat(requestContext.firstValue?.filters?.prisons).isEqualTo(listOf("WWI", "MKI"))
+  }
 }

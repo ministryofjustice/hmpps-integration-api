@@ -204,6 +204,18 @@ class AuthorisationService(
 
   fun getPersonCaseload(emailAddress: String): List<String> = manageUsersService.userCaseload(emailAddress)
 
+  fun setOnBehalfOfFilters(
+    oboUserName: String,
+    oboUserHasPrisonRole: Boolean?,
+    filters: ConsumerFilters?,
+  ): ConsumerFilters? {
+    if (oboUserHasPrisonRole == true || filters?.prisons != null) {
+      return filters
+    }
+    val caseload = getPersonCaseload(oboUserName)
+    return filters?.copy(prisons = caseload) ?: ConsumerFilters(caseload)
+  }
+
   /**
    * Reduces a list of list<Any> (mixed) type to a flattened list of specified Enum type
    * If any of the items is a wild card then null is returned

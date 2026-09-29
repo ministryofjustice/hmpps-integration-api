@@ -41,7 +41,7 @@ class UnsignedJwtOboServiceTest :
     },
   )
 
-fun createUnsignedJwt(): String {
+fun createUnsignedJwt(name: String = "testName"): String {
   val now = Date()
 
   return Jwts
@@ -49,7 +49,7 @@ fun createUnsignedJwt(): String {
     .issuer("testIss")
     .subject("testUserSubject")
     .issuedAt(now)
-    .claim("name", "testName")
-    .claim("unique_name", "testName")
+    .claim("name", name)
+    .claim("unique_name", name)
     .compact()
 }

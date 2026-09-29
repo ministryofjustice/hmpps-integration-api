@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.provider.Arguments
+import org.mockito.kotlin.any
 import org.mockito.kotlin.times
 import org.mockito.kotlin.whenever
 import org.slf4j.Logger
@@ -496,5 +497,41 @@ class AuthorisationServiceTest : ConfigTest() {
         mockManageUsersService,
       )
     assertEquals(true, service.verifyUsername("testUsername", "consumer-name"))
+  }
+
+  @Test
+  fun `setOnBehalfOfFilters returns filters if oboUserHasPrisonRole is true`() {
+    val service = AuthorisationService(AuthorisationConfig(), mockTelemetryService, mockManageUsersService)
+    val filters = ConsumerFilters()
+    val onBehalfOfFilters = service.setOnBehalfOfFilters("oboUsername", true, filters)
+    assertEquals(filters, onBehalfOfFilters)
+  }
+
+  @Test
+  fun `setOnBehalfOfFilters returns filters if prison filters have already been set`() {
+    val service = AuthorisationService(AuthorisationConfig(), mockTelemetryService, mockManageUsersService)
+    val filters = ConsumerFilters(emptyList())
+    val onBehalfOfFilters = service.setOnBehalfOfFilters("oboUsername", false, filters)
+    assertEquals(filters, onBehalfOfFilters)
+  }
+
+  @Test
+  fun `setOnBehalfOfFilters returns filters with caseload if filters is not defined and prison filters have not already been set`() {
+    whenever(mockManageUsersService.userCaseload(any())).thenReturn(listOf("MKI", "WWI"))
+    val service = AuthorisationService(AuthorisationConfig(), mockTelemetryService, mockManageUsersService)
+    val filters = null
+    val expectedFilters = ConsumerFilters(listOf("MKI", "WWI"))
+    val onBehalfOfFilters = service.setOnBehalfOfFilters("oboUsername", false, filters)
+    assertEquals(expectedFilters, onBehalfOfFilters)
+  }
+
+  @Test
+  fun `setOnBehalfOfFilters returns filters with caseload if filters is defined and prison filters have not already been set`() {
+    whenever(mockManageUsersService.userCaseload(any())).thenReturn(listOf("MKI", "WWI"))
+    val service = AuthorisationService(AuthorisationConfig(), mockTelemetryService, mockManageUsersService)
+    val filters = ConsumerFilters(null, alertCodes = listOf("A1", "A2"))
+    val expectedFilters = ConsumerFilters(listOf("MKI", "WWI"), alertCodes = listOf("A1", "A2"))
+    val onBehalfOfFilters = service.setOnBehalfOfFilters("oboUsername", false, filters)
+    assertEquals(expectedFilters, onBehalfOfFilters)
   }
 }

@@ -19,7 +19,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessE
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsPrisonRole
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.oboconfig.OboUser
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.CertificateService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
@@ -118,7 +117,7 @@ class AuthorisationFilter(
 
     // Update filters for obo
     if (oboUsername != null && features.isEnabled(OBO_CASELOAD_FILTER_ENABLED)) {
-      filters = setOnBehalfOfFilters(oboUsername, oboUserHasPrisonRole, filters)
+      filters = authorisationService.setOnBehalfOfFilters(oboUsername, oboUserHasPrisonRole, filters)
     }
 
     request.setAttribute("filters", filters)
@@ -146,19 +145,6 @@ class AuthorisationFilter(
     } else {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Unable to authorise $requestedPath for $clientName")
     }
-  }
-
-  fun setOnBehalfOfFilters(
-    oboUserName: String,
-    oboUserHasPrisonRole: Boolean?,
-    filters: ConsumerFilters?,
-  ): ConsumerFilters? {
-    if (oboUserHasPrisonRole == true) {
-      return filters
-    }
-    // Get the persons caseload
-    val caseload = authorisationService.getPersonCaseload(oboUserName)
-    return filters?.copy(prisons = caseload)
   }
 
   /**
