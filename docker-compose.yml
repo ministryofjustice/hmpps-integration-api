@@ -52,6 +52,7 @@ services:
       - DEFAULT_REGION=eu-west-2
     volumes:
       - "./localstack:/var/lib/localstack"
+      - "./localstack/init/ready.d:/etc/localstack/init/ready.d:ro"
       - "/var/run/docker.sock:/var/run/docker.sock"
 
   postgres:

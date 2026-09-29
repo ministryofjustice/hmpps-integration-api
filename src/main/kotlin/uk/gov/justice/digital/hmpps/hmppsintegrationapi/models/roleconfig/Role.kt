@@ -4,6 +4,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.RedactionPolic
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.allEndpoints
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.daso
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.constants
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extCaseStatusUpdate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extHmppsPublicProtection
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extHmppsPublicProtectionCat4
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extHmppsSeriousHarm
@@ -53,6 +54,7 @@ val roleConstants =
       -"/v1/activities/schedule/{scheduleId}/waiting-list-applications"
       -"/v1/activities/{activityId}/schedules"
       -"/v1/addresses"
+      -"/v1/cases/{caseId}/status"
       -"/v1/contacts"
       -"/v1/contacts/{contactId}"
       -"/v1/contacts/{contactId}/linked-prisoners"
@@ -184,4 +186,5 @@ val roles =
     mojPrisonsWarrantReceipt,
     extPrisonsPrisonerFinance,
     extPrisonsCrimeData,
+    extCaseStatusUpdate,
   ).associateBy { it.name }

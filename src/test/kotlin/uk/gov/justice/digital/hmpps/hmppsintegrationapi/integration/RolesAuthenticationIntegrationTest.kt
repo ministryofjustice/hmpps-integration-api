@@ -65,4 +65,5 @@ class RolesAuthenticationIntegrationTest : IntegrationTestBase() {
       .replace("{visitReference}", "123")
       .replace("{eventNumber}", "123")
       .replace("{courtId}", "ACCRYC")
+      .replace("{caseId}", "case-123")
 }

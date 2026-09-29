@@ -59,9 +59,12 @@ services:
     base-url: https://court-register-api-dev.hmpps.service.justice.gov.uk
   remand-and-sentencing:
     base-url: https://remand-and-sentencing-api-dev.hmpps.service.justice.gov.uk
+  cemo:
+    base-url: https://hmpps-electronic-monitoring-create-an-order-api-dev.hmpps.service.justice.gov.uk
 
 feature-flag:
   # API Config
+  case-status-update-enabled: true
   course-completion-event-enabled: true
   use-active-alerts-endpoint: true
   use-emergency-contacts-endpoint: true
@@ -96,6 +99,9 @@ feature-flag:
 #authorisation.consumers - now defined in the configuration repository
 
 hmpps.sqs:
+  topics:
+    emnotificationevents:
+      arn: ${EM_NOTIFICATION_EVENTS_TOPIC_ARN}
   queues:
     hmppsdomainqueue:
       queueName: ${HMPPS_DOMAIN_QUEUE_NAME}

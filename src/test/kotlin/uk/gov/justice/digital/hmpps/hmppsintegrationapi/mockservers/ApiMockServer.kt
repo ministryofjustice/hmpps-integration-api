@@ -45,6 +45,7 @@ class ApiMockServer(
           UpstreamApi.MANAGE_USERS -> ApiMockServerConfig(4034, "manage-users.json")
           UpstreamApi.COURT_REGISTER -> ApiMockServerConfig(4035, "court_register.json", true)
           UpstreamApi.REMAND_AND_SENTENCING -> ApiMockServerConfig(4036, "remand-and-sentencing.json", true)
+          UpstreamApi.CEMO -> ApiMockServerConfig(4037, "cemo.json")
           // USE PRISM
           UpstreamApi.PRISON_API -> ApiMockServerConfig(4000)
           UpstreamApi.NDELIUS -> ApiMockServerConfig(4003)

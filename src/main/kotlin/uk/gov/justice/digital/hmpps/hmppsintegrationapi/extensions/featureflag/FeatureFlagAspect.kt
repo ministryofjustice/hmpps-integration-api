@@ -19,7 +19,7 @@ class FeatureFlagAspect(
   fun checkFeatureFlag(
     joinPoint: ProceedingJoinPoint,
     featureFlag: FeatureFlag,
-  ): Any {
+  ): Any? {
     val featureFlagName = featureFlag.name
 
     val featureFlagValue = featureFlagConfig.getConfigFlagValue(featureFlagName) ?: throw FeatureNotEnabledException("Feature flag not found: $featureFlagName")
