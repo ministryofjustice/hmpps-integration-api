@@ -10,6 +10,7 @@ val mojProbationRiskManagement =
       -"/v1/persons/{hmppsId}/addresses"
       -"/v1/persons/{hmppsId}/person-responsible-officer"
       -"/v1/persons/{hmppsId}/protected-characteristics"
+      -"/v1/persons/{hmppsId}/risks/dynamic"
       -"/v1/persons/{hmppsId}/risks/mappadetail"
       -"/v1/persons/{hmppsId}/risks/serious-harm"
       -"/v1/persons/{hmppsId}"
