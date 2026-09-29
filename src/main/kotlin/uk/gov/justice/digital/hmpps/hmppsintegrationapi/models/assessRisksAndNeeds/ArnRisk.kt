@@ -9,7 +9,7 @@ data class ArnRisk(
   val current: String? = null,
   val currentConcernsText: String? = null,
 ) {
-  fun toRisk(): Risk =
+  fun toRisk(): Risk? =
     Risk(
       risk = this.risk,
       previous = this.previous,
