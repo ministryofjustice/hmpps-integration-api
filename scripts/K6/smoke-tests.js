@@ -830,6 +830,7 @@ function verify_obo_access(hmppsId) {
     validate_get_request_with_obo(`/v1/hmpps/reference-data/courts/${courtId}`)
     validate_get_request_with_obo(`/v1/persons/${hmppsId}/movements/scheduled`)
     validate_get_request_with_obo(`/v1/prison/${prisonId}/live-roll`)
+    validate_get_request_with_obo(`/v1/prison/${prisonId}/prisoners`)
   });
 }
 

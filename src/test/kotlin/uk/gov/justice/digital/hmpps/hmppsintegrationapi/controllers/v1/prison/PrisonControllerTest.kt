@@ -42,6 +42,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitExtern
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitorSupport
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.interfaces.toPaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.locationsInsidePrison.LIPPrisonSummary
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiLiveRoll
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCapacityForPrisonService
@@ -49,6 +50,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetLiveRollServ
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonPayBandsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonRegimeService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersByPrisonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetResidentialDetailsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetResidentialHierarchyService
@@ -73,6 +75,7 @@ internal class PrisonControllerTest(
   @MockitoBean val getCapacityForPrisonService: GetCapacityForPrisonService,
   @MockitoBean val getPrisonRegimeService: GetPrisonRegimeService,
   @MockitoBean val getPrisonPayBandsService: GetPrisonPayBandsService,
+  @MockitoBean val getPrisonersByPrisonService: GetPrisonersByPrisonService,
   @MockitoBean val getLiveRollService: GetLiveRollService,
 ) : DescribeSpec({
     val firstName = personInProbationAndNomisPersona.firstName
@@ -851,9 +854,9 @@ internal class PrisonControllerTest(
       }
     }
 
-    describe("GET /{prisonId}/live-roll") {
+    describe("GET /{prisonId}/prisoners") {
       val prisonId = "ABC"
-      val path = "$basePath/$prisonId/live-roll"
+      val path = "$basePath/$prisonId/prisoners"
 
       val paginatedLiveRoll =
         PaginatedLiveRoll(
@@ -883,30 +886,30 @@ internal class PrisonControllerTest(
         )
 
       beforeEach {
-        Mockito.reset(getLiveRollService)
+        Mockito.reset(getPrisonersByPrisonService)
       }
 
       it("should return 200 when success") {
-        whenever(getLiveRollService.execute(eq(prisonId), eq(1), eq(10), any())).thenReturn(Response(data = paginatedLiveRoll))
+        whenever(getPrisonersByPrisonService.execute(eq(prisonId), eq(1), eq(10), any())).thenReturn(Response(data = paginatedLiveRoll))
         val result = mockMvc.performAuthorised(path)
         result.response.status.shouldBe(HttpStatus.OK.value())
         result.response.contentAsJson<PaginatedResponse<PersonInPrison>>().shouldBe(paginatedLiveRoll.toPaginatedResponse())
       }
 
       it("should call the audit service") {
-        whenever(getLiveRollService.execute(eq(prisonId), eq(1), eq(10), any())).thenReturn(Response(data = paginatedLiveRoll))
+        whenever(getPrisonersByPrisonService.execute(eq(prisonId), eq(1), eq(10), any())).thenReturn(Response(data = paginatedLiveRoll))
         mockMvc.performAuthorised(path)
         verify(
           auditService,
           times(1),
         ).createEvent(
-          "LIVE_ROLL",
+          "PRISONERS_BY_PRISON",
           mapOf("prisonId" to prisonId),
         )
       }
 
-      it("returns 400 when getLiveRollService returns bad request") {
-        whenever(getLiveRollService.execute(eq(prisonId), eq(1), eq(10), any())).thenReturn(
+      it("returns 400 when getPrisonersByPrisonService returns bad request") {
+        whenever(getPrisonersByPrisonService.execute(eq(prisonId), eq(1), eq(10), any())).thenReturn(
           Response(
             data = null,
             errors =
@@ -923,8 +926,8 @@ internal class PrisonControllerTest(
         result.response.status.shouldBe(400)
       }
 
-      it("returns 404 when getLiveRollService returns not found") {
-        whenever(getLiveRollService.execute(eq(prisonId), eq(1), eq(10), any())).thenReturn(
+      it("returns 404 when getPrisonersByPrisonService returns not found") {
+        whenever(getPrisonersByPrisonService.execute(eq(prisonId), eq(1), eq(10), any())).thenReturn(
           Response(
             data = null,
             errors =
@@ -932,6 +935,72 @@ internal class PrisonControllerTest(
                 UpstreamApiError(
                   type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                   causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
+                ),
+              ),
+          ),
+        )
+
+        val result = mockMvc.performAuthorised(path)
+        result.response.status.shouldBe(404)
+      }
+    }
+
+    describe("GET /{prisonId}/live-roll") {
+      val prisonId = "ABC"
+      val path = "$basePath/$prisonId/live-roll"
+
+      val liveRoll = PrisonApiLiveRoll(listOf("A5155DY", "A9971DY"))
+
+      beforeEach {
+        Mockito.reset(getLiveRollService)
+      }
+
+      it("should return 200 when success") {
+        whenever(getLiveRollService.execute(eq(prisonId), any())).thenReturn(Response(data = liveRoll))
+        val result = mockMvc.performAuthorised(path)
+        result.response.status.shouldBe(HttpStatus.OK.value())
+        result.response.contentAsJson<DataResponse<PrisonApiLiveRoll>>().shouldBe(DataResponse(data = liveRoll))
+      }
+
+      it("should call the audit service") {
+        whenever(getLiveRollService.execute(eq(prisonId), any())).thenReturn(Response(data = liveRoll))
+        mockMvc.performAuthorised(path)
+        verify(
+          auditService,
+          times(1),
+        ).createEvent(
+          "LIVE_ROLL",
+          mapOf("prisonId" to prisonId),
+        )
+      }
+
+      it("returns 400 when getLiveRollService returns bad request") {
+        whenever(getLiveRollService.execute(eq(prisonId), any())).thenReturn(
+          Response(
+            data = null,
+            errors =
+              listOf(
+                UpstreamApiError(
+                  type = UpstreamApiError.Type.BAD_REQUEST,
+                  causedBy = UpstreamApi.PRISON_API,
+                ),
+              ),
+          ),
+        )
+
+        val result = mockMvc.performAuthorised(path)
+        result.response.status.shouldBe(400)
+      }
+
+      it("returns 404 when getLiveRollService returns not found") {
+        whenever(getLiveRollService.execute(eq(prisonId), any())).thenReturn(
+          Response(
+            data = null,
+            errors =
+              listOf(
+                UpstreamApiError(
+                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                  causedBy = UpstreamApi.PRISON_API,
                 ),
               ),
           ),
