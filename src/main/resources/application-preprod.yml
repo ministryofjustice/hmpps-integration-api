@@ -85,6 +85,7 @@ feature-flag:
   use-lao-enabled-by-default: true
   live-roll-enabled: false
   prison-role-check-enabled: false
+  obo-caseload-filter-enabled: false
   # Events Config
   enable-delete-processed-events: true
   enable-publish-pending-events: true

@@ -8,16 +8,19 @@ import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
+import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.RestClientConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ManageUsersGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsPrisonCaseload
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsPrisonUser
 import java.io.File
 import kotlin.test.assertEquals
@@ -27,6 +30,7 @@ import kotlin.test.assertEquals
   initializers = [ConfigDataApplicationContextInitializer::class],
   classes = [ManageUsersGateway::class],
 )
+@Import(RestClientConfig::class)
 class ManageUsersTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
   private val manageUsersGateway: ManageUsersGateway,
@@ -37,6 +41,7 @@ class ManageUsersTest(
 
       val nomisUsername = "NOMIS_TEST_USERNAME"
       val prisonUsersPath = "/prisonusers/by-email/test@test/details"
+      val prisonUserCaseloadPath = "/prisonusers/TEST_USER/caseloads"
 
       beforeEach {
         manageUsersMockServer.start()
@@ -51,6 +56,13 @@ class ManageUsersTest(
           prisonUsersPath,
           File(
             "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/PrisonUsersResponse.json",
+          ).readText(),
+        )
+
+        manageUsersMockServer.stubForGet(
+          prisonUserCaseloadPath,
+          File(
+            "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/PrisonUserCaseloadResponse.json",
           ).readText(),
         )
 
@@ -98,6 +110,24 @@ class ManageUsersTest(
           HttpStatus.BAD_REQUEST,
         )
         val response = manageUsersGateway.getPrisonUsersByEmail("error@test")
+        assertEquals(null, response.data)
+        assertEquals(UpstreamApiError.Type.BAD_REQUEST, response.errors[0].type)
+        assertEquals(UpstreamApi.MANAGE_USERS, response.errors[0].causedBy)
+      }
+
+      it("successfully finds prison user caseload records for a user") {
+        val response = manageUsersGateway.getPrisonUserCaseload("TEST_USER")
+        val caseload = response.data?.caseloads
+        caseload?.shouldContain(HmppsPrisonCaseload("WWI", "WANDSWORTH (HMP)"))
+      }
+
+      it("prison user caseload returns a 400 ") {
+        manageUsersMockServer.stubForGet(
+          "/prisonusers/TEST_USER_2/caseloads",
+          "",
+          HttpStatus.BAD_REQUEST,
+        )
+        val response = manageUsersGateway.getPrisonUserCaseload("TEST_USER_2")
         assertEquals(null, response.data)
         assertEquals(UpstreamApiError.Type.BAD_REQUEST, response.errors[0].type)
         assertEquals(UpstreamApi.MANAGE_USERS, response.errors[0].causedBy)

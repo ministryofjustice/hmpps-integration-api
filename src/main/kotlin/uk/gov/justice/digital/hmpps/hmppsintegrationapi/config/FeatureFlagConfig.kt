@@ -41,6 +41,7 @@ data class FeatureFlagConfig(
     const val USE_LAO_ENABLED_BY_DEFAULT = "use-lao-enabled-by-default"
     const val LIVE_ROLL_ENABLED = "live-roll-enabled"
     const val PRISON_ROLE_CHECK_ENABLED = "prison-role-check-enabled"
+    const val OBO_CASELOAD_FILTER_ENABLED = "obo-caseload-filter-enabled"
 
     // Events feature flags
     const val ENABLE_DELETE_PROCESSED_EVENTS = "enable-delete-processed-events"

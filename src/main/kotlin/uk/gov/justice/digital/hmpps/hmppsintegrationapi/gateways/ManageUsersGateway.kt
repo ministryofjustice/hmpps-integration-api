@@ -7,16 +7,20 @@ import org.springframework.stereotype.Component
 import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Companion.HMPPS_AUTH_USERS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Companion.HMPPS_PRISON_USERS
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Companion.HMPPS_PRISON_USER_CASELOAD
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RestApiClient
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsPrisonUser
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsPrisonUserCaseload
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.PaginatedUsers
 
 @Component
 class ManageUsersGateway(
   @Value("\${services.manage-users.base-url}") baseUrl: String,
   private val hmppsAuthGateway: HmppsAuthGateway,
+  private val manageUsersRestClient: RestApiClient,
 ) : UpstreamGateway {
   override fun metaData() =
     GatewayMetadata(
@@ -103,6 +107,27 @@ class ManageUsersGateway(
           errors = result.errors,
         )
       }
+    }
+  }
+
+  @Cacheable(HMPPS_PRISON_USER_CASELOAD, keyGenerator = "gatewayKeyGenerator")
+  fun getPrisonUserCaseload(username: String): Response<HmppsPrisonUserCaseload?> {
+    val uri =
+      UriComponentsBuilder
+        .fromUriString("/prisonusers/$username/caseloads")
+        .toUriString()
+
+    val result =
+      manageUsersRestClient.get(
+        uri,
+        HmppsPrisonUserCaseload::class,
+        authenticationHeader(),
+      )
+
+    return if (result.errors.isEmpty()) {
+      Response(data = result.data)
+    } else {
+      Response.error(UpstreamApi.MANAGE_USERS, result.errors, null)
     }
   }
 }

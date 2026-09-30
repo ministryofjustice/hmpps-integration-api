@@ -12,6 +12,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.OBO_CASELOAD_FILTER_ENABLED
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.PRISON_ROLE_CHECK_ENABLED
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.mergeFeatures
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
@@ -112,7 +113,13 @@ class AuthorisationFilter(
         null
       }
 
-    val filters = authorisationService.allFilters(clientName)
+    var filters = authorisationService.allFilters(clientName)
+
+    // Update filters for obo
+    if (oboUsername != null && features.isEnabled(OBO_CASELOAD_FILTER_ENABLED)) {
+      filters = authorisationService.setOnBehalfOfFilters(oboUsername, oboUserHasPrisonRole, filters)
+    }
+
     request.setAttribute("filters", filters)
 
     val requestedPath = req.requestURI

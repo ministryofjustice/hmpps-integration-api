@@ -434,6 +434,18 @@ abstract class IntegrationTestBase {
           "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/PrisonUsersResponse.json",
         ).readText(),
       )
+      manageUsersMockServer.stubForGet(
+        "/prisonusers/TEST_USER/caseloads",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/PrisonUserCaseloadResponse.json",
+        ).readText(),
+      )
+      manageUsersMockServer.stubForGet(
+        "/prisonusers/TEST2_USER/caseloads",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/PrisonUserCaseloadResponseUser2.json",
+        ).readText(),
+      )
 
       probationSearchMockServer.start()
       managePomCaseMockServer.start()
