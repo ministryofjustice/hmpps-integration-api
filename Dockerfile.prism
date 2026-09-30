@@ -15,7 +15,6 @@ RUN swagger-cli bundle -r -o /prismMocks/adjudications.json /tmp/adjudications.j
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/adjudications.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/assess-risks-and-needs.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/case-notes.json
-RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/ndelius.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/x4018-non-associations.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/x4019-personal-relationships.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/x4020-manage-prison-visits.json
