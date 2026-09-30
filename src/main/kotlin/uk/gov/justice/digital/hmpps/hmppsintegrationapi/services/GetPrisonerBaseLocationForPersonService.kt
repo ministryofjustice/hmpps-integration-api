@@ -20,7 +20,7 @@ class GetPrisonerBaseLocationForPersonService(
     hmppsId: String,
     filters: ConsumerFilters?,
   ): Response<PrisonerBaseLocation?> {
-    val personResponse = getPersonService.getNomisNumber(hmppsId)
+    val personResponse = getPersonService.getNomisNumber(hmppsId, filters)
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = personResponse.errors)
     }

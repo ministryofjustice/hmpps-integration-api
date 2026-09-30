@@ -343,8 +343,9 @@ class GetPersonService(
   fun getPersonSupervisionStatus(
     nomisId: String,
     hmppsId: String,
+    requestContext: RequestContext? = null,
   ): String {
-    val status = getPersonFromPrisonerOffenderSearch(nomisId)?.status ?: return "UNKNOWN"
+    val status = getPersonFromPrisonerOffenderSearch(nomisId, requestContext)?.status ?: return "UNKNOWN"
 
     if (status.startsWith("ACTIVE")) {
       return "PRISONS"
@@ -552,8 +553,11 @@ class GetPersonService(
     requestContext: RequestContext? = null,
   ): Response<PersonOnProbation?> = getPersonFromDelius(hmppsId, requestContext = requestContext)
 
-  private fun getPersonFromPrisonerOffenderSearch(nomisId: String): POSPrisoner? {
-    val searchResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomisId)
+  private fun getPersonFromPrisonerOffenderSearch(
+    nomisId: String,
+    requestContext: RequestContext? = null,
+  ): POSPrisoner? {
+    val searchResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomisId, requestContext)
     if (searchResponse.errors.isNotEmpty()) {
       throw UpstreamApiException(UpstreamApi.PRISONER_OFFENDER_SEARCH, searchResponse.errors.first().type, "person", nomisId, searchResponse.errors)
     }
