@@ -13,5 +13,4 @@ node dist/index.js mock -p 4019 -h 0.0.0.0 /prismMocks/x4019-personal-relationsh
 node dist/index.js mock -p 4020 -h 0.0.0.0 /prismMocks/x4020-manage-prison-visits.json & port=4021;
 node dist/index.js mock -p 4021 -h 0.0.0.0 /prismMocks/x4021-incentives.json & port=4022;
 node dist/index.js mock -p 4022 -h 0.0.0.0 /prismMocks/x4022-alerts-api.json & port=4023;
-node dist/index.js mock -p 4023 -h 0.0.0.0 /prismMocks/x4023-locations-inside-prison-api.json & port=4024;
 wait
