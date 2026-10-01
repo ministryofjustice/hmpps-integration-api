@@ -490,6 +490,13 @@ abstract class IntegrationTestBase {
           "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/locationsInsidePrison/fixtures/ResidentialSummary.json",
         ).readText(),
       )
+
+      locationsInsidePrisonServer.stubForGet(
+        "/locations/prison/$prisonId/residential-hierarchy",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/locationsInsidePrison/fixtures/ResidentialHierarchy.json",
+        ).readText(),
+      )
     }
 
     @AfterAll

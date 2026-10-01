@@ -6,14 +6,13 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 
 class ResidentialHierarchyIntegrationTest : IntegrationTestBase() {
-  private val prisonId = "MDI"
   private val path = "/v1/prison/$prisonId/residential-hierarchy"
 
   @Test
   fun `return the residential hierarchy`() {
     callApi(path)
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("prison-residential-hierarchy-response")))
+      .andExpect(content().json(getExpectedResponse("prison-residential-hierarchy-response.json")))
   }
 
   @Test
