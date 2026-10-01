@@ -4,6 +4,8 @@ RUN apk add --no-cache curl jq
 RUN npm install -g @apidevtools/swagger-cli
 RUN mkdir /prismMocks
 
+COPY scripts/setUpPrism.sh setUpScript.sh
+
 COPY src/main/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/prismMocks /prismMocks
 COPY src/test/resources/openapi-specs/manage-adjudications.json /tmp/adjudications.json
 RUN swagger-cli bundle -r -o /prismMocks/adjudications.json /tmp/adjudications.json
@@ -21,4 +23,4 @@ RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/x4020-manage-prison-visits
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/x4021-incentives.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/x4022-alerts-api.json
 
-ENTRYPOINT sh -c 'port=4010; for file in $(ls /prismMocks/*.json | sort); do node dist/index.js mock -p $port -h 0.0.0.0 $file & port=$((port + 1)); done; wait'
+ENTRYPOINT ["/bin/sh", "setUpScript.sh"]
