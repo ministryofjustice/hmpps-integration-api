@@ -102,7 +102,7 @@ services:
   alerts:
     base-url: http://localhost:4025
   locations-inside-prison:
-    base-url: http://localhost:4026
+    base-url: http://localhost:4038
   health-and-medication:
     base-url: http://localhost:4027
   activities:
