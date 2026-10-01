@@ -24,8 +24,7 @@ import java.time.LocalDate
 
 class DeactivateLocationIntegrationTest : IntegrationTestWithQueueBase("locations") {
   private val prisonId = "MDI"
-  private val key = "MDI-A-1-001"
-  private val path = "/v1/prison/$prisonId/location/$key/deactivate"
+  private val path = "/v1/prison/$prisonId/location/$cellKey/deactivate"
   private val deactivateLocationRequest =
     DeactivateLocationRequest(
       deactivationReason = DeactivationReason.DAMAGED,
@@ -261,39 +260,6 @@ class DeactivateLocationIntegrationTest : IntegrationTestWithQueueBase("location
         "first": true,
         "numberOfElements": 1,
         "empty": false
-      }
-      """.trimIndent(),
-    )
-
-    locationsInsidePrisonServer.stubForGet(
-      "/locations/key/$key",
-      """
-      {
-        "id": "2475f250-434a-4257-afe7-b911f1773a4d",
-        "prisonId": "MDI",
-        "code": "001",
-        "cellMark": "A1",
-        "pathHierarchy": "A-1-001",
-        "locationType": "CELL",
-        "comments": "Not to be used",
-        "permanentlyInactive": false,
-        "certifiedCell": true,
-        "internalMovementAllowed": true,
-        "status": "ACTIVE",
-        "active": true,
-        "locked": false,
-        "inCellSanitation": true,
-        "deactivatedByParent": false,
-        "topLevelId": "57718979-573c-433a-9e51-2d83f887c11c",
-        "level": 1,
-        "leafLevel": false,
-        "topLevelApprovalLocationId": "57718979-573c-433a-9e51-2d83f087c11c",
-        "pendingApprovalRequestId": "57818979-573c-433a-9e51-2d83f087c11c",
-        "lastDeactivationReasonForChange": "Cell damaged",
-        "lastModifiedBy": "string",
-        "lastModifiedDate": "2026-10-01T14:12:40.784Z",
-        "key": "MDI-A-1-001",
-        "isResidential": true
       }
       """.trimIndent(),
     )
