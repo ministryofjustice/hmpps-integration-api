@@ -1,0 +1,484 @@
+{
+  "prisonSummary": {
+    "prisonName": "string",
+    "workingCapacity": 0,
+    "signedOperationalCapacity": 0,
+    "maxCapacity": 0,
+    "numberOfCellLocations": 0,
+    "currentCertificate": {
+      "id": "2475f250-434a-4257-afe7-b911f1773a4d",
+      "prisonId": "MDI",
+      "approvedBy": "USER1",
+      "approvedDate": "2023-01-01T12:00:00",
+      "certificationApprovalRequestId": "2475f250-434a-4257-afe7-b911f1773a4d",
+      "totalWorkingCapacity": 100,
+      "totalMaxCapacity": 120,
+      "totalCertifiedNormalAccommodation": 110,
+      "signedOperationCapacity": 500,
+      "current": true,
+      "approvedRequest": {
+        "id": "2475f250-434a-4257-afe7-b911f1773a4d",
+        "locationId": "2475f250-434a-4257-afe7-b911f1773a4d",
+        "approvalType": "SIGNED_OP_CAP",
+        "prisonId": "MDI",
+        "locationKey": "MDI-A-1-001",
+        "status": "PENDING",
+        "requestedBy": "USER1",
+        "requestedDate": "2026-10-01T16:01:47.305Z",
+        "approvedOrRejectedBy": "USER2",
+        "approvedOrRejectedDate": "2026-10-01T16:01:47.305Z",
+        "comments": "string",
+        "certifiedNormalAccommodationChange": 1,
+        "workingCapacityChange": 1,
+        "maxCapacityChange": 1,
+        "currentSignedOperationCapacity": 1,
+        "signedOperationCapacityChange": 1,
+        "reasonForChange": "Change in number of cells",
+        "locations": [
+          {
+            "id": "2475f250-434a-4257-afe7-b911f1773a4d",
+            "locationCode": "MDI-A-1-001",
+            "cellMark": "Standard",
+            "currentCellMark": "Standard",
+            "localName": "Cell 1",
+            "pathHierarchy": "MDI-A-1-001",
+            "level": 3,
+            "certifiedNormalAccommodation": 2,
+            "workingCapacity": 2,
+            "maxCapacity": 2,
+            "currentCertifiedNormalAccommodation": 2,
+            "currentWorkingCapacity": 2,
+            "currentMaxCapacity": 2,
+            "inCellSanitation": true,
+            "currentInCellSanitation": false,
+            "locationType": "CELL",
+            "accommodationTypes": [
+              "CARE_AND_SEPARATION"
+            ],
+            "currentSpecialistCellTypes": [
+              "ACCESSIBLE_CELL"
+            ],
+            "specialistCellTypes": [
+              "ACCESSIBLE_CELL"
+            ],
+            "usedFor": [
+              "CLOSE_SUPERVISION_CENTRE"
+            ],
+            "convertedCellType": "OFFICE",
+            "reactivateThisLocation": true,
+            "subLocations": [
+            ]
+          }
+        ],
+        "certificateId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "cellMark": "A1",
+        "currentCellMark": "A1-001",
+        "inCellSanitation": true,
+        "currentInCellSanitation": false,
+        "deactivatedReason": "DAMAGED",
+        "maxCapacity": 2,
+        "workingCapacity": 1,
+        "certifiedNormalAccommodation": 2,
+        "deactivationReasonDescription": "Window damage",
+        "proposedReactivationDate": "2026-01-24",
+        "planetFmReference": "2323/45M",
+        "specialistCellTypes": [
+          "ACCESSIBLE_CELL"
+        ],
+        "currentSpecialistCellTypes": [
+          "ACCESSIBLE_CELL"
+        ],
+        "accommodationType": "NORMAL_ACCOMMODATION",
+        "usedForTypes": [
+          "CLOSE_SUPERVISION_CENTRE"
+        ],
+        "convertedCellType": "OFFICE",
+        "otherConvertedCellType": "Swimming pool",
+        "currentConvertedCellType": "OFFICE",
+        "currentOtherConvertedCellType": "Swimming pool",
+        "currentAccommodationTypes": [
+          "CARE_AND_SEPARATION"
+        ],
+        "currentUsedForTypes": [
+          "CLOSE_SUPERVISION_CENTRE"
+        ],
+        "topLevelAccommodationTypes": [
+          "CARE_AND_SEPARATION"
+        ],
+        "topLevelUsedFor": [
+          "CLOSE_SUPERVISION_CENTRE"
+        ]
+      },
+      "locations": [
+        {
+          "locationCode": "001",
+          "pathHierarchy": "A-1-001",
+          "certifiedNormalAccommodation": 2,
+          "workingCapacity": 1,
+          "maxCapacity": 2,
+          "inCellSanitation": true,
+          "locationType": "CELL",
+          "accommodationTypes": [
+            "CARE_AND_SEPARATION"
+          ],
+          "specialistCellTypes": [
+            "ACCESSIBLE_CELL"
+          ],
+          "usedFor": [
+            "CLOSE_SUPERVISION_CENTRE"
+          ],
+          "localName": "Houseblock A",
+          "cellMark": "T-01",
+          "level": 3,
+          "convertedCellType": "HOLDING_ROOM",
+          "otherConvertedCellType": "Yoga room",
+          "subLocations": [
+          ]
+        }
+      ]
+    }
+  },
+  "topLevelLocationType": "Wings",
+  "subLocationName": "Wings",
+  "wingStructure": [
+    "CELL"
+  ],
+  "locationHierarchy": [
+    {
+      "id": "c73e8ad1-191b-42b8-bfce-2550cc858dab",
+      "prisonId": "MDI",
+      "code": "001",
+      "type": "WING",
+      "localName": "Wing A",
+      "pathHierarchy": "A-1-001",
+      "level": 1
+    }
+  ],
+  "parentLocation": {
+    "id": "2475f250-434a-4257-afe7-b911f1773a4d",
+    "prisonId": "MDI",
+    "code": "001",
+    "cellMark": "A1",
+    "pathHierarchy": "A-1-001",
+    "locationType": "CELL",
+    "localName": "Wing A",
+    "wingStructure": [
+      "CELL"
+    ],
+    "comments": "Not to be used",
+    "permanentlyInactive": false,
+    "permanentlyInactiveReason": "Demolished",
+    "capacity": {
+      "maxCapacity": 2,
+      "workingCapacity": 1,
+      "certifiedNormalAccommodation": 2
+    },
+    "pendingChanges": {
+      "maxCapacity": 2,
+      "workingCapacity": 1,
+      "certifiedNormalAccommodation": 2,
+      "cellMark": "A1",
+      "inCellSanitation": true,
+      "specialistCellTypes": [
+        "ACCESSIBLE_CELL"
+      ]
+    },
+    "oldWorkingCapacity": 0,
+    "certifiedCell": true,
+    "usage": [
+      {
+        "usageType": "ADJUDICATION_HEARING",
+        "capacity": 0,
+        "sequence": 0
+      }
+    ],
+    "servicesUsingLocation": [
+      {
+        "serviceType": "APPOINTMENT",
+        "serviceFamilyType": "ACTIVITIES_APPOINTMENTS"
+      }
+    ],
+    "internalMovementAllowed": true,
+    "accommodationTypes": [
+      "CARE_AND_SEPARATION"
+    ],
+    "specialistCellTypes": [
+      "ACCESSIBLE_CELL"
+    ],
+    "usedFor": [
+      "CLOSE_SUPERVISION_CENTRE"
+    ],
+    "status": "ACTIVE",
+    "active": true,
+    "locked": false,
+    "convertedCellType": "HOLDING_ROOM",
+    "otherConvertedCellType": "string",
+    "inCellSanitation": true,
+    "deactivatedByParent": false,
+    "deactivatedDate": "2023-01-23T12:23:00",
+    "deactivatedReason": "DAMAGED",
+    "deactivationReasonDescription": "Window damage",
+    "deactivatedBy": "string",
+    "proposedReactivationDate": "2026-01-24",
+    "planetFmReference": "2323/45M",
+    "topLevelId": "57718979-573c-433a-9e51-2d83f887c11c",
+    "level": 1,
+    "leafLevel": false,
+    "topLevelApprovalLocationId": "57718979-573c-433a-9e51-2d83f087c11c",
+    "pendingApprovalRequestId": "57818979-573c-433a-9e51-2d83f087c11c",
+    "lastDeactivationReasonForChange": "Cell damaged",
+    "currentCellCertificate": {
+      "locationCode": "001",
+      "pathHierarchy": "A-1-001",
+      "certifiedNormalAccommodation": 2,
+      "workingCapacity": 1,
+      "maxCapacity": 2,
+      "inCellSanitation": true,
+      "locationType": "CELL",
+      "accommodationTypes": [
+        "CARE_AND_SEPARATION"
+      ],
+      "specialistCellTypes": [
+        "ACCESSIBLE_CELL"
+      ],
+      "usedFor": [
+        "CLOSE_SUPERVISION_CENTRE"
+      ],
+      "localName": "Houseblock A",
+      "cellMark": "T-01",
+      "level": 3,
+      "convertedCellType": "HOLDING_ROOM",
+      "otherConvertedCellType": "Yoga room",
+      "subLocations": [
+        {
+        "id": "2475f250-434a-4257-afe7-b911f1773a4d",
+        "prisonId": "MDI",
+        "code": "001",
+        "pathHierarchy": "A-1-001",
+        "locationType": "CELL",
+        "permanentlyInactive": false,
+        "active": true,
+        "deactivatedByParent": false,
+        "topLevelId": "57718979-573c-433a-9e51-2d83f887c11c",
+        "level": 1,
+        "leafLevel": false,
+        "lastModifiedBy": "string",
+        "lastModifiedDate": "2026-10-01T16:01:47.322Z",
+        "key": "MDI-A-1-001",
+        "isResidential": true
+        }
+      ]
+    },
+    "parentId": "57718979-573c-433a-9e51-2d83f887c11c",
+    "inactiveCells": 0,
+    "numberOfCellLocations": 0,
+    "childLocations": [
+    ],
+    "changeHistory": [
+      {
+        "transactionId": "019464e9-05da-77b3-810b-887e199d8190",
+        "transactionType": "CAPACITY_CHANGE",
+        "attribute": "Location Type",
+        "oldValues": [
+          "Dry cell",
+          "Safe cell"
+        ],
+        "newValues": [
+          "Dry cell",
+          "Safe cell"
+        ],
+        "amendedBy": "user",
+        "amendedDate": "2023-01-23T10:15:30"
+      }
+    ],
+    "transactionHistory": [
+      {
+        "transactionId": "019464e9-05da-77b3-810b-887e199d8190",
+        "transactionType": "CAPACITY_CHANGE",
+        "prisonId": "MDI",
+        "transactionDetail": "Working capacity changed from 0 to 1",
+        "transactionInvokedBy": "STAFF_USER1",
+        "txStartTime": "2026-10-01T16:01:47.306Z",
+        "txEndTime": "2026-10-01T16:01:47.306Z",
+        "transactionDetails": [
+          {
+            "locationId": "019483f5-fee7-7ed0-924c-3ee4b2b51904",
+            "locationKey": "BXI-1-1-001",
+            "attributeCode": "STATUS",
+            "attribute": "Location Type",
+            "amendedBy": "user",
+            "amendedDate": "2023-01-23T10:15:30",
+            "oldValues": [
+              "Dry cell",
+              "Safe cell"
+            ],
+            "newValues": [
+              "Dry cell",
+              "Safe cell"
+            ]
+          }
+        ]
+      }
+    ],
+    "lastModifiedBy": "string",
+    "lastModifiedDate": "2026-10-01T16:01:47.306Z",
+    "key": "MDI-A-1-001",
+    "isResidential": true
+  },
+  "subLocations": [
+    {
+      "id": "2475f250-434a-4257-afe7-b911f1773a4d",
+      "prisonId": "MDI",
+      "code": "001",
+      "cellMark": "A1",
+      "pathHierarchy": "A-1-001",
+      "locationType": "CELL",
+      "localName": "Wing A",
+      "wingStructure": [
+        "CELL"
+      ],
+      "comments": "Not to be used",
+      "permanentlyInactive": false,
+      "permanentlyInactiveReason": "Demolished",
+      "capacity": {
+        "maxCapacity": 2,
+        "workingCapacity": 1,
+        "certifiedNormalAccommodation": 2
+      },
+      "pendingChanges": {
+        "maxCapacity": 2,
+        "workingCapacity": 1,
+        "certifiedNormalAccommodation": 2,
+        "cellMark": "A1",
+        "inCellSanitation": true,
+        "specialistCellTypes": [
+          "ACCESSIBLE_CELL"
+        ]
+      },
+      "oldWorkingCapacity": 0,
+      "certifiedCell": true,
+      "usage": [
+        {
+          "usageType": "ADJUDICATION_HEARING",
+          "capacity": 0,
+          "sequence": 0
+        }
+      ],
+      "servicesUsingLocation": [
+        {
+          "serviceType": "APPOINTMENT",
+          "serviceFamilyType": "ACTIVITIES_APPOINTMENTS"
+        }
+      ],
+      "internalMovementAllowed": true,
+      "accommodationTypes": [
+        "CARE_AND_SEPARATION"
+      ],
+      "specialistCellTypes": [
+        "ACCESSIBLE_CELL"
+      ],
+      "usedFor": [
+        "CLOSE_SUPERVISION_CENTRE"
+      ],
+      "status": "ACTIVE",
+      "active": true,
+      "locked": false,
+      "convertedCellType": "HOLDING_ROOM",
+      "otherConvertedCellType": "string",
+      "inCellSanitation": true,
+      "deactivatedByParent": false,
+      "deactivatedDate": "2023-01-23T12:23:00",
+      "deactivatedReason": "DAMAGED",
+      "deactivationReasonDescription": "Window damage",
+      "deactivatedBy": "string",
+      "proposedReactivationDate": "2026-01-24",
+      "planetFmReference": "2323/45M",
+      "topLevelId": "57718979-573c-433a-9e51-2d83f887c11c",
+      "level": 1,
+      "leafLevel": false,
+      "topLevelApprovalLocationId": "57718979-573c-433a-9e51-2d83f087c11c",
+      "pendingApprovalRequestId": "57818979-573c-433a-9e51-2d83f087c11c",
+      "lastDeactivationReasonForChange": "Cell damaged",
+      "currentCellCertificate": {
+        "locationCode": "001",
+        "pathHierarchy": "A-1-001",
+        "certifiedNormalAccommodation": 2,
+        "workingCapacity": 1,
+        "maxCapacity": 2,
+        "inCellSanitation": true,
+        "locationType": "CELL",
+        "accommodationTypes": [
+          "CARE_AND_SEPARATION"
+        ],
+        "specialistCellTypes": [
+          "ACCESSIBLE_CELL"
+        ],
+        "usedFor": [
+          "CLOSE_SUPERVISION_CENTRE"
+        ],
+        "localName": "Houseblock A",
+        "cellMark": "T-01",
+        "level": 3,
+        "convertedCellType": "HOLDING_ROOM",
+        "otherConvertedCellType": "Yoga room",
+        "subLocations": [
+        ]
+      },
+      "parentId": "57718979-573c-433a-9e51-2d83f887c11c",
+      "inactiveCells": 0,
+      "numberOfCellLocations": 0,
+      "childLocations": [
+      ],
+      "changeHistory": [
+        {
+          "transactionId": "019464e9-05da-77b3-810b-887e199d8190",
+          "transactionType": "CAPACITY_CHANGE",
+          "attribute": "Location Type",
+          "oldValues": [
+            "Dry cell",
+            "Safe cell"
+          ],
+          "newValues": [
+            "Dry cell",
+            "Safe cell"
+          ],
+          "amendedBy": "user",
+          "amendedDate": "2023-01-23T10:15:30"
+        }
+      ],
+      "transactionHistory": [
+        {
+          "transactionId": "019464e9-05da-77b3-810b-887e199d8190",
+          "transactionType": "CAPACITY_CHANGE",
+          "prisonId": "MDI",
+          "transactionDetail": "Working capacity changed from 0 to 1",
+          "transactionInvokedBy": "STAFF_USER1",
+          "txStartTime": "2026-10-01T16:01:47.306Z",
+          "txEndTime": "2026-10-01T16:01:47.306Z",
+          "transactionDetails": [
+            {
+              "locationId": "019483f5-fee7-7ed0-924c-3ee4b2b51904",
+              "locationKey": "BXI-1-1-001",
+              "attributeCode": "STATUS",
+              "attribute": "Location Type",
+              "amendedBy": "user",
+              "amendedDate": "2023-01-23T10:15:30",
+              "oldValues": [
+                "Dry cell",
+                "Safe cell"
+              ],
+              "newValues": [
+                "Dry cell",
+                "Safe cell"
+              ]
+            }
+          ]
+        }
+      ],
+      "lastModifiedBy": "string",
+      "lastModifiedDate": "2026-10-01T16:01:47.306Z",
+      "key": "MDI-A-1-001",
+      "isResidential": true
+    }
+  ]
+}
