@@ -94,15 +94,12 @@
     "convertedCellType": "HOLDING_ROOM",
     "otherConvertedCellType": "Yoga room",
     "subLocations": [
-      "string"
     ]
   },
   "parentId": "57718979-573c-433a-9e51-2d83f887c11c",
-  "parentLocation": "string",
   "inactiveCells": 0,
   "numberOfCellLocations": 0,
   "childLocations": [
-    "string"
   ],
   "changeHistory": [
     {

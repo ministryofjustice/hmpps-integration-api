@@ -192,7 +192,7 @@ abstract class IntegrationTestBase {
     val nomsIdNotActiveInPrisonOrProb = "A3646EC"
     val prisonId = "MKI"
     val emptyPrisonId = "MKD"
-    val cellKey = "MDI-A-1-001"
+    val cellKey = "MKI-A-1-001"
 
     val crnActiveInProbation = "A654321"
     val crnNotActiveInProbation = "A765432"
@@ -474,6 +474,13 @@ abstract class IntegrationTestBase {
         "/locations/key/$cellKey",
         File(
           "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/locationsInsidePrison/fixtures/CellLocation.json",
+        ).readText(),
+      )
+
+      locationsInsidePrisonServer.stubForGet(
+        "/locations/residential-summary/$prisonId",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/locationsInsidePrison/fixtures/ResidentialSummary.json",
         ).readText(),
       )
 
