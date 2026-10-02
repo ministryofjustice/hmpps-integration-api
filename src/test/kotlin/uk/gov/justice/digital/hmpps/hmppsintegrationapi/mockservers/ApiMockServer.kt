@@ -48,6 +48,7 @@ class ApiMockServer(
           UpstreamApi.CEMO -> ApiMockServerConfig(4037, "cemo.json")
           UpstreamApi.LOCATIONS_INSIDE_PRISON -> ApiMockServerConfig(4038, "locations-inside-prison.json")
           UpstreamApi.PRISONER_ALERTS -> ApiMockServerConfig(4039, "prisoner-alerts.json")
+          UpstreamApi.INCENTIVES -> ApiMockServerConfig(4040, "incentives.json")
           // USE PRISM
           UpstreamApi.PRISON_API -> ApiMockServerConfig(4000)
           UpstreamApi.NDELIUS -> ApiMockServerConfig(4003)
@@ -60,7 +61,6 @@ class ApiMockServer(
           UpstreamApi.NON_ASSOCIATIONS -> ApiMockServerConfig(4005)
           UpstreamApi.PERSONAL_RELATIONSHIPS -> ApiMockServerConfig(4006)
           UpstreamApi.MANAGE_PRISON_VISITS -> ApiMockServerConfig(4007)
-          UpstreamApi.INCENTIVES -> ApiMockServerConfig(4008)
           UpstreamApi.SAN -> ApiMockServerConfig(4200)
           UpstreamApi.HMPPS_AUTH -> throw NotImplementedError("HMPPS Auth MockServer is already running, see HmppsAuthMockServer")
         }
