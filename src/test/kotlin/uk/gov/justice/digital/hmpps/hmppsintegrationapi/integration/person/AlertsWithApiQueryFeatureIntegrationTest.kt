@@ -15,7 +15,7 @@ class AlertsWithApiQueryFeatureIntegrationTest : IntegrationTestBase() {
     fun `returns alerts for a person`() {
       callApi(path)
         .andExpect(status().isOk)
-        .andExpect(content().json(getExpectedResponse("person-alerts")))
+        .andExpect(content().json(getExpectedResponse("person-alerts.json")))
     }
 
     @Test

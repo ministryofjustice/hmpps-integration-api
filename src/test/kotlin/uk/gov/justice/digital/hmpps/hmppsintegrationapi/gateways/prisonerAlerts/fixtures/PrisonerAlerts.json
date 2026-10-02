@@ -1,0 +1,58 @@
+{
+  "totalPages": 0,
+  "totalElements": 0,
+  "size": 0,
+  "content": [
+    {
+      "alertUuid": "8cdadcf3-b003-4116-9956-c99bd8df6a00",
+      "prisonNumber": "A1234AA",
+      "alertCode": {
+        "alertTypeCode": "A",
+        "alertTypeDescription": "Alert type description",
+        "code": "ABC",
+        "description": "Alert code description",
+        "canBeAdministered": false
+      },
+      "description": "Alert description",
+      "authorisedBy": "A. Nurse, An Agency",
+      "activeFrom": "2021-09-27",
+      "activeTo": "2022-07-15",
+      "isActive": true,
+      "createdAt": "2021-09-27T14:19:25",
+      "createdBy": "USER1234",
+      "createdByDisplayName": "Firstname Lastname",
+      "lastModifiedAt": "2022-07-15T15:24:56",
+      "lastModifiedBy": "USER1234",
+      "lastModifiedByDisplayName": "Firstname Lastname",
+      "activeToLastSetAt": "2022-07-15T15:24:56",
+      "activeToLastSetBy": "USER1234",
+      "activeToLastSetByDisplayName": "Firstname Lastname",
+      "madeInactiveAt": "2022-07-15T15:24:56",
+      "madeInactiveBy": "USER1234",
+      "madeInactiveByDisplayName": "Firstname Lastname",
+      "prisonCodeWhenCreated": "LEI"
+    }
+  ],
+  "number": 0,
+  "sort": {
+    "empty": true,
+    "sorted": true,
+    "unsorted": true
+  },
+  "pageable": {
+    "offset": 0,
+    "paged": true,
+    "pageNumber": 0,
+    "pageSize": 0,
+    "sort": {
+      "empty": true,
+      "sorted": true,
+      "unsorted": true
+    },
+    "unpaged": true
+  },
+  "numberOfElements": 0,
+  "first": true,
+  "last": true,
+  "empty": true
+}

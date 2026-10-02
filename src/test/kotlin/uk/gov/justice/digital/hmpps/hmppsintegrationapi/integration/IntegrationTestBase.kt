@@ -36,7 +36,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CorePersonRecor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ManageUsersGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerAlertsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
@@ -56,9 +55,6 @@ import java.nio.charset.StandardCharsets
 abstract class IntegrationTestBase {
   @MockitoSpyBean
   lateinit var featureFlagConfig: FeatureFlagConfig
-
-  @MockitoSpyBean
-  lateinit var alertsGateway: PrisonerAlertsGateway
 
   @MockitoSpyBean
   lateinit var activitiesGateway: ActivitiesGateway
@@ -97,7 +93,6 @@ abstract class IntegrationTestBase {
 
   @BeforeEach
   fun evictAllCaches() {
-    reset(alertsGateway)
     reset(telemetryService)
     reset(activitiesGateway)
     reset(prisonerOffenderSearchGateway)
@@ -218,6 +213,7 @@ abstract class IntegrationTestBase {
     val remandAndSentencingMockServer = ApiMockServer.create(UpstreamApi.REMAND_AND_SENTENCING)
     val courtRegisterMockServer = ApiMockServer.create(UpstreamApi.COURT_REGISTER)
     val locationsInsidePrisonServer = ApiMockServer.create(UpstreamApi.LOCATIONS_INSIDE_PRISON)
+    val alertsServer = ApiMockServer.create(UpstreamApi.PRISONER_ALERTS)
 
     @BeforeEach
     fun setUp() {
@@ -497,6 +493,29 @@ abstract class IntegrationTestBase {
           "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/locationsInsidePrison/fixtures/ResidentialHierarchy.json",
         ).readText(),
       )
+
+      alertsServer.start()
+
+      alertsServer.stubForGet(
+        "/prisoners/$nomsId/alerts?page=0&size=10",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisonerAlerts/fixtures/PrisonerAlerts.json",
+        ).readText(),
+      )
+
+      alertsServer.stubForGet(
+        "/prisoners/$nomsId/alerts?page=0&size=10&isActive=true",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisonerAlerts/fixtures/PrisonerAlerts.json",
+        ).readText(),
+      )
+
+      alertsServer.stubForGet(
+        "/prisoners/$nomsId/alerts?page=0&size=10&alertCode=HA,HA2,XA,XC,XCA,XCI,XCO,XCOL,XCOP,XCOR,XEL,XELH,XER,XHT,XILLENT,XIS,XRF",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisonerAlerts/fixtures/PrisonerAlerts.json",
+        ).readText(),
+      )
     }
 
     @AfterAll
@@ -515,6 +534,7 @@ abstract class IntegrationTestBase {
       manageUsersMockServer.stop()
       remandAndSentencingMockServer.stop()
       locationsInsidePrisonServer.stop()
+      alertsServer.stop()
     }
   }
 
