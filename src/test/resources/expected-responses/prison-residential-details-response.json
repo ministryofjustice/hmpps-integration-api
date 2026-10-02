@@ -11,18 +11,15 @@
       "comments": "Not to be used",
       "capacity": {
         "maxCapacity": 2,
-        "workingCapacity": 2
+        "workingCapacity": 1
       },
-      "oldWorkingCapacity": -2147483648,
-      "certification": {
-        "certified": true,
-        "capacityOfCertifiedCell": 1
-      },
+      "oldWorkingCapacity": 0,
+      "certification": null,
       "usage": [
         {
           "usageType": "ADJUDICATION_HEARING",
-          "capacity": -2147483648,
-          "sequence": -2147483648
+          "capacity": 0,
+          "sequence": 0
         }
       ],
       "accommodationTypes": [
@@ -46,8 +43,9 @@
       "proposedReactivationDate": "2026-01-24",
       "externalReference": "2323/45M",
       "level": 1,
-      "inactiveCells": -2147483648,
-      "numberOfCellLocations": -2147483648,
+      "parentLocationKey": null,
+      "inactiveCells": 0,
+      "numberOfCellLocations": 0,
       "isResidential": true
     },
     "subLocations": [
@@ -60,18 +58,15 @@
         "comments": "Not to be used",
         "capacity": {
           "maxCapacity": 2,
-          "workingCapacity": 2
+          "workingCapacity": 1
         },
-        "oldWorkingCapacity": -2147483648,
-        "certification": {
-          "certified": true,
-          "capacityOfCertifiedCell": 1
-        },
+        "oldWorkingCapacity": 0,
+        "certification": null,
         "usage": [
           {
             "usageType": "ADJUDICATION_HEARING",
-            "capacity": -2147483648,
-            "sequence": -2147483648
+            "capacity": 0,
+            "sequence": 0
           }
         ],
         "accommodationTypes": [
@@ -95,8 +90,9 @@
         "proposedReactivationDate": "2026-01-24",
         "externalReference": "2323/45M",
         "level": 1,
-        "inactiveCells": -2147483648,
-        "numberOfCellLocations": -2147483648,
+        "parentLocationKey": null,
+        "inactiveCells": 0,
+        "numberOfCellLocations": 0,
         "isResidential": true
       }
     ]

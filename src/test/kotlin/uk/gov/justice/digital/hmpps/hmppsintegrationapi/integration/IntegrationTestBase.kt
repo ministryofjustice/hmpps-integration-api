@@ -192,6 +192,7 @@ abstract class IntegrationTestBase {
     val nomsIdNotActiveInPrisonOrProb = "A3646EC"
     val prisonId = "MKI"
     val emptyPrisonId = "MKD"
+    val cellKey = "MKI-A-1-001"
 
     val crnActiveInProbation = "A654321"
     val crnNotActiveInProbation = "A765432"
@@ -216,6 +217,7 @@ abstract class IntegrationTestBase {
     val manageUsersMockServer = ApiMockServer.create(UpstreamApi.MANAGE_USERS)
     val remandAndSentencingMockServer = ApiMockServer.create(UpstreamApi.REMAND_AND_SENTENCING)
     val courtRegisterMockServer = ApiMockServer.create(UpstreamApi.COURT_REGISTER)
+    val locationsInsidePrisonServer = ApiMockServer.create(UpstreamApi.LOCATIONS_INSIDE_PRISON)
 
     @BeforeEach
     fun setUp() {
@@ -467,6 +469,34 @@ abstract class IntegrationTestBase {
           "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/courtregister/fixtures/GetCourtResponse.json",
         ).readText(),
       )
+      locationsInsidePrisonServer.start()
+      locationsInsidePrisonServer.stubForGet(
+        "/locations/key/$cellKey",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/locationsInsidePrison/fixtures/CellLocation.json",
+        ).readText(),
+      )
+
+      locationsInsidePrisonServer.stubForGet(
+        "/locations/residential-summary/$prisonId",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/locationsInsidePrison/fixtures/ResidentialSummary.json",
+        ).readText(),
+      )
+
+      locationsInsidePrisonServer.stubForGet(
+        "/locations/residential-summary/$prisonId?parentPathHierarchy=A",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/locationsInsidePrison/fixtures/ResidentialSummary.json",
+        ).readText(),
+      )
+
+      locationsInsidePrisonServer.stubForGet(
+        "/locations/prison/$prisonId/residential-hierarchy",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/locationsInsidePrison/fixtures/ResidentialHierarchy.json",
+        ).readText(),
+      )
     }
 
     @AfterAll
@@ -484,6 +514,7 @@ abstract class IntegrationTestBase {
       probationSearchMockServer.stop()
       manageUsersMockServer.stop()
       remandAndSentencingMockServer.stop()
+      locationsInsidePrisonServer.stop()
     }
   }
 

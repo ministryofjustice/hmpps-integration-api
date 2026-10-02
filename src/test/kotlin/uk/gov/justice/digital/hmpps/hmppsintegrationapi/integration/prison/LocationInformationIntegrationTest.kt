@@ -6,15 +6,13 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 
 class LocationInformationIntegrationTest : IntegrationTestBase() {
-  private final val prisonId = "MDI"
-  private final val locationId = "MDI-A1-B1-C1"
-  private final val baseLocationInformationPath = "/v1/prison/$prisonId/location/$locationId"
+  private final val baseLocationInformationPath = "/v1/prison/$prisonId/location/$cellKey"
 
   @Test
   fun `return a 200 when successful upstream response`() {
     callApi(baseLocationInformationPath)
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("location-information-response")))
+      .andExpect(content().json(getExpectedResponse("location-information-response.json")))
   }
 
   @Test
