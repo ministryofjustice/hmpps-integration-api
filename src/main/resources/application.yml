@@ -100,7 +100,7 @@ services:
   incentives:
     base-url: http://localhost:4024
   alerts:
-    base-url: http://localhost:4025
+    base-url: http://localhost:4039
   locations-inside-prison:
     base-url: http://localhost:4038
   health-and-medication:
