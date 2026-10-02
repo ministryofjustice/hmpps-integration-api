@@ -341,7 +341,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
     fun `returns a prisoners iep level`() {
       callApi(path)
         .andExpect(status().isOk)
-        .andExpect(content().json("""{"data":{"iepCode": "STD", "iepLevel": "Standard"}}"""))
+        .andExpect(content().json(getExpectedResponse("iep-level-response.json"), JsonCompareMode.STRICT))
     }
 
     @Test
