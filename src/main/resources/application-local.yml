@@ -26,7 +26,7 @@ services:
   san.base-url: http://localhost:4200
   non-associations.base-url: http://localhost:4021
   personal-relationships.base-url: http://localhost:4022
-  manage-prison-visits.base-url: http://localhost:4023
+  manage-prison-visits.base-url: http://localhost:4041
   incentives.base-url: http://localhost:4040
   alerts.base-url: http://localhost:4039
   locations-inside-prison.base-url: http://localhost:4038
