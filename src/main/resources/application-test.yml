@@ -57,7 +57,7 @@ services:
   incentives:
     base-url: http://localhost:4008
   alerts:
-    base-url: http://localhost:4009
+    base-url: http://localhost:4039
   locations-inside-prison:
     base-url: http://localhost:4038
   activities:

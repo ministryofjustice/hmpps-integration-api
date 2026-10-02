@@ -21,6 +21,5 @@ RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/x4018-non-associations.jso
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/x4019-personal-relationships.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/x4020-manage-prison-visits.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/x4021-incentives.json
-RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/x4022-alerts-api.json
 
 ENTRYPOINT ["/bin/sh", "setUpScript.sh"]
