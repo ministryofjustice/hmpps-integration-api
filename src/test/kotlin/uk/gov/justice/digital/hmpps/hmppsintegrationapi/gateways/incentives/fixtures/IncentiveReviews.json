@@ -1,0 +1,28 @@
+{
+  "id": 12345,
+  "iepCode": "STD",
+  "iepLevel": "Standard",
+  "prisonerNumber": "A1234BC",
+  "bookingId": 1234567,
+  "iepDate": "2021-12-31",
+  "iepTime": "2021-12-31T12:34:56.789012",
+  "iepDetails": [
+    {
+      "id": 12345,
+      "iepLevel": "Standard",
+      "iepCode": "STD",
+      "comments": "A review took place",
+      "prisonerNumber": "A1234BC",
+      "bookingId": 1234567,
+      "iepDate": "2021-12-31",
+      "iepTime": "2021-12-31T12:34:56.789012",
+      "agencyId": "MDI",
+      "userId": "USER_1_GEN",
+      "reviewType": "REVIEW",
+      "auditModuleName": "INCENTIVES_API",
+      "isRealReview": true
+    }
+  ],
+  "nextReviewDate": "2022-12-31",
+  "daysSinceReview": 23
+}
