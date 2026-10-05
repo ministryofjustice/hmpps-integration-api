@@ -1,12 +1,12 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.prison
 
 import org.junit.jupiter.api.Test
+import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 
 class VisitSearchIntegrationTest : IntegrationTestBase() {
-  private final val prisonId = "MDI"
   final val path = "/v1/prison/$prisonId/visit/search"
   final val fromDate = "2024-01-01"
   final val toDate = "2024-01-14"
@@ -19,7 +19,7 @@ class VisitSearchIntegrationTest : IntegrationTestBase() {
   fun `return a prisoner with all fields populated`() {
     callApi("$path$pathWithQueryParams")
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("visit-search-response")))
+      .andExpect(content().json(getExpectedResponse("visit-search-response.json"), JsonCompareMode.STRICT))
   }
 
   @Test

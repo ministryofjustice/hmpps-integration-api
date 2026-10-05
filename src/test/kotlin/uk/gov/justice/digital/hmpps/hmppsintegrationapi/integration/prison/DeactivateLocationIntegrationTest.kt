@@ -24,8 +24,7 @@ import java.time.LocalDate
 
 class DeactivateLocationIntegrationTest : IntegrationTestWithQueueBase("locations") {
   private val prisonId = "MDI"
-  private val key = "MDI-A-1-001"
-  private val path = "/v1/prison/$prisonId/location/$key/deactivate"
+  private val path = "/v1/prison/$prisonId/location/$cellKey/deactivate"
   private val deactivateLocationRequest =
     DeactivateLocationRequest(
       deactivationReason = DeactivationReason.DAMAGED,

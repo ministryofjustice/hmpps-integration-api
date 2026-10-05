@@ -55,13 +55,13 @@ services:
   personal-relationships:
     base-url: http://localhost:4019
   manage-prison-visits:
-    base-url: http://localhost:4020
+    base-url: http://localhost:4041
   incentives:
-    base-url: http://localhost:4021
+    base-url: http://localhost:4040
   alerts:
-    base-url: http://localhost:4022
+    base-url: http://localhost:4039
   locations-inside-prison:
-    base-url: http://localhost:4023
+    base-url: http://localhost:4038
   prisoner-base-location:
     base-url: http://localhost:4030
   core-person-record:

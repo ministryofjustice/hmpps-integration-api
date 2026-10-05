@@ -8,18 +8,15 @@
     "comments": "Not to be used",
     "capacity": {
       "maxCapacity": 2,
-      "workingCapacity": 2
+      "workingCapacity": 1
     },
-    "oldWorkingCapacity": -2147483648,
-    "certification": {
-      "certified": true,
-      "capacityOfCertifiedCell": 1
-    },
+    "oldWorkingCapacity": 0,
+    "certification": null,
     "usage": [
       {
         "usageType": "ADJUDICATION_HEARING",
-        "capacity": -2147483648,
-        "sequence": -2147483648
+        "capacity": 0,
+        "sequence": 0
       }
     ],
     "accommodationTypes": [
@@ -44,8 +41,8 @@
     "externalReference": "2323/45M",
     "level": 1,
     "parentLocationKey": null,
-    "inactiveCells": -2147483648,
-    "numberOfCellLocations": -2147483648,
+    "inactiveCells": 0,
+    "numberOfCellLocations": 0,
     "isResidential": true
   }
 }

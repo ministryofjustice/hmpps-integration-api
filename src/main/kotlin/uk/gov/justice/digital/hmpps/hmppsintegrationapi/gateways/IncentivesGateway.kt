@@ -18,7 +18,8 @@ class IncentivesGateway(
       summary = "Manage and review the incentives levels of prisons.",
       developerPortalId = "DPS020",
       developerPortalUrl = "https://developer-portal.hmpps.service.justice.gov.uk/components/hmpps-incentives-api",
-      apiSpecUrl = "https://incentives-api-dev.hmpps.service.justice.gov.uk/swagger-ui/index.html",
+      apiDocUrl = "https://incentives-api-dev.hmpps.service.justice.gov.uk/webjars/swagger-ui/index.html",
+      apiSpecUrl = "https://incentives-api-dev.hmpps.service.justice.gov.uk/v3/api-docs",
       gitHubRepoUrl = "https://github.com/ministryofjustice/hmpps-incentives-api",
     )
 

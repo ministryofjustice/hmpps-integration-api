@@ -3,8 +3,8 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -24,18 +24,14 @@ class AlertsIntegrationTest : IntegrationTestBase() {
     fun `returns all alerts for a person`() {
       callApi(path)
         .andExpect(status().isOk)
-        .andExpect(content().json(getExpectedResponse("person-alerts")))
-
-      verify(alertsGateway, times(1)).getPrisonerAlertsForCodes(nomsId, 1, 10, emptyList(), false)
+        .andExpect(content().json(getExpectedResponse("person-alerts.json"), JsonCompareMode.STRICT))
     }
 
     @Test
     fun `returns active alerts for a person`() {
       callApi(activeOnlyPath)
         .andExpect(status().isOk)
-        .andExpect(content().json(getExpectedResponse("person-alerts")))
-
-      verify(alertsGateway, times(1)).getPrisonerAlertsForCodes(nomsId, 1, 10, emptyList(), true)
+        .andExpect(content().json(getExpectedResponse("person-alerts.json"), JsonCompareMode.STRICT))
     }
 
     @Test
@@ -43,9 +39,7 @@ class AlertsIntegrationTest : IntegrationTestBase() {
       whenever(authorisationConfig.roles).thenReturn(mapOf("full-access" to testRoleWithPoliceIntelligenceAlerts))
       callApi(path)
         .andExpect(status().isOk)
-        .andExpect(content().json(getExpectedResponse("person-alerts")))
-
-      verify(alertsGateway, times(1)).getPrisonerAlertsForCodes(nomsId, 1, 10, testRoleWithPoliceIntelligenceAlerts.filters?.alertCodes!!, false)
+        .andExpect(content().json(getExpectedResponse("person-alerts.json"), JsonCompareMode.STRICT))
     }
 
     @Test
