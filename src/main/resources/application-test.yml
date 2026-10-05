@@ -51,7 +51,7 @@ services:
   non-associations:
     base-url: http://localhost:4005
   personal-relationships:
-    base-url: http://localhost:4006
+    base-url: http://localhost:4042
   manage-prison-visits:
     base-url: http://localhost:4041
   incentives:

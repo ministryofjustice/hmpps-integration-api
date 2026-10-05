@@ -219,6 +219,7 @@ abstract class IntegrationTestBase {
     val alertsServer = ApiMockServer.create(UpstreamApi.PRISONER_ALERTS)
     val incentivesServer = ApiMockServer.create(UpstreamApi.INCENTIVES)
     val managePrisonVisitsServer = ApiMockServer.create(UpstreamApi.MANAGE_PRISON_VISITS)
+    val personalRelationshipServer = ApiMockServer.create(UpstreamApi.PERSONAL_RELATIONSHIPS)
 
     @BeforeEach
     fun setUp() {
@@ -560,6 +561,8 @@ abstract class IntegrationTestBase {
           "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisonVisits/fixtures/VisitFuture.json",
         ).readText(),
       )
+
+      personalRelationshipServer.start()
     }
 
     @AfterAll
@@ -581,6 +584,7 @@ abstract class IntegrationTestBase {
       alertsServer.stop()
       incentivesServer.stop()
       managePrisonVisitsServer.stop()
+      personalRelationshipServer.stop()
     }
   }
 
