@@ -3,23 +3,18 @@
     {
       "applicationReference": "dfs-wjs-eqr",
       "reference": "v9-d7-ed-7u",
-      "sessionTemplateReference": "v9d.7ed.7u",
-      "prisonerId": "G2996UX",
+      "prisonerId": "AF34567G",
       "prisonId": "MDI",
       "prisonName": "Moorland (HMP & YOI)",
+      "sessionTemplateReference": "v9d.7ed.7u",
       "visitRoom": "Visits Main Hall",
       "visitType": "SOCIAL",
-      "visitStatus": "BOOKED",
-      "outcomeStatus": "ADMINISTRATIVE_CANCELLATION",
+      "visitStatus": "RESERVED",
+      "visitSubStatus": "AUTO_APPROVED",
+      "outcomeStatus": "VISITOR_CANCELLED",
       "visitRestriction": "OPEN",
       "startTimestamp": "2018-12-01T13:45:00",
       "endTimestamp": "2018-12-01T13:45:00",
-      "visitors": [
-        {
-          "contactId": 1234,
-          "visitContact": true
-        }
-      ],
       "visitNotes": [
         {
           "type": "VISITOR_CONCERN",
@@ -31,8 +26,18 @@
         "telephone": "01234 567890",
         "email": "email@example.com"
       },
+      "visitors": [
+        {
+          "contactId": 1234,
+          "visitContact": true
+        }
+      ],
       "visitorSupport": {
         "description": "visually impaired assistance"
+      },
+      "visitExternalSystemDetails": {
+        "clientName": "client_name",
+        "clientVisitReference": "Reference ID in the client system"
       },
       "createdTimestamp": "2018-12-01T13:45:00",
       "modifiedTimestamp": "2018-12-01T13:45:00",
@@ -45,6 +50,6 @@
     "page": 1,
     "perPage": 0,
     "totalCount": 0,
-    "totalPages": -2147483648
+    "totalPages": 0
   }
 }

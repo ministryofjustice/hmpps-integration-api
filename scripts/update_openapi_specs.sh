@@ -28,4 +28,5 @@ updateOpenApiSpec "https://court-register-api-dev.hmpps.service.justice.gov.uk/v
 updateOpenApiSpec "https://remand-and-sentencing-api-dev.hmpps.service.justice.gov.uk/v3/api-docs" "../src/test/resources/openapi-specs/remand-and-sentencing.json"
 updateOpenApiSpec "https://locations-inside-prison-api-dev.hmpps.service.justice.gov.uk/v3/api-docs" "../src/test/resources/openapi-specs/locations-inside-prison.json"
 updateOpenApiSpec "https://alerts-api-dev.hmpps.service.justice.gov.uk/v3/api-docs" "../src/test/resources/openapi-specs/prisoner-alerts.json"
-updateOpenApiSpec "https://incentives-api-dev.hmpps.service.justice.gov.uk/v3/api-docs.json" "../src/test/resources/openapi-specs/incentives.json"
+updateOpenApiSpec "https://incentives-api-dev.hmpps.service.justice.gov.uk/v3/api-docs" "../src/test/resources/openapi-specs/incentives.json"
+updateOpenApiSpec "https://hmpps-manage-prison-visits-orchestration-dev.prison.service.justice.gov.uk/v3/api-docs" "../src/test/resources/openapi-specs/manage-prisons.json"

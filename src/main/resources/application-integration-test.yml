@@ -55,7 +55,7 @@ services:
   personal-relationships:
     base-url: http://localhost:4019
   manage-prison-visits:
-    base-url: http://localhost:4020
+    base-url: http://localhost:4041
   incentives:
     base-url: http://localhost:4040
   alerts:

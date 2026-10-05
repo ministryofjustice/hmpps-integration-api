@@ -194,6 +194,9 @@ abstract class IntegrationTestBase {
     val crnNotActiveInPrisonOrProb = "A876543"
     val crnUnknownInPrison = "A987654"
 
+    val clientReference = "AABDC234"
+    val visitReference = "123456"
+
     val certSerialNumber = "9572494320151578633330348943480876283449388176"
     val revokedSerialNumber = "8472494320151578633330348943480876283449388195"
 
@@ -215,6 +218,7 @@ abstract class IntegrationTestBase {
     val locationsInsidePrisonServer = ApiMockServer.create(UpstreamApi.LOCATIONS_INSIDE_PRISON)
     val alertsServer = ApiMockServer.create(UpstreamApi.PRISONER_ALERTS)
     val incentivesServer = ApiMockServer.create(UpstreamApi.INCENTIVES)
+    val managePrisonVisitsServer = ApiMockServer.create(UpstreamApi.MANAGE_PRISON_VISITS)
 
     @BeforeEach
     fun setUp() {
@@ -526,6 +530,36 @@ abstract class IntegrationTestBase {
           "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/incentives/fixtures/IncentiveReviews.json",
         ).readText(),
       )
+
+      managePrisonVisitsServer.start()
+
+      managePrisonVisitsServer.stubForGet(
+        "/visits/$visitReference",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisonVisits/fixtures/Visit.json",
+        ).readText(),
+      )
+
+      managePrisonVisitsServer.stubForGet(
+        "/visits/external-system/$clientReference",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisonVisits/fixtures/ExternalSystemVisit.json",
+        ).readText(),
+      )
+
+      managePrisonVisitsServer.stubForGet(
+        "/visits/search?prisonId=$prisonId&visitStatus=BOOKED&page=0&size=10&visitStartDate=2024-01-01&visitEndDate=2024-01-14",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisonVisits/fixtures/VisitSearch.json",
+        ).readText(),
+      )
+
+      managePrisonVisitsServer.stubForGet(
+        "/visits/search/future/$nomsId",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisonVisits/fixtures/VisitFuture.json",
+        ).readText(),
+      )
     }
 
     @AfterAll
@@ -546,6 +580,7 @@ abstract class IntegrationTestBase {
       locationsInsidePrisonServer.stop()
       alertsServer.stop()
       incentivesServer.stop()
+      managePrisonVisitsServer.stop()
     }
   }
 
