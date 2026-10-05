@@ -8,7 +8,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Setup K6
-        uses: grafana/setup-k6-action@db07bd9765aac508ef18982e52ab937fe633a065 # v1
+        uses: grafana/setup-k6-action@43b9fc21641a76002687994433dd586f56e791b1 # v1
       - name: Run main Smoke Test script
         shell: bash
         env:
