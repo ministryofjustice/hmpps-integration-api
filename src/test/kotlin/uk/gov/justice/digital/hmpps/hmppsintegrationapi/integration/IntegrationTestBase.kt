@@ -546,6 +546,20 @@ abstract class IntegrationTestBase {
           "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisonVisits/fixtures/ExternalSystemVisit.json",
         ).readText(),
       )
+
+      managePrisonVisitsServer.stubForGet(
+        "/visits/search?prisonId=$prisonId&visitStatus=BOOKED&page=0&size=10&visitStartDate=2024-01-01&visitEndDate=2024-01-14",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisonVisits/fixtures/VisitSearch.json",
+        ).readText(),
+      )
+
+      managePrisonVisitsServer.stubForGet(
+        "/visits/search/future/$nomsId",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisonVisits/fixtures/VisitFuture.json",
+        ).readText(),
+      )
     }
 
     @AfterAll
