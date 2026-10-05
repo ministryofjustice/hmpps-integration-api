@@ -194,6 +194,9 @@ abstract class IntegrationTestBase {
     val crnNotActiveInPrisonOrProb = "A876543"
     val crnUnknownInPrison = "A987654"
 
+    val clientReference = "AABDC234"
+    val visitReference = "123456"
+
     val certSerialNumber = "9572494320151578633330348943480876283449388176"
     val revokedSerialNumber = "8472494320151578633330348943480876283449388195"
 
@@ -529,6 +532,20 @@ abstract class IntegrationTestBase {
       )
 
       managePrisonVisitsServer.start()
+
+      managePrisonVisitsServer.stubForGet(
+        "/visits/$visitReference",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisonVisits/fixtures/Visit.json",
+        ).readText(),
+      )
+
+      managePrisonVisitsServer.stubForGet(
+        "/visits/external-system/$clientReference",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisonVisits/fixtures/ExternalSystemVisit.json",
+        ).readText(),
+      )
     }
 
     @AfterAll

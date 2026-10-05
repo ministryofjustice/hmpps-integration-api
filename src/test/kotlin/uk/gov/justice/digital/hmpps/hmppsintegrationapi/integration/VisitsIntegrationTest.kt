@@ -9,6 +9,8 @@ import org.awaitility.kotlin.untilCallTo
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.skyscreamer.jsonassert.JSONAssert
+import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CancelOutcome
@@ -29,39 +31,11 @@ class VisitsIntegrationTest : IntegrationTestWithQueueBase("visits") {
   @DisplayName("GET /v1/visit/{visitReference}")
   @Nested
   inner class GetVisitByReference {
-    private val visitReference = "123456"
-
     @Test
     fun `gets the visit detail`() {
       callApi("/v1/visit/$visitReference")
         .andExpect(status().isOk)
-        .andExpect(
-          content().json(
-            """
-            {
-              "data": {
-                  "prisonerId": $nomsId,
-                  "prisonId": "MDI",
-                  "prisonName": "Moorland (HMP & YOI)",
-                  "visitRoom": "Visits Main Hall",
-                  "visitType": "SOCIAL",
-                  "visitStatus": "BOOKED",
-                  "outcomeStatus": "ADMINISTRATIVE_CANCELLATION",
-                  "visitRestriction": "OPEN",
-                  "startTimestamp": "2018-12-01T13:45:00",
-                  "endTimestamp": "2018-12-01T13:45:00",
-                  "createdTimestamp": "2018-12-01T13:45:00",
-                  "modifiedTimestamp": "2018-12-01T13:45:00",
-                  "firstBookedDateTime": "2018-12-01T13:45:00",
-                  "visitors": [{ "contactId": 1234, "visitContact": true}],
-                  "visitNotes": [{ "type": "VISITOR_CONCERN", "text": "Visitor is concerned that his mother in-law is coming!"}],
-                  "visitContact": {"name": "John Smith", "telephone": "01234 567890", "email": "email@example.com"},
-                  "visitorSupport": {"description": "visually impaired assistance"}
-              }
-            }
-      """,
-          ),
-        )
+        .andExpect(content().json(getExpectedResponse("visit-response.json"), JsonCompareMode.STRICT))
     }
 
     @Test
@@ -338,7 +312,6 @@ class VisitsIntegrationTest : IntegrationTestWithQueueBase("visits") {
   @DisplayName("PUT /v1/visit/{visitReference}")
   @Nested
   inner class PutVisit {
-    private val visitReference = "123456"
     private val path = "/v1/visit/$visitReference"
     private val timestamp = "2020-12-04T10:42:43"
 
@@ -397,17 +370,7 @@ class VisitsIntegrationTest : IntegrationTestWithQueueBase("visits") {
 
       putApi(path, requestBody)
         .andExpect(status().isOk)
-        .andExpect(
-          content().json(
-            """
-            {
-              "data": {
-                  "message": "Visit update written to queue"
-              }
-            }
-            """,
-          ),
-        )
+        .andExpect(content().json(getExpectedResponse("visit-update-response.json"), JsonCompareMode.STRICT))
 
       await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
 
@@ -525,7 +488,6 @@ class VisitsIntegrationTest : IntegrationTestWithQueueBase("visits") {
   @DisplayName("POST /v1/visit/{visitReference}/cancel")
   @Nested
   inner class PostCancelVisit {
-    private val visitReference = "123456"
     private val path = "/v1/visit/$visitReference/cancel"
     private val cancelVisitRequest =
       CancelVisitRequest(
@@ -544,17 +506,7 @@ class VisitsIntegrationTest : IntegrationTestWithQueueBase("visits") {
 
       postToApi(path, requestBody)
         .andExpect(status().isOk)
-        .andExpect(
-          content().json(
-            """
-            {
-              "data": {
-                  "message": "Visit cancellation written to queue"
-              }
-            }
-            """,
-          ),
-        )
+        .andExpect(content().json(getExpectedResponse("visit-cancel-response.json"), JsonCompareMode.STRICT))
 
       await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
 
@@ -566,9 +518,9 @@ class VisitsIntegrationTest : IntegrationTestWithQueueBase("visits") {
       messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
       messageJson.shouldContainJsonKeyValue("$.who", defaultCn)
       val objectMapper = jacksonObjectMapper()
-      val messageAttributes = objectMapper.readTree(messageJson).at("/messageAttributes")
-      val expectedMessageAttributes = objectMapper.readTree(objectMapper.writeValueAsString(expectedMessage.messageAttributes))
-      messageAttributes.shouldBe(expectedMessageAttributes)
+      val messageAttributesJson = objectMapper.readTree(messageJson).at("/messageAttributes").toString()
+      val expectedMessageAttributesJson = objectMapper.writeValueAsString(expectedMessage.messageAttributes)
+      JSONAssert.assertEquals(expectedMessageAttributesJson, messageAttributesJson, true)
     }
 
     @Test
@@ -595,23 +547,11 @@ class VisitsIntegrationTest : IntegrationTestWithQueueBase("visits") {
   @DisplayName("GET /id/by-client-ref/{clientReference}")
   @Nested
   inner class GetClientRefByVisitRef {
-    private val clientReference = "AABDC234"
-
     @Test
     fun `gets the visit reference`() {
       callApi("/v1/visit/id/by-client-ref/$clientReference")
         .andExpect(status().isOk)
-        .andExpect(
-          content().json(
-            """
-              {
-                "data": {
-                  "visitReferences": ["abc-123-xyz"]
-                }
-              }
-              """,
-          ),
-        )
+        .andExpect(content().json(getExpectedResponse("visit-reference-response.json"), JsonCompareMode.STRICT))
     }
 
     @Test
