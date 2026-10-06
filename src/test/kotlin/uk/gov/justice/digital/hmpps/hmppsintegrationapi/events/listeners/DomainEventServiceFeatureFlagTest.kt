@@ -36,7 +36,7 @@ class DomainEventServiceFeatureFlagTest : DomainEventsListenerTestCase() {
 
   /**
    *  Feature flags:
-   * - `person-languages.json-changed-notifications-enabled` : false
+   * - `person-languages-changed-notifications-enabled` : false
    * - `prisoner-merge-notifications-enabled` : true
    * - `prisoner-base-location-changed-notifications-enabled` is undefined (not set)
    */
@@ -110,7 +110,7 @@ class DomainEventServiceFeatureFlagTest : DomainEventsListenerTestCase() {
       executeShouldSaveEventNotifications(hmppsDomainEvent, expectedEventNotifications)
     }
 
-    // IntegrationEventTypes associated with a feature flag set to “false” are not enabled; e.g. person-languages.json-changed
+    // IntegrationEventTypes associated with a feature flag set to “false” are not enabled; e.g. person-languages-changed
     // IntegrationEventTypes that are not enabled are not written to the database
     @Test
     fun `should process and save enabled events, and skip event with feature flag disabled`() {
