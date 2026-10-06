@@ -46,6 +46,7 @@ runs:
       shell: bash
       run: |
         git add tech-docs/source/.
+        git add src/main/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/controllers/README.md
     - name: Commit and push
       uses: dsanders11/github-app-commit-action@43de6da2f4d927e997c0784c7a0b61bd19ad6aac # v1.5.0
       with:
