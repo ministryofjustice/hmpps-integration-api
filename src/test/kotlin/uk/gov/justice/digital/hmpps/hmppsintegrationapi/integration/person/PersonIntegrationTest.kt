@@ -243,7 +243,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
     fun `returns image metadata for a person`() {
       callApi("$basePath/$nomsId/images")
         .andExpect(status().isOk)
-        .andExpect(content().json(getExpectedResponse("person-image-meta-data"), JsonCompareMode.STRICT))
+        .andExpect(content().json(getExpectedResponse("person-image-meta-data.json"), JsonCompareMode.STRICT))
     }
 
     @Test
@@ -271,13 +271,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
     fun `returns person name details for a person`() {
       callApi("$basePath/$nomsId/name")
         .andExpect(status().isOk)
-        .andExpect(
-          content().json(
-            """
-      {"data":{"firstName":"Matt","lastName":"Nolan"}}
-    """,
-          ),
-        )
+        .andExpect(content().json(getExpectedResponse("person-name.json"), JsonCompareMode.STRICT))
     }
 
     @Test
@@ -305,13 +299,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
     fun `returns person cell location if in prison`() {
       callApi("$basePath/$nomsId/cell-location")
         .andExpect(status().isOk)
-        .andExpect(
-          content().json(
-            """
-  {"data":{"prisonCode":"MDI","prisonName":"HMP Leeds","cell":"A-1-002"}}
-""",
-          ),
-        )
+        .andExpect(content().json(getExpectedResponse("cell-location-response.json"), JsonCompareMode.STRICT))
     }
 
     @Test
@@ -371,17 +359,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
     fun `returns a prisoner's number of children`() {
       callApi(path)
         .andExpect(status().isOk)
-        .andExpect(
-          content().json(
-            """
-          {
-            "data": {
-              "numberOfChildren": "string"
-            }
-          }
-          """,
-          ),
-        )
+        .andExpect(content().json(getExpectedResponse("number-of-children-response.json"), JsonCompareMode.STRICT))
     }
 
     @Test
@@ -411,7 +389,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
     fun `returns a prisoner's physical characteristics`() {
       callApi(path)
         .andExpect(status().isOk)
-        .andExpect(content().json(getExpectedResponse("physical-characteristics"), JsonCompareMode.STRICT))
+        .andExpect(content().json(getExpectedResponse("physical-characteristics.json"), JsonCompareMode.STRICT))
     }
 
     @Test
@@ -441,7 +419,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
     fun `returns a prisoner's care needs`() {
       callApi(path)
         .andExpect(status().isOk)
-        .andExpect(content().json(getExpectedResponse("personal-care-needs"), JsonCompareMode.STRICT))
+        .andExpect(content().json(getExpectedResponse("personal-care-needs.json"), JsonCompareMode.STRICT))
     }
 
     @Test
@@ -471,7 +449,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
     fun `returns a prisoner's languages`() {
       callApi(path)
         .andExpect(status().isOk)
-        .andExpect(content().json(getExpectedResponse("person-languages")))
+        .andExpect(content().json(getExpectedResponse("person-languages.json"), JsonCompareMode.STRICT))
     }
 
     @Test
@@ -507,7 +485,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
       )
       callApi(path)
         .andExpect(status().isOk)
-        .andExpect(content().json(getExpectedResponse("person-education"), JsonCompareMode.STRICT))
+        .andExpect(content().json(getExpectedResponse("person-education.json"), JsonCompareMode.STRICT))
     }
 
     @Test

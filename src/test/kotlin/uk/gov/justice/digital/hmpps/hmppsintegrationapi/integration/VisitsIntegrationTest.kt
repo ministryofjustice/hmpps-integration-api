@@ -127,17 +127,7 @@ class VisitsIntegrationTest : IntegrationTestWithQueueBase("visits") {
 
       postToApi(path, requestBody)
         .andExpect(status().isOk)
-        .andExpect(
-          content().json(
-            """
-            {
-              "data": {
-                  "message": "Visit creation written to queue"
-              }
-            }
-            """,
-          ),
-        )
+        .andExpect(content().json(getExpectedResponse("post-visit-queue-response.json"), JsonCompareMode.STRICT))
 
       await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
 
