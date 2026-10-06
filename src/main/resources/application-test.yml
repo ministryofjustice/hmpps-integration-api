@@ -49,7 +49,7 @@ services:
   case-notes:
     base-url: http://localhost:4008
   non-associations:
-    base-url: http://localhost:4005
+    base-url: http://localhost:4043
   personal-relationships:
     base-url: http://localhost:4042
   manage-prison-visits:

@@ -220,6 +220,7 @@ abstract class IntegrationTestBase {
     val incentivesServer = ApiMockServer.create(UpstreamApi.INCENTIVES)
     val managePrisonVisitsServer = ApiMockServer.create(UpstreamApi.MANAGE_PRISON_VISITS)
     val personalRelationshipServer = ApiMockServer.create(UpstreamApi.PERSONAL_RELATIONSHIPS)
+    val nonAssociationServer = ApiMockServer.create(UpstreamApi.NON_ASSOCIATIONS)
 
     @BeforeEach
     fun setUp() {
@@ -612,6 +613,15 @@ abstract class IntegrationTestBase {
           "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/personalRelationships/fixtures/ContactByContactId.json",
         ).readText(),
       )
+
+      nonAssociationServer.start()
+
+      nonAssociationServer.stubForGet(
+        "/prisoner/$nomsId/non-associations?includeOpen=true&includeClosed=false",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/nonAssociations/fixtures/PrisonerNonAssociations.json",
+        ).readText(),
+      )
     }
 
     @AfterAll
@@ -634,6 +644,7 @@ abstract class IntegrationTestBase {
       incentivesServer.stop()
       managePrisonVisitsServer.stop()
       personalRelationshipServer.stop()
+      nonAssociationServer.stop()
     }
   }
 

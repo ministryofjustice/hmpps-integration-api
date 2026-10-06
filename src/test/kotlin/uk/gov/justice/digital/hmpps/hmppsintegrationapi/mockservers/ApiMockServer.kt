@@ -51,6 +51,7 @@ class ApiMockServer(
           UpstreamApi.INCENTIVES -> ApiMockServerConfig(4040, "incentives.json")
           UpstreamApi.MANAGE_PRISON_VISITS -> ApiMockServerConfig(4041, "manage-prisons.json")
           UpstreamApi.PERSONAL_RELATIONSHIPS -> ApiMockServerConfig(4042, "relationships.json")
+          UpstreamApi.NON_ASSOCIATIONS -> ApiMockServerConfig(4043, "non-associations.json")
           // USE PRISM
           UpstreamApi.PRISON_API -> ApiMockServerConfig(4000)
           UpstreamApi.NDELIUS -> ApiMockServerConfig(4003)
@@ -60,7 +61,6 @@ class ApiMockServer(
           UpstreamApi.CVL -> ApiMockServerConfig(4007)
           UpstreamApi.CASE_NOTES -> ApiMockServerConfig(4008)
           UpstreamApi.RISK_MANAGEMENT_PLAN -> ApiMockServerConfig(4004)
-          UpstreamApi.NON_ASSOCIATIONS -> ApiMockServerConfig(4005)
           UpstreamApi.SAN -> ApiMockServerConfig(4200)
           UpstreamApi.HMPPS_AUTH -> throw NotImplementedError("HMPPS Auth MockServer is already running, see HmppsAuthMockServer")
         }
