@@ -47,6 +47,6 @@ class EndpointToGatewayDocumentationManagerTest {
     val gateway = endPoint?.firstOrNull { it.inClass.lowercase().contains("gateway") }
 
     assertEquals("Assess Risks and Needs", gateway?.metadata?.summary)
-    assertEquals(106, data.size)
+    assertEquals(109, data.size)
   }
 }
