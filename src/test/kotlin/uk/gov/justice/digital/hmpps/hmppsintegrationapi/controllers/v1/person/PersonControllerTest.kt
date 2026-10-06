@@ -749,8 +749,8 @@ internal class PersonControllerTest(
         }
       }
 
-      describe("/v1/persons/{hmppsId}/physical-characteristics") {
-        val path = "$basePath/$sanitisedHmppsId/physical-characteristics"
+      describe("/v1/persons/{hmppsId}/physical-characteristics.json") {
+        val path = "$basePath/$sanitisedHmppsId/physical-characteristics.json"
         val physicalCharacteristics =
           PhysicalCharacteristics(
             heightCentimetres = 200,

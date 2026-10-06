@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
@@ -20,7 +21,7 @@ class PrisonerContactsIntegrationTest : IntegrationTestBase() {
       val params = "?page=1&size=10"
       callApi("$basePath/$nomsId/contacts$params")
         .andExpect(status().isOk)
-        .andExpect(content().json(getExpectedResponse("prisoners-contacts")))
+        .andExpect(content().json(getExpectedResponse("prisoners-contacts.json"), JsonCompareMode.STRICT))
     }
   }
 
@@ -31,7 +32,7 @@ class PrisonerContactsIntegrationTest : IntegrationTestBase() {
       val params = "?page=1&size=10"
       callApi("$basePath/$nomsId/emergency-contacts$params")
         .andExpect(status().isOk)
-        .andExpect(content().json(getExpectedResponse("prisoners-contacts")))
+        .andExpect(content().json(getExpectedResponse("prisoners-contacts.json"), JsonCompareMode.STRICT))
     }
   }
 }

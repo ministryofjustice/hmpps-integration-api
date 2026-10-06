@@ -1,0 +1,24 @@
+{
+  "content": [
+    {
+      "prisonerNumber": "G2996UX",
+      "prisonerContactId": 123456,
+      "lastName": "Doe",
+      "firstName": "John",
+      "middleNames": "William",
+      "prisonId": "BXI",
+      "prisonName": "Brixton (HMP)",
+      "relationshipTypeCode": "S",
+      "relationshipTypeDescription": "Official",
+      "relationshipToPrisonerCode": "FRI",
+      "relationshipToPrisonerDescription": "Friend",
+      "isRelationshipActive": true
+    }
+  ],
+  "page": {
+    "size": 0,
+    "number": 0,
+    "totalElements": 0,
+    "totalPages": 0
+  }
+}

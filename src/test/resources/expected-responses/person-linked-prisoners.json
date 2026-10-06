@@ -1,0 +1,24 @@
+{
+  "data": [
+    {
+      "prisonerNumber": "G2996UX",
+      "lastName": "Doe",
+      "firstName": "John",
+      "middleNames": "William",
+      "relationshipTypeCode": "S",
+      "relationshipTypeDescription": "Official",
+      "relationshipToPrisonerCode": "FRI",
+      "relationshipToPrisonerDescription": "Friend",
+      "isRelationshipActive": true,
+      "prisonerContactId": 123456
+    }
+  ],
+  "pagination": {
+    "isLastPage": true,
+    "count": 1,
+    "page": 1,
+    "perPage": 0,
+    "totalCount": 0,
+    "totalPages": 0
+  }
+}

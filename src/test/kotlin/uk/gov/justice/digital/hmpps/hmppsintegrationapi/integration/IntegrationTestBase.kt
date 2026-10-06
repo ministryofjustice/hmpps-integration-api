@@ -174,7 +174,6 @@ abstract class IntegrationTestBase {
   final val noPrisonsCn = "no-prisons"
   final val emptyPrisonsCn = "empty-prisons"
   final val noProbationAccessCn = "supervision-status-prison-only"
-  final val contactId = 123456L
   final val nomsIdFromProbation = "G5555TT"
 
   companion object {
@@ -196,6 +195,7 @@ abstract class IntegrationTestBase {
 
     val clientReference = "AABDC234"
     val visitReference = "123456"
+    val contactId = 123456L
 
     val certSerialNumber = "9572494320151578633330348943480876283449388176"
     val revokedSerialNumber = "8472494320151578633330348943480876283449388195"
@@ -563,6 +563,55 @@ abstract class IntegrationTestBase {
       )
 
       personalRelationshipServer.start()
+
+      personalRelationshipServer.stubForGet(
+        "/contact/$contactId/linked-prisoners",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/personalRelationships/fixtures/LinkedPrisoners.json",
+        ).readText(),
+      )
+
+      personalRelationshipServer.stubForGet(
+        "/contact/$contactId/linked-prisoners?page=0&size=10",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/personalRelationships/fixtures/LinkedPrisoners.json",
+        ).readText(),
+      )
+
+      personalRelationshipServer.stubForGet(
+        "/prisoner-contact/$contactId/restriction",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/personalRelationships/fixtures/PrisonerContactRestriction.json",
+        ).readText(),
+      )
+
+      personalRelationshipServer.stubForGet(
+        "/prisoner/$nomsId/contact?page=0&size=10",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/personalRelationships/fixtures/PrisonerContactSearch.json",
+        ).readText(),
+      )
+
+      personalRelationshipServer.stubForGet(
+        "/prisoner/$nomsId/contact?page=0&size=10&emergencyContactOrNextOfKin=true",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/personalRelationships/fixtures/PrisonerContactSearch.json",
+        ).readText(),
+      )
+
+      personalRelationshipServer.stubForGet(
+        "/prisoner/$nomsId/number-of-children",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/personalRelationships/fixtures/NumberOfChildren.json",
+        ).readText(),
+      )
+
+      personalRelationshipServer.stubForGet(
+        "/contact/$contactId",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/personalRelationships/fixtures/ContactByContactId.json",
+        ).readText(),
+      )
     }
 
     @AfterAll
