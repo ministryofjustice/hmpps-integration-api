@@ -18,6 +18,7 @@ class NonAssociationsGateway(
       summary = "Management and creation of non-associations that displays which prisoners can’t associate with one another for safety reasons.",
       developerPortalId = "DPS032",
       developerPortalUrl = "https://developer-portal.hmpps.service.justice.gov.uk/components/hmpps-non-associations-api",
+      apiDocUrl = "https://non-associations-api-dev.hmpps.service.justice.gov.uk/swagger-ui/index.html",
       apiSpecUrl = "https://non-associations-api-dev.hmpps.service.justice.gov.uk/v3/api-docs",
       gitHubRepoUrl = "https://github.com/ministryofjustice/hmpps-personal-relationships-api",
     )

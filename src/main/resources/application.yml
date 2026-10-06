@@ -92,7 +92,7 @@ services:
   san:
     base-url: http://localhost:4200
   non-associations:
-    base-url: http://localhost:4021
+    base-url: http://localhost:4043
   personal-relationships:
     base-url: http://localhost:4042
   manage-prison-visits:

@@ -17,5 +17,4 @@ RUN swagger-cli bundle -r -o /prismMocks/adjudications.json /tmp/adjudications.j
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/adjudications.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/assess-risks-and-needs.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/case-notes.json
-RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/x4018-non-associations.json
 ENTRYPOINT ["/bin/sh", "setUpScript.sh"]

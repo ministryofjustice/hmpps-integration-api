@@ -24,7 +24,7 @@ services:
   probation-integration-epf.base-url: http://localhost:4018
   plp.base-url: http://localhost:4020
   san.base-url: http://localhost:4200
-  non-associations.base-url: http://localhost:4021
+  non-associations.base-url: http://localhost:4043
   personal-relationships.base-url: http://localhost:4042
   manage-prison-visits.base-url: http://localhost:4041
   incentives.base-url: http://localhost:4040
