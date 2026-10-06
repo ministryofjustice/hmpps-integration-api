@@ -65,10 +65,13 @@ class EndpointToGatewayDocumentationManager(
     val leftTitle = "Endpoint"
     val rightTitle = "Upstream Gateways"
     content.appendLine("# HMPPS External API Endpoints")
+    content.appendLine()
     content.appendLine("## Endpoints and Related Upstream Services")
+    content.appendLine()
     val title = "| $leftTitle${" ".repeat(leftSize - leftTitle.length - 1)}| $rightTitle${" ".repeat(rightSize - rightTitle.length - 1)}|"
-    val lineBreak = "|${"-".repeat(leftSize)}|${"-".repeat(rightSize)}|"
+    val lineBreak = "| ${"-".repeat(leftSize-2)} | ${"-".repeat(rightSize-2)} |"
 
+    content.appendLine("<!-- prettier-ignore -->")
     content.appendLine(title)
     content.appendLine(lineBreak)
 
