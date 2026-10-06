@@ -615,6 +615,13 @@ abstract class IntegrationTestBase {
       )
 
       nonAssociationServer.start()
+
+      nonAssociationServer.stubForGet(
+        "/prisoner/$nomsId/non-associations?includeOpen=true&includeClosed=false",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/nonAssociations/fixtures/PrisonerNonAssociations.json",
+        ).readText(),
+      )
     }
 
     @AfterAll
