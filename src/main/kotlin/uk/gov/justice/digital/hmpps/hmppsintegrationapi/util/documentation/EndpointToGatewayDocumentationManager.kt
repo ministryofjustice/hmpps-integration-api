@@ -24,13 +24,51 @@ import tools.jackson.core.json.JsonReadFeature
 import tools.jackson.databind.json.JsonMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.GatewayMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.DocumentationManager
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.FileManager
 import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.io.path.absolutePathString
 
-class EndpointToGatewayDocumentationManager : DocumentationManager {
+class EndpointToGatewayDocumentationManager(
+  val fileManager: FileManager,
+) : DocumentationManager {
   val srcPath = "src/main/kotlin"
   val controllerPath = "uk/gov/justice/digital/hmpps/hmppsintegrationapi/controllers"
+
+  override fun generate() {
+    val fileName = "README.md"
+    val path = fileManager.getSourcePath("controllers")
+    val data = getData()
+    val contents = createContent(data)
+    fileManager.write("$path/$fileName", contents)
+  }
+
+  fun swaggerLink(link: String): String {
+    val badge = "[![API docs](https://img.shields.io/badge/API_docs_-view-85EA2D.svg?logo=swagger)](API_DOC_LINK)"
+    return badge.replace("API_DOC_LINK", link)
+  }
+
+  fun formatData(endpoints: Map<String, List<Function>>): List<String> =
+    endpoints.entries.map { (endpointName, gateways) ->
+      val endpoint = endpointName.split("\", \"").first()
+      val x =
+        gateways.map {
+          "${it.inClass} (${it.name}) ${it.metadata?.apiDocUrl?.let {link -> swaggerLink(link) }}"
+        }
+      "| $endpoint | ${x.joinToString("<br>")} |"
+    }
+
+  fun createContent(endpoints: Map<String, List<Function>>): String {
+    val content = StringBuilder()
+    content.appendLine("# HMPPS External API Endpoints")
+    content.appendLine("## Endpoints and Related Upstream Services")
+    content.appendLine("| Endpoint | Upstream Gateways |")
+    content.appendLine("| -------- | ----------------- |")
+    formatData(endpoints).sorted().forEach {
+      content.appendLine(it)
+    }
+    return content.toString()
+  }
 
   fun getData(): Map<String, List<Function>> {
     val controllerFilePath = Paths.get("$srcPath/$controllerPath/")
@@ -57,7 +95,7 @@ class EndpointToGatewayDocumentationManager : DocumentationManager {
       files.map {
         val path = it.split("$srcPath/").last()
         val name = path.split("/").last()
-        SourceFile(path, name, ArrayList(firstPass), false)
+        SourceFile(path, name, ArrayList(firstPass), true)
       }
 
     return srcCodeFiles
@@ -69,15 +107,15 @@ class EndpointToGatewayDocumentationManager : DocumentationManager {
             "${func.httpMethod} ${func.endpoint!!}",
             func
               .recurseFunctionCalls()
-              .filter { it.inClass.contains("Gateway") && it.metadata != null }
-              .distinctBy { "${it.inClass}:${it.name}" },
+              .filter {
+                it.inClass.contains("Gateway") &&
+                  it.name?.contains("authenticationHeader") == false &&
+                  !it.name.contains("getClientToken") &&
+                  !it.name.contains("useRestApiClient")
+              }.distinctBy { "${it.inClass}:${it.name}" },
           )
         }
       }.toMap()
-  }
-
-  override fun generate() {
-    TODO("Not yet implemented")
   }
 }
 
@@ -291,7 +329,7 @@ class SourceFile(
         Declaration(func.name, func)
       }.plus(localFunctions ?: emptyList())
 
-  val metadata =
+  fun metadata() =
     ktClassBody
       ?.children
       ?.filterIsInstance<KtNamedFunction>()
@@ -328,7 +366,7 @@ class SourceFile(
       } else {
         associateToFunctionsFromFuncList(body)
       }
-
+    val metadata = metadata()
     val func =
       Function(
         inClass = fileName,

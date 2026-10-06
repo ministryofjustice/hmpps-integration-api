@@ -86,4 +86,9 @@ class FileManager {
     val documentationDirectory: Path = Paths.get("tech-docs", "source", "documentation", docType)
     return documentationDirectory.toFile().absolutePath
   }
+
+  fun getSourcePath(packageName: String): String {
+    val documentationDirectory: Path = Paths.get("src/main/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi", packageName)
+    return documentationDirectory.toFile().absolutePath
+  }
 }
