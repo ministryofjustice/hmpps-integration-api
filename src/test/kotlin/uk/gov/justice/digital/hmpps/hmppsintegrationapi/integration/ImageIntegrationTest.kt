@@ -10,6 +10,7 @@ class ImageIntegrationTest : IntegrationTestBase() {
     callApi("/v1/images/2461788")
       .andExpect(status().isOk)
       .andExpect(content().contentType("image/jpeg"))
+      .andExpect(content().string(imageByteArray.toString()))
   }
 
   private val id = 2461788
@@ -20,6 +21,7 @@ class ImageIntegrationTest : IntegrationTestBase() {
     callApi(path)
       .andExpect(status().isOk)
       .andExpect(content().contentType("image/jpeg"))
+      .andExpect(content().string(imageByteArray.toString()))
   }
 
   @Test
