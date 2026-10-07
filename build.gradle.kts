@@ -103,6 +103,7 @@ tasks {
       "uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.SchedulingConfig",
       "uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.DocumentationGenerator",
       "uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.FileManager",
+      "uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.documentation.EndpointToGatewayDocumentationManager",
     )
 
   // Enables the coverage report to be created for only unit tests or integration tests
