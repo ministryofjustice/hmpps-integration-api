@@ -27,7 +27,6 @@ data class FeatureFlagConfig(
     const val CSRA_ENDPOINT = "csra-endpoint"
     const val USE_EMERGENCY_CONTACTS_ENDPOINT = "use-emergency-contacts-endpoint"
     const val EPF_ENDPOINT_INCLUDES_LAO = "epf-endpoint-includes-lao"
-    const val EPF_GATEWAY_DISABLED = "epf-gateway-disabled"
     const val CPR_ENABLED = "cpr-enabled"
     const val USE_ASSESSMENT_SUMMARY_ENDPOINT = "use-assessment-summary-endpoint"
     const val USE_STUBBED_ASSESSMENT_SUMMARY = "use-stubbed-assessment-summary"

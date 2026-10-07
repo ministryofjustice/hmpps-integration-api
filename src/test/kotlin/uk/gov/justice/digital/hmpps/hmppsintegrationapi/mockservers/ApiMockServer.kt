@@ -52,7 +52,6 @@ class ApiMockServer(
           UpstreamApi.MANAGE_PRISON_VISITS -> ApiMockServerConfig(4041, "manage-prisons.json")
           UpstreamApi.PERSONAL_RELATIONSHIPS -> ApiMockServerConfig(4042, "relationships.json")
           UpstreamApi.NON_ASSOCIATIONS -> ApiMockServerConfig(4043, "non-associations.json")
-          UpstreamApi.EFFECTIVE_PROPOSAL_FRAMEWORK -> ApiMockServerConfig(4044, "effective-proposition-framework.json")
           // USE PRISM
           UpstreamApi.PRISON_API -> ApiMockServerConfig(4000)
           UpstreamApi.NDELIUS -> ApiMockServerConfig(4003)

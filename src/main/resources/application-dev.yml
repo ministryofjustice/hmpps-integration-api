@@ -13,8 +13,6 @@ services:
     base-url: https://external-api-and-delius-dev.hmpps.service.justice.gov.uk
   assess-risks-and-needs:
     base-url: https://assess-risks-and-needs-dev.hmpps.service.justice.gov.uk
-  probation-integration-epf:
-    base-url: https://external-api-and-delius-dev.hmpps.service.justice.gov.uk
   adjudications:
     base-url: https://manage-adjudications-api-dev.hmpps.service.justice.gov.uk
   create-and-vary-licence:
@@ -71,7 +69,6 @@ feature-flag:
   use-contact-events-endpoint: true
   csra-endpoint: true
   epf-endpoint-includes-lao: true
-  epf-gateway-disabled: true
   cpr-enabled: true
   use-assessment-summary-endpoint: true
   use-stubbed-assessment-summary: false

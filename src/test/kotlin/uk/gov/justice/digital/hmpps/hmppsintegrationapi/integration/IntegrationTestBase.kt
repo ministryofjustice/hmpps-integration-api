@@ -221,7 +221,6 @@ abstract class IntegrationTestBase {
     val managePrisonVisitsServer = ApiMockServer.create(UpstreamApi.MANAGE_PRISON_VISITS)
     val personalRelationshipServer = ApiMockServer.create(UpstreamApi.PERSONAL_RELATIONSHIPS)
     val nonAssociationServer = ApiMockServer.create(UpstreamApi.NON_ASSOCIATIONS)
-    val probationIntegrationEPFServer = ApiMockServer.create(UpstreamApi.EFFECTIVE_PROPOSAL_FRAMEWORK)
 
     @BeforeEach
     fun setUp() {
@@ -623,8 +622,6 @@ abstract class IntegrationTestBase {
           "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/nonAssociations/fixtures/PrisonerNonAssociations.json",
         ).readText(),
       )
-
-      probationIntegrationEPFServer.start()
     }
 
     @AfterAll
@@ -648,7 +645,6 @@ abstract class IntegrationTestBase {
       managePrisonVisitsServer.stop()
       personalRelationshipServer.stop()
       nonAssociationServer.stop()
-      probationIntegrationEPFServer.stop()
     }
   }
 
