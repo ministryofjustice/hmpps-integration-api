@@ -56,7 +56,6 @@ class ApiMockServer(
           UpstreamApi.PRISON_API -> ApiMockServerConfig(4000)
           UpstreamApi.NDELIUS -> ApiMockServerConfig(4003)
           UpstreamApi.ASSESS_RISKS_AND_NEEDS -> ApiMockServerConfig(4004)
-          UpstreamApi.EFFECTIVE_PROPOSAL_FRAMEWORK -> ApiMockServerConfig(4005)
           UpstreamApi.ADJUDICATIONS -> ApiMockServerConfig(4006)
           UpstreamApi.CVL -> ApiMockServerConfig(4007)
           UpstreamApi.CASE_NOTES -> ApiMockServerConfig(4008)

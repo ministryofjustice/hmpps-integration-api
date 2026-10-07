@@ -1,0 +1,41 @@
+{
+  "nomsId": "string",
+  "name": {
+    "forename": "string",
+    "surname": "string",
+    "middleName": "string"
+  },
+  "dateOfBirth": "2026-10-07",
+  "gender": "string",
+  "courtAppearance": {
+    "date": "2026-10-07",
+    "court": {
+      "name": "string"
+    }
+  },
+  "sentence": {
+    "expectedReleaseDate": "2026-10-07"
+  },
+  "responsibleProvider": {
+    "code": "string",
+    "name": "string"
+  },
+  "ogrsScore": 0,
+  "rsrScore": 0.1,
+  "limitedAccess": {
+    "excludedFrom": [
+      {
+        "email": "string"
+      }
+    ],
+    "exclusionMessage": "string",
+    "restrictedTo": [
+      {
+        "email": "string"
+      }
+    ],
+    "restrictionMessage": "string"
+  },
+  "age": 0,
+  "ageAtRelease": 0
+}
