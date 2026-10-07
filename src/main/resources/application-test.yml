@@ -21,7 +21,7 @@ services:
   int-api:
     base-url: https://localhost:8443
   prison-api:
-    base-url: http://localhost:4000
+    base-url: http://localhost:4044
   hmpps-auth:
     base-url: http://localhost:3000
     username: client

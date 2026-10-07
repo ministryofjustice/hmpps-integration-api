@@ -32,3 +32,4 @@ updateOpenApiSpec "https://incentives-api-dev.hmpps.service.justice.gov.uk/v3/ap
 updateOpenApiSpec "https://hmpps-manage-prison-visits-orchestration-dev.prison.service.justice.gov.uk/v3/api-docs" "../src/test/resources/openapi-specs/manage-prisons.json"
 updateOpenApiSpec "https://personal-relationships-api-dev.hmpps.service.justice.gov.uk/v3/api-docs" "../src/test/resources/openapi-specs/relationships.json"
 updateOpenApiSpec "https://non-associations-api-dev.hmpps.service.justice.gov.uk/v3/api-docs" "../src/test/resources/openapi-specs/non-associations.json"
+updateOpenApiSpec "https://prison-api-dev.prison.service.justice.gov.uk/v3/api-docs" "../src/test/resources/openapi-specs/prison-api.json"

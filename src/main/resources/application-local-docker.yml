@@ -18,7 +18,7 @@ services:
   create-and-vary-licence.base-url: http://prism:4013
   manage-pom-case-api.base-url: http://prism:4014
   ndelius.base-url: http://prism:4015
-  prison-api.base-url: http://prism:4016
+  prison-api.base-url: http://prism:4044
   prisoner-offender-search.base-url: http://prism:4017
   plp.base-url: http://prism:4020
   san.base-url: http://localhost:4200
