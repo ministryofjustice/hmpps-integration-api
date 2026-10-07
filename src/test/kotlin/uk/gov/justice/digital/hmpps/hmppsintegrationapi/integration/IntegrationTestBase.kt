@@ -719,6 +719,83 @@ abstract class IntegrationTestBase {
           "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/nomis/fixtures/PersonMovements.json",
         ).readText(),
       )
+
+      prisonApiServer.stubForGet(
+        "/api/bookings/offenderNo/$nomsId/offenceHistory",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/nomis/fixtures/PersonOffences.json",
+        ).readText(),
+      )
+
+      prisonApiServer.stubForGet(
+        "/api/offenders/$nomsId/prison-timeline",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/nomis/fixtures/PersonTimeline.json",
+        ).readText(),
+      )
+
+      prisonApiServer.stubForGet(
+        "/api/bookings/0001200924/reasonable-adjustments?",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/nomis/fixtures/PersonReasonableAdjustments.json",
+        ).readText(),
+      )
+
+      prisonApiServer.stubForGet(
+        "/api/offenders/$nomsId",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/nomis/fixtures/PersonCategories.json",
+        ).readText(),
+      )
+
+      prisonApiServer.stubForGet(
+        "/api/offender-sentences?offenderNo=$crn",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/nomis/fixtures/PersonOffenderSentences.json",
+        ).readText(),
+      )
+
+      prisonApiServer.stubForGet(
+        "/api/offenders/$nomsId/sentences",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/nomis/fixtures/PersonSentences.json",
+        ).readText(),
+      )
+
+      prisonApiServer.stubForGet(
+        "/api/offenders/$nomsId/booking/latest/sentence-summary",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/nomis/fixtures/PersonSentenceSummary.json",
+        ).readText(),
+      )
+
+      prisonApiServer.stubForGet(
+        "/api/bookings/offenderNo/$nomsId/visit/balances",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/nomis/fixtures/PersonVisitBalances.json",
+        ).readText(),
+      )
+
+      prisonApiServer.stubForGet(
+        "/api/offenders/$nomsId/offender-restrictions",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/nomis/fixtures/PersonRestrictions.json",
+        ).readText(),
+      )
+
+      prisonApiServer.stubForGet(
+        "/api/v1/prison/$prisonId/offenders/$nomsId/accounts",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/nomis/fixtures/PersonAccounts.json",
+        ).readText(),
+      )
+
+      prisonApiServer.stubForGet(
+        "/api/v1/prison/$nomsId/live_roll",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/nomis/fixtures/PersonLiveRoll.json",
+        ).readText(),
+      )
     }
 
     @AfterAll

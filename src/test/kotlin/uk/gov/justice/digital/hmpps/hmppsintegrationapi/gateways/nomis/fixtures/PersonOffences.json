@@ -1,0 +1,22 @@
+[
+  {
+    "bookingId": 1123456,
+    "offenceDate": "2018-02-10",
+    "offenceRangeDate": "2018-03-10",
+    "offenceDescription": "Commit an act / series of acts with intent to pervert the course of public justice",
+    "offenceCode": "RR84070",
+    "statuteCode": "RR84",
+    "mostSerious": true,
+    "primaryResultCode": "string",
+    "secondaryResultCode": "string",
+    "primaryResultDescription": "string",
+    "secondaryResultDescription": "string",
+    "primaryResultConviction": true,
+    "secondaryResultConviction": true,
+    "courtDate": "2018-02-10",
+    "caseId": 100,
+    "offenceSeverityRanking": 100,
+    "sentenceStartDate": "2018-03-10",
+    "primarySentence": true
+  }
+]

@@ -1,35 +1,33 @@
 {
-  "data":
-  {
-    "prisonPeriod":
-    [
+  "data": {
+    "prisonPeriod": [
       {
-        "entryDate":"2021-07-05T09:35:17Z",
-        "releaseDate":"2021-07-05T09:35:17Z",
-        "movementDates":
-        [
+        "entryDate": "2023-12-08T15:50:37Z",
+        "releaseDate": "2023-12-08T15:50:37Z",
+        "movementDates": [
           {
-            "reasonInToPrison":"Unconvicted Remand",
-            "dateInToPrison":"2021-07-05T09:35:17Z",
-            "inwardType":"ADM",
-            "reasonOutOfPrison":"Conditional Release (CJA91) -SH Term>1YR",
-            "dateOutOfPrison":"2021-07-05T09:35:17Z",
-            "outwardType":"REL",
-            "admittedIntoPrisonId":"MDI",
-            "releaseFromPrisonId":"MDI"
+            "reasonInToPrison": "Unconvicted Remand",
+            "dateInToPrison": "2023-12-08T15:50:37Z",
+            "inwardType": "ADM",
+            "reasonOutOfPrison": "Conditional Release (CJA91) -SH Term>1YR",
+            "dateOutOfPrison": "2023-12-08T15:50:37Z",
+            "outwardType": "REL",
+            "admittedIntoPrisonId": "MDI",
+            "releaseFromPrisonId": "MDI"
           }
         ],
-        "transfers":
-        [
+        "transfers": [
           {
-            "dateOutOfPrison":"2021-07-05T09:35:17Z",
-            "dateInToPrison":"2021-07-05T09:35:17Z",
-            "transferReason":"Compassionate Transfer",
-            "fromPrisonId":"WWI",
-            "toPrisonId":"BXI"
+            "dateOutOfPrison": "2023-12-08T15:50:37Z",
+            "dateInToPrison": "2023-12-08T15:50:37Z",
+            "transferReason": "Compassionate Transfer",
+            "fromPrisonId": "WWI",
+            "toPrisonId": "BXI"
           }
         ],
-        "prisons":["string"]
+        "prisons": [
+          "string"
+        ]
       }
     ]
   }

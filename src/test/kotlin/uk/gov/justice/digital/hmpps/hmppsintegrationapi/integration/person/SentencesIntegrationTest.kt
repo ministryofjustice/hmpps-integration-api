@@ -61,7 +61,7 @@ class SentencesIntegrationTest : IntegrationTestBase() {
   fun `returns latest sentence key dates and adjustments for a person`() {
     callApi("$path/latest-key-dates-and-adjustments")
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("person-sentence-key-dates"), JsonCompareMode.STRICT))
+      .andExpect(content().json(getExpectedResponse("person-sentence-key-dates.json"), JsonCompareMode.STRICT))
   }
 
   @Test
@@ -88,7 +88,7 @@ class SentencesIntegrationTest : IntegrationTestBase() {
     whenever(authorisationConfig.roles).thenReturn(mapOf("full-access" to testRoleWithLaoRedactions))
     callApi("$path/latest-key-dates-and-adjustments")
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("person-sentence-key-dates"), JsonCompareMode.STRICT))
+      .andExpect(content().json(getExpectedResponse("person-sentence-key-dates.json"), JsonCompareMode.STRICT))
   }
 
   @Test

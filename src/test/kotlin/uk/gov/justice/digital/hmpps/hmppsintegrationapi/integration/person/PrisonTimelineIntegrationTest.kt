@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
 import org.junit.jupiter.api.Test
+import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
@@ -13,7 +14,7 @@ class PrisonTimelineIntegrationTest : IntegrationTestBase() {
   fun `returns prison timeline for a person`() {
     callApi(path)
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("prison-timeline.json")))
+      .andExpect(content().json(getExpectedResponse("prison-timeline.json"), JsonCompareMode.STRICT))
   }
 
   @Test
@@ -38,6 +39,6 @@ class PrisonTimelineIntegrationTest : IntegrationTestBase() {
   fun `returns specific case note types for a person`() {
     callApiWithCN(path, limitedCaseNotesCn)
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("prison-timeline.json")))
+      .andExpect(content().json(getExpectedResponse("prison-timeline.json"), JsonCompareMode.STRICT))
   }
 }

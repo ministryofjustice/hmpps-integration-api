@@ -1,0 +1,36 @@
+{
+  "prisonerNumber": "A1234AA",
+  "prisonPeriod": [
+    {
+      "bookNumber": "string",
+      "bookingId": 0,
+      "bookingSequence": 0,
+      "entryDate": "2023-12-08T15:50:37",
+      "releaseDate": "2023-12-08T15:50:37",
+      "movementDates": [
+        {
+          "reasonInToPrison": "Unconvicted Remand",
+          "dateInToPrison": "2023-12-08T15:50:37",
+          "inwardType": "ADM",
+          "reasonOutOfPrison": "Conditional Release (CJA91) -SH Term>1YR",
+          "dateOutOfPrison": "2023-12-08T15:50:37",
+          "outwardType": "REL",
+          "admittedIntoPrisonId": "MDI",
+          "releaseFromPrisonId": "MDI"
+        }
+      ],
+      "transfers": [
+        {
+          "dateOutOfPrison": "2023-12-08T15:50:37",
+          "dateInToPrison": "2023-12-08T15:50:37",
+          "transferReason": "Compassionate Transfer",
+          "fromPrisonId": "WWI",
+          "toPrisonId": "BXI"
+        }
+      ],
+      "prisons": [
+        "string"
+      ]
+    }
+  ]
+}

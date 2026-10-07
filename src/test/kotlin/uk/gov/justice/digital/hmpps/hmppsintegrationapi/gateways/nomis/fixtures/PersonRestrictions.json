@@ -1,5 +1,6 @@
 {
-  "data": [
+  "bookingId": 0,
+  "offenderRestrictions": [
     {
       "restrictionId": 0,
       "comment": "string",

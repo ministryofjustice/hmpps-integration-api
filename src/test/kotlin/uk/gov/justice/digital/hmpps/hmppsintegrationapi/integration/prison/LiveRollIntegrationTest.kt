@@ -7,7 +7,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 
 class LiveRollIntegrationTest : IntegrationTestBase() {
-  final val path = "/v1/prison/$prisonId/live-roll"
+  final val path = "/v1/prison/$nomsId/live-roll"
 
   @Test
   fun `return a list prisoners with all fields populated`() {
