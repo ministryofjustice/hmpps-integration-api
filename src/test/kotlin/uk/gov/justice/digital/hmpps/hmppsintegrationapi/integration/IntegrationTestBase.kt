@@ -426,6 +426,13 @@ abstract class IntegrationTestBase {
               """,
       )
 
+      nDeliusMockServer.stubForGet(
+        "/case-details/$crn/1234",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/ndelius/fixtures/CaseDetails.json",
+        ).readText(),
+      )
+
       manageUsersMockServer.start()
       manageUsersMockServer.stubForGet(
         "/users/search?username=testName&authSources=azuread",

@@ -9,6 +9,6 @@ class EPFPersonDetailIntegrationTest : IntegrationTestBase() {
   fun `returns a person detail for a probation case, by HmppsID`() {
     callApi("/v1/epf/person-details/$crn/1234")
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("person-probation-information")))
+      .andExpect(content().json(getExpectedResponse("person-probation-information.json")))
   }
 }
