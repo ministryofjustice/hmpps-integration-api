@@ -4,7 +4,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.CprResultExcep
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService.IdentifierType
 
 data class CorePersonRecord(
+  val name: CPRName? = null,
+  val aliases: List<CPRAlias> = emptyList(),
+  val addresses: List<CPRAddress> = emptyList(),
   val identifiers: Identifiers? = null,
+  val sourceSystem: String? = null,
+  val status: String? = null,
+  val linkedRecords: List<CorePersonLinkedRecord> = emptyList(),
 ) {
   fun getIdentifier(identifierType: IdentifierType): String? =
     when (identifierType) {

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -35,7 +36,7 @@ class CacheIntegrationTest : IntegrationTestBase() {
     verify(prisonerOffenderSearchGateway, times(1)).getPrisonOffender(nomsId)
 
     // Calls the cached CPR method only once
-    verify(corePersonRecordGateway, times(1)).corePersonRecordFor(any(), eq(nomsId))
+    verify(corePersonRecordGateway, times(1)).corePersonRecordFor(any(), eq(nomsId), anyOrNull())
   }
 
   @Order(2)
@@ -91,7 +92,7 @@ class CacheDisabledIntegrationTest : IntegrationTestBase() {
 
     // Address endpoint calls CPR twice per request. One for nomis and one for crn
     // Calls the cached CPR method 4 times in total across 2 requests
-    verify(corePersonRecordGateway, times(4)).corePersonRecordFor(any(), eq(nomsId))
+    verify(corePersonRecordGateway, times(4)).corePersonRecordFor(any(), eq(nomsId), anyOrNull())
   }
 
   @Test
