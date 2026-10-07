@@ -22,6 +22,7 @@ class ProbationIntegrationEPFGateway(
     GatewayMetadata(
       summary = "DEPRECATED - Delius integration API specifically for the Effective Proposals Framework",
       apiDocUrl = "https://effective-proposal-framework-and-delius-dev.hmpps.service.justice.gov.uk/swagger-ui/index.html#/",
+      apiSpecUrl = "https://effective-proposal-framework-and-delius-dev.hmpps.service.justice.gov.uk/v3/api-docs",
       gitHubRepoUrl = "https://github.com/ministryofjustice/hmpps-probation-integration-services/tree/main/projects/effective-proposal-framework-and-delius",
     )
 

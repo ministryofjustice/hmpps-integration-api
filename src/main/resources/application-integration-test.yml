@@ -49,7 +49,7 @@ services:
   prison-api:
     base-url: http://localhost:4015
   probation-integration-epf:
-    base-url: http://localhost:4016
+    base-url: http://localhost:4044
   non-associations:
     base-url: http://localhost:4043
   personal-relationships:

@@ -10,8 +10,7 @@ services:
         curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4012/case-notes/A1234AA/518b2200-6489-4c77-8514-10cf80ccd488 &&
         curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4013/public/licences/id/123 &&
         curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4014/case/abc/supervisions &&
-        curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4015/api/offenders/A1234AA &&
-        curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4016/case-details/crn/1234'
+        curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4015/api/offenders/A1234AA'
     ports:
       - "4010:4010"
       - "4011:4011"
@@ -19,7 +18,6 @@ services:
       - "4013:4013"
       - "4014:4014"
       - "4015:4015"
-      - "4016:4016"
 
   local-stack-aws:
     image: localstack/localstack:3.0
