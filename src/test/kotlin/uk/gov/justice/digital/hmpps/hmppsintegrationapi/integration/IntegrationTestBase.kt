@@ -47,6 +47,7 @@ import java.io.File
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @ActiveProfiles("integration-test")
 @AutoConfigureMockMvc
@@ -204,6 +205,7 @@ abstract class IntegrationTestBase {
     val imageByteArray = byteArrayOf(0x48, 101, 108, 108, 111)
 
     val dateNow = LocalDate.now().toString()
+    val dateTimeNow = LocalDateTime.now().toString()
 
     val gatewaysFolder = "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways"
     private val hmppsAuthMockServer = HmppsAuthMockServer()
@@ -819,6 +821,48 @@ abstract class IntegrationTestBase {
       )
 
       caseNotesServer.start()
+
+      caseNotesServer.stubForPost(
+        "/search/case-notes/$nomsId",
+        """{
+          "includeSensitive" : true,
+          "occurredFrom" : "${dateTimeNow}Z",
+          "occurredTo" : "${dateTimeNow}Z",
+          "page" : 1,
+          "size" : 10
+        }""".removeWhitespaceAndNewlines(),
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/caseNotes/fixtures/PersonCaseNotes.json",
+        ).readText(),
+      )
+
+      caseNotesServer.stubForPost(
+        "/search/case-notes/$nomsId",
+        """{
+          "includeSensitive" : true,
+          "page" : 1,
+          "size" : 10
+        }""".removeWhitespaceAndNewlines(),
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/caseNotes/fixtures/PersonCaseNotes.json",
+        ).readText(),
+      )
+
+      caseNotesServer.stubForPost(
+        "/search/case-notes/$nomsId",
+        """{
+          "includeSensitive" : true,
+          "typeSubTypes" : [ {
+            "type" : "CAB",
+            "subTypes" : [ ]
+          } ],
+          "page" : 1,
+          "size" : 10
+          }""".removeWhitespaceAndNewlines(),
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/caseNotes/fixtures/PersonCaseNotes.json",
+        ).readText(),
+      )
     }
 
     @AfterAll
