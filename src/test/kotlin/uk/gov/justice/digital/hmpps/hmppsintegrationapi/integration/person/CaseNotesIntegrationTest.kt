@@ -1,14 +1,14 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
 import org.junit.jupiter.api.Test
+import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
-import java.time.LocalDateTime
 
 class CaseNotesIntegrationTest : IntegrationTestBase() {
-  private final val startDate: LocalDateTime = LocalDateTime.now()
-  private final val endDate: LocalDateTime = LocalDateTime.now()
+  private final val startDate = dateTimeNow
+  private final val endDate = dateTimeNow
   private final val cnMatchedPrisonerId = nomsId
   private final val path = "$basePath/$cnMatchedPrisonerId/case-notes"
   private final val probationPath = "$basePath/$nomsIdFromProbation/case-notes"
@@ -17,7 +17,7 @@ class CaseNotesIntegrationTest : IntegrationTestBase() {
   fun `returns case notes for a person`() {
     callApi(path)
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("person-case-notes")))
+      .andExpect(content().json(getExpectedResponse("person-case-notes.json"), JsonCompareMode.STRICT))
   }
 
   @Test
@@ -55,6 +55,6 @@ class CaseNotesIntegrationTest : IntegrationTestBase() {
   fun `returns specific case note types for a person`() {
     callApiWithCN(path, limitedCaseNotesCn)
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("person-case-notes")))
+      .andExpect(content().json(getExpectedResponse("person-case-notes.json"), JsonCompareMode.STRICT))
   }
 }

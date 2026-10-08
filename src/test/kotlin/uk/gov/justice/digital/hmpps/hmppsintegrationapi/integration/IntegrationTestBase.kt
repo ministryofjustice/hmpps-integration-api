@@ -47,6 +47,7 @@ import java.io.File
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @ActiveProfiles("integration-test")
 @AutoConfigureMockMvc
@@ -204,6 +205,7 @@ abstract class IntegrationTestBase {
     val imageByteArray = byteArrayOf(0x48, 101, 108, 108, 111)
 
     val dateNow = LocalDate.now().toString()
+    val dateTimeNow = LocalDateTime.now().toString()
 
     val gatewaysFolder = "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways"
     private val hmppsAuthMockServer = HmppsAuthMockServer()
@@ -228,6 +230,7 @@ abstract class IntegrationTestBase {
     val nonAssociationServer = ApiMockServer.create(UpstreamApi.NON_ASSOCIATIONS)
     val prisonApiServer = ApiMockServer.create(UpstreamApi.PRISON_API)
     val createAndVaryLicenceServer = ApiMockServer.create(UpstreamApi.CVL)
+    val caseNotesServer = ApiMockServer.create(UpstreamApi.CASE_NOTES)
 
     @BeforeEach
     fun setUp() {
@@ -816,6 +819,50 @@ abstract class IntegrationTestBase {
           "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/createAndVaryLicence/fixtures/PersonLicenceSummaries.json",
         ).readText(),
       )
+
+      caseNotesServer.start()
+
+      caseNotesServer.stubForPost(
+        "/search/case-notes/$nomsId",
+        """{
+          "includeSensitive" : true,
+          "occurredFrom" : "${dateTimeNow}Z",
+          "occurredTo" : "${dateTimeNow}Z",
+          "page" : 1,
+          "size" : 10
+        }""".removeWhitespaceAndNewlines(),
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/caseNotes/fixtures/PersonCaseNotes.json",
+        ).readText(),
+      )
+
+      caseNotesServer.stubForPost(
+        "/search/case-notes/$nomsId",
+        """{
+          "includeSensitive" : true,
+          "page" : 1,
+          "size" : 10
+        }""".removeWhitespaceAndNewlines(),
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/caseNotes/fixtures/PersonCaseNotes.json",
+        ).readText(),
+      )
+
+      caseNotesServer.stubForPost(
+        "/search/case-notes/$nomsId",
+        """{
+          "includeSensitive" : true,
+          "typeSubTypes" : [ {
+            "type" : "CAB",
+            "subTypes" : [ ]
+          } ],
+          "page" : 1,
+          "size" : 10
+          }""".removeWhitespaceAndNewlines(),
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/caseNotes/fixtures/PersonCaseNotes.json",
+        ).readText(),
+      )
     }
 
     @AfterAll
@@ -841,6 +888,7 @@ abstract class IntegrationTestBase {
       nonAssociationServer.stop()
       prisonApiServer.stop()
       createAndVaryLicenceServer.stop()
+      caseNotesServer.stop()
     }
   }
 

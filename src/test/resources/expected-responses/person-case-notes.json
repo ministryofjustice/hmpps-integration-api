@@ -24,9 +24,9 @@
   "pagination": {
     "isLastPage": true,
     "count": 1,
-    "page": -2147483648,
-    "perPage": -2147483648,
-    "totalCount": -2147483648,
-    "totalPages": 0
+    "page": 1,
+    "perPage": 10,
+    "totalCount": 1,
+    "totalPages": 1
   }
 }

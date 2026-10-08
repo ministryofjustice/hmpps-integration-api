@@ -1,0 +1,37 @@
+{
+  "content": [
+    {
+      "caseNoteId": "518b2200-6489-4c77-8514-10cf80ccd488",
+      "offenderIdentifier": "A1234AA",
+      "type": "CAB",
+      "typeDescription": "Conduct & Behaviour",
+      "subType": "EDUCATION",
+      "subTypeDescription": "Education",
+      "creationDateTime": "2017-10-31T01:30:00",
+      "occurrenceDateTime": "2017-10-31T01:30:00",
+      "authorName": "John Smith",
+      "authorUserId": "12345 or USERNAME_12345",
+      "authorUsername": "USER1",
+      "text": "This is some text",
+      "locationId": "MDI",
+      "sensitive": true,
+      "amendments": [
+        {
+          "creationDateTime": "2018-12-01T13:45:00",
+          "authorUserName": "USER1",
+          "authorName": "John Smith",
+          "authorUserId": "12345",
+          "additionalNoteText": "Some Additional Text",
+          "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        }
+      ],
+      "systemGenerated": true
+    }
+  ],
+  "metadata": {
+    "totalElements": 1,
+    "page": 1,
+    "size": 10
+  },
+  "hasCaseNotes": true
+}

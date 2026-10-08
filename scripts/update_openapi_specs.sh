@@ -34,3 +34,4 @@ updateOpenApiSpec "https://personal-relationships-api-dev.hmpps.service.justice.
 updateOpenApiSpec "https://non-associations-api-dev.hmpps.service.justice.gov.uk/v3/api-docs" "../src/test/resources/openapi-specs/non-associations.json"
 updateOpenApiSpec "https://prison-api-dev.prison.service.justice.gov.uk/v3/api-docs" "../src/test/resources/openapi-specs/prison-api.json"
 updateOpenApiSpec "https://create-and-vary-a-licence-api-dev.hmpps.service.justice.gov.uk/v3/api-docs/public" "../src/test/resources/openapi-specs/cvl.json"
+updateOpenApiSpec "https://dev.offender-case-notes.service.justice.gov.uk/v3/api-docs" "../src/test/resources/openapi-specs/case-notes.json"
