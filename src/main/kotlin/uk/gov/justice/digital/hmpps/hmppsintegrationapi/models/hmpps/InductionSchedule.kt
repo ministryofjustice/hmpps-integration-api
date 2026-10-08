@@ -37,6 +37,7 @@ data class InductionSchedule(
     description = """
       The current status of the Induction Schedule.
       list of values:
+          PENDING_INITIAL_SCREENING_AND_ASSESSMENTS_FROM_CURIOUS
           SCHEDULED
           COMPLETED
           EXEMPT_PRISONER_DRUG_OR_ALCOHOL_DEPENDENCY
@@ -50,7 +51,9 @@ data class InductionSchedule(
           EXEMPT_SECURITY_ISSUE_RISK_TO_STAFF
           EXEMPT_SYSTEM_TECHNICAL_ISSUE
           EXEMPT_PRISONER_TRANSFER
+          EXEMPT_TEMP_ABSENCE
           EXEMPT_PRISONER_RELEASE
+          EXEMPT_PRISONER_RELEASE_HOSPITAL
           EXEMPT_PRISONER_DEATH
           EXEMPT_SCREENING_AND_ASSESSMENT_IN_PROGRESS
           EXEMPT_SCREENING_AND_ASSESSMENT_INCOMPLETE
