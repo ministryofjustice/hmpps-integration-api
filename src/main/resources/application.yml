@@ -70,7 +70,7 @@ services:
   prisoner-offender-search:
     base-url: "TestURL"
   ndelius:
-    base-url: "TestURL"
+    base-url: http://localhost:4201
   hmpps-auth:
     base-url: "OtherTestURL"
     username: hmpps-integration-api-client

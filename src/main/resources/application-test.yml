@@ -37,7 +37,7 @@ services:
   san:
     base-url: http://localhost:4200
   ndelius:
-    base-url: http://localhost:4003
+    base-url: http://localhost:4201
   assess-risks-and-needs:
     base-url: http://localhost:4004
   adjudications:

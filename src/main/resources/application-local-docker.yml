@@ -17,7 +17,7 @@ services:
   case-notes.base-url: http://prism:4012
   create-and-vary-licence.base-url: http://prism:4013
   manage-pom-case-api.base-url: http://prism:4014
-  ndelius.base-url: http://prism:4015
+  ndelius.base-url: http://prism:4201
   prison-api.base-url: http://prism:4044
   prisoner-offender-search.base-url: http://prism:4017
   plp.base-url: http://prism:4020
