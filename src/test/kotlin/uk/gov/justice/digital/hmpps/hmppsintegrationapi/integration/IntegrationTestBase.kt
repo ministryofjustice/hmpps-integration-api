@@ -209,7 +209,7 @@ abstract class IntegrationTestBase {
     val plpMockServer = ApiMockServer.create(UpstreamApi.PLP)
     val sanMockServer = ApiMockServer.create(UpstreamApi.SAN)
     val activitiesMockServer = ApiMockServer.create(UpstreamApi.ACTIVITIES)
-    val nDeliusMockServer = ApiMockServer.create(UpstreamApi.NDELIUS_INTEGRATION_TEST)
+    val nDeliusMockServer = ApiMockServer.create(UpstreamApi.NDELIUS)
     val prisonerBaseLocationMockServer = ApiMockServer.create(UpstreamApi.PRISONER_BASE_LOCATION)
     val corePersonRecordMockServer = ApiMockServer.create(UpstreamApi.CORE_PERSON_RECORD)
     val arnsMockServer = ApiMockServer.create(UpstreamApi.ARNS_INTEGRATION_TEST)
