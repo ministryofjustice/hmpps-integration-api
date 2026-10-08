@@ -196,7 +196,6 @@ tasks {
 
   withType<Test> {
     systemProperty("kotest.framework.config.fqn", "uk.gov.justice.digital.hmpps.hmppsintegrationapi.kotest.ProjectConfig")
-    jvmArgs("--add-opens", "java.base/java.time=ALL-UNNAMED")
   }
 
   getByName("check") {

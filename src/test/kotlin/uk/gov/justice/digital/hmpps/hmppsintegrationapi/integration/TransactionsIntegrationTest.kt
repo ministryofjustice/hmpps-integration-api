@@ -1,32 +1,15 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 
-import io.mockk.every
-import io.mockk.mockkStatic
-import io.mockk.unmockkStatic
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import java.time.LocalDate
 
 class TransactionsIntegrationTest : IntegrationTestBase() {
   val accountCode = "spends"
   final val fromDate = "2024-01-01"
   final val toDate = "2024-01-14"
   var dateQueryParams = "?from_date=$fromDate&to_date=$toDate"
-
-  @BeforeEach
-  fun setUp() {
-    mockkStatic(LocalDate::class)
-    every { LocalDate.now() } returns LocalDate.of(2026, 10, 7)
-  }
-
-  @AfterEach
-  fun tearDown() {
-    unmockkStatic(LocalDate::class)
-  }
 
   @Test
   fun `return a list of transactions for a prisoner`() {
