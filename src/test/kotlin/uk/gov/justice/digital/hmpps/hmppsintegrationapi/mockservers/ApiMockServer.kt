@@ -55,8 +55,8 @@ class ApiMockServer(
           UpstreamApi.PRISON_API -> ApiMockServerConfig(4044, "prison-api.json")
           UpstreamApi.CVL -> ApiMockServerConfig(4045, "cvl.json")
           UpstreamApi.CASE_NOTES -> ApiMockServerConfig(4046, "case-notes.json")
+          UpstreamApi.ASSESS_RISKS_AND_NEEDS -> ApiMockServerConfig(4047, "assess-risks-and-needs.json")
           // USE PRISM
-          UpstreamApi.ASSESS_RISKS_AND_NEEDS -> ApiMockServerConfig(4004)
           UpstreamApi.ADJUDICATIONS -> ApiMockServerConfig(4006)
           UpstreamApi.RISK_MANAGEMENT_PLAN -> ApiMockServerConfig(4004)
           UpstreamApi.SAN -> ApiMockServerConfig(4200)

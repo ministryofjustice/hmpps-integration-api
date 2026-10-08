@@ -76,7 +76,7 @@ services:
     username: hmpps-integration-api-client
     password: clientsecret
   assess-risks-and-needs:
-    base-url: http://localhost:4050
+    base-url: http://localhost:4047
   adjudications:
     base-url: http://localhost:4045
   create-and-vary-licence:
