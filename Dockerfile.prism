@@ -15,5 +15,4 @@ RUN swagger-cli bundle -r -o /prismMocks/adjudications.json /tmp/adjudications.j
 # we are trying to move away from prism now in favour of wiremock. do not add any new mocks to this list.
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/adjudications.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/assess-risks-and-needs.json
-RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/case-notes.json
 ENTRYPOINT ["/bin/sh", "setUpScript.sh"]

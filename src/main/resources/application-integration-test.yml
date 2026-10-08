@@ -41,7 +41,7 @@ services:
   assess-risks-and-needs:
     base-url: http://localhost:4011
   case-notes:
-    base-url: http://localhost:4012
+    base-url: http://localhost:4046
   create-and-vary-licence:
     base-url: http://localhost:4045
   ndelius:
