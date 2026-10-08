@@ -802,6 +802,20 @@ abstract class IntegrationTestBase {
       )
 
       createAndVaryLicenceServer.start()
+
+      createAndVaryLicenceServer.stubForGet(
+        "/public/licences/id/99999",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/createAndVaryLicence/fixtures/PersonLicences.json",
+        ).readText(),
+      )
+
+      createAndVaryLicenceServer.stubForGet(
+        "/public/licence-summaries/crn/$crn",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/createAndVaryLicence/fixtures/PersonLicenceSummaries.json",
+        ).readText(),
+      )
     }
 
     @AfterAll

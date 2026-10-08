@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
 import org.junit.jupiter.api.Test
+import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
@@ -10,6 +11,6 @@ class LicenceConditionIntegrationTest : IntegrationTestBase() {
   fun `returns alerts for a person`() {
     callApi("$basePath/$nomsId/licences/conditions")
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("person-licence-conditions")))
+      .andExpect(content().json(getExpectedResponse("person-licence-conditions.json"), JsonCompareMode.STRICT))
   }
 }
