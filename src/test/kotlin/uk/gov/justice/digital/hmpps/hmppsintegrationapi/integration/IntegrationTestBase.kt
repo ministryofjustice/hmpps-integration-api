@@ -46,6 +46,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.TestConstants.DEFAU
 import java.io.File
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
+import java.time.LocalDate
 
 @ActiveProfiles("integration-test")
 @AutoConfigureMockMvc
@@ -201,6 +202,8 @@ abstract class IntegrationTestBase {
     val revokedSerialNumber = "8472494320151578633330348943480876283449388195"
 
     val imageByteArray = byteArrayOf(0x48, 101, 108, 108, 111)
+
+    val dateNow = LocalDate.now().toString()
 
     val gatewaysFolder = "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways"
     private val hmppsAuthMockServer = HmppsAuthMockServer()
@@ -648,7 +651,7 @@ abstract class IntegrationTestBase {
       )
 
       prisonApiServer.stubForGet(
-        "/api/transactions/prison/$prisonId/offenders/$nomsId/accounts/spends?from_date=2026-10-07&to_date=2026-10-07",
+        "/api/transactions/prison/$prisonId/offenders/$nomsId/accounts/spends?from_date=$dateNow&to_date=$dateNow",
         File(
           "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/nomis/fixtures/PersonTransactions.json",
         ).readText(),
