@@ -15,7 +15,7 @@ services:
   adjudications.base-url: http://prism:4010
   assess-risks-and-needs.base-url: http://prism:4011
   case-notes.base-url: http://prism:4012
-  create-and-vary-licence.base-url: http://prism:4013
+  create-and-vary-licence.base-url: http://prism:4045
   manage-pom-case-api.base-url: http://prism:4014
   ndelius.base-url: http://prism:4201
   prison-api.base-url: http://prism:4044

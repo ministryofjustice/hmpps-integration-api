@@ -43,7 +43,7 @@ services:
   adjudications:
     base-url: http://localhost:4006
   create-and-vary-licence:
-    base-url: http://localhost:4007
+    base-url: http://localhost:4045
   case-notes:
     base-url: http://localhost:4008
   non-associations:
