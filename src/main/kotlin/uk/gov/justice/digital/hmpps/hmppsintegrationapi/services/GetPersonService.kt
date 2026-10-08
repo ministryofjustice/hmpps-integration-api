@@ -34,6 +34,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffenders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationintegrationepf.LimitedAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.SupervisionStatus
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService.IdentifierType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 
 @Service
@@ -241,17 +242,6 @@ class GetPersonService(
     NOMS,
     CRN,
     UNKNOWN,
-  }
-
-  fun identifyHmppsId(input: String): IdentifierType {
-    val nomsPattern = Regex("^[A-Z]\\d{4}[A-Z]{2}$")
-    val crnPattern = Regex("^[A-Z]{1,2}\\d{6}$")
-
-    return when {
-      nomsPattern.matches(input) -> IdentifierType.NOMS
-      crnPattern.matches(input) -> IdentifierType.CRN
-      else -> IdentifierType.UNKNOWN
-    }
   }
 
   /**
@@ -608,5 +598,16 @@ class GetPersonService(
       trackCPRFailureEvent(it, hmppsId, response.data, response.errors)
     }
     return response
+  }
+}
+
+fun identifyHmppsId(input: String): IdentifierType {
+  val nomsPattern = Regex("^[A-Z]\\d{4}[A-Z]{2}$")
+  val crnPattern = Regex("^[A-Z]{1,2}\\d{6}$")
+
+  return when {
+    nomsPattern.matches(input) -> IdentifierType.NOMS
+    crnPattern.matches(input) -> IdentifierType.CRN
+    else -> IdentifierType.UNKNOWN
   }
 }

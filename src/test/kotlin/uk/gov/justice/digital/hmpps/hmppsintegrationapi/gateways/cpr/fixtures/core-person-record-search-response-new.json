@@ -5,23 +5,17 @@
         {
           "name": {
             "firstName": "vpcmzyr",
-            "middleNames": null,
             "lastName": "ufrtlpd",
-            "dateOfBirth": "1958-06-23"
+            "dateOfBirth": "1958-06-23",
+            "aliases": []
           },
           "aliases": [
             {
               "firstName": "lpsuidu",
               "lastName": "lhykyto",
               "middleNames": "ubnrzkm",
-              "title": {
-                "code": null,
-                "description": null
-              },
-              "sex": {
-                "code": null,
-                "description": null
-              }
+              "title": {},
+              "sex": {}
             }
           ],
           "addresses": [
@@ -30,25 +24,8 @@
               "noFixedAbode": false,
               "startDate": "2008-01-14",
               "startDateTime": "2008-01-14T00:00:00",
-              "endDate": null,
-              "endDateTime": null,
               "postcode": "PB4 1HG",
-              "subBuildingName": null,
-              "buildingName": null,
-              "buildingNumber": null,
-              "thoroughfareName": null,
-              "dependentLocality": null,
-              "postTown": null,
-              "county": null,
-              "country": null,
-              "countryCode": null,
-              "uprn": null,
-              "status": {
-                "code": null,
-                "description": null
-              },
-              "comment": null,
-              "typeVerified": null,
+              "status": {},
               "usages": [],
               "contacts": []
             },
@@ -57,25 +34,8 @@
               "noFixedAbode": false,
               "startDate": "1985-09-11",
               "startDateTime": "1985-09-11T00:00:00",
-              "endDate": null,
-              "endDateTime": null,
               "postcode": "SY1 6GM",
-              "subBuildingName": null,
-              "buildingName": null,
-              "buildingNumber": null,
-              "thoroughfareName": null,
-              "dependentLocality": null,
-              "postTown": null,
-              "county": null,
-              "country": null,
-              "countryCode": null,
-              "uprn": null,
-              "status": {
-                "code": null,
-                "description": null
-              },
-              "comment": null,
-              "typeVerified": null,
+              "status": {},
               "usages": [],
               "contacts": []
             }
@@ -83,8 +43,6 @@
           "identifiers": {
             "crn": "A123456",
             "prisonNumber": "SM4879V",
-            "defendantId": null,
-            "cid": null,
             "pncs": [
               "1951/1529173V"
             ],
@@ -97,36 +55,28 @@
             "otherIdentifiers": []
           },
           "sourceSystem": "NOMIS",
-          "status": "TRUSTED"
+          "status": "TRUSTED",
+          "linkedRecords": []
         },
         {
           "name": {
             "firstName": "vpcmzyr",
-            "middleNames": null,
             "lastName": "ufrtlpd",
-            "dateOfBirth": "1958-06-23"
+            "dateOfBirth": "1958-06-23",
+            "aliases": []
           },
           "aliases": [
             {
               "firstName": "lpsuidu",
               "lastName": "lhykyto",
               "middleNames": "ubnrzkm",
-              "title": {
-                "code": null,
-                "description": null
-              },
-              "sex": {
-                "code": null,
-                "description": null
-              }
+              "title": {},
+              "sex": {}
             }
           ],
           "addresses": [],
           "identifiers": {
             "crn": "A669783",
-            "prisonNumber": null,
-            "defendantId": null,
-            "cid": null,
             "pncs": [
               "1951/1529173V"
             ],
@@ -139,7 +89,8 @@
             "otherIdentifiers": []
           },
           "sourceSystem": "DELIUS",
-          "status": "TRUSTED"
+          "status": "TRUSTED",
+          "linkedRecords": []
         }
       ]
     },
@@ -148,23 +99,17 @@
         {
           "name": {
             "firstName": "vpcmzyr",
-            "middleNames": null,
             "lastName": "ufrtlpd",
-            "dateOfBirth": "1958-06-23"
+            "dateOfBirth": "1958-06-23",
+            "aliases": []
           },
           "aliases": [
             {
               "firstName": "lpsuidu",
               "lastName": "lhykyto",
               "middleNames": "ubnrzkm",
-              "title": {
-                "code": null,
-                "description": null
-              },
-              "sex": {
-                "code": null,
-                "description": null
-              }
+              "title": {},
+              "sex": {}
             }
           ],
           "addresses": [
@@ -173,25 +118,8 @@
               "noFixedAbode": false,
               "startDate": "2008-01-14",
               "startDateTime": "2008-01-14T00:00:00",
-              "endDate": null,
-              "endDateTime": null,
               "postcode": "PB4 1HG",
-              "subBuildingName": null,
-              "buildingName": null,
-              "buildingNumber": null,
-              "thoroughfareName": null,
-              "dependentLocality": null,
-              "postTown": null,
-              "county": null,
-              "country": null,
-              "countryCode": null,
-              "uprn": null,
-              "status": {
-                "code": null,
-                "description": null
-              },
-              "comment": null,
-              "typeVerified": null,
+              "status": {},
               "usages": [],
               "contacts": []
             },
@@ -200,34 +128,14 @@
               "noFixedAbode": false,
               "startDate": "1985-09-11",
               "startDateTime": "1985-09-11T00:00:00",
-              "endDate": null,
-              "endDateTime": null,
               "postcode": "SY1 6GM",
-              "subBuildingName": null,
-              "buildingName": null,
-              "buildingNumber": null,
-              "thoroughfareName": null,
-              "dependentLocality": null,
-              "postTown": null,
-              "county": null,
-              "country": null,
-              "countryCode": null,
-              "uprn": null,
-              "status": {
-                "code": null,
-                "description": null
-              },
-              "comment": null,
-              "typeVerified": null,
+              "status": {},
               "usages": [],
               "contacts": []
             }
           ],
           "identifiers": {
-            "crn": null,
             "prisonNumber": "MO1368S",
-            "defendantId": null,
-            "cid": null,
             "pncs": [
               "1951/1529173V"
             ],
@@ -240,36 +148,28 @@
             "otherIdentifiers": []
           },
           "sourceSystem": "NOMIS",
-          "status": "TRUSTED"
+          "status": "TRUSTED",
+          "linkedRecords": []
         },
         {
           "name": {
             "firstName": "vpcmzyr",
-            "middleNames": null,
             "lastName": "ufrtlpd",
-            "dateOfBirth": "1958-06-23"
+            "dateOfBirth": "1958-06-23",
+            "aliases": []
           },
           "aliases": [
             {
               "firstName": "lpsuidu",
               "lastName": "lhykyto",
               "middleNames": "ubnrzkm",
-              "title": {
-                "code": null,
-                "description": null
-              },
-              "sex": {
-                "code": null,
-                "description": null
-              }
+              "title": {},
+              "sex": {}
             }
           ],
           "addresses": [],
           "identifiers": {
             "crn": "Z163457",
-            "prisonNumber": null,
-            "defendantId": null,
-            "cid": null,
             "pncs": [
               "1951/1529173V"
             ],
@@ -282,7 +182,8 @@
             "otherIdentifiers": []
           },
           "sourceSystem": "DELIUS",
-          "status": "TRUSTED"
+          "status": "TRUSTED",
+          "linkedRecords": []
         }
       ]
     }

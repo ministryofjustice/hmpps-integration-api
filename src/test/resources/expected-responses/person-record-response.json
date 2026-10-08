@@ -1,0 +1,127 @@
+{
+  "data": {
+      "firstName": "John",
+      "middleNames": "Morgan",
+      "lastName": "Doe",
+      "dateOfBirth": "1990-08-21",
+      "disability": true,
+      "interestToImmigration": true,
+      "title": {
+        "code": "MR",
+        "description": "MR"
+      },
+      "sex": {
+        "code": "M",
+        "description": "Male"
+      },
+      "sexualOrientation": {
+        "code": "HET",
+        "description": "Heterosexual"
+      },
+      "religion": {
+        "code": "CHRST",
+        "description": "Christianity"
+      },
+      "ethnicity": {
+        "code": "B9",
+        "description": "Black/Black British : Any other backgr'nd"
+      },
+      "aliases": [
+        {
+          "firstName": "Jon",
+          "lastName": "do",
+          "middleNames": "Morgain",
+          "title": {
+            "code": "MR",
+            "description": "MR"
+          },
+          "sex": {
+            "code": "M",
+            "description": "Male"
+          }
+        }
+      ],
+      "nationalities": [
+        {
+          "code": "GB",
+          "description": "GB"
+        }
+      ],
+      "addresses": [
+        {
+          "cprAddressId": "ec4c7479-218c-4f11-a02d-edd749820679",
+          "noFixedAbode": false,
+          "startDate": "2020-02-26",
+          "startDateTime": "2026-02-26T11:08:46.347Z",
+          "endDate": "2023-07-15",
+          "endDateTime": "2026-07-15T11:08:46.347Z",
+          "postcode": "SW1H 9AJ",
+          "subBuildingName": "Sub building 2",
+          "buildingName": "Main Building",
+          "buildingNumber": "102",
+          "thoroughfareName": "Petty France",
+          "dependentLocality": "Westminster",
+          "postTown": "London",
+          "county": "Greater London",
+          "country": "United Kingdom of Great Britain and Northern Ireland (the)",
+          "countryCode": "GBR",
+          "uprn": "100120991537",
+          "status": {
+            "code": "M",
+            "description": "Main"
+          },
+          "comment": "Some comment",
+          "typeVerified": false,
+          "usages": [
+            {
+              "code": "CURFEW",
+              "description": "Curfew Order",
+              "isActive": true
+            }
+          ],
+          "contacts": [
+            {
+              "type": {
+                "code": "HOME",
+                "description": "Home"
+              },
+              "value": "+44 20 7946 0000",
+              "extension": "1234"
+            }
+          ]
+        }
+      ],
+      "identifiers": {
+        "crns": [
+          "A123123"
+        ],
+        "prisonNumbers": [
+          "G2996UX"
+        ],
+        "defendantIds": [
+          "46caa4e5-ae06-4226-9cb6-682cb26cf025"
+        ],
+        "cids": [
+          "\"1234567\""
+        ],
+        "pncs": [
+          "2000/1234567A"
+        ],
+        "cros": [
+          "123456/00A"
+        ],
+        "nationalInsuranceNumbers": [
+          "QQ123456B"
+        ],
+        "driverLicenseNumbers": [
+          "SMITH840325J912"
+        ],
+        "arrestSummonsNumbers": [
+          "0700000000000002536Y"
+        ],
+        "otherIdentifiers": [
+          "string"
+        ]
+      }
+    }
+}

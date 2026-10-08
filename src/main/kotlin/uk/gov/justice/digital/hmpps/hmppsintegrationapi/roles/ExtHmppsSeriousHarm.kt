@@ -7,6 +7,7 @@ val extHmppsSeriousHarm =
   role("ext-hmpps-serious-harm") {
     permissions {
       -"/v1/persons/{hmppsId}/risks/serious-harm"
+      -"/v2/persons/{hmppsId}"
       -"/v1/status"
     }
     redactionPolicies {

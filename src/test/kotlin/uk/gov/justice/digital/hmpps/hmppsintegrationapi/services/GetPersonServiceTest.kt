@@ -1103,21 +1103,21 @@ internal class GetPersonServiceTest :
 
       describe("identify hmppsId type") {
         it("should identify a CRN") {
-          getPersonService.identifyHmppsId("X688624") shouldBe IdentifierType.CRN
-          getPersonService.identifyHmppsId("X963105") shouldBe IdentifierType.CRN
+          identifyHmppsId("X688624") shouldBe IdentifierType.CRN
+          identifyHmppsId("X963105") shouldBe IdentifierType.CRN
         }
         it("should identify a NOMS number") {
-          getPersonService.identifyHmppsId("A4433DZ") shouldBe IdentifierType.NOMS
-          getPersonService.identifyHmppsId("G6333VK") shouldBe IdentifierType.NOMS
+          identifyHmppsId("A4433DZ") shouldBe IdentifierType.NOMS
+          identifyHmppsId("G6333VK") shouldBe IdentifierType.NOMS
         }
         it("should not identify a random string") {
-          getPersonService.identifyHmppsId("This is not an identifier") shouldBe IdentifierType.UNKNOWN
+          identifyHmppsId("This is not an identifier") shouldBe IdentifierType.UNKNOWN
         }
         it("should not identify an empty string") {
-          getPersonService.identifyHmppsId("") shouldBe IdentifierType.UNKNOWN
+          identifyHmppsId("") shouldBe IdentifierType.UNKNOWN
         }
         it("should not identify a CRN with a typo string") {
-          getPersonService.identifyHmppsId("XO12345") shouldBe IdentifierType.UNKNOWN
+          identifyHmppsId("XO12345") shouldBe IdentifierType.UNKNOWN
         }
       }
 
