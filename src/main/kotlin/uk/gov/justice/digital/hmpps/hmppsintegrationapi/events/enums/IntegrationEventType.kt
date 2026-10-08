@@ -482,7 +482,7 @@ enum class IntegrationEventType(
   ),
   PERSON_PROTECTED_CHARACTERISTICS_CHANGED(
     "v1/persons/{hmppsId}/protected-characteristics",
-    { NEW_PERSON_EVENTS.contains(it.eventType) }, // No specific event found
+    { NEW_PERSON_EVENTS.contains(it.eventType) || PRISONER_EVENTS.contains(it.eventType) }, // No specific event found
     description = "Person Protected Characteristics Changed",
   ),
   PERSON_REPORTED_ADJUDICATIONS_CHANGED(
@@ -595,7 +595,7 @@ enum class IntegrationEventType(
   ),
   PERSON_HEALTH_AND_DIET_CHANGED(
     "v1/persons/{hmppsId}/health-and-diet",
-    { NEW_PERSON_EVENTS.contains(it.eventType) }, // No specific event found
+    { NEW_PERSON_EVENTS.contains(it.eventType) || PRISONER_EVENTS.contains(it.eventType) }, // No specific event found
     description = "Person Health and Diet Changed",
   ),
   PERSON_CARE_NEEDS_CHANGED(
@@ -605,7 +605,7 @@ enum class IntegrationEventType(
   ),
   PERSON_LANGUAGES_CHANGED(
     "v1/persons/{hmppsId}/languages",
-    { NEW_PERSON_EVENTS.contains(it.eventType) }, // No specific event found
+    { NEW_PERSON_EVENTS.contains(it.eventType) || PRISONER_EVENTS.contains(it.eventType) }, // No specific event found
     featureFlag = FeatureFlagConfig.PERSON_LANGUAGES_CHANGED_NOTIFICATIONS_ENABLED,
     description = "Person Languages Changed",
   ),
