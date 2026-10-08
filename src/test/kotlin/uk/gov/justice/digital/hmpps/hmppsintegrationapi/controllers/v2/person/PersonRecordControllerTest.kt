@@ -21,7 +21,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v2.PersonRec
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.CPRName
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.CorePersonRecord
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -45,7 +44,7 @@ internal class PersonRecordControllerTest(
         beforeTest {
           Mockito.reset(personRecordService)
           whenever(personRecordService.personRecord(eq(hmppsId), any<RequestContext>())).thenReturn(
-            Response(CorePersonRecord(CPRName("John", "Brian", "Doe"))),
+            Response(CorePersonRecord("John", "Brian", "Doe")),
           )
           Mockito.reset(auditService)
         }
@@ -54,8 +53,7 @@ internal class PersonRecordControllerTest(
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.OK.value())
           val response = result.response.contentAsJson<DataResponse<CorePersonRecord>>()
-          response.data.name
-            ?.firstName
+          response.data.firstName
             .shouldBe("John")
 
           verify(auditService, times(1)).createEvent(

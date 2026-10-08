@@ -53,12 +53,12 @@ class GetProtectedCharacteristicsServiceTest {
     Mockito.reset(consumerPrisonAccessService)
     service = GetProtectedCharacteristicsService(prisonerOffenderSearchGateway, prisonApiGateway, consumerPrisonAccessService, getPersonService, deliusGateway)
 
-    whenever(getPersonService.identifyHmppsId(hmppsId)).thenReturn(GetPersonService.IdentifierType.NOMS)
+    whenever(identifyHmppsId(hmppsId)).thenReturn(GetPersonService.IdentifierType.NOMS)
   }
 
   @Test
   fun `invalid hmpps id return bad request`() {
-    whenever(getPersonService.identifyHmppsId(hmppsId)).thenReturn(GetPersonService.IdentifierType.UNKNOWN)
+    whenever(identifyHmppsId(hmppsId)).thenReturn(GetPersonService.IdentifierType.UNKNOWN)
     val result = service.execute(hmppsId, filters)
 
     result.errors.shouldHaveSize(1)

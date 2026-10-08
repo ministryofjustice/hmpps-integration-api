@@ -9,7 +9,6 @@ import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CorePersonRecordGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.CPRName
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.CorePersonRecord
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
@@ -20,7 +19,7 @@ class PersonRecordServiceTest {
   val service = PersonRecordService(corePersonRecordGateway)
   val requestContext = buildRequestContext()
   val successResponse =
-    CorePersonRecord(name = CPRName("John", "Smith"))
+    CorePersonRecord(firstName = "John", lastName = "Smith")
 
   @Test
   fun `should successfully get a person for a person for a NOMIS`() {
