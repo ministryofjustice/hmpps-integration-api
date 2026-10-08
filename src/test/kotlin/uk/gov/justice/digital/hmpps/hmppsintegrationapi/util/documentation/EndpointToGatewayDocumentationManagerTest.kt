@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.documentation
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.FileManager
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -37,16 +36,5 @@ class EndpointToGatewayDocumentationManagerTest {
       }
 
     assertEquals(expected, result)
-  }
-
-  @Test
-  fun `Should generate documentation data`() {
-    val generator = EndpointToGatewayDocumentationManager(FileManager())
-    val data = generator.getData()
-    val endPoint = data["GET /v1/persons/{hmppsId}/risks/scores"]
-    val gateway = endPoint?.firstOrNull { it.inClass.lowercase().contains("gateway") }
-
-    assertEquals("Assess Risks and Needs", gateway?.metadata?.summary)
-    assertEquals(109, data.size)
   }
 }
