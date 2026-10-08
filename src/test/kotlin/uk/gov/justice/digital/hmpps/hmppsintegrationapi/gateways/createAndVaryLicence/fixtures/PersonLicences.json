@@ -1,0 +1,124 @@
+{
+  "id": 99999,
+  "kind": "CRD",
+  "licenceType": "AP",
+  "policyVersion": "V2_1",
+  "version": "1.4",
+  "statusCode": "IN_PROGRESS",
+  "prisonNumber": "A1234AA",
+  "bookingId": 989898,
+  "crn": "X12444",
+  "approvedByUsername": "X33221",
+  "approvedDateTime": "2023-11-20T00:00:00Z",
+  "createdByUsername": "X12333",
+  "createdDateTime": "2023-11-20T00:00:00Z",
+  "updatedByUsername": "X34433",
+  "updatedDateTime": "2022-08-24T12:30:33",
+  "licenceStartDate": "2022-08-24",
+  "isInPssPeriod": true,
+  "conditions": {
+    "AP": {
+      "standard": [
+        {
+          "code": "5a105297-dce1-4d18-b9ea-4195b46b7594",
+          "text": "Not commit any offence."
+        }
+      ],
+      "additional": [
+        {
+          "id": 123456,
+          "type": "ELECTRONIC_MONITORING",
+          "text": "You must not enter the location X",
+          "code": "5a105297-dce1-4d18-b9ea-4195b46b7594",
+          "category": "Residence at a specific place",
+          "restrictions": "['ALCOHOL']"
+        },
+        {
+          "id": 123456,
+          "type": "STANDARD",
+          "text": "You must not enter the location X",
+          "code": "5a105297-dce1-4d18-b9ea-4195b46b7594",
+          "category": "Residence at a specific place"
+        },
+        {
+          "id": 123456,
+          "type": "MULTIPLE_EXCLUSION_ZONE",
+          "text": "You must not enter the location X",
+          "code": "5a105297-dce1-4d18-b9ea-4195b46b7594",
+          "category": "Residence at a specific place",
+          "hasImageUpload": true
+        },
+        {
+          "id": 123456,
+          "type": "MULTIPLE_UPLOADS",
+          "text": "You must not enter the location X",
+          "code": "5a105297-dce1-4d18-b9ea-4195b46b7594",
+          "category": "Residence at a specific place",
+          "hasImageUpload": true
+        },
+        {
+          "id": 123456,
+          "type": "SINGLE_UPLOAD",
+          "text": "You must not enter the location X",
+          "code": "5a105297-dce1-4d18-b9ea-4195b46b7594",
+          "category": "Residence at a specific place",
+          "hasImageUpload": true
+        }
+      ],
+      "bespoke": [
+        {
+          "text": "You should not visit Y"
+        }
+      ]
+    },
+    "PSS": {
+      "standard": [
+        {
+          "code": "5a105297-dce1-4d18-b9ea-4195b46b7594",
+          "text": "Not commit any offence."
+        }
+      ],
+      "additional": [
+        {
+          "id": 123456,
+          "type": "ELECTRONIC_MONITORING",
+          "text": "You must not enter the location X",
+          "code": "5a105297-dce1-4d18-b9ea-4195b46b7594",
+          "category": "Residence at a specific place",
+          "restrictions": "['ALCOHOL']"
+        },
+        {
+          "id": 123456,
+          "type": "STANDARD",
+          "text": "You must not enter the location X",
+          "code": "5a105297-dce1-4d18-b9ea-4195b46b7594",
+          "category": "Residence at a specific place"
+        },
+        {
+          "id": 123456,
+          "type": "MULTIPLE_EXCLUSION_ZONE",
+          "text": "You must not enter the location X",
+          "code": "5a105297-dce1-4d18-b9ea-4195b46b7594",
+          "category": "Residence at a specific place",
+          "hasImageUpload": true
+        },
+        {
+          "id": 123456,
+          "type": "MULTIPLE_UPLOADS",
+          "text": "You must not enter the location X",
+          "code": "5a105297-dce1-4d18-b9ea-4195b46b7594",
+          "category": "Residence at a specific place",
+          "hasImageUpload": true
+        },
+        {
+          "id": 123456,
+          "type": "SINGLE_UPLOAD",
+          "text": "You must not enter the location X",
+          "code": "5a105297-dce1-4d18-b9ea-4195b46b7594",
+          "category": "Residence at a specific place",
+          "hasImageUpload": true
+        }
+      ]
+    }
+  }
+}

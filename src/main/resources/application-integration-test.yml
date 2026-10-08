@@ -43,7 +43,7 @@ services:
   case-notes:
     base-url: http://localhost:4012
   create-and-vary-licence:
-    base-url: http://localhost:4013
+    base-url: http://localhost:4045
   ndelius:
     base-url: http://localhost:4201
   prison-api:

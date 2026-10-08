@@ -22,8 +22,8 @@ class CreateAndVaryLicenceGateway(
       summary = "A service to allow Probation Practitioners and Prison staff to create and vary licences in an efficient way.",
       developerPortalId = "DPS011",
       developerPortalUrl = "https://developer-portal.hmpps.service.justice.gov.uk/components/create-and-vary-a-licence-api",
-      apiDocUrl = "https://create-and-vary-a-licence-api-test2.hmpps.service.justice.gov.uk/swagger-ui/index.html",
-      apiSpecUrl = "https://create-and-vary-a-licence-api-test2.hmpps.service.justice.gov.uk/v3/api-docs/public",
+      apiDocUrl = "https://create-and-vary-a-licence-api-dev.hmpps.service.justice.gov.uk/swagger-ui/index.html",
+      apiSpecUrl = "https://create-and-vary-a-licence-api-dev.hmpps.service.justice.gov.uk/v3/api-docs/public",
       gitHubRepoUrl = "https://github.com/ministryofjustice/create-and-vary-a-licence",
       slackChannel = "#create-and-vary-a-licence",
     )
