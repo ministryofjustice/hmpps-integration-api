@@ -1,5 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr
 
+import com.fasterxml.jackson.annotation.JsonInclude
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class CorePersonRecordSearchResponseItem(
   val name: CPRName? = null,
   val aliases: List<CPRAlias> = emptyList(),

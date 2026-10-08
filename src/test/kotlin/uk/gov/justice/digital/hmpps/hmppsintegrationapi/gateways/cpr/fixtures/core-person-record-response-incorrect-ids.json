@@ -5,8 +5,8 @@
   "lastName": "Doe",
   "dateOfBirth": "1990-08-21",
   "title": {
-    "code": "Mr",
-    "description": "Mr"
+    "code": "MR",
+    "description": "MR"
   },
   "sex": {
     "code": "M",
@@ -26,8 +26,8 @@
       "lastName": "do",
       "middleNames": "Morgain",
       "title": {
-        "code": "Mr",
-        "description": "Mr"
+        "code": "MR",
+        "description": "MR"
       }
     }
   ],

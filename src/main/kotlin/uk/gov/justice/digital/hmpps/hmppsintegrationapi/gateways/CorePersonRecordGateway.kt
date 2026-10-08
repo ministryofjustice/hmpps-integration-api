@@ -54,6 +54,7 @@ class CorePersonRecordGateway(
   fun corePersonRecordFor(
     cprType: IdentifierType, // prison or probation
     hmppsId: String,
+    requestContext: RequestContext? = null,
   ): CorePersonRecord {
     val cprType = if (cprType == IdentifierType.NOMS) "prison" else "probation"
     val uri = "/person/$cprType/$hmppsId"
@@ -61,7 +62,7 @@ class CorePersonRecordGateway(
       webClient.request<CorePersonRecord>(
         HttpMethod.GET,
         uri,
-        authenticationHeader(),
+        authenticationHeader(requestContext),
         UpstreamApi.CORE_PERSON_RECORD,
         badRequestAsError = true,
       )

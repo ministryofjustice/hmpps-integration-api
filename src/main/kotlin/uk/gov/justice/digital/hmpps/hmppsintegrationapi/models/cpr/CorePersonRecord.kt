@@ -1,9 +1,25 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.CprResultException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService.IdentifierType
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class CorePersonRecord(
+  val firstName: String? = null,
+  val middleNames: String? = null,
+  val lastName: String? = null,
+  val dateOfBirth: String? = null,
+  val disability: Boolean? = null,
+  val interestToImmigration: Boolean? = null,
+  val title: CPRTitle? = null,
+  val sex: CPRSex? = null,
+  val sexualOrientation: CPRCodeDescription? = null,
+  val religion: CPRCodeDescription? = null,
+  val ethnicity: CPRCodeDescription? = null,
+  val aliases: List<CPRAlias> = emptyList(),
+  val addresses: List<CPRAddress> = emptyList(),
+  val nationalities: List<CPRCodeDescription> = emptyList(),
   val identifiers: Identifiers? = null,
 ) {
   fun getIdentifier(identifierType: IdentifierType): String? =
@@ -37,4 +53,5 @@ data class Identifiers(
   val nationalInsuranceNumbers: List<String> = emptyList(),
   val driverLicenseNumbers: List<String> = emptyList(),
   val arrestSummonsNumbers: List<String> = emptyList(),
+  val otherIdentifiers: List<String> = emptyList(),
 )

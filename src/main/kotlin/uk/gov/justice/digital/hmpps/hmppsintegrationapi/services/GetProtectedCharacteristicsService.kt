@@ -25,7 +25,7 @@ class GetProtectedCharacteristicsService(
     hmppsId: String,
     filters: ConsumerFilters?,
   ): Response<PersonProtectedCharacteristics?> {
-    val hmppsIdType = getPersonService.identifyHmppsId(hmppsId)
+    val hmppsIdType = identifyHmppsId(hmppsId)
     if (hmppsIdType == IdentifierType.UNKNOWN) {
       return Response(
         data = null,
