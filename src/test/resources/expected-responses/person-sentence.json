@@ -1,63 +1,40 @@
 {
   "data": [
-      {
-        "serviceSource": "PRISON_API",
-        "systemSource": "PRISON_SYSTEMS",
-        "dateOfSentencing": "2019-08-24",
-        "description": "string",
-        "isActive": null,
-        "isCustodial": true,
-        "fineAmount": -1.7976931348623157E308,
-        "length": {
-          "duration": null,
-          "units": null,
-          "terms": [
-            {
-              "years": 1,
-              "months": 2,
-              "weeks": 3,
-              "days": 4,
-              "hours": null,
-              "prisonTermCode": "string"
-            }
-          ]
-        }
-      },
-      {
-        "serviceSource": "NDELIUS",
-        "systemSource": "PROBATION_SYSTEMS",
-        "dateOfSentencing": "2009-07-07",
-        "description": "CJA - Community Order",
-        "isActive": false,
-        "isCustodial": false,
-        "fineAmount": null,
-        "length": {
-          "duration": 12,
-          "units": "Months",
-          "terms": []
-        }
-      },
-      {
-        "serviceSource": "NDELIUS",
-        "systemSource": "PROBATION_SYSTEMS",
-        "dateOfSentencing": "2009-09-01",
-        "description": "Custodial Sentence",
-        "isActive": true,
-        "isCustodial": true,
-        "fineAmount": null,
-        "length": {
-          "duration": 12,
-          "units": "Years",
-          "terms": []
-        }
+    {
+      "serviceSource": "NDELIUS",
+      "systemSource": "PROBATION_SYSTEMS",
+      "dateOfSentencing": "2009-07-07",
+      "description": "CJA - Community Order",
+      "isActive": false,
+      "isCustodial": false,
+      "fineAmount": null,
+      "length": {
+        "duration": 12,
+        "units": "Months",
+        "terms": []
       }
-    ],
+    },
+    {
+      "serviceSource": "NDELIUS",
+      "systemSource": "PROBATION_SYSTEMS",
+      "dateOfSentencing": "2009-09-01",
+      "description": "Custodial Sentence",
+      "isActive": true,
+      "isCustodial": true,
+      "fineAmount": null,
+      "length": {
+        "duration": 12,
+        "units": "Years",
+        "terms": []
+      }
+    }
+  ],
   "pagination": {
     "isLastPage": true,
-    "count": 3,
+    "count": 2,
     "page": 1,
     "perPage": 10,
-    "totalCount": 3,
+    "totalCount": 2,
     "totalPages": 1
   }
 }

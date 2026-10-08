@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
 import org.junit.jupiter.api.Test
+import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
@@ -10,7 +11,7 @@ class ProtectedCharacteristicsIntegrationTest : IntegrationTestBase() {
   fun `returns protected characteristics for a person`() {
     callApi("$basePath/$nomsId/protected-characteristics")
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("person-protected-characteristics")))
+      .andExpect(content().json(getExpectedResponse("person-protected-characteristics.json"), JsonCompareMode.STRICT))
   }
 
   @Test

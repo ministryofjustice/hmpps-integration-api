@@ -1,0 +1,297 @@
+{
+  "prisonerNumber": "A1234AA",
+  "latestPrisonTerm": {
+    "bookNumber": "B45232",
+    "bookingId": 12312312,
+    "courtSentences": [
+      {
+        "caseInfoNumber": "TD20177010",
+        "id": 1,
+        "caseSeq": 1,
+        "beginDate": "2019-12-01",
+        "court": {
+          "agencyId": "MDI",
+          "description": "Moorland (HMP & YOI)",
+          "longDescription": "Moorland (HMP & YOI)",
+          "agencyType": "INST",
+          "active": true,
+          "courtType": "CC",
+          "courtTypeDescription": "Crown Court",
+          "deactivationDate": "2012-01-12",
+          "addresses": [
+            {
+              "addressId": 543524,
+              "addressType": "BUS",
+              "flat": "3B",
+              "premise": "Liverpool Prison",
+              "street": "Slinn Street",
+              "locality": "Brincliffe",
+              "town": "Liverpool",
+              "townCode": "17743",
+              "postalCode": "LI1 5TH",
+              "county": "Herefordshire",
+              "countyCode": "HEREFORD",
+              "country": "England",
+              "countryCode": "ENG",
+              "comment": "This is a comment text",
+              "primary": true,
+              "mail": true,
+              "noFixedAddress": false,
+              "startDate": "2005-05-12",
+              "endDate": "2021-02-12",
+              "phones": [
+                {
+                  "phoneId": 2234232,
+                  "number": "0114 2345678",
+                  "type": "TEL",
+                  "ext": "123",
+                  "createDatetime": "2023-07-19T10:00:00",
+                  "modifyDatetime": "2023-07-20T11:00:00"
+                }
+              ],
+              "addressUsages": [
+                {
+                  "addressId": 23422313,
+                  "addressUsage": "HDC",
+                  "addressUsageDescription": "HDC Address",
+                  "activeFlag": true
+                }
+              ]
+            }
+          ],
+          "phones": [
+            {
+              "phoneId": 2234232,
+              "number": "0114 2345678",
+              "type": "TEL",
+              "ext": "123",
+              "createDatetime": "2023-07-19T10:00:00",
+              "modifyDatetime": "2023-07-20T11:00:00"
+            }
+          ],
+          "emails": [
+            {
+              "emailAddressId": 0,
+              "email": "string"
+            }
+          ],
+          "area": {
+            "code": "code",
+            "description": "description"
+          },
+          "region": {
+            "code": "code",
+            "description": "description"
+          }
+        },
+        "caseType": "Adult",
+        "caseInfoPrefix": "string",
+        "caseStatus": "ACTIVE",
+        "sentences": [
+          {
+            "sentenceSequence": 0,
+            "consecutiveToSequence": 0,
+            "sentenceStatus": "string",
+            "sentenceCategory": "string",
+            "sentenceCalculationType": "string",
+            "sentenceTypeDescription": "string",
+            "sentenceStartDate": "2026-10-07",
+            "sentenceEndDate": "2026-10-07",
+            "fineAmount": 0.1,
+            "lineSeq": 1,
+            "offences": [
+              {
+                "offenderChargeId": 0,
+                "offenceStartDate": "2026-10-07",
+                "offenceEndDate": "2026-10-07",
+                "offenceStatute": "string",
+                "offenceCode": "string",
+                "offenceDescription": "string",
+                "indicators": [
+                  "string"
+                ]
+              }
+            ],
+            "terms": [
+              {
+                "termSequence": 1,
+                "consecutiveTo": 2,
+                "sentenceType": "2",
+                "sentenceTermCode": "IMP",
+                "sentenceTypeDescription": "2",
+                "startDate": "2018-12-31",
+                "years": 0,
+                "months": 0,
+                "weeks": 0,
+                "days": 0,
+                "lifeSentence": true
+              }
+            ]
+          }
+        ],
+        "issuingCourt": {
+          "agencyId": "MDI",
+          "description": "Moorland (HMP & YOI)",
+          "longDescription": "Moorland (HMP & YOI)",
+          "agencyType": "INST",
+          "active": true,
+          "courtType": "CC",
+          "courtTypeDescription": "Crown Court",
+          "deactivationDate": "2012-01-12",
+          "addresses": [
+            {
+              "addressId": 543524,
+              "addressType": "BUS",
+              "flat": "3B",
+              "premise": "Liverpool Prison",
+              "street": "Slinn Street",
+              "locality": "Brincliffe",
+              "town": "Liverpool",
+              "townCode": "17743",
+              "postalCode": "LI1 5TH",
+              "county": "Herefordshire",
+              "countyCode": "HEREFORD",
+              "country": "England",
+              "countryCode": "ENG",
+              "comment": "This is a comment text",
+              "primary": true,
+              "mail": true,
+              "noFixedAddress": false,
+              "startDate": "2005-05-12",
+              "endDate": "2021-02-12",
+              "phones": [
+                {
+                  "phoneId": 2234232,
+                  "number": "0114 2345678",
+                  "type": "TEL",
+                  "ext": "123",
+                  "createDatetime": "2023-07-19T10:00:00",
+                  "modifyDatetime": "2023-07-20T11:00:00"
+                }
+              ],
+              "addressUsages": [
+                {
+                  "addressId": 23422313,
+                  "addressUsage": "HDC",
+                  "addressUsageDescription": "HDC Address",
+                  "activeFlag": true
+                }
+              ]
+            }
+          ],
+          "phones": [
+            {
+              "phoneId": 2234232,
+              "number": "0114 2345678",
+              "type": "TEL",
+              "ext": "123",
+              "createDatetime": "2023-07-19T10:00:00",
+              "modifyDatetime": "2023-07-20T11:00:00"
+            }
+          ],
+          "emails": [
+            {
+              "emailAddressId": 0,
+              "email": "string"
+            }
+          ],
+          "area": {
+            "code": "code",
+            "description": "description"
+          },
+          "region": {
+            "code": "code",
+            "description": "description"
+          }
+        },
+        "issuingCourtDate": "2026-10-07"
+      }
+    ],
+    "licenceSentences": [
+      {
+        "sentenceSequence": 0,
+        "consecutiveToSequence": 0,
+        "sentenceStatus": "string",
+        "sentenceCategory": "string",
+        "sentenceCalculationType": "string",
+        "sentenceTypeDescription": "string",
+        "sentenceStartDate": "2026-10-07",
+        "sentenceEndDate": "2026-10-07",
+        "fineAmount": 0.1,
+        "lineSeq": 1,
+        "offences": [
+          {
+            "offenderChargeId": 0,
+            "offenceStartDate": "2026-10-07",
+            "offenceEndDate": "2026-10-07",
+            "offenceStatute": "string",
+            "offenceCode": "string",
+            "offenceDescription": "string",
+            "indicators": [
+              "string"
+            ]
+          }
+        ],
+        "terms": [
+          {
+            "termSequence": 1,
+            "consecutiveTo": 2,
+            "sentenceType": "2",
+            "sentenceTermCode": "IMP",
+            "sentenceTypeDescription": "2",
+            "startDate": "2018-12-31",
+            "years": 0,
+            "months": 0,
+            "weeks": 0,
+            "days": 0,
+            "lifeSentence": true
+          }
+        ]
+      }
+    ],
+    "keyDates": {
+      "sentenceStartDate": "2010-02-03",
+      "effectiveSentenceEndDate": "2020-02-03",
+      "additionalDaysAwarded": 5,
+      "nonDtoReleaseDate": "2020-04-01",
+      "nonDtoReleaseDateType": "CRD",
+      "confirmedReleaseDate": "2020-04-20",
+      "releaseDate": "2020-04-01",
+      "sentenceExpiryDate": "2020-02-03",
+      "automaticReleaseDate": "2020-02-03",
+      "conditionalReleaseDate": "2020-02-03",
+      "nonParoleDate": "2020-02-03",
+      "postRecallReleaseDate": "2020-02-03",
+      "licenceExpiryDate": "2020-02-03",
+      "homeDetentionCurfewEligibilityDate": "2020-02-03",
+      "paroleEligibilityDate": "2020-02-03",
+      "homeDetentionCurfewActualDate": "2020-02-03",
+      "actualParoleDate": "2020-02-03",
+      "releaseOnTemporaryLicenceDate": "2020-02-03",
+      "earlyRemovalSchemeEligibilityDate": "2020-02-03",
+      "earlyTermDate": "2020-02-03",
+      "midTermDate": "2020-02-03",
+      "lateTermDate": "2020-02-03",
+      "topupSupervisionExpiryDate": "2020-02-03",
+      "tariffDate": "2020-02-03",
+      "dtoPostRecallReleaseDate": "2020-02-03",
+      "tariffEarlyRemovalSchemeEligibilityDate": "2020-02-03",
+      "topupSupervisionStartDate": "2019-04-01",
+      "homeDetentionCurfewEndDate": "2019-04-01"
+    },
+    "sentenceAdjustments": {
+      "additionalDaysAwarded": 12,
+      "unlawfullyAtLarge": 12,
+      "lawfullyAtLarge": 12,
+      "restoredAdditionalDaysAwarded": 12,
+      "specialRemission": 12,
+      "recallSentenceRemand": 12,
+      "recallSentenceTaggedBail": 12,
+      "remand": 12,
+      "taggedBail": 12,
+      "unusedRemand": 12,
+      "timeSpentInCustodyAbroad": 12,
+      "timeSpentAsAnAppealApplicant": 12
+    }
+  }
+}

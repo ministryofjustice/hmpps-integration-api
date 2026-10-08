@@ -1,0 +1,14 @@
+{
+  "reasonableAdjustments": [
+    {
+      "treatmentCode": "WHEELCHR_ACC",
+      "commentText": "abcd",
+      "startDate": "2010-06-21",
+      "endDate": "2010-06-21",
+      "agencyId": "LEI",
+      "agencyDescription": "Moorland (HMP)",
+      "treatmentDescription": "Wheelchair accessibility",
+      "personalCareNeedId": 1
+    }
+  ]
+}

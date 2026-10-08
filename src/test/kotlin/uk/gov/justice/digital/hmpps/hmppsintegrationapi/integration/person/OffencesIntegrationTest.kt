@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
 import org.junit.jupiter.api.Test
+import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
@@ -16,7 +17,7 @@ class OffencesIntegrationTest : IntegrationTestBase() {
      */
     callApiWithCN("$basePath/$nomsId/offences", cn = "automated-test-client")
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("person-prison-probation-offences.json")))
+      .andExpect(content().json(getExpectedResponse("person-prison-probation-offences.json"), JsonCompareMode.STRICT))
   }
 
   // Should be exactly the same outcome as above
@@ -29,28 +30,28 @@ class OffencesIntegrationTest : IntegrationTestBase() {
      */
     callApiWithCN("$basePath/$nomsId/offences", cn = "automated-test-client-no-filters")
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("person-prison-probation-offences.json")))
+      .andExpect(content().json(getExpectedResponse("person-prison-probation-offences.json"), JsonCompareMode.STRICT))
   }
 
   @Test
   fun `returns offences for a consumer with PROBATION supervision status`() {
     callApiWithCN("$basePath/$nomsId/offences", cn = "supervision-status-probation-only")
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("person-probation-offences.json")))
+      .andExpect(content().json(getExpectedResponse("person-probation-offences.json"), JsonCompareMode.STRICT))
   }
 
   @Test
   fun `returns offences for a consumer with PRISONS supervision status`() {
     callApiWithCN("$basePath/$nomsId/offences", cn = "supervision-status-prison-only")
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("person-prison-offences.json")))
+      .andExpect(content().json(getExpectedResponse("person-prison-offences.json"), JsonCompareMode.STRICT))
   }
 
   @Test
   fun `returns offences for a consumer with NONE supervision status`() {
     callApiWithCN("$basePath/$nomsId/offences", cn = "supervision-status-none")
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("noResults.json")))
+      .andExpect(content().json(getExpectedResponse("noResults.json"), JsonCompareMode.STRICT))
   }
 
   @Test

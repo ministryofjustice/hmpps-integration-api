@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
+import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
@@ -13,7 +14,7 @@ class RisksIntegrationTest : IntegrationTestBase() {
   fun `returns protected characteristics for a person`(path: String) {
     callApi("$basePath/$crn/risks/$path")
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("person-risk-$path")))
+      .andExpect(content().json(getExpectedResponse("person-risk-$path.json"), JsonCompareMode.STRICT))
   }
 
   @ParameterizedTest
@@ -41,6 +42,6 @@ class RisksIntegrationTest : IntegrationTestBase() {
   fun `notes are redacted for dynamic risks for ext-probation-police-intelligence role`() {
     callApiWithCN("$basePath/$crn/risks/dynamic", "ext-probation-police-intelligence")
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("person-risk-dynamic-text-redacted.json")))
+      .andExpect(content().json(getExpectedResponse("person-risk-dynamic-text-redacted.json"), JsonCompareMode.STRICT))
   }
 }

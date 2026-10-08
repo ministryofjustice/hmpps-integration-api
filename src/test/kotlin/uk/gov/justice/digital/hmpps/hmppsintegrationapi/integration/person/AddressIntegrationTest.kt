@@ -9,6 +9,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.whenever
 import org.springframework.http.HttpStatus
+import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
@@ -49,7 +50,7 @@ class AddressIntegrationTest : IntegrationTestBase() {
   fun `returns addresses for a person`() {
     callApi(path)
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("person-addresses")))
+      .andExpect(content().json(getExpectedResponse("person-addresses.json"), JsonCompareMode.STRICT))
   }
 
   @Test

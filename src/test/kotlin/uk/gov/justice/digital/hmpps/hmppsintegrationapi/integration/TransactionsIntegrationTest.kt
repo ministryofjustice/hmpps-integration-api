@@ -1,51 +1,49 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 
 import org.junit.jupiter.api.Test
+import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 class TransactionsIntegrationTest : IntegrationTestBase() {
-  val prisonId = "MDI"
-  val hmppsId = "G2996UX"
   val accountCode = "spends"
   final val fromDate = "2024-01-01"
   final val toDate = "2024-01-14"
-  val clientUniqueRef = "ABC123456X"
   var dateQueryParams = "?from_date=$fromDate&to_date=$toDate"
 
   @Test
   fun `return a list of transactions for a prisoner`() {
-    callApi("/v1/prison/$prisonId/prisoners/$hmppsId/accounts/$accountCode/transactions")
+    callApi("/v1/prison/$prisonId/prisoners/$nomsId/accounts/$accountCode/transactions")
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("transactions-response")))
+      .andExpect(content().json(getExpectedResponse("transactions-response.json"), JsonCompareMode.STRICT))
   }
 
   @Test
   fun `return a list of transactions when the dates are supplied in the request`() {
-    callApi("/v1/prison/$prisonId/prisoners/$hmppsId/accounts/$accountCode/transactions$dateQueryParams")
+    callApi("/v1/prison/$prisonId/prisoners/$nomsId/accounts/$accountCode/transactions$dateQueryParams")
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("transactions-response")))
+      .andExpect(content().json(getExpectedResponse("transactions-response.json"), JsonCompareMode.STRICT))
   }
 
   @Test
   fun `transactions returns 404`() {
     val wrongPrisonId = "XYZ"
-    callApiWithCN("/v1/prison/$wrongPrisonId/prisoners/$hmppsId/accounts/$accountCode/transactions", limitedPrisonsCn)
+    callApiWithCN("/v1/prison/$wrongPrisonId/prisoners/$nomsId/accounts/$accountCode/transactions", limitedPrisonsCn)
       .andExpect(status().isNotFound)
   }
 
   // transaction
   @Test
   fun `return a transaction for a prisoner`() {
-    callApi("/v1/prison/$prisonId/prisoners/$hmppsId/transactions/$clientUniqueRef")
+    callApi("/v1/prison/$prisonId/prisoners/$nomsId/transactions/$clientReference")
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("transaction-response")))
+      .andExpect(content().json(getExpectedResponse("transaction-response.json"), JsonCompareMode.STRICT))
   }
 
   @Test
   fun `transaction returns 404`() {
     val wrongPrisonId = "XYZ"
-    callApiWithCN("/v1/prison/$wrongPrisonId/prisoners/$hmppsId/transactions/$clientUniqueRef", limitedPrisonsCn)
+    callApiWithCN("/v1/prison/$wrongPrisonId/prisoners/$nomsId/transactions/$clientReference", limitedPrisonsCn)
       .andExpect(status().isNotFound)
   }
 
@@ -63,9 +61,9 @@ class TransactionsIntegrationTest : IntegrationTestBase() {
       }
       """.trimIndent()
 
-    postToApi("/v1/prison/$prisonId/prisoners/$hmppsId/transactions", requestBody)
+    postToApi("/v1/prison/$prisonId/prisoners/$nomsId/transactions", requestBody)
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("transaction-create-response")))
+      .andExpect(content().json(getExpectedResponse("transaction-create-response.json"), JsonCompareMode.STRICT))
   }
 
   @Test
@@ -81,7 +79,7 @@ class TransactionsIntegrationTest : IntegrationTestBase() {
       }
       """.trimIndent()
 
-    postToApiWithCN("/v1/prison/$prisonId/prisoners/$hmppsId/transactions", requestBody, emptyPrisonsCn)
+    postToApiWithCN("/v1/prison/$prisonId/prisoners/$nomsId/transactions", requestBody, emptyPrisonsCn)
       .andExpect(status().isForbidden)
   }
 
@@ -101,9 +99,9 @@ class TransactionsIntegrationTest : IntegrationTestBase() {
       }
       """.trimIndent()
 
-    postToApi("/v1/prison/$prisonId/prisoners/$hmppsId/transactions/transfer", requestBody)
+    postToApi("/v1/prison/$prisonId/prisoners/$nomsId/transactions/transfer", requestBody)
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("transaction-transfer-create-response")))
+      .andExpect(content().json(getExpectedResponse("transaction-transfer-create-response.json"), JsonCompareMode.STRICT))
   }
 
   @Test
@@ -120,7 +118,7 @@ class TransactionsIntegrationTest : IntegrationTestBase() {
       }
       """.trimIndent()
 
-    postToApi("/v1/prison/$prisonId/prisoners/$hmppsId/transactions/transfer", requestBody)
+    postToApi("/v1/prison/$prisonId/prisoners/$nomsId/transactions/transfer", requestBody)
       .andExpect(status().isBadRequest)
   }
 }

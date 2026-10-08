@@ -1,0 +1,18 @@
+{
+  "data": {
+    "balances": [
+      {
+        "accountCode": "spends",
+        "amount": 5678
+      },
+      {
+        "accountCode": "savings",
+        "amount": 12344
+      },
+      {
+        "accountCode": "cash",
+        "amount": 13565
+      }
+    ]
+  }
+}
