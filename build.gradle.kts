@@ -123,6 +123,7 @@ tasks {
       reports {
         filters {
           excludes {
+            packages("uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.documentation")
             classes(*classesToBeExcluded)
           }
         }
