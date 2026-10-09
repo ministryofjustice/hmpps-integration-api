@@ -308,12 +308,12 @@ function verify_post_endpoints() {
     exec.test.fail(`${postAllocationEndpoint} caused the test to fail`)
   }
 
-  // const personSearchV2Res = http.post(`${baseUrl}${personSearchV2Endpoint}`, personSearchV2Request, params);
-  // if (!check(personSearchV2Res, {
-  //   [`POST ${personSearchV2Endpoint} returns 200`]: (r) => r.status === 200,
-  // })) {
-  //   exec.test.fail(`${personSearchV2Endpoint} caused the test to fail`)
-  // }
+  const personSearchV2Res = http.post(`${baseUrl}${personSearchV2Endpoint}`, personSearchV2Request, params);
+  if (!check(personSearchV2Res, {
+    [`POST ${personSearchV2Endpoint} returns 200`]: (r) => r.status === 200,
+  })) {
+    exec.test.fail(`${personSearchV2Endpoint} caused the test to fail`)
+  }
 }
 
 function verify_web_application_firewall_request(path) {
@@ -760,6 +760,7 @@ function verify_get_basic_details(hmppsId) {
     validate_get_request(`/v1/persons/${hmppsId}/iep-level`);
     validate_get_request(`/v1/persons/${hmppsId}/sentences/latest-key-dates-and-adjustments`);
     validate_get_request(`/v1/persons/${hmppsId}/cell-share-risk-assessments`);
+    validate_get_request(`/v2/persons/${hmppsId}`);
 
     let res = validate_get_request(`/v1/persons/${hmppsId}/needs`);
     validate_response_attribute_not_empty(res, "assessedOn", "Needs assessment found");
