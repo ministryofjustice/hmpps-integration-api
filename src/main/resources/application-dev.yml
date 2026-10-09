@@ -150,3 +150,7 @@ hmpps.sqs:
       queueName: ${UNILINK_QUEUE_NAME}
       queueArn: ${UNILINK_QUEUE_ARN}
       subscribeTopicId: integrationeventtopic
+    phonehubsubscriberqueue:
+      queueName: ${PHONEHUB_QUEUE_NAME}
+      queueArn: ${PHONEHUB_QUEUE_ARN}
+      subscribeTopicId: integrationeventtopic
