@@ -1,12 +1,15 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.documentation
 
-import org.jetbrains.kotlin.cli.jvm.compiler.EnvironmentConfigFiles
-import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
+import org.jetbrains.kotlin.cli.jvm.compiler.IdeaStandaloneExecutionSetup
+import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreApplicationEnvironment
+import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreApplicationEnvironmentMode
+import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreProjectEnvironment
+import org.jetbrains.kotlin.com.intellij.openapi.Disposable
 import org.jetbrains.kotlin.com.intellij.openapi.util.Disposer
 import org.jetbrains.kotlin.com.intellij.psi.PsiManager
 import org.jetbrains.kotlin.com.intellij.testFramework.LightVirtualFile
-import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.idea.KotlinFileType
+import org.jetbrains.kotlin.parsing.KotlinParserDefinition
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtClassBody
@@ -29,6 +32,14 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.io.path.absolutePathString
 
+/**
+ *
+ * THIS CLASS IS A WORK IN PROGRESS
+ * This class traverses the source code and attempts to link endpoints to the upstream endpoints and creates a readme in the controllers folder
+ * This is triggered by gradle via github actions on a PR
+ * To disable this then remove this from the list of generators in the DocumentationGenerator
+ * //TODO Improve this code
+ */
 class EndpointToGatewayDocumentationManager(
   val fileManager: FileManager,
 ) : DocumentationManager {
@@ -156,6 +167,10 @@ data class Declaration(
   val func: Function? = null,
 )
 
+/**
+ * //TODO Improve this code
+ * This code is a work in progress
+ */
 class SourceFile(
   filePath: String,
   fileName: String,
@@ -163,13 +178,20 @@ class SourceFile(
   val secondPass: Boolean = false,
 ) {
   companion object {
-    val project =
-      KotlinCoreEnvironment
-        .createForProduction(
-          Disposer.newDisposable(),
-          CompilerConfiguration(),
-          EnvironmentConfigFiles.JVM_CONFIG_FILES,
-        ).project
+    private fun createKotlinProjectEnvironment(disposable: Disposable): KotlinCoreProjectEnvironment {
+      IdeaStandaloneExecutionSetup.doSetup()
+      val applicationEnvironment =
+        KotlinCoreApplicationEnvironment
+          .create(
+            disposable,
+            KotlinCoreApplicationEnvironmentMode.Production,
+          ).also {
+            it.registerParserDefinition(KotlinParserDefinition())
+          }
+      return KotlinCoreProjectEnvironment(disposable, applicationEnvironment)
+    }
+
+    val project = createKotlinProjectEnvironment(Disposer.newDisposable()).project
 
     val jsonMapper: JsonMapper =
       JsonMapper
