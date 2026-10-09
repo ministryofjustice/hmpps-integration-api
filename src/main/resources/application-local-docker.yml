@@ -13,7 +13,7 @@ services:
   int-api.base-url: https://localhost:8443
   hmpps-auth.base-url: http://hmpps-auth:8080
   adjudications.base-url: http://prism:4010
-  assess-risks-and-needs.base-url: http://prism:4047
+  assess-risks-and-needs.base-url: http://prism:4032
   case-notes.base-url: http://prism:4046
   create-and-vary-licence.base-url: http://prism:4045
   manage-pom-case-api.base-url: http://prism:4014
