@@ -34,7 +34,7 @@ class PersonRecordController(
     ],
   )
   fun getPerson(
-    @Parameter(description = "A HMPPS identifier", example = "X00001")
+    @Parameter(description = "An HMPPS identifier (either a NOMIS ID or a CRN)", example = "A1234AA", required = true)
     @PathVariable("hmppsId") hmppsId: String,
     @RequestAttribute requestContext: RequestContext,
   ): DataResponse<CorePersonRecord> {
