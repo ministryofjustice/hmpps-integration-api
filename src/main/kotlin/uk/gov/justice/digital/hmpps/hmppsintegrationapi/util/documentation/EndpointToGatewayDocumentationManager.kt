@@ -33,10 +33,12 @@ import java.nio.file.Paths
 import kotlin.io.path.absolutePathString
 
 /**
+ *
  * THIS CLASS IS A WORK IN PROGRESS
  * This class traverses the source code and attempts to link endpoints to the upstream endpoints and creates a readme in the controllers folder
  * This is triggered by gradle via github actions on a PR
  * To disable this then remove this from the list of generators in the DocumentationGenerator
+ * //TODO Improve this code
  */
 class EndpointToGatewayDocumentationManager(
   val fileManager: FileManager,
@@ -166,6 +168,7 @@ data class Declaration(
 )
 
 /**
+ * //TODO Improve this code
  * This code is a work in progress
  */
 class SourceFile(
