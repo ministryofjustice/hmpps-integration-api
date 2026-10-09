@@ -40,7 +40,7 @@ class ApiMockServer(
           UpstreamApi.NDELIUS -> ApiMockServerConfig(4201, "ndelius.json")
           UpstreamApi.PRISONER_BASE_LOCATION -> ApiMockServerConfig(4030, "prisoner-base-location.json")
           UpstreamApi.CORE_PERSON_RECORD -> ApiMockServerConfig(4031, "core-person-record.json")
-          UpstreamApi.ARNS_INTEGRATION_TEST -> ApiMockServerConfig(4032, "assess-risks-and-needs.json", overrideBindType = false, lenientDateValidation = true)
+          UpstreamApi.ASSESS_RISKS_AND_NEEDS -> ApiMockServerConfig(4032, "assess-risks-and-needs.json", overrideBindType = false, lenientDateValidation = true)
           UpstreamApi.PROBATION_OFFENDER_SEARCH -> ApiMockServerConfig(4033, "probation-offender-search.json")
           UpstreamApi.MANAGE_USERS -> ApiMockServerConfig(4034, "manage-users.json")
           UpstreamApi.COURT_REGISTER -> ApiMockServerConfig(4035, "court_register.json", true)
@@ -56,7 +56,6 @@ class ApiMockServer(
           UpstreamApi.CVL -> ApiMockServerConfig(4045, "cvl.json")
           UpstreamApi.CASE_NOTES -> ApiMockServerConfig(4046, "case-notes.json")
           // USE PRISM
-          UpstreamApi.ASSESS_RISKS_AND_NEEDS -> ApiMockServerConfig(4004)
           UpstreamApi.ADJUDICATIONS -> ApiMockServerConfig(4006)
           UpstreamApi.RISK_MANAGEMENT_PLAN -> ApiMockServerConfig(4004)
           UpstreamApi.SAN -> ApiMockServerConfig(4200)
