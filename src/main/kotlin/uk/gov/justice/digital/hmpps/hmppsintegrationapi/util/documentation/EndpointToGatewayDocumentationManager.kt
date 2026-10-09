@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.documentation
 
+import org.jetbrains.kotlin.CoreEnvironmentDeprecation
 import org.jetbrains.kotlin.cli.jvm.compiler.EnvironmentConfigFiles
 import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
 import org.jetbrains.kotlin.com.intellij.openapi.util.Disposer
@@ -29,6 +30,12 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.io.path.absolutePathString
 
+/**
+ * THIS CLASS IS A WORK IN PROGRESS
+ * This class traverses the source code and attempts to link endpoints to the upstream endpoints and creates a readme in the controllers folder
+ * This is triggered by gradle via github actions on a PR
+ * To disable this then remove this from the list of generators in the DocumentationGenerator class
+ */
 class EndpointToGatewayDocumentationManager(
   val fileManager: FileManager,
 ) : DocumentationManager {
@@ -156,6 +163,9 @@ data class Declaration(
   val func: Function? = null,
 )
 
+/**
+ * This code is a work in progress
+ */
 class SourceFile(
   filePath: String,
   fileName: String,
@@ -163,6 +173,7 @@ class SourceFile(
   val secondPass: Boolean = false,
 ) {
   companion object {
+    @OptIn(CoreEnvironmentDeprecation::class, CompilerConfiguration.Internals::class)
     val project =
       KotlinCoreEnvironment
         .createForProduction(
