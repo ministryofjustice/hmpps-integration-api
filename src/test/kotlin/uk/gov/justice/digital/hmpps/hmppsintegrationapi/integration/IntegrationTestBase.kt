@@ -231,7 +231,6 @@ abstract class IntegrationTestBase {
     val prisonApiServer = ApiMockServer.create(UpstreamApi.PRISON_API)
     val createAndVaryLicenceServer = ApiMockServer.create(UpstreamApi.CVL)
     val caseNotesServer = ApiMockServer.create(UpstreamApi.CASE_NOTES)
-    val assesmentRisksAndNeedsServer = ApiMockServer.create(UpstreamApi.ASSESS_RISKS_AND_NEEDS)
 
     @BeforeEach
     fun setUp() {
@@ -864,8 +863,6 @@ abstract class IntegrationTestBase {
           "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/caseNotes/fixtures/PersonCaseNotes.json",
         ).readText(),
       )
-
-      assesmentRisksAndNeedsServer.start()
     }
 
     @AfterAll
@@ -892,7 +889,6 @@ abstract class IntegrationTestBase {
       prisonApiServer.stop()
       createAndVaryLicenceServer.stop()
       caseNotesServer.stop()
-      assesmentRisksAndNeedsServer.stop()
     }
   }
 
