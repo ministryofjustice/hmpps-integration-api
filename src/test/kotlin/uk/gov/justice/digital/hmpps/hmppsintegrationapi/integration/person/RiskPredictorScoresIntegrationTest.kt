@@ -1,27 +1,12 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.test.context.TestPropertySource
 import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 
-@TestPropertySource(properties = ["services.assess-risks-and-needs.base-url=http://localhost:4032"])
 class RiskPredictorScoresIntegrationTest : IntegrationTestBase() {
-  @BeforeEach
-  fun setUp() {
-    arnsMockServer.start()
-  }
-
-  @AfterEach
-  fun tearDown() {
-    arnsMockServer.stop()
-    arnsMockServer.resetValidator()
-  }
-
   @Test
   fun `risk scores endpoint returns OK with version 2`() {
     arnsMockServer.stubForGet(

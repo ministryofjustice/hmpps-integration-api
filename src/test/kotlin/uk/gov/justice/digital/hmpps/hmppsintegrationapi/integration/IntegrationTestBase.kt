@@ -863,6 +863,8 @@ abstract class IntegrationTestBase {
           "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/caseNotes/fixtures/PersonCaseNotes.json",
         ).readText(),
       )
+
+      arnsMockServer.start()
     }
 
     @AfterAll
@@ -889,6 +891,7 @@ abstract class IntegrationTestBase {
       prisonApiServer.stop()
       createAndVaryLicenceServer.stop()
       caseNotesServer.stop()
+      arnsMockServer.stop()
     }
   }
 
