@@ -12,6 +12,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.cache.CacheManager
 import org.springframework.context.annotation.Import
@@ -200,5 +201,18 @@ class HmppsAuthGatewayTest(
       val secondToken = hmppsAuthGateway.getClientToken("NOMIS", buildRequestContext(oboUser = OboUser("testUser")))
       secondToken shouldBe firstToken
       verify(telemetryService, times(1)).trackEvent("AuthTokenCache")
+    }
+
+    it("does not includes the oboUserName in the URI sent to hmpps auth when feature disabled") {
+
+      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.OBO_PASS_USERNAME_TO_AUTH)).thenReturn(false)
+      val token = hmppsAuthMockServer.getToken()
+      hmppsAuthMockServer.stubGetOAuthToken("client", "client-secret", token)
+      val client = WebClientWrapper("http://localhost:3000")
+      val wrapper = spy(client)
+      ReflectionTestUtils.setField(hmppsAuthGateway, "webClientWrapper", wrapper)
+      val uri = argumentCaptor<String>()
+      verify(wrapper, atLeast(1)).getResponseBodySpec(eq(HttpMethod.POST), uri.capture(), anyMap(), eq(null))
+      assertEquals("/auth/oauth/token?grant_type=client_credentials", uri.firstValue)
     }
   })

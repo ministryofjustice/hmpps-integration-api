@@ -93,6 +93,7 @@ feature-flag:
   live-roll-enabled: true
   prison-role-check-enabled: true
   obo-caseload-filter-enabled: false
+  obo-pass-username-to-auth: false
   # Events Config
   enable-delete-processed-events: false
   enable-publish-pending-events: false

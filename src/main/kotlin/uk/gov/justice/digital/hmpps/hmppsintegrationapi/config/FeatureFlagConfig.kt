@@ -41,6 +41,7 @@ data class FeatureFlagConfig(
     const val LIVE_ROLL_ENABLED = "live-roll-enabled"
     const val PRISON_ROLE_CHECK_ENABLED = "prison-role-check-enabled"
     const val OBO_CASELOAD_FILTER_ENABLED = "obo-caseload-filter-enabled"
+    const val OBO_PASS_USERNAME_TO_AUTH = "obo-pass-username-to-auth"
 
     // Events feature flags
     const val ENABLE_DELETE_PROCESSED_EVENTS = "enable-delete-processed-events"
