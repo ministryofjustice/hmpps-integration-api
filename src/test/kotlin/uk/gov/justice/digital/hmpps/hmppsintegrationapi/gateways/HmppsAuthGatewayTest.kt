@@ -51,6 +51,7 @@ class HmppsAuthGatewayTest(
       hmppsAuthMockServer.start()
       Mockito.reset(telemetryService)
       hmppsAuthMockServer.stubGetOAuthToken("username", "password")
+      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.OBO_PASS_USERNAME_TO_AUTH)).thenReturn(true)
     }
 
     afterTest {
@@ -211,6 +212,7 @@ class HmppsAuthGatewayTest(
       val client = WebClientWrapper("http://localhost:3000")
       val wrapper = spy(client)
       ReflectionTestUtils.setField(hmppsAuthGateway, "webClientWrapper", wrapper)
+      hmppsAuthGateway.getClientToken("NOMIS", buildRequestContext(oboUser = OboUser("testUser")))
       val uri = argumentCaptor<String>()
       verify(wrapper, atLeast(1)).getResponseBodySpec(eq(HttpMethod.POST), uri.capture(), anyMap(), eq(null))
       assertEquals("/auth/oauth/token?grant_type=client_credentials", uri.firstValue)
