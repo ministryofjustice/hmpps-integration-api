@@ -1,40 +1,40 @@
 {
   "data": {
-    "assessedOn": "2026-01-16T16:22:54",
+    "assessedOn": "2026-10-09T11:44:44",
     "riskToSelf": {
       "suicide": {
-        "risk": "YES",
-        "previous": "YES",
+        "risk": "Yes, No, Don't know, null",
+        "previous": "Yes, No, Don't know",
         "previousConcernsText": "**REDACTED**",
-        "current": "YES",
+        "current": "Yes, No, Don't know",
         "currentConcernsText": "**REDACTED**"
       },
       "selfHarm": {
-        "risk": "YES",
-        "previous": "YES",
+        "risk": "Yes, No, Don't know, null",
+        "previous": "Yes, No, Don't know",
         "previousConcernsText": "**REDACTED**",
-        "current": "YES",
+        "current": "Yes, No, Don't know",
         "currentConcernsText": "**REDACTED**"
       },
       "custody": {
-        "risk": "YES",
-        "previous": "YES",
+        "risk": "Yes, No, Don't know, null",
+        "previous": "Yes, No, Don't know",
         "previousConcernsText": "**REDACTED**",
-        "current": "YES",
+        "current": "Yes, No, Don't know",
         "currentConcernsText": "**REDACTED**"
       },
       "hostelSetting": {
-        "risk": "YES",
-        "previous": "YES",
+        "risk": "Yes, No, Don't know, null",
+        "previous": "Yes, No, Don't know",
         "previousConcernsText": "**REDACTED**",
-        "current": "YES",
+        "current": "Yes, No, Don't know",
         "currentConcernsText": "**REDACTED**"
       },
       "vulnerability": {
-        "risk": "YES",
-        "previous": "YES",
+        "risk": "Yes, No, Don't know, null",
+        "previous": "Yes, No, Don't know",
         "previousConcernsText": "**REDACTED**",
-        "current": "YES",
+        "current": "Yes, No, Don't know",
         "currentConcernsText": "**REDACTED**"
       }
     },
@@ -50,18 +50,20 @@
       "riskImminence": "**REDACTED**",
       "riskIncreaseFactors": "**REDACTED**",
       "riskMitigationFactors": "**REDACTED**",
-      "overallRiskLevel": "VERY_HIGH",
+      "overallRiskLevel": "HIGH",
       "riskInCommunity": {
         "children": "HIGH ",
         "public": "HIGH ",
+        "knowAdult": "HIGH ",
         "staff": "MEDIUM",
         "prisoners": "LOW"
       },
       "riskInCustody": {
-        "children": "LOW",
-        "public": "LOW",
+        "knowAdult": "HIGH ",
         "staff": "VERY_HIGH",
-        "prisoners": "VERY_HIGH"
+        "prisoners": "VERY_HIGH",
+        "children": "LOW",
+        "public": "LOW"
       }
     }
   }

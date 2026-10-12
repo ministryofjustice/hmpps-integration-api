@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
 import org.junit.jupiter.api.Test
+import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
@@ -10,14 +11,14 @@ class RiskSeriousHarmIntegrationTest : IntegrationTestBase() {
   fun `returns serious harm risks for a person`() {
     callApi("$basePath/$crn/risks/serious-harm")
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("risk-serious-harm.json")))
+      .andExpect(content().json(getExpectedResponse("risk-serious-harm.json"), JsonCompareMode.STRICT))
   }
 
   @Test
   fun `returns serious harm risks for a person for a nomis number`() {
     callApi("$basePath/$nomsId/risks/serious-harm")
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("risk-serious-harm.json")))
+      .andExpect(content().json(getExpectedResponse("risk-serious-harm.json"), JsonCompareMode.STRICT))
   }
 
   @Test
@@ -36,6 +37,6 @@ class RiskSeriousHarmIntegrationTest : IntegrationTestBase() {
   fun `returns serious harm risks for a person with redactions`() {
     callApiWithCN("$basePath/$nomsIdFromProbation/risks/serious-harm", "ext-probation-police-intelligence")
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("risk-serious-harm-redacted.json")))
+      .andExpect(content().json(getExpectedResponse("risk-serious-harm-redacted.json"), JsonCompareMode.STRICT))
   }
 }

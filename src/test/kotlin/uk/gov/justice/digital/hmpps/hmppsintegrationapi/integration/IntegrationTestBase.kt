@@ -865,6 +865,20 @@ abstract class IntegrationTestBase {
       )
 
       arnsMockServer.start()
+
+      arnsMockServer.stubForGet(
+        "/risks/risk-management-plan/$crn",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/assessrisksandneeds/fixtures/RiskManagementPlan.json",
+        ).readText(),
+      )
+
+      arnsMockServer.stubForGet(
+        "/risks/rosh/$crn",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/assessrisksandneeds/fixtures/RiskOfSeriousHarm.json",
+        ).readText(),
+      )
     }
 
     @AfterAll

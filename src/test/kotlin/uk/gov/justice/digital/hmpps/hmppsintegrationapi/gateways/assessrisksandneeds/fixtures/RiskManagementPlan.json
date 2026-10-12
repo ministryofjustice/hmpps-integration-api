@@ -1,0 +1,32 @@
+{
+  "crn": "string",
+  "limitedAccessOffender": true,
+  "riskManagementPlan": [
+    {
+      "assessmentId": 0,
+      "dateCompleted": "2026-10-09T11:44:44",
+      "partcompStatus": "string",
+      "initiationDate": "2026-10-09T11:44:44",
+      "assessmentStatus": "string",
+      "assessmentType": "string",
+      "superStatus": "string",
+      "keyInformationCurrentSituation": "string",
+      "furtherConsiderationsCurrentSituation": "string",
+      "supervision": "string",
+      "monitoringAndControl": "string",
+      "interventionsAndTreatment": "string",
+      "victimSafetyPlanning": "string",
+      "contingencyPlans": "string",
+      "laterWIPAssessmentExists": true,
+      "latestWIPDate": "2026-10-09T11:44:44",
+      "laterSignLockAssessmentExists": true,
+      "latestSignLockDate": "2026-10-09T11:44:44",
+      "laterPartCompUnsignedAssessmentExists": true,
+      "latestPartCompUnsignedDate": "2026-10-09T11:44:44",
+      "laterPartCompSignedAssessmentExists": true,
+      "latestPartCompSignedDate": "2026-10-09T11:44:44",
+      "laterCompleteAssessmentExists": true,
+      "latestCompleteDate": "2026-10-09T11:44:44"
+    }
+  ]
+}
