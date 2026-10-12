@@ -36,3 +36,4 @@ updateOpenApiSpec "https://prison-api-dev.prison.service.justice.gov.uk/v3/api-d
 updateOpenApiSpec "https://create-and-vary-a-licence-api-dev.hmpps.service.justice.gov.uk/v3/api-docs/public" "../src/test/resources/openapi-specs/cvl.json"
 updateOpenApiSpec "https://dev.offender-case-notes.service.justice.gov.uk/v3/api-docs" "../src/test/resources/openapi-specs/case-notes.json"
 updateOpenApiSpec "https://support-for-additional-needs-api.hmpps.service.justice.gov.uk/openapi/SupportAdditionalNeedsAPI.yml" "../src/test/resources/openapi-specs/san.json"
+updateOpenApiSpec "https://manage-adjudications-api-dev.hmpps.service.justice.gov.uk/v3/api-docs" "../src/test/resources/openapi-specs/adjudications.json"
