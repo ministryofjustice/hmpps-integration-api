@@ -1,14 +1,4 @@
 services:
-  prism:
-    build:
-      context: .
-      dockerfile: Dockerfile.prism
-    container_name: prism
-    healthcheck:
-      test: 'curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4010/reported-adjudications/hearings?hearingDate=1910-06-03'
-    ports:
-      - "4010:4010"
-
   local-stack-aws:
     image: localstack/localstack:3.0
     container_name: local-stack-aws

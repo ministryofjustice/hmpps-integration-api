@@ -1,0 +1,218 @@
+[
+  {
+    "chargeNumber": "string",
+    "prisonerNumber": "G2996UX",
+    "prisonerName": "SAM GOMEZ",
+    "gender": "MALE",
+    "incidentDetails": {
+      "locationName": "string",
+      "locationUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "dateTimeOfIncident": "2010-10-12T10:00:00",
+      "dateTimeOfDiscovery": "2010-10-12T10:00:00",
+      "handoverDeadline": "2010-10-14T10:00:00"
+    },
+    "isYouthOffender": true,
+    "incidentRole": {
+      "roleCode": "25a",
+      "offenceRule": {
+        "paragraphNumber": "25(a)",
+        "paragraphDescription": "Committed an assault"
+      },
+      "associatedPrisonersNumber": "G2996UX",
+      "associatedPrisonersName": "G2996UX"
+    },
+    "offenceDetails": {
+      "offenceCode": 3,
+      "offenceCodeDescription": "Disobeys any lawful order",
+      "offenceRule": {
+        "paragraphNumber": "25(a)",
+        "paragraphDescription": "Committed an assault",
+        "nomisCode": "string",
+        "withOthersNomisCode": "string"
+      },
+      "victimPrisonersNumber": "G2996UX",
+      "victimStaffUsername": "ABC12D",
+      "victimOtherPersonsName": "Bob Hope",
+      "protectedCharacteristics": [
+        "AGE"
+      ],
+      "protectedCharacteristicsDescriptions": [
+        "string"
+      ]
+    },
+    "incidentStatement": {
+      "statement": "string",
+      "completed": true
+    },
+    "createdByUserId": "string",
+    "createdDateTime": "2026-10-12T15:27:45.356Z",
+    "status": "ACCEPTED",
+    "statusDescription": "string",
+    "reviewedByUserId": "string",
+    "statusReason": "string",
+    "statusDetails": "string",
+    "damages": [
+      {
+        "code": "CLEANING",
+        "codeDescription": "Cleaning",
+        "details": "the kettle was broken",
+        "reporter": "ABC12D",
+        "repairCost": 12.5
+      }
+    ],
+    "evidence": [
+      {
+        "code": "PHOTO",
+        "codeDescription": "Photo",
+        "identifier": "Tag number or Camera number",
+        "details": "ie what does the photo describe",
+        "reporter": "ABC12D"
+      }
+    ],
+    "witnesses": [
+      {
+        "code": "PRISON_OFFICER",
+        "codeDescription": "A prison officer",
+        "firstName": "Fred",
+        "lastName": "Kruger",
+        "reporter": "ABC12D",
+        "comment": "string"
+      }
+    ],
+    "hearings": [
+      {
+        "id": 0,
+        "locationUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "dateTimeOfHearing": "2010-10-12T10:00:00",
+        "oicHearingType": "GOV_ADULT",
+        "oicHearingTypeDescription": "string",
+        "outcome": {
+          "id": 0,
+          "adjudicator": "string",
+          "code": "COMPLETE",
+          "codeDescription": "string",
+          "reason": "LEGAL_ADVICE",
+          "details": "string",
+          "plea": "UNFIT",
+          "pleaDescription": "string"
+        },
+        "agencyId": "string",
+        "representative": "string"
+      }
+    ],
+    "issuingOfficer": "string",
+    "dateTimeOfIssue": "2026-10-12T15:27:45.356Z",
+    "disIssueHistory": [
+      {
+        "issuingOfficer": "string",
+        "dateTimeOfIssue": "2026-10-12T15:27:45.356Z"
+      }
+    ],
+    "dateTimeOfFirstHearing": "2026-10-12T15:27:45.356Z",
+    "outcomes": [
+      {
+        "hearing": {
+          "id": 0,
+          "locationUuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "dateTimeOfHearing": "2010-10-12T10:00:00",
+          "oicHearingType": "GOV_ADULT",
+          "oicHearingTypeDescription": "string",
+          "outcome": {
+            "id": 0,
+            "adjudicator": "string",
+            "code": "COMPLETE",
+            "codeDescription": "string",
+            "reason": "LEGAL_ADVICE",
+            "details": "string",
+            "plea": "UNFIT",
+            "pleaDescription": "string"
+          },
+          "agencyId": "string",
+          "representative": "string"
+        },
+        "outcome": {
+          "outcome": {
+            "id": 0,
+            "code": "REFER_POLICE",
+            "details": "string",
+            "reason": "ANOTHER_WAY",
+            "quashedReason": "FLAWED_CASE",
+            "referGovReason": "REVIEW_FOR_REFER_POLICE",
+            "oicHearingId": 0,
+            "canRemove": true
+          },
+          "referralOutcome": {
+            "id": 0,
+            "code": "REFER_POLICE",
+            "details": "string",
+            "reason": "ANOTHER_WAY",
+            "quashedReason": "FLAWED_CASE",
+            "referGovReason": "REVIEW_FOR_REFER_POLICE",
+            "oicHearingId": 0,
+            "canRemove": true
+          }
+        }
+      }
+    ],
+    "punishments": [
+      {
+        "id": 0,
+        "type": "PRIVILEGE",
+        "hasChildUnder18": true,
+        "typeDescription": "string",
+        "privilegeType": "CANTEEN",
+        "privilegeTypeDescription": "string",
+        "otherPrivilege": "string",
+        "stoppagePercentage": 0,
+        "activatedBy": "string",
+        "activatedFrom": "string",
+        "schedule": {
+          "duration": 0,
+          "measurement": "DAYS",
+          "startDate": "2026-10-12",
+          "endDate": "2026-10-12",
+          "suspendedUntil": "2026-10-12"
+        },
+        "consecutiveChargeNumber": "string",
+        "consecutiveReportAvailable": true,
+        "damagesOwedAmount": 0.1,
+        "canRemove": true,
+        "canEdit": true,
+        "paybackNotes": "string",
+        "rehabilitativeActivities": [
+          {
+            "id": 0,
+            "details": "string",
+            "monitor": "string",
+            "endDate": "2026-10-12",
+            "totalSessions": 0,
+            "completed": true
+          }
+        ],
+        "rehabilitativeActivitiesCompleted": true,
+        "rehabilitativeActivitiesNotCompletedOutcome": "FULL_ACTIVATE",
+        "previousSuspendedUntilDate": "2026-10-12"
+      }
+    ],
+    "punishmentComments": [
+      {
+        "id": 0,
+        "comment": "string",
+        "reasonForChange": "APPEAL",
+        "reasonForChangeDescription": "string",
+        "createdByUserId": "string",
+        "dateTime": "2026-10-12T15:27:45.356Z"
+      }
+    ],
+    "outcomeEnteredInNomis": true,
+    "overrideAgencyId": "string",
+    "originatingAgencyId": "string",
+    "transferableActionsAllowed": true,
+    "createdOnBehalfOfOfficer": "string",
+    "createdOnBehalfOfReason": "string",
+    "linkedChargeNumbers": [
+      "string"
+    ],
+    "canActionFromHistory": true
+  }
+]

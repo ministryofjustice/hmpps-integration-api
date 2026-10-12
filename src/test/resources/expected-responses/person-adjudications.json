@@ -1,0 +1,97 @@
+{
+  "data": [
+    {
+      "incidentDetails": {
+        "dateTimeOfIncident": "2010-10-12T10:00:00"
+      },
+      "isYouthOffender": true,
+      "incidentRole": {
+        "roleCode": "25a",
+        "offenceRule": {
+          "paragraphNumber": "25(a)",
+          "paragraphDescription": "Committed an assault"
+        }
+      },
+      "offenceDetails": {
+        "offenceCode": 3,
+        "offenceRule": {
+          "paragraphNumber": "25(a)",
+          "paragraphDescription": "Committed an assault"
+        }
+      },
+      "status": "ACCEPTED",
+      "statusReason": "string",
+      "statusDetails": "string",
+      "hearings": [
+        {
+          "dateTimeOfHearing": "2010-10-12T10:00:00",
+          "oicHearingType": "GOV_ADULT",
+          "outcome": {
+            "code": "COMPLETE",
+            "reason": "LEGAL_ADVICE",
+            "details": "string",
+            "plea": "UNFIT"
+          }
+        }
+      ],
+      "outcomes": [
+        {
+          "hearing": {
+            "dateTimeOfHearing": "2010-10-12T10:00:00",
+            "oicHearingType": "GOV_ADULT",
+            "outcome": {
+              "code": "COMPLETE",
+              "reason": "LEGAL_ADVICE",
+              "details": "string",
+              "plea": "UNFIT"
+            }
+          },
+          "outcome": {
+            "outcome": {
+              "code": "REFER_POLICE",
+              "details": "string",
+              "reason": "ANOTHER_WAY",
+              "quashedReason": "FLAWED_CASE",
+              "canRemove": true
+            },
+            "referralOutcome": {
+              "code": "REFER_POLICE",
+              "details": "string",
+              "reason": "ANOTHER_WAY",
+              "quashedReason": "FLAWED_CASE",
+              "canRemove": true
+            }
+          }
+        }
+      ],
+      "punishments": [
+        {
+          "type": "PRIVILEGE",
+          "privilegeType": "CANTEEN",
+          "otherPrivilege": "string",
+          "schedule": {
+            "days": null,
+            "startDate": "2026-10-12",
+            "endDate": "2026-10-12",
+            "suspendedUntil": "2026-10-12"
+          }
+        }
+      ],
+      "punishmentComments": [
+        {
+          "comment": "string",
+          "reasonForChange": "APPEAL",
+          "dateTime": "2026-10-12T15:27:45.356Z"
+        }
+      ]
+    }
+  ],
+  "pagination": {
+    "isLastPage": true,
+    "count": 1,
+    "page": 1,
+    "perPage": 8,
+    "totalCount": 1,
+    "totalPages": 1
+  }
+}

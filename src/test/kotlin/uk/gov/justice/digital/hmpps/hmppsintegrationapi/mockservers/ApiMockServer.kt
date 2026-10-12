@@ -56,8 +56,7 @@ class ApiMockServer(
           UpstreamApi.CVL -> ApiMockServerConfig(4045, "cvl.json")
           UpstreamApi.SAN -> ApiMockServerConfig(4200, "san.json")
           UpstreamApi.CASE_NOTES -> ApiMockServerConfig(4046, "case-notes.json")
-          // USE PRISM
-          UpstreamApi.ADJUDICATIONS -> ApiMockServerConfig(4006)
+          UpstreamApi.ADJUDICATIONS -> ApiMockServerConfig(4047, "adjudications.json", true)
           UpstreamApi.HMPPS_AUTH -> throw NotImplementedError("HMPPS Auth MockServer is already running, see HmppsAuthMockServer")
         }
 

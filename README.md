@@ -156,7 +156,7 @@ Then visit [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/s
 #### With dependent services
 
 Simulators are used to run dependent services for running the application locally and in smoke tests.
-They use [Prism](https://github.com/stoplightio/prism) which creates a mock server
+They use [Wiremock](https://wiremock.org/docs/solutions/kotlin/) which creates a mock server
 based on an API's latest OpenAPI specification file.
 
 It's possible to run the application with dependent services like

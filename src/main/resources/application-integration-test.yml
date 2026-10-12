@@ -37,7 +37,7 @@ services:
   san:
     base-url: http://localhost:4200
   adjudications:
-    base-url: http://localhost:4010
+    base-url: http://localhost:4047
   assess-risks-and-needs:
     base-url: http://localhost:4032
   case-notes:
