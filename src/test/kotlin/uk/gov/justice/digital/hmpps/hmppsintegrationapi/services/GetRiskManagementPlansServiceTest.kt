@@ -92,7 +92,7 @@ class GetRiskManagementPlansServiceTest(
     val testErrors =
       listOf(
         UpstreamApiError(
-          causedBy = UpstreamApi.RISK_MANAGEMENT_PLAN,
+          causedBy = UpstreamApi.ASSESS_RISKS_AND_NEEDS,
           type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
           description = "Lorem Ipsum dolor sit amet",
         ),

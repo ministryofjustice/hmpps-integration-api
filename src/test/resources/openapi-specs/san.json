@@ -1,0 +1,3635 @@
+openapi: 3.1.1
+info:
+  title: Support For Additional Needs API
+  version: '0.22.0'
+  description: Support For Additional Needs API
+  contact:
+    name: Learning and Work Progress team
+    email: learningandworkprogress@digital.justice.gov.uk
+servers:
+  - url: https://support-for-additional-needs-api-dev.hmpps.service.justice.gov.uk
+    description: Development
+  - url: https://support-for-additional-needs-api-preprod.hmpps.service.justice.gov.uk
+    description: Pre-Production
+  - url: https://support-for-additional-needs-api.hmpps.service.justice.gov.uk
+    description: Production
+  - url: http://localhost:8080
+    description: Local
+
+security:
+  - bearerAuth: [ ]
+
+#
+# --------------------------------------------------------------------------------
+#
+paths:
+  #
+  # --------------------------------------------------------------------------------
+  # RESTful style endpoints start here
+  # --------------------------------------------------------------------------------
+  #
+
+  '/search/prisons/{prisonId}/people':
+    get:
+      summary: List people in the specified prison, optionally filtering on various prisoner and SAN related fields.
+      description: |
+        An API that allows searching, filtering and sorting of people in prison and their Additional Needs.
+        
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__SEARCH__RO`
+      tags:
+        - Search
+      operationId: search-by-prison
+      parameters:
+        - $ref: "#/components/parameters/prisonIdPathParameter"
+        - $ref: "#/components/parameters/prisonNameOrNumberQueryStringParameter"
+        - $ref: "#/components/parameters/planStatusQueryStringParameter"
+        - $ref: "#/components/parameters/sortByQueryStringParameter"
+        - $ref: "#/components/parameters/sortDirectionQueryStringParameter"
+        - $ref: "#/components/parameters/pageNumberQueryStringParameter"
+        - $ref: "#/components/parameters/pageSizeQueryStringParameter"
+      responses:
+        '200':
+          $ref: '#/components/responses/SearchByPrison'
+        '400':
+          $ref: '#/components/responses/400Error'
+
+  '/profile/{prisonNumber}/education-support-plan':
+    parameters:
+      - $ref: "#/components/parameters/prisonNumberPathParameter"
+    post:
+      summary: Create an Education Support Plan
+      description: |
+        Creates an Education Support Plan for the specified prisoner.
+
+        A prisoner can only have a maximum of one Education Support Plans, and a 409 is returned if a 2nd is attempted
+        to be created.
+
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+      tags:
+        - Support Plan
+      operationId: create-education-support-plan
+      responses:
+        '201':
+          $ref: '#/components/responses/EducationSupportPlan'
+          description: The Education Support Plan that was created.
+        '400':
+          $ref: '#/components/responses/400Error'
+        '409':
+          $ref: '#/components/responses/409Error'
+          description: A 409 is returned when the specified prisoner already has an Education Support Plan.
+      requestBody:
+        $ref: '#/components/requestBodies/CreateEducationSupportPlan'
+    get:
+      summary: Return an Education Support Plan
+      description: |
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RO` (Read-Only)
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+      tags:
+        - Support Plan
+      operationId: get-education-support-plan
+      responses:
+        '200':
+          $ref: '#/components/responses/EducationSupportPlan'
+          description: The Education Support Plan for the specified person.
+        '404':
+          $ref: '#/components/responses/404Error'
+
+  '/profile/{prisonNumber}/has-need':
+    parameters:
+      - $ref: "#/components/parameters/prisonNumberPathParameter"
+    get:
+      summary: Return whether someone has a need
+      description: |
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RO` (Read-Only)
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+      tags:
+        - Needs
+      operationId: has-need
+      responses:
+        '200':
+          $ref: '#/components/responses/HasNeed'
+          description: Information about whether a person has a need.
+        '404':
+          $ref: '#/components/responses/404Error'
+
+  '/profile/{prisonNumber}/education-support-plan/review':
+    parameters:
+      - $ref: "#/components/parameters/prisonNumberPathParameter"
+    post:
+      summary: Review an Education Support Plan
+      description: |
+        Creates an Education Support Plan Review and updates the plan for the specified prisoner.
+
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+      tags:
+        - Support Plan
+      operationId: create-education-support-plan-review
+      responses:
+        '201':
+          description: Successfully created review (no response body)
+        '400':
+          $ref: '#/components/responses/400Error'
+        '404':
+          $ref: '#/components/responses/404Error'
+          description: Attempted to create a support plan review where there is no support plan
+        '409':
+          $ref: '#/components/responses/409Error'
+          description: Attempted to create a support plan review where there is no active review schedule
+      requestBody:
+        $ref: '#/components/requestBodies/CreateEducationSupportPlanReview'
+    get:
+      summary: Get Education Support Plan Reviews
+      description: |
+        Gets a list of ELSP reviews
+
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RO` (Read-Only)
+      tags:
+        - Support Plan
+      operationId: get-education-support-plan-reviews
+      responses:
+        '200':
+          $ref: '#/components/responses/GetPlanReviews'
+          description: Returned successfully
+        '404':
+          $ref: '#/components/responses/404Error'
+          description: Education Support plan did not exist
+
+  '/profile/{prisonNumber}/plan-action-status':
+    parameters:
+      - $ref: "#/components/parameters/prisonNumberPathParameter"
+    get:
+      summary: Returns the plan action status for a person
+      description: |
+        This endpoint has been written to satisfy the data requirements for the Actions
+        box on the SAN pages.
+        
+        The UI will decode the planStatus to decide which links to display in the actions area. 
+        The additional information in the actions area will use the  deadline dates for the plan 
+        creation schedule and the review schedule. The endpoint also returns the reasons the person 
+        refused a plan if any. 
+        
+        If there is no record of this peson in SAN then the status will be NO_PLAN. 
+
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RO` (Read-Only)
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+
+      tags:
+        - Plan
+      responses:
+        '200':
+          $ref: '#/components/responses/PlanActionStatusResponse'
+      operationId: get-plan-action-status
+
+  '/profile/{prisonNumber}/additional-needs-factors':
+    parameters:
+      - $ref: "#/components/parameters/prisonNumberPathParameter"
+    get:
+      summary: Retrieves the list of needs, strengths and support strategies.
+      description: |
+        
+        This will only return Non screener challenges and strengths
+
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RO` (Read-Only)
+      tags:
+        - Needs
+      responses:
+        '200':
+          $ref: '#/components/responses/AdditionalNeedsFactors'
+      operationId: getAdditionalNeedsFactors
+
+  '/profile/{prisonNumber}/conditions':
+    parameters:
+      - $ref: "#/components/parameters/prisonNumberPathParameter"
+    post:
+      summary: Adds one or more Conditions.
+      description: |
+        Adds one or more Conditions to the specified prisoner's list of Conditions.
+        
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+      tags:
+        - Condition
+      responses:
+        '201':
+          $ref: '#/components/responses/ConditionList'
+        '400':
+          $ref: '#/components/responses/400Error'
+        '409':
+          $ref: '#/components/responses/409Error'
+      operationId: post-conditions
+      requestBody:
+        $ref: '#/components/requestBodies/CreateConditionList'
+    get:
+      summary: Retrieves the list of conditions.
+      description: |
+        
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RO` (Read-Only)
+      tags:
+        - Condition
+      responses:
+        '200':
+          $ref: '#/components/responses/ConditionList'
+        '400':
+          $ref: '#/components/responses/400Error'
+      operationId: get-conditions
+  '/profile/{prisonNumber}/conditions/{conditionReference}':
+    parameters:
+      - $ref: "#/components/parameters/prisonNumberPathParameter"
+      - name: conditionReference
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: UUID of the specific condition to update
+    get:
+      summary: Retrieves a condition by reference.
+      description: |
+
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RO` (Read-Only)
+      tags:
+        - Condition
+      responses:
+        '200':
+          $ref: '#/components/responses/Condition'
+        '404':
+          $ref: '#/components/responses/404Error'
+      operationId: get-condition
+    put:
+      summary: Updates a single condition by UUID.
+      description: |
+        Updates a specific condition associated with the given prison number.
+
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+      tags:
+        - Condition
+      operationId: update-condition
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateCondition'
+      responses:
+        '200':
+          $ref: '#/components/responses/Condition'
+        '400':
+          $ref: '#/components/responses/400Error'
+        '404':
+          description: Condition not found
+    delete:
+      summary: Deletes a single condition by UUID.
+      description: |
+        Hard-deletes the specified condition. Whether the condition was previously archived
+        (`active = false`) or still live, it is deleted in the same way. If the condition was
+        the prisoner's only "need" source, the prisoner's plan-creation/review schedules are
+        marked `EXEMPT_NO_NEED` and an `san.plan-creation-schedule.updated` /
+        `san.review-schedule.updated` event is published so MN can pick up the change.
+
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+      tags:
+        - Condition
+      operationId: delete-condition
+      parameters:
+        - name: prisonId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: The prison code making the change (drives `updatedAtPrison` on cascaded schedule updates and `createdAtPrison` on the timeline row).
+        - name: reason
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/DeletionReason'
+          description: The reason for deletion. Stored in the timeline event's `additionalInfo`.
+      responses:
+        '204':
+          description: The condition was successfully deleted.
+        '400':
+          $ref: '#/components/responses/400Error'
+        '404':
+          $ref: '#/components/responses/404Error'
+
+  '/profile/{prisonNumber}/ehcp-status':
+    parameters:
+      - $ref: "#/components/parameters/prisonNumberPathParameter"
+    get:
+      summary: Retrieves EHCP status for the prisoner.
+      description: |
+
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RO` (Read-Only)
+      tags:
+        - EHCP
+      responses:
+        '200':
+          $ref: '#/components/responses/EhcpStatus'
+        '404':
+          $ref: '#/components/responses/404Error'
+      operationId: get-ehcp-status
+    put:
+      summary: Updates the EHCP status of the prisoner.
+      description: |
+        Updates whether the prisoner has an Education, Health, and Care Plan (EHCP) .
+
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+      tags:
+        - EHCP
+      operationId: update-ehcp
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateEhcpStatus'
+      responses:
+        '200':
+          $ref: '#/components/responses/EhcpStatus'
+        '400':
+          $ref: '#/components/responses/400Error'
+        '404':
+          description: EHCP not found
+
+  '/profile/{prisonNumber}/conditions/{conditionReference}/archive':
+    parameters:
+      - $ref: "#/components/parameters/prisonNumberPathParameter"
+      - name: conditionReference
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: UUID of the specific condition to archive
+    put:
+      summary: Archives a single condition by UUID.
+      description: |
+        Archives a specific condition associated with the given prison number.
+
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+      tags:
+        - Condition
+      operationId: archive-condition
+      requestBody:
+        $ref: '#/components/requestBodies/ArchiveCondition'
+      responses:
+        '204':
+          description: The challenge was successfully archived.
+        '400':
+          $ref: '#/components/responses/400Error'
+        '404':
+          $ref: '#/components/responses/404Error'
+        '409':
+          $ref: '#/components/responses/409Error'
+
+  '/profile/{prisonNumber}/challenges':
+    parameters:
+      - $ref: "#/components/parameters/prisonNumberPathParameter"
+    post:
+      summary: Adds one or more challenges.
+      description: |
+        Adds one or more Challenges to the specified prisoner's list of Challenges.
+                  
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+      tags:
+        - Challenge
+      responses:
+        '201':
+          $ref: '#/components/responses/ChallengeList'
+        '400':
+          $ref: '#/components/responses/400Error'
+        '409':
+          $ref: '#/components/responses/409Error'
+      operationId: post-challenges
+      requestBody:
+        $ref: '#/components/requestBodies/CreateChallengeList'
+    get:
+      summary: Retrieves the list of challenges.
+      description: |
+
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RO` (Read-Only)
+      tags:
+        - Challenge
+      responses:
+        '200':
+          $ref: '#/components/responses/ChallengeList'
+        '400':
+          $ref: '#/components/responses/400Error'
+      operationId: get-challenges
+  '/profile/{prisonNumber}/challenges/{challengeReference}':
+    parameters:
+      - $ref: "#/components/parameters/prisonNumberPathParameter"
+      - name: challengeReference
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: UUID of the specific challenge to update
+    get:
+      summary: Retrieves a challenge by reference.
+      description: |
+
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RO` (Read-Only)
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+      tags:
+        - Challenge
+      responses:
+        '200':
+          $ref: '#/components/responses/Challenge'
+        '404':
+          $ref: '#/components/responses/404Error'
+      operationId: get-challenge
+    put:
+      summary: Updates a single challenge by UUID.
+      description: |
+        Updates a specific challenge associated with the given prison number.
+
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+
+      tags:
+        - Challenge
+      operationId: update-challenge
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateChallenge'
+      responses:
+        '200':
+          $ref: '#/components/responses/Challenge'
+        '400':
+          $ref: '#/components/responses/400Error'
+        '404':
+          description: Challenge not found
+    delete:
+      summary: Deletes a single manually-added challenge by UUID.
+      description: |
+        Hard-deletes the specified challenge. Whether the challenge was previously archived
+        (`active = false`) or still live, it is deleted in the same way. **Only manually-added
+        challenges can be deleted** — challenges sourced from an ALN screener return 409.
+
+        If the challenge was the prisoner's only "need" source, the plan-creation/review
+        schedules are marked `EXEMPT_NO_NEED` and an `san.plan-creation-schedule.updated` /
+        `san.review-schedule.updated` event is published so MN can pick up the change.
+
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+      tags:
+        - Challenge
+      operationId: delete-challenge
+      parameters:
+        - name: prisonId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: The prison code making the change (drives `updatedAtPrison` on cascaded schedule updates and `createdAtPrison` on the timeline row).
+        - name: reason
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/DeletionReason'
+          description: The reason for deletion. Stored in the timeline event's `additionalInfo`.
+      responses:
+        '204':
+          description: The challenge was successfully deleted.
+        '400':
+          $ref: '#/components/responses/400Error'
+        '404':
+          $ref: '#/components/responses/404Error'
+        '409':
+          $ref: '#/components/responses/409Error'
+
+  '/profile/{prisonNumber}/challenges/{challengeReference}/archive':
+    parameters:
+      - $ref: "#/components/parameters/prisonNumberPathParameter"
+      - name: challengeReference
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: UUID of the specific challenge to archive
+    put:
+      summary: Archives a single challenge by UUID.
+      description: |
+        Archives a specific challenge associated with the given prison number.
+
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+      tags:
+        - Challenge
+      operationId: archive-challenge
+      requestBody:
+        $ref: '#/components/requestBodies/ArchiveChallenge'
+      responses:
+        '204':
+          description: The challenge was successfully archived.
+        '400':
+          $ref: '#/components/responses/400Error'
+        '404':
+          $ref: '#/components/responses/404Error'
+        '409':
+          $ref: '#/components/responses/409Error'
+
+  '/profile/{prisonNumber}/strengths':
+    parameters:
+      - $ref: "#/components/parameters/prisonNumberPathParameter"
+    post:
+      summary: Adds one or more strengths.
+      description: |
+        Adds one or more Strengths to the specified prisoner's list of Strengths.
+
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+      tags:
+        - Strength
+      responses:
+        '201':
+          $ref: '#/components/responses/StrengthList'
+        '400':
+          $ref: '#/components/responses/400Error'
+        '409':
+          $ref: '#/components/responses/409Error'
+      operationId: post-strengths
+      requestBody:
+        $ref: '#/components/requestBodies/CreateStrengthList'
+    get:
+      summary: Retrieves the list of strengths.
+      description: |
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RO` (Read-Only)
+      tags:
+        - Strength
+      responses:
+        '200':
+          $ref: '#/components/responses/StrengthList'
+        '400':
+          $ref: '#/components/responses/400Error'
+      operationId: get-strengths
+
+  '/profile/{prisonNumber}/aln-screener':
+    parameters:
+      - $ref: "#/components/parameters/prisonNumberPathParameter"
+    post:
+      summary: Endpoint to take in all of the aln screener information.
+      description: |
+        End point used to input the information from the ALN screener. This is a manual
+        data entry process where the user keys in the information from the ALN screener form. 
+        It is essentially a date and a list of challenge and strength codes. If only a date is 
+        sent then this means the screener was completed but there were no needs identified.
+
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+      tags:
+        - ALN Screener
+      responses:
+        '201':
+          description: Successfully created ALN screener (no response body)
+        '400':
+          $ref: '#/components/responses/400Error'
+        '409':
+          $ref: '#/components/responses/409Error'
+      operationId: post-aln-screener
+      requestBody:
+        $ref: '#/components/requestBodies/CreateALNScreenerRequest'
+    get:
+      summary: Retrieve the ALN screener information for a person.
+      description: |
+        Endpoint to retrieve the Additional Learning Needs (ALN) screener information
+        for a person in custody, based on their prison number. Returns the date the
+        screener was completed along with any associated challenge and strength codes.
+        Note that a person may have more than one screener.
+
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RO` (Read-Only)
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+      tags:
+        - ALN Screener
+      responses:
+        '200':
+          $ref: '#/components/responses/ALNScreenersResponse'
+        '400':
+          $ref: '#/components/responses/400Error'
+      operationId: get-aln-screener
+    delete:
+      summary: Deletes the current (latest) ALN screener for a prisoner.
+      description: |
+        Permanently deletes the prisoner's most recent ALN screener, together with
+        the strengths and challenges that were recorded as part of it. If the
+        prisoner has an earlier ALN screener, that screener becomes the current one
+        and its strengths and challenges are restored.
+
+        This endpoint always operates on the latest screener — there is no path or
+        query parameter to target a specific screener by reference.
+
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+      tags:
+        - ALN Screener
+      operationId: delete-aln-screener
+      parameters:
+        - name: prisonId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: The prison code identifying the establishment where the deletion is being made.
+        - name: reason
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/DeletionReason'
+          description: The reason for deletion.
+      responses:
+        '204':
+          description: The current ALN screener was successfully deleted.
+        '400':
+          $ref: '#/components/responses/400Error'
+        '404':
+          $ref: '#/components/responses/404Error'
+
+  '/profile/{prisonNumber}/strengths/{strengthReference}':
+    parameters:
+      - $ref: "#/components/parameters/prisonNumberPathParameter"
+      - name: strengthReference
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: UUID of the specific strength to update
+    get:
+      summary: Retrieves a strength by reference.
+      description: |
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RO` (Read-Only)
+      tags:
+        - Strength
+      responses:
+        '200':
+          $ref: '#/components/responses/Strength'
+        '404':
+          $ref: '#/components/responses/404Error'
+      operationId: get-strength
+    put:
+      summary: Updates a single strength by UUID.
+      description: |
+        Updates a specific strength associated with the given prison number.
+
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+
+      tags:
+        - Strength
+      operationId: update-strength
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateStrength'
+      responses:
+        '200':
+          $ref: '#/components/responses/Strength'
+        '400':
+          $ref: '#/components/responses/400Error'
+        '404':
+          description: Strength not found
+    delete:
+      summary: Deletes a single manually-added strength by UUID.
+      description: |
+        Hard-deletes the specified strength. Whether the strength was previously archived
+        (`active = false`) or still live, it is deleted in the same way. **Only manually-added
+        strengths can be deleted** — strengths sourced from an ALN screener return 409.
+
+        Strengths do not contribute to a prisoner's "need" status, so deletion has no effect on
+        plan-creation/review schedules.
+
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+      tags:
+        - Strength
+      operationId: delete-strength
+      parameters:
+        - name: prisonId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: The prison code making the change. Stored as `createdAtPrison` on the timeline row.
+        - name: reason
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/DeletionReason'
+          description: The reason for deletion. Stored in the timeline event's `additionalInfo`.
+      responses:
+        '204':
+          description: The strength was successfully deleted.
+        '400':
+          $ref: '#/components/responses/400Error'
+        '404':
+          $ref: '#/components/responses/404Error'
+        '409':
+          $ref: '#/components/responses/409Error'
+  '/profile/{prisonNumber}/strengths/{strengthReference}/archive':
+    parameters:
+      - $ref: "#/components/parameters/prisonNumberPathParameter"
+      - name: strengthReference
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: UUID of the specific strength to archive
+    put:
+      summary: Archives a single strength by UUID.
+      description: |
+        Archives a specific strength associated with the given prison number.
+
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+      tags:
+        - Strength
+      operationId: archive-strength
+      requestBody:
+        $ref: '#/components/requestBodies/ArchiveStrength'
+      responses:
+        '204':
+          description: The strength was successfully archived.
+        '400':
+          $ref: '#/components/responses/400Error'
+        '404':
+          $ref: '#/components/responses/404Error'
+        '409':
+          $ref: '#/components/responses/409Error'
+
+  '/profile/{prisonNumber}/reviews/review-schedules':
+    parameters:
+      - $ref: "#/components/parameters/prisonNumberPathParameter"
+    get:
+      summary: Lists all Plan Review Schedules (past and scheduled) for a prisoner
+      description: |
+        Returns all Review schedules for the specified prisoner. 
+
+        The data will be returned as a list ordered by last updated date then by version number. 
+
+        It is possible for a review schedule to be updated therefore this endpoint will return all versions of a
+        review schedule - the highest version number will be the most recent schedule. 
+
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RO` (Read-Only)
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+
+      tags:
+        - Plan Reviews
+      responses:
+        '200':
+          $ref: '#/components/responses/GetReviewSchedules'
+        '404':
+          $ref: '#/components/responses/404Error'
+      operationId: get-review-schedules
+
+  '/profile/{prisonNumber}/plan-creation-schedule':
+    parameters:
+      - $ref: "#/components/parameters/prisonNumberPathParameter"
+      - name: includeAllHistory
+        in: query
+        description: Whether to include the history of the schedule changes
+        required: false
+        schema:
+          type: boolean
+          default: false
+    get:
+      summary: Returns the plan creation Schedule for a prisoner
+      description: |
+        Returns the plan creation schedule for the specified prisoner. 
+
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RO` (Read-Only)
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+
+      tags:
+        - Plan
+      responses:
+        '200':
+          $ref: '#/components/responses/GetPlanCreationSchedule'
+        '404':
+          $ref: '#/components/responses/404Error'
+      operationId: get-plan-creation-schedule
+
+  '/profile/{prisonNumber}/plan-creation-schedule/status':
+    parameters:
+      - $ref: "#/components/parameters/prisonNumberPathParameter"
+    patch:
+      summary: Update the status of the plan creation schedule for a prisoner
+      description: |
+        Updates the status of the plan creation schedule for the specified prisoner.
+
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+
+      tags:
+        - Plan
+      requestBody:
+        $ref: '#/components/requestBodies/UpdatePlanCreationStatus'
+      responses:
+        '200':
+          $ref: '#/components/responses/GetPlanCreationSchedule'
+        '400':
+          $ref: '#/components/responses/400Error'
+        '404':
+          $ref: '#/components/responses/404Error'
+      operationId: update-plan-creation-schedule-status
+  '/reference-data/{domain}':
+    get:
+      tags:
+        - Reference Data
+      summary: Retrieve all reference data for a domain.
+      description: |-
+        Get all reference data for a domain e.g. CONDITION
+        
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RO` (Read-Only)
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+      operationId: getReferenceData
+      parameters:
+        - name: domain
+          in: path
+          description: Reference data domain.
+          required: true
+          schema:
+            type: string
+            enum:
+              - CONDITION
+              - CHALLENGE
+              - STRENGTH
+              - SUPPORT_STRATEGY
+        - name: includeInactive
+          in: query
+          description: Include inactive reference data. Defaults to false
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          $ref: '#/components/responses/ReferenceDataResponse'
+        '404':
+          $ref: '#/components/responses/404Error'
+  '/reference-data/{domain}/categories':
+    get:
+      tags:
+        - Reference Data
+      summary: Retrieve default reference data at the category level.
+      description: |-
+        Each category of reference data can have a default value. So that if someone wants to choose reference data
+        at the category level then this endpoint will return the reference data to be used.  
+        
+        For example in the domain CHALLENGE if someone wants the categories then it will return the default reference data type 
+        for each category currently there are 9 categories. an example of one of them isLITERACY_SKILLS, this will return the 
+        ChallengeType that should be used ie LITERACY_SKILLS_DEFAULT.
+        
+        If no defaults are set for a category then this will return no results. 
+        
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RO` (Read-Only)
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+      operationId: getReferenceDataCategories
+      parameters:
+        - name: domain
+          in: path
+          description: Reference data domain.
+          required: true
+          schema:
+            type: string
+            enum:
+              - CONDITION
+              - CHALLENGE
+              - STRENGTH
+              - SUPPORT_STRATEGY
+        - name: includeInactive
+          in: query
+          description: Include inactive reference data. Defaults to false
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          $ref: '#/components/responses/ReferenceDataResponse'
+        '404':
+          $ref: '#/components/responses/404Error'
+
+  '/profile/{prisonNumber}/support-strategies':
+    parameters:
+      - $ref: "#/components/parameters/prisonNumberPathParameter"
+    post:
+      summary: Adds one or more support strategies.
+      description: |
+        Adds one or more Support Strategies to the specified prisoner's list of Support Strategies.
+
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+      tags:
+        - Support Strategy
+      responses:
+        '201':
+          $ref: '#/components/responses/SupportStrategyList'
+        '400':
+          $ref: '#/components/responses/400Error'
+        '409':
+          $ref: '#/components/responses/409Error'
+      operationId: post-support-strategies
+      requestBody:
+        $ref: '#/components/requestBodies/CreateSupportStrategyList'
+
+    get:
+      summary: Retrieves the list of support strategies.
+      description: |
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RO` (Read-Only)
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+      tags:
+        - Support Strategy
+      responses:
+        '200':
+          $ref: '#/components/responses/SupportStrategyList'
+        '400':
+          $ref: '#/components/responses/400Error'
+      operationId: get-support-strategies
+
+  '/profile/{prisonNumber}/support-strategies/{supportStrategyReference}':
+    parameters:
+      - $ref: "#/components/parameters/prisonNumberPathParameter"
+      - name: supportStrategyReference
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: UUID of the specific support strategy to update
+    get:
+      summary: Retrieves a support strategy.
+      description: |
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RO` (Read-Only)
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+      tags:
+        - Support Strategy
+      responses:
+        '200':
+          $ref: '#/components/responses/SupportStrategy'
+        '404':
+          $ref: '#/components/responses/404Error'
+      operationId: get-support-strategy
+    put:
+      summary: Updates a single support strategy by UUID.
+      description: |
+        Updates a specific support strategy associated with the given prison number.
+
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+      tags:
+        - Support Strategy
+      operationId: update-support-strategy
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateSupportStrategy'
+      responses:
+        '200':
+          $ref: '#/components/responses/SupportStrategy'
+        '400':
+          $ref: '#/components/responses/400Error'
+        '404':
+          $ref: '#/components/responses/404Error'
+        '409':
+          $ref: '#/components/responses/409Error'
+    delete:
+      summary: Deletes a single support strategy by UUID.
+      description: |
+        Hard-deletes the specified support strategy. Whether the support strategy was previously
+        archived (`active = false`) or still live, it is deleted in the same way.
+
+        Support strategies do not contribute to a prisoner's "need" status, so deletion has no
+        effect on plan-creation/review schedules.
+
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+      tags:
+        - Support Strategy
+      operationId: delete-support-strategy
+      parameters:
+        - name: prisonId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: The prison code making the change. Stored as `createdAtPrison` on the timeline row.
+        - name: reason
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/DeletionReason'
+          description: The reason for deletion. Stored in the timeline event's `additionalInfo`.
+      responses:
+        '204':
+          description: The support strategy was successfully deleted.
+        '400':
+          $ref: '#/components/responses/400Error'
+        '404':
+          $ref: '#/components/responses/404Error'
+  '/profile/{prisonNumber}/support-strategies/{supportStrategyReference}/archive':
+    parameters:
+      - $ref: "#/components/parameters/prisonNumberPathParameter"
+      - name: supportStrategyReference
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: UUID of the specific support strategy to archive
+    put:
+      summary: Archives a single support strategy by UUID.
+      description: |
+        Archives a specific support strategy associated with the given prison number.
+
+        **Role Requirements:**
+        Access to this endpoint requires one of the following roles:
+          - `ROLE_SUPPORT_ADDITIONAL_NEEDS__ELSP__RW` (Read-Write)
+      tags:
+        - Support Strategy
+      operationId: archive-support-strategy
+      requestBody:
+        $ref: '#/components/requestBodies/ArchiveSupportStrategy'
+      responses:
+        '204':
+          description: The support strategy was successfully archived.
+        '400':
+          $ref: '#/components/responses/400Error'
+        '404':
+          $ref: '#/components/responses/404Error'
+        '409':
+          $ref: '#/components/responses/409Error'
+
+  #
+  # Subject access request
+  # --------------------------------------------------------------------------------
+  '/subject-access-request':
+    get:
+      summary: Retrieves SAN SAR data
+      tags:
+        - Subject Access Request
+      parameters:
+        - $ref: "#/components/parameters/prnQueryStringParameter"
+        - $ref: "#/components/parameters/fromDate"
+        - $ref: "#/components/parameters/toDate"
+      responses:
+        '200':
+          $ref: '#/components/responses/SarContentFound'
+        '204':
+          description: Request successfully processed - no content found
+        '209':
+          description: Subject Identifier is not recognised by this service
+        '400':
+          $ref: '#/components/responses/400Error'
+        '401':
+          description: The client does not have authorisation to make this request
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  #
+  # Request Body Definitions
+  # --------------------------------------------------------------------------------
+  requestBodies:
+    CreateConditionList:
+      description: Request body to create conditions for a person.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateConditionsRequest'
+    UpdateEhcpStatus:
+      description: Request body to update the EHCP status.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateEhcpRequest'
+    UpdateCondition:
+      description: Request body to update a condition for a person.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateConditionRequest'
+    CreateChallengeList:
+      description: Request body to create challenges for a person.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateChallengesRequest'
+    UpdateChallenge:
+      description: Request body to update a challenge for a person.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateChallengeRequest'
+    CreateStrengthList:
+      description: Request body to create strength for a person.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateStrengthsRequest'
+    UpdateStrength:
+      description: Request body to update a strength for a person.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateStrengthRequest'
+    CreateEducationSupportPlan:
+      description: Request body to create an Education Support Plan for a person.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateEducationSupportPlanRequest'
+    CreateEducationSupportPlanReview:
+      description: Request body to create an Education Support Plan for a person.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SupportPlanReviewRequest'
+    UpdatePlanCreationStatus:
+      description: Request body to update the status of the plan creation schedule.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdatePlanCreationStatusRequest'
+    CreateALNScreenerRequest:
+      description: Request body to save an ALN screener.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ALNScreenerRequest'
+    CreateSupportStrategyList:
+      description: Request body to create support strategies for a person.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateSupportStrategiesRequest'
+
+    UpdateSupportStrategy:
+      description: Request body to update a support strategy for a person.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateSupportStrategyRequest'
+
+    ArchiveSupportStrategy:
+      description: Request body to archive a support strategy for a person.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ArchiveSupportStrategyRequest'
+
+    ArchiveStrength:
+      description: Request body to archive a strength for a person.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ArchiveStrengthRequest'
+
+    ArchiveChallenge:
+      description: Request body to archive a challenge for a person.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ArchiveChallengeRequest'
+
+    ArchiveCondition:
+      description: Request body to archive a condition for a person.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ArchiveConditionRequest'
+
+
+  #
+  # Schema and Enum Definitions
+  # --------------------------------------------------------------------------------
+  schemas:
+    PrisonId:
+      type: string
+      description: The Prison identifier.
+      example: BXI
+      pattern: "^[A-Z]{3}$"
+
+    SearchSortField:
+      type: string
+      enum:
+        - PRISONER_NAME
+        - PRISON_NUMBER
+        - CELL_LOCATION
+        - RELEASE_DATE
+        - DEADLINE_DATE
+        - PLAN_STATUS
+        - HAS_ADDITIONAL_NEED
+        - IN_EDUCATION
+
+    SearchSortDirection:
+      type: string
+      enum:
+        - ASC
+        - DESC
+
+    ErrorResponse:
+      title: ErrorResponse
+      description: |
+        A generic response body object describing errors in a web request, and can be used to communicate several
+        different types of error condition such as (but not limited to) `400 BAD REQUEST`, `409 CONFLICT` etc.
+      properties:
+        status:
+          description: The HTTP status code.
+          type: integer
+          example: 400
+        errorCode:
+          description: An optional application specific error code.
+          type: string
+        userMessage:
+          description: An optional human readable description of the error.
+          type: string
+          example: 'No Plan found for prisoner [A1234BC]'
+        developerMessage:
+          description: An optional error message that may have more technical information for developers.
+          type: string
+        moreInfo:
+          description: Optional more detailed information about the error.
+          type: string
+      required:
+        - status
+
+    SentenceType:
+      type: string
+      description: An enumeration of prisoner sentence types.
+      enum:
+        - RECALL
+        - DEAD
+        - INDETERMINATE_SENTENCE
+        - SENTENCED
+        - CONVICTED_UNSENTENCED
+        - CIVIL_PRISONER
+        - IMMIGRATION_DETAINEE
+        - REMAND
+        - UNKNOWN
+        - OTHER
+
+    PlanStatus:
+      type: string
+      description: An enumeration of plan status.
+      enum:
+        - PLAN_OVERDUE
+        - PLAN_DUE
+        - REVIEW_OVERDUE
+        - REVIEW_DUE
+        - ACTIVE_PLAN
+        - NEEDS_PLAN
+        - INACTIVE_PLAN
+        - PLAN_DECLINED
+        - NO_PLAN
+
+    SearchByPrisonResponse:
+      title: SearchByPrisonResponse
+      description: Response body containing a Search by prison paginated results response.
+      type: object
+      properties:
+        pagination:
+          $ref: '#/components/schemas/PaginationMetaData'
+        people:
+          type: array
+          description: A List containing zero or more people matching the search.
+          items:
+            $ref: '#/components/schemas/Person'
+      required:
+        - people
+        - pagination
+
+    PaginationMetaData:
+      description: Pagination metadata for the search results.
+      type: object
+      properties:
+        totalElements:
+          type: integer
+          description: Total number of elements matching the criteria
+          example: 100
+        totalPages:
+          type: integer
+          description: Total number of pages
+          example: 5
+        page:
+          type: integer
+          description: Current page number
+          example: 2
+        last:
+          type: boolean
+          description: Indicates this is the last page
+          example: false
+        first:
+          type: boolean
+          description: Indicates this is the first page
+          example: false
+        pageSize:
+          type: integer
+          description: Number of items per page
+          example: 20
+      required:
+        - totalElements
+        - totalPages
+        - page
+        - last
+        - first
+        - pageSize
+
+    AuditedResource:
+      title: AuditedResource
+      type: object
+      properties:
+        createdBy:
+          type: string
+          description: The DPS username of the person who created this resource.
+          example: 'asmith_gen'
+        createdByDisplayName:
+          type: string
+          description: The display name of the person who created this resource.
+          example: 'Alex Smith'
+        createdAt:
+          type: string
+          format: date-time
+          description: An ISO-8601 timestamp representing when this resource was created.
+          example: '2023-06-19T09:39:44Z'
+        createdAtPrison:
+          type: string
+          description: The identifier of the prison that the prisoner was resident at when this resource was created.
+          example: 'BXI'
+        updatedBy:
+          type: string
+          description: The DPS username of the person who last updated this resource.
+          example: 'asmith_gen'
+        updatedByDisplayName:
+          type: string
+          description: The display name of the person who last updated this resource.
+          example: 'Alex Smith'
+        updatedAt:
+          type: string
+          format: date-time
+          description: An ISO-8601 timestamp representing when this resource was last updated. This will be the same as the created date if it has not yet been updated.
+          example: '2023-06-19T09:39:44Z'
+        updatedAtPrison:
+          type: string
+          description: The identifier of the prison that the prisoner was resident at when this resource was updated.
+          example: 'BXI'
+      required:
+        - createdBy
+        - createdByDisplayName
+        - createdAt
+        - createdAtPrison
+        - updatedBy
+        - updatedByDisplayName
+        - updatedAt
+        - updatedAtPrison
+
+    Person:
+      title: Person
+      description: A summary of a person in prison, including flags as to whether they have Challenges, Strengths, Conditions or Support Recommendations recorded in the service.
+      type: object
+      properties:
+        forename:
+          type: string
+          description: The prisoner's forename.
+          example: Bob
+        surname:
+          type: string
+          description: The prisoner's surname.
+          example: Smith
+        prisonNumber:
+          type: string
+          description: The prisoner's NOMIS number.
+          example: A1234BC
+        dateOfBirth:
+          type: string
+          format: date
+          description: The prisoner's date of birth.
+          example: "1999-12-01"
+        cellLocation:
+          type: string
+          description: The prisoner's cell location within prison
+          example: "B-3-047"
+        releaseDate:
+          type: string
+          format: date
+          description: The prisoner's release date as returned by prisoner-search-api.
+          example: "2035-11-01"
+        sentenceType:
+          $ref: '#/components/schemas/SentenceType'
+          description: The prisoner's sentence type.
+        hasAdditionalNeed:
+          type: boolean
+          description: Returns true if this person has any ALN needs, LDD needs, SAN condition or SAN Challenge.
+        inEducation:
+          type: boolean
+          description: Returns true if this person is currently in education.
+        planStatus:
+          $ref: '#/components/schemas/PlanStatus'
+          description: The status of the persons plan.
+        deadlineDate:
+          type: string
+          format: date
+          description: |
+            Either the plan creation,or review deadline date.  
+            Only returned when the planStatus is PLAN_OVERDUE, PLAN_DUE, REVIEW_OVERDUE, REVIEW_DUE, ACTIVE_PLAN.
+          example: "2035-11-01"
+
+      required:
+        - forename
+        - surname
+        - prisonNumber
+        - dateOfBirth
+        - sentenceType
+        - hasAdditionalNeed
+        - inEducation
+        - planStatus
+
+    ReviewSchedulesResponse:
+      title: ReviewSchedulesResponse
+      description: A list of review schedules for a prisoner.
+      type: object
+      properties:
+        reviewSchedules:
+          type: array
+          description: A List containing zero or more ReviewSchedules.
+          items:
+            $ref: '#/components/schemas/ReviewScheduleResponse'
+      required:
+        - reviewSchedules
+
+    AdditionalNeedsFactorsResponse:
+      title: AdditionalNeedsFactorsResponse
+      description: A list of needs, strengths and support strategies for a prisoner.
+      type: object
+      properties:
+        conditions:
+          type: array
+          description: A List containing zero or more Conditions.
+          items:
+            $ref: '#/components/schemas/ConditionResponse'
+        challenges:
+          type: array
+          description: A List containing zero or more Challenges.
+          items:
+            $ref: '#/components/schemas/ChallengeResponse'
+        strengths:
+          type: array
+          description: A List containing zero or more Strengths.
+          items:
+            $ref: '#/components/schemas/StrengthResponse'
+        supportStrategies:
+          type: array
+          description: A List containing zero or more SupportStrategies.
+          items:
+            $ref: '#/components/schemas/SupportStrategyResponse'
+      required:
+        - conditions
+        - challenges
+        - strengths
+        - supportStrategies
+
+    ConditionListResponse:
+      title: ConditionListResponse
+      description: A list of conditions for a prisoner.
+      type: object
+      properties:
+        conditions:
+          type: array
+          description: A List containing zero or more Conditions.
+          items:
+            $ref: '#/components/schemas/ConditionResponse'
+      required:
+        - conditions
+
+    ChallengeListResponse:
+      title: ChallengeListResponse
+      description: A list of challenges for a prisoner.
+      type: object
+      properties:
+        challenges:
+          type: array
+          description: A List containing zero or more Challenges.
+          items:
+            $ref: '#/components/schemas/ChallengeResponse'
+      required:
+        - challenges
+    StrengthListResponse:
+      title: StrengthListResponse
+      description: A list of strengths for a prisoner.
+      type: object
+      properties:
+        strengths:
+          type: array
+          description: A List containing zero or more Strengths.
+          items:
+            $ref: '#/components/schemas/StrengthResponse'
+      required:
+        - strengths
+    CreateConditionsRequest:
+      title: ConditionListRequest
+      description: A request to create a list of conditions for a person.
+      type: object
+      properties:
+        conditions:
+          type: array
+          description: A List containing zero or more Conditions.
+          items:
+            $ref: '#/components/schemas/ConditionRequest'
+      required:
+        - conditions
+    CreateChallengesRequest:
+      title: ChallengesListRequest
+      description: A request to create a list of challenges for a person.
+      type: object
+      properties:
+        challenges:
+          type: array
+          description: A List containing zero or more Challenges.
+          items:
+            $ref: '#/components/schemas/ChallengeRequest'
+      required:
+        - challenges
+    CreateStrengthsRequest:
+      title: StrengthsListRequest
+      description: A request to create a list of strengths for a person.
+      type: object
+      properties:
+        strengths:
+          type: array
+          description: A List containing zero or more Strengths.
+          items:
+            $ref: '#/components/schemas/StrengthRequest'
+      required:
+        - strengths
+
+    SupportPlanReviewRequest:
+      title: SupportPlanReviewRequest
+      description: A request to create an Education Support Plan Review for a person.
+      type: object
+      properties:
+        prisonId:
+          $ref: '#/components/schemas/PrisonId'
+          description: The prisonId that the person is a resident at at the time of creating the review.
+        nextReviewDate:
+          type: string
+          format: date
+          description: |
+            An ISO-8601 date representing date that the next review should be scheduled.
+          example: '2023-11-19'
+        reviewCreatedBy:
+          description: Optional details of who created the Education Support Plan review. If not specified the authenticated user is assumed to have created it.
+          $ref: '#/components/schemas/ReviewContributor'
+        otherContributors:
+          description: |
+            Optional list of other people involved in the creation of the Education Support Plan Review.
+
+            If provided, the list must contain at least 1 contributor. The list must not be empty.
+          type: array
+          items:
+            $ref: '#/components/schemas/ReviewContributor'
+          min: 1
+        prisonerDeclinedFeedback:
+          type: boolean
+          default: false
+          description: whether or not the prisoner declined to be part of the review
+        prisonerFeedback:
+          type: string
+          description: Details about how the prisoner feels they are progressing. This is mandatory if the prisonerDeclinedFeedback is false.
+          example: The education support changes have really helped me to concentrate in lessons.
+          maxLength: 4096
+        reviewerFeedback:
+          type: string
+          description: Details about how the reviewer feels the prisoner has progressed.
+          example: Chris has really improved his concentration in lessons.
+          maxLength: 4096
+        updateEducationSupportPlan:
+          description: Request object containing updates to the education support plan .
+          $ref: '#/components/schemas/UpdateEducationSupportPlanRequest'
+      required:
+        - prisonId
+        - reviewerFeedback
+        - nextReviewDate
+        - updateEducationSupportPlan
+        - prisonerDeclinedFeedback
+
+    UpdateEducationSupportPlanRequest:
+      title: UpdateEducationSupportPlanRequest
+      description: A request to update an Education Support Plan for a person.
+      type: object
+      properties:
+        anyChanges:
+          type: boolean
+          default: false
+          description: If there are no changes to the plan then this is false and we ignore any updated fields.
+                       This maybe necessary for day one with a reduced review journey.
+        teachingAdjustments:
+          type: string
+          description: Optional details of any adjustments that need to be made to the teaching or curriculum.
+          example: Ensure simple, clear and relevant examples of used when explaining concepts.
+          maxLength: 4096
+        specificTeachingSkills:
+          type: string
+          description: Optional details of any specific teaching skills or knowledge that are required.
+          example: British Sign Language.
+          maxLength: 4096
+        examAccessArrangements:
+          type: string
+          description: Optional details of any exam access arrangements that need to be made.
+          example: Escort Chris to the exam hall 10 minutes before other students to allow him time to settle and collect his thoughts before the exam.
+          maxLength: 4096
+        lnspSupport:
+          type: string
+          description: Optional details of any support that a Learning Needs Support Practitioner needs to provide.
+          example: An LNSP is required for approx 1 hour per week to read and explain passages of text to Chris.
+          maxLength: 4096
+        lnspSupportHours:
+          type: integer
+          description: |
+            Recommended number of additional support hours per week to meet the individual's educational needs.  
+            Mandatory when `lnspSupport` is populated.
+          example: 4
+        detail:
+          type: string
+          description: Optional Additional information about the plan that is not covered in the other questions.
+          example: Chris is very open about his issues and is a pleasure to talk to.
+          maxLength: 4096
+      required:
+        - anyChanges
+
+    CreateEducationSupportPlanRequest:
+      title: CreateEducationSupportPlanRequest
+      description: A request to create an Education Support Plan for a person.
+      type: object
+      properties:
+        prisonId:
+          $ref: '#/components/schemas/PrisonId'
+          description: The prisonId that the person is a resident at at the time of creating their plan.
+        hasCurrentEhcp:
+          type: boolean
+          description: Whether there is a current Education Health Care Plan in place for the person.
+          example: true
+        reviewDate:
+          type: string
+          format: date
+          description: |
+            An ISO-8601 date representing date that the Education Support Plan should be reviewed.
+          example: '2023-11-19'
+        planCreatedBy:
+          description: Optional details of who created the Education Support Plan. If not specified the authenticated user is assumed to have created it.
+          $ref: '#/components/schemas/PlanContributor'
+        otherContributors:
+          description: |
+            Optional list of other people involved in the creation of the Education Support Plan.
+            
+            If provided, the list must contain at least 1 contributor. The list must not be empty.
+          type: array
+          items:
+            $ref: '#/components/schemas/PlanContributor'
+          min: 1
+        teachingAdjustments:
+          type: string
+          description: Optional details of any adjustments that need to be made to the teaching or curriculum.
+          example: Ensure simple, clear and relevant examples of used when explaining concepts.
+          maxLength: 4096
+        specificTeachingSkills:
+          type: string
+          description: Optional details of any specific teaching skills or knowledge that are required.
+          example: British Sign Language.
+          maxLength: 4096
+        examAccessArrangements:
+          type: string
+          description: Optional details of any exam access arrangements that need to be made.
+          example: Escort Chris to the exam hall 10 minutes before other students to allow him time to settle and collect his thoughts before the exam.
+          maxLength: 4096
+        lnspSupport:
+          type: string
+          description: Optional details of any support that a Learning Needs Support Practitioner needs to provide.
+          example: An LNSP is required for approx 1 hour per week to read and explain passages of text to Chris.
+          maxLength: 4096
+        lnspSupportHours:
+          type: integer
+          description: |
+            Recommended number of additional support hours per week to meet the individual's educational needs.  
+            Mandatory when `lnspSupport` is populated.
+          example: 4
+        detail:
+          type: string
+          description: Optional Additional information about the plan that is not covered in the other questions.
+          example: Chris is very open about his issues and is a pleasure to talk to.
+          maxLength: 4096
+        individualSupport:
+          type: string
+          description: Details of education support that the person feels they need or would benefit from.
+          example: Chris is sensitive to loud noises and has asked for a quieter position in a calm classroom.
+          maxLength: 4096
+      required:
+        - prisonId
+        - hasCurrentEhcp
+        - reviewDate
+        - individualSupport
+
+    PlanContributor:
+      title: PlanContributor
+      description: An object describing someone who contributed to the Education Support Plan
+      type: object
+      properties:
+        name:
+          type: string
+          example: Joe Bloggs
+          maxLength: 200
+        jobRole:
+          type: string
+          example: Education Instructor
+          maxLength: 200
+      required:
+        - name
+        - jobRole
+
+    ReviewContributor:
+      title: ReviewContributor
+      description: An object describing someone who contributed to the Review of an Education Support Plan
+      type: object
+      properties:
+        name:
+          type: string
+          example: Joe Bloggs
+          maxLength: 200
+        jobRole:
+          type: string
+          example: Education Instructor
+          maxLength: 200
+      required:
+        - name
+        - jobRole
+
+    ReferenceDataListResponse:
+      title: ReferenceDataListResponse
+      description: A list of reference data for a given domain.
+      type: object
+      properties:
+        referenceDataList:
+          type: array
+          description: A List containing zero or more ReferenceDataItem.
+          items:
+            $ref: '#/components/schemas/ReferenceData'
+      required:
+        - referenceDataList
+
+    ALNScreeners:
+      title: ALNScreeners
+      description: A list of ALN screeners for a given person.
+      type: object
+      properties:
+        screeners:
+          type: array
+          description: A List containing zero or more ALNScreener.
+          items:
+            $ref: '#/components/schemas/ALNScreenerResponse'
+      required:
+        - screeners
+
+    ALNAssessmentListResponse:
+      title: ALNAssessmentListResponse
+      description: A list of ALN assessments for a given person.
+      type: object
+      properties:
+        assessments:
+          type: array
+          description: A List containing zero or more ALN assessment.
+          items:
+            $ref: '#/components/schemas/ALNAssessmentResponse'
+      required:
+        - assessments
+
+    ReferenceData:
+      type: object
+      description: A reference item belonging to a particular domain
+      properties:
+        code:
+          type: string
+          description: The short code of a reference data
+        description:
+          type: string
+          description: The description of the reference data code
+        categoryCode:
+          type: string
+          description: The short code of a reference data category
+        categoryDescription:
+          type: string
+          description: The description of the reference data category
+        areaCode:
+          type: string
+          description: The short code of a reference data area
+        areaDescription:
+          type: string
+          description: The description of the reference data area
+        listSequence:
+          type: integer
+          format: int32
+          description: 'The sequence number of the code. Used for ordering codes correctly in lists and drop downs. '
+          example: 3
+        active:
+          type: boolean
+          description: whether or not this ref data is active
+      required:
+        - code
+
+    ALNScreenerResponse:
+      title: ALNScreenerResponse
+      type: object
+      description: Details about the ALN screener
+      allOf:
+        - $ref: '#/components/schemas/AuditedResource'
+      properties:
+        reference:
+          type: string
+          format: uuid
+          description: The unique reference of this ALN screener
+          example: c88a6c48-97e2-4c04-93b5-98619966447b
+        screenerDate:
+          type: string
+          format: date
+          description: |
+            An ISO-8601 date representing the date the screener was carried out.
+          example: '2023-11-19'
+        challenges:
+          type: array
+          description: A List containing zero or more challenges.
+          items:
+            $ref: '#/components/schemas/ChallengeResponse'
+        strengths:
+          type: array
+          description: A List containing zero or more strengths.
+          items:
+            $ref: '#/components/schemas/StrengthResponse'
+      required:
+        - reference
+        - screenerDate
+        - challenges
+        - strengths
+
+    ALNAssessmentResponse:
+      title: ALNAssessmentResponse
+      type: object
+      description: Details about the ALN assessment from Curious
+      properties:
+        reference:
+          type: string
+          format: uuid
+          description: The unique reference of this ALN assessment
+          example: c88a6c48-97e2-4c04-93b5-98619966447b
+        prisonNumber:
+          type: string
+          description: The prisoner's NOMIS number.
+          example: A1234BC
+        hasNeed:
+          type: boolean
+          description: Whether or not the person has a need.
+          example: true
+        screeningDate:
+          type: string
+          format: date
+          description: The date that the screening assessment was recorded.
+          example: '2023-11-19'
+        curiousReference:
+          type: string
+          format: uuid
+          description: The unique reference of this ALN assessment in Curious
+          example: c88a6c48-97e2-4c04-93b5-98619966447b
+        createdBy:
+          type: string
+          description: The DPS username of the person who created this resource.
+          example: 'system'
+        createdAt:
+          type: string
+          format: date-time
+          description: An ISO-8601 timestamp representing when this resource was created.
+          example: '2023-06-19T09:39:44Z'
+        updatedBy:
+          type: string
+          description: The DPS username of the person who last updated this resource.
+          example: 'system'
+        updatedAt:
+          type: string
+          format: date-time
+          description: An ISO-8601 timestamp representing when this resource was last updated. This will be the same as the created date if it has not yet been updated.
+          example: '2023-06-19T09:39:44Z'
+      required:
+        - reference
+        - prisonNumber
+        - hasNeed
+        - screeningDate
+        - createdBy
+        - createdAt
+        - updatedBy
+        - updatedAt
+
+    ReviewScheduleResponse:
+      title: ReviewScheduleResponse
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/AuditedResource'
+      description: |
+        A Scheduled Review of a Prisoner's support additional needs plan.
+
+        A DPS user will create a new Review Schedule (and therefore they will be recorded in the `createdBy...` fields)
+        when they complete a prisoner's additional needs plan or their previous Review. IE. completing the plan will create
+        the prisoner's first Review Schedule. Completing their Review will create their next Review Schedule.
+      properties:
+        reference:
+          type: string
+          format: uuid
+          description: The unique reference of this Review
+          example: c88a6c48-97e2-4c04-93b5-98619966447b
+        deadlineDate:
+          type: string
+          format: date
+          description: |
+            An ISO-8601 date representing date that the Review is due. This date can be null.
+            For example the person was in education and had a cataract which meant they had a visual support need. 
+            The ELSP was created for the person. At some point in the future the cataract was removed and 
+            so the plan was updated removing this need education ends for this person. 
+            Then the person is enrolled in education once again. After enrolling a new need is identified (say) 
+            ADHD then the plan will have a review schedule generated but because the person had already started 
+            education the deadline date will be blank and therefore the review is optional and not subject to 
+            the KPI requirements.
+          example: '2023-11-19'
+        reviewCompletedDate:
+          type: string
+          format: date
+          description: |
+            If the status of this Review Schedule is COMPLETED, this field is an ISO-8601 date representing 
+            date that the Review was created. This field will only have a value when the status of the 
+            Review Schedule is COMPLETED, and reflects the date the Review was completed.
+          example: '2023-11-19'
+        reviewKeyedInBy:
+          type: string
+          description: |
+            If the status of this Review Schedule is COMPLETED, this field is the DPS 
+            username of the user that keyed the Review into the system.This 
+            field will only have a value when the status of the Review Schedule is COMPLETED, 
+            and reflects the logged in user who interacted with the SAN service.
+        reviewCompletedBy:
+          type: string
+          description: |
+            If the status of this Review Schedule is COMPLETED, and the person who met with the 
+            prisoner to create their Review was not the same person who keyed it into 
+            the SAN service, this field will be that person's name. This field will only have a value 
+            when the status of the Review Schedule is COMPLETED, and the person who met with 
+            the prisoner to create their Education Support Plan was not the same person who keyed it
+            into the SAN service. If the Review Schedule is COMPLETED and this field is null, 
+            consumers of this API can assume the person who created the Review is 
+            the person who keyed it in. See field reviewKeyedInBy
+        reviewCompletedByJobRole:
+          type: string
+          description: The job role of the person who completed the review.
+          example: 'Education coordinator'
+        status:
+          $ref: '#/components/schemas/ReviewScheduleStatus'
+        exemptionReason:
+          type: string
+          description: |
+            An optional reason as to why the Review Schedule is exempted.
+
+            Only present when the `status` field is one of the `EXEMPTION_` statuses and the user entered an exemption 
+            reason when marking the Review as Exempted.
+        version:
+          type: integer
+          description: the version number of this schedule (the highest number is the most recent version of this review schedule)
+      required:
+        - reference
+        - status
+        - deadlineDate
+
+    ConditionResponse:
+      title: ConditionResponse
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/AuditedResource'
+      description: |
+        A condition a person has.
+      properties:
+        reference:
+          type: string
+          format: uuid
+          description: The unique reference of this condition
+          example: c88a6c48-97e2-4c04-93b5-98619966447b
+        source:
+          $ref: '#/components/schemas/Source'
+        conditionType:
+          $ref: '#/components/schemas/ReferenceData'
+        conditionName:
+          type: string
+          description: more granular information about the condition
+          example: (for Mental Health) Social Anxiety
+        conditionDetails:
+          type: string
+          description: additional detail about the condition
+        active:
+          type: boolean
+          description: |
+            Whether or not this condition is active
+        archiveReason:
+          type: string
+          description: the reason why this record was archived
+      required:
+        - reference
+        - source
+        - conditionType
+        - active
+
+    EhcpStatusResponse:
+      title: EhcpResponse
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/AuditedResource'
+      description: |
+        Whether the person has an Education, Health, and Care Plan (EHCP)
+      properties:
+        hasCurrentEhcp:
+          type: boolean
+          description: |
+            the person has an Education, Health, and Care Plan (EHCP)
+      required:
+        - hasCurrentEhcp
+
+    ChallengeResponse:
+      title: ChallengeResponse
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/AuditedResource'
+      description: |
+        A challenge a person has.
+      properties:
+        reference:
+          type: string
+          format: uuid
+          description: The unique reference of this challenge
+          example: c88a6c48-97e2-4c04-93b5-98619966447b
+        fromALNScreener:
+          type: boolean
+          description: |
+            Whether or not this challenge is from the ALN screener
+        alnScreenerDate:
+          type: string
+          format: date
+          description: The date that the screener was recorded that has this challenge
+          example: '2023-11-19'
+        symptoms:
+          type: string
+          description: Optional details about the symptoms of this challenge
+          example: John struggles to read text on white background.
+        howIdentified:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentificationSource'
+          description: |
+            The list of enums as to how this challenge was identified. Multiple reasons may apply.
+        howIdentifiedOther:
+          type: string
+          description: Details about how this challenge was identified when the OTHER IdentificationSource enum option is chosen
+          example: The trainer noticed that John could read better on a cream background.
+        challengeType:
+          $ref: '#/components/schemas/ReferenceData'
+        active:
+          type: boolean
+          description: |
+            Whether or not this challenge is active
+        archiveReason:
+          type: string
+          description: Details about why this challenge was archived
+          example: His hearing improved dramatiacally with an implant.
+      required:
+        - reference
+        - fromALNScreener
+        - challengeType
+        - active
+
+    ALNChallenge:
+      title: ALNChallenge
+      type: object
+      description: |
+        An ALN challenge recorded in the screener.
+      properties:
+        challengeTypeCode:
+          type: string
+          description: the reference data type code of the challenge
+      required:
+        - challengeTypeCode
+
+    ALNStrength:
+      title: ALNStrength
+      type: object
+      description: |
+        An ALN strength recorded in the screener.
+      properties:
+        strengthTypeCode:
+          type: string
+          description: the reference data type code of the strength
+      required:
+        - strengthTypeCode
+
+    StrengthResponse:
+      title: StrengthResponse
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/AuditedResource'
+      description: |
+        A strength a person has.
+      properties:
+        reference:
+          type: string
+          format: uuid
+          description: The unique reference of this strength
+          example: c88a6c48-97e2-4c04-93b5-98619966447b
+        fromALNScreener:
+          type: boolean
+          description: |
+            Whether or not this strength is from the ALN screener
+        alnScreenerDate:
+          type: string
+          format: date
+          description: The date that the screener was recorded that has this strength
+          example: '2023-11-19'
+        symptoms:
+          type: string
+          description: Optional details about the symptoms of this strength
+          example: John is great at reading.
+        howIdentified:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentificationSource'
+          description: |
+            The list of enums as to how this strength was identified. Multiple reasons may apply.
+        howIdentifiedOther:
+          type: string
+          description: Details about how this strength was identified when the OTHER IdentificationSource enum option is chosen
+          example: The trainer noticed that John was great at reading.
+        strengthType:
+          $ref: '#/components/schemas/ReferenceData'
+        active:
+          type: boolean
+          description: |
+            Whether or not this strength is active
+        archiveReason:
+          type: string
+      required:
+        - reference
+        - fromALNScreener
+        - strengthType
+        - active
+
+
+    ConditionRequest:
+      title: ConditionRequest
+      type: object
+      description: |
+        A condition a person has.
+      properties:
+        source:
+          $ref: '#/components/schemas/Source'
+        conditionTypeCode:
+          type: string
+          description: the reference data type code of the condition
+        conditionName:
+          type: string
+          description: more granular information about the condition
+          example: (for Mental Health) Social Anxiety
+        conditionDetails:
+          type: string
+          description: additional detail about the condition
+        prisonId:
+          $ref: '#/components/schemas/PrisonId'
+      required:
+        - source
+        - conditionTypeCode
+        - prisonId
+
+    UpdateEhcpRequest:
+      title: UpdateEhcpRequest
+      type: object
+      description: |
+        request object to whether or not the person has an Education, Health, and Care Plan (EHCP)
+      properties:
+        hasCurrentEhcp:
+          type: boolean
+          description: Whether there is a current Education Health Care Plan in place for the person.
+          example: true
+        prisonId:
+          $ref: '#/components/schemas/PrisonId'
+          description: The prison the EHCP was updated at
+      required:
+        - hasCurrentEhcp
+        - prisonId
+
+    UpdateConditionRequest:
+      title: UpdateConditionRequest
+      type: object
+      description: |
+        request object to update a condition.
+      properties:
+        source:
+          $ref: '#/components/schemas/Source'
+        conditionName:
+          type: string
+          description: more granular information about the condition
+          example: (for Mental Health) Social Anxiety
+        conditionDetails:
+          type: string
+          description: additional detail about the condition
+          minLength: 1
+          pattern: '(?s)\A\s*\S.*\z'
+        prisonId:
+          $ref: '#/components/schemas/PrisonId'
+          description: The prison the condition was updated at
+      required:
+        - source
+        - conditionDetails
+        - prisonId
+
+    ChallengeRequest:
+      title: ChallengeRequest
+      type: object
+      description: |
+        A challenge a person has.
+      properties:
+        challengeTypeCode:
+          type: string
+          description: the reference data type code of the challenge
+        prisonId:
+          $ref: '#/components/schemas/PrisonId'
+        symptoms:
+          type: string
+          description: Optional details about the symptoms of this challenge
+          example: John struggles to read text on white background.
+        howIdentified:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentificationSource'
+          description: |
+            The list of enums as to how this challenge was identified. Multiple reasons may apply.
+        howIdentifiedOther:
+          type: string
+          description: Details about how this challenge was identified when the OTHER IdentificationSource enum option is chosen
+          example: The trainer noticed that John could read better on a cream background.
+      required:
+        - challengeTypeCode
+        - prisonId
+    UpdateChallengeRequest:
+      title: UpdateChallengeRequest
+      type: object
+      description: |
+        request object to update a challenge.
+      properties:
+        symptoms:
+          type: string
+          description: Details about the symptoms of this challenge
+          example: John struggles to read text on white background.
+          minLength: 1
+          pattern: '(?s)\A\s*\S.*\z'
+        howIdentified:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentificationSource'
+          description: |
+            The list of enums as to how this challenge was identified. Multiple reasons may apply.
+        howIdentifiedOther:
+          type: string
+          description: Details about how this challenge was identified when the OTHER IdentificationSource enum option is chosen
+          example: The trainer noticed that John could read better on a cream background.
+        prisonId:
+          $ref: '#/components/schemas/PrisonId'
+          description: The prison the challenge was updated at
+      required:
+        - symptoms
+        - howIdentified
+        - prisonId
+    StrengthRequest:
+      title: StrengthRequest
+      type: object
+      description: |
+        A strength a person has.
+      properties:
+        strengthTypeCode:
+          type: string
+          description: the reference data type code of the strength
+        prisonId:
+          $ref: '#/components/schemas/PrisonId'
+        symptoms:
+          type: string
+          description: Optional details about the symptoms of this strength
+          example: John is great at reading.
+        howIdentified:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentificationSource'
+          description: |
+            The list of enums as to how this strength was identified. Multiple reasons may apply.
+        howIdentifiedOther:
+          type: string
+          description: Details about how this strength was identified when the OTHER IdentificationSource enum option is chosen
+          example: The trainer noticed that John was great at reading.
+      required:
+        - strengthTypeCode
+        - prisonId
+
+    UpdateStrengthRequest:
+      title: UpdateStrengthRequest
+      type: object
+      description: |
+        request object to update a strength.
+      properties:
+        symptoms:
+          type: string
+          description: Details about the symptoms of this strength
+          example: John is great at reading.
+          minLength: 1
+          pattern: '(?s)\A\s*\S.*\z'
+        howIdentified:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentificationSource'
+          description: |
+            The list of enums as to how this strength was identified. Multiple reasons may apply.
+        howIdentifiedOther:
+          type: string
+          description: Details about how this strength was identified when the OTHER IdentificationSource enum option is chosen
+          example: The trainer noticed that John was great at reading.
+        prisonId:
+          $ref: '#/components/schemas/PrisonId'
+          description: The prison the strength was updated at
+      required:
+        - symptoms
+        - howIdentified
+        - prisonId
+
+    UpdatePlanCreationStatusRequest:
+      title: UpdatePlanCreationStatusRequest
+      type: object
+      description: |
+        request object to update a the status of a plan creation schedule.
+      properties:
+        exemptionReason:
+          $ref: '#/components/schemas/PlanCreationScheduleExemptionReason'
+        exemptionDetail:
+          type: string
+          description: More Detail about the reason for the exemption
+        prisonId:
+          $ref: '#/components/schemas/PrisonId'
+          description: The prison the schedule was updated at
+        status:
+          $ref: '#/components/schemas/PlanCreationUpdateStatus'
+      required:
+        - status
+        - prisonId
+
+    ALNScreenerRequest:
+      title: ALNScreenerRequest
+      type: object
+      description: |
+        request object to create an ALN screener.
+      properties:
+        prisonId:
+          $ref: '#/components/schemas/PrisonId'
+          description: The prison the ALN screener was keyed in at
+        screenerDate:
+          type: string
+          format: date
+          description: |
+            An ISO-8601 date representing the date the screener was carried out.
+          example: '2023-11-19'
+        challenges:
+          type: array
+          description: A List containing zero or more challenge codes.
+          items:
+            $ref: '#/components/schemas/ALNChallenge'
+        strengths:
+          type: array
+          description: A List containing zero or more strength codes.
+          items:
+            $ref: '#/components/schemas/ALNStrength'
+      required:
+        - screenerDate
+        - prisonId
+        - challenges
+        - strengths
+
+    Source:
+      title: Source
+      description: Enum of the source of the need.
+      type: string
+      enum:
+        - SELF_DECLARED
+        - CONFIRMED_DIAGNOSIS
+
+    IdentificationSource:
+      title: IdentificationSource
+      description: How a challenge was identified.
+      type: string
+      enum:
+        - EDUCATION_SKILLS_WORK
+        - WIDER_PRISON
+        - CONVERSATIONS
+        - COLLEAGUE_INFO
+        - FORMAL_PROCESSES
+        - SELF_DISCLOSURE
+        - OTHER_SCREENING_TOOL
+        - OTHER
+
+    ReviewScheduleStatus:
+      title: ReviewScheduleStatus
+      description: Enum of the various Review Schedule statuses.
+      type: string
+      enum:
+        - SCHEDULED
+        - EXEMPT_SYSTEM_TECHNICAL_ISSUE
+        - EXEMPT_PRISONER_TRANSFER
+        - EXEMPT_PRISONER_RELEASE
+        - EXEMPT_PRISONER_DEATH
+        - EXEMPT_PRISONER_MERGE
+        - EXEMPT_PRISONER_NOT_COMPLY
+        - EXEMPT_NOT_IN_EDUCATION
+        - EXEMPT_NO_NEED
+        - EXEMPT_UNKNOWN
+        - COMPLETED
+
+    PlanCreationSchedulesResponse:
+      title: PlansCreationSchedulesResponse
+      description: A list of plan creation schedules for a prisoner.
+      type: object
+      properties:
+        planCreationSchedules:
+          type: array
+          description: A List containing zero or more PlanCreationSchedules.
+          items:
+            $ref: '#/components/schemas/PlanCreationScheduleResponse'
+      required:
+        - planCreationSchedules
+
+    PlanReviewsResponse:
+      title: PlanCreationReviewsResponse
+      description: A list of plan creation reviews for a prisoner.
+      type: object
+      properties:
+        reviews:
+          type: array
+          description: A List containing zero or more EducationSupportPlanReviewResponse.
+          items:
+            $ref: '#/components/schemas/EducationSupportPlanReviewResponse'
+      required:
+        - reviews
+
+
+
+
+    PlanCreationScheduleResponse:
+      title: PlanCreationScheduleResponse
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/AuditedResource'
+      description: |
+        A Plan creation schedule for a Prisoner's support additional needs plan.
+
+      properties:
+        reference:
+          type: string
+          format: uuid
+          description: The unique reference of this plan creation schedule
+          example: c88a6c48-97e2-4c04-93b5-98619966447b
+        earliestStartDate:
+          type: string
+          format: date
+          description: |
+            An ISO-8601 date representing earliest date that the plan can be created. 
+            If this date is null then there is no restriction. eg when a person has a need identified 
+            after they are enrolled in education.
+          example: '2023-11-19'
+        deadlineDate:
+          type: string
+          format: date
+          description: |
+            An ISO-8601 date representing date that the plan creation is due. 
+            If this date is null then there is no dead line date. eg when a person has a need identified 
+            after they are enrolled in education.
+          example: '2023-11-19'
+        planCompletedDate:
+          type: string
+          format: date
+          description: |
+            If the status of this Plan Creation Schedule is COMPLETED, this field is an ISO-8601 date representing 
+            date that the Education Support Plan was created. This field will only have a value when the status of the 
+            Plan Creation Schedule is COMPLETED, and reflects the date the Education Support Plan was created 
+            (rather than the Plan Creation Schedule)
+          example: '2023-11-19'
+        planCompletedBy:
+          type: string
+          description: |
+            If the status of this Plan Creation Schedule is COMPLETED, and the person who met with the 
+            prisoner to create their Education Support Plan was not the same person who keyed it into 
+            the SAN service, this field will be that person's name. This field will only have a value 
+            when the status of the Plan Creation Schedule is COMPLETED, and the person who met with 
+            the prisoner to create their Education Support Plan was not the same person who keyed it
+            into the SAN service. If the Plan Creation Schedule is COMPLETED and this field is null, 
+            consumers of this API can assume the person who created the Education Support Plan is 
+            the person who keyed it in. See field planKeyedInBy
+        planKeyedInBy:
+          type: string
+          description: |
+            If the status of this Plan Creation Schedule is COMPLETED, this field is the DPS 
+            username of the user that keyed the Education Support Plan into the system.This 
+            field will only have a value when the status of the Plan Creation Schedule is COMPLETED, 
+            and reflects the logged in user who interacted with the SAN service.
+        planCompletedByJobRole:
+          type: string
+          description: The job role of the person who completed the plan.
+          example: 'Education coordinator'
+        status:
+          $ref: '#/components/schemas/PlanCreationStatus'
+        exemptionReason:
+          $ref: '#/components/schemas/PlanCreationScheduleExemptionReason'
+        exemptionDetail:
+          type: string
+          description: |
+            More detail about the reason for this exemption. This is mainly used for EXEMPT_PRISONER_NOT_COMPLY.
+        needSources:
+          type: array
+          items:
+            $ref: '#/components/schemas/NeedSource'
+          description: |
+            The source(s) for why this plan creation schedule is needed. Multiple reasons may apply.
+        version:
+          type: integer
+          description: the version number of this schedule (the highest number is the most recent version of this plan creation schedule)
+      required:
+        - reference
+        - status
+        - deadlineDate
+
+    PlanActionStatus:
+      title: PlanActionStatus
+      type: object
+      properties:
+        planCreationDeadlineDate:
+          type: string
+          format: date
+          description: |
+            An ISO-8601 date representing date that the plan creation is due.  
+            Only returned when the status is PLAN_OVERDUE, PLAN_DUE, REVIEW_OVERDUE, REVIEW_DUE, ACTIVE_PLAN.
+          example: '2023-11-19'
+        reviewDeadlineDate:
+          type: string
+          format: date
+          description: |
+            An ISO-8601 date representing date that the next plan review is due.  
+            Only returned when the status is PLAN_OVERDUE, PLAN_DUE, REVIEW_OVERDUE, REVIEW_DUE, ACTIVE_PLAN.
+          example: '2023-11-19'
+        status:
+          $ref: '#/components/schemas/PlanStatus'
+        exemptionReason:
+          $ref: '#/components/schemas/PlanCreationScheduleExemptionReason'
+        exemptionDetail:
+          type: string
+          description: |
+            More detail about the reason the plan was declined. This is mainly used for EXEMPT_PRISONER_NOT_COMPLY.
+        exemptionRecordedBy:
+          type: string
+          description: If the plan was declined by the prisoner, the display name of the person who recorded the plan exemption.
+          example: Alex Smith
+        exemptionRecordedAt:
+          type: string
+          format: date-time
+          description: If the plan was declined by the prisoner, the timestamp that the plan was exempted.
+          example: 2025-10-04
+
+      required:
+        - status
+
+    PlanCreationStatus:
+      title: PlanCreationStatus
+      description: Enum of the various plan creation schedule statuses.
+      type: string
+      enum:
+        - SCHEDULED
+        - EXEMPT_SYSTEM_TECHNICAL_ISSUE
+        - EXEMPT_PRISONER_TRANSFER
+        - EXEMPT_PRISONER_RELEASE
+        - EXEMPT_PRISONER_DEATH
+        - EXEMPT_PRISONER_MERGE
+        - EXEMPT_PRISONER_NOT_COMPLY
+        - EXEMPT_NOT_IN_EDUCATION
+        - EXEMPT_NO_NEED
+        - EXEMPT_UNKNOWN
+        - COMPLETED
+
+    NeedSource:
+      title: NeedSource
+      description: The source(s) for why this plan creation schedule is needed.
+      type: string
+      enum:
+        - LDD_SCREENER
+        - ALN_SCREENER
+        - CONDITION_SELF_DECLARED
+        - CONDITION_CONFIRMED_DIAGNOSIS
+        - CHALLENGE_NOT_ALN_SCREENER
+
+    PlanCreationUpdateStatus:
+      title: PlanCreationUpdateStatus
+      description: Enum of the list of statuses the plan creation schedule can be updated to.
+      type: string
+      enum:
+        - EXEMPT_PRISONER_NOT_COMPLY
+
+    PlanCreationScheduleExemptionReason:
+      title: PlanCreationScheduleExemptionReason
+      description: Enum of the list of reasons a plan is exempted for.
+      type: string
+      enum:
+        - EXEMPT_REFUSED_TO_ENGAGE
+        - EXEMPT_NOT_REQUIRED
+        - EXEMPT_INACCURATE_IDENTIFICATION
+
+
+    EducationSupportPlanResponse:
+      title: EducationSupportPlanResponse
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/AuditedResource'
+      description: A person's Education Support Plan
+      properties:
+        hasCurrentEhcp:
+          type: boolean
+          description: Whether there is a current Education Health Care Plan in place for the person.
+          example: true
+        planCreatedBy:
+          description: Optional details of who created the Education Support Plan. If not present the plan was created by the createdBy/createdByDisplayName fields.
+          $ref: '#/components/schemas/PlanContributor'
+        otherContributors:
+          description: Optional list of other people involved in the creation of the Education Support Plan.
+          type: array
+          items:
+            $ref: '#/components/schemas/PlanContributor'
+        teachingAdjustments:
+          type: string
+          description: Optional details of any adjustments that need to be made to the teaching or curriculum.
+          example: Ensure simple, clear and relevant examples of used when explaining concepts.
+        specificTeachingSkills:
+          type: string
+          description: Optional details of any specific teaching skills or knowledge that are required.
+          example: British Sign Language.
+        examAccessArrangements:
+          type: string
+          description: Optional details of any exam access arrangements that need to be made.
+          example: Escort Chris to the exam hall 10 minutes before other students to allow him time to settle and collect his thoughts before the exam.
+        lnspSupport:
+          type: string
+          description: Optional details of any support that a Learning Needs Support Practitioner needs to provide.
+          example: An LNSP is required for approx 1 hour per week to read and explain passages of text to Chris.
+        lnspSupportHours:
+          type: integer
+          description: |
+            Recommended number of Learning Needs Support Practitioner support hours per week to meet the individual's educational needs.  
+            Will be present when `lnspSupport` is populated.
+          example: 4
+        detail:
+          type: string
+          description: Optional Additional information about the plan that is not covered in the other questions.
+          example: Chris is very open about his issues and is a pleasure to talk to.
+        individualSupport:
+          type: string
+          description: Details of education support that the person feels they need or would benefit from.
+          example: Chris is sensitive to loud noises and has asked for a quieter position in a calm classroom.
+      required:
+        - hasCurrentEhcp
+        - individualSupport
+
+    HasNeedResponse:
+      title: HasNeedResponse
+      type: object
+      description: Whether or not the person has a need in SAN
+      properties:
+        hasNeed:
+          type: boolean
+          description: Whether or not the person has a need.
+          example: true
+        url:
+          type: string
+          description: A link to the person in SAN
+          example: https://support-for-additional-needs-dev.hmpps.service.justice.gov.uk/profile/A5052DY/overview
+        modalUrl:
+          type: string
+          description: A link to the modal view of the persons needs in SAN
+          example: https://support-for-additional-needs-dev.hmpps.service.justice.gov.uk/code-fragment/A5052DY/additional-needs
+      required:
+        - hasNeed
+        - url
+        - modalUrl
+
+    EducationSupportPlanReviewResponse:
+      title: EducationSupportPlanReviewResponse
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/AuditedResource'
+      description: A person's Education Support Plan Review
+      properties:
+        reviewCreatedBy:
+          description: Optional details of who created the Review. If not present the review was created by the createdBy/createdByDisplayName fields.
+          $ref: '#/components/schemas/ReviewContributor'
+        otherContributors:
+          description: Optional list of other people involved in the creation of the review.
+          type: array
+          items:
+            $ref: '#/components/schemas/ReviewContributor'
+        prisonerDeclinedFeedback:
+          type: boolean
+          description: Whether or not the prisoner took part in the review.
+          example: true
+        prisonerFeedback:
+          type: string
+          description: Details of any feedback from the prisoner.
+          example: My support needs have been fully met by the course provider.
+        reviewerFeedback:
+          type: string
+          description: Details of any feedback from the reviewer.
+          example: As noted by the Mr Smith, his support needs have been fully met.
+      required:
+        - prisonerFeedback
+        - reviewerFeedback
+        - prisonerDeclinedFeedback
+
+    CreateSupportStrategiesRequest:
+      title: SupportStrategiesListRequest
+      type: object
+      properties:
+        supportStrategies:
+          type: array
+          items:
+            $ref: '#/components/schemas/SupportStrategyRequest'
+      required:
+        - supportStrategies
+
+    UpdateSupportStrategyRequest:
+      title: UpdateSupportStrategyRequest
+      type: object
+      properties:
+        detail:
+          type: string
+          description: Optional further explanation or description of this strategy
+          minLength: 1
+          pattern: '(?s)\A\s*\S.*\z'
+        prisonId:
+          $ref: '#/components/schemas/PrisonId'
+      required:
+        - detail
+        - prisonId
+
+    ArchiveSupportStrategyRequest:
+      title: ArchiveSupportStrategyRequest
+      type: object
+      properties:
+        archiveReason:
+          type: string
+          description: Explanation as to why this record is archived.
+          minLength: 1
+          pattern: '(?s)\A\s*\S.*\z'
+        prisonId:
+          $ref: '#/components/schemas/PrisonId'
+      required:
+        - archiveReason
+        - prisonId
+
+    ArchiveStrengthRequest:
+      title: ArchiveStrengthRequest
+      type: object
+      properties:
+        archiveReason:
+          type: string
+          description: Explanation as to why this record is archived.
+          minLength: 1
+          pattern: '(?s)\A\s*\S.*\z'
+        prisonId:
+          $ref: '#/components/schemas/PrisonId'
+      required:
+        - archiveReason
+        - prisonId
+
+    ArchiveChallengeRequest:
+      title: ArchiveChallengeRequest
+      type: object
+      properties:
+        archiveReason:
+          type: string
+          description: Explanation as to why this record is archived.
+          minLength: 1
+          pattern: '(?s)\A\s*\S.*\z'
+        prisonId:
+          $ref: '#/components/schemas/PrisonId'
+      required:
+        - archiveReason
+        - prisonId
+
+    ArchiveConditionRequest:
+      title: ArchiveConditionRequest
+      type: object
+      properties:
+        archiveReason:
+          type: string
+          description: Explanation as to why this record is archived.
+          minLength: 1
+          pattern: '(?s)\A\s*\S.*\z'
+        prisonId:
+          $ref: '#/components/schemas/PrisonId'
+      required:
+        - archiveReason
+        - prisonId
+
+    DeletionReason:
+      type: string
+      enum:
+        - DATA_PROCESSING_OBJECTION
+        - ENTERED_IN_ERROR
+      description: Reason for deleting a record.
+
+
+    SupportStrategyRequest:
+      title: SupportStrategyRequest
+      type: object
+      properties:
+        supportStrategyTypeCode:
+          type: string
+        prisonId:
+          $ref: '#/components/schemas/PrisonId'
+        detail:
+          type: string
+          description: Optional further explanation or description of this strategy
+      required:
+        - supportStrategyTypeCode
+        - prisonId
+
+    SupportStrategyResponse:
+      title: SupportStrategyResponse
+      allOf:
+        - $ref: '#/components/schemas/AuditedResource'
+      properties:
+        reference:
+          type: string
+          format: uuid
+        detail:
+          type: string
+        archiveReason:
+          type: string
+        supportStrategyType:
+          $ref: '#/components/schemas/ReferenceData'
+        active:
+          type: boolean
+      required:
+        - reference
+        - supportStrategyType
+        - active
+
+    SupportStrategyListResponse:
+      title: SupportStrategyListResponse
+      type: object
+      properties:
+        supportStrategies:
+          type: array
+          items:
+            $ref: '#/components/schemas/SupportStrategyResponse'
+      required:
+        - supportStrategies
+
+    ### SAR endpoint ###
+    SarSuccessResponse:
+      type: object
+      properties:
+        content:
+          $ref: '#/components/schemas/SubjectAccessRequestContent'
+
+    SubjectAccessRequestContent:
+      type: object
+      description: The content of a Support for Additional Needs Subject Access Request response.
+      properties:
+        originalEducationSupportPlan:
+          description: |
+            The original (initial) version of the person's Education Support Plan, if one exists.
+            This is deliberately the first version of the plan as it was created (sourced from the plan history), rather
+            than the current plan. Subsequent changes to the plan are represented by its reviews.
+          $ref: '#/components/schemas/SarEducationSupportPlanResponse'
+        ehcpStatuses:
+          description: |
+            All versions of the person's EHCP (Education, Health and Care Plan) answer, ordered oldest first.
+            Each version is independent of any Plan or Review version - there is no relationship between them.
+          type: array
+          items:
+            $ref: '#/components/schemas/EhcpStatusResponse'
+        reviews:
+          description: |
+            The person's Education Support Plan reviews, ordered oldest first. Each review shows the review's own
+            fields (feedback, contributors) together with the version of the plan as it was after that review was
+            completed, so the reader can see how the plan changed over time following the initial plan.
+          type: array
+          items:
+            $ref: '#/components/schemas/SarEducationSupportPlanReviewResponse'
+        supportStrategies:
+          description: The person's support strategies, both active and archived.
+          type: array
+          items:
+            $ref: '#/components/schemas/SupportStrategyResponse'
+        nonAlnStrengths:
+          description: The person's manually added strengths, both active and archived. Strengths sourced from an ALN screener are not included.
+          type: array
+          items:
+            $ref: '#/components/schemas/StrengthResponse'
+        nonAlnChallenges:
+          description: The person's manually added challenges, both active and archived. Challenges sourced from an ALN screener are not included.
+          type: array
+          items:
+            $ref: '#/components/schemas/ChallengeResponse'
+        alnScreeners:
+          description: All of the person's ALN screeners entered in SAN, ordered most recent first.
+          type: array
+          items:
+            $ref: '#/components/schemas/ALNScreenerResponse'
+        planCreationSchedules:
+          description: All versions of the person's plan creation schedules, ordered oldest first.
+          type: array
+          items:
+            $ref: '#/components/schemas/PlanCreationScheduleResponse'
+        reviewSchedules:
+          description: All versions of the person's review schedules, ordered oldest first.
+          type: array
+          items:
+            $ref: '#/components/schemas/ReviewScheduleResponse'
+        conditions:
+          description: A list of the person's conditions.
+          type: array
+          items:
+            $ref: '#/components/schemas/ConditionResponse'
+        alnAssessments:
+          description: All of the person's ALN assessments from Curious, ordered most recent first.
+          type: array
+          items:
+            $ref: '#/components/schemas/ALNAssessmentResponse'
+      required:
+        - ehcpStatuses
+        - reviews
+        - supportStrategies
+        - nonAlnStrengths
+        - nonAlnChallenges
+        - alnScreeners
+        - planCreationSchedules
+        - reviewSchedules
+        - conditions
+        - alnAssessments
+
+    SarEducationSupportPlanResponse:
+      title: SarEducationSupportPlanResponse
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/AuditedResource'
+      description: A person's Education Support Plan. Modelled specifically for the Subject Access Request endpoint.
+      properties:
+        planCreatedBy:
+          description: Optional details of who created the Education Support Plan. If not present the plan was created by the createdBy/createdByDisplayName fields.
+          $ref: '#/components/schemas/PlanContributor'
+        otherContributors:
+          description: Optional list of other people involved in the creation of the Education Support Plan.
+          type: array
+          items:
+            $ref: '#/components/schemas/PlanContributor'
+        teachingAdjustments:
+          type: string
+          description: Optional details of any adjustments that need to be made to the teaching or curriculum.
+          example: Ensure simple, clear and relevant examples of used when explaining concepts.
+        specificTeachingSkills:
+          type: string
+          description: Optional details of any specific teaching skills or knowledge that are required.
+          example: British Sign Language.
+        examAccessArrangements:
+          type: string
+          description: Optional details of any exam access arrangements that need to be made.
+          example: Escort Chris to the exam hall 10 minutes before other students to allow him time to settle and collect his thoughts before the exam.
+        lnspSupport:
+          type: string
+          description: Optional details of any support that a Learning Needs Support Practitioner needs to provide.
+          example: An LNSP is required for approx 1 hour per week to read and explain passages of text to Chris.
+        lnspSupportHours:
+          type: integer
+          description: |
+            Recommended number of Learning Needs Support Practitioner support hours per week to meet the individual's educational needs.  
+            Will be present when `lnspSupport` is populated.
+          example: 4
+        otherDetails:
+          type: string
+          description: Optional Additional information about the plan that is not covered in the other questions.
+          example: Chris is very open about his issues and is a pleasure to talk to.
+        individualSupport:
+          type: string
+          description: Details of education support that the person feels they need or would benefit from.
+          example: Chris is sensitive to loud noises and has asked for a quieter position in a calm classroom.
+      required:
+        - individualSupport
+
+    SarEducationSupportPlanReviewResponse:
+      title: SarEducationSupportPlanReviewResponse
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/AuditedResource'
+      description: |
+        A single Education Support Plan Review, modelled specifically for the Subject Access Request endpoint.
+        This is a union of two records that share no id or reference: the review record itself (feedback, contributors),
+        and the version of the plan as it was after the review was completed. The two are associated by ordinal position
+        in the service layer, not by any relationship in the data.
+      properties:
+        individualSupport:
+          type: string
+          description: The `individualSupport` field of the plan as it was after this review.
+        teachingAdjustments:
+          type: string
+          description: The `teachingAdjustments` field of the plan as it was after this review.
+        specificTeachingSkills:
+          type: string
+          description: The `specificTeachingSkills` field of the plan as it was after this review.
+        examAccessArrangements:
+          type: string
+          description: The `examAccessArrangements` field of the plan as it was after this review.
+        lnspSupport:
+          type: string
+          description: The `lnspSupport` field of the plan as it was after this review.
+        lnspSupportHours:
+          type: integer
+          description: The `lnspSupportHours` field of the plan as it was after this review.
+        otherDetails:
+          type: string
+          description: The `detail` field of the plan as it was after this review.
+        prisonerDeclinedFeedback:
+          type: boolean
+          description: Whether the prisoner declined to give feedback for this review.
+        prisonerFeedback:
+          type: string
+          description: The prisoner's feedback for this review.
+        reviewerFeedback:
+          type: string
+          description: The reviewer's feedback for this review.
+        reviewCreatedBy:
+          description: Details of who carried out this review.
+          $ref: '#/components/schemas/ReviewContributor'
+        otherContributors:
+          description: Optional list of other people involved in this review.
+          type: array
+          items:
+            $ref: '#/components/schemas/ReviewContributor'
+      required:
+        - individualSupport
+        - prisonerDeclinedFeedback
+
+  # --------------------------------------------------------------------------------
+  # Response Body Definitions
+  # --------------------------------------------------------------------------------
+  responses:
+    400Error:
+      description: Error response for a HTTP 400 describing fields in the request payload that are in error.
+      headers:
+        Access-Control-Allow-Origin:
+          schema:
+            type: string
+        Access-Control-Allow-Methods:
+          schema:
+            type: string
+        Access-Control-Allow-Headers:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            status: 400
+            userMessage: 'Error on field deadlineDate: rejected value [2023-06-01] cannot be in the past'
+    404Error:
+      description: |
+        Error response for a HTTP 404 describing the problem with the request.
+      headers:
+        Access-Control-Allow-Origin:
+          schema:
+            type: string
+        Access-Control-Allow-Methods:
+          schema:
+            type: string
+        Access-Control-Allow-Headers:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            status: 404
+            userMessage: 'The prisoner with prisonNumber=[A1234BC] not found'
+    409Error:
+      description: |
+        Error response for a HTTP 409 describing the problem with the request.
+      headers:
+        Access-Control-Allow-Origin:
+          schema:
+            type: string
+        Access-Control-Allow-Methods:
+          schema:
+            type: string
+        Access-Control-Allow-Headers:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            status: 409
+            userMessage: 'A resource with reference [c88a6c48-97e2-4c04-93b5-98619966447b] already exists for prisoner [A1234BC]'
+
+    SarContentFound:
+      description: Request successfully processed - content found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SarSuccessResponse'
+
+    SearchByPrison:
+      description: Response body containing a Search by prison results response.
+      headers:
+        Access-Control-Allow-Origin:
+          schema:
+            type: string
+        Access-Control-Allow-Methods:
+          schema:
+            type: string
+        Access-Control-Allow-Headers:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SearchByPrisonResponse'
+    AdditionalNeedsFactors:
+      description: Response body containing the a list of Additional Needs Factors.
+      headers:
+        Access-Control-Allow-Origin:
+          schema:
+            type: string
+        Access-Control-Allow-Methods:
+          schema:
+            type: string
+        Access-Control-Allow-Headers:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AdditionalNeedsFactorsResponse'
+
+    ConditionList:
+      description: Response body containing the a list of conditions.
+      headers:
+        Access-Control-Allow-Origin:
+          schema:
+            type: string
+        Access-Control-Allow-Methods:
+          schema:
+            type: string
+        Access-Control-Allow-Headers:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ConditionListResponse'
+
+    ChallengeList:
+      description: Response body containing the a list of challenges.
+      headers:
+        Access-Control-Allow-Origin:
+          schema:
+            type: string
+        Access-Control-Allow-Methods:
+          schema:
+            type: string
+        Access-Control-Allow-Headers:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ChallengeListResponse'
+
+    StrengthList:
+      description: Response body containing the a list of strengths.
+      headers:
+        Access-Control-Allow-Origin:
+          schema:
+            type: string
+        Access-Control-Allow-Methods:
+          schema:
+            type: string
+        Access-Control-Allow-Headers:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/StrengthListResponse'
+
+    Condition:
+      description: Response body containing a single condition.
+      headers:
+        Access-Control-Allow-Origin:
+          schema:
+            type: string
+        Access-Control-Allow-Methods:
+          schema:
+            type: string
+        Access-Control-Allow-Headers:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ConditionResponse'
+
+    EhcpStatus:
+      description: Response body containing the EHCP status.
+      headers:
+        Access-Control-Allow-Origin:
+          schema:
+            type: string
+        Access-Control-Allow-Methods:
+          schema:
+            type: string
+        Access-Control-Allow-Headers:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/EhcpStatusResponse'
+
+    Challenge:
+      description: Response body containing a single challenge.
+      headers:
+        Access-Control-Allow-Origin:
+          schema:
+            type: string
+        Access-Control-Allow-Methods:
+          schema:
+            type: string
+        Access-Control-Allow-Headers:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ChallengeResponse'
+
+    Strength:
+      description: Response body containing a single strength.
+      headers:
+        Access-Control-Allow-Origin:
+          schema:
+            type: string
+        Access-Control-Allow-Methods:
+          schema:
+            type: string
+        Access-Control-Allow-Headers:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/StrengthResponse'
+    SupportStrategy:
+      description: Response body containing a single support strategy.
+      headers:
+        Access-Control-Allow-Origin:
+          schema:
+            type: string
+        Access-Control-Allow-Methods:
+          schema:
+            type: string
+        Access-Control-Allow-Headers:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SupportStrategyResponse'
+    SupportStrategyList:
+      description: Response body containing the list of support strategies.
+      headers:
+        Access-Control-Allow-Origin:
+          schema:
+            type: string
+        Access-Control-Allow-Methods:
+          schema:
+            type: string
+        Access-Control-Allow-Headers:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SupportStrategyListResponse'
+
+    GetReviewSchedules:
+      description: Response body containing the a list of review schedules.
+      headers:
+        Access-Control-Allow-Origin:
+          schema:
+            type: string
+        Access-Control-Allow-Methods:
+          schema:
+            type: string
+        Access-Control-Allow-Headers:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ReviewSchedulesResponse'
+
+    ReferenceDataResponse:
+      description: Response body containing the a list of reference data.
+      headers:
+        Access-Control-Allow-Origin:
+          schema:
+            type: string
+        Access-Control-Allow-Methods:
+          schema:
+            type: string
+        Access-Control-Allow-Headers:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ReferenceDataListResponse'
+
+    GetPlanCreationSchedule:
+      description: Response body containing the a the plan creation schedule.
+      headers:
+        Access-Control-Allow-Origin:
+          schema:
+            type: string
+        Access-Control-Allow-Methods:
+          schema:
+            type: string
+        Access-Control-Allow-Headers:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlanCreationSchedulesResponse'
+
+    GetPlanReviews:
+      description: Response body containing the a the plan reviews.
+      headers:
+        Access-Control-Allow-Origin:
+          schema:
+            type: string
+        Access-Control-Allow-Methods:
+          schema:
+            type: string
+        Access-Control-Allow-Headers:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlanReviewsResponse'
+
+    PlanActionStatusResponse:
+      description: Response body containing the Education Support Plan action status.
+      headers:
+        Access-Control-Allow-Origin:
+          schema:
+            type: string
+        Access-Control-Allow-Methods:
+          schema:
+            type: string
+        Access-Control-Allow-Headers:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlanActionStatus'
+
+    EducationSupportPlan:
+      description: Response body containing an Education Support Plan.
+      headers:
+        Access-Control-Allow-Origin:
+          schema:
+            type: string
+        Access-Control-Allow-Methods:
+          schema:
+            type: string
+        Access-Control-Allow-Headers:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/EducationSupportPlanResponse'
+    HasNeed:
+      description: Response body containing information whether someone has a need.
+      headers:
+        Access-Control-Allow-Origin:
+          schema:
+            type: string
+        Access-Control-Allow-Methods:
+          schema:
+            type: string
+        Access-Control-Allow-Headers:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/HasNeedResponse'
+
+    ALNScreenersResponse:
+      description: Response body ALN screener results.
+      headers:
+        Access-Control-Allow-Origin:
+          schema:
+            type: string
+        Access-Control-Allow-Methods:
+          schema:
+            type: string
+        Access-Control-Allow-Headers:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ALNScreeners'
+
+
+  #
+  # Request Body Definitions
+  # --------------------------------------------------------------------------------
+  #requestBodies:
+
+  parameters:
+    prisonIdPathParameter:
+      name: prisonId
+      in: path
+      required: true
+      schema:
+        type: string
+        pattern: "^[A-Z]{3}$"
+        example: "BXI"
+      description: The ID of the prison
+    prisonNumberPathParameter:
+      name: prisonNumber
+      description: The NOMIS Prison Reference Number of the Prisoner that the operation is being performed on.
+      schema:
+        type: string
+        pattern: "^[A-Z]\\d{4}[A-Z]{2}$"
+        example: 'A1234BC'
+      in: path
+      required: true
+    prisonNameOrNumberQueryStringParameter:
+      name: prisonerNameOrNumber
+      in: query
+      description: Filter by prisoner name or prison number
+      schema:
+        type: string
+        example: 'Bloggs'
+    prnQueryStringParameter:
+      name: prn
+      in: query
+      required: true
+      description: NOMIS Prison Reference Number
+      schema:
+        type: string
+    planStatusQueryStringParameter:
+      name: planStatus
+      in: query
+      description: Filter by Plan Status. Not specifying a value will not filter on Plan Status.
+      schema:
+        $ref: '#/components/schemas/PlanStatus'
+        example: 'PLAN_OVERDUE'
+    sortByQueryStringParameter:
+      name: sortBy
+      in: query
+      description: Column to sort by
+      schema:
+        $ref: '#/components/schemas/SearchSortField'
+        example: 'PRISONER_NAME'
+    sortDirectionQueryStringParameter:
+      name: sortDirection
+      in: query
+      description: Sort direction (ascending or descending)
+      schema:
+        $ref: '#/components/schemas/SearchSortDirection'
+        example: 'ASC'
+    pageNumberQueryStringParameter:
+      name: page
+      in: query
+      description: Page number for pagination
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+        example: 1
+    pageSizeQueryStringParameter:
+      name: size
+      in: query
+      description: Number of items per page
+      schema:
+        type: integer
+        minimum: 1
+        default: 50
+        example: 50
+    fromDate:
+      name: fromDate
+      in: query
+      description: Optional parameter denoting minimum date of event occurrence which should be returned in the response
+      schema:
+        type: string
+        format: date
+        example: '2023-01-01'
+    toDate:
+      name: toDate
+      in: query
+      description: Optional parameter denoting maximum date of event occurrence which should be returned in the response
+      schema:
+        type: string
+        format: date
+        example: '2023-12-31'

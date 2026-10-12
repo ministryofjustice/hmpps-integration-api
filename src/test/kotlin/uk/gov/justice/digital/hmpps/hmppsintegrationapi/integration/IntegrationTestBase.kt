@@ -217,7 +217,7 @@ abstract class IntegrationTestBase {
     val nDeliusMockServer = ApiMockServer.create(UpstreamApi.NDELIUS)
     val prisonerBaseLocationMockServer = ApiMockServer.create(UpstreamApi.PRISONER_BASE_LOCATION)
     val corePersonRecordMockServer = ApiMockServer.create(UpstreamApi.CORE_PERSON_RECORD)
-    val arnsMockServer = ApiMockServer.create(UpstreamApi.ARNS_INTEGRATION_TEST)
+    val arnsMockServer = ApiMockServer.create(UpstreamApi.ASSESS_RISKS_AND_NEEDS)
     val probationSearchMockServer = ApiMockServer.create(UpstreamApi.PROBATION_OFFENDER_SEARCH)
     val manageUsersMockServer = ApiMockServer.create(UpstreamApi.MANAGE_USERS)
     val remandAndSentencingMockServer = ApiMockServer.create(UpstreamApi.REMAND_AND_SENTENCING)
@@ -863,6 +863,22 @@ abstract class IntegrationTestBase {
           "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/caseNotes/fixtures/PersonCaseNotes.json",
         ).readText(),
       )
+
+      arnsMockServer.start()
+
+      arnsMockServer.stubForGet(
+        "/risks/risk-management-plan/$crn",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/assessrisksandneeds/fixtures/RiskManagementPlan.json",
+        ).readText(),
+      )
+
+      arnsMockServer.stubForGet(
+        "/risks/rosh/$crn",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/assessrisksandneeds/fixtures/RiskOfSeriousHarm.json",
+        ).readText(),
+      )
     }
 
     @AfterAll
@@ -889,6 +905,7 @@ abstract class IntegrationTestBase {
       prisonApiServer.stop()
       createAndVaryLicenceServer.stop()
       caseNotesServer.stop()
+      arnsMockServer.stop()
     }
   }
 

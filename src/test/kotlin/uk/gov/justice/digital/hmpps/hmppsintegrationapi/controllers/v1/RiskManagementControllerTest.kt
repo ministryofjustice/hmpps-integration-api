@@ -120,7 +120,7 @@ class RiskManagementControllerTest(
               listOf(
                 UpstreamApiError(
                   type = UpstreamApiError.Type.FORBIDDEN,
-                  causedBy = UpstreamApi.RISK_MANAGEMENT_PLAN,
+                  causedBy = UpstreamApi.ASSESS_RISKS_AND_NEEDS,
                   description = "Mock Error",
                 ),
               ),
@@ -141,7 +141,7 @@ class RiskManagementControllerTest(
               listOf(
                 UpstreamApiError(
                   type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                  causedBy = UpstreamApi.RISK_MANAGEMENT_PLAN,
+                  causedBy = UpstreamApi.ASSESS_RISKS_AND_NEEDS,
                   description = "Mock Error",
                 ),
               ),

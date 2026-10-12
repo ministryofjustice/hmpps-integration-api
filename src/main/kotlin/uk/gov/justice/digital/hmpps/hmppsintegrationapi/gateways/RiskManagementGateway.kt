@@ -34,7 +34,7 @@ class RiskManagementGateway(
         HttpMethod.GET,
         "/risks/risk-management-plan/$crn",
         authenticationHeader(),
-        UpstreamApi.RISK_MANAGEMENT_PLAN,
+        UpstreamApi.ASSESS_RISKS_AND_NEEDS,
         forbiddenAsError = true,
       )
     return when (result) {

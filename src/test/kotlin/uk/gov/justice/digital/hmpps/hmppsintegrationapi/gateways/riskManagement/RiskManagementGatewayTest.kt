@@ -31,7 +31,7 @@ class RiskManagementGatewayTest(
   private val riskManagementGateway: RiskManagementGateway,
 ) : DescribeSpec({
 
-    val riskManagementMockServer = ApiMockServer.create(UpstreamApi.RISK_MANAGEMENT_PLAN)
+    val riskManagementMockServer = ApiMockServer.create(UpstreamApi.ASSESS_RISKS_AND_NEEDS)
 
     beforeEach {
       riskManagementMockServer.start()

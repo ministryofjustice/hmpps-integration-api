@@ -14,7 +14,7 @@ services:
   int-api.base-url: https://localhost:8443
   hmpps-auth.base-url: http://localhost:9090
   adjudications.base-url: http://localhost:4010
-  assess-risks-and-needs.base-url: http://localhost:4011
+  assess-risks-and-needs.base-url: http://localhost:4032
   case-notes.base-url: http://localhost:4046
   create-and-vary-licence.base-url: http://localhost:4045
   manage-pom-case-api.base-url: http://localhost:4014

@@ -1,40 +1,40 @@
 {
   "data": {
-    "assessedOn": "2026-01-16T16:22:54",
+    "assessedOn": "2026-10-09T11:44:44",
     "riskToSelf": {
       "suicide": {
-        "risk": "YES",
-        "previous": "YES",
+        "risk": "Yes, No, Don't know, null",
+        "previous": "Yes, No, Don't know",
         "previousConcernsText": "Risk of self harms concerns due to ...",
-        "current": "YES",
+        "current": "Yes, No, Don't know",
         "currentConcernsText": "Risk of self harms concerns due to ..."
       },
       "selfHarm": {
-        "risk": "YES",
-        "previous": "YES",
+        "risk": "Yes, No, Don't know, null",
+        "previous": "Yes, No, Don't know",
         "previousConcernsText": "Risk of self harms concerns due to ...",
-        "current": "YES",
+        "current": "Yes, No, Don't know",
         "currentConcernsText": "Risk of self harms concerns due to ..."
       },
       "custody": {
-        "risk": "YES",
-        "previous": "YES",
+        "risk": "Yes, No, Don't know, null",
+        "previous": "Yes, No, Don't know",
         "previousConcernsText": "Risk of self harms concerns due to ...",
-        "current": "YES",
+        "current": "Yes, No, Don't know",
         "currentConcernsText": "Risk of self harms concerns due to ..."
       },
       "hostelSetting": {
-        "risk": "YES",
-        "previous": "YES",
+        "risk": "Yes, No, Don't know, null",
+        "previous": "Yes, No, Don't know",
         "previousConcernsText": "Risk of self harms concerns due to ...",
-        "current": "YES",
+        "current": "Yes, No, Don't know",
         "currentConcernsText": "Risk of self harms concerns due to ..."
       },
       "vulnerability": {
-        "risk": "YES",
-        "previous": "YES",
+        "risk": "Yes, No, Don't know, null",
+        "previous": "Yes, No, Don't know",
         "previousConcernsText": "Risk of self harms concerns due to ...",
-        "current": "YES",
+        "current": "Yes, No, Don't know",
         "currentConcernsText": "Risk of self harms concerns due to ..."
       }
     },
@@ -50,7 +50,7 @@
       "riskImminence": "the risk is imminent and more probably in X situation",
       "riskIncreaseFactors": "If offender in situation X the risk can be higher",
       "riskMitigationFactors": "Giving offender therapy in X will reduce the risk",
-      "overallRiskLevel": "VERY_HIGH",
+      "overallRiskLevel": "HIGH",
       "riskInCommunity": {
         "children": "HIGH ",
         "public": "HIGH ",

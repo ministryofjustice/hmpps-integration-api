@@ -5,11 +5,9 @@ services:
       dockerfile: Dockerfile.prism
     container_name: prism
     healthcheck:
-      test: 'curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4010/reported-adjudications/hearings?hearingDate=1910-06-03 &&
-        curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4011/risks/predictors/D1974X'
+      test: 'curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4010/reported-adjudications/hearings?hearingDate=1910-06-03'
     ports:
       - "4010:4010"
-      - "4011:4011"
 
   local-stack-aws:
     image: localstack/localstack:3.0

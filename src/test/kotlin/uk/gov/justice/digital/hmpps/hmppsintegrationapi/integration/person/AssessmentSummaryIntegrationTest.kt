@@ -1,10 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.mockito.kotlin.whenever
 import org.springframework.http.HttpStatus
-import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
@@ -13,7 +11,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationT
 import java.io.File
 import kotlin.test.Test
 
-@TestPropertySource(properties = ["services.assess-risks-and-needs.base-url=http://localhost:4032"])
 class AssessmentSummaryIntegrationTest : IntegrationTestBase() {
   val testAssessmentSummary =
     """
@@ -45,18 +42,12 @@ class AssessmentSummaryIntegrationTest : IntegrationTestBase() {
 
   @BeforeEach
   fun setUp() {
-    arnsMockServer.start()
     arnsMockServer.stubForGet(
       "/assessments/mapps/crn/$crn",
       File(
         "$gatewaysFolder/assessrisksandneeds/fixtures/AssessmentSummaryResponse.json",
       ).readText(),
     )
-  }
-
-  @AfterEach
-  fun tearDown() {
-    arnsMockServer.stop()
   }
 
   @Test
