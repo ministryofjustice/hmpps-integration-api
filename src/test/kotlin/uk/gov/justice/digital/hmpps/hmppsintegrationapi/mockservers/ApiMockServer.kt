@@ -57,7 +57,6 @@ class ApiMockServer(
           UpstreamApi.CASE_NOTES -> ApiMockServerConfig(4046, "case-notes.json")
           // USE PRISM
           UpstreamApi.ADJUDICATIONS -> ApiMockServerConfig(4006)
-          UpstreamApi.RISK_MANAGEMENT_PLAN -> ApiMockServerConfig(4004)
           UpstreamApi.SAN -> ApiMockServerConfig(4200)
           UpstreamApi.HMPPS_AUTH -> throw NotImplementedError("HMPPS Auth MockServer is already running, see HmppsAuthMockServer")
         }

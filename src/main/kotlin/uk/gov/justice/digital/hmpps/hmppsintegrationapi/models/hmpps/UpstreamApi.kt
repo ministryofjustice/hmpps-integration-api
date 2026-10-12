@@ -10,7 +10,6 @@ enum class UpstreamApi {
   CVL,
   CASE_NOTES,
   MANAGE_POM_CASE,
-  RISK_MANAGEMENT_PLAN,
   TEST,
   PLP,
   NON_ASSOCIATIONS,
