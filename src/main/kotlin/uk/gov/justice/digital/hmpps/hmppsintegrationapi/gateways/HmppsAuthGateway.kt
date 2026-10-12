@@ -74,8 +74,10 @@ class HmppsAuthGateway(
     service: String,
     context: RequestContext?,
   ): String {
+    val passOboUsername = featureFlagConfig.isEnabled(FeatureFlagConfig.OBO_PASS_USERNAME_TO_AUTH)
+
     val oboUserName = context?.oboUser?.username
-    val cacheKey = if (oboUserName != null) "hmpps-token-$oboUserName" else "hmpps-token"
+    val cacheKey = if (oboUserName != null && passOboUsername) "hmpps-token-$oboUserName" else "hmpps-token"
 
     val existingAccessToken = tokenCache?.get(cacheKey)?.get()?.toString()
 
@@ -94,7 +96,7 @@ class HmppsAuthGateway(
         .fromUriString("/auth/oauth/token")
         .queryParam("grant_type", "client_credentials")
 
-    if (oboUserName != null) {
+    if (oboUserName != null && passOboUsername) {
       uriComponents.queryParam("username", oboUserName)
     }
 
