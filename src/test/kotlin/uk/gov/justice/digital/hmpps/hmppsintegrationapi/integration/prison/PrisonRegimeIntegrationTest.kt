@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.prison
 
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
+import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
@@ -24,7 +25,7 @@ class PrisonRegimeIntegrationTest : IntegrationTestBase() {
     )
     callApi(path)
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("prison-regime-response")))
+      .andExpect(content().json(getExpectedResponse("prison-regime-response.json"), JsonCompareMode.STRICT))
 
     activitiesMockServer.assertValidationPassed()
   }

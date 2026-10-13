@@ -1,0 +1,20 @@
+{
+  "data": {
+    "deadlineDate": "2025-03-20",
+    "status": "SCHEDULED",
+    "calculationRule": "NEW_PRISON_ADMISSION",
+    "nomisNumber": "X1234YZ",
+    "systemCreatedBy": "system",
+    "systemCreatedAt": "2025-02-28T10:25:34.949Z",
+    "systemCreatedAtPrison": "MKI",
+    "systemUpdatedBy": "system",
+    "systemUpdatedAt": "2025-02-28T10:25:34.949Z",
+    "systemUpdatedAtPrison": "MKI",
+    "inductionPerformedBy": null,
+    "inductionPerformedAt": null,
+    "inductionPerformedByRole": null,
+    "inductionPerformedAtPrison": null,
+    "exemptionReason": null,
+    "version": 0
+  }
+}

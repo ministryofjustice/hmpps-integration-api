@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 
 import org.junit.jupiter.api.Test
+import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
@@ -9,13 +10,7 @@ class HmppsIdIntegrationTest : IntegrationTestBase() {
   fun `gets the person detail`() {
     callApi("/v1/hmpps/id/nomis-number/$nomsId")
       .andExpect(status().isOk)
-      .andExpect(
-        content().json(
-          """
-        {"data":{"hmppsId":"A123123"}}
-      """,
-        ),
-      )
+      .andExpect(content().json(getExpectedResponse("person-hmppsid.json"), JsonCompareMode.STRICT))
   }
 
   @Test
@@ -40,78 +35,42 @@ class HmppsIdIntegrationTest : IntegrationTestBase() {
   fun `gets the person detail using new url`() {
     callApi("/v1/hmpps/id/by-nomis-number/$nomsId")
       .andExpect(status().isOk)
-      .andExpect(
-        content().json(
-          """
-        {"data":{"hmppsId":"A123123"}}
-      """,
-        ),
-      )
+      .andExpect(content().json(getExpectedResponse("person-hmppsid.json"), JsonCompareMode.STRICT))
   }
 
   @Test
   fun `gets the nomis Id for a HMPPSID where the id is a crn`() {
     callApi("/v1/hmpps/id/nomis-number/by-hmpps-id/$crn")
       .andExpect(status().isOk)
-      .andExpect(
-        content().json(
-          """
-        {"data":{"nomisNumber":"$nomsId"}}
-      """,
-        ),
-      )
+      .andExpect(content().json(getExpectedResponse("person-nomis-number.json"), JsonCompareMode.STRICT))
   }
 
   @Test
   fun `gets the nomis Id for a HMPPSID where the id is a NOMIS id`() {
     callApi("/v1/hmpps/id/nomis-number/by-hmpps-id/$nomsId")
       .andExpect(status().isOk)
-      .andExpect(
-        content().json(
-          """
-        {"data":{"nomisNumber":"$nomsId"}}
-      """,
-        ),
-      )
+      .andExpect(content().json(getExpectedResponse("person-nomis-number.json"), JsonCompareMode.STRICT))
   }
 
   @Test
   fun `gets the nomis Id for a HMPPSID where the id is a NOMIS id AND is not in delius`() {
     callApi("/v1/hmpps/id/nomis-number/by-hmpps-id/$crn")
       .andExpect(status().isOk)
-      .andExpect(
-        content().json(
-          """
-        {"data":{"nomisNumber":"$nomsId"}}
-      """,
-        ),
-      )
+      .andExpect(content().json(getExpectedResponse("person-nomis-number.json"), JsonCompareMode.STRICT))
   }
 
   @Test
   fun `gets the nomis Id for a HMPPSID where the id is invalid`() {
     callApi("/v1/hmpps/id/nomis-number/by-hmpps-id/invalidId")
       .andExpect(status().is4xxClientError)
-      .andExpect(
-        content().json(
-          """
-        {"userMessage":"Invalid HMPPS ID: invalidId","developerMessage":"Validation failure: Invalid HMPPS ID: invalidId"}
-      """,
-        ),
-      )
+      .andExpect(content().json(getExpectedResponse("person-hmppsid-invalid.json"), JsonCompareMode.STRICT))
   }
 
   @Test
   fun `gets the nomis Id for a HMPPSID where the id not found`() {
     callApi("/v1/hmpps/id/nomis-number/by-hmpps-id/invalidId")
       .andExpect(status().is4xxClientError)
-      .andExpect(
-        content().json(
-          """
-        {"userMessage":"Invalid HMPPS ID: invalidId","developerMessage":"Validation failure: Invalid HMPPS ID: invalidId","moreInfo":null}
-      """,
-        ),
-      )
+      .andExpect(content().json(getExpectedResponse("person-hmppsid-not-found.json"), JsonCompareMode.STRICT))
   }
 
   @Test

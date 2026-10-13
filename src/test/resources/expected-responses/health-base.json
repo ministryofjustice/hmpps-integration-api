@@ -1,0 +1,163 @@
+{
+  "components": {
+    "activities-health": {
+      "details": {
+        "queueName": "activities",
+        "messagesOnQueue": "0",
+        "messagesInFlight": "0"
+      },
+      "status": "UP"
+    },
+    "assessmentevents-health": {
+      "details": {
+        "queueName": "assessmentevents",
+        "messagesOnQueue": "1",
+        "messagesInFlight": "0"
+      },
+      "status": "UP"
+    },
+    "audit-health": {
+      "details": {
+        "queueName": "audit",
+        "messagesOnQueue": "493",
+        "messagesInFlight": "0"
+      },
+      "status": "UP"
+    },
+    "db": {
+      "details": {
+        "database": "PostgreSQL",
+        "validationQuery": "isValid()"
+      },
+      "status": "UP"
+    },
+    "diskSpace": {
+      "details": {
+        "total": 494384795648,
+        "free": 368550453248,
+        "threshold": 10485760,
+        "path": "/Users/jessicawylde/Documents/GitHub/hmpps-integration-api/.",
+        "exists": true
+      },
+      "status": "UP"
+    },
+    "domainevents-health": {
+      "details": {
+        "topicArn": "arn:aws:sns:eu-west-2:000000000000:domainevents-topic",
+        "subscriptionsConfirmed": "0",
+        "subscriptionsPending": "0"
+      },
+      "status": "UP"
+    },
+    "educationalnevents-health": {
+      "details": {
+        "queueName": "educationalnevents",
+        "messagesOnQueue": "1",
+        "messagesInFlight": "0"
+      },
+      "status": "UP"
+    },
+    "educationcoursecompletionevents-health": {
+      "details": {
+        "queueName": "education-course-completion-events",
+        "messagesOnQueue": "1",
+        "messagesInFlight": "0"
+      },
+      "status": "UP"
+    },
+    "educationstatusevents-health": {
+      "details": {
+        "queueName": "educationstatusevents",
+        "messagesOnQueue": "1",
+        "messagesInFlight": "0"
+      },
+      "status": "UP"
+    },
+    "emnotificationevents-health": {
+      "details": {
+        "topicArn": "arn:aws:sns:eu-west-2:000000000000:returns-events.fifo",
+        "subscriptionsConfirmed": "0",
+        "subscriptionsPending": "0"
+      },
+      "status": "UP"
+    },
+    "healthInfo": {
+      "details": {
+        "version": "2026-10-13"
+      },
+      "status": "UP"
+    },
+    "hmppsdomainqueue-health": {
+      "details": {
+        "queueName": "hmpps_integrations_events_queue",
+        "messagesOnQueue": "0",
+        "messagesInFlight": "0",
+        "dlqStatus": "UP",
+        "dlqName": "hmpps_integrations_events_queue_dlq",
+        "messagesOnDlq": "0"
+      },
+      "status": "UP"
+    },
+    "integrationeventtopic-health": {
+      "details": {
+        "topicArn": "arn:aws:sns:eu-west-2:000000000000:integration_event_topic",
+        "subscriptionsConfirmed": "0",
+        "subscriptionsPending": "0"
+      },
+      "status": "UP"
+    },
+    "livenessState": {
+      "status": "UP"
+    },
+    "locations-health": {
+      "details": {
+        "queueName": "locations",
+        "messagesOnQueue": "0",
+        "messagesInFlight": "0"
+      },
+      "status": "UP"
+    },
+    "ping": {
+      "status": "UP"
+    },
+    "prisonapi": {
+      "details": {
+        "healthurl": "http://localhost:4044/health/ping",
+        "httpStatusCode": 404
+      },
+      "status": "UP"
+    },
+    "readinessState": {
+      "status": "UP"
+    },
+    "ssl": {
+      "details": {
+        "expiringChains": [],
+        "invalidChains": [],
+        "validChains": []
+      },
+      "status": "UP"
+    },
+    "testqueue-health": {
+      "details": {
+        "queueName": "test_queue",
+        "messagesOnQueue": "1",
+        "messagesInFlight": "0"
+      },
+      "status": "UP"
+    },
+    "visits-health": {
+      "details": {
+        "queueName": "visits",
+        "messagesOnQueue": "0",
+        "messagesInFlight": "0"
+      },
+      "status": "UP"
+    }
+  },
+  "groups": [
+    "liveness",
+    "readiness"
+  ],
+  "status": "UP"
+}

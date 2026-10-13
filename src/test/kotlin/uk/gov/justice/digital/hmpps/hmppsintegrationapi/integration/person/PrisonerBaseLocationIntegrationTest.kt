@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
 import org.junit.jupiter.api.Test
+import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
@@ -12,9 +13,7 @@ class PrisonerBaseLocationIntegrationTest : IntegrationTestBase() {
   fun `returns prisoner base location`() {
     callApi(path = makePathPrisonerBaseLocation(nomsId))
       .andExpect(status().isOk)
-      .andExpect(
-        content().json(getExpectedResponse("prisoner-base-location")),
-      )
+      .andExpect(content().json(getExpectedResponse("prisoner-base-location.json"), JsonCompareMode.STRICT))
   }
 
   @Test

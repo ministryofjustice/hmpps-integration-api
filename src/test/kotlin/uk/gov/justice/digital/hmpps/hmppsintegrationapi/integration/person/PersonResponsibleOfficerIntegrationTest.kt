@@ -22,7 +22,7 @@ class PersonResponsibleOfficerIntegrationTest : IntegrationTestBase() {
     )
     callApi("$basePath/$nomsId/person-responsible-officer")
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("person-responsible-officer"), JsonCompareMode.STRICT))
+      .andExpect(content().json(getExpectedResponse("person-responsible-officer.json"), JsonCompareMode.STRICT))
 
     managePomCaseMockServer.assertValidationPassed()
   }

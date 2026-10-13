@@ -11,6 +11,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.http.HttpStatus
+import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.web.reactive.function.client.WebClientResponseException
@@ -127,17 +128,7 @@ class DeactivateLocationIntegrationTest : IntegrationTestWithQueueBase("location
 
     postToApi(path, asJsonString(deactivateLocationRequest))
       .andExpect(status().isOk)
-      .andExpect(
-        content().json(
-          """
-          {
-            "data": {
-              "message": "Deactivate location written to queue"
-            }
-          }
-          """.trimIndent(),
-        ),
-      )
+      .andExpect(content().json(getExpectedResponse("deactivate-location-event-response.json"), JsonCompareMode.STRICT))
     await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
 
     val queueMessages = getQueueMessages()
@@ -193,17 +184,7 @@ class DeactivateLocationIntegrationTest : IntegrationTestWithQueueBase("location
   fun `return the response saying message on queue for test event`() {
     postToApi(path, asJsonString(deactivateLocationRequest.copy(externalReference = "TestEvent")))
       .andExpect(status().isOk)
-      .andExpect(
-        content().json(
-          """
-          {
-            "data": {
-              "message": "Deactivate location written to queue"
-            }
-          }
-          """.trimIndent(),
-        ),
-      )
+      .andExpect(content().json(getExpectedResponse("deactivate-location-event-response.json"), JsonCompareMode.STRICT))
 
     await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
 

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
+import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
@@ -33,7 +34,7 @@ class PrisonActivitiesIntegrationTest : IntegrationTestBase() {
       )
       callApi(path)
         .andExpect(status().isOk)
-        .andExpect(content().json(getExpectedResponse("prison-activities-response")))
+        .andExpect(content().json(getExpectedResponse("prison-activities-response.json"), JsonCompareMode.STRICT))
 
       activitiesMockServer.assertValidationPassed()
     }
@@ -95,7 +96,7 @@ class PrisonActivitiesIntegrationTest : IntegrationTestBase() {
       )
       postToApi(path, requestBody)
         .andExpect(status().is2xxSuccessful)
-        .andExpect(content().json(getExpectedResponse("search-appointments-response")))
+        .andExpect(content().json(getExpectedResponse("search-appointments-response.json"), JsonCompareMode.STRICT))
 
       activitiesMockServer.assertValidationPassed()
     }
@@ -135,7 +136,7 @@ class PrisonActivitiesIntegrationTest : IntegrationTestBase() {
       )
       callApi(path)
         .andExpect(status().isOk)
-        .andExpect(content().json(getExpectedResponse("historical-attendances-response")))
+        .andExpect(content().json(getExpectedResponse("historical-attendances-response.json"), JsonCompareMode.STRICT))
 
       activitiesMockServer.assertValidationPassed()
     }

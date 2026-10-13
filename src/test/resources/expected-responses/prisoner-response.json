@@ -21,6 +21,15 @@
       "croNumber": "29906/12J",
       "deliusCrn": null
     },
-    "pncId": "12/394773H"
+    "pncId": "12/394773H",
+    "category": "C",
+    "csra": "HIGH",
+    "receptionDate": "2023-05-01",
+    "status": "ACTIVE IN",
+    "prisonId": "MDI",
+    "prisonName": "HMP Leeds",
+    "cellLocation": "A-1-002",
+    "youthOffender": true,
+    "inOutStatus": null
   }
 }
