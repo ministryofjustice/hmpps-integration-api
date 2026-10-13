@@ -14,7 +14,7 @@ val extPrisonContactManagement =
     }
     filters {
       supervisionStatuses {
-        - "PRISONS"
+        -"PRISONS"
       }
     }
   }
