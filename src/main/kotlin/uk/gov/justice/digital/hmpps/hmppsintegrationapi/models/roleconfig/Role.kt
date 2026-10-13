@@ -7,6 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.constants
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extHmppsPublicProtection
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extHmppsPublicProtectionCat4
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extHmppsSeriousHarm
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extPrisonContactManagement
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extPrisonsCourseCompletion
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extPrisonsCrimeData
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extPrisonsEducation
@@ -171,6 +172,7 @@ val roles =
     daso,
     mojProbationRiskManagement,
     extHmppsSeriousHarm,
+    extPrisonContactManagement,
     extPrisonsCourseCompletion,
     mojProbationCaseProposal,
     mojPrisonsPrisonerImage,
