@@ -2,6 +2,7 @@
   "data": {
     "planCreationSchedules": [
       {
+        "nomisNumber": "G2996UX",
         "reference": "44052fd9-bf6c-41bc-8308-6839a7048836",
         "status": "SCHEDULED",
         "createdBy": "system",
@@ -13,6 +14,10 @@
         "updatedAt": "2025-07-16T08:48:11.844737Z",
         "updatedAtPrison": "BXI",
         "deadlineDate": "2025-10-06",
+        "planCompletedDate": null,
+        "planCompletedBy": null,
+        "planKeyedInBy": null,
+        "planCompletedByJobRole": null,
         "exemptionReason": null,
         "exemptionDetail": null,
         "needSources": [
@@ -22,6 +27,7 @@
         "version": 1
       },
       {
+        "nomisNumber": "G2996UX",
         "reference": "44052fd9-bf6c-41bc-8308-6839a7048836",
         "status": "EXEMPT_PRISONER_NOT_COMPLY",
         "createdBy": "system",
@@ -33,6 +39,10 @@
         "updatedAt": "2025-07-16T08:48:29.143136Z",
         "updatedAtPrison": "MDI",
         "deadlineDate": null,
+        "planCompletedDate": null,
+        "planCompletedBy": null,
+        "planKeyedInBy": null,
+        "planCompletedByJobRole": null,
         "exemptionReason": "EXEMPT_REFUSED_TO_ENGAGE",
         "exemptionDetail": "aa",
         "needSources": [

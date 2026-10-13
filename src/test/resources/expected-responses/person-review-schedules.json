@@ -1,8 +1,8 @@
 {
-  "data":
-  {
+  "data": {
     "reviewSchedules": [
       {
+        "nomisNumber": "G2996UX",
         "reference": "628490ec-b944-4813-bdee-a2a6fe3e7d88",
         "deadlineDate": "2025-07-21",
         "status": "SCHEDULED",

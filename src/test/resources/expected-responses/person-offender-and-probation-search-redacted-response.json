@@ -19,11 +19,16 @@
       ],
       "identifiers": {
         "nomisNumber": "G2996UX",
-        "croNumber": "**REDACTED**"
+        "croNumber": "**REDACTED**",
+        "deliusCrn": "**REDACTED**"
       },
       "pncId": "**REDACTED**",
       "hmppsId": "G2996UX",
-      "contactDetails": null
+      "contactDetails": null,
+      "currentRestriction": null,
+      "restrictionMessage": "**REDACTED**",
+      "currentExclusion": null,
+      "exclusionMessage": null
     }
   }
 }
