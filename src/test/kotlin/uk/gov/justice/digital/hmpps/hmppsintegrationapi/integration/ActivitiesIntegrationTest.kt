@@ -16,6 +16,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
+import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AttendanceUpdateRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Exclusion
@@ -50,7 +51,7 @@ class ActivitiesIntegrationTest : IntegrationTestInMemoryQueueBase("activities")
       )
       callApi(path)
         .andExpect(MockMvcResultMatchers.status().isOk)
-        .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("activities-schedule-response")))
+        .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("activities-schedule-response.json"), JsonCompareMode.STRICT))
 
       activitiesMockServer.assertValidationPassed()
     }
@@ -88,7 +89,7 @@ class ActivitiesIntegrationTest : IntegrationTestInMemoryQueueBase("activities")
       )
       callApi(path)
         .andExpect(MockMvcResultMatchers.status().isOk)
-        .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("activities-schedule-detailed-response")))
+        .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("activities-schedule-detailed-response.json"), JsonCompareMode.STRICT))
 
       activitiesMockServer.assertValidationPassed()
     }
@@ -124,7 +125,7 @@ class ActivitiesIntegrationTest : IntegrationTestInMemoryQueueBase("activities")
       )
       callApi(path)
         .andExpect(MockMvcResultMatchers.status().isOk)
-        .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("activities-suitability-criteria")))
+        .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("activities-suitability-criteria.json"), JsonCompareMode.STRICT))
 
       activitiesMockServer.assertValidationPassed()
     }
@@ -275,7 +276,7 @@ class ActivitiesIntegrationTest : IntegrationTestInMemoryQueueBase("activities")
       )
       callApi(path)
         .andExpect(MockMvcResultMatchers.status().isOk)
-        .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("reasons-for-attendance")))
+        .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("reasons-for-attendance.json"), JsonCompareMode.STRICT))
 
       activitiesMockServer.assertValidationPassed()
     }
@@ -304,17 +305,7 @@ class ActivitiesIntegrationTest : IntegrationTestInMemoryQueueBase("activities")
       val requestBody = asJsonString(prisonerDeallocationRequest)
       putApi(path, requestBody)
         .andExpect(MockMvcResultMatchers.status().isOk)
-        .andExpect(
-          MockMvcResultMatchers.content().json(
-            """
-            {
-              "data": {
-                "message": "Prisoner deallocation written to queue"
-              }
-            }
-            """.trimIndent(),
-          ),
-        )
+        .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("deallocate-schedule-response.json"), JsonCompareMode.STRICT))
 
       await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
 
@@ -345,17 +336,7 @@ class ActivitiesIntegrationTest : IntegrationTestInMemoryQueueBase("activities")
       val requestBody = asJsonString(prisonerDeallocationRequest.copy(reasonCode = "TestEvent"))
       putApi(path, requestBody)
         .andExpect(MockMvcResultMatchers.status().isOk)
-        .andExpect(
-          MockMvcResultMatchers.content().json(
-            """
-            {
-              "data": {
-                "message": "Prisoner deallocation written to queue"
-              }
-            }
-            """.trimIndent(),
-          ),
-        )
+        .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("deallocate-schedule-response.json"), JsonCompareMode.STRICT))
 
       await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
 
@@ -476,7 +457,7 @@ class ActivitiesIntegrationTest : IntegrationTestInMemoryQueueBase("activities")
       )
       callApi(path)
         .andExpect(MockMvcResultMatchers.status().isOk)
-        .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("deallocation-reasons")))
+        .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("deallocation-reasons.json"), JsonCompareMode.STRICT))
 
       activitiesMockServer.assertValidationPassed()
     }
@@ -537,17 +518,7 @@ class ActivitiesIntegrationTest : IntegrationTestInMemoryQueueBase("activities")
       val requestBody = asJsonString(prisonerAllocationRequest)
       postToApi(path, requestBody)
         .andExpect(MockMvcResultMatchers.status().isOk)
-        .andExpect(
-          MockMvcResultMatchers.content().json(
-            """
-            {
-              "data": {
-                "message": "Prisoner allocation written to queue"
-              }
-            }
-            """.trimIndent(),
-          ),
-        )
+        .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("allocation-schedule-response.json"), JsonCompareMode.STRICT))
 
       await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
 
@@ -910,17 +881,7 @@ class ActivitiesIntegrationTest : IntegrationTestInMemoryQueueBase("activities")
       val requestBody = asJsonString(prisonerAllocationRequest.copy(testEvent = "TestEvent"))
       postToApi(path, requestBody)
         .andExpect(MockMvcResultMatchers.status().isOk)
-        .andExpect(
-          MockMvcResultMatchers.content().json(
-            """
-            {
-              "data": {
-                "message": "Prisoner allocation written to queue"
-              }
-            }
-            """.trimIndent(),
-          ),
-        )
+        .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("allocation-schedule-response.json"), JsonCompareMode.STRICT))
 
       await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
 
@@ -961,7 +922,7 @@ class ActivitiesIntegrationTest : IntegrationTestInMemoryQueueBase("activities")
 
       callApi(path)
         .andExpect(MockMvcResultMatchers.status().isOk)
-        .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("waiting-list-applications-response")))
+        .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("waiting-list-applications-response.json"), JsonCompareMode.STRICT))
 
       activitiesMockServer.verify(
         getRequestedFor(urlEqualTo("/integration-api/schedules/$scheduleId/waiting-list-applications"))

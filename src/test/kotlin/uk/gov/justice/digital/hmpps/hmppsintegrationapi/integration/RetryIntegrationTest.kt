@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.spy
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.util.ReflectionTestUtils
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -59,7 +60,7 @@ class RetryIntegrationTest : IntegrationTestBase() {
 
       callApi(path)
         .andExpect(status().isOk)
-        .andExpect(content().json(getExpectedResponse("activities-schedule-response")))
+        .andExpect(content().json(getExpectedResponse("activities-schedule-response.json"), JsonCompareMode.STRICT))
 
       activitiesMockServer.assertValidationPassed()
     }
@@ -108,7 +109,7 @@ class RetryIntegrationTest : IntegrationTestBase() {
       )
       callApi(path)
         .andExpect(status().isOk)
-        .andExpect(content().json(getExpectedResponse("activities-schedule-response")))
+        .andExpect(content().json(getExpectedResponse("activities-schedule-response.json"), JsonCompareMode.STRICT))
     }
   }
 
@@ -131,7 +132,7 @@ class RetryIntegrationTest : IntegrationTestBase() {
 
       callApi(path)
         .andExpect(status().isOk)
-        .andExpect(content().json(getExpectedResponse("activities-schedule-detailed-response")))
+        .andExpect(content().json(getExpectedResponse("activities-schedule-detailed-response.json"), JsonCompareMode.STRICT))
 
       activitiesMockServer.assertValidationPassed()
     }
@@ -181,7 +182,7 @@ class RetryIntegrationTest : IntegrationTestBase() {
 
       callApi(path)
         .andExpect(status().isOk)
-        .andExpect(content().json(getExpectedResponse("activities-schedule-detailed-response")))
+        .andExpect(content().json(getExpectedResponse("activities-schedule-detailed-response.json"), JsonCompareMode.STRICT))
     }
   }
 

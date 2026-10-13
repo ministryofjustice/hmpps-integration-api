@@ -4,7 +4,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import java.io.File
 import kotlin.test.Test
 
 class CourtCasesIntegrationTest : IntegrationTestBase() {
@@ -13,12 +12,7 @@ class CourtCasesIntegrationTest : IntegrationTestBase() {
     callApi(
       "/v1/persons/$crn/court-cases",
     ).andExpect(status().isOk)
-      .andExpect(
-        MockMvcResultMatchers.content().json(
-          File("src/test/resources/expected-responses/court-cases.json").readText(),
-          JsonCompareMode.STRICT,
-        ),
-      )
+      .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("court-cases.json"), JsonCompareMode.STRICT))
 
     remandAndSentencingMockServer.assertValidationPassed()
   }

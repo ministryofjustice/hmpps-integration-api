@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 
+import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import kotlin.test.Test
@@ -9,12 +10,6 @@ class StatusIntegrationTest : IntegrationTestBase() {
   fun `Status test`() {
     callApi("/v1/status")
       .andExpect(status().isOk)
-      .andExpect(
-        content().json(
-          """
-        {"data":{"status":"ok"},"errors":[]}
-        """,
-        ),
-      )
+      .andExpect(content().json(getExpectedResponse("status.json"), JsonCompareMode.STRICT))
   }
 }

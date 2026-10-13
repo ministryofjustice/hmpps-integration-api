@@ -1,0 +1,7 @@
+{
+  "status": 400,
+  "errorCode": null,
+  "userMessage": "Invalid HMPPS ID: invalidId",
+  "developerMessage": "Validation failure: Invalid HMPPS ID: invalidId",
+  "moreInfo": null
+}

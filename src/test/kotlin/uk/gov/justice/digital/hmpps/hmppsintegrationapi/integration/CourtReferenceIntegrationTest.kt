@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 
 import org.springframework.http.HttpStatus
+import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import kotlin.test.Test
@@ -14,18 +15,7 @@ class CourtReferenceIntegrationTest : IntegrationTestBase() {
     callApi(
       path,
     ).andExpect(status().isOk)
-      .andExpect(
-        content().json(
-          """
-          {
-            "data":
-              {
-                "courtName":"Accrington Youth Court"
-              }
-          }
-          """.trimIndent(),
-        ),
-      )
+      .andExpect(content().json(getExpectedResponse("courts-reference-data.json"), JsonCompareMode.STRICT))
 
     courtRegisterMockServer.assertValidationPassed()
   }

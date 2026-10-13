@@ -11,12 +11,6 @@ class HealthCheckIntegrationTest : IntegrationTestBase() {
   fun `health check test`(path: String) {
     callApi(path)
       .andExpect(status().isOk)
-      .andExpect(
-        content().json(
-          """
-        {"status":"UP"}
-        """,
-        ),
-      )
+      .andExpect(content().json(getExpectedResponse("health.json")))
   }
 }
