@@ -32,4 +32,4 @@ prevent_indexing: true
 
 show_contribution_banner: false
 
-api_path: https://ministryofjustice.github.io/hmpps-integration-api/openapi/api-docs.json
+api_path: https://docs.hmpps-external-api.service.justice.gov.uk/openapi/api-docs.json
