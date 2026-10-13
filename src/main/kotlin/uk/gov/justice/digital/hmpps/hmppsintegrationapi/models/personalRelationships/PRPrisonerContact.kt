@@ -20,7 +20,7 @@ data class PRPrisonerContact(
   @JsonProperty("middleNames")
   val middleNames: String?,
   @JsonProperty("dateOfBirth")
-  val dateOfBirth: String,
+  val dateOfBirth: String?,
   @JsonProperty("relationshipTypeCode")
   val relationshipTypeCode: String,
   @JsonProperty("relationshipTypeDescription")

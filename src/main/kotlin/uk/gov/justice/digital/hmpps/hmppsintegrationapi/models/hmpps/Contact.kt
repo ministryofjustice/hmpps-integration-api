@@ -12,7 +12,7 @@ data class Contact(
   @Schema(description = "The middle names of the contact, if any", example = "William")
   val middleNames: String?,
   @Schema(description = "The date of birth of the contact, if known", example = "1980-01-01")
-  val dateOfBirth: String,
+  val dateOfBirth: String?,
   @Schema(description = "Flat number or name", example = "Flat 2B")
   val flat: String?,
   @Schema(description = "Building or house number or name", example = "Mansion House")
