@@ -28,4 +28,5 @@ enum class UpstreamApi {
   COURT_REGISTER,
   REMAND_AND_SENTENCING,
   CEMO,
+  TIER,
 }

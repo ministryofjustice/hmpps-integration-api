@@ -32,4 +32,9 @@ class RestClientConfig {
   fun manageUsersRestClient(
     @Value("\${services.manage-users.base-url}") baseUrl: String,
   ): RestApiClient = RestApiClient(UpstreamApi.MANAGE_USERS.name, baseUrl)
+
+  @Bean("tierRestClient")
+  fun tierRestClient(
+    @Value("\${services.tier.base-url}") baseUrl: String,
+  ): RestApiClient = RestApiClient(UpstreamApi.TIER.name, baseUrl)
 }
