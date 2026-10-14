@@ -3,8 +3,8 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.11"
-  kotlin("plugin.spring") version "2.4.20"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.12"
+  kotlin("plugin.spring") version "2.4.21"
   id("dev.detekt") version "2.0.0-alpha.6"
   id("org.jetbrains.kotlinx.kover") version "0.9.11"
 }
@@ -26,15 +26,15 @@ dependencies {
   runtimeOnly("io.jsonwebtoken:jjwt-impl:0.13.0")
   runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.13.0")
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
-  runtimeOnly("org.postgresql:postgresql:42.7.13")
+  runtimeOnly("org.postgresql:postgresql:42.7.14")
   runtimeOnly("org.flywaydb:flyway-core")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-cache")
   implementation("org.springframework.boot:spring-boot-starter-jdbc")
   runtimeOnly("org.springframework.boot:spring-boot-starter-flyway")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
-  implementation("io.sentry:sentry-spring-boot-4-starter:8.58.0")
-  implementation("io.sentry:sentry-logback:8.58.0")
+  implementation("io.sentry:sentry-spring-boot-4-starter:8.60.0")
+  implementation("io.sentry:sentry-logback:8.60.0")
   implementation("org.springframework.data:spring-data-jdbc")
   implementation("org.springframework.data:spring-data-commons")
   implementation("org.springframework:spring-aop")
@@ -52,7 +52,7 @@ dependencies {
   implementation("io.jsonwebtoken:jjwt-api:0.13.0")
   implementation("com.jayway.jsonpath:json-path:3.0.0")
   implementation("com.github.ben-manes.caffeine:caffeine:3.3.0")
-  implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:2.4.20")
+  implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:2.4.21")
 
   testImplementation("org.springframework.boot:spring-boot-starter-test")
   testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
@@ -76,14 +76,14 @@ dependencies {
   }
   // Explicitly add all necessary Jetty and Servlet dependencies
   testImplementation("javax.servlet:javax.servlet-api:4.0.1")
-  testImplementation("org.eclipse.jetty:jetty-util:12.1.13")
-  testImplementation("org.eclipse.jetty:jetty-server:12.1.13")
-  testImplementation("org.eclipse.jetty:jetty-http:12.1.13")
-  testImplementation("org.eclipse.jetty:jetty-io:12.1.13")
+  testImplementation("org.eclipse.jetty:jetty-util:12.1.14")
+  testImplementation("org.eclipse.jetty:jetty-server:12.1.14")
+  testImplementation("org.eclipse.jetty:jetty-http:12.1.14")
+  testImplementation("org.eclipse.jetty:jetty-io:12.1.14")
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
   testImplementation(kotlin("test"))
   testImplementation("io.mockk:mockk:1.14.11")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:6.2.0")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:6.3.0")
 }
 
 java {
