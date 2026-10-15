@@ -61,6 +61,8 @@ services:
     base-url: https://remand-and-sentencing-api.hmpps.service.justice.gov.uk
   cemo:
     base-url: https://hmpps-electronic-monitoring-create-an-order-api.hmpps.service.justice.gov.uk
+  tier:
+    base-url: https://hmpps-tier.hmpps.service.justice.gov.uk
 
 feature-flag:
   # API Config

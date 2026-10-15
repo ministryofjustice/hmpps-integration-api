@@ -1,0 +1,225 @@
+{
+  "data": {
+    "tierScore": "D",
+    "calculationId": "123e4567-e89b-12d3-a456-426614174000",
+    "calculationDate": "2021-04-23T18:25:43.511",
+    "data": {
+      "tier": "NOT_SUPERVISED",
+      "provisional": true,
+      "calculationVersion": "string",
+      "deliusInputs": {
+        "isFemale": true,
+        "rsrScore": 0,
+        "ogrsScore": 0,
+        "hasNoMandate": true,
+        "registrations": {
+          "hasIomNominal": true,
+          "hasLiferIpp": true,
+          "hasDomesticAbuse": true,
+          "hasStalking": true,
+          "hasChildProtection": true,
+          "complexityFactors": [
+            "MENTAL_HEALTH"
+          ],
+          "rosh": "VERY_HIGH",
+          "mappaLevel": "M1",
+          "mappaCategory": "M1",
+          "unsupervised": true
+        },
+        "previousEnforcementActivity": true,
+        "latestReleaseDate": "2026-10-14",
+        "hasActiveEvent": true,
+        "latestSentencingAct2026ExcludedOffenceDate": "2026-10-14",
+        "latestChildSexualExploitationSentenceDate": "2026-10-14"
+      },
+      "assessmentSummary": {
+        "assessment": {
+          "id": 0,
+          "completedDate": "2026-10-14T10:25:02.776",
+          "type": "string",
+          "status": "string",
+          "sanIndicator": true
+        },
+        "accommodation": {
+          "linkedToHarm": "Yes",
+          "linkedToReOffending": "Yes",
+          "questionAnswers": {
+            "additionalProp1": {
+              "score": 0
+            },
+            "additionalProp2": {
+              "score": 0
+            },
+            "additionalProp3": {
+              "score": 0
+            }
+          },
+          "section": "ACCOMMODATION",
+          "score": 0
+        },
+        "educationTrainingEmployability": {
+          "linkedToHarm": "Yes",
+          "linkedToReOffending": "Yes",
+          "questionAnswers": {
+            "additionalProp1": {
+              "score": 0
+            },
+            "additionalProp2": {
+              "score": 0
+            },
+            "additionalProp3": {
+              "score": 0
+            }
+          },
+          "section": "ACCOMMODATION",
+          "score": 0
+        },
+        "relationships": {
+          "linkedToHarm": "Yes",
+          "linkedToReOffending": "Yes",
+          "questionAnswers": {
+            "additionalProp1": {
+              "score": 0
+            },
+            "additionalProp2": {
+              "score": 0
+            },
+            "additionalProp3": {
+              "score": 0
+            }
+          },
+          "parentalResponsibilities": "Yes",
+          "section": "ACCOMMODATION",
+          "score": 0
+        },
+        "lifestyleAndAssociates": {
+          "linkedToHarm": "Yes",
+          "linkedToReOffending": "Yes",
+          "questionAnswers": {
+            "additionalProp1": {
+              "score": 0
+            },
+            "additionalProp2": {
+              "score": 0
+            },
+            "additionalProp3": {
+              "score": 0
+            }
+          },
+          "section": "ACCOMMODATION",
+          "score": 0
+        },
+        "drugMisuse": {
+          "linkedToHarm": "Yes",
+          "linkedToReOffending": "Yes",
+          "questionAnswers": {
+            "additionalProp1": {
+              "score": 0
+            },
+            "additionalProp2": {
+              "score": 0
+            },
+            "additionalProp3": {
+              "score": 0
+            }
+          },
+          "section": "ACCOMMODATION",
+          "score": 0
+        },
+        "alcoholMisuse": {
+          "linkedToHarm": "Yes",
+          "linkedToReOffending": "Yes",
+          "questionAnswers": {
+            "additionalProp1": {
+              "score": 0
+            },
+            "additionalProp2": {
+              "score": 0
+            },
+            "additionalProp3": {
+              "score": 0
+            }
+          },
+          "section": "ACCOMMODATION",
+          "score": 0
+        },
+        "thinkingAndBehaviour": {
+          "linkedToHarm": "Yes",
+          "linkedToReOffending": "Yes",
+          "questionAnswers": {
+            "additionalProp1": {
+              "score": 0
+            },
+            "additionalProp2": {
+              "score": 0
+            },
+            "additionalProp3": {
+              "score": 0
+            }
+          },
+          "impulsivity": "None",
+          "temperControl": "None",
+          "section": "ACCOMMODATION",
+          "score": 0
+        },
+        "attitudes": {
+          "linkedToHarm": "Yes",
+          "linkedToReOffending": "Yes",
+          "questionAnswers": {
+            "additionalProp1": {
+              "score": 0
+            },
+            "additionalProp2": {
+              "score": 0
+            },
+            "additionalProp3": {
+              "score": 0
+            }
+          },
+          "section": "ACCOMMODATION",
+          "score": 0
+        }
+      },
+      "oasysInputs": {
+        "predictors": {
+          "completedDate": "2026-10-14T10:25:02.776",
+          "assessmentType": "LAYER3",
+          "outputVersion": "string",
+          "output": {
+            "allReoffendingPredictor": {
+              "staticOrDynamic": "STATIC",
+              "score": 0,
+              "band": "LOW"
+            },
+            "violentReoffendingPredictor": {
+              "staticOrDynamic": "STATIC",
+              "score": 0,
+              "band": "LOW"
+            },
+            "seriousViolentReoffendingPredictor": {
+              "staticOrDynamic": "STATIC",
+              "score": 0,
+              "band": "LOW"
+            },
+            "directContactSexualReoffendingPredictor": {
+              "score": 0,
+              "band": "LOW"
+            },
+            "indirectImageContactSexualReoffendingPredictor": {
+              "score": 0,
+              "band": "LOW"
+            },
+            "combinedSeriousReoffendingPredictor": {
+              "algorithmVersion": "string",
+              "staticOrDynamic": "STATIC",
+              "score": 0,
+              "band": "LOW"
+            }
+          }
+        },
+        "everCommittedSexualOffence": true
+      }
+    },
+    "provisional": false
+  }
+}

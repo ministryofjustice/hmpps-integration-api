@@ -232,6 +232,7 @@ abstract class IntegrationTestBase {
     val createAndVaryLicenceServer = ApiMockServer.create(UpstreamApi.CVL)
     val caseNotesServer = ApiMockServer.create(UpstreamApi.CASE_NOTES)
     val adjudicationsServer = ApiMockServer.create(UpstreamApi.ADJUDICATIONS)
+    val tierMockServer = ApiMockServer.create(UpstreamApi.TIER)
 
     @BeforeEach
     fun setUp() {
@@ -889,6 +890,14 @@ abstract class IntegrationTestBase {
           "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/adjudications/fixtures/ReportedAdjudications.json",
         ).readText(),
       )
+
+      tierMockServer.start()
+      tierMockServer.stubForGet(
+        "/v3/crn/$crn/tier/details",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/tier/fixtures/TierDetailsResponse.json",
+        ).readText(),
+      )
     }
 
     @AfterAll
@@ -917,6 +926,7 @@ abstract class IntegrationTestBase {
       caseNotesServer.stop()
       arnsMockServer.stop()
       adjudicationsServer.stop()
+      tierMockServer.stop()
     }
   }
 

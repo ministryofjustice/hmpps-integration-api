@@ -38,6 +38,7 @@ services:
   court-register.base-url: http://localhost:4035
   remand-and-sentencing.base-url: http://localhost:4036
   cemo.base-url: http://localhost:4037
+  tier.base-url: http://localhost:4048
 
 authorisation:
   consumers:

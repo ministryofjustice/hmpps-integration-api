@@ -76,6 +76,8 @@ services:
     base-url: http://localhost:4036
   cemo:
     base-url: http://localhost:4037
+  tier:
+    base-url: http://localhost:4048
 
 hmpps.sqs:
   provider: localstack
