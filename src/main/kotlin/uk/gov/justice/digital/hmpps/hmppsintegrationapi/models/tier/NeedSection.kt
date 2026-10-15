@@ -7,7 +7,7 @@ data class NeedSection(
   val section: String? = null,
   val linkedToReOffending: String? = null,
   val linkedToHarm: String? = null,
-  val questionAnswers: HashMap<String, SectionAnswer>? = null,
+  val questionAnswers: HashMap<String, String>? = null,
   val score: Int? = null,
   val parentalResponsibilities: String? = null,
   val impulsivity: String? = null,

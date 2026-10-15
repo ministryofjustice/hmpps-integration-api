@@ -43,15 +43,9 @@
         "linkedToHarm": "Yes",
         "linkedToReOffending": "Yes",
         "questionAnswers": {
-          "additionalProp1": {
-            "score": 0
-          },
-          "additionalProp2": {
-            "score": 0
-          },
-          "additionalProp3": {
-            "score": 0
-          }
+          "additionalProp1": "None",
+          "additionalProp2": "Yes",
+          "additionalProp3": "No"
         },
         "section": "ACCOMMODATION",
         "score": 0
@@ -60,15 +54,9 @@
         "linkedToHarm": "Yes",
         "linkedToReOffending": "Yes",
         "questionAnswers": {
-          "additionalProp1": {
-            "score": 0
-          },
-          "additionalProp2": {
-            "score": 0
-          },
-          "additionalProp3": {
-            "score": 0
-          }
+          "additionalProp1": "Yes",
+          "additionalProp2": "Yes",
+          "additionalProp3": "Yes"
         },
         "section": "ACCOMMODATION",
         "score": 0
@@ -77,15 +65,9 @@
         "linkedToHarm": "Yes",
         "linkedToReOffending": "Yes",
         "questionAnswers": {
-          "additionalProp1": {
-            "score": 0
-          },
-          "additionalProp2": {
-            "score": 0
-          },
-          "additionalProp3": {
-            "score": 0
-          }
+          "additionalProp1": "Yes",
+          "additionalProp2": "Yes",
+          "additionalProp3": "Yes"
         },
         "parentalResponsibilities": "Yes",
         "section": "ACCOMMODATION",
@@ -95,15 +77,9 @@
         "linkedToHarm": "Yes",
         "linkedToReOffending": "Yes",
         "questionAnswers": {
-          "additionalProp1": {
-            "score": 0
-          },
-          "additionalProp2": {
-            "score": 0
-          },
-          "additionalProp3": {
-            "score": 0
-          }
+          "additionalProp1": "Yes",
+          "additionalProp2": "Yes",
+          "additionalProp3": "Yes"
         },
         "section": "ACCOMMODATION",
         "score": 0
@@ -112,15 +88,9 @@
         "linkedToHarm": "Yes",
         "linkedToReOffending": "Yes",
         "questionAnswers": {
-          "additionalProp1": {
-            "score": 0
-          },
-          "additionalProp2": {
-            "score": 0
-          },
-          "additionalProp3": {
-            "score": 0
-          }
+          "additionalProp1": "Yes",
+          "additionalProp2": "Yes",
+          "additionalProp3": "Yes"
         },
         "section": "ACCOMMODATION",
         "score": 0
@@ -129,15 +99,9 @@
         "linkedToHarm": "Yes",
         "linkedToReOffending": "Yes",
         "questionAnswers": {
-          "additionalProp1": {
-            "score": 0
-          },
-          "additionalProp2": {
-            "score": 0
-          },
-          "additionalProp3": {
-            "score": 0
-          }
+          "additionalProp1": "Yes",
+          "additionalProp2": "Yes",
+          "additionalProp3": "Yes"
         },
         "section": "ACCOMMODATION",
         "score": 0
@@ -146,15 +110,9 @@
         "linkedToHarm": "Yes",
         "linkedToReOffending": "Yes",
         "questionAnswers": {
-          "additionalProp1": {
-            "score": 0
-          },
-          "additionalProp2": {
-            "score": 0
-          },
-          "additionalProp3": {
-            "score": 0
-          }
+          "additionalProp1": "Yes",
+          "additionalProp2": "Yes",
+          "additionalProp3": "Yes"
         },
         "impulsivity": "None",
         "temperControl": "None",
@@ -165,15 +123,9 @@
         "linkedToHarm": "Yes",
         "linkedToReOffending": "Yes",
         "questionAnswers": {
-          "additionalProp1": {
-            "score": 0
-          },
-          "additionalProp2": {
-            "score": 0
-          },
-          "additionalProp3": {
-            "score": 0
-          }
+          "additionalProp1": "Yes",
+          "additionalProp2": "Yes",
+          "additionalProp3": "Yes"
         },
         "section": "ACCOMMODATION",
         "score": 0
