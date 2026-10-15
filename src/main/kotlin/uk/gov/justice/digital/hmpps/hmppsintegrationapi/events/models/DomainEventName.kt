@@ -237,4 +237,11 @@ object DomainEventName {
       const val AMENDED = "location.inside.prison.signed-op-cap.amended"
     }
   }
+
+  object Tier {
+    object Calculation {
+      const val CHANGED = "tier.calculation.changed"
+      const val COMPLETE = "tier.calculation.complete"
+    }
+  }
 }

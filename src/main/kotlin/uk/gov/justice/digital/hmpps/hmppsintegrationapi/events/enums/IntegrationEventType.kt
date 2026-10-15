@@ -109,6 +109,12 @@ val CONTACT_EVENT_CHANGED_EVENTS =
     DomainEventName.ProbabtionCase.MappaInformation.DELETED,
   )
 
+val TIER_EVENTS =
+  listOf(
+    DomainEventName.Tier.Calculation.CHANGED,
+    DomainEventName.Tier.Calculation.COMPLETE,
+  )
+
 enum class PrisonerChangedCategory {
   IDENTIFIERS,
   PERSONAL_DETAILS,
@@ -608,6 +614,11 @@ enum class IntegrationEventType(
     { NEW_PERSON_EVENTS.contains(it.eventType) || PRISONER_EVENTS.contains(it.eventType) }, // No specific event found
     featureFlag = FeatureFlagConfig.PERSON_LANGUAGES_CHANGED_NOTIFICATIONS_ENABLED,
     description = "Person Languages Changed",
+  ),
+  TIER_DETAILS_CHANGED(
+    "v1/persons/{hmppsId}/tier/details",
+    { TIER_EVENTS.contains(it.eventType) },
+    description = "Tier Calculation Details Changed",
   ),
   PRISONER_MERGED(
     "v1/persons/{hmppsId}",
