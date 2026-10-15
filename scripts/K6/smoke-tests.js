@@ -121,7 +121,6 @@ const get_endpoints = [
   `/v1/activities/schedule/${scheduleId}/suitability-criteria`,
   `/v1/persons/${hmppsId}/court-cases`,
   `/v1/hmpps/reference-data/courts/${courtId}`,
-  `/v1/persons/${hmppsId}/tier/details`
 ];
 
 const postEducationUpdateEndpoint = `/v1/persons/${hmppsId}/education/status`
@@ -762,6 +761,7 @@ function verify_get_basic_details(hmppsId) {
     validate_get_request(`/v1/persons/${hmppsId}/sentences/latest-key-dates-and-adjustments`);
     validate_get_request(`/v1/persons/${hmppsId}/cell-share-risk-assessments`);
     validate_get_request(`/v2/persons/${hmppsId}`);
+    validate_get_request(`/v1/persons/${hmppsId}/tier/details`);
 
     let res = validate_get_request(`/v1/persons/${hmppsId}/needs`);
     validate_response_attribute_not_empty(res, "assessedOn", "Needs assessment found");
