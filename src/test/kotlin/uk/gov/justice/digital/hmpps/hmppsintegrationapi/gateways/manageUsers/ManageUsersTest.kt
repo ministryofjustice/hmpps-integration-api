@@ -37,7 +37,7 @@ class ManageUsersTest(
 ) : DescribeSpec(
     {
       val manageUsersMockServer = ApiMockServer.create(UpstreamApi.MANAGE_USERS)
-      val path = "/users/search?username=testUser&authSources=azuread"
+      val path = "/users/search?status=ACTIVE&username=testUser&authSources=azuread"
 
       val nomisUsername = "NOMIS_TEST_USERNAME"
       val prisonUsersPath = "/prisonusers/by-email/test@test/details"

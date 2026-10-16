@@ -447,7 +447,7 @@ abstract class IntegrationTestBase {
 
       manageUsersMockServer.start()
       manageUsersMockServer.stubForGet(
-        "/users/search?username=testName&authSources=azuread",
+        "/users/search?status=ACTIVE&username=testName&authSources=nomis&authSources=delius&authSources=azuread",
         File(
           "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/UserFoundResponse.json",
         ).readText(),
