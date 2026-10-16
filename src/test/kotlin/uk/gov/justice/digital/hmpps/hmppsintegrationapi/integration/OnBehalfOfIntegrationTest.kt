@@ -20,7 +20,7 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
   @BeforeEach
   fun setUp() {
     manageUsersMockServer.stubForGet(
-      "/users/search?username=testName&authSources=azuread",
+      "/users/search?status=ACTIVE&username=testName&authSources=nomis&authSources=delius&authSources=azuread",
       File(
         "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/UserFoundResponse.json",
       ).readText(),
@@ -147,7 +147,7 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
   @Test
   fun `an obo username is verified unsuccessfully beacuse it cant be found`() {
     manageUsersMockServer.stubForGet(
-      "/users/search?username=testName&authSources=azuread",
+      "/users/search?status=ACTIVE&username=testName&authSources=nomis&authSources=delius&authSources=azuread",
       File(
         "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/UserNotFoundResponse.json",
       ).readText(),
@@ -159,7 +159,7 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
   @Test
   fun `an obo username is verified unsuccessfully because it is not enabled`() {
     manageUsersMockServer.stubForGet(
-      "/users/search?username=testName&authSources=azuread",
+      "/users/search?status=ACTIVE&username=testName&authSources=nomis&authSources=delius&authSources=azuread",
       File(
         "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/UserFoundNotEnabledResponse.json",
       ).readText(),
@@ -171,7 +171,7 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
   @Test
   fun `an obo username is verified unsuccessfully because it is locked`() {
     manageUsersMockServer.stubForGet(
-      "/users/search?username=testName&authSources=azuread",
+      "/users/search?status=ACTIVE&username=testName&authSources=nomis&authSources=delius&authSources=azuread",
       File(
         "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/UserFoundLockedResponse.json",
       ).readText(),

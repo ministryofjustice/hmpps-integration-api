@@ -2,6 +2,8 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ManageUsersGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsAuthSource
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsAuthUsernames
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsPrisonRole
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsPrisonUser
 
@@ -9,15 +11,30 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.Hmpps
 class ManageUsersService(
   private val manageUsersGateway: ManageUsersGateway,
 ) {
-  fun usernameExists(
-    username: String,
-    authSources: List<String>,
-  ): Boolean {
-    val usersResponse = manageUsersGateway.findUser(username, authSources)
+  fun getAuthUsernames(username: String): HmppsAuthUsernames {
+    val usersResponse =
+      manageUsersGateway.findUser(
+        username,
+        listOf(
+          HmppsAuthSource.NOMIS.value,
+          HmppsAuthSource.NDELIUS.value,
+          HmppsAuthSource.AZUREAD.value,
+        ),
+      )
     usersResponse.errors.forEach {
       throw RuntimeException("Call to ${it.causedBy.name} failed with error: ${it.type.name}")
     }
-    return usersResponse.data?.content?.any { it.enabled && !it.locked } ?: false
+
+    val bySource = mutableMapOf<String, String>()
+    usersResponse.data
+      ?.content
+      ?.filter { it.enabled && !it.locked }
+      ?.associateByTo(bySource, { it.source }, { it.username })
+    return HmppsAuthUsernames(
+      nomisUsername = bySource[HmppsAuthSource.NOMIS.value],
+      deliusUsername = bySource[HmppsAuthSource.NDELIUS.value],
+      azureAdUsername = bySource[HmppsAuthSource.AZUREAD.value],
+    )
   }
 
   fun getActivePrisonUsersByEmail(emailAddress: String): List<HmppsPrisonUser> {

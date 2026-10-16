@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito.mock
@@ -9,6 +10,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ManageUsersGate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsAuthSource
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsAuthUser
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsPrisonCaseload
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsPrisonRole
@@ -32,31 +34,31 @@ class ManageUsersServiceTest {
   @Test
   fun `username is found in one of the required sources`() {
     whenever(manageUsersGateway.findUser(any(), any())).thenReturn(Response(PaginatedUsers(listOf(HmppsAuthUser("testName1", "delius")))))
-    assertTrue(service.usernameExists("testName1", listOf("delius")))
+    assertTrue(service.getAuthUsernames("testName1").hasUsername(HmppsAuthSource.NDELIUS))
   }
 
   @Test
   fun `username is NOT found in one of the required sources`() {
     whenever(manageUsersGateway.findUser(any(), any())).thenReturn(Response(PaginatedUsers(emptyList())))
-    assertFalse(service.usernameExists("testName2", listOf("delius")))
+    assertFalse(service.getAuthUsernames("testName2").hasUsername(HmppsAuthSource.NDELIUS))
   }
 
   @Test
   fun `username is found but is not enabled`() {
     whenever(manageUsersGateway.findUser(any(), any())).thenReturn(Response(PaginatedUsers(listOf(HmppsAuthUser("testName2", "delius", enabled = false)))))
-    assertFalse(service.usernameExists("testName2", listOf("delius")))
+    assertFalse(service.getAuthUsernames("testName2").hasUsername(HmppsAuthSource.NDELIUS))
   }
 
   @Test
   fun `username is found but and is locked`() {
     whenever(manageUsersGateway.findUser(any(), any())).thenReturn(Response(PaginatedUsers(listOf(HmppsAuthUser("testName2", "delius", locked = true)))))
-    assertFalse(service.usernameExists("testName2", listOf("delius")))
+    assertFalse(service.getAuthUsernames("testName2").hasUsername(HmppsAuthSource.NDELIUS))
   }
 
   @Test
   fun `no data is returned from manage users gateway`() {
     whenever(manageUsersGateway.findUser(any(), any())).thenReturn(Response(data = null))
-    assertFalse(service.usernameExists("testName2", listOf("delius")))
+    assertFalse(service.getAuthUsernames("testName2").hasUsername(HmppsAuthSource.NDELIUS))
   }
 
   @Test
@@ -64,7 +66,7 @@ class ManageUsersServiceTest {
     whenever(manageUsersGateway.findUser(any(), any())).thenReturn(Response(null, errors = listOf(UpstreamApiError(type = UpstreamApiError.Type.BAD_REQUEST, causedBy = UpstreamApi.MANAGE_USERS))))
     val error =
       assertThrows<RuntimeException> {
-        (service.usernameExists("testName2", listOf("delius")))
+        (service.getAuthUsernames("testName2").hasUsername(HmppsAuthSource.NDELIUS))
       }
     assertEquals("Call to MANAGE_USERS failed with error: BAD_REQUEST", error.message)
   }
@@ -150,5 +152,57 @@ class ManageUsersServiceTest {
     whenever(manageUsersGateway.getPrisonUsersByEmail(any())).thenReturn(Response(listOf(HmppsPrisonUser("testName1", "ABC", listOf("ROLE_2"))), errors = emptyList()))
     whenever(manageUsersGateway.getPrisonUserCaseload("testName1")).thenReturn(Response(null, errors = emptyList()))
     assertEquals(emptyList(), service.userCaseload("test@test"))
+  }
+
+  @Test
+  fun `get auth users gets all auth usernames`() {
+    whenever(manageUsersGateway.findUser(any(), any())).thenReturn(
+      Response(
+        PaginatedUsers(
+          listOf(
+            HmppsAuthUser("deliusUser1", "delius", enabled = false),
+            HmppsAuthUser("deliusUser2", "delius", enabled = true),
+            HmppsAuthUser("deliusUser3", "delius", enabled = true),
+            HmppsAuthUser("nomisUser1", "nomis", enabled = false),
+            HmppsAuthUser("nomisUser2", "nomis", enabled = true),
+            HmppsAuthUser("nomisUser3", "nomis", enabled = true),
+            HmppsAuthUser("azureadUser1", "azuread", enabled = false),
+            HmppsAuthUser("azureadUser2", "azuread", enabled = true),
+            HmppsAuthUser("azureadUser3", "azuread", enabled = true),
+          ),
+        ),
+      ),
+    )
+
+    val hmppsAuthUserNames = service.getAuthUsernames("test@test")
+    hmppsAuthUserNames.nomisUsername shouldBe "nomisUser3"
+    hmppsAuthUserNames.deliusUsername shouldBe "deliusUser3"
+    hmppsAuthUserNames.azureAdUsername shouldBe "azureadUser3"
+  }
+
+  @Test
+  fun `get auth users gets partial auth usernames`() {
+    whenever(manageUsersGateway.findUser(any(), any())).thenReturn(
+      Response(
+        PaginatedUsers(
+          listOf(
+            HmppsAuthUser("deliusUser1", "delius", enabled = false),
+            HmppsAuthUser("deliusUser2", "delius", enabled = false),
+            HmppsAuthUser("deliusUser3", "delius", enabled = false),
+            HmppsAuthUser("nomisUser1", "nomis", enabled = false),
+            HmppsAuthUser("nomisUser2", "nomis", enabled = true),
+            HmppsAuthUser("nomisUser3", "nomis", enabled = true),
+            HmppsAuthUser("azureadUser1", "azuread", enabled = false),
+            HmppsAuthUser("azureadUser2", "azuread", enabled = false),
+            HmppsAuthUser("azureadUser3", "azuread", enabled = false),
+          ),
+        ),
+      ),
+    )
+
+    val hmppsAuthUserNames = service.getAuthUsernames("test@test")
+    hmppsAuthUserNames.nomisUsername shouldBe "nomisUser3"
+    hmppsAuthUserNames.deliusUsername shouldBe null
+    hmppsAuthUserNames.azureAdUsername shouldBe null
   }
 }

@@ -86,18 +86,23 @@ class AuthorisationFilter(
       return
     }
 
-    if (authorisationService.requiresObo(clientName)) {
-      if (oboUsername.isNullOrEmpty()) {
-        res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "On Behalf Of username unavailable for $clientName")
-        return
-      }
+    val authUsernames =
+      if (authorisationService.requiresObo(clientName)) {
+        if (oboUsername.isNullOrEmpty()) {
+          res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "On Behalf Of username unavailable for $clientName")
+          return
+        }
+        val authUsernames = authorisationService.getAuthUsernames(oboUsername)
 
-      if (!authorisationService.verifyUsername(oboUsername, clientName)) {
-        log.error("On Behalf Of username: $oboUsername not found in hmpps auth")
-        res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Not authorized")
-        return
+        if (!authorisationService.verifyUsername(authUsernames, clientName)) {
+          log.error("On Behalf Of username: $oboUsername not found in hmpps auth")
+          res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Not authorized")
+          return
+        }
+        authUsernames
+      } else {
+        null
       }
-    }
 
     if (consumerConfig == null) {
       response.sendError(HttpServletResponse.SC_FORBIDDEN, "No consumer authorisation config found for $clientName")
@@ -107,7 +112,12 @@ class AuthorisationFilter(
     val oboUserHasPrisonRole =
       if (oboUsername != null && features.isEnabled(PRISON_ROLE_CHECK_ENABLED)) {
         val hasRole = authorisationService.hasPrisonRole(oboUsername, HmppsPrisonRole.GLOBAL_SEARCH)
-        log.info("OBO User $oboUsername has prisons global search role? : $hasRole")
+        log.info(
+          "OBO User $oboUsername has prisons global search role? : $hasRole. " +
+            "Azuread username: ${authUsernames?.azureAdUsername}, " +
+            "Nomis username: ${authUsernames?.nomisUsername}, " +
+            "NDelius username: ${authUsernames?.deliusUsername}",
+        )
         hasRole
       } else {
         null
@@ -125,7 +135,7 @@ class AuthorisationFilter(
     val requestedPath = req.requestURI
 
     // Set oboUser
-    val oboUser = oboUsername?.let { OboUser(it, oboUserHasPrisonRole) }
+    val oboUser = oboUsername?.let { OboUser(it, oboUserHasPrisonRole, authUsernames) }
 
     val context = RequestContext(clientName, consumerConfig, filters, requestFeatures, oboUser)
     request.setAttribute("requestContext", context)
