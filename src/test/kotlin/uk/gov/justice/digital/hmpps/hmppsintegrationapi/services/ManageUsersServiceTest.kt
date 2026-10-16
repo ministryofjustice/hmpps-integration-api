@@ -205,4 +205,13 @@ class ManageUsersServiceTest {
     hmppsAuthUserNames.deliusUsername shouldBe null
     hmppsAuthUserNames.azureAdUsername shouldBe null
   }
+
+  @Test
+  fun `auth source not recognized`() {
+    val exception =
+      assertThrows<RuntimeException> {
+        HmppsAuthSource.of("INVALID")
+      }
+    exception.message shouldBe "HMPPS Auth Source not recognized: INVALID"
+  }
 }

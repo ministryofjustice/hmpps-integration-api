@@ -11,6 +11,6 @@ enum class HmppsAuthSource(
   ;
 
   companion object {
-    fun of(value: String): HmppsAuthSource = HmppsAuthSource.entries.filter { it.value == value }.firstOrNull() ?: throw RuntimeException("AuthSource not found")
+    fun of(value: String): HmppsAuthSource = entries.firstOrNull { it.value == value } ?: throw RuntimeException("HMPPS Auth Source not recognized: $value")
   }
 }
