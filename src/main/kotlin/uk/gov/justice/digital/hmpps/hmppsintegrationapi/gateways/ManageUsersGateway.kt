@@ -49,8 +49,7 @@ class ManageUsersGateway(
     val uri =
       UriComponentsBuilder
         .fromUriString("/users/search")
-        .queryParam("status", "ACTIVE")
-        .queryParam("username", username)
+        .queryParam("name", username)
         .queryParam("authSources", authSources)
         .toUriString()
 

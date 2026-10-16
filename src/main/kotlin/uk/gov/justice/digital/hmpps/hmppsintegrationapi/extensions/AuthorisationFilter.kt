@@ -94,7 +94,7 @@ class AuthorisationFilter(
         }
         val authUsernames = authorisationService.getAuthUsernames(oboUsername)
 
-        if (!authorisationService.verifyUsername(authUsernames, clientName)) {
+        if (features.isEnabled(FeatureFlagConfig.OBO_VERIFY_USERNAME) && !authorisationService.verifyUsername(authUsernames, clientName)) {
           log.error("On Behalf Of username: $oboUsername not found in hmpps auth")
           res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Not authorized")
           return

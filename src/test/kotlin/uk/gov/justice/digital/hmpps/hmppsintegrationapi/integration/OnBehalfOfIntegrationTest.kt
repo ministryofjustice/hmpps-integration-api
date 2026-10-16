@@ -8,6 +8,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.PRISON_ROLE_CHECK_ENABLED
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.createUnsignedJwt
@@ -19,8 +20,9 @@ import kotlin.test.assertEquals
 class OnBehalfOfIntegrationTest : IntegrationTestBase() {
   @BeforeEach
   fun setUp() {
+    whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.OBO_VERIFY_USERNAME)).thenReturn(true)
     manageUsersMockServer.stubForGet(
-      "/users/search?status=ACTIVE&username=testName&authSources=nomis&authSources=delius&authSources=azuread",
+      "/users/search?name=testName&authSources=nomis&authSources=delius&authSources=azuread",
       File(
         "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/UserFoundResponse.json",
       ).readText(),
@@ -147,7 +149,7 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
   @Test
   fun `an obo username is verified unsuccessfully beacuse it cant be found`() {
     manageUsersMockServer.stubForGet(
-      "/users/search?status=ACTIVE&username=testName&authSources=nomis&authSources=delius&authSources=azuread",
+      "/users/search?name=testName&authSources=nomis&authSources=delius&authSources=azuread",
       File(
         "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/UserNotFoundResponse.json",
       ).readText(),
@@ -157,9 +159,16 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
   }
 
   @Test
+  fun `an obo username is NOT verified when feature flag is disabled`() {
+    whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.OBO_VERIFY_USERNAME)).thenReturn(false)
+    callApiWithCN("$basePath/$crn", "obo-unsigned-verified", oboValue = createUnsignedJwt())
+      .andExpect(MockMvcResultMatchers.status().isOk)
+  }
+
+  @Test
   fun `an obo username is verified unsuccessfully because it is not enabled`() {
     manageUsersMockServer.stubForGet(
-      "/users/search?status=ACTIVE&username=testName&authSources=nomis&authSources=delius&authSources=azuread",
+      "/users/search?name=testName&authSources=nomis&authSources=delius&authSources=azuread",
       File(
         "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/UserFoundNotEnabledResponse.json",
       ).readText(),
@@ -171,7 +180,7 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
   @Test
   fun `an obo username is verified unsuccessfully because it is locked`() {
     manageUsersMockServer.stubForGet(
-      "/users/search?status=ACTIVE&username=testName&authSources=nomis&authSources=delius&authSources=azuread",
+      "/users/search?name=testName&authSources=nomis&authSources=delius&authSources=azuread",
       File(
         "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/UserFoundLockedResponse.json",
       ).readText(),
