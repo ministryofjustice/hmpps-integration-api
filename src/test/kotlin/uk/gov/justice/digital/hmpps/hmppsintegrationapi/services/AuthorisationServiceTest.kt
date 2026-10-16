@@ -9,6 +9,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ConfigTest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsAuthUsernames
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.oboconfig.OboConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
@@ -462,41 +463,39 @@ class AuthorisationServiceTest : ConfigTest() {
         mockTelemetryService,
         mockManageUsersService,
       )
-    assertEquals(true, service.verifyUsername("testUsername", "consumer-name"))
+    assertEquals(true, service.verifyUsername(HmppsAuthUsernames("testUsername"), "consumer-name"))
   }
 
   @Test
   fun `verifyUsername returns false if oboConfig does have a verification strategy but user not verified`() {
-    whenever(mockManageUsersService.usernameExists("testUsername", listOf("testStrategy"))).thenReturn(false)
     val service =
       AuthorisationService(
         AuthorisationConfig(
           mapOf(
             "consumer-name" to
-              ConsumerConfig(oboConfig = OboConfig("test", verificationStrategy = "testStrategy")),
+              ConsumerConfig(oboConfig = OboConfig("test", verificationStrategy = "azuread")),
           ),
         ),
         mockTelemetryService,
         mockManageUsersService,
       )
-    assertEquals(false, service.verifyUsername("testUsername", "consumer-name"))
+    assertEquals(false, service.verifyUsername(HmppsAuthUsernames(null), "consumer-name"))
   }
 
   @Test
   fun `verifyUsername returns false if oboConfig does have a verification strategy and user IS verified`() {
-    whenever(mockManageUsersService.usernameExists("testUsername", listOf("testStrategy"))).thenReturn(true)
     val service =
       AuthorisationService(
         AuthorisationConfig(
           mapOf(
             "consumer-name" to
-              ConsumerConfig(oboConfig = OboConfig("test", verificationStrategy = "testStrategy")),
+              ConsumerConfig(oboConfig = OboConfig("test", verificationStrategy = "azuread")),
           ),
         ),
         mockTelemetryService,
         mockManageUsersService,
       )
-    assertEquals(true, service.verifyUsername("testUsername", "consumer-name"))
+    assertEquals(true, service.verifyUsername(HmppsAuthUsernames("testUsername"), "consumer-name"))
   }
 
   @Test

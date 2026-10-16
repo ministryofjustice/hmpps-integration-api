@@ -42,6 +42,7 @@ data class FeatureFlagConfig(
     const val PRISON_ROLE_CHECK_ENABLED = "prison-role-check-enabled"
     const val OBO_CASELOAD_FILTER_ENABLED = "obo-caseload-filter-enabled"
     const val OBO_PASS_USERNAME_TO_AUTH = "obo-pass-username-to-auth"
+    const val OBO_VERIFY_USERNAME = "obo-verify-username"
 
     // Events feature flags
     const val ENABLE_DELETE_PROCESSED_EVENTS = "enable-delete-processed-events"

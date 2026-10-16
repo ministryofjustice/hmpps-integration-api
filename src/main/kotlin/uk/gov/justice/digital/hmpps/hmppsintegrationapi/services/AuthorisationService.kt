@@ -5,6 +5,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.fixedClock
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.enums.IntegrationEventType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.normalisePath
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsAuthSource
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsAuthUsernames
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsPrisonRole
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
@@ -185,12 +187,14 @@ class AuthorisationService(
     }
   }
 
+  fun getAuthUsernames(username: String): HmppsAuthUsernames = manageUsersService.getAuthUsernames(username)
+
   fun verifyUsername(
-    username: String,
+    authUsernames: HmppsAuthUsernames,
     consumerName: String,
   ): Boolean {
     val authSource = authorisationConfig.consumers[consumerName]?.oboConfig?.verificationStrategy ?: return true
-    return manageUsersService.usernameExists(username, listOf(authSource))
+    return authUsernames.hasUsername(HmppsAuthSource.of(authSource))
   }
 
   fun requiresObo(consumerName: String): Boolean = authorisationConfig.consumers[consumerName]?.oboConfig?.required == true
