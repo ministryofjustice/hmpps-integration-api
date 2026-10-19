@@ -7,6 +7,8 @@ import org.springframework.cache.annotation.Cacheable
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Companion.GATEWAY_CACHE
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.OBO_DELIUS_USER_LAO_CHECK
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
@@ -18,10 +20,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService.IdentifierType
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ManageUsersService
 
 @Component
 class CorePersonRecordGateway(
   @Value("\${services.core-person-record.base-url}") baseUrl: String,
+  private val manageUsersService: ManageUsersService,
+  private val featureFlagConfig: FeatureFlagConfig,
 ) : UpstreamGateway {
   override fun metaData() =
     GatewayMetadata(
@@ -98,7 +103,10 @@ class CorePersonRecordGateway(
 
     return when (result) {
       is WebClientWrapperResponse.Success -> {
-        Response(data = result.data)
+        val deliusUsername = requestContext.oboUser?.authUsernames?.deliusUsername
+        val upstreamResponse = if (deliusUsername != null && featureFlagConfig.isEnabled(OBO_DELIUS_USER_LAO_CHECK)) result.data.redact(manageUsersService::getProbationCaseAccess, deliusUsername) else result.data
+
+        Response(data = upstreamResponse)
       }
 
       is WebClientWrapperResponse.Error -> {

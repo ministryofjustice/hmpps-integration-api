@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.OBO_DELIUS_USER_LAO_CHECK
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
@@ -15,10 +17,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.PSAddressSearchResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.PSPaginatedOffendersResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.PersonSearchRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ManageUsersService
 
 @Component
 class ProbationOffenderSearchGateway(
   @Value("\${services.probation-offender-search.base-url}") baseUrl: String,
+  private val manageUsersService: ManageUsersService,
+  private val featureFlagConfig: FeatureFlagConfig,
 ) : UpstreamGateway {
   override fun metaData() =
     GatewayMetadata(
@@ -82,12 +87,15 @@ class ProbationOffenderSearchGateway(
 
     return when (result) {
       is WebClientWrapperResponse.Success -> {
-        Response(
-          data =
-            result.data.content
-              .map { it.toPerson() }
-              .sortedByDescending { it.dateOfBirth },
-        )
+        val resultSorted = PSPaginatedOffendersResponse(result.data.content.sortedByDescending { it.dateOfBirth })
+        val deliusUsername = requestContext?.oboUser?.authUsernames?.deliusUsername
+        val upstreamResponse = if (deliusUsername != null && featureFlagConfig.isEnabled(OBO_DELIUS_USER_LAO_CHECK)) resultSorted.redact(manageUsersService::getProbationCaseAccess, deliusUsername) else resultSorted
+
+        val data =
+          upstreamResponse.content
+            .map { it.toPerson() }
+
+        Response(data)
       }
 
       is WebClientWrapperResponse.Error -> {

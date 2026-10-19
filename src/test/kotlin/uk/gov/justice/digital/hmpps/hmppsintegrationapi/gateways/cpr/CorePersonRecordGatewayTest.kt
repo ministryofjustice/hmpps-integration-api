@@ -5,6 +5,7 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
 import jakarta.validation.ValidationException
 import org.mockito.Mockito
@@ -15,52 +16,101 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
+import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.util.ReflectionTestUtils
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.RestClientConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.defaultObjectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CorePersonRecordGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ManageUsersGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationAccessGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase.Companion.gatewaysFolder
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.CorePersonRecordSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsAuthUsernames
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.oboconfig.OboUser
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.REDACTION_MASKING_TEXT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService.IdentifierType
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ManageUsersService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.TestConstants.DEFAULT_CRN
 import java.io.File
 
 @ActiveProfiles("test")
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [CorePersonRecordGateway::class],
+  classes = [CorePersonRecordGateway::class, ProbationAccessGateway::class, ManageUsersGateway::class, ManageUsersService::class],
 )
+@Import(RestClientConfig::class)
 class CorePersonRecordGatewayTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
+  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
   private val corePersonRecordGateway: CorePersonRecordGateway,
 ) : DescribeSpec(
     {
       val cprMockServer = ApiMockServer.Companion.create(UpstreamApi.CORE_PERSON_RECORD)
+      val probationAccessMockServer = ApiMockServer.create(UpstreamApi.PROBATION_ACCESS)
       val objectMapper = jacksonObjectMapper()
       val crn = DEFAULT_CRN
       val nomsId = "G2996UX"
 
+      val deliusUser = "DELIUS_USER"
+      val oboUser = OboUser("testUser", authUsernames = HmppsAuthUsernames(deliusUsername = deliusUser))
+      val requestContextLao = buildRequestContext("testUser", oboUser = oboUser)
+      val requestLao =
+        jacksonObjectMapper().readValue(
+          File(
+            "$gatewaysFolder/cpr/fixtures/core-person-record-search-request-lao.json",
+          ).readText(),
+          CorePersonRecordSearchRequest::class.java,
+        )
+
       beforeEach {
         cprMockServer.start()
+        probationAccessMockServer.start()
         Mockito.reset(hmppsAuthGateway)
+
+        whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.OBO_DELIUS_USER_LAO_CHECK)).thenReturn(true)
+
         whenever(hmppsAuthGateway.getClientToken("CORE_PERSON_RECORD")).thenReturn(
           HmppsAuthMockServer.Companion.TOKEN,
         )
         whenever(hmppsAuthGateway.getClientToken(eq("CORE_PERSON_RECORD"), any<RequestContext>())).thenReturn(
           HmppsAuthMockServer.Companion.TOKEN,
         )
+        whenever(hmppsAuthGateway.getClientToken("PROBATION_ACCESS", null)).thenReturn(
+          HmppsAuthMockServer.TOKEN,
+        )
+
+        probationAccessMockServer.stubForPost(
+          "/user/$deliusUser/access",
+          defaultObjectMapper.writeValueAsString(listOf("A669783", "Z163457")),
+          File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/probationAccess/fixtures/CheckUserAccessResponse.json").readText(),
+        )
+
+        cprMockServer.stubForPost(
+          "/person/vetting/search",
+          File(
+            "$gatewaysFolder/cpr/fixtures/core-person-record-search-request-lao.json",
+          ).readText(),
+          File(
+            "$gatewaysFolder/cpr/fixtures/core-person-record-search-response-new.json",
+          ).readText(),
+          HttpStatus.OK,
+        )
+
         cprMockServer.stubForGet(
           "/person/probation/$crn",
           File(
@@ -168,6 +218,28 @@ class CorePersonRecordGatewayTest(
         val response = corePersonRecordGateway.corePersonRecordSearch(request, requestContext)
         response.data shouldBe null
         response.errors.shouldContain(UpstreamApiError(causedBy = UpstreamApi.CORE_PERSON_RECORD, type = UpstreamApiError.Type.BAD_REQUEST))
+      }
+
+      it("redacts personal details where required") {
+        val response = corePersonRecordGateway.corePersonRecordSearch(requestLao, requestContextLao)
+        response.data
+          ?.data[0]
+          ?.results[1]
+          ?.name
+          ?.firstName
+          .shouldBe(REDACTION_MASKING_TEXT)
+      }
+
+      it("does not redact personal details where required when feature is disabled") {
+        whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.OBO_DELIUS_USER_LAO_CHECK)).thenReturn(false)
+
+        val response = corePersonRecordGateway.corePersonRecordSearch(requestLao, requestContextLao)
+        response.data
+          ?.data[0]
+          ?.results[1]
+          ?.name
+          ?.firstName
+          .shouldNotBe(REDACTION_MASKING_TEXT)
       }
 
       it("upstream API returns an unexpected exception, throw RuntimeException") {

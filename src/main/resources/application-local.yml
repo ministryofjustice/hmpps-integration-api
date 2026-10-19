@@ -40,6 +40,7 @@ services:
   remand-and-sentencing.base-url: http://localhost:4036
   cemo.base-url: http://localhost:4037
   tier.base-url: http://localhost:4048
+  probation-access.base-url: http://localhost:4049
 
 hmpps.sqs:
   provider: localstack
@@ -96,6 +97,7 @@ feature-flag:
   obo-caseload-filter-enabled: false
   obo-pass-username-to-auth: false
   obo-verify-username: false
+  obo-delius-user-lao-check: false
   # Events Config
   enable-delete-processed-events: false
   enable-publish-pending-events: false

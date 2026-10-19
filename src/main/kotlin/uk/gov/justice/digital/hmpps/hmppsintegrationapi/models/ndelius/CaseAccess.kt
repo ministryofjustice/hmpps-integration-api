@@ -10,4 +10,6 @@ data class CaseAccess(
 
 data class UserAccess(
   val access: List<CaseAccess>,
-)
+) {
+  fun laoCrns(): List<String> = access.filter { it.userExcluded || it.userRestricted }.map { it.crn }
+}

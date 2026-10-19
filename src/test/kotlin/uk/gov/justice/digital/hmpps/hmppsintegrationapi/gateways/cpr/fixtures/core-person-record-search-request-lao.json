@@ -1,0 +1,18 @@
+{
+  "firstName": "Harry",
+  "lastName": "Smith",
+  "middleName": "Brian",
+  "dateOfBirth": "1998-08-24",
+  "firstNameAliases": [
+    "Haz"
+  ],
+  "lastNameAliases": [
+    "Smithy"
+  ],
+  "dateOfBirthAliases": [
+    "1992-02-12"
+  ],
+  "postcodes": [
+    "NE3ZYE"
+  ]
+}
