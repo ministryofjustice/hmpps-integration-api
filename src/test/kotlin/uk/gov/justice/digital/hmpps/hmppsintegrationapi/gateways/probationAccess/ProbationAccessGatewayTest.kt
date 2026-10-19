@@ -35,6 +35,7 @@ class ProbationAccessGatewayTest(
       val crns = listOf("A888888", "A777777", "A666666")
 
       beforeEach {
+
         probationAccessMockServer.start()
         Mockito.reset(hmppsAuthGateway)
         whenever(hmppsAuthGateway.getClientToken("PROBATION_ACCESS", null)).thenReturn(

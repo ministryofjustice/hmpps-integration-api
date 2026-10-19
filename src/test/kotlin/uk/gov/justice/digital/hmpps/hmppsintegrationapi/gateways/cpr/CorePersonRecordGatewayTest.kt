@@ -79,7 +79,9 @@ class CorePersonRecordGatewayTest(
 
       beforeEach {
         cprMockServer.start()
-        probationAccessMockServer.start()
+        if (!probationAccessMockServer.isRunning()) {
+          probationAccessMockServer.start()
+        }
         Mockito.reset(hmppsAuthGateway)
 
         whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.OBO_DELIUS_USER_LAO_CHECK)).thenReturn(true)
@@ -129,6 +131,7 @@ class CorePersonRecordGatewayTest(
 
       afterTest {
         cprMockServer.stop()
+        probationAccessMockServer.stop()
       }
 
       it("authenticates using HMPPS Auth with credentials") {

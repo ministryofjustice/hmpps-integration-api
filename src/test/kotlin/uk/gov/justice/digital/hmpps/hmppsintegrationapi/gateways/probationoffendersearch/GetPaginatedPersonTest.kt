@@ -69,7 +69,9 @@ class GetPaginatedPersonTest(
         whenever(featureFlag.isEnabled(FeatureFlagConfig.OBO_DELIUS_USER_LAO_CHECK)).thenReturn(true)
 
         probationOffenderSearchMockServer.start()
-        probationAccessMockServer.start()
+        if (!probationAccessMockServer.isRunning()) {
+          probationAccessMockServer.start()
+        }
         probationOffenderSearchMockServer.stubForPost(
           path,
           defaultObjectMapper.writeValueAsString(searchRequest.toMap()),
