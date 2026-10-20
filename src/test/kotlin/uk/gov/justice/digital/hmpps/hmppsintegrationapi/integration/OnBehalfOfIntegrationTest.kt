@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Nested
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.atLeast
 import org.mockito.kotlin.eq
@@ -278,43 +279,127 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
     assertThat(requestContext.firstValue?.filters?.prisons).isEqualTo(listOf("WWI", "MKI"))
   }
 
-  // User LAO Redaction
-  @Test
-  fun `an obo user has a redaction applied to v1 person search`() {
+  @Nested
+  inner class UserRedactionsAndFilters {
+    // User LAO Redaction
     val firstName = "Robert"
     val lastName = "Larsen"
-    whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.USE_PROBATION_SEARCH_FOR_PERSON_SEARCH)).thenReturn(true)
     val searchRequest = PersonSearchRequest(firstName, lastName)
     val expectedRequest = attributeSearchRequest(firstName, lastName)
-    prisonerOffenderSearchMockServer.stubForPost(
-      "/attribute-search?page=0&size=10",
-      jacksonObjectMapper().writeValueAsString(expectedRequest.toMap()),
+    val v2Response =
       File(
-        "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/AttributeSearch.json",
-      ).readText(),
-    )
-    probationSearchMockServer.stubForPost(
-      searchRequest.uriString(1, 10),
-      defaultObjectMapper.writeValueAsString(searchRequest.toMap()),
-      File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/probationoffendersearch/fixtures/PaginatedOffenderSearchResponse.json").readText(),
-    )
+        "$gatewaysFolder/cpr/fixtures/core-person-record-search-response-new.json",
+      ).readText()
 
-    manageUsersMockServer.stubForGet(
-      "/users/search?name=testName&authSources=nomis&authSources=delius&authSources=azuread",
+    val v2Request =
       File(
-        "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/UserFoundAllUsernamesResponse.json",
-      ).readText(),
-    )
+        "$gatewaysFolder/cpr/fixtures/core-person-record-search-request.json",
+      ).readText()
 
-    probationAccessMockServer.stubForPost(
-      "/user/DELIUS_USER/access",
-      defaultObjectMapper.writeValueAsString(listOf("A123456")),
-      File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/probationAccess/fixtures/CheckUserAccessResponse.json").readText(),
-    )
+    @BeforeEach
+    internal fun setUp() {
+      whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.USE_PROBATION_SEARCH_FOR_PERSON_SEARCH)).thenReturn(true)
+      probationAccessMockServer.stubForPost(
+        "/user/DELIUS_USER/access",
+        defaultObjectMapper.writeValueAsString(listOf("A123456")),
+        File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/probationAccess/fixtures/CheckUserAccessResponse.json").readText(),
+      )
 
-    val queryParams = "first_name=$firstName&last_name=$lastName"
-    callApiWithCN("$basePath?$queryParams", "obo-unsigned-verified", oboValue = createUnsignedJwt())
-      .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("person-search-probation-and-prison-with-user-lao-response.json"), JsonCompareMode.STRICT))
+      probationAccessMockServer.stubForPost(
+        "/user/DELIUS_USER/access",
+        defaultObjectMapper.writeValueAsString(listOf("A669783", "Z163457")),
+        File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/probationAccess/fixtures/CheckUserAccessResponse.json").readText(),
+      )
+
+      prisonerOffenderSearchMockServer.stubForPost(
+        "/attribute-search?page=0&size=10",
+        jacksonObjectMapper().writeValueAsString(expectedRequest.toMap()),
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/AttributeSearch.json",
+        ).readText(),
+      )
+      probationSearchMockServer.stubForPost(
+        searchRequest.uriString(1, 10),
+        defaultObjectMapper.writeValueAsString(searchRequest.toMap()),
+        File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/probationoffendersearch/fixtures/PaginatedOffenderSearchResponse.json").readText(),
+      )
+
+      manageUsersMockServer.stubForGet(
+        "/users/search?name=testName&authSources=nomis&authSources=delius&authSources=azuread",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/UserFoundAllUsernamesResponse.json",
+        ).readText(),
+      )
+
+      corePersonRecordMockServer.stubForPost(
+        "/person/vetting/search",
+        resBody = v2Response,
+        reqBody = v2Request,
+      )
+    }
+
+    @Test
+    fun `an obo user has a redaction applied to v1 person search`() {
+      val queryParams = "first_name=$firstName&last_name=$lastName"
+      callApiWithCN("$basePath?$queryParams", "obo-unsigned-verified", oboValue = createUnsignedJwt())
+        .andExpect(status().isOk)
+        .andExpect(content().json(getExpectedResponse("person-search-probation-and-prison-with-user-lao-response.json"), JsonCompareMode.STRICT))
+    }
+
+    @Test
+    fun `an obo user has a redaction applied to v2 person search`() {
+      postToApiWithCN(v2BasePath, v2Request, "obo-unsigned-verified", oboValue = createUnsignedJwt())
+        .andExpect(status().isOk)
+        .andExpect(content().json(getExpectedResponse("person-search-v2-redacted.json"), JsonCompareMode.STRICT))
+    }
+
+    @Test
+    fun `an obo user does not have a delius account for a v1 person search`() {
+      manageUsersMockServer.stubForGet(
+        "/users/search?name=testName&authSources=nomis&authSources=delius&authSources=azuread",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/UserFoundNoDeliusUsernameResponse.json",
+        ).readText(),
+      )
+
+      val queryParams = "first_name=$firstName&last_name=$lastName"
+      callApiWithCN("$basePath?$queryParams", "obo-unsigned-verified", oboValue = createUnsignedJwt())
+        .andExpect(status().isOk)
+        .andExpect(content().json(getExpectedResponse("person-search-prison-only.json"), JsonCompareMode.STRICT))
+    }
+
+    @Test
+    fun `an obo user does not have a delius account for a v2 person search`() {
+      manageUsersMockServer.stubForGet(
+        "/users/search?name=testName&authSources=nomis&authSources=delius&authSources=azuread",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/UserFoundNoDeliusUsernameResponse.json",
+        ).readText(),
+      )
+
+      postToApiWithCN(v2BasePath, v2Request, "obo-unsigned-verified", oboValue = createUnsignedJwt())
+        .andExpect(status().isOk)
+        .andExpect(content().json(getExpectedResponse("person-search-v2-prison-only.json"), JsonCompareMode.STRICT))
+    }
+
+    @Test
+    fun `an obo user does not have the nomis role for a v2 person search`() {
+      manageUsersMockServer.stubForGet(
+        "/prisonusers/by-email/testName/details",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/PrisonUsersResponseNoRole.json",
+        ).readText(),
+      )
+
+      probationAccessMockServer.stubForPost(
+        "/user/DELIUS_USER/access",
+        defaultObjectMapper.writeValueAsString(listOf("A669783", "Z163457")),
+        File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/probationAccess/fixtures/CheckUserAccessResponseNoLao.json").readText(),
+      )
+
+      postToApiWithCN(v2BasePath, v2Request, "obo-unsigned-verified", oboValue = createUnsignedJwt())
+        .andExpect(status().isOk)
+        .andExpect(content().json(getExpectedResponse("person-search-v2-probation-only.json"), JsonCompareMode.STRICT))
+    }
   }
 }

@@ -22,5 +22,15 @@ data class CorePersonRecordSearchResponse(
     return CorePersonRecordSearchResponse(groups)
   }
 
+  fun removeItemsWithSourceSystem(sourceSystems: List<String>): CorePersonRecordSearchResponse {
+    val groups =
+      data.map { group ->
+        val items =
+          group.results.filter { !sourceSystems.contains(it.sourceSystem) }
+        CorePersonRecordSearchResponseGroup(items)
+      }
+    return CorePersonRecordSearchResponse(groups)
+  }
+
   override fun crns(): List<String> = this.data.flatMap { it.results.mapNotNull { it.deliusCrn() } }
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldContain
+import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
@@ -60,9 +61,8 @@ class CorePersonRecordGatewayTest(
   private val corePersonRecordGateway: CorePersonRecordGateway,
 ) : DescribeSpec(
     {
-      val cprMockServer = ApiMockServer.Companion.create(UpstreamApi.CORE_PERSON_RECORD)
+      val cprMockServer = ApiMockServer.create(UpstreamApi.CORE_PERSON_RECORD)
       val probationAccessMockServer = ApiMockServer.create(UpstreamApi.PROBATION_ACCESS)
-      val objectMapper = jacksonObjectMapper()
       val crn = DEFAULT_CRN
       val nomsId = "G2996UX"
 
@@ -79,7 +79,7 @@ class CorePersonRecordGatewayTest(
 
       beforeEach {
         cprMockServer.start()
-        if (!probationAccessMockServer.isRunning()) {
+        if (!probationAccessMockServer.isRunning) {
           probationAccessMockServer.start()
         }
         Mockito.reset(hmppsAuthGateway)
@@ -87,10 +87,10 @@ class CorePersonRecordGatewayTest(
         whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.OBO_DELIUS_USER_LAO_CHECK)).thenReturn(true)
 
         whenever(hmppsAuthGateway.getClientToken("CORE_PERSON_RECORD")).thenReturn(
-          HmppsAuthMockServer.Companion.TOKEN,
+          HmppsAuthMockServer.TOKEN,
         )
         whenever(hmppsAuthGateway.getClientToken(eq("CORE_PERSON_RECORD"), any<RequestContext>())).thenReturn(
-          HmppsAuthMockServer.Companion.TOKEN,
+          HmppsAuthMockServer.TOKEN,
         )
         whenever(hmppsAuthGateway.getClientToken("PROBATION_ACCESS", null)).thenReturn(
           HmppsAuthMockServer.TOKEN,
@@ -243,6 +243,45 @@ class CorePersonRecordGatewayTest(
           ?.name
           ?.firstName
           .shouldNotBe(REDACTION_MASKING_TEXT)
+      }
+
+      it("does not return nomis records when user does not have nomis role") {
+        val oboUser = OboUser("testUser", authUsernames = HmppsAuthUsernames(deliusUsername = deliusUser), hasPrisonRole = false)
+        val requestContextOboUserNoNomis = buildRequestContext("testUser", oboUser = oboUser)
+        val response = corePersonRecordGateway.corePersonRecordSearch(requestLao, requestContextOboUserNoNomis)
+        val distinctSources =
+          response.data
+            ?.data
+            ?.flatMap { it.results.mapNotNull { item -> item.sourceSystem } }
+            ?.distinct() ?: emptyList()
+        distinctSources shouldNotContain "NOMIS"
+        distinctSources shouldContain "DELIUS"
+      }
+
+      it("does not return delius records when user does not have a delius user account") {
+        val oboUser = OboUser("testUser", authUsernames = HmppsAuthUsernames(deliusUsername = null), hasPrisonRole = true)
+        val requestContextOboUserNoNomis = buildRequestContext("testUser", oboUser = oboUser)
+        val response = corePersonRecordGateway.corePersonRecordSearch(requestLao, requestContextOboUserNoNomis)
+        val distinctSources =
+          response.data
+            ?.data
+            ?.flatMap { it.results.mapNotNull { item -> item.sourceSystem } }
+            ?.distinct() ?: emptyList()
+        distinctSources shouldNotContain "DELIUS"
+        distinctSources shouldContain "NOMIS"
+      }
+
+      it("does not return any nomis or delius records when user does not have a delius user account and no nomis role") {
+        val oboUser = OboUser("testUser", authUsernames = HmppsAuthUsernames(deliusUsername = null), hasPrisonRole = false)
+        val requestContextOboUserNoAccess = buildRequestContext("testUser", oboUser = oboUser)
+        val response = corePersonRecordGateway.corePersonRecordSearch(requestLao, requestContextOboUserNoAccess)
+        val distinctSources =
+          response.data
+            ?.data
+            ?.flatMap { it.results.mapNotNull { item -> item.sourceSystem } }
+            ?.distinct() ?: emptyList()
+        distinctSources shouldNotContain "DELIUS"
+        distinctSources shouldNotContain "NOMIS"
       }
 
       it("upstream API returns an unexpected exception, throw RuntimeException") {

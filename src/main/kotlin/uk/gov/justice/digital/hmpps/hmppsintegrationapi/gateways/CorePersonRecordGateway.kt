@@ -104,7 +104,8 @@ class CorePersonRecordGateway(
     return when (result) {
       is WebClientWrapperResponse.Success -> {
         val deliusUsername = requestContext.oboUser?.authUsernames?.deliusUsername
-        val upstreamResponse = if (deliusUsername != null && featureFlagConfig.isEnabled(OBO_DELIUS_USER_LAO_CHECK)) result.data.redact(manageUsersService::getProbationCaseAccess, deliusUsername) else result.data
+        val filtered = if (!requestContext.oboUser?.excludedSourceSystems().isNullOrEmpty() && featureFlagConfig.isEnabled(OBO_DELIUS_USER_LAO_CHECK)) result.data.removeItemsWithSourceSystem(requestContext.oboUser.excludedSourceSystems()) else result.data
+        val upstreamResponse = if (deliusUsername != null && featureFlagConfig.isEnabled(OBO_DELIUS_USER_LAO_CHECK)) filtered.redact(manageUsersService::getProbationCaseAccess, deliusUsername) else filtered
 
         Response(data = upstreamResponse)
       }

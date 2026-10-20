@@ -20,6 +20,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffend
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsAuthUsernames
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.oboconfig.OboUser
@@ -27,6 +28,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffender
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.REDACTION_MASKING_TEXT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ManageUsersService
 import java.io.File
+import kotlin.collections.emptyList
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -134,6 +136,19 @@ class GetPaginatedPersonTest(
               requestContextLao,
             )
           assertThat(personSearchResponse.data[1].firstName).isNotEqualTo(REDACTION_MASKING_TEXT)
+        }
+
+        it("returns an empty list when a user does not have a delius account") {
+          val oboUser = OboUser("testUser", authUsernames = HmppsAuthUsernames(deliusUsername = null))
+          val requestContext = buildRequestContext("testUser", oboUser = oboUser)
+          whenever(featureFlag.isEnabled(FeatureFlagConfig.OBO_DELIUS_USER_LAO_CHECK)).thenReturn(false)
+          val personSearchResponse =
+            probationOffenderSearchGateway.personSearch(
+              searchRequestLao,
+              PaginatedRequest(1, 10),
+              requestContext,
+            )
+          assertThat(personSearchResponse.data).isEqualTo(emptyList<Person>())
         }
       }
     },
