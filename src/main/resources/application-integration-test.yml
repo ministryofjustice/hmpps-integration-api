@@ -78,6 +78,8 @@ services:
     base-url: http://localhost:4037
   tier:
     base-url: http://localhost:4048
+  probation-access:
+    base-url: http://localhost:4049
 
 hmpps.sqs:
   provider: localstack
@@ -144,6 +146,7 @@ feature-flag:
   obo-caseload-filter-enabled: true
   obo-pass-username-to-auth: true
   obo-verify-username: true
+  obo-delius-user-lao-check: true
   # Events Config
   enable-delete-processed-events: true
   enable-publish-pending-events: true
@@ -281,6 +284,7 @@ authorisation:
       oboConfig:
         strategy: "unsigned"
         verification-strategy: "azuread"
+      allowLao: true
     obo-invalid:
       roles:
         - "all-endpoints"

@@ -58,6 +58,7 @@ class ApiMockServer(
           UpstreamApi.CASE_NOTES -> ApiMockServerConfig(4046, "case-notes.json")
           UpstreamApi.ADJUDICATIONS -> ApiMockServerConfig(4047, "adjudications.json", true)
           UpstreamApi.TIER -> ApiMockServerConfig(4048, "tier.json", true)
+          UpstreamApi.PROBATION_ACCESS -> ApiMockServerConfig(4049, "tier.json", true)
           UpstreamApi.HMPPS_AUTH -> throw NotImplementedError("HMPPS Auth MockServer is already running, see HmppsAuthMockServer")
         }
 

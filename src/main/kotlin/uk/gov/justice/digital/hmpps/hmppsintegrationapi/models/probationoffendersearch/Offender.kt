@@ -4,6 +4,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonOnProbation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonProtectedCharacteristics
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.redaction.REDACTION_MASKING_TEXT
 import java.time.LocalDate
 
 data class Offender(
@@ -22,7 +23,11 @@ data class Offender(
   val restrictionMessage: String? = null,
   val currentExclusion: Boolean = false,
   val exclusionMessage: String? = null,
-) {
+) : ProbationOffender {
+  override fun deliusCrn() = otherIds.crn
+
+  override fun redacted(): Offender = Offender(REDACTION_MASKING_TEXT, REDACTION_MASKING_TEXT, otherIds = this.otherIds)
+
   fun toPerson() =
     Person(
       firstName = this.firstName,

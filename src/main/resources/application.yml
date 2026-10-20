@@ -119,6 +119,8 @@ services:
     base-url: http://localhost:4037
   tier:
     base-url: http://localhost:4048
+  probation-access:
+    base-url: http://localhost:4049
 
 authorisation:
   certificate-revocation-list:

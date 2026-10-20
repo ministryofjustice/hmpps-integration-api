@@ -37,4 +37,9 @@ class RestClientConfig {
   fun tierRestClient(
     @Value("\${services.tier.base-url}") baseUrl: String,
   ): RestApiClient = RestApiClient(UpstreamApi.TIER.name, baseUrl)
+
+  @Bean("probationAccessRestClient")
+  fun probationAccessRestClient(
+    @Value("\${services.probation-access.base-url}") baseUrl: String,
+  ): RestApiClient = RestApiClient(UpstreamApi.PROBATION_ACCESS.name, baseUrl)
 }

@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.mockito.kotlin.argumentCaptor
@@ -7,10 +8,16 @@ import org.mockito.kotlin.atLeast
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.PRISON_ROLE_CHECK_ENABLED
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.defaultObjectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.PersonSearchRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService.Companion.attributeSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.onbehalfof.createUnsignedJwt
 import java.io.File
 import kotlin.collections.emptyList
@@ -269,5 +276,45 @@ class OnBehalfOfIntegrationTest : IntegrationTestBase() {
     verify(authGateway, atLeast(1)).getClientToken(eq("Prisoner Offender Search"), requestContext.capture())
     assertThat(requestContext.firstValue?.oboUser?.hasPrisonRole).isEqualTo(false)
     assertThat(requestContext.firstValue?.filters?.prisons).isEqualTo(listOf("WWI", "MKI"))
+  }
+
+  // User LAO Redaction
+  @Test
+  fun `an obo user has a redaction applied to v1 person search`() {
+    val firstName = "Robert"
+    val lastName = "Larsen"
+    whenever(featureFlagConfig.isEnabled(FeatureFlagConfig.USE_PROBATION_SEARCH_FOR_PERSON_SEARCH)).thenReturn(true)
+    val searchRequest = PersonSearchRequest(firstName, lastName)
+    val expectedRequest = attributeSearchRequest(firstName, lastName)
+    prisonerOffenderSearchMockServer.stubForPost(
+      "/attribute-search?page=0&size=10",
+      jacksonObjectMapper().writeValueAsString(expectedRequest.toMap()),
+      File(
+        "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/AttributeSearch.json",
+      ).readText(),
+    )
+    probationSearchMockServer.stubForPost(
+      searchRequest.uriString(1, 10),
+      defaultObjectMapper.writeValueAsString(searchRequest.toMap()),
+      File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/probationoffendersearch/fixtures/PaginatedOffenderSearchResponse.json").readText(),
+    )
+
+    manageUsersMockServer.stubForGet(
+      "/users/search?name=testName&authSources=nomis&authSources=delius&authSources=azuread",
+      File(
+        "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/manageUsers/fixtures/UserFoundAllUsernamesResponse.json",
+      ).readText(),
+    )
+
+    probationAccessMockServer.stubForPost(
+      "/user/DELIUS_USER/access",
+      defaultObjectMapper.writeValueAsString(listOf("A123456")),
+      File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/probationAccess/fixtures/CheckUserAccessResponse.json").readText(),
+    )
+
+    val queryParams = "first_name=$firstName&last_name=$lastName"
+    callApiWithCN("$basePath?$queryParams", "obo-unsigned-verified", oboValue = createUnsignedJwt())
+      .andExpect(status().isOk)
+      .andExpect(content().json(getExpectedResponse("person-search-probation-and-prison-with-user-lao-response.json"), JsonCompareMode.STRICT))
   }
 }

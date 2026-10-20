@@ -2,14 +2,17 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ManageUsersGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationAccessGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsAuthSource
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsAuthUsernames
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsPrisonRole
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsPrisonUser
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.UserAccess
 
 @Service
 class ManageUsersService(
   private val manageUsersGateway: ManageUsersGateway,
+  private val probationAccessGateway: ProbationAccessGateway,
 ) {
   fun getAuthUsernames(username: String): HmppsAuthUsernames {
     val usersResponse =
@@ -69,5 +72,16 @@ class ManageUsersService(
           response.data?.caseloads ?: emptyList()
         }.mapNotNull { it.id }
     return caseload
+  }
+
+  fun getProbationCaseAccess(
+    ndeliusUsername: String,
+    crns: List<String>,
+  ): UserAccess? {
+    val userAccessResponse = probationAccessGateway.getProbationAccess(ndeliusUsername, crns)
+    userAccessResponse.errors.forEach { err ->
+      throw RuntimeException("Call to getProbationAccess in ${err.causedBy.name} failed with error: ${err.type.name}")
+    }
+    return userAccessResponse.data
   }
 }

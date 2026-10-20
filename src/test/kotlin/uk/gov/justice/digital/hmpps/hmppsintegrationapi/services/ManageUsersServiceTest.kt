@@ -7,6 +7,7 @@ import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ManageUsersGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationAccessGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -17,6 +18,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.Hmpps
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsPrisonUser
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsPrisonUserCaseload
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.PaginatedUsers
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.UserAccess
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -25,10 +28,11 @@ import kotlin.test.assertTrue
 class ManageUsersServiceTest {
   lateinit var service: ManageUsersService
   val manageUsersGateway: ManageUsersGateway = mock()
+  val probationAccessGateway: ProbationAccessGateway = mock()
 
   @BeforeEach
   fun setup() {
-    service = ManageUsersService(manageUsersGateway)
+    service = ManageUsersService(manageUsersGateway, probationAccessGateway)
   }
 
   @Test
@@ -213,5 +217,52 @@ class ManageUsersServiceTest {
         HmppsAuthSource.of("INVALID")
       }
     exception.message shouldBe "HMPPS Auth Source not recognized: INVALID"
+  }
+
+  @Test
+  fun `get Probation Case Access returns case access`() {
+    val caseAccess =
+      listOf(
+        CaseAccess(
+          "A123456",
+          userExcluded = true,
+          userRestricted = false,
+          exclusionMessage = "",
+          restrictionMessage = "",
+        ),
+      )
+    whenever(
+      probationAccessGateway.getProbationAccess(
+        "A123456",
+        listOf("A123456"),
+      ),
+    ).thenReturn(Response(UserAccess(caseAccess)))
+    val access = service.getProbationCaseAccess("A123456", listOf("A123456"))
+    access?.access shouldBe caseAccess
+  }
+
+  @Test
+  fun `get Probation Case Access returns an error`() {
+    val caseAccess =
+      listOf(
+        CaseAccess(
+          "A123456",
+          userExcluded = true,
+          userRestricted = false,
+          exclusionMessage = "",
+          restrictionMessage = "",
+        ),
+      )
+    whenever(
+      probationAccessGateway.getProbationAccess(
+        "A123456",
+        listOf("A123456"),
+      ),
+    ).thenReturn(Response(null, errors = listOf(UpstreamApiError(type = UpstreamApiError.Type.BAD_REQUEST, causedBy = UpstreamApi.PROBATION_ACCESS))))
+    val exception =
+      assertThrows<RuntimeException> {
+        service.getProbationCaseAccess("A123456", listOf("A123456"))
+      }
+    exception.message shouldBe "Call to getProbationAccess in PROBATION_ACCESS failed with error: BAD_REQUEST"
   }
 }

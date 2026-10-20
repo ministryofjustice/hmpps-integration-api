@@ -38,3 +38,4 @@ updateOpenApiSpec "https://dev.offender-case-notes.service.justice.gov.uk/v3/api
 updateOpenApiSpec "https://support-for-additional-needs-api.hmpps.service.justice.gov.uk/openapi/SupportAdditionalNeedsAPI.yml" "../src/test/resources/openapi-specs/san.json"
 updateOpenApiSpec "https://manage-adjudications-api-dev.hmpps.service.justice.gov.uk/v3/api-docs" "../src/test/resources/openapi-specs/adjudications.json"
 updateOpenApiSpec "https://hmpps-tier-dev.hmpps.service.justice.gov.uk/v3/api-docs" "../src/test/resources/openapi-specs/tier.json"
+updateOpenApiSpec "https://probation-access-control-dev.hmpps.service.justice.gov.uk/v3/api-docs" "../src/test/resources/openapi-specs/probation-access.json"
