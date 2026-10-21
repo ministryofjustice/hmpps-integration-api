@@ -13,6 +13,7 @@ import java.io.File
 class AddressSearchIntegrationTest : IntegrationTestBase() {
   val path = "/v1/addresses"
   val pathGetParams = "?buildingName=Burnham"
+  val pathParamsSpaces = "?postcode=NE1+2XY"
   val bodyPostParams =
     """
     {
@@ -38,6 +39,22 @@ class AddressSearchIntegrationTest : IntegrationTestBase() {
   @Test
   fun `successfully searches address building name using a GET`() {
     callApi("$path$pathGetParams")
+      .andExpect(status().isOk)
+      .andExpect(header().string("Cache-Control", "no-cache"))
+  }
+
+  @Test
+  fun `successfully searches address postcode with spaces using a GET`() {
+    val fixturesPath = "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/probationoffendersearch/fixtures/address-search-response.json"
+    probationSearchMockServer.stubForPost(
+      "$path$pathParamsSpaces",
+      resBody =
+        File(
+          fixturesPath,
+        ).readText(),
+      reqBody = defaultObjectMapper.writeValueAsString(requestBody),
+    )
+    callApi("$path$pathParamsSpaces")
       .andExpect(status().isOk)
       .andExpect(header().string("Cache-Control", "no-cache"))
   }
