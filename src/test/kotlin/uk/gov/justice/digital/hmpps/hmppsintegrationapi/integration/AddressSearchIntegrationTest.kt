@@ -47,12 +47,12 @@ class AddressSearchIntegrationTest : IntegrationTestBase() {
   fun `successfully searches address postcode with spaces using a GET`() {
     val fixturesPath = "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/probationoffendersearch/fixtures/address-search-response.json"
     probationSearchMockServer.stubForPost(
-      "$path$pathParamsSpaces",
+      "/search/addresses?maxResults=100",
       resBody =
         File(
           fixturesPath,
         ).readText(),
-      reqBody = defaultObjectMapper.writeValueAsString(requestBody),
+      reqBody = defaultObjectMapper.writeValueAsString(AddressSearchRequest(postcode = "NE1 2XY")),
     )
     callApi("$path$pathParamsSpaces")
       .andExpect(status().isOk)

@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.whenever
+import org.springframework.http.HttpStatus
 import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
@@ -20,6 +21,15 @@ class ContactsIntegrationTest : IntegrationTestBase() {
   @Test
   fun `successfully searches contacts with spaces in the name using a GET`() {
     personalRelationshipServer.stubForGet(
+      "/contact/search?page=0&size=10&firstName=John%2520Harry&lastName=Doe%2520Rae&searchType=EXACT",
+      body =
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/personalRelationships/fixtures/contact-search-response.json",
+        ).readText(),
+      status = HttpStatus.BAD_REQUEST,
+    )
+
+    personalRelationshipServer.stubForGet(
       "/contact/search?page=0&size=10&firstName=John%20Harry&lastName=Doe%20Rae&searchType=EXACT",
       body =
         File(
@@ -27,7 +37,7 @@ class ContactsIntegrationTest : IntegrationTestBase() {
         ).readText(),
     )
 
-    callApi("/v1/contacts?firstName=John%20Harry&lastName=Doe%20Rae")
+    callApi("/v1/contacts?firstName=John Harry&lastName=Doe Rae")
       .andExpect(status().isOk)
       .andExpect(header().string("Cache-Control", "no-cache"))
   }

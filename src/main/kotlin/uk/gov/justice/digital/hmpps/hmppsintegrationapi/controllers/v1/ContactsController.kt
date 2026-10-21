@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import jakarta.validation.ValidationException
-import org.slf4j.LoggerFactory
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactLinkedPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactSearchRequest
@@ -46,10 +44,6 @@ class ContactsController(
   private val getContactService: GetContactService,
   private val contactSearchService: ContactSearchService,
 ) {
-  companion object {
-    private val log = LoggerFactory.getLogger(this::class.java)
-  }
-
   @GetMapping("/{contactId}")
   @Operation(
     summary = "Returns a contact by ID.",
@@ -148,10 +142,8 @@ class ContactsController(
     @RequestAttribute requestContext: RequestContext?,
     @Valid @RequestBody request: ContactSearchRequest? = null,
   ): ResponseEntity<PaginatedResponse<ContactSearchResponseItem>> {
-    val req = request ?: ContactSearchRequest(firstName?.decodeUrlCharacters(), middleNames?.decodeUrlCharacters(), lastName?.decodeUrlCharacters(), dateOfBirth, searchType)
+    val req = request ?: ContactSearchRequest(firstName, middleNames, lastName, dateOfBirth, searchType)
     req.validate()
-
-    log.info("ContactSearch request: firstName: ${req.firstName}, secondName: ${req.lastName}, dateOfBirth: ${req.dateOfBirth}, searchType: ${req.searchType}")
 
     val response = contactSearchService.contactSearch(req, pageNo, perPage, requestContext)
 
