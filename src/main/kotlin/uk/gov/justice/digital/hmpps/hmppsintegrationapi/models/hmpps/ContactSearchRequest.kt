@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
 import jakarta.validation.ValidationException
+import org.slf4j.LoggerFactory
 import org.springframework.web.util.UriComponentsBuilder
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -12,6 +13,10 @@ data class ContactSearchRequest(
   val dateOfBirth: String? = null,
   val searchType: ContactSearchType = ContactSearchType.EXACT,
 ) {
+  companion object {
+    private val log = LoggerFactory.getLogger(this::class.java)
+  }
+
   fun uriString(
     pageNo: Int,
     perPage: Int,
@@ -27,6 +32,9 @@ data class ContactSearchRequest(
     lastName?.let { uri.queryParam("lastName", it) }
     dateOfBirth?.let { uri.queryParam("dateOfBirth", it) }
     uri.queryParam("searchType", searchType.name)
+
+    log.info("Contact search request uri: ${uri.toUriString()}")
+
     return uri.toUriString()
   }
 

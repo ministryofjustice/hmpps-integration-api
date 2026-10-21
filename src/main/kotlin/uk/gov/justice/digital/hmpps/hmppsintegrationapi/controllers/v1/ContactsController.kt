@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import jakarta.validation.ValidationException
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -45,6 +46,10 @@ class ContactsController(
   private val getContactService: GetContactService,
   private val contactSearchService: ContactSearchService,
 ) {
+  companion object {
+    private val log = LoggerFactory.getLogger(this::class.java)
+  }
+
   @GetMapping("/{contactId}")
   @Operation(
     summary = "Returns a contact by ID.",
@@ -145,6 +150,8 @@ class ContactsController(
   ): ResponseEntity<PaginatedResponse<ContactSearchResponseItem>> {
     val req = request ?: ContactSearchRequest(firstName?.decodeUrlCharacters(), middleNames?.decodeUrlCharacters(), lastName?.decodeUrlCharacters(), dateOfBirth, searchType)
     req.validate()
+
+    log.info("ContactSearch request: firstName: ${req.firstName}, secondName: ${req.lastName}, dateOfBirth: ${req.dateOfBirth}, searchType: ${req.searchType}")
 
     val response = contactSearchService.contactSearch(req, pageNo, perPage, requestContext)
 
