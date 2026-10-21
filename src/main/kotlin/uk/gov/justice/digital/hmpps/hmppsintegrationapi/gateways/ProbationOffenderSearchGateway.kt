@@ -75,6 +75,10 @@ class ProbationOffenderSearchGateway(
     paginatedRequest: PaginatedRequest,
     requestContext: RequestContext?,
   ): Response<List<Person>> {
+    if (requestContext?.oboUser?.excludedSourceSystems()?.contains("DELIUS") == true) {
+      return Response(emptyList())
+    }
+
     val result =
       webClient.request<PSPaginatedOffendersResponse>(
         HttpMethod.POST,

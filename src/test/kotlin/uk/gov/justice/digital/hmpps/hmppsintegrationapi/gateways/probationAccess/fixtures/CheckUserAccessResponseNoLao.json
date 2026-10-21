@@ -1,0 +1,67 @@
+{
+  "access": [
+    {
+      "crn": "A111111",
+      "userExcluded": false,
+      "userRestricted": false,
+      "exclusionMessage": "string",
+      "restrictionMessage": "string"
+    },
+    {
+      "crn": "A222222",
+      "userExcluded": false,
+      "userRestricted": false,
+      "exclusionMessage": "string",
+      "restrictionMessage": "string"
+    },
+    {
+      "crn": "A333333",
+      "userExcluded": false,
+      "userRestricted": false,
+      "exclusionMessage": "string",
+      "restrictionMessage": "string"
+    },
+    {
+      "crn": "A444444",
+      "userExcluded": false,
+      "userRestricted": false,
+      "exclusionMessage": "string",
+      "restrictionMessage": "string"
+    },
+    {
+      "crn": "A555555",
+      "userExcluded": false,
+      "userRestricted": false,
+      "exclusionMessage": "string",
+      "restrictionMessage": "string"
+    },
+    {
+      "crn": "A669783",
+      "userExcluded": false,
+      "userRestricted": false,
+      "exclusionMessage": "string",
+      "restrictionMessage": "string"
+    },
+    {
+      "crn": "A666666",
+      "userExcluded": false,
+      "userRestricted": false,
+      "exclusionMessage": "string",
+      "restrictionMessage": "string"
+    },
+    {
+      "crn": "A777777",
+      "userExcluded": false,
+      "userRestricted": false,
+      "exclusionMessage": "string",
+      "restrictionMessage": "string"
+    },
+    {
+      "crn": "A123456",
+      "userExcluded": false,
+      "userRestricted": false,
+      "exclusionMessage": "string",
+      "restrictionMessage": "string"
+    }
+  ]
+}

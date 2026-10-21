@@ -165,6 +165,7 @@ abstract class IntegrationTestBase {
   }
 
   final val basePath = "/v1/persons"
+  final val v2BasePath = "/v2/persons"
   final val defaultCn = "automated-test-client"
   final val pnc = URLEncoder.encode("2004/13116M", StandardCharsets.UTF_8)
   final val nomsId = "G2996UX"
@@ -996,10 +997,11 @@ abstract class IntegrationTestBase {
     path: String,
     requestBody: String,
     cn: String,
+    oboValue: String? = null,
   ): ResultActions =
     mockMvc.perform(
       post(path)
-        .headers(getAuthHeader(cn))
+        .headers(getAuthHeader(cn = cn, oboValue = oboValue))
         .content(requestBody)
         .contentType(org.springframework.http.MediaType.APPLICATION_JSON),
     )
