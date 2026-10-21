@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AddressSearchRequest
@@ -103,7 +104,13 @@ class AddressController(
     @RequestAttribute requestContext: RequestContext?,
     @Valid @RequestBody request: AddressSearchRequest? = null,
   ): ResponseEntity<AddressSearchResponse> {
-    val req = request ?: AddressSearchRequest(buildingName, addressNumber, streetName, postcode)
+    val req =
+      request ?: AddressSearchRequest(
+        buildingName?.decodeUrlCharacters(),
+        addressNumber?.decodeUrlCharacters(),
+        streetName?.decodeUrlCharacters(),
+        postcode?.decodeUrlCharacters(),
+      )
     req.validate()
 
     val response = addressSearchService.addressSearch(req, maxResults, requestContext)

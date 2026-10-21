@@ -7,6 +7,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import java.io.File
 
 class ContactsIntegrationTest : IntegrationTestBase() {
   @Test
@@ -17,8 +18,16 @@ class ContactsIntegrationTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `successfully searches contacts by firstName and lastName using a GET`() {
-    callApi("/v1/contacts?firstName=John&lastName=Doe")
+  fun `successfully searches contacts with spaces in the name using a GET`() {
+    personalRelationshipServer.stubForGet(
+      "/contact/search?page=0&size=10&firstName=John%20Harry&lastName=Doe%20Rae&searchType=EXACT",
+      body =
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/personalRelationships/fixtures/contact-search-response.json",
+        ).readText(),
+    )
+
+    callApi("/v1/contacts?firstName=John%20Harry&lastName=Doe%20Rae")
       .andExpect(status().isOk)
       .andExpect(header().string("Cache-Control", "no-cache"))
   }

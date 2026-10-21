@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactLinkedPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactSearchRequest
@@ -142,7 +143,7 @@ class ContactsController(
     @RequestAttribute requestContext: RequestContext?,
     @Valid @RequestBody request: ContactSearchRequest? = null,
   ): ResponseEntity<PaginatedResponse<ContactSearchResponseItem>> {
-    val req = request ?: ContactSearchRequest(firstName, middleNames, lastName, dateOfBirth, searchType)
+    val req = request ?: ContactSearchRequest(firstName?.decodeUrlCharacters(), middleNames?.decodeUrlCharacters(), lastName?.decodeUrlCharacters(), dateOfBirth, searchType)
     req.validate()
 
     val response = contactSearchService.contactSearch(req, pageNo, perPage, requestContext)
