@@ -11,7 +11,6 @@ class TierChangedEventTest : DomainEventsListenerTestCase() {
   @ValueSource(
     strings = [
       "tier.calculation.changed",
-      "tier.calculation.complete",
     ],
   )
   fun `will process a tier details changed event`(eventType: String) {

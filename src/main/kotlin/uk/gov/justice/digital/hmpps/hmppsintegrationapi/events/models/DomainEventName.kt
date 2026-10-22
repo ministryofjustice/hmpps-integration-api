@@ -241,7 +241,6 @@ object DomainEventName {
   object Tier {
     object Calculation {
       const val CHANGED = "tier.calculation.changed"
-      const val COMPLETE = "tier.calculation.complete"
     }
   }
 }

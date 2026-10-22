@@ -112,7 +112,6 @@ val CONTACT_EVENT_CHANGED_EVENTS =
 val TIER_EVENTS =
   listOf(
     DomainEventName.Tier.Calculation.CHANGED,
-    DomainEventName.Tier.Calculation.COMPLETE,
   )
 
 enum class PrisonerChangedCategory {
