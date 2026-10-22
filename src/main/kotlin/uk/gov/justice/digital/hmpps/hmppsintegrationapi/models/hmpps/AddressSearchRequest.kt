@@ -14,7 +14,7 @@ data class AddressSearchRequest(
       UriComponentsBuilder
         .fromUriString("/search/addresses")
     maxResults?.let { uri.queryParam("maxResults", it) }
-    return uri.toUriString()
+    return uri.build().toUriString()
   }
 
   fun validate() {
@@ -23,11 +23,11 @@ data class AddressSearchRequest(
     }
   }
 
-  fun toMap(): Map<String, String> {
-    val buildingName = buildingName ?: ""
-    val addressNumber = addressNumber ?: ""
-    val streetName = streetName ?: ""
-    val postcode = postcode ?: ""
+  fun toMap(): Map<String, String?> {
+    val buildingName = buildingName
+    val addressNumber = addressNumber
+    val streetName = streetName
+    val postcode = postcode
     return mapOf(
       "buildingName" to buildingName,
       "addressNumber" to addressNumber,
