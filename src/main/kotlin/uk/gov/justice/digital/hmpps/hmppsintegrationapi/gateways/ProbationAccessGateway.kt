@@ -27,6 +27,11 @@ class ProbationAccessGateway(
     crns: List<String>,
     requestContext: RequestContext? = null,
   ): Response<UserAccess?> {
+    // Probation user access cannot take an empty list
+    if (crns.isEmpty()) {
+      return Response(UserAccess(emptyList()))
+    }
+
     val result =
       probationAccessRestClient.post(
         "/user/$username/access",
