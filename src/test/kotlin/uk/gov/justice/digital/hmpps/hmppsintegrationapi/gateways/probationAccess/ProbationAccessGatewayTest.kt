@@ -16,7 +16,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGatewa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationAccessGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.UserAccess
 import java.io.File
 
 @ActiveProfiles("test")
@@ -70,6 +72,11 @@ class ProbationAccessGatewayTest(
           val probationAccessResponse = probationAccessGateway.getProbationAccess(deliusUser, crns, null)
           assertThat(probationAccessResponse.data).isNull()
           assertThat(probationAccessResponse.errors).isNotEmpty
+        }
+
+        it("does not call the upstream with an empty list of CRNS") {
+          val crns = probationAccessGateway.getProbationAccess(deliusUser, emptyList(), null)
+          assertThat(crns).isEqualTo(Response(UserAccess(emptyList())))
         }
       }
     },
