@@ -42,4 +42,14 @@ data class PersonInPrison(
   val youthOffender: Boolean,
   @Schema(description = "In out status", example = "IN")
   val inOutStatus: String? = null,
+  @Schema(description = "Does the prisoner have an indeterminate Sentence", example = "true")
+  val indeterminateSentence: Boolean? = null,
+  @Schema(description = "The prisoners most serious offence", example = "Robbery")
+  val mostSeriousOffence: String? = null,
+  @Schema(description = "The prisoners legal status", example = "SENTENCED")
+  val legalStatus: String? = null,
+  @Schema(description = "The prisoners imprisonment status", example = "LIFE")
+  val imprisonmentStatus: String? = null,
+  @Schema(description = "The prisoners imprisonment status description", example = "Serving Life Imprisonment")
+  val imprisonmentStatusDescription: String? = null,
 )

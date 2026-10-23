@@ -31,7 +31,12 @@
       "prisonName": "HMP Leeds",
       "cellLocation": "A-1-002",
       "youthOffender": true,
-      "inOutStatus": null
+      "inOutStatus": null,
+      "indeterminateSentence": true,
+      "mostSeriousOffence": "Robbery",
+      "legalStatus": "SENTENCED",
+      "imprisonmentStatus": "LIFE",
+      "imprisonmentStatusDescription": "Serving Life Imprisonment"
     },
     {
       "firstName": "Robert",
@@ -64,7 +69,12 @@
       "prisonName": "HMP Leeds",
       "cellLocation": "A-1-002",
       "youthOffender": true,
-      "inOutStatus": null
+      "inOutStatus": null,
+      "indeterminateSentence": true,
+      "mostSeriousOffence": "Robbery",
+      "legalStatus": "SENTENCED",
+      "imprisonmentStatus": "LIFE",
+      "imprisonmentStatusDescription": "Serving Life Imprisonment"
     }
   ],
   "pagination": {

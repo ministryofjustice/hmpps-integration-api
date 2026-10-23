@@ -7,6 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPri
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonalCareNeed
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PhysicalCharacteristics
 import java.time.LocalDate
+import kotlin.Boolean
 
 data class POSPrisoner(
   val prisonerNumber: String? = null,
@@ -48,6 +49,11 @@ data class POSPrisoner(
   val personalCareNeeds: List<POSPersonalCareNeed>? = null,
   val languages: List<POSLanguage>? = null,
   val identifiers: List<POSIdentifier>? = null,
+  val indeterminateSentence: Boolean? = null,
+  val mostSeriousOffence: String? = null,
+  val legalStatus: String? = null,
+  val imprisonmentStatus: String? = null,
+  val imprisonmentStatusDescription: String? = null,
 ) {
   fun toPerson(): Person =
     Person(
@@ -90,6 +96,11 @@ data class POSPrisoner(
       receptionDate = this.receptionDate,
       status = this.status,
       youthOffender = this.youthOffender,
+      indeterminateSentence = this.indeterminateSentence,
+      mostSeriousOffence = this.mostSeriousOffence,
+      legalStatus = this.legalStatus,
+      imprisonmentStatus = this.imprisonmentStatus,
+      imprisonmentStatusDescription = this.imprisonmentStatusDescription,
     )
 
   fun toLiveRoll(): PersonInPrison =
@@ -116,6 +127,11 @@ data class POSPrisoner(
       status = this.status,
       youthOffender = this.youthOffender,
       inOutStatus = this.inOutStatus,
+      indeterminateSentence = this.indeterminateSentence,
+      mostSeriousOffence = this.mostSeriousOffence,
+      legalStatus = this.legalStatus,
+      imprisonmentStatus = this.imprisonmentStatus,
+      imprisonmentStatusDescription = this.imprisonmentStatusDescription,
     )
 
   fun toPhysicalCharacteristics(): PhysicalCharacteristics =
