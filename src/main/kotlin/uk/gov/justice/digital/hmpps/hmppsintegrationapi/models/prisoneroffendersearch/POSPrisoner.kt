@@ -127,6 +127,11 @@ data class POSPrisoner(
       status = this.status,
       youthOffender = this.youthOffender,
       inOutStatus = this.inOutStatus,
+      indeterminateSentence = this.indeterminateSentence,
+      mostSeriousOffence = this.mostSeriousOffence,
+      legalStatus = this.legalStatus,
+      imprisonmentStatus = this.imprisonmentStatus,
+      imprisonmentStatusDescription = this.imprisonmentStatusDescription,
     )
 
   fun toPhysicalCharacteristics(): PhysicalCharacteristics =
