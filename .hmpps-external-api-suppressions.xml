@@ -8,7 +8,7 @@
     Bundled with detekt which is only used for static code analysis
     ]]></notes>
     <!-- Matches any path ending with kotlin- followed by anything and -2.4.10.jar -->
-    <filePath regex="true">^pkg:maven/org\.jetbrains\.kotlin@.*kotlin-.*\-2.4.10.jar</filePath>
+    <filePath regex="true">.*kotlin-.*\-2.4.10.jar</filePath>
     <cpe>cpe:/a:jetbrains:kotlin</cpe>
     <cve>CVE-2026-53914</cve>
   </suppress>
