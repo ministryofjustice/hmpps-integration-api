@@ -120,6 +120,11 @@ internal class PrisonControllerTest(
                 cellLocation = "A-1-002",
                 youthOffender = false,
                 inOutStatus = null,
+                indeterminateSentence = true,
+                mostSeriousOffence = "Robbery",
+                legalStatus = "SENTENCED",
+                imprisonmentStatus = "LIFE",
+                imprisonmentStatusDescription = "Serving Life Imprisonment",
               ),
           ),
         )
@@ -150,7 +155,12 @@ internal class PrisonControllerTest(
               "prisonName": "HMP Leeds",
               "cellLocation": "A-1-002",
               "youthOffender": false,
-              "inOutStatus": null
+              "inOutStatus": null,
+              "indeterminateSentence": true,
+              "mostSeriousOffence": "Robbery",
+              "legalStatus": "SENTENCED",
+              "imprisonmentStatus": "LIFE",
+              "imprisonmentStatusDescription": "Serving Life Imprisonment"
             }
           }
           """.removeWhitespaceAndNewlines(),
