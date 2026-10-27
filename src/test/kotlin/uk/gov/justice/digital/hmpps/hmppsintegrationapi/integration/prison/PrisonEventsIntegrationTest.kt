@@ -10,15 +10,14 @@ class PrisonEventsIntegrationTest : IntegrationTestBase() {
   final val path = "/v1/prison/$prisonId/events?fromDateTime=$dateTimeNow"
   final val invalidHmppsPath = "/v1/prison/$prisonId/events?fromDateTime=$dateTimeNow&hmppsId=$invalidNomsId"
   final val invalidPrisonPath = "/v1/prison/123/events?fromDateTime=$dateTimeNow"
-  final val invalidTimePath =
-    "/v1/prison/$prisonId/events?fromDateTime=abc" b
+  final val invalidTimePath = "/v1/prison/$prisonId/events?fromDateTime=abc"
 
-      @Test
-      fun `return a list of events to a prison`() {
-        callApi(path)
-          .andExpect(status().isOk)
-          .andExpect(content().json(getExpectedResponse("prison-events.json"), JsonCompareMode.STRICT))
-      }
+  @Test
+  fun `return a list of events to a prison`() {
+    callApi(path)
+      .andExpect(status().isOk)
+      .andExpect(content().json(getExpectedResponse("prison-events.json"), JsonCompareMode.STRICT))
+  }
 
   @Test
   fun `return a 404 with invalid hmpps Id`() {
