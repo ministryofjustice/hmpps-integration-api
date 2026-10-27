@@ -33,10 +33,12 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.ENTITY_NOT_FOUND
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.interfaces.toPaginatedResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiEvents
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiLiveRoll
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCapacityForPrisonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetLiveRollService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonEventsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonPayBandsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonRegimeService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersByPrisonService
@@ -48,6 +50,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @RestController
@@ -65,6 +68,7 @@ class PrisonController(
   @Autowired val getPrisonPayBandsService: GetPrisonPayBandsService,
   @Autowired val getPrisonersByPrisonService: GetPrisonersByPrisonService,
   @Autowired val getLiveRollService: GetLiveRollService,
+  @Autowired val getPrisonEventsService: GetPrisonEventsService,
 ) {
   @GetMapping("/prisoners/{hmppsId}")
   @Tags(value = [Tag(name = "Prisoners"), Tag(name = "Reception")])
@@ -457,6 +461,55 @@ class PrisonController(
 
     auditService.createEvent(
       "LIVE_ROLL",
+      mapOf("prisonId" to prisonId) as Map<String, String?>,
+    )
+
+    return DataResponse(data = response.data)
+  }
+
+  @GetMapping("/{prisonId}/events")
+  @Operation(
+    summary = "Gets all events by prisonId.",
+    description =
+      "Event Types: <ul>" +
+        "<li>ALERT</li>" +
+        "<li>DISCHARGE</li>" +
+        "<li>IEP_CHANGED</li>" +
+        "<li>INTERNAL_LOCATION_CHANGED</li>" +
+        "<li>NOMS_ID_CHANGED</li>" +
+        "<li>PERSONAL_DETAILS_CHANGED</li>" +
+        "<li>PERSONAL_OFFICER_CHANGED</li>" +
+        "<li>RECEPTION</li>" +
+        "<li>SENTENCE_INFORMATION_CHANGED</li>" +
+        "<li>BALANCE_UPDATE</li>" +
+        "</ul>",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully performed the query on upstream APIs. An empty list is returned when no results are found."),
+      ApiResponse(responseCode = "400", description = "No results found for the prison.", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
+      ApiResponse(responseCode = "403", content = [Content(schema = Schema(ref = "#/components/schemas/ForbiddenResponse"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  fun getEvents(
+    @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
+    @Parameter(description = "HMPPS ID", schema = Schema(minimum = "A1417AE")) @RequestParam(required = false) hmppsId: String?,
+    @Parameter(description = "Event Type", schema = Schema(minimum = "ALERT")) @RequestParam(required = false) eventType: String?,
+    @Parameter(description = "From Date Time", schema = Schema(minimum = "2018-01-10T03:34:12.123")) @RequestParam(required = true) fromDateTime: LocalDateTime,
+    @Parameter(description = "Number of events to return. If from_datetime is over a week ago then limit has to be specified and be less than or equal to 1000", schema = Schema(minimum = "100")) @RequestParam(required = false) limit: Int?,
+    @RequestAttribute requestContext: RequestContext,
+  ): DataResponse<PrisonApiEvents?> {
+    val response = getPrisonEventsService.execute(prisonId, hmppsId, eventType, fromDateTime, limit, requestContext)
+
+    if (response.hasErrorCausedBy(BAD_REQUEST, causedBy = UpstreamApi.PRISON_API)) {
+      throw ValidationException("Invalid query parameters.")
+    }
+
+    if (response.hasErrorCausedBy(ENTITY_NOT_FOUND, causedBy = UpstreamApi.PRISON_API)) {
+      throw EntityNotFoundException("Could not find events with supplied query parameters.")
+    }
+
+    auditService.createEvent(
+      "EVENTS",
       mapOf("prisonId" to prisonId) as Map<String, String?>,
     )
 

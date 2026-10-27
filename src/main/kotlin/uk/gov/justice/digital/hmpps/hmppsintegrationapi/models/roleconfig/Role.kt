@@ -132,6 +132,7 @@ val roleConstants =
       -"/v1/prison/{prisonId}/activities"
       -"/v1/prison/{prisonId}/appointments/search"
       -"/v1/prison/{prisonId}/capacity"
+      -"/v1/prison/{prisonId}/events"
       -"/v1/prison/{prisonId}/live-roll"
       -"/v1/prison/{prisonId}/location/{key}"
       -"/v1/prison/{prisonId}/location/{key}/deactivate"

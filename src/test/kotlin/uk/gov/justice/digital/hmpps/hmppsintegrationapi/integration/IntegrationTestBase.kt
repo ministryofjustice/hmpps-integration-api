@@ -808,6 +808,13 @@ abstract class IntegrationTestBase {
         ).readText(),
       )
 
+      prisonApiServer.stubForGet(
+        "/api/v1/offenders/events?prison_id=$prisonId&from_datetime=$dateTimeNow",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/nomis/fixtures/GetEventsResponse.json",
+        ).readText(),
+      )
+
       createAndVaryLicenceServer.start()
 
       createAndVaryLicenceServer.stubForGet(
