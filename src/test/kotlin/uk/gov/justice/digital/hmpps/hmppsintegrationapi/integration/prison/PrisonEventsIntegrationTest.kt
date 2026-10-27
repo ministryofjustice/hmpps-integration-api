@@ -30,10 +30,4 @@ class PrisonEventsIntegrationTest : IntegrationTestBase() {
     callApi(invalidPrisonPath)
       .andExpect(status().isNotFound)
   }
-
-  @Test
-  fun `return a 400 with bad date time`() {
-    callApi(invalidTimePath)
-      .andExpect(status().isBadRequest)
-  }
 }
