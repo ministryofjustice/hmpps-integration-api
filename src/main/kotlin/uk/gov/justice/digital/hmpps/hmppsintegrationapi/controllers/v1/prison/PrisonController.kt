@@ -50,7 +50,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @RestController
@@ -494,7 +493,7 @@ class PrisonController(
     @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
     @Parameter(description = "HMPPS ID", schema = Schema(minimum = "A1417AE")) @RequestParam(required = false) hmppsId: String?,
     @Parameter(description = "Event Type", schema = Schema(minimum = "ALERT")) @RequestParam(required = false) eventType: String?,
-    @Parameter(description = "From Date Time", schema = Schema(minimum = "2018-01-10T03:34:12.123")) @RequestParam(required = true) fromDateTime: LocalDateTime,
+    @Parameter(description = "From Date Time. The following formats are supported: 2018-01-10, 2018-01-10 03:34, 2018-01-10 03:34:12, 2018-01-10 03:34:12.123", schema = Schema(minimum = "2018-01-10T03:34:12.123")) @RequestParam(required = true) fromDateTime: String,
     @Parameter(description = "Number of events to return. If from_datetime is over a week ago then limit has to be specified and be less than or equal to 1000", schema = Schema(minimum = "100")) @RequestParam(required = false) limit: Int?,
     @RequestAttribute requestContext: RequestContext,
   ): DataResponse<PrisonApiEvents?> {
