@@ -45,7 +45,7 @@ class GetEventsForPrisonTest(
       val nomisId = "A1417AE"
       val eventType = "ALERT"
       val limit = 100
-      val fromDateTime = LocalDateTime.now()
+      val fromDateTime = LocalDateTime.now().toString()
       val eventsShortPath = "/api/v1/offenders/events?prison_id=$prisonId&from_datetime=$fromDateTime"
       val eventsLongPath = "/api/v1/offenders/events?prison_id=$prisonId&from_datetime=$fromDateTime&offender_id=$nomisId&event_type=$eventType&limit=$limit"
       val authToken = "ABC123"

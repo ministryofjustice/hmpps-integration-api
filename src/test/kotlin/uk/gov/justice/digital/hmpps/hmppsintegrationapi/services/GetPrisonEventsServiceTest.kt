@@ -32,7 +32,7 @@ internal class GetPrisonEventsServiceTest(
     {
       val prisonId = "ABC"
       val nomisId = "A1417AE"
-      val fromDateTime = LocalDateTime.now()
+      val fromDateTime = LocalDateTime.now().toString()
       val requestContext = buildRequestContext("testUser")
       val prisonEvents =
         PrisonApiEvents(

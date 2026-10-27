@@ -1029,7 +1029,7 @@ internal class PrisonControllerTest(
 
       describe("GET /{prisonId}/events") {
         val prisonId = "ABC"
-        val fromDateTime = LocalDateTime.now()
+        val fromDateTime = LocalDateTime.now().toString()
         val path = "$basePath/$prisonId/events?fromDateTime=$fromDateTime"
 
         val prisonEvents =
