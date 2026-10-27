@@ -48,7 +48,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonA
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.visits.VisitBalances
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
-import java.time.LocalDateTime
 
 @Component
 class PrisonApiGateway(
@@ -1099,7 +1098,7 @@ class PrisonApiGateway(
     prisonId: String,
     nomisNumber: String?,
     eventType: String?,
-    fromDateTime: LocalDateTime,
+    fromDateTime: String,
     limit: Int?,
     requestContext: RequestContext,
   ): Response<PrisonApiEvents?> {

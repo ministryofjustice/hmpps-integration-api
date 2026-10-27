@@ -8,7 +8,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiEvents
-import java.time.LocalDateTime
 
 @Service
 class GetPrisonEventsService(
@@ -19,7 +18,7 @@ class GetPrisonEventsService(
     prisonId: String,
     hmppsId: String?,
     eventType: String?,
-    fromDateTime: LocalDateTime,
+    fromDateTime: String,
     limit: Int?,
     requestContext: RequestContext,
   ): Response<PrisonApiEvents?> {
