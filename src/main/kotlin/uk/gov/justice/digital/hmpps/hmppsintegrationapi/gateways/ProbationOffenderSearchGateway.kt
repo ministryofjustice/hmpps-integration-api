@@ -75,7 +75,7 @@ class ProbationOffenderSearchGateway(
     paginatedRequest: PaginatedRequest,
     requestContext: RequestContext?,
   ): Response<List<Person>> {
-    if (requestContext?.oboUser?.excludedSourceSystems()?.contains("DELIUS") == true) {
+    if (featureFlagConfig.isEnabled(OBO_DELIUS_USER_LAO_CHECK) && requestContext?.oboUser?.excludedSourceSystems()?.contains("DELIUS") == true) {
       return Response(emptyList())
     }
 
