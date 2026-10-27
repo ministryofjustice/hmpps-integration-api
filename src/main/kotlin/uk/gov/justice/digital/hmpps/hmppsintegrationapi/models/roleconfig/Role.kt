@@ -120,6 +120,7 @@ val roleConstants =
       -"/v1/persons/{hmppsId}/sentences"
       -"/v1/persons/{hmppsId}/sentences/latest-key-dates-and-adjustments"
       -"/v1/persons/{hmppsId}/status-information"
+      -"/v1/persons/{hmppsId}/supervision-status"
       -"/v1/persons/{hmppsId}/tier/details"
       -"/v1/persons/{hmppsId}/prison-timeline"
       -"/v1/persons/{hmppsId}/visit-orders"

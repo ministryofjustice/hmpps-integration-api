@@ -762,6 +762,7 @@ function verify_get_basic_details(hmppsId) {
     validate_get_request(`/v1/persons/${hmppsId}/cell-share-risk-assessments`);
     validate_get_request(`/v2/persons/${hmppsId}`);
     validate_get_request(`/v1/persons/${hmppsId}/tier/details`);
+    validate_get_request(`/v1/persons/${hmppsId}/supervision-status`);
 
     let res = validate_get_request(`/v1/persons/${hmppsId}/needs`);
     validate_response_attribute_not_empty(res, "assessedOn", "Needs assessment found");
