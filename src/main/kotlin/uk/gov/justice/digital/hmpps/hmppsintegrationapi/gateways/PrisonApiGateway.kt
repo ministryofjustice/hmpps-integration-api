@@ -31,6 +31,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonA
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiAddress
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiAssessmentSummary
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiBooking
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiEvents
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiImageDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiInmateDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiLiveRoll
@@ -47,6 +48,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonA
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.visits.VisitBalances
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
+import java.time.LocalDateTime
 
 @Component
 class PrisonApiGateway(
@@ -1083,6 +1085,34 @@ class PrisonApiGateway(
       prisonApiRestClient.get(
         "/api/v1/prison/$prisonId/live_roll",
         PrisonApiLiveRoll::class,
+        authenticationHeader(requestContext),
+      )
+
+    return if (result.errors.isEmpty()) {
+      Response(data = result.data)
+    } else {
+      Response.error(UpstreamApi.PRISON_API, result.errors, null)
+    }
+  }
+
+  fun getEvents(
+    prisonId: String,
+    nomisNumber: String?,
+    eventType: String?,
+    fromDateTime: LocalDateTime,
+    limit: Int?,
+    requestContext: RequestContext,
+  ): Response<PrisonApiEvents?> {
+    val urlParameters =
+      "?prison_id=$prisonId&from_datetime=$fromDateTime" +
+        (nomisNumber?.let { "&offender_id=$nomisNumber" } ?: "") +
+        (eventType?.let { "&event_type=$eventType" } ?: "") +
+        (limit?.let { "&limit=$limit" } ?: "")
+
+    val result =
+      prisonApiRestClient.get(
+        "/api/v1/offenders/events$urlParameters",
+        PrisonApiEvents::class,
         authenticationHeader(requestContext),
       )
 

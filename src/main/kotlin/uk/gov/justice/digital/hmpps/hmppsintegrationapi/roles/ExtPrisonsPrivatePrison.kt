@@ -32,6 +32,7 @@ val extPrisonsPrivatePrison =
       -"/v1/persons/{hmppsId}/images/{id}"
       -"/v1/prison/prisoners"
       -"/v1/prison/prisoners/{hmppsId}"
+      -"/v1/prison/{prisonId}/events"
       -"/v1/prison/{prisonId}/prisoners/{hmppsId}/balances"
       -"/v1/prison/{prisonId}/prisoners/{hmppsId}/accounts/{accountCode}/balances"
       -"/v1/prison/{prisonId}/prisoners/{hmppsId}/accounts/{accountCode}/transactions"
