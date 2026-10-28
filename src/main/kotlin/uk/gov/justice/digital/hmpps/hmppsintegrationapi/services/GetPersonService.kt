@@ -326,7 +326,6 @@ class GetPersonService(
       } else {
         SupervisionStatus.NONE
       }
-
     logger.info("Supervision status of $supervisionStatus has been found for hmppsId $hmppsId")
     return supervisionStatus
   }

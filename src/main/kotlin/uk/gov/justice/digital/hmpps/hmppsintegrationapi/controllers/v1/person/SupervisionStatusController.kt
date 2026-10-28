@@ -30,7 +30,7 @@ class SupervisionStatusController(
   @GetMapping("{hmppsId}/supervision-status")
   @Operation(
     summary = "Returns a persons supervision status.",
-    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    description = "The offenders supervision status will be either PRISONS, PROBATION, UNKNOWN or NONE<br /><b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a supervision status for a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "400", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
