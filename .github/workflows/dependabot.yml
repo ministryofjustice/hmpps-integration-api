@@ -17,6 +17,6 @@ jobs:
           app-id: ${{ secrets.BOT_APP_ID }}
           private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
 
-      - uses: ministryofjustice/hmpps-probation-integration-services/.github/actions/dependabot-automerge@292d5ffcd08c71a81ee363f05a21d8ba5f0406a1 # main
+      - uses: ministryofjustice/hmpps-probation-integration-services/.github/actions/dependabot-automerge@6994e38af1bb43bb2704ac7989b4914c67a63d65 # main
         with:
           token: ${{ steps.app-token.outputs.token }}
