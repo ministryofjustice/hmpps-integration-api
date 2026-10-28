@@ -1,0 +1,9 @@
+{
+  "data": {
+    "supervisionStatus": "PROBATION",
+    "probationProvider": {
+      "code": "PROV1",
+      "description": "Provider Description"
+    }
+  }
+}
