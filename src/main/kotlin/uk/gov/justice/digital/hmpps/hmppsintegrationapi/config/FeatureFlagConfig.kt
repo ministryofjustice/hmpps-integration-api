@@ -44,6 +44,7 @@ data class FeatureFlagConfig(
     const val OBO_PASS_USERNAME_TO_AUTH = "obo-pass-username-to-auth"
     const val OBO_VERIFY_USERNAME = "obo-verify-username"
     const val OBO_DELIUS_USER_LAO_CHECK = "obo-delius-user-lao-check"
+    const val CHECK_NDELIUS_WHEN_NO_CVL_LICENCES = "check-ndelius-when-no-cvl-licences"
 
     // Events feature flags
     const val ENABLE_DELETE_PROCESSED_EVENTS = "enable-delete-processed-events"

@@ -90,6 +90,7 @@ feature-flag:
   obo-pass-username-to-auth: false
   obo-verify-username: false # Disabling required for smoke test
   obo-delius-user-lao-check: true
+  check-ndelius-when-no-cvl-licences: true
   # Events Config
   enable-delete-processed-events: true
   enable-publish-pending-events: true
