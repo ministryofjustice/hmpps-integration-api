@@ -17,6 +17,7 @@ class GetOffencesForPersonService(
 ) {
   fun execute(
     hmppsId: String,
+    convictionsOnly: Boolean,
     requestContext: RequestContext?,
   ): Response<List<Offence>> {
     val personResponse: Response<Person?>
@@ -29,7 +30,7 @@ class GetOffencesForPersonService(
     if (filters?.hasPrisonFilter() == true) {
       personResponse = getPersonService.getPersonWithPrisonFilter(hmppsId, filters)
       nomisNumber = personResponse.data?.identifiers?.nomisNumber ?: return Response(data = emptyList(), errors = personResponse.errors)
-      nomisOffences = prisonApiGateway.getOffencesForPerson(nomisNumber, requestContext)
+      nomisOffences = prisonApiGateway.getOffencesForPerson(nomisNumber, convictionsOnly, requestContext)
 
       return Response(
         data = nomisOffences.data,
@@ -41,7 +42,7 @@ class GetOffencesForPersonService(
       val deliusCrn = personResponse.data?.identifiers?.deliusCrn
 
       if (nomisNumber != null && (filters == null || filters.canAccessPrisons())) {
-        nomisOffences = prisonApiGateway.getOffencesForPerson(nomisNumber, requestContext)
+        nomisOffences = prisonApiGateway.getOffencesForPerson(nomisNumber, convictionsOnly, requestContext)
       }
 
       if (deliusCrn != null && (filters == null || filters.canAccessProbation())) {

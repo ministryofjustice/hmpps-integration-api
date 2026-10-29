@@ -45,7 +45,7 @@ class GetOffencesForPersonTest(
     {
       val nomisApiMockServer = ApiMockServer.create(UpstreamApi.PRISON_API)
       val offenderNo = "zyx987"
-      val offenceHistoryPath = "/api/bookings/offenderNo/$offenderNo/offenceHistory"
+      val offenceHistoryPath = "/api/bookings/offenderNo/$offenderNo/offenceHistory?convictionsOnly=true"
       val requestContext = buildRequestContext("testUser")
       val responseJson =
         """
@@ -85,13 +85,13 @@ class GetOffencesForPersonTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        prisonApiGateway.getOffencesForPerson(offenderNo, requestContext)
+        prisonApiGateway.getOffencesForPerson(offenderNo, true, requestContext)
 
         verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS", requestContext)
       }
 
       it("returns offence history for the matching person ID") {
-        val response = prisonApiGateway.getOffencesForPerson(offenderNo, requestContext)
+        val response = prisonApiGateway.getOffencesForPerson(offenderNo, true, requestContext)
 
         response.data.count().shouldBeGreaterThan(0)
       }
@@ -99,7 +99,7 @@ class GetOffencesForPersonTest(
       it("returns a person with an empty list of offences when no offences are found") {
         nomisApiMockServer.stubForGet(offenceHistoryPath, "[]")
 
-        val response = prisonApiGateway.getOffencesForPerson(offenderNo, requestContext)
+        val response = prisonApiGateway.getOffencesForPerson(offenderNo, true, requestContext)
 
         response.data.shouldBeEmpty()
       }
@@ -107,7 +107,7 @@ class GetOffencesForPersonTest(
       it("returns an error when 404 Not Found is returned because no person is found") {
         nomisApiMockServer.stubForGet(offenceHistoryPath, "", HttpStatus.NOT_FOUND)
 
-        val response = prisonApiGateway.getOffencesForPerson(offenderNo, requestContext)
+        val response = prisonApiGateway.getOffencesForPerson(offenderNo, true, requestContext)
 
         response.errors.shouldHaveSize(1)
         response.errors
@@ -144,7 +144,7 @@ class GetOffencesForPersonTest(
         gateway.hmppsAuthGateway = authGateway
 
         // When
-        val response = gateway.getOffencesForPerson(offenderNo, requestContext)
+        val response = gateway.getOffencesForPerson(offenderNo, true, requestContext)
 
         // Then
         response.data.count().shouldBeGreaterThan(0)

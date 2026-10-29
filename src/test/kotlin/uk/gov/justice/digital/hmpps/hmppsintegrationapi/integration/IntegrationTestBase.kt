@@ -732,7 +732,7 @@ abstract class IntegrationTestBase {
       )
 
       prisonApiServer.stubForGet(
-        "/api/bookings/offenderNo/$nomsId/offenceHistory",
+        "/api/bookings/offenderNo/$nomsId/offenceHistory?convictionsOnly=true",
         File(
           "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/nomis/fixtures/PersonOffences.json",
         ).readText(),
