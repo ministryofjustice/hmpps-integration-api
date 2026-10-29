@@ -5,15 +5,15 @@
     "licences": [
       {
         "status": "IN_NDELIUS_ONLY",
-        "typeCode": "LAP",
+        "typeCode": "AP",
         "createdDate": "2024-06-14T00:00",
         "approvedDate": "2024-06-14T00:00",
         "updatedDate": "2024-06-14T00:00",
         "conditions": [
           {
-            "type": "Licence - Accredited Programme",
-            "code": "LAP",
-            "category": "LC54",
+            "type": "Bespoke",
+            "code": "LC54",
+            "category": "Licence - Accredited Programme",
             "condition": "Aggression Replacement Training"
           }
         ]
@@ -21,3 +21,4 @@
     ]
   }
 }
+

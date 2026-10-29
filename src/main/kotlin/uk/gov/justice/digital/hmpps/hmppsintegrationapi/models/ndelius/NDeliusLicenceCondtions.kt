@@ -15,16 +15,16 @@ data class NDeliusLicenceConditions(
           id = sentence.eventNumber?.toString() ?: "",
           offenderNumber = crn,
           status = "IN_NDELIUS_ONLY",
-          typeCode = lc.mainCategory?.code,
+          typeCode = "AP",
           createdDate = lc.createdDate?.atStartOfDay().toString(),
           updatedDate = lc.updatedDate?.atStartOfDay().toString(),
           approvedDate = lc.createdDate?.atStartOfDay().toString(),
           conditions =
             listOf(
               LicenceCondition(
-                type = lc.mainCategory?.description,
-                code = lc.mainCategory?.code,
-                category = lc.subCategory?.code,
+                type = "Bespoke",
+                code = lc.subCategory?.code,
+                category = lc.mainCategory?.description,
                 condition = lc.subCategory?.description,
               ),
             ),
