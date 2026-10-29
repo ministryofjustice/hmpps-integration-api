@@ -147,6 +147,7 @@ feature-flag:
   obo-pass-username-to-auth: true
   obo-verify-username: true
   obo-delius-user-lao-check: true
+  check-ndelius-when-no-cvl-licences: true
   # Events Config
   enable-delete-processed-events: true
   enable-publish-pending-events: true

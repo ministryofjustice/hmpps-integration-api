@@ -1,0 +1,23 @@
+{
+  "data": {
+    "hmppsId": "G2996UX",
+    "offenderNumber": "G2996UX",
+    "licences": [
+      {
+        "status": "IN_NDELIUS_ONLY",
+        "typeCode": "LAP",
+        "createdDate": "2024-06-14T00:00",
+        "approvedDate": "2024-06-14T00:00",
+        "updatedDate": "2024-06-14T00:00",
+        "conditions": [
+          {
+            "type": "Licence - Accredited Programme",
+            "code": "LAP",
+            "category": "LC54",
+            "condition": "Aggression Replacement Training"
+          }
+        ]
+      }
+    ]
+  }
+}

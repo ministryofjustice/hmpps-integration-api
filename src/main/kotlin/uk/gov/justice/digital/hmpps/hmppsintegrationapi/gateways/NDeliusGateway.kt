@@ -26,6 +26,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusContactEvent
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusContactEvents
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusLicenceConditions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusSupervisions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.UserAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.person.PersonExists
@@ -489,6 +490,29 @@ class NDeliusGateway(
 
       is WebClientWrapperResponse.Error -> {
         PersonExists(crn, false)
+      }
+    }
+  }
+
+  fun getLicenceConditionsForPerson(
+    crn: String,
+    requestContext: RequestContext? = null,
+  ): Response<NDeliusLicenceConditions?> {
+    val result =
+      webClient.request<NDeliusLicenceConditions>(
+        HttpMethod.GET,
+        "/case/$crn/licence-conditions",
+        authenticationHeader(requestContext),
+        UpstreamApi.NDELIUS,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(result.data)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(null, result.errors)
       }
     }
   }
