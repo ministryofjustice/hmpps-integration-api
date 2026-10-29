@@ -58,30 +58,6 @@ class GetLicenceCondionsForPersonTest(
               ),
             ),
         )
-    /*
-    {
-  "sentences": [
-    {
-      "eventNumber": 3,
-      "licenceConditions": [
-        {
-          "mainCategory": {
-            "code": "LAP",
-            "description": "Licence - Accredited Programme"
-          },
-          "subCategory": {
-            "code": "LC54",
-            "description": "Aggression Replacement Training"
-          },
-          "createdDate": "2024-06-14",
-          "updatedDate": "2024-06-14"
-        }
-      ]
-    }
-  ]
-}
-
-     */
 
       beforeEach {
         nDeliusMockServer.start()
