@@ -1,16 +1,62 @@
 {
   "sentences": [
     {
+      "eventNumber": 1,
+      "licenceConditions": [
+        {
+          "mainCategory": {
+            "code": "LAP1",
+            "description": "Licence - Accredited Programme 1"
+          },
+          "subCategory": {
+            "code": "LC541",
+            "description": "Aggression Replacement Training 1"
+          },
+          "createdDate": "2024-06-14",
+          "updatedDate": "2024-06-14"
+        }
+      ]
+    },
+    {
+      "eventNumber": 2,
+      "licenceConditions": [
+        {
+          "mainCategory": {
+            "code": "LAP2",
+            "description": "Licence - Accredited Programme 2"
+          },
+          "subCategory": {
+            "code": "LC542",
+            "description": "Aggression Replacement Training"
+          },
+          "createdDate": "2024-06-14",
+          "updatedDate": "2024-06-14"
+        },
+        {
+          "mainCategory": {
+            "code": "LAP3",
+            "description": "Licence - Accredited Programme 3"
+          },
+          "subCategory": {
+            "code": "LC543",
+            "description": "Aggression Replacement Training 3"
+          },
+          "createdDate": "2024-06-14",
+          "updatedDate": "2024-06-14"
+        }
+      ]
+    },
+    {
       "eventNumber": 3,
       "licenceConditions": [
         {
           "mainCategory": {
-            "code": "LAP",
-            "description": "Licence - Accredited Programme"
+            "code": "LAP4",
+            "description": "Licence - Accredited Programme 4"
           },
           "subCategory": {
             "code": "LC54",
-            "description": "Aggression Replacement Training"
+            "description": "Aggression Replacement Training 4"
           },
           "createdDate": "2024-06-14",
           "updatedDate": "2024-06-14"

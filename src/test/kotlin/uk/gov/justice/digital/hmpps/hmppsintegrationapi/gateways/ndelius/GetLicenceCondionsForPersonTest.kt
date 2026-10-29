@@ -11,6 +11,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.defaultObjectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
@@ -18,12 +19,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusLicenceCategory
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusLicenceCondition
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusLicenceConditions
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusSentenceLicenceCondition
 import java.io.File
-import java.time.LocalDate
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -41,22 +38,11 @@ class GetLicenceCondionsForPersonTest(
       val requestContext = buildRequestContext("testUser")
 
       val expected =
-        NDeliusLicenceConditions(
-          sentences =
-            listOf(
-              NDeliusSentenceLicenceCondition(
-                eventNumber = 3,
-                licenceConditions =
-                  listOf(
-                    NDeliusLicenceCondition(
-                      mainCategory = NDeliusLicenceCategory("LAP", "Licence - Accredited Programme"),
-                      subCategory = NDeliusLicenceCategory("LC54", "Aggression Replacement Training"),
-                      createdDate = LocalDate.of(2024, 6, 14),
-                      updatedDate = LocalDate.of(2024, 6, 14),
-                    ),
-                  ),
-              ),
-            ),
+        defaultObjectMapper.readValue(
+          File(
+            "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/ndelius/fixtures/LicenceConditionsResponse.json",
+          ).readText(),
+          NDeliusLicenceConditions::class.java,
         )
 
       beforeEach {
