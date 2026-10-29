@@ -95,11 +95,12 @@ class OffencesController(
   )
   fun getPersonOffences(
     @Parameter(description = "The HMPPS ID of the person", example = "G2996UX") @PathVariable hmppsId: String,
+    @Parameter(description = "Return only convicted offences") @RequestParam(required = false, defaultValue = "true", name = "convictionsOnly") convictionsOnly: Boolean,
     @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
     @RequestAttribute requestContext: RequestContext?,
   ): PaginatedResponse<Offence> {
-    val response = getOffencesForPersonService.execute(hmppsId, requestContext)
+    val response = getOffencesForPersonService.execute(hmppsId, convictionsOnly, requestContext)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")

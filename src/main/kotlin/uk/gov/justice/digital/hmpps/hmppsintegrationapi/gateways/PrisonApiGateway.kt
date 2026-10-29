@@ -207,16 +207,17 @@ class PrisonApiGateway(
 
   fun getOffencesForPerson(
     id: String,
+    convictionsOnly: Boolean,
     requestContext: RequestContext? = null,
   ): Response<List<Offence>> {
     if (useRestApiClient(requestContext)) {
-      return getOffencesForPerson2(id, requestContext)
+      return getOffencesForPerson2(id, convictionsOnly, requestContext)
     }
 
     val result =
       webClient.requestList<PrisonApiOffenceHistoryDetail>(
         HttpMethod.GET,
-        "/api/bookings/offenderNo/$id/offenceHistory",
+        "/api/bookings/offenderNo/$id/offenceHistory?convictionsOnly=$convictionsOnly",
         authenticationHeader(requestContext),
         UpstreamApi.PRISON_API,
       )
@@ -235,11 +236,12 @@ class PrisonApiGateway(
 
   fun getOffencesForPerson2(
     id: String,
+    convictionsOnly: Boolean,
     requestContext: RequestContext? = null,
   ): Response<List<Offence>> {
     val result =
       prisonApiRestClient.getList(
-        "/api/bookings/offenderNo/$id/offenceHistory",
+        "/api/bookings/offenderNo/$id/offenceHistory?convictionsOnly=$convictionsOnly",
         PrisonApiOffenceHistoryDetail::class,
         authenticationHeader(requestContext),
       )
