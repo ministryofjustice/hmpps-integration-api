@@ -12,13 +12,57 @@
         "conditions": [
           {
             "type": "Bespoke",
-            "code": "LC54",
-            "category": "Licence - Accredited Programme",
+            "code": "LC541",
+            "category": "Licence - Accredited Programme 1",
+            "condition": "Aggression Replacement Training 1"
+          }
+        ]
+      },
+      {
+        "status": "IN_NDELIUS_ONLY",
+        "typeCode": "AP",
+        "createdDate": "2024-06-14T00:00",
+        "approvedDate": "2024-06-14T00:00",
+        "updatedDate": "2024-06-14T00:00",
+        "conditions": [
+          {
+            "type": "Bespoke",
+            "code": "LC542",
+            "category": "Licence - Accredited Programme 2",
             "condition": "Aggression Replacement Training"
+          }
+        ]
+      },
+      {
+        "status": "IN_NDELIUS_ONLY",
+        "typeCode": "AP",
+        "createdDate": "2024-06-14T00:00",
+        "approvedDate": "2024-06-14T00:00",
+        "updatedDate": "2024-06-14T00:00",
+        "conditions": [
+          {
+            "type": "Bespoke",
+            "code": "LC543",
+            "category": "Licence - Accredited Programme 3",
+            "condition": "Aggression Replacement Training 3"
+          }
+        ]
+      },
+      {
+        "status": "IN_NDELIUS_ONLY",
+        "typeCode": "AP",
+        "createdDate": "2024-06-14T00:00",
+        "approvedDate": "2024-06-14T00:00",
+        "updatedDate": "2024-06-14T00:00",
+        "conditions": [
+          {
+            "type": "Bespoke",
+            "code": "LC54",
+            "category": "Licence - Accredited Programme 4",
+            "condition": "Aggression Replacement Training 4"
           }
         ]
       }
     ]
   }
 }
-
