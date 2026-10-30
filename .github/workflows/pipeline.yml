@@ -23,6 +23,25 @@ jobs:
     name: Test
     uses: ./.github/workflows/test.yml
     secrets: inherit
+  app_version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.app_version.outputs.version }}
+    steps:
+      - id: app_version
+        name: Application version creators
+        uses: ministryofjustice/hmpps-github-shared-actions/.github/actions/build-test-and-deploy/create_app_version@90bdfa991e9944e4997eba4c1f2709d21ec807ea # v1
+  gradle_assemble:
+    name: Validate the kotlin
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/gradle_verify.yml@v2 # WORKFLOW_VERSION
+    secrets: inherit
+    with:
+      gradle-command: 'BUILD_NUMBER=${{ needs.app_version.outputs.version}} ./gradlew assemble'
+      upload-build-artifacts: true
+      upload-test-artifacts: false
+      java-version: "25"
+    needs:
+      - app_version
   build:
     name: Build docker image from hmpps-github-actions
     if: github.ref == 'refs/heads/main'
@@ -33,6 +52,8 @@ jobs:
       additional_docker_tag: ${{ inputs.additional_docker_tag }}
       push: ${{ inputs.push || true }}
       docker_multiplatform: false
+    needs:
+      - gradle_assemble
   deploy_dev:
     concurrency:
       # Only 1 job can deploy to dev at a time
@@ -53,43 +74,43 @@ jobs:
     secrets: inherit
     needs:
       - deploy_dev
-  deploy_preprod:
-    concurrency:
-      # Only 1 job can deploy to preprod at a time
-      group: hmpps-external-api-preprod
-      cancel-in-progress: false
-    name: Deploy to pre-production environment
-    needs:
-      - build
-      - dev-smoke-tests
-    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
-    secrets: inherit
-    with:
-      environment: 'preprod'
-      app_version: '${{ needs.build.outputs.app_version }}'
-      slack_notification: 'true' # if 'true', it needs a valid NONPROD_RELEASES_SLACK_CHANNEL variable to be set
-  preprod-smoke-tests:
-    uses: ./.github/workflows/smoke-test-preprod.yml
-    secrets: inherit
-    needs:
-      - deploy_preprod
-  deploy_prod:
-    concurrency:
-      # Only 1 job can deploy to prod at a time
-      group: hmpps-external-api-prod
-      cancel-in-progress: false
-    name: Deploy to production environment
-    needs:
-      - build
-      - dev-smoke-tests
-    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
-    secrets: inherit
-    with:
-      environment: 'prod'
-      app_version: '${{ needs.build.outputs.app_version }}'
-      slack_notification: 'true' # if 'true', it needs a valid PROD_RELEASES_SLACK_CHANNEL variable to be set
-  prod-smoke-tests:
-    uses: ./.github/workflows/smoke-test-prod.yml
-    secrets: inherit
-    needs:
-      - deploy_prod
+#  deploy_preprod:
+#    concurrency:
+#      # Only 1 job can deploy to preprod at a time
+#      group: hmpps-external-api-preprod
+#      cancel-in-progress: false
+#    name: Deploy to pre-production environment
+#    needs:
+#      - build
+#      - dev-smoke-tests
+#    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
+#    secrets: inherit
+#    with:
+#      environment: 'preprod'
+#      app_version: '${{ needs.build.outputs.app_version }}'
+#      slack_notification: 'true' # if 'true', it needs a valid NONPROD_RELEASES_SLACK_CHANNEL variable to be set
+#  preprod-smoke-tests:
+#    uses: ./.github/workflows/smoke-test-preprod.yml
+#    secrets: inherit
+#    needs:
+#      - deploy_preprod
+#  deploy_prod:
+#    concurrency:
+#      # Only 1 job can deploy to prod at a time
+#      group: hmpps-external-api-prod
+#      cancel-in-progress: false
+#    name: Deploy to production environment
+#    needs:
+#      - build
+#      - dev-smoke-tests
+#    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
+#    secrets: inherit
+#    with:
+#      environment: 'prod'
+#      app_version: '${{ needs.build.outputs.app_version }}'
+#      slack_notification: 'true' # if 'true', it needs a valid PROD_RELEASES_SLACK_CHANNEL variable to be set
+#  prod-smoke-tests:
+#    uses: ./.github/workflows/smoke-test-prod.yml
+#    secrets: inherit
+#    needs:
+#      - deploy_prod
