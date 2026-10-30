@@ -23,6 +23,25 @@ jobs:
     name: Test
     uses: ./.github/workflows/test.yml
     secrets: inherit
+  app_version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.app_version.outputs.version }}
+    steps:
+      - id: app_version
+        name: Application version creators
+        uses: ministryofjustice/hmpps-github-shared-actions/.github/actions/build-test-and-deploy/create_app_version@90bdfa991e9944e4997eba4c1f2709d21ec807ea # v1
+  gradle_assemble:
+    name: Validate the kotlin
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/gradle_verify.yml@v2 # WORKFLOW_VERSION
+    secrets: inherit
+    with:
+      gradle-command: 'BUILD_NUMBER=${{ needs.app_version.outputs.version}} ./gradlew assemble'
+      upload-build-artifacts: true
+      upload-test-artifacts: false
+      java-version: "25"
+    needs:
+      - app_version
   build:
     name: Build docker image from hmpps-github-actions
     if: github.ref == 'refs/heads/main'
@@ -33,6 +52,9 @@ jobs:
       additional_docker_tag: ${{ inputs.additional_docker_tag }}
       push: ${{ inputs.push || true }}
       docker_multiplatform: false
+      download_build_artifacts: true
+    needs:
+      - gradle_assemble
   deploy_dev:
     concurrency:
       # Only 1 job can deploy to dev at a time
