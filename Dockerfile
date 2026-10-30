@@ -22,5 +22,3 @@ COPY --from=builder --chown=appuser:appgroup /builder/extracted/snapshot-depende
 COPY --from=builder --chown=appuser:appgroup /builder/extracted/application/ ./
 
 ENTRYPOINT ["java", "-XX:+ExitOnOutOfMemoryError", "-XX:+AlwaysActAsServerClassMachine", "-javaagent:agent.jar", "-jar", "app.jar"]
-
-ENTRYPOINT ["java", "-XX:+ExitOnOutOfMemoryError", "-XX:+AlwaysActAsServerClassMachine", "-javaagent:agent.jar", "-jar", "app.jar"]
