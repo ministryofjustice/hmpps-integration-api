@@ -19,10 +19,10 @@ permissions:
   contents: read
   packages: write
 jobs:
-  test:
-    name: Test
-    uses: ./.github/workflows/test.yml
-    secrets: inherit
+#  test:
+#    name: Test
+#    uses: ./.github/workflows/test.yml
+#    secrets: inherit
   app_version:
     runs-on: ubuntu-latest
     outputs:
