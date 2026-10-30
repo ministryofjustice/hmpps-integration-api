@@ -53,6 +53,7 @@ jobs:
       additional_docker_tag: ${{ inputs.additional_docker_tag }}
       push: ${{ inputs.push || true }}
       docker_multiplatform: false
+      download_build_artifacts: true
     needs:
       - gradle_assemble
   deploy_dev:
