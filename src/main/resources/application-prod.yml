@@ -90,7 +90,7 @@ feature-flag:
   prison-role-check-enabled: true
   obo-caseload-filter-enabled: true
   obo-pass-username-to-auth: false
-  obo-verify-username: true
+  obo-verify-username: false
   obo-delius-user-lao-check: true
   check-ndelius-when-no-cvl-licences: false
   # Events Config
