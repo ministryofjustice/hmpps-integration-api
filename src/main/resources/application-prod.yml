@@ -91,7 +91,7 @@ feature-flag:
   obo-caseload-filter-enabled: true
   obo-pass-username-to-auth: false
   obo-verify-username: false
-  obo-delius-user-lao-check: true
+  obo-delius-user-lao-check: false
   check-ndelius-when-no-cvl-licences: false
   # Events Config
   enable-delete-processed-events: true
