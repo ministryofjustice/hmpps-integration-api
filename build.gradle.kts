@@ -47,7 +47,7 @@ dependencies {
     exclude("org.springframework.security", "spring-security-web")
   }
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.1")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.12.0")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
   implementation("io.jsonwebtoken:jjwt-api:0.13.0")
   implementation("com.jayway.jsonpath:json-path:3.0.0")
