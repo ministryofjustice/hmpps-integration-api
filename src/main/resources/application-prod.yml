@@ -64,7 +64,7 @@ services:
   tier:
     base-url: https://hmpps-tier.hmpps.service.justice.gov.uk
   probation-access:
-    base-url: https://probation-access-control-prod.hmpps.service.justice.gov.uk
+    base-url: https://probation-access-control.hmpps.service.justice.gov.uk
 
 feature-flag:
   # API Config
