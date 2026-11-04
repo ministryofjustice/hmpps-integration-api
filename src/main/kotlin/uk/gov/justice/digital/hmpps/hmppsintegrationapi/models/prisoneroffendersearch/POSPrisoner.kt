@@ -54,6 +54,7 @@ data class POSPrisoner(
   val legalStatus: String? = null,
   val imprisonmentStatus: String? = null,
   val imprisonmentStatusDescription: String? = null,
+  val locationDescription: String? = null,
 ) {
   fun toPerson(): Person =
     Person(
@@ -101,6 +102,7 @@ data class POSPrisoner(
       legalStatus = this.legalStatus,
       imprisonmentStatus = this.imprisonmentStatus,
       imprisonmentStatusDescription = this.imprisonmentStatusDescription,
+      locationDescription = this.locationDescription,
     )
 
   fun toLiveRoll(): PersonInPrison =
