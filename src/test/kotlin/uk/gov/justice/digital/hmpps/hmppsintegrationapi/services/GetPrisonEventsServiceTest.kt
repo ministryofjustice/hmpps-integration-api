@@ -43,7 +43,7 @@ internal class GetPrisonEventsServiceTest(
               noms_id = "A1417AE",
               prison_id = "BMI",
               timestamp = "2016-10-21 15:55:06.284",
-              eventData = "string",
+              balance_update = mapOf("account" to mapOf("code" to "SPND", "desc" to "Spends"), "balance" to 1055.69),
             ),
           ),
         )
@@ -74,9 +74,14 @@ internal class GetPrisonEventsServiceTest(
         response.data.events[0]
           .timestamp
           .shouldBe("2016-10-21T14:55:06.284Z")
-        response.data.events[0]
-          .eventData
-          .shouldBe("string")
+        val balanceUpdate =
+          response.data
+            ?.events[0]
+            ?.balance_update!!
+        val balanceUpdateAccount = balanceUpdate["account"] as Map<*, *>
+        balanceUpdateAccount["code"] shouldBe ("SPND")
+        balanceUpdateAccount["desc"] shouldBe ("Spends")
+        balanceUpdate["balance"] shouldBe (1055.69)
       }
 
       it("will return 200 and a list of events with valid hmpps id") {
@@ -104,9 +109,14 @@ internal class GetPrisonEventsServiceTest(
         response.data.events[0]
           .timestamp
           .shouldBe("2016-10-21T14:55:06.284Z")
-        response.data.events[0]
-          .eventData
-          .shouldBe("string")
+        val balanceUpdate =
+          response.data
+            ?.events[0]
+            ?.balance_update!!
+        val balanceUpdateAccount = balanceUpdate["account"] as Map<*, *>
+        balanceUpdateAccount["code"] shouldBe ("SPND")
+        balanceUpdateAccount["desc"] shouldBe ("Spends")
+        balanceUpdate["balance"] shouldBe (1055.69)
       }
 
       it("will return 404 with invalid hmpps id") {

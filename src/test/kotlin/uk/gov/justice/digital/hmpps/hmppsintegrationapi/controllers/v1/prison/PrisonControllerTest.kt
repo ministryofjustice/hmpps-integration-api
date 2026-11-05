@@ -1043,7 +1043,7 @@ internal class PrisonControllerTest(
                 noms_id = "A1417AE",
                 prison_id = "BMI",
                 timestamp = "2016-10-21T14:55:06.284Z",
-                eventData = "string",
+                balance_update = mapOf("account" to mapOf("code" to "SPND", "desc" to "Spends"), "balance" to 1055.69),
               ),
             ),
           )
