@@ -131,6 +131,7 @@ internal class PrisonControllerTest(
                   legalStatus = "SENTENCED",
                   imprisonmentStatus = "LIFE",
                   imprisonmentStatusDescription = "Serving Life Imprisonment",
+                  locationDescription = "Outside - released from Leeds",
                 ),
             ),
           )
@@ -166,7 +167,8 @@ internal class PrisonControllerTest(
               "mostSeriousOffence": "Robbery",
               "legalStatus": "SENTENCED",
               "imprisonmentStatus": "LIFE",
-              "imprisonmentStatusDescription": "Serving Life Imprisonment"
+              "imprisonmentStatusDescription": "Serving Life Imprisonment",
+              "locationDescription": "Outside - released from Leeds"
             }
           }
           """.removeWhitespaceAndNewlines(),

@@ -52,4 +52,6 @@ data class PersonInPrison(
   val imprisonmentStatus: String? = null,
   @Schema(description = "The prisoners imprisonment status description", example = "Serving Life Imprisonment")
   val imprisonmentStatusDescription: String? = null,
+  @Schema(description = "Description of the location", example = "Outside - released from Leeds")
+  val locationDescription: String? = null,
 )

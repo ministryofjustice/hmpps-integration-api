@@ -36,7 +36,8 @@
       "mostSeriousOffence": "Robbery",
       "legalStatus": "SENTENCED",
       "imprisonmentStatus": "LIFE",
-      "imprisonmentStatusDescription": "Serving Life Imprisonment"
+      "imprisonmentStatusDescription": "Serving Life Imprisonment",
+      "locationDescription": null
     },
     {
       "firstName": "Robert",
@@ -74,7 +75,8 @@
       "mostSeriousOffence": "Robbery",
       "legalStatus": "SENTENCED",
       "imprisonmentStatus": "LIFE",
-      "imprisonmentStatusDescription": "Serving Life Imprisonment"
+      "imprisonmentStatusDescription": "Serving Life Imprisonment",
+      "locationDescription": null
     }
   ],
   "pagination": {

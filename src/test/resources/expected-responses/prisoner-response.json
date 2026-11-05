@@ -35,6 +35,7 @@
     "mostSeriousOffence": "Robbery",
     "legalStatus": "SENTENCED",
     "imprisonmentStatus": "LIFE",
-    "imprisonmentStatusDescription": "Serving Life Imprisonment"
+    "imprisonmentStatusDescription": "Serving Life Imprisonment",
+    "locationDescription": "Outside - released from Leeds"
   }
 }
