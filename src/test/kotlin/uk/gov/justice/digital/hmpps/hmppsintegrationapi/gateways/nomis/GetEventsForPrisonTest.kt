@@ -89,7 +89,7 @@ class GetEventsForPrisonTest(
         response.data
           ?.events[0]
           ?.type
-          .shouldBe("IEP_CHANGED")
+          .shouldBe("BALANCE_UPDATE")
         response.data
           ?.events[0]
           ?.id
@@ -106,10 +106,15 @@ class GetEventsForPrisonTest(
           ?.events[0]
           ?.timestamp
           .shouldBe("2016-10-21 15:55:06.284")
-        response.data
-          ?.events[0]
-          ?.eventData
-          .shouldBe("string")
+
+        val balanceUpdate =
+          response.data
+            ?.events[0]
+            ?.balance_update!!
+        val balanceUpdateAccount = balanceUpdate["account"] as Map<*, *>
+        balanceUpdateAccount["code"] shouldBe ("SPND")
+        balanceUpdateAccount["desc"] shouldBe ("Spends")
+        balanceUpdate["balance"] shouldBe (1055.69)
       }
 
       it("returns an error when 404 Not Found is returned because no events are found with no extra optional parameters") {
@@ -193,7 +198,7 @@ class GetEventsForPrisonTest(
         response.data
           ?.events[0]
           ?.type
-          .shouldBe("IEP_CHANGED")
+          .shouldBe("BALANCE_UPDATE")
         response.data
           ?.events[0]
           ?.id
@@ -210,10 +215,14 @@ class GetEventsForPrisonTest(
           ?.events[0]
           ?.timestamp
           .shouldBe("2016-10-21 15:55:06.284")
-        response.data
-          ?.events[0]
-          ?.eventData
-          .shouldBe("string")
+        val balanceUpdate =
+          response.data
+            ?.events[0]
+            ?.balance_update!!
+        val balanceUpdateAccount = balanceUpdate["account"] as Map<*, *>
+        balanceUpdateAccount["code"] shouldBe ("SPND")
+        balanceUpdateAccount["desc"] shouldBe ("Spends")
+        balanceUpdate["balance"] shouldBe (1055.69)
       }
 
       it("returns an error when 404 Not Found is returned because no events are found with extra optional parameters") {
