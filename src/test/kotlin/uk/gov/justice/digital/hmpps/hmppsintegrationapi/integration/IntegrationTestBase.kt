@@ -815,6 +815,13 @@ abstract class IntegrationTestBase {
         ).readText(),
       )
 
+      prisonApiServer.stubForGet(
+        "/api/v1/offenders/$nomsId/pss_detail",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/nomis/fixtures/PssDetailResponse.json",
+        ).readText(),
+      )
+
       createAndVaryLicenceServer.start()
 
       createAndVaryLicenceServer.stubForGet(

@@ -132,6 +132,7 @@ val roleConstants =
       -"/v1/prison/prisoners"
       -"/v1/prison/prisoners/{hmppsId}"
       -"/v1/prison/prisoners/{hmppsId}/activities/attendances"
+      -"/v1/prison/prisoners/{hmppsId}/pss-detail"
       -"/v1/prison/{prisonId}/activities"
       -"/v1/prison/{prisonId}/appointments/search"
       -"/v1/prison/{prisonId}/capacity"

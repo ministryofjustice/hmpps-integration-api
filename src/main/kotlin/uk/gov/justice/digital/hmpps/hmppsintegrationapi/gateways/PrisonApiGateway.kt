@@ -39,6 +39,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonA
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiOffenceHistoryDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiOffenderSentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiPrisonTimeline
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiPssDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiReasonableAdjustments
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiReferenceCode
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiScheduledEvents
@@ -1114,6 +1115,24 @@ class PrisonApiGateway(
       prisonApiRestClient.get(
         "/api/v1/offenders/events$urlParameters",
         PrisonApiEvents::class,
+        authenticationHeader(requestContext),
+      )
+
+    return if (result.errors.isEmpty()) {
+      Response(data = result.data)
+    } else {
+      Response.error(UpstreamApi.PRISON_API, result.errors, null)
+    }
+  }
+
+  fun getPssDetail(
+    nomisId: String,
+    requestContext: RequestContext,
+  ): Response<PrisonApiPssDetail?> {
+    val result =
+      prisonApiRestClient.get(
+        "/api/v1/offenders/$nomisId/pss_detail",
+        PrisonApiPssDetail::class,
         authenticationHeader(requestContext),
       )
 
