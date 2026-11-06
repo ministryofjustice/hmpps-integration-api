@@ -33,8 +33,8 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-jdbc")
   runtimeOnly("org.springframework.boot:spring-boot-starter-flyway")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.12.0")
-  implementation("io.sentry:sentry-spring-boot-4-starter:8.61.1")
-  implementation("io.sentry:sentry-logback:8.61.1")
+  implementation("io.sentry:sentry-spring-boot-4-starter:8.62.0")
+  implementation("io.sentry:sentry-logback:8.62.0")
   implementation("org.springframework.data:spring-data-jdbc")
   implementation("org.springframework.data:spring-data-commons")
   implementation("org.springframework:spring-aop")
@@ -46,7 +46,7 @@ dependencies {
     exclude("org.springframework.security", "spring-security-crypto")
     exclude("org.springframework.security", "spring-security-web")
   }
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.1")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.2.0")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
   implementation("io.jsonwebtoken:jjwt-api:0.13.0")
@@ -83,7 +83,7 @@ dependencies {
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
   testImplementation(kotlin("test"))
   testImplementation("io.mockk:mockk:1.14.11")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:6.3.0")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:6.4.0")
 }
 
 java {
