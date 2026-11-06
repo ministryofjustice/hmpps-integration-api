@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
 import io.swagger.v3.oas.annotations.tags.Tags
 import jakarta.validation.ValidationException
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestAttribute
@@ -35,6 +34,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.interfaces.toPaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiEvents
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiLiveRoll
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiPssDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCapacityForPrisonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetLiveRollService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
@@ -46,6 +46,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersSer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetResidentialDetailsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetResidentialHierarchyService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitsService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.PrisonPssDetailService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
@@ -56,18 +57,19 @@ import java.time.format.DateTimeFormatter
 @RequestMapping("/v1/prison")
 @Tag(name = "Prison")
 class PrisonController(
-  @Autowired val getPrisonersService: GetPrisonersService,
-  @Autowired val getPersonService: GetPersonService,
-  @Autowired val getVisitsService: GetVisitsService,
-  @Autowired val getResidentialHierarchyService: GetResidentialHierarchyService,
-  @Autowired val getResidentialDetailsService: GetResidentialDetailsService,
-  @Autowired val getCapacityForPrisonService: GetCapacityForPrisonService,
-  @Autowired val auditService: AuditService,
-  @Autowired val getPrisonRegimeService: GetPrisonRegimeService,
-  @Autowired val getPrisonPayBandsService: GetPrisonPayBandsService,
-  @Autowired val getPrisonersByPrisonService: GetPrisonersByPrisonService,
-  @Autowired val getLiveRollService: GetLiveRollService,
-  @Autowired val getPrisonEventsService: GetPrisonEventsService,
+  private val getPrisonersService: GetPrisonersService,
+  private val getPersonService: GetPersonService,
+  private val getVisitsService: GetVisitsService,
+  private val getResidentialHierarchyService: GetResidentialHierarchyService,
+  private val getResidentialDetailsService: GetResidentialDetailsService,
+  private val getCapacityForPrisonService: GetCapacityForPrisonService,
+  private val auditService: AuditService,
+  private val getPrisonRegimeService: GetPrisonRegimeService,
+  private val getPrisonPayBandsService: GetPrisonPayBandsService,
+  private val getPrisonersByPrisonService: GetPrisonersByPrisonService,
+  private val getLiveRollService: GetLiveRollService,
+  private val getPrisonEventsService: GetPrisonEventsService,
+  private val prisonPssDetailService: PrisonPssDetailService,
 ) {
   @GetMapping("/prisoners/{hmppsId}")
   @Tags(value = [Tag(name = "Prisoners"), Tag(name = "Reception")])
@@ -510,6 +512,39 @@ class PrisonController(
     auditService.createEvent(
       "EVENTS",
       mapOf("prisonId" to prisonId) as Map<String, String?>,
+    )
+
+    return DataResponse(data = response.data)
+  }
+
+  @GetMapping("/prisoners/{hmppsId}/pss-detail")
+  @Operation(
+    summary = "Returns the PSS detail information for the specified offender including personal data, warnings, sentence details and location information.",
+    description = "The field 'offender_details_request' contains a JSON block of data containing the offender data.",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully returns the PSS detail information for the specified offender."),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
+      ApiResponse(responseCode = "403", content = [Content(schema = Schema(ref = "#/components/schemas/ForbiddenResponse"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  fun getPssDetails(
+    @Parameter(description = "The HMPPS ID of the person", example = "A1417AE") @PathVariable hmppsId: String,
+    @RequestAttribute requestContext: RequestContext,
+  ): DataResponse<PrisonApiPssDetail?> {
+    val response = prisonPssDetailService.pssDetail(hmppsId, requestContext)
+
+    if (response.hasError(BAD_REQUEST)) {
+      throw ValidationException("Invalid hmpps id $hmppsId")
+    }
+
+    if (response.hasErrorCausedBy(ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Could not find person with supplied hmppsId $hmppsId.")
+    }
+
+    auditService.createEvent(
+      "OFFENDER_PSS_DETAIL",
+      mapOf("hmppsId" to hmppsId) as Map<String, String?>,
     )
 
     return DataResponse(data = response.data)
