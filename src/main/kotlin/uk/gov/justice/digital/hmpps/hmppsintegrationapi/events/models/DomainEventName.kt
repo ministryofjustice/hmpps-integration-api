@@ -64,6 +64,10 @@ object DomainEventName {
       const val UPDATED = "probation-case.restriction.updated"
     }
 
+    object PersonalDetails {
+      const val UPDATED = "probation-case.personal-details.updated"
+    }
+
     object Sentence {
       const val CREATED = "probation-case.sentence.created"
       const val AMENDED = "probation-case.sentence.amended"
