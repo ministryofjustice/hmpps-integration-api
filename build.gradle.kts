@@ -47,6 +47,8 @@ dependencies {
     exclude("org.springframework.security", "spring-security-web")
   }
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.2.0")
+  implementation("javax.xml.bind:jaxb-api:2.3.1")
+  implementation("org.glassfish.jaxb:jaxb-runtime:2.3.9")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
   implementation("io.jsonwebtoken:jjwt-api:0.13.0")
