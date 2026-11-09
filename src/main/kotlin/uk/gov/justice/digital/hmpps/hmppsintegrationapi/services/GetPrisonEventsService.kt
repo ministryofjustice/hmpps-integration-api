@@ -33,7 +33,7 @@ class GetPrisonEventsService(
 
     val response = prisonApiGateway.getEvents(prisonId, nomisNumber, eventType, fromDateTime, limit, requestContext)
 
-    return Response(data = response.data?.convertTimestamps(), errors = response.errors)
+    return Response(data = response.data, errors = response.errors)
   }
 
   private fun getNomisNumber(hmppsId: String?): String? {
