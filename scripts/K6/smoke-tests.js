@@ -532,7 +532,6 @@ function verify_prisoner_endpoints(prisonId, nomisNumber) {
   validate_get_request(`${prisonerPrefix}/accounts/spends/transactions`);
   // validate_get_request(`${prisonerPrefix}/transactions/canteen_test`);
   validate_get_request(`${prisonerPrefix}/non-associations`);
-  validate_get_request(`${prisonerPrefix}/pss-detail`);
 }
 
 function verify_activities_search(prisonId, prisonerId, startDate, days = 90) {
@@ -642,6 +641,7 @@ function verify_prisons_endpoints(nomisNumber) {
       return
     }
 
+    validate_get_request(`/v1/prison/prisoners/${nomisNumber}/pss-detail`); // Get person by NOMIS ID, we already got by CRN
     validate_get_request(`/v1/persons/${nomisNumber}`); // Get person by NOMIS ID, we already got by CRN
     validate_get_request(`/v1/persons/${nomisNumber}/cell-location`);
     validate_get_request(`/v1/persons/${nomisNumber}/visit-restrictions`);
