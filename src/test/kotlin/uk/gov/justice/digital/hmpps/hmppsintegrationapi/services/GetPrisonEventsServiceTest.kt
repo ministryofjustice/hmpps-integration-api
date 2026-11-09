@@ -73,7 +73,7 @@ internal class GetPrisonEventsServiceTest(
           .shouldBe("BMI")
         response.data.events[0]
           .timestamp
-          .shouldBe("2016-10-21T14:55:06.284Z")
+          .shouldBe("2016-10-21 15:55:06.284")
         val balanceUpdate =
           response.data
             ?.events[0]
@@ -108,7 +108,7 @@ internal class GetPrisonEventsServiceTest(
           .shouldBe("BMI")
         response.data.events[0]
           .timestamp
-          .shouldBe("2016-10-21T14:55:06.284Z")
+          .shouldBe("2016-10-21 15:55:06.284")
         val balanceUpdate =
           response.data
             ?.events[0]
