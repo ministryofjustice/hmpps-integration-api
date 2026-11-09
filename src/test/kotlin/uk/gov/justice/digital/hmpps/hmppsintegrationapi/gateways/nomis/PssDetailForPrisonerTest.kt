@@ -31,7 +31,7 @@ class PssDetailForPrisonerTest :
     {
       val nomisApiMockServer = ApiMockServer.create(UpstreamApi.PRISON_API)
       val nomisId = "A1417AE"
-      val path = "/api/v1/offenders/$nomisId/pss-detail"
+      val path = "/api/v1/offenders/$nomisId/pss_detail"
       val authToken = "ABC123"
       val responseJson =
         File(
