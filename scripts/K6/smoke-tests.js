@@ -532,6 +532,7 @@ function verify_prisoner_endpoints(prisonId, nomisNumber) {
   validate_get_request(`${prisonerPrefix}/accounts/spends/transactions`);
   // validate_get_request(`${prisonerPrefix}/transactions/canteen_test`);
   validate_get_request(`${prisonerPrefix}/non-associations`);
+  validate_get_request(`${prisonerPrefix}/pss-detail`);
 }
 
 function verify_activities_search(prisonId, prisonerId, startDate, days = 90) {

@@ -45,6 +45,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.locationsInsidePr
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiEvent
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiEvents
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiLiveRoll
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiPssDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCapacityForPrisonService
@@ -58,6 +59,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersSer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetResidentialDetailsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetResidentialHierarchyService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitsService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.PrisonPssDetailService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 import java.time.DayOfWeek
@@ -82,6 +84,7 @@ internal class PrisonControllerTest(
   @MockitoBean val getPrisonersByPrisonService: GetPrisonersByPrisonService,
   @MockitoBean val getLiveRollService: GetLiveRollService,
   @MockitoBean val getPrisonEventsService: GetPrisonEventsService,
+  @MockitoBean val pssDetailService: PrisonPssDetailService,
 ) : DescribeSpec(
     {
       val firstName = personInProbationAndNomisPersona.firstName
@@ -1105,6 +1108,81 @@ internal class PrisonControllerTest(
 
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(404)
+        }
+      }
+
+      describe("GET /prisoners/{hmppsId}/pss-detail") {
+        val path = "$basePath/prisoners/$hmppsId/pss-detail"
+
+        val pssDetail =
+          PrisonApiPssDetail(
+            type = "IEP_CHANGED",
+            id = 21,
+            noms_id = "A1417AE",
+            prison_id = "BMI",
+            timestamp = "2016-10-21T14:55:06.284Z",
+            offender_details_request =
+              mapOf(
+                "offender_details" to
+                  mapOf(
+                    "personal_details" to
+                      mapOf("offender_surname" to "SMITH", "offender_given_name_1" to "JOHN", "offender_dob" to "2000-02-20 00:00:00"),
+                  ),
+              ),
+          )
+
+        beforeEach {
+          Mockito.reset(getPrisonEventsService)
+        }
+
+        it("should return 200 and audit when successful") {
+          whenever(pssDetailService.pssDetail(eq(hmppsId), anyOrNull())).thenReturn(Response(data = pssDetail))
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.OK.value())
+          result.response.contentAsJson<DataResponse<PrisonApiPssDetail>>().shouldBe(DataResponse(data = pssDetail))
+
+          verify(
+            auditService,
+            times(1),
+          ).createEvent(
+            "OFFENDER_PSS_DETAIL",
+            mapOf("hmppsId" to hmppsId),
+          )
+        }
+        it("returns 404 when the service returns not found") {
+          whenever(pssDetailService.pssDetail(eq(hmppsId), anyOrNull())).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                    causedBy = UpstreamApi.PRISON_API,
+                  ),
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(404)
+        }
+
+        it("returns 400 when the service returns bad request") {
+          whenever(pssDetailService.pssDetail(eq(hmppsId), anyOrNull())).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    type = UpstreamApiError.Type.BAD_REQUEST,
+                    causedBy = UpstreamApi.PRISON_API,
+                  ),
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(400)
         }
       }
     },
