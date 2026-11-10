@@ -28,6 +28,8 @@ val mojHmppsPersonLookupV2 =
       -"/v1/persons/{hmppsId}/sentences"
       -"/v1/status"
       -"/v2/persons"
+      -"/v1/prison/prisoners/{hmppsId}"
+      -"/v1/persons/{hmppsId}/alerts"
     }
     redactionPolicies {
       -laoRedactionPolicy
