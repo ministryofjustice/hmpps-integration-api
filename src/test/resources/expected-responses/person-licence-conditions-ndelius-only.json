@@ -6,9 +6,9 @@
       {
         "status": "IN_NDELIUS_ONLY",
         "typeCode": "AP",
-        "createdDate": "2024-06-14T00:00",
-        "approvedDate": "2024-06-14T00:00",
-        "updatedDate": "2024-06-14T00:00",
+        "createdDate": "2024-06-14T00:00:00",
+        "approvedDate": "2024-06-14T00:00:00",
+        "updatedDate": "2024-06-14T00:00:00",
         "conditions": [
           {
             "type": "Bespoke",
@@ -21,9 +21,9 @@
       {
         "status": "IN_NDELIUS_ONLY",
         "typeCode": "AP",
-        "createdDate": "2024-06-14T00:00",
-        "approvedDate": "2024-06-14T00:00",
-        "updatedDate": "2024-06-14T00:00",
+        "createdDate": "2024-06-14T00:00:00",
+        "approvedDate": "2024-06-14T00:00:00",
+        "updatedDate": "2024-06-14T00:00:00",
         "conditions": [
           {
             "type": "Bespoke",
@@ -36,9 +36,9 @@
       {
         "status": "IN_NDELIUS_ONLY",
         "typeCode": "AP",
-        "createdDate": "2024-06-14T00:00",
-        "approvedDate": "2024-06-14T00:00",
-        "updatedDate": "2024-06-14T00:00",
+        "createdDate": "2024-06-14T00:00:00",
+        "approvedDate": "2024-06-14T00:00:00",
+        "updatedDate": "2024-06-14T00:00:00",
         "conditions": [
           {
             "type": "Bespoke",
@@ -51,9 +51,9 @@
       {
         "status": "IN_NDELIUS_ONLY",
         "typeCode": "AP",
-        "createdDate": "2024-06-14T00:00",
-        "approvedDate": "2024-06-14T00:00",
-        "updatedDate": "2024-06-14T00:00",
+        "createdDate": "2024-06-14T00:00:00",
+        "approvedDate": "2024-06-14T00:00:00",
+        "updatedDate": "2024-06-14T00:00:00",
         "conditions": [
           {
             "type": "Bespoke",
