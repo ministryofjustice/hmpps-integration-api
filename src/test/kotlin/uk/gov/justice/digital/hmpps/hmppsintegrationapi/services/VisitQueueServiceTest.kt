@@ -267,6 +267,59 @@ internal class VisitQueueServiceTest(
         response.data.shouldBeNull()
         response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.BAD_REQUEST, "You cannot have multiple visit notes of the same type")))
       }
+
+      it("return error if actionedBy not provided for a STAFF userType") {
+        val createVisitRequestWithNoActionedByForStaff =
+          createVisitRequest.copy(
+            actionedBy = null,
+            userType = UserType.STAFF,
+            visitNotes = listOf(createVisitRequest.visitNotes[0].copy(), createVisitRequest.visitNotes[0].copy()),
+          )
+        val response = visitQueueService.sendCreateVisit(createVisitRequestWithNoActionedByForStaff, who, filters)
+        response.data.shouldBeNull()
+        response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.BAD_REQUEST, "You must provide a username when userType is STAFF")))
+      }
+
+      it("return error if actionedBy not provided for a PUBLIC userType") {
+        val createVisitRequestWithNoActionedByForPublic =
+          createVisitRequest.copy(
+            actionedBy = null,
+            userType = UserType.PUBLIC,
+            visitNotes = listOf(createVisitRequest.visitNotes[0].copy(), createVisitRequest.visitNotes[0].copy()),
+          )
+        val response = visitQueueService.sendCreateVisit(createVisitRequestWithNoActionedByForPublic, who, filters)
+        response.data.shouldBeNull()
+        response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.BAD_REQUEST, "You must provide a username when userType is PUBLIC")))
+      }
+
+      it("return error if actionedBy is over 60 chars for a STAFF userType") {
+        val createVisitRequestWithInvalidActionedBy =
+          createVisitRequest.copy(
+            actionedBy = "X".repeat(61),
+            userType = UserType.STAFF,
+            visitNotes = listOf(createVisitRequest.visitNotes[0].copy(), createVisitRequest.visitNotes[0].copy()),
+          )
+        val response = visitQueueService.sendCreateVisit(createVisitRequestWithInvalidActionedBy, who, filters)
+        response.data.shouldBeNull()
+        response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.BAD_REQUEST, "Username cannot exceed 60 characters")))
+      }
+
+      it("successfully adds to message queue when actionedBy is over valid chars for a STAFF userType") {
+        val messageBody = """{"messageId":"1","eventType":"VisitCreated","messageAttributes":{}}"""
+
+        whenever(objectMapper.writeValueAsString(any<HmppsMessage>())).thenReturn(messageBody)
+
+        val response = visitQueueService.sendCreateVisit(createVisitRequest.copy(actionedBy = "X".repeat(60), userType = UserType.STAFF), who, filters)
+
+        verify(mockSqsClient).sendMessage(
+          argThat<SendMessageRequest> { request: SendMessageRequest? ->
+            request?.queueUrl() == "https://test-queue-url" &&
+              request.messageBody() == messageBody
+          },
+        )
+
+        response.data.shouldBeTypeOf<HmppsMessageResponse>()
+      }
     }
 
     describe("update visit request") {
@@ -347,6 +400,59 @@ internal class VisitQueueServiceTest(
         val response = visitQueueService.sendUpdateVisit(visitReference, updateVisitRequestWithDuplicateNoteTypes, who, filters)
         response.data.shouldBeNull()
         response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.BAD_REQUEST, "You cannot have multiple visit notes of the same type")))
+      }
+
+      it("return error if actionedBy not provided for a STAFF userType") {
+        val updateVisitRequestWithNoActionedByForStaff =
+          updateVisitRequest.copy(
+            actionedBy = null,
+            userType = UserType.STAFF,
+            visitNotes = listOf(updateVisitRequest.visitNotes[0].copy(), updateVisitRequest.visitNotes[0].copy()),
+          )
+        val response = visitQueueService.sendUpdateVisit(visitReference, updateVisitRequestWithNoActionedByForStaff, who, filters)
+        response.data.shouldBeNull()
+        response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.BAD_REQUEST, "You must provide a username when userType is STAFF")))
+      }
+
+      it("return error if actionedBy not provided for a PUBLIC userType") {
+        val updateVisitRequestWithNoActionedByForPublic =
+          updateVisitRequest.copy(
+            actionedBy = null,
+            userType = UserType.PUBLIC,
+            visitNotes = listOf(updateVisitRequest.visitNotes[0].copy(), updateVisitRequest.visitNotes[0].copy()),
+          )
+        val response = visitQueueService.sendUpdateVisit(visitReference, updateVisitRequestWithNoActionedByForPublic, who, filters)
+        response.data.shouldBeNull()
+        response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.BAD_REQUEST, "You must provide a username when userType is PUBLIC")))
+      }
+
+      it("return error if actionedBy is over 60 chars for a STAFF userType") {
+        val updateVisitRequestWithInvalidActionedBy =
+          updateVisitRequest.copy(
+            actionedBy = "X".repeat(61),
+            userType = UserType.STAFF,
+            visitNotes = listOf(updateVisitRequest.visitNotes[0].copy(), updateVisitRequest.visitNotes[0].copy()),
+          )
+        val response = visitQueueService.sendUpdateVisit(visitReference, updateVisitRequestWithInvalidActionedBy, who, filters)
+        response.data.shouldBeNull()
+        response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.BAD_REQUEST, "Username cannot exceed 60 characters")))
+      }
+
+      it("successfully adds to message queue when actionedBy is over valid chars for a STAFF userType") {
+        val messageBody = """{"messageId":"1","eventType":"VisitUpdated","messageAttributes":{}}"""
+
+        whenever(objectMapper.writeValueAsString(any<HmppsMessage>())).thenReturn(messageBody)
+
+        val response = visitQueueService.sendUpdateVisit(visitReference, updateVisitRequest.copy(actionedBy = "X".repeat(60), userType = UserType.STAFF), who, filters)
+
+        verify(mockSqsClient).sendMessage(
+          argThat<SendMessageRequest> { request: SendMessageRequest? ->
+            request?.queueUrl() == "https://test-queue-url" &&
+              request.messageBody() == messageBody
+          },
+        )
+
+        response.data.shouldBeTypeOf<HmppsMessageResponse>()
       }
     }
 

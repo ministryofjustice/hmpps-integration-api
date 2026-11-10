@@ -112,6 +112,9 @@ class VisitsControllerTest(
             """
             {
               "data": {
+                  "actionedBy": null,
+                  "applicationMethodType":"BY_PRISONER",
+                  "userType":"PRISONER",
                   "applicationReference":"dfs-wjs-abc",
                   "reference":"dfs-wjs-abc",
                   "prisonerId": "PrisonerId",
