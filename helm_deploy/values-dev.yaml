@@ -61,6 +61,9 @@ generic-service:
     event-phonehub-queue:
       PHONEHUB_QUEUE_NAME: "sqs_name"
       PHONEHUB_QUEUE_ARN: "sqs_arn"
+    event-enhanced-reception-checks-queue:
+      ENHANCED_RECEPTION_CHECKS_QUEUE_NAME: "sqs_name"
+      ENHANCED_RECEPTION_CHECKS_QUEUE_ARN: "sqs_arn"
 
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
