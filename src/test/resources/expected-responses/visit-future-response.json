@@ -1,6 +1,9 @@
 {
   "data": [
     {
+      "actionedBy":null,
+      "applicationMethodType":"BY_PRISONER",
+      "userType":"PRISONER",
       "applicationReference": "dfs-wjs-eqr",
       "reference": "v9-d7-ed-7u",
       "prisonerId": "AF34567G",
