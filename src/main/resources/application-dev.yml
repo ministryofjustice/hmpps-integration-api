@@ -162,3 +162,7 @@ hmpps.sqs:
       queueName: ${PHONEHUB_QUEUE_NAME}
       queueArn: ${PHONEHUB_QUEUE_ARN}
       subscribeTopicId: integrationeventtopic
+    enhancedreceptioncheckssubscriberqueue:
+      queueName: ${ENHANCED_RECEPTION_CHECKS_QUEUE_NAME}
+      queueArn: ${ENHANCED_RECEPTION_CHECKS_QUEUE_ARN}
+      subscribeTopicId: integrationeventtopic
