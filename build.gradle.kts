@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.14"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.15"
   kotlin("plugin.spring") version "2.4.21"
   id("dev.detekt") version "2.0.0-alpha.6"
   id("org.jetbrains.kotlinx.kover") version "0.9.11"
@@ -48,7 +48,7 @@ dependencies {
   }
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.2.0")
   implementation("javax.xml.bind:jaxb-api:2.3.1")
-  implementation("org.glassfish.jaxb:jaxb-runtime:2.3.9")
+  implementation("org.glassfish.jaxb:jaxb-runtime:4.0.9")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
   implementation("io.jsonwebtoken:jjwt-api:0.13.0")
@@ -84,7 +84,7 @@ dependencies {
   testImplementation("org.eclipse.jetty:jetty-io:12.1.14")
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
   testImplementation(kotlin("test"))
-  testImplementation("io.mockk:mockk:1.14.11")
+  testImplementation("io.mockk:mockk:1.14.12")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:6.4.0")
 }
 
