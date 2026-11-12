@@ -1,9 +1,17 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
+import com.fasterxml.jackson.annotation.JsonAlias
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotBlank
 
 data class Visit(
+  @JsonAlias("username")
+  @Schema(description = "Identity of the user who actioned this request. Also accepts username as an input alias. Required and nonblank for STAFF (username, maximum 60 characters) or PUBLIC (booker reference). Ignored for PRISONER (including omitted or null userType), which always uses the visit's prisoner ID (maximum 60 characters). SYSTEM uses the shared system actor.", required = false)
+  val actionedBy: String? = null,
+  @Schema(description = "Application method. Defaults to BY_PRISONER when omitted or null.", required = false)
+  val applicationMethodType: ApplicationMethodType = ApplicationMethodType.BY_PRISONER,
+  @Schema(description = "User type for user who actioned this request. Defaults to PRISONER when omitted or null.", required = false)
+  val userType: UserType = UserType.PRISONER,
   @Schema(description = "Application Reference", example = "dfs-wjs-eqr")
   val applicationReference: String?,
   @Schema(description = "Visit Reference", example = "v9-d7-ed-7u")
@@ -88,3 +96,14 @@ data class VisitExternalSystemDetails(
   @Schema(description = "Client visit reference", example = "Reference ID in the client system")
   val clientVisitReference: String?,
 )
+
+@Suppress("unused")
+enum class ApplicationMethodType {
+  PHONE,
+  WEBSITE,
+  EMAIL,
+  IN_PERSON,
+  NOT_KNOWN,
+  NOT_APPLICABLE,
+  BY_PRISONER,
+}

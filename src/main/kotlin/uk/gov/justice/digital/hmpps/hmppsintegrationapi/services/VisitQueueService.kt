@@ -41,6 +41,11 @@ class VisitQueueService(
     who: String,
     filters: ConsumerFilters?,
   ): Response<HmppsMessageResponse?> {
+    val validateActionedBy = validateActionedBy(createVisitRequest.actionedBy, createVisitRequest.userType)
+    if (validateActionedBy.errors.isNotEmpty()) {
+      return Response(data = null, errors = validateActionedBy.errors)
+    }
+
     val checkVisitNoteTypesUniqueResponse = checkVisitNoteTypesUnique(createVisitRequest.visitNotes)
     if (checkVisitNoteTypesUniqueResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = checkVisitNoteTypesUniqueResponse.errors)
@@ -78,6 +83,11 @@ class VisitQueueService(
     who: String,
     filters: ConsumerFilters?,
   ): Response<HmppsMessageResponse?> {
+    val validateActionedBy = validateActionedBy(updateVisitRequest.actionedBy, updateVisitRequest.userType)
+    if (validateActionedBy.errors.isNotEmpty()) {
+      return Response(data = null, errors = validateActionedBy.errors)
+    }
+
     val checkVisitNoteTypesUniqueResponse = checkVisitNoteTypesUnique(updateVisitRequest.visitNotes)
     if (checkVisitNoteTypesUniqueResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = checkVisitNoteTypesUniqueResponse.errors)
@@ -184,6 +194,22 @@ class VisitQueueService(
       return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.BAD_REQUEST, description = "You cannot have multiple visit notes of the same type")))
     }
 
+    return Response(data = null)
+  }
+
+  fun validateActionedBy(
+    actionedBy: String? = null,
+    userType: UserType? = null,
+  ): Response<Nothing?> {
+    if (actionedBy.isNullOrBlank() && userType == UserType.STAFF) {
+      return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.BAD_REQUEST, description = "You must provide a username when userType is STAFF")))
+    }
+    if (actionedBy.isNullOrBlank() && userType == UserType.PUBLIC) {
+      return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.BAD_REQUEST, description = "You must provide a username when userType is PUBLIC")))
+    }
+    if (!actionedBy.isNullOrBlank() && actionedBy.length > 60 && userType == UserType.STAFF) {
+      return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.BAD_REQUEST, description = "Username cannot exceed 60 characters")))
+    }
     return Response(data = null)
   }
 }

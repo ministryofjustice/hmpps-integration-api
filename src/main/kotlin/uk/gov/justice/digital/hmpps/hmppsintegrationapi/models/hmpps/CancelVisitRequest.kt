@@ -9,7 +9,7 @@ data class CancelVisitRequest(
   @Schema(description = "Outcome status and description", required = true)
   @field:Valid
   val cancelOutcome: CancelOutcome,
-  @Schema(description = "Type of user cancelling the visit", required = true, example = "PRISONER", allowableValues = ["PRISONER"])
+  @Schema(description = "Type of user cancelling the visit", required = true, example = "PRISONER", allowableValues = ["PRISONER", "STAFF"])
   val userType: UserType,
   @Schema(description = "Username for user who actioned this request", required = false)
   val actionedBy: String? = null,
