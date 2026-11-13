@@ -25,6 +25,7 @@ data class PSAddressSearchResponse(
                 county = address.county,
                 postcode = address.postcode,
                 startDate = address.startDate,
+                endDate = address.endDate,
                 status =
                   AddressStatus(
                     code = address.status.code,
@@ -66,6 +67,7 @@ data class PSAddress(
   val county: String? = null,
   val postcode: String? = null,
   val startDate: String? = null,
+  val endDate: String? = null,
   val notes: String? = null,
   val createdDateTime: String? = null,
   val lastUpdatedDateTime: String? = null,

@@ -1,0 +1,52 @@
+{
+  "personAddresses": [
+    {
+      "hmppsId": "X123123",
+      "address": {
+        "buildingName": "Burnham House",
+        "addressNumber": "1",
+        "streetName": "Church Road",
+        "district": "Church Road",
+        "town": "Leicester",
+        "county": "Leicestershire",
+        "postcode": "LM2 1BF",
+        "endDate": null,
+        "startDate": "2020-08-03",
+        "status": {
+          "code": "M",
+          "description": "Main"
+        },
+        "type": {
+          "code": "A02",
+          "description": "Approved Premises"
+        },
+        "noFixedAbode": false
+      },
+      "matchScore": 100
+    },
+    {
+      "hmppsId": "X123123",
+      "address": {
+        "buildingName": "Old House",
+        "addressNumber": "2",
+        "streetName": "Old Road",
+        "district": "Old Road",
+        "town": "Old Town",
+        "county": "Leicestershire",
+        "postcode": "LM3 2CD",
+        "endDate": "2019-10-08",
+        "startDate": "2019-04-08",
+        "status": {
+          "code": "P",
+          "description": "Previous"
+        },
+        "type": {
+          "code": "A02",
+          "description": "Approved Premises"
+        },
+        "noFixedAbode": false
+      },
+      "matchScore": 100
+    }
+  ]
+}

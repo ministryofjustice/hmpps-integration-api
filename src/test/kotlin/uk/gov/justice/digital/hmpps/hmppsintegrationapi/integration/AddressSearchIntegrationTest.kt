@@ -3,6 +3,8 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.whenever
+import org.springframework.test.json.JsonCompareMode
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
@@ -57,6 +59,7 @@ class AddressSearchIntegrationTest : IntegrationTestBase() {
     callApi("$path$pathParamsSpaces")
       .andExpect(status().isOk)
       .andExpect(header().string("Cache-Control", "no-cache"))
+      .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("address-search-expected-response.json"), JsonCompareMode.STRICT))
   }
 
   @Test

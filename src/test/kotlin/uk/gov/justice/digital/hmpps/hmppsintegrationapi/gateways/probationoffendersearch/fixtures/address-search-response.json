@@ -31,6 +31,39 @@
         "noFixedAbode": false
       },
       "matchScore": 100
+    },
+    {
+      "person": {
+        "id": 123,
+        "crn": "X123123",
+        "dob": "1990-08-16",
+        "gender": "Male"
+      },
+      "address": {
+        "id": 123,
+        "buildingName": "Old House",
+        "addressNumber": "2",
+        "streetName": "Old Road",
+        "district": "Old Park",
+        "town": "Old Town",
+        "county": "Leicestershire",
+        "postcode": "LM3 2CD",
+        "startDate": "2019-04-08",
+        "endDate": "2019-10-08",
+        "notes": "notes text",
+        "createdDateTime": "2020-08-11T11:00:01+01:00",
+        "lastUpdatedDateTime": "2022-06-09T11:47:51+01:00",
+        "status": {
+          "code": "P",
+          "description": "Previous"
+        },
+        "type": {
+          "code": "A02",
+          "description": "Approved Premises"
+        },
+        "noFixedAbode": false
+      },
+      "matchScore": 100
     }
   ]
 }
