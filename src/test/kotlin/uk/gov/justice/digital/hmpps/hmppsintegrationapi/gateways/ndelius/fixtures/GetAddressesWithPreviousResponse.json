@@ -1,0 +1,39 @@
+{
+  "contactDetails": {
+    "addresses": [
+      {
+        "noFixedAbode": false,
+        "type": {
+          "code": "NDELIUS",
+          "description": "An NDelius Address"
+        },
+        "buildingName": "Test Building Name",
+        "addressNumber": "31",
+        "streetName": "Test Street",
+        "town": "Test Town",
+        "district": "Test District",
+        "county": "Test County",
+        "postcode": "NE1 1AB",
+        "from": "2026-01-23",
+        "notes": "This is a current address"
+      },
+      {
+        "noFixedAbode": false,
+        "type": {
+          "code": "PREV",
+          "description": "A Previous Address"
+        },
+        "buildingName": "Test Building Name",
+        "addressNumber": "31",
+        "streetName": "Test Street",
+        "town": "Test Town",
+        "district": "Test District",
+        "county": "Test County",
+        "postcode": "NE1 1AB",
+        "from": "2021-02-12",
+        "to": "2021-04-14",
+        "notes": "This is a previous address"
+      }
+    ]
+  }
+}

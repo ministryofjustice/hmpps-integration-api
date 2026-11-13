@@ -55,10 +55,11 @@ class AddressController(
     ],
   )
   fun getPersonAddresses(
+    @RequestParam(defaultValue = "false") includePrevious: Boolean = false,
     @Parameter(description = "The HMPPS ID of the person", example = "G2996UX") @PathVariable hmppsId: String,
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<List<Address>> {
-    val response = getAddressesForPersonService.execute(hmppsId, requestContext)
+    val response = getAddressesForPersonService.execute(hmppsId, includePrevious, requestContext)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Invalid id: $hmppsId")

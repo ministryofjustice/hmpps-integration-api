@@ -370,12 +370,14 @@ class NDeliusGateway(
 
   fun getAddressesForPerson(
     crn: String,
+    includePrevious: Boolean = false,
     requestContext: RequestContext?,
   ): Response<List<Address>> {
+    val path = if (includePrevious) "/case/$crn/addresses?includePrevious=true" else "/case/$crn/addresses"
     val result =
       webClient.request<ContactDetailsWithAddress>(
         HttpMethod.GET,
-        "/case/$crn/addresses",
+        path,
         authenticationHeader(requestContext),
         UpstreamApi.NDELIUS,
       )

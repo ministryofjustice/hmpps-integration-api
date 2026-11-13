@@ -101,6 +101,20 @@ class AddressIntegrationTest : IntegrationTestBase() {
   }
 
   @Test
+  fun `returns all addresses including previous from NDelius`() {
+    val addresses =
+      callApi("$path?includePrevious=true")
+        .andExpect(status().isOk)
+        .andReturn()
+        .response
+        .contentAsJson<Response<List<Address>>>()
+        .data
+    assertEquals(3, addresses.size)
+    assertEquals("This is a current address", addresses[1].notes)
+    assertEquals("This is a previous address", addresses[2].notes)
+  }
+
+  @Test
   fun `returns a not found when non existent crn passed and no valid CRN and NOMIS resolved`() {
     callApi(notExistsCrnPath)
       .andExpect(status().isNotFound)

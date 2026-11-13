@@ -93,7 +93,7 @@ class PostAddressesSearchTest(
           addressResponse.data
             ?.personAddresses
             ?.size
-            .shouldBe(1)
+            .shouldBe(2)
           addressResponse.data
             ?.personAddresses[0]
             ?.address

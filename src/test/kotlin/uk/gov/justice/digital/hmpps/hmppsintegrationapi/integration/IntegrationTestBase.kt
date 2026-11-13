@@ -374,6 +374,13 @@ abstract class IntegrationTestBase {
       )
 
       nDeliusMockServer.stubForGet(
+        "/case/$crn/addresses?includePrevious=true",
+        File(
+          "$gatewaysFolder/ndelius/fixtures/GetAddressesWithPreviousResponse.json",
+        ).readText(),
+      )
+
+      nDeliusMockServer.stubForGet(
         "/case/$crn/supervisions",
         File(
           "$gatewaysFolder/ndelius/fixtures/SupervisionsResponse.json",

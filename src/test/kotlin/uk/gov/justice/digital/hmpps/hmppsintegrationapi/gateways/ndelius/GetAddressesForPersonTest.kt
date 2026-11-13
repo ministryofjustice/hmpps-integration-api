@@ -83,13 +83,13 @@ class GetAddressesForPersonTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        nDeliusGateway.getAddressesForPerson(hmppsId, requestContext)
+        nDeliusGateway.getAddressesForPerson(hmppsId, false, requestContext)
 
         verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("nDelius", requestContext)
       }
 
       it("returns addresses for a person with the matching ID") {
-        val response = nDeliusGateway.getAddressesForPerson(hmppsId, requestContext)
+        val response = nDeliusGateway.getAddressesForPerson(hmppsId, false, requestContext)
 
         response.data.shouldContain(
           generateTestAddress(
@@ -113,7 +113,7 @@ class GetAddressesForPersonTest(
         """,
         )
 
-        val response = nDeliusGateway.getAddressesForPerson(hmppsId, requestContext)
+        val response = nDeliusGateway.getAddressesForPerson(hmppsId, false, requestContext)
 
         response.data.shouldBeEmpty()
       }
@@ -129,7 +129,7 @@ class GetAddressesForPersonTest(
         """,
         )
 
-        val response = nDeliusGateway.getAddressesForPerson(hmppsId, requestContext)
+        val response = nDeliusGateway.getAddressesForPerson(hmppsId, false, requestContext)
 
         response.data.shouldBeEmpty()
       }
@@ -144,7 +144,7 @@ class GetAddressesForPersonTest(
         """,
         )
 
-        val response = nDeliusGateway.getAddressesForPerson(hmppsId, requestContext)
+        val response = nDeliusGateway.getAddressesForPerson(hmppsId, false, requestContext)
 
         response.data.shouldBeEmpty()
       }
@@ -161,7 +161,7 @@ class GetAddressesForPersonTest(
         """,
         )
 
-        val response = nDeliusGateway.getAddressesForPerson(hmppsId, requestContext)
+        val response = nDeliusGateway.getAddressesForPerson(hmppsId, false, requestContext)
 
         response.data.shouldBeEmpty()
       }
@@ -182,7 +182,7 @@ class GetAddressesForPersonTest(
         """,
         )
 
-        val response = nDeliusGateway.getAddressesForPerson(hmppsId, requestContext)
+        val response = nDeliusGateway.getAddressesForPerson(hmppsId, false, requestContext)
 
         response.data
           .first()

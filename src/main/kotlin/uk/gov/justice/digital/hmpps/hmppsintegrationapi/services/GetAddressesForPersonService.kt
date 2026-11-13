@@ -18,6 +18,7 @@ class GetAddressesForPersonService(
 ) {
   fun execute(
     hmppsId: String,
+    includePrevious: Boolean = false,
     requestContext: RequestContext?,
   ): Response<List<Address>> {
     // Verify that the provided ID exists in its own domain
@@ -38,7 +39,7 @@ class GetAddressesForPersonService(
     val probationAddresses =
       if (ConsumerFilters.hasProbationAccess(filters)) {
         val probationId = getPersonService.convert(hmppsId, GetPersonService.IdentifierType.CRN)
-        probationId.data?.let { deliusGateway.getAddressesForPerson(it, requestContext).withoutNotFound() } ?: Response(data = emptyList(), errors = probationId.errors)
+        probationId.data?.let { deliusGateway.getAddressesForPerson(it, includePrevious, requestContext).withoutNotFound() } ?: Response(data = emptyList(), errors = probationId.errors)
       } else {
         Response(emptyList(), emptyList())
       }
