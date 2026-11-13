@@ -15,6 +15,18 @@ configurations.register("koverCli") {
   isCanBeResolved = true
 }
 
+configurations.all {
+  resolutionStrategy.eachDependency {
+    if (requested.group == "org.webjars" &&
+      requested.name == "swagger-ui" &&
+      requested.version == "5.34.0"
+    ) {
+      useVersion("5.34.1")
+      because("Fix CVE-2026-116802 DomPurify")
+    }
+  }
+}
+
 configurations {
   testImplementation { exclude(group = "org.junit.vintage") }
   all {
