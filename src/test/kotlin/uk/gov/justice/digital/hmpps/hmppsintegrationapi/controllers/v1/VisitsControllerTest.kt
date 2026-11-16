@@ -85,7 +85,7 @@ class VisitsControllerTest(
             visitorSupport = VisitorSupport(description = "Description"),
             visitExternalSystemDetails =
               VisitExternalSystemDetails(
-                clientName = "client_name",
+                clientName = "automated-test-client",
                 clientVisitReference = "12345",
               ),
           )
@@ -133,7 +133,7 @@ class VisitsControllerTest(
                   "visitContact": {"name": "Name", "telephone": "Telephone", "email": "Email"},
                   "visitors": [],
                   "visitorSupport": {"description": "Description"},
-                  "visitExternalSystemDetails": {"clientName": "client_name", "clientVisitReference": "12345"},
+                  "visitExternalSystemDetails": {"clientName": "automated-test-client", "clientVisitReference": "12345"},
                   "createdTimestamp": "Created",
                   "modifiedTimestamp": "Modified",
                   "firstBookedDateTime": "First"

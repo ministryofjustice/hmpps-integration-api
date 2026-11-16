@@ -1,0 +1,7 @@
+{
+  "status": 400,
+  "errorCode": null,
+  "userMessage": "No DPS username found for staff email address: test@test.gov.uk",
+  "developerMessage": "Validation failure: No DPS username found for staff email address: test@test.gov.uk",
+  "moreInfo": null
+}

@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
-import com.fasterxml.jackson.annotation.JsonAlias
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
@@ -9,14 +8,13 @@ import java.time.LocalDateTime
 
 @Schema(description = "Create visit request")
 data class CreateVisitRequest(
-  @JsonAlias("username")
-  @Schema(description = "Identity of the user who actioned this request. Also accepts username as an input alias. Required and nonblank for STAFF (username, maximum 60 characters) or PUBLIC (booker reference). Ignored for PRISONER (including omitted or null userType), which always uses the visit's prisoner ID (maximum 60 characters). SYSTEM uses the shared system actor.", required = false)
-  val actionedBy: String? = null,
+  @Schema(description = "The email address of the user who actioned this request. Required and nonblank when userType is STAFF.", required = false)
+  val staffEmailAddress: String? = null,
   @Schema(description = "Application method. Defaults to BY_PRISONER when omitted or null.", required = false)
   val applicationMethodType: ApplicationMethodType = ApplicationMethodType.BY_PRISONER,
   @Schema(description = "User type for user who actioned this request. Defaults to PRISONER when omitted or null.", required = false)
   val userType: UserType = UserType.PRISONER,
-  @Schema(description = "Prisoner Id", example = "AF34567G", required = true)
+  @Schema(description = "Prisoner Id", example = "AF3456G", required = true)
   @field:NotBlank
   val prisonerId: String,
   @Schema(description = "Prison Id", example = "3-character code, example = MDI", required = true)
@@ -55,16 +53,22 @@ data class CreateVisitRequest(
   @field:Valid
   val visitorSupport: VisitorSupport? = null,
 ) {
-  fun toHmppsMessage(who: String): HmppsMessage =
+  fun toHmppsMessage(
+    who: String,
+    actionedBy: String? = null,
+  ): HmppsMessage =
     HmppsMessage(
       eventType = HmppsMessageEventType.VISIT_CREATED,
-      messageAttributes = modelToMap(who),
+      messageAttributes = modelToMap(who, actionedBy),
       who = who,
     )
 
-  private fun modelToMap(clientName: String): Map<String, Any?> =
+  private fun modelToMap(
+    clientName: String,
+    actionedBy: String?,
+  ): Map<String, Any?> =
     mapOf(
-      "actionedBy" to this.actionedBy,
+      "actionedBy" to actionedBy,
       "applicationMethodType" to this.applicationMethodType.name,
       "userType" to this.userType.name,
       "prisonerId" to this.prisonerId,

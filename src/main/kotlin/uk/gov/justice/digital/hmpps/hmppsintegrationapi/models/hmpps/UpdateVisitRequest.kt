@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
-import com.fasterxml.jackson.annotation.JsonAlias
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
@@ -9,9 +8,8 @@ import java.time.LocalDateTime
 
 @Schema(description = "Update visit request")
 data class UpdateVisitRequest(
-  @JsonAlias("username")
-  @Schema(description = "Identity of the user who actioned this request. Also accepts username as an input alias. Required and nonblank for STAFF (username, maximum 60 characters) or PUBLIC (booker reference). Ignored for PRISONER (including omitted or null userType), which always uses the visit's prisoner ID (maximum 60 characters). SYSTEM uses the shared system actor.", required = false)
-  val actionedBy: String? = null,
+  @Schema(description = "The email address of the user who actioned this request. Required and nonblank when userType is STAFF.", required = false)
+  val staffEmailAddress: String? = null,
   @Schema(description = "Application method. Defaults to BY_PRISONER when omitted or null.", required = false)
   val applicationMethodType: ApplicationMethodType = ApplicationMethodType.BY_PRISONER,
   @Schema(description = "User type for user who actioned this request. Defaults to PRISONER when omitted or null.", required = false)
@@ -47,16 +45,20 @@ data class UpdateVisitRequest(
   fun toHmppsMessage(
     who: String,
     visitReference: String,
+    actionedBy: String? = null,
   ): HmppsMessage =
     HmppsMessage(
       eventType = HmppsMessageEventType.VISIT_UPDATED,
-      messageAttributes = modelToMap(visitReference),
+      messageAttributes = modelToMap(visitReference, actionedBy),
       who = who,
     )
 
-  private fun modelToMap(visitReference: String): Map<String, Any?> =
+  private fun modelToMap(
+    visitReference: String,
+    actionedBy: String?,
+  ): Map<String, Any?> =
     mapOf(
-      "actionedBy" to this.actionedBy,
+      "actionedBy" to actionedBy,
       "applicationMethodType" to this.applicationMethodType.name,
       "userType" to this.userType.name,
       "visitReference" to visitReference,

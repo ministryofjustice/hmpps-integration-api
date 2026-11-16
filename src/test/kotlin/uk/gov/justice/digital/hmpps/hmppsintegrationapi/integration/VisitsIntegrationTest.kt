@@ -25,6 +25,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitRestri
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visitor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitorSupport
+import java.io.File
 import java.time.LocalDateTime
 
 class VisitsIntegrationTest : IntegrationTestWithQueueBase("visits") {
@@ -297,6 +298,49 @@ class VisitsIntegrationTest : IntegrationTestWithQueueBase("visits") {
 
       checkQueueIsEmpty()
     }
+
+    @Test
+    fun `return a 400 when no staffEmail presented for STAFF userType`() {
+      val createVisitRequestByStaff = getCreateVisitRequest(prisonerId).copy(userType = UserType.STAFF, staffEmailAddress = null)
+      val requestBody = asJsonString(createVisitRequestByStaff)
+      postToApi(path, requestBody)
+        .andExpect(status().isBadRequest)
+        .andExpect(content().json(getExpectedResponse("visit-staff-email-not-provided-response.json"), JsonCompareMode.STRICT))
+      checkQueueIsEmpty()
+    }
+
+    @Test
+    fun `return a 400 when no username found for staffEmail for STAFF userType`() {
+      val createVisitRequestByStaff = getCreateVisitRequest(prisonerId).copy(userType = UserType.STAFF, staffEmailAddress = "test@test.gov.uk")
+      val requestBody = asJsonString(createVisitRequestByStaff)
+      postToApi(path, requestBody)
+        .andExpect(status().isBadRequest)
+        .andExpect(content().json(getExpectedResponse("visit-staff-username-not-found-response.json"), JsonCompareMode.STRICT))
+      checkQueueIsEmpty()
+    }
+
+    @Test
+    fun `returns a 200 when username is found for staffEmail for STAFF userType`() {
+      val createVisitRequestByStaff = getCreateVisitRequest(prisonerId).copy(userType = UserType.STAFF, staffEmailAddress = "testName")
+      val requestBody = asJsonString(createVisitRequestByStaff)
+      postToApi(path, requestBody)
+        .andExpect(status().isOk)
+        .andExpect(content().json(getExpectedResponse("post-visit-queue-response.json"), JsonCompareMode.STRICT))
+
+      await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
+
+      val queueMessages = getQueueMessages()
+      queueMessages.size.shouldBe(1)
+
+      val messageJson = queueMessages[0].body()
+      val expectedMessage = createVisitRequestByStaff.toHmppsMessage(defaultCn, actionedBy = "TEST_USER")
+      messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
+      messageJson.shouldContainJsonKeyValue("$.who", defaultCn)
+      val objectMapper = jacksonObjectMapper()
+      val messageAttributesJson = objectMapper.readTree(messageJson).at("/messageAttributes").toString()
+      val expectedMessageAttributesJson = objectMapper.writeValueAsString(expectedMessage.messageAttributes)
+      JSONAssert.assertEquals(expectedMessageAttributesJson, messageAttributesJson, true)
+    }
   }
 
   @DisplayName("PUT /v1/visit/{visitReference}")
@@ -368,7 +412,7 @@ class VisitsIntegrationTest : IntegrationTestWithQueueBase("visits") {
       queueMessages.size.shouldBe(1)
 
       val messageJson = queueMessages[0].body()
-      val expectedMessage = updateVisitRequest.toHmppsMessage(defaultCn, visitReference)
+      val expectedMessage = updateVisitRequest.toHmppsMessage(defaultCn, visitReference, nomsId)
       messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
       messageJson.shouldContainJsonKeyValue("$.who", defaultCn)
       val objectMapper = jacksonObjectMapper()
@@ -455,6 +499,64 @@ class VisitsIntegrationTest : IntegrationTestWithQueueBase("visits") {
     }
 
     @Test
+    fun `return a 403 when an attempt to update a visit that has not been created by the client`() {
+      val visitReference = "654321"
+      managePrisonVisitsServer.stubForGet(
+        "/visits/$visitReference",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisonVisits/fixtures/VisitWithClientName.json",
+        ).readText(),
+      )
+      val requestBody = asJsonString(updateVisitRequest)
+      putApi("/v1/visit/$visitReference", requestBody)
+        .andExpect(status().isForbidden)
+        .andExpect(content().json(getExpectedResponse("visit-client-forbidden-response.json"), JsonCompareMode.STRICT))
+    }
+
+    @Test
+    fun `return a 400 when no staffEmail presented for STAFF userType`() {
+      val updateVisitRequestByStaff = updateVisitRequest.copy(userType = UserType.STAFF, staffEmailAddress = null)
+      val requestBody = asJsonString(updateVisitRequestByStaff)
+      putApi(path, requestBody)
+        .andExpect(status().isBadRequest)
+        .andExpect(content().json(getExpectedResponse("visit-staff-email-not-provided-response.json"), JsonCompareMode.STRICT))
+      checkQueueIsEmpty()
+    }
+
+    @Test
+    fun `return a 400 when no username found for staffEmail for STAFF userType`() {
+      val updateVisitRequestByStaff = updateVisitRequest.copy(userType = UserType.STAFF, staffEmailAddress = "test@test.gov.uk")
+      val requestBody = asJsonString(updateVisitRequestByStaff)
+      putApi(path, requestBody)
+        .andExpect(status().isBadRequest)
+        .andExpect(content().json(getExpectedResponse("visit-staff-username-not-found-response.json"), JsonCompareMode.STRICT))
+      checkQueueIsEmpty()
+    }
+
+    @Test
+    fun `returns a 200 when username is found for staffEmail for STAFF userType`() {
+      val updateVisitRequestByStaff = updateVisitRequest.copy(userType = UserType.STAFF, staffEmailAddress = "testName")
+      val requestBody = asJsonString(updateVisitRequestByStaff)
+      putApi(path, requestBody)
+        .andExpect(status().isOk)
+        .andExpect(content().json(getExpectedResponse("visit-update-response.json"), JsonCompareMode.STRICT))
+
+      await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
+
+      val queueMessages = getQueueMessages()
+      queueMessages.size.shouldBe(1)
+
+      val messageJson = queueMessages[0].body()
+      val expectedMessage = updateVisitRequestByStaff.toHmppsMessage(defaultCn, visitReference, actionedBy = "TEST_USER")
+      messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
+      messageJson.shouldContainJsonKeyValue("$.who", defaultCn)
+      val objectMapper = jacksonObjectMapper()
+      val messageAttributesJson = objectMapper.readTree(messageJson).at("/messageAttributes").toString()
+      val expectedMessageAttributesJson = objectMapper.writeValueAsString(expectedMessage.messageAttributes)
+      JSONAssert.assertEquals(expectedMessageAttributesJson, messageAttributesJson, true)
+    }
+
+    @Test
     fun `return a 404 when prison not in filter`() {
       val requestBody = asJsonString(updateVisitRequest)
 
@@ -490,6 +592,17 @@ class VisitsIntegrationTest : IntegrationTestWithQueueBase("visits") {
         userType = UserType.PRISONER,
       )
 
+    private val cancelVisitRequestByStaff =
+      CancelVisitRequest(
+        cancelOutcome =
+          CancelOutcome(
+            outcomeStatus = OutcomeStatus.VISIT_ORDER_CANCELLED,
+            text = "visit order cancelled",
+          ),
+        actionedBy = "test-consumer",
+        userType = UserType.STAFF,
+      )
+
     @Test
     fun `post the visit cancellation, get back a message response and find a message on the queue`() {
       val requestBody = asJsonString(cancelVisitRequest)
@@ -505,6 +618,101 @@ class VisitsIntegrationTest : IntegrationTestWithQueueBase("visits") {
 
       val messageJson = queueMessages[0].body()
       val expectedMessage = cancelVisitRequest.toHmppsMessage(defaultCn, visitReference, actionedBy = nomsId)
+      messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
+      messageJson.shouldContainJsonKeyValue("$.who", defaultCn)
+      val objectMapper = jacksonObjectMapper()
+      val messageAttributesJson = objectMapper.readTree(messageJson).at("/messageAttributes").toString()
+      val expectedMessageAttributesJson = objectMapper.writeValueAsString(expectedMessage.messageAttributes)
+      JSONAssert.assertEquals(expectedMessageAttributesJson, messageAttributesJson, true)
+    }
+
+    @Test
+    fun `return a 403 when an attempt to update a visit that has not been created by the client`() {
+      val visitReference = "654321"
+      managePrisonVisitsServer.stubForGet(
+        "/visits/$visitReference",
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisonVisits/fixtures/VisitWithClientName.json",
+        ).readText(),
+      )
+      val invalidCancelRequest =
+        CancelVisitRequest(
+          cancelOutcome =
+            CancelOutcome(
+              outcomeStatus = OutcomeStatus.VISIT_ORDER_CANCELLED,
+              text = "visit order cancelled",
+            ),
+          actionedBy = "a-different-consumer",
+          userType = UserType.PRISONER,
+        )
+      val requestBody = asJsonString(invalidCancelRequest)
+      postToApi("/v1/visit/$visitReference/cancel", requestBody)
+        .andExpect(status().isForbidden)
+        .andExpect(content().json(getExpectedResponse("visit-client-forbidden-response.json"), JsonCompareMode.STRICT))
+    }
+
+    @Test
+    fun `return a 400 when no staffEmail presented for STAFF userType`() {
+      val invalidCancelRequest =
+        CancelVisitRequest(
+          cancelOutcome =
+            CancelOutcome(
+              outcomeStatus = OutcomeStatus.VISIT_ORDER_CANCELLED,
+              text = "visit order cancelled",
+            ),
+          actionedBy = "test-consumer",
+          userType = UserType.STAFF,
+        )
+      val requestBody = asJsonString(invalidCancelRequest)
+      postToApi(path, requestBody)
+        .andExpect(status().isBadRequest)
+        .andExpect(content().json(getExpectedResponse("visit-staff-email-not-provided-response.json"), JsonCompareMode.STRICT))
+    }
+
+    @Test
+    fun `return a 400 when no username found for staffEmail for STAFF userType`() {
+      val invalidCancelRequest =
+        CancelVisitRequest(
+          cancelOutcome =
+            CancelOutcome(
+              outcomeStatus = OutcomeStatus.VISIT_ORDER_CANCELLED,
+              text = "visit order cancelled",
+            ),
+          staffEmailAddress = "test@test.gov.uk",
+          actionedBy = "test-consumer",
+          userType = UserType.STAFF,
+        )
+      val requestBody = asJsonString(invalidCancelRequest)
+      postToApi(path, requestBody)
+        .andExpect(status().isBadRequest)
+        .andExpect(content().json(getExpectedResponse("visit-staff-username-not-found-response.json"), JsonCompareMode.STRICT))
+    }
+
+    @Test
+    fun `returns a 200 when username is found for staffEmail for STAFF userType`() {
+      val invalidCancelRequest =
+        CancelVisitRequest(
+          cancelOutcome =
+            CancelOutcome(
+              outcomeStatus = OutcomeStatus.VISIT_ORDER_CANCELLED,
+              text = "visit order cancelled",
+            ),
+          staffEmailAddress = "testName",
+          actionedBy = "test-consumer",
+          userType = UserType.STAFF,
+        )
+      val requestBody = asJsonString(invalidCancelRequest)
+      postToApi(path, requestBody)
+        .andExpect(status().isOk)
+        .andExpect(content().json(getExpectedResponse("visit-cancel-response.json"), JsonCompareMode.STRICT))
+
+      await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
+
+      val queueMessages = getQueueMessages()
+      queueMessages.size.shouldBe(1)
+
+      val messageJson = queueMessages[0].body()
+      val expectedMessage = cancelVisitRequestByStaff.toHmppsMessage(defaultCn, visitReference, actionedBy = "TEST_USER")
       messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
       messageJson.shouldContainJsonKeyValue("$.who", defaultCn)
       val objectMapper = jacksonObjectMapper()

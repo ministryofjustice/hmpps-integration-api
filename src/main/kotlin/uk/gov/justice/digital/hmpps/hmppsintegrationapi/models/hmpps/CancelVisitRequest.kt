@@ -13,6 +13,8 @@ data class CancelVisitRequest(
   val userType: UserType,
   @Schema(description = "Username for user who actioned this request", required = false)
   val actionedBy: String? = null,
+  @Schema(description = "The email address of the user who actioned this request. Required and nonblank when userType is STAFF.", required = false)
+  val staffEmailAddress: String? = null,
 ) {
   fun toHmppsMessage(
     who: String,
