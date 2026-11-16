@@ -54,15 +54,15 @@ runs:
                   tail -5 $FILE4 | grep ruby | sed "s/[^0-9.]*//g" > .ruby-version
                   chmod 755 .ruby-version
                 else
-                  echo "Using ruby version 3.2.0"
-                  echo '3.2.0' > .ruby-version
+                  echo "Using ruby version 3.3"
+                  echo '3.3' > .ruby-version
                   chmod 755 .ruby-version
                 fi
               fi
             fi
           else
-            echo "Using ruby version 3.2.0"
-            echo '3.2.0' > .ruby-version
+            echo "Using ruby version 3.3"
+            echo '3.3' > .ruby-version
             chmod 755 .ruby-version
           fi
         fi
@@ -72,13 +72,13 @@ runs:
       run: |
         if [[ ${{ steps.branch-exists.outputs.result }} == 1 ]];
         then
-          echo "Using ruby version 3.2.0"
-          echo '3.2.0' > .ruby-version
+          echo "Using ruby version 3.3"
+          echo '3.3' > .ruby-version
           chmod 755 .ruby-version
         fi
       shell: bash
 
-    - uses: ruby/setup-ruby@3ff19f5e2baf30647122352b96108b1fbe250c64 # v1
+    - uses: ruby/setup-ruby@b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 # v1.338.0
 
     - name: Install dependencies
       run: |
@@ -90,7 +90,7 @@ runs:
           if [ -f "$FILE2" ]; then
             echo "$FILE2 already exists."
             if grep -q standardrb "$FILE2"; then
-              echo "standardrb already exists."
+              echo "standardrb already exists. "
             else
               bundle add standardrb
             fi
