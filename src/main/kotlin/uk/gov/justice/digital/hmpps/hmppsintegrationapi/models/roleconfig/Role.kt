@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.extProbationPolice
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.fullAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.fullAccessLaoRedactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.hmppsSystem
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mojHmppsAgencyData
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mojHmppsPersonLookup
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mojHmppsPersonLookupV2
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.mojPrisonsEducation
@@ -198,4 +199,5 @@ val roles =
     extProbationCaseStatusUpdate,
     extHmppsPenTestWithRestrictions,
     extHmppsPenTestNoRestrictions,
+    mojHmppsAgencyData,
   ).associateBy { it.name }
