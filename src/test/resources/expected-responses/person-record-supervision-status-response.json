@@ -1,0 +1,31 @@
+{
+  "data": {
+    "supervisionStatus": "PRISONS",
+    "determinedBy": "G2996UX",
+    "prison": [
+      {
+        "hmppsId": "G2996UX",
+        "prisonerStatus": "ACTIVE IN",
+        "inPrison": true,
+        "prisonId": "MDI",
+        "lastPrisonId": "MDI",
+        "lastMovementType": "CRT",
+        "receptionDate": "2023-05-01"
+      }
+    ],
+    "probation": [
+      {
+        "hmppsId": "A123123",
+        "activeSupervision": true,
+        "provider": {
+          "code": "PROV1",
+          "description": "Provider Description"
+        },
+        "team": {
+          "code": "string",
+          "description": "string"
+        }
+      }
+    ]
+  }
+}

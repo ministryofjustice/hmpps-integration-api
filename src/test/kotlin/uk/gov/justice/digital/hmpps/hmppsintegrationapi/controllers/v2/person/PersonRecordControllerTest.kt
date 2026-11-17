@@ -22,8 +22,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtens
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.CorePersonRecord
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.CorePersonRecordSupervisionStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.roles.dsl.SupervisionStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.v2.PersonRecordService
 
@@ -65,6 +67,34 @@ internal class PersonRecordControllerTest(
         it("returns a bad request from upstream") {
           whenever(personRecordService.personRecord(eq(hmppsId), any<RequestContext>())).thenThrow(ValidationException("Bad Request"))
           val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+        }
+      }
+
+      describe("GET $path/supervision-status") {
+        beforeTest {
+          Mockito.reset(personRecordService)
+          whenever(personRecordService.personRecordSupervisionStatus(eq(hmppsId), any<RequestContext>())).thenReturn(
+            Response(CorePersonRecordSupervisionStatus(supervisionStatus = SupervisionStatus.PROBATION)),
+          )
+          Mockito.reset(auditService)
+        }
+
+        it("returns a 200 OK status code") {
+          val result = mockMvc.performAuthorised("$path/supervision-status")
+          result.response.status.shouldBe(HttpStatus.OK.value())
+          val response = result.response.contentAsJson<DataResponse<CorePersonRecordSupervisionStatus>>()
+          response.data.supervisionStatus.shouldBe(SupervisionStatus.PROBATION)
+
+          verify(auditService, times(1)).createEvent(
+            "GET_PERSON_V2_SUPERVISION_STATUS",
+            mapOf("hmppsId" to hmppsId),
+          )
+        }
+
+        it("returns a bad request from upstream") {
+          whenever(personRecordService.personRecordSupervisionStatus(eq(hmppsId), any<RequestContext>())).thenThrow(ValidationException("Bad Request"))
+          val result = mockMvc.performAuthorised("$path/supervision-status")
           result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
         }
       }
