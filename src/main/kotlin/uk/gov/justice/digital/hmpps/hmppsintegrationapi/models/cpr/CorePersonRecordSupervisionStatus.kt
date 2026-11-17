@@ -25,7 +25,7 @@ data class PrisonData(
   val inPrison: Boolean,
   @Schema(example = "MKI", description = "The current prison id")
   val prisonId: String? = null,
-  @Schema(example = "MKI", description = "The current prison id or the last i.e. final prison before release. Same as latestLocationId unless latestLocationId was not a prison")
+  @Schema(example = "MKI", description = "The current prison id or the last i.e. final prison before release")
   val lastPrisonId: String? = null,
   @Schema(example = "TAP, CRT, TRN, ADM, REL", description = "Last Movement Type Code of prisoner")
   val lastMovementType: String? = null,
