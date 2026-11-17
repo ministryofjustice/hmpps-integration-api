@@ -48,7 +48,7 @@ class PersonRecordController(
   @Operation(
     summary = "Returns a supervision status for a given HMPPS ID using CPR identifiers.",
     responses = [
-      ApiResponse(responseCode = "200", content = [Content(schema = Schema(implementation = CorePersonRecord::class))], description = "Successfully found a person with the provided HMPPS ID."),
+      ApiResponse(responseCode = "200", content = [Content(schema = Schema(implementation = CorePersonRecordSupervisionStatus::class))], description = "Successfully found a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
