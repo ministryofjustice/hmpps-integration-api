@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.CorePersonRecord
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.cpr.CorePersonRecordSupervisionStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.v2.PersonRecordService
@@ -40,6 +41,25 @@ class PersonRecordController(
   ): DataResponse<CorePersonRecord> {
     val response = personRecordService.personRecord(hmppsId, requestContext)
     auditService.createEvent("GET_PERSON_RECORD", mapOf("hmppsId" to hmppsId))
+    return DataResponse(response.data)
+  }
+
+  @GetMapping("{hmppsId}/supervision-status")
+  @Operation(
+    summary = "Returns a supervision status for a given HMPPS ID using CPR identifiers.",
+    responses = [
+      ApiResponse(responseCode = "200", content = [Content(schema = Schema(implementation = CorePersonRecord::class))], description = "Successfully found a person with the provided HMPPS ID."),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  fun getPersonSupervisionStatus(
+    @Parameter(description = "An HMPPS identifier (either a NOMIS ID or a CRN)", example = "A1234AA", required = true)
+    @PathVariable("hmppsId") hmppsId: String,
+    @RequestAttribute requestContext: RequestContext,
+  ): DataResponse<CorePersonRecordSupervisionStatus?> {
+    val response = personRecordService.personRecordSupervisionStatus(hmppsId, requestContext)
+    auditService.createEvent("GET_PERSON_V2_SUPERVISION_STATUS", mapOf("hmppsId" to hmppsId))
     return DataResponse(response.data)
   }
 }

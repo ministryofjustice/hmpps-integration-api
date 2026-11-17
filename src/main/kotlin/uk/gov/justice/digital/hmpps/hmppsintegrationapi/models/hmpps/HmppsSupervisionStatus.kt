@@ -20,3 +20,10 @@ data class ProbationProvider(
   @Schema(description = "The probation provider description", example = "London")
   val description: String? = null,
 )
+
+data class ProbationTeam(
+  @Schema(description = "The probation team code", example = "N56DTX")
+  val code: String? = null,
+  @Schema(description = "The probation team description", example = "Approved Premises")
+  val description: String? = null,
+)

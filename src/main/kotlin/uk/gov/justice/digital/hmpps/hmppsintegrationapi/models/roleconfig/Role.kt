@@ -161,6 +161,7 @@ val roleConstants =
       -"/v1/visit/{visitReference}/cancel"
       -"/v2/persons"
       -"/v2/persons/{hmppsId}"
+      -"/v2/persons/{hmppsId}/supervision-status"
       -"/v3/api-docs"
       -"/v3/api-docs/swagger-config"
       -"/swagger-ui.html"

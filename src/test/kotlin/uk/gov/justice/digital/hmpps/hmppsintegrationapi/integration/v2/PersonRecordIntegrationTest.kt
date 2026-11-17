@@ -59,4 +59,33 @@ class PersonRecordIntegrationTest : IntegrationTestBase() {
   fun `returns a 404 not found when nomis id not found`() {
     callApi("$path/F1234BC").andExpect(status().isNotFound)
   }
+
+  @Test
+  fun `successfully gets a supervision status for a person using a NOMIS ID`() {
+    callApi("$path/$nomsId/supervision-status")
+      .andExpect(status().isOk)
+      .andExpect(content().json(getExpectedResponse("person-record-supervision-status-response.json"), JsonCompareMode.STRICT))
+  }
+
+  @Test
+  fun `successfully gets a supervision status for a person using a CRN`() {
+    callApi("$path/$crn/supervision-status")
+      .andExpect(status().isOk)
+      .andExpect(content().json(getExpectedResponse("person-record-supervision-status-response.json"), JsonCompareMode.STRICT))
+  }
+
+  @Test
+  fun `supervision status returns a 400 bad request when hmpps id is neither a CRN or a NOMIS ID`() {
+    callApi("$path/99AABBCC/supervision-status").andExpect(status().isBadRequest)
+  }
+
+  @Test
+  fun `supervision status returns a 404 not found when crn not found`() {
+    callApi("$path/F123456/supervision-status").andExpect(status().isNotFound)
+  }
+
+  @Test
+  fun `supervision status returns a 404 not found when nomis id not found`() {
+    callApi("$path/F1234BC/supervision-status").andExpect(status().isNotFound)
+  }
 }
