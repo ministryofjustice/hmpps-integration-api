@@ -1,0 +1,7 @@
+{
+  "status": 403,
+  "errorCode": null,
+  "userMessage": "Visit with reference: 654321 forbidden for automated-test-client",
+  "developerMessage": "Forbidden to complete action by upstream service: Visit with reference: 654321 forbidden for automated-test-client",
+  "moreInfo": null
+}

@@ -6,6 +6,7 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeTypeOf
+import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doReturn
@@ -21,7 +22,9 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import software.amazon.awssdk.services.sqs.SqsAsyncClient
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ManageUsersGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CancelOutcome
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CancelVisitRequest
@@ -44,6 +47,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visitor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitorSupport
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visitors
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.manageUsers.HmppsPrisonUser
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPaginatedPrisonerContacts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPrisonerContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.RestrictionSummary
@@ -64,6 +68,7 @@ internal class VisitQueueServiceTest(
   @MockitoBean val getVisitInformationByReferenceService: GetVisitInformationByReferenceService,
   @MockitoBean val personalRelationshipsGateway: PersonalRelationshipsGateway,
   @MockitoBean val consumerPrisonAccessService: ConsumerPrisonAccessService,
+  @MockitoBean val manageUsersGateway: ManageUsersGateway,
 ) : DescribeSpec({
     val mockSqsClient = mock<SqsAsyncClient>()
     val visitQueue =
@@ -75,7 +80,7 @@ internal class VisitQueueServiceTest(
     val hmppsId = "A1234AB"
     val prisonId = "MDI"
     val filters = ConsumerFilters(prisons = listOf(prisonId))
-    val who = "client-name"
+    val who = "client_name"
     val visitReference = "ABC-123-DEF-456"
     val visitorContactId = 3L
     val visitor = Visitors(contactId = visitorContactId, visitContact = true)
@@ -162,7 +167,6 @@ internal class VisitQueueServiceTest(
 
     beforeTest {
       reset(mockSqsClient, objectMapper)
-
       whenever(hmppsQueueService.findByQueueId("visits")).thenReturn(visitQueue)
       whenever(getPersonService.getNomisNumber(hmppsId = eq(hmppsId), filters = any<ConsumerFilters>())).thenReturn(Response(NomisNumber(hmppsId)))
       whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessage>(prisonId, filters)).thenReturn(Response(data = null))
@@ -268,48 +272,44 @@ internal class VisitQueueServiceTest(
         response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.BAD_REQUEST, "You cannot have multiple visit notes of the same type")))
       }
 
-      it("return error if actionedBy not provided for a STAFF userType") {
+      it("return error if staffEmailAddress not provided for a STAFF userType") {
         val createVisitRequestWithNoActionedByForStaff =
           createVisitRequest.copy(
-            actionedBy = null,
+            staffEmailAddress = null,
             userType = UserType.STAFF,
             visitNotes = listOf(createVisitRequest.visitNotes[0].copy(), createVisitRequest.visitNotes[0].copy()),
           )
         val response = visitQueueService.sendCreateVisit(createVisitRequestWithNoActionedByForStaff, who, filters)
         response.data.shouldBeNull()
-        response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.BAD_REQUEST, "You must provide a username when userType is STAFF")))
+        response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.BAD_REQUEST, "You must provide a staffEmailAddress when userType is STAFF")))
       }
 
-      it("return error if actionedBy not provided for a PUBLIC userType") {
-        val createVisitRequestWithNoActionedByForPublic =
+      it("return error if username can not be resolved for a STAFF userType") {
+        whenever(manageUsersGateway.getPrisonUsersByEmail("test@gov.uk")).thenReturn(Response(emptyList()))
+        val createVisitRequestWithNoActionedByForStaff =
           createVisitRequest.copy(
-            actionedBy = null,
-            userType = UserType.PUBLIC,
-            visitNotes = listOf(createVisitRequest.visitNotes[0].copy(), createVisitRequest.visitNotes[0].copy()),
-          )
-        val response = visitQueueService.sendCreateVisit(createVisitRequestWithNoActionedByForPublic, who, filters)
-        response.data.shouldBeNull()
-        response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.BAD_REQUEST, "You must provide a username when userType is PUBLIC")))
-      }
-
-      it("return error if actionedBy is over 60 chars for a STAFF userType") {
-        val createVisitRequestWithInvalidActionedBy =
-          createVisitRequest.copy(
-            actionedBy = "X".repeat(61),
+            staffEmailAddress = "test@gov.uk",
             userType = UserType.STAFF,
             visitNotes = listOf(createVisitRequest.visitNotes[0].copy(), createVisitRequest.visitNotes[0].copy()),
           )
-        val response = visitQueueService.sendCreateVisit(createVisitRequestWithInvalidActionedBy, who, filters)
+        val response = visitQueueService.sendCreateVisit(createVisitRequestWithNoActionedByForStaff, who, filters)
         response.data.shouldBeNull()
-        response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.BAD_REQUEST, "Username cannot exceed 60 characters")))
+        response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.BAD_REQUEST, "No DPS username found for staff email address: test@gov.uk")))
       }
 
-      it("successfully adds to message queue when actionedBy is over valid chars for a STAFF userType") {
+      it("successfully adds to message queue when DPS user found for STAFF userType") {
+        whenever(manageUsersGateway.getPrisonUsersByEmail("testUser@gov.uk")).thenReturn(Response(listOf(HmppsPrisonUser("USER_NAME"))))
         val messageBody = """{"messageId":"1","eventType":"VisitCreated","messageAttributes":{}}"""
+        val createVisitRequestForStaff =
+          createVisitRequest.copy(
+            staffEmailAddress = "testUser@gov.uk",
+            userType = UserType.STAFF,
+            visitNotes = listOf(createVisitRequest.visitNotes[0].copy()),
+          )
 
         whenever(objectMapper.writeValueAsString(any<HmppsMessage>())).thenReturn(messageBody)
 
-        val response = visitQueueService.sendCreateVisit(createVisitRequest.copy(actionedBy = "X".repeat(60), userType = UserType.STAFF), who, filters)
+        val response = visitQueueService.sendCreateVisit(createVisitRequestForStaff, who, filters)
 
         verify(mockSqsClient).sendMessage(
           argThat<SendMessageRequest> { request: SendMessageRequest? ->
@@ -402,48 +402,55 @@ internal class VisitQueueServiceTest(
         response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.BAD_REQUEST, "You cannot have multiple visit notes of the same type")))
       }
 
-      it("return error if actionedBy not provided for a STAFF userType") {
-        val updateVisitRequestWithNoActionedByForStaff =
+      it("return error if client Name does not match") {
+        whenever(manageUsersGateway.getPrisonUsersByEmail("testUser@gov.uk")).thenReturn(Response(listOf(HmppsPrisonUser("USER_NAME"))))
+        val updateVisitRequestWith =
           updateVisitRequest.copy(
-            actionedBy = null,
+            staffEmailAddress = "testUser@gov.uk",
             userType = UserType.STAFF,
-            visitNotes = listOf(updateVisitRequest.visitNotes[0].copy(), updateVisitRequest.visitNotes[0].copy()),
           )
-        val response = visitQueueService.sendUpdateVisit(visitReference, updateVisitRequestWithNoActionedByForStaff, who, filters)
-        response.data.shouldBeNull()
-        response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.BAD_REQUEST, "You must provide a username when userType is STAFF")))
+        val exception = assertThrows<ForbiddenByUpstreamServiceException> { visitQueueService.sendUpdateVisit(visitReference, updateVisitRequestWith, "a-client", filters) }
+        exception.message shouldBe "Visit with reference: ABC-123-DEF-456 forbidden for a-client"
       }
 
-      it("return error if actionedBy not provided for a PUBLIC userType") {
-        val updateVisitRequestWithNoActionedByForPublic =
+      it("return error if staffEmailAddress not provided for a STAFF userType") {
+        val updateVisitRequestWithDuplicateNoteTypes =
           updateVisitRequest.copy(
-            actionedBy = null,
-            userType = UserType.PUBLIC,
-            visitNotes = listOf(updateVisitRequest.visitNotes[0].copy(), updateVisitRequest.visitNotes[0].copy()),
-          )
-        val response = visitQueueService.sendUpdateVisit(visitReference, updateVisitRequestWithNoActionedByForPublic, who, filters)
-        response.data.shouldBeNull()
-        response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.BAD_REQUEST, "You must provide a username when userType is PUBLIC")))
-      }
-
-      it("return error if actionedBy is over 60 chars for a STAFF userType") {
-        val updateVisitRequestWithInvalidActionedBy =
-          updateVisitRequest.copy(
-            actionedBy = "X".repeat(61),
+            staffEmailAddress = null,
             userType = UserType.STAFF,
-            visitNotes = listOf(updateVisitRequest.visitNotes[0].copy(), updateVisitRequest.visitNotes[0].copy()),
+            visitNotes = listOf(updateVisitRequest.visitNotes[0].copy()),
           )
-        val response = visitQueueService.sendUpdateVisit(visitReference, updateVisitRequestWithInvalidActionedBy, who, filters)
+        val response = visitQueueService.sendUpdateVisit(visitReference, updateVisitRequestWithDuplicateNoteTypes, who, filters)
         response.data.shouldBeNull()
-        response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.BAD_REQUEST, "Username cannot exceed 60 characters")))
+        response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.BAD_REQUEST, "You must provide a staffEmailAddress when userType is STAFF")))
       }
 
-      it("successfully adds to message queue when actionedBy is over valid chars for a STAFF userType") {
-        val messageBody = """{"messageId":"1","eventType":"VisitUpdated","messageAttributes":{}}"""
+      it("return error if username can not be resolved for a STAFF userType") {
+        whenever(manageUsersGateway.getPrisonUsersByEmail("test@gov.uk")).thenReturn(Response(emptyList()))
+        val updateVisitRequestWithDuplicateNoteTypes =
+          updateVisitRequest.copy(
+            staffEmailAddress = "test@gov.uk",
+            userType = UserType.STAFF,
+            visitNotes = listOf(updateVisitRequest.visitNotes[0].copy()),
+          )
+        val response = visitQueueService.sendUpdateVisit(visitReference, updateVisitRequestWithDuplicateNoteTypes, who, filters)
+        response.data.shouldBeNull()
+        response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.BAD_REQUEST, "No DPS username found for staff email address: test@gov.uk")))
+      }
+
+      it("successfully adds to message queue when DPS user found for STAFF userType") {
+        whenever(manageUsersGateway.getPrisonUsersByEmail("testUser@gov.uk")).thenReturn(Response(listOf(HmppsPrisonUser("USER_NAME"))))
+        val messageBody = """{"messageId":"1","eventType":"VisitCreated","messageAttributes":{}}"""
+        val updateVisitRequestForStaff =
+          updateVisitRequest.copy(
+            staffEmailAddress = "testUser@gov.uk",
+            userType = UserType.STAFF,
+            visitNotes = listOf(updateVisitRequest.visitNotes[0].copy()),
+          )
 
         whenever(objectMapper.writeValueAsString(any<HmppsMessage>())).thenReturn(messageBody)
 
-        val response = visitQueueService.sendUpdateVisit(visitReference, updateVisitRequest.copy(actionedBy = "X".repeat(60), userType = UserType.STAFF), who, filters)
+        val response = visitQueueService.sendUpdateVisit(visitReference, updateVisitRequestForStaff, who, filters)
 
         verify(mockSqsClient).sendMessage(
           argThat<SendMessageRequest> { request: SendMessageRequest? ->
@@ -504,6 +511,64 @@ internal class VisitQueueServiceTest(
         val response = visitQueueService.sendCancelVisit(visitReference, cancelVisitRequest, who, filters)
         response.data.shouldBeNull()
         response.errors.shouldBe(errors)
+      }
+
+      it("return error if client Name does not match") {
+
+        whenever(manageUsersGateway.getPrisonUsersByEmail("testUser@gov.uk")).thenReturn(Response(listOf(HmppsPrisonUser("USER_NAME"))))
+        val cancelVisitRequestWithNoActionedByForStaff =
+          cancelVisitRequest.copy(
+            staffEmailAddress = "testUser@gov.uk",
+            userType = UserType.STAFF,
+          )
+        val exception = assertThrows<ForbiddenByUpstreamServiceException> { visitQueueService.sendCancelVisit(visitReference, cancelVisitRequestWithNoActionedByForStaff, "a-client", filters) }
+        exception.message shouldBe "Visit with reference: ABC-123-DEF-456 forbidden for a-client"
+      }
+
+      it("return error if staffEmailAddress not provided for a STAFF userType") {
+        val cancelVisitRequestWithNoActionedByForStaff =
+          cancelVisitRequest.copy(
+            staffEmailAddress = null,
+            userType = UserType.STAFF,
+          )
+        val response = visitQueueService.sendCancelVisit(visitReference, cancelVisitRequestWithNoActionedByForStaff, who, filters)
+        response.data.shouldBeNull()
+        response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.BAD_REQUEST, "You must provide a staffEmailAddress when userType is STAFF")))
+      }
+
+      it("return error if username can not be resolved for a STAFF userType") {
+        whenever(manageUsersGateway.getPrisonUsersByEmail("test@gov.uk")).thenReturn(Response(emptyList()))
+        val cancelVisitRequestWithNoActionedByForStaff =
+          cancelVisitRequest.copy(
+            staffEmailAddress = "test@gov.uk",
+            userType = UserType.STAFF,
+          )
+        val response = visitQueueService.sendCancelVisit(visitReference, cancelVisitRequestWithNoActionedByForStaff, who, filters)
+        response.data.shouldBeNull()
+        response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.BAD_REQUEST, "No DPS username found for staff email address: test@gov.uk")))
+      }
+
+      it("successfully adds to message queue when DPS user found for STAFF userType") {
+        whenever(manageUsersGateway.getPrisonUsersByEmail("testUser@gov.uk")).thenReturn(Response(listOf(HmppsPrisonUser("USER_NAME"))))
+        val messageBody = """{"messageId":"1","eventType":"VisitCreated","messageAttributes":{}}"""
+        val cancelVisitRequestForStaff =
+          cancelVisitRequest.copy(
+            staffEmailAddress = "testUser@gov.uk",
+            userType = UserType.STAFF,
+          )
+
+        whenever(objectMapper.writeValueAsString(any<HmppsMessage>())).thenReturn(messageBody)
+
+        val response = visitQueueService.sendCancelVisit(visitReference, cancelVisitRequestForStaff, who, filters)
+
+        verify(mockSqsClient).sendMessage(
+          argThat<SendMessageRequest> { request: SendMessageRequest? ->
+            request?.queueUrl() == "https://test-queue-url" &&
+              request.messageBody() == messageBody
+          },
+        )
+
+        response.data.shouldBeTypeOf<HmppsMessageResponse>()
       }
     }
   })

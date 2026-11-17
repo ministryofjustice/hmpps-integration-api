@@ -127,20 +127,20 @@ class VisitsController(
   @PostMapping("")
   fun postVisit(
     @Valid @RequestBody createVisitRequest: CreateVisitRequest,
-    @RequestAttribute clientName: String?,
     @RequestAttribute requestContext: RequestContext?,
   ): DataResponse<HmppsMessageResponse?> {
-    val response = visitQueueService.sendCreateVisit(createVisitRequest, clientName.orEmpty(), requestContext?.filters)
+    val response = visitQueueService.sendCreateVisit(createVisitRequest, requestContext?.consumerId.orEmpty(), requestContext?.filters)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException(response.errors[0].description ?: "Could not find information for a given visit.")
     }
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
-      throw ValidationException("Either invalid prisoner or prison id.")
+      val messageResponse = response.getErrorDescriptionForType(UpstreamApiError.Type.BAD_REQUEST) ?: "Either invalid prisoner or prison id."
+      throw ValidationException(messageResponse)
     }
 
-    auditService.createEvent("POST_VISIT", mapOf("prisonerId" to createVisitRequest.prisonerId, "clientVisitReference" to createVisitRequest.clientVisitReference, "clientName" to clientName.orEmpty()))
+    auditService.createEvent("POST_VISIT", mapOf("prisonerId" to createVisitRequest.prisonerId, "clientVisitReference" to createVisitRequest.clientVisitReference, "clientName" to requestContext?.consumerId.orEmpty()))
 
     return DataResponse(response.data)
   }
@@ -199,7 +199,8 @@ class VisitsController(
     }
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
-      throw ValidationException("Either invalid prisoner or prison id.")
+      val messageResponse = response.getErrorDescriptionForType(UpstreamApiError.Type.BAD_REQUEST) ?: "Either invalid prisoner or prison id."
+      throw ValidationException(messageResponse)
     }
 
     auditService.createEvent("POST_UPDATE_VISIT", mapOf("visitReference" to visitReference, "clientName" to clientName.orEmpty()))
@@ -258,7 +259,8 @@ class VisitsController(
     }
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
-      throw ValidationException("Either invalid prisoner or prison id.")
+      val messageResponse = response.getErrorDescriptionForType(UpstreamApiError.Type.BAD_REQUEST) ?: "Either invalid prisoner or prison id."
+      throw ValidationException(messageResponse)
     }
 
     auditService.createEvent("POST_CANCEL_VISIT", mapOf("visitReference" to visitReference, "clientName" to clientName.orEmpty()))

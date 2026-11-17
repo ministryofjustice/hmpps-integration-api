@@ -19,6 +19,12 @@ data class Response<T>(
 
   fun hasError(type: UpstreamApiError.Type): Boolean = this.errors.any { it.type == type }
 
+  fun getErrorDescriptionForType(type: UpstreamApiError.Type): String? =
+    this.errors
+      .filter { it.type == type }
+      .firstOrNull()
+      ?.description
+
   fun hasErrorCausedBy(
     type: UpstreamApiError.Type,
     causedBy: UpstreamApi,
