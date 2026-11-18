@@ -9,6 +9,8 @@ data class CancelVisitRequest(
   @Schema(description = "Outcome status and description", required = true)
   @field:Valid
   val cancelOutcome: CancelOutcome,
+  @Schema(description = "Application method. Defaults to BY_PRISONER when omitted or null.", required = false)
+  val applicationMethodType: ApplicationMethodType = ApplicationMethodType.BY_PRISONER,
   @Schema(description = "Type of user cancelling the visit", required = true, example = "PRISONER", allowableValues = ["PRISONER", "STAFF"])
   val userType: UserType,
   @Schema(description = "Username for user who actioned this request", required = false)
@@ -36,6 +38,7 @@ data class CancelVisitRequest(
       "visitReference" to visitReference,
       "cancelOutcome" to this.cancelOutcome,
       "userType" to this.userType,
+      "applicationMethodType" to this.applicationMethodType.name,
       "actionedBy" to (actionedBy ?: this.actionedBy),
       "clientName" to clientName,
     )

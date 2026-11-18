@@ -13,6 +13,7 @@ import org.skyscreamer.jsonassert.JSONAssert
 import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ApplicationMethodType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CancelOutcome
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CancelVisitRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CreateVisitRequest
@@ -421,6 +422,7 @@ class VisitsIntegrationTest : IntegrationTestWithQueueBase("visits") {
       val expectedMessageAttributesJson = objectMapper.writeValueAsString(expectedMessage.messageAttributes)
       messageAttributes.shouldBe(expectedMessageAttributes)
       expectedMessageAttributesJson.shouldContainJsonKeyValue("$.clientName", defaultCn)
+      expectedMessageAttributesJson.shouldContainJsonKeyValue("$.applicationMethodType", ApplicationMethodType.BY_PRISONER.name)
     }
 
     @Test
@@ -557,6 +559,7 @@ class VisitsIntegrationTest : IntegrationTestWithQueueBase("visits") {
       val expectedMessageAttributesJson = objectMapper.writeValueAsString(expectedMessage.messageAttributes)
       JSONAssert.assertEquals(expectedMessageAttributesJson, messageAttributesJson, true)
       messageAttributesJson.shouldContainJsonKeyValue("$.clientName", defaultCn)
+      messageAttributesJson.shouldContainJsonKeyValue("$.applicationMethodType", ApplicationMethodType.BY_PRISONER.name)
     }
 
     @Test
@@ -628,6 +631,7 @@ class VisitsIntegrationTest : IntegrationTestWithQueueBase("visits") {
       val expectedMessageAttributesJson = objectMapper.writeValueAsString(expectedMessage.messageAttributes)
       JSONAssert.assertEquals(expectedMessageAttributesJson, messageAttributesJson, true)
       messageAttributesJson.shouldContainJsonKeyValue("$.clientName", defaultCn)
+      messageAttributesJson.shouldContainJsonKeyValue("$.applicationMethodType", ApplicationMethodType.BY_PRISONER.name)
     }
 
     @Test
