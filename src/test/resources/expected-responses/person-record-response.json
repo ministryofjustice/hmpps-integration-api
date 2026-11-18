@@ -5,7 +5,6 @@
       "lastName": "Doe",
       "dateOfBirth": "1990-08-21",
       "disability": true,
-      "interestToImmigration": true,
       "title": {
         "code": "MR",
         "description": "MR"
