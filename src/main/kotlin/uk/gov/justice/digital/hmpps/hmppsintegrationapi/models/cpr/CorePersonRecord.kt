@@ -11,7 +11,6 @@ data class CorePersonRecord(
   val lastName: String? = null,
   val dateOfBirth: String? = null,
   val disability: Boolean? = null,
-  val interestToImmigration: Boolean? = null,
   val title: CPRTitle? = null,
   val sex: CPRSex? = null,
   val sexualOrientation: CPRCodeDescription? = null,
