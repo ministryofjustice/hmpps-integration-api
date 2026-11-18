@@ -49,15 +49,17 @@ data class UpdateVisitRequest(
   ): HmppsMessage =
     HmppsMessage(
       eventType = HmppsMessageEventType.VISIT_UPDATED,
-      messageAttributes = modelToMap(visitReference, actionedBy),
+      messageAttributes = modelToMap(visitReference, actionedBy, who),
       who = who,
     )
 
   private fun modelToMap(
     visitReference: String,
     actionedBy: String?,
+    clientName: String?,
   ): Map<String, Any?> =
     mapOf(
+      "clientName" to clientName,
       "actionedBy" to actionedBy,
       "applicationMethodType" to this.applicationMethodType.name,
       "userType" to this.userType.name,
