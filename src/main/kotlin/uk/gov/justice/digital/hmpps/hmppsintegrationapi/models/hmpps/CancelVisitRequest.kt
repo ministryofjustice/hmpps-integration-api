@@ -23,19 +23,21 @@ data class CancelVisitRequest(
   ): HmppsMessage =
     HmppsMessage(
       eventType = HmppsMessageEventType.VISIT_CANCELLED,
-      messageAttributes = modelToMap(visitReference, actionedBy),
+      messageAttributes = modelToMap(visitReference, actionedBy, who),
       who = who,
     )
 
   private fun modelToMap(
     visitReference: String,
     actionedBy: String?,
+    clientName: String,
   ): Map<String, Any?> =
     mapOf(
       "visitReference" to visitReference,
       "cancelOutcome" to this.cancelOutcome,
       "userType" to this.userType,
       "actionedBy" to (actionedBy ?: this.actionedBy),
+      "clientName" to clientName,
     )
 }
 

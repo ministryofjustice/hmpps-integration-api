@@ -418,7 +418,9 @@ class VisitsIntegrationTest : IntegrationTestWithQueueBase("visits") {
       val objectMapper = jacksonObjectMapper()
       val messageAttributes = objectMapper.readTree(messageJson).at("/messageAttributes")
       val expectedMessageAttributes = objectMapper.readTree(objectMapper.writeValueAsString(expectedMessage.messageAttributes))
+      val expectedMessageAttributesJson = objectMapper.writeValueAsString(expectedMessage.messageAttributes)
       messageAttributes.shouldBe(expectedMessageAttributes)
+      expectedMessageAttributesJson.shouldContainJsonKeyValue("$.clientName", defaultCn)
     }
 
     @Test
@@ -554,6 +556,7 @@ class VisitsIntegrationTest : IntegrationTestWithQueueBase("visits") {
       val messageAttributesJson = objectMapper.readTree(messageJson).at("/messageAttributes").toString()
       val expectedMessageAttributesJson = objectMapper.writeValueAsString(expectedMessage.messageAttributes)
       JSONAssert.assertEquals(expectedMessageAttributesJson, messageAttributesJson, true)
+      messageAttributesJson.shouldContainJsonKeyValue("$.clientName", defaultCn)
     }
 
     @Test
@@ -624,6 +627,7 @@ class VisitsIntegrationTest : IntegrationTestWithQueueBase("visits") {
       val messageAttributesJson = objectMapper.readTree(messageJson).at("/messageAttributes").toString()
       val expectedMessageAttributesJson = objectMapper.writeValueAsString(expectedMessage.messageAttributes)
       JSONAssert.assertEquals(expectedMessageAttributesJson, messageAttributesJson, true)
+      messageAttributesJson.shouldContainJsonKeyValue("$.clientName", defaultCn)
     }
 
     @Test
