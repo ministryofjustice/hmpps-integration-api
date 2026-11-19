@@ -142,6 +142,23 @@ class ApiMockServer(
     )
   }
 
+  fun stubForMovedPermanently(
+    path: String,
+    redirectLocation: String,
+  ) {
+    stubFor(
+      get(path)
+        .withHeader(
+          "Authorization",
+          matching("Bearer ${HmppsAuthMockServer.TOKEN}"),
+        ).willReturn(
+          aResponse()
+            .withHeader("location", redirectLocation)
+            .withStatus(HttpStatus.MOVED_PERMANENTLY.value()),
+        ),
+    )
+  }
+
   fun stubForRetry(
     scenario: String,
     path: String,

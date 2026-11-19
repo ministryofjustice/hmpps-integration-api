@@ -18,6 +18,7 @@ import reactor.util.retry.Retry
 import tools.jackson.databind.DeserializationFeature
 import tools.jackson.databind.json.JsonMapper
 import tools.jackson.module.kotlin.KotlinModule
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MovedPermanentlyException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -121,7 +122,13 @@ class WebClientWrapper(
       val responseData =
         getResponseBodySpec(method, uri, headers, requestBody)
           .retrieve()
-          .onStatus({ status -> status.value() in CREATE_TRANSACTION_RETRY_HTTP_CODES }) { response ->
+          // This code is specifically in place to handle 301 (Moved Permanently) status currently returned by CPR for merged cases
+          .onStatus({ status -> status.value() == HttpStatus.MOVED_PERMANENTLY.value() }) { response ->
+            throw MovedPermanentlyException(
+              message = "$uri has been moved permanently",
+              location = response.headers().header("location").firstOrNull(),
+            )
+          }.onStatus({ status -> status.value() in CREATE_TRANSACTION_RETRY_HTTP_CODES }) { response ->
             retryError(response, upstreamApi, method, uri)
           }.bodyToMono(T::class.java)
           .retryWhen(

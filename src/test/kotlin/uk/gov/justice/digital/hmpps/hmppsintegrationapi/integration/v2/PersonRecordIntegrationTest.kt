@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.defaultObjectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
@@ -87,5 +88,27 @@ class PersonRecordIntegrationTest : IntegrationTestBase() {
   @Test
   fun `supervision status returns a 404 not found when nomis id not found`() {
     callApi("$path/F1234BC/supervision-status").andExpect(status().isNotFound)
+  }
+
+  @Test
+  fun `upstream returns a 301 permanent redirect for v2 persons supervision status endpoint`() {
+    corePersonRecordMockServer.stubForMovedPermanently(
+      "/person/probation/A301301",
+      redirectLocation = "/person/probation/A123123",
+    )
+    callApi("$path/A301301/supervision-status")
+      .andExpect(status().isMovedPermanently)
+      .andExpect(header().string("location", "$path/A123123/supervision-status"))
+  }
+
+  @Test
+  fun `upstream returns a 301 permanent redirect for v2 persons endpoint`() {
+    corePersonRecordMockServer.stubForMovedPermanently(
+      "/person/probation/A301301",
+      redirectLocation = "/person/probation/A123123",
+    )
+    callApi("$path/A301301")
+      .andExpect(status().isMovedPermanently)
+      .andExpect(header().string("location", "$path/A123123"))
   }
 }
