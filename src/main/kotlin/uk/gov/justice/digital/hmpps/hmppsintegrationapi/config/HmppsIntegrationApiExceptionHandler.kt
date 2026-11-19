@@ -2,8 +2,10 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.config
 
 import io.sentry.Sentry
 import io.sentry.SentryLevel
+import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.ValidationException
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.BAD_GATEWAY
 import org.springframework.http.HttpStatus.BAD_REQUEST
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.method.annotation.HandlerMethodValidationException
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import org.springframework.web.servlet.HandlerMapping
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.CaseStatusValidationException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ConflictFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.DeprecatedApiException
@@ -33,6 +36,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.HmppsAuthFaile
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MovedPermanentlyException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.UpstreamApiException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 
@@ -299,6 +303,20 @@ class HmppsIntegrationApiExceptionHandler {
           userMessage = e.message,
         ),
       )
+  }
+
+  @ExceptionHandler(MovedPermanentlyException::class)
+  fun handleMovedPermanentlyException(
+    e: MovedPermanentlyException,
+    req: HttpServletRequest,
+  ): ResponseEntity<Any> {
+    val path = req.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString()
+    return ResponseEntity
+      .status(HttpStatus.MOVED_PERMANENTLY)
+      .header(
+        HttpHeaders.LOCATION,
+        e.toLocation(path),
+      ).build()
   }
 
   private fun logAndCapture(

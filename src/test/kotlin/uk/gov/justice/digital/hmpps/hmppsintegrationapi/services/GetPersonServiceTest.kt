@@ -28,6 +28,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FilterViolationException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MovedPermanentlyException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.UpstreamApiException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.RequestContext.Companion.buildRequestContext
@@ -984,6 +985,20 @@ internal class GetPersonServiceTest :
               "fallbackId" to "G2996UX",
               "message" to "Failed to use CPR to convert $crnNumber",
               "error" to "Some error",
+            ),
+          )
+        }
+
+        it("CPR 301 failure, track event and continue to existing processing") {
+          whenever(corePersonRecordGateway.corePersonRecordFor(IdentifierType.CRN, crnNumber)).thenThrow(MovedPermanentlyException("Moved Permanently"))
+          getPersonService.getNomisNumber(crnNumber, filters = null)
+          verify(telemetryService).trackEvent(
+            "CPRNomsFailure",
+            mapOf(
+              "fallbackSuccess" to "true",
+              "fallbackId" to "G2996UX",
+              "message" to "Failed to use CPR to convert $crnNumber",
+              "error" to "Moved Permanently",
             ),
           )
         }
