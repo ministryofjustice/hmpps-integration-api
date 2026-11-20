@@ -1,6 +1,8 @@
 #!/bin/bash
 
 ignore="dev/sleach5 dev/bmadley dev/mryall preprod/pmcphee dev/zkhan"
+EXPIRY_REPORT=expiry_Report_${ENV}.csv
+echo "" > $EXPIRY_REPORT
 
 configure_aws_credentials() {
     local environment="$1"
@@ -54,6 +56,17 @@ convert_date_to_seconds() {
     else
         # BSD date (macOS)
         date -jf "%b %d %H:%M:%S %Y %Z" "$date_str" +%s 2>/dev/null || date -jf "%b %d %H:%M:%S %Y %Z" "$date_str" "+%s"
+    fi
+}
+
+convert_seconds_to_iso_date() {
+    local seconds="$1"
+    if date --version >/dev/null 2>&1; then
+        # GNU date
+        date -ud "@$seconds" +'%Y-%m-%dT%H:%M:%S'
+    else
+        # BSD date (macOS)
+        date -u -r $seconds +"%Y-%m-%dT%H:%M:%S"
     fi
 }
 
@@ -131,6 +144,12 @@ enhanced_expiry_check() {
   expires_in_seconds=$((expiry_time - current_time))
 
   warn_days=(30 21 14 7 6 5 4 3 2 1 0)
+
+  # Append all expiry times to csv file
+  if(($expiry_time >= $current_time)); then
+    iso_date=$(convert_seconds_to_iso_date $expiry_time)
+    echo "$certificate_name, $iso_date" >> $EXPIRY_REPORT
+  fi
 
   for day in ${warn_days[@]}; do
     start_of_day=$((day * 24 * 3600))
@@ -226,6 +245,30 @@ main() {
     for client in $clients; do
         check_certificate_expiry "s3" "hmpps-integration-api-$ENV-certificates-backup" "/home/appuser/pem-certs/client.pem" "$ENV" "$client" "$slack_webhook_url"
     done
+
+
+    tail -n+2 $EXPIRY_REPORT | sort -t "," -k 2 | column -t -s ',' > formatted.txt
+    reportData="$(cat formatted.txt)"
+    payload='{
+        "blocks": [
+            {
+              "type": "header",
+              "text": {
+                "type": "plain_text",
+                "text": "Certificate Expiry Report ('$ENV')"
+              }
+            },
+            {
+                "type": "markdown",
+                "text": "```\n'"$reportData"'\n```"
+            }
+        ]
+    }'
+
+    # Send the report every Monday (1st Day of working week)
+    if [ "$(date +%u)" -eq 1 ]; then
+      curl -X POST -H 'Content-type: application/json' --data "$payload" "$slack_webhook_url"
+    fi
   fi
 }
 
