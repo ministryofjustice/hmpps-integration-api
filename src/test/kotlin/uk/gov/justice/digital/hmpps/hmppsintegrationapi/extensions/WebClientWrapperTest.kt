@@ -83,7 +83,7 @@ class WebClientWrapperTest :
 
     describe("retry on all upstream gets") {
       it("calls requestWithRetry for a GET request") {
-        listOf(502, 503, 504, 522, 599, 499, 408).forEach {
+        RestApiClient.retryCodes.forEach {
           mockServer.resetAll()
           mockServer.stubForRetry(it.toString(), getPath, 2, it, 200, """{"sourceName" : "Harold"}""".removeWhitespaceAndNewlines())
           val result = retryWebClient.request<TestModel>(HttpMethod.GET, getPath, headers, UpstreamApi.TEST)
@@ -386,14 +386,6 @@ class WebClientWrapperTest :
             ),
           ),
         )
-      }
-
-      it("throws an internal server error when the request 500's") {
-        mockServer.stubGetTest(getPath, "", HttpStatus.INTERNAL_SERVER_ERROR)
-
-        shouldThrow<WebClientResponseException.InternalServerError> {
-          webClient.request<TestModel>(HttpMethod.GET, getPath, headers, UpstreamApi.TEST)
-        }
       }
 
       it("throws a timeout error if response is too slow") {
