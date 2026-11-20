@@ -20,6 +20,7 @@ class CacheIntegrationTest : IntegrationTestBase() {
   private final val nomsPath = "/v1/persons/$nomsId"
   private final val crnPath = "/v1/persons/$crn"
   private final val addressPath = "$nomsPath/addresses"
+  private final val referenceData = "/v1/hmpps/reference-data"
 
   @Order(1)
   @Test
@@ -68,13 +69,27 @@ class CacheIntegrationTest : IntegrationTestBase() {
     // Calls the cacheable method only once (caches first request)
     verify(manageUsersGateway, times(1)).findUser(any(), any())
   }
+
+  @Test()
+  fun `caches reference data when reference data endpoint called twice and feature enabled`() {
+    // Request 1
+    callApi(referenceData)
+      .andExpect(status().isOk)
+
+    // Request 2
+    callApi(referenceData)
+      .andExpect(status().isOk)
+
+    // Calls the cacheable method only once (caches first request)
+    verify(referenceDataService, times(1)).referenceData()
+  }
 }
 
 class CacheDisabledIntegrationTest : IntegrationTestBase() {
   private final val nomsPath = "/v1/persons/$nomsId"
   private final val crnPath = "/v1/persons/$crn"
   private final val addressPath = "$nomsPath/addresses"
-
+  private final val referenceData = "/v1/hmpps/reference-data"
   private final val oboCn = "obo-unsigned-verified"
 
   @Test
@@ -120,5 +135,19 @@ class CacheDisabledIntegrationTest : IntegrationTestBase() {
 
     // Calls the cached manage users only once
     verify(manageUsersGateway, times(2)).findUser(any(), any())
+  }
+
+  @Test()
+  fun `does not cache reference data when reference data endpoint called twice and feature disabled`() {
+    // Request 1
+    callApi(referenceData)
+      .andExpect(status().isOk)
+
+    // Request 2
+    callApi(referenceData)
+      .andExpect(status().isOk)
+
+    // Calls the cacheable method only once (caches first request)
+    verify(referenceDataService, times(2)).referenceData()
   }
 }

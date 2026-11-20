@@ -1,8 +1,10 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.CacheConfig.Companion.REFERENCE_DATA_CACHE
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.getOrError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
@@ -21,6 +23,7 @@ class ReferenceDataService(
   private val deliusWebClient = WebClientWrapper(deliusBaseUrl)
   private val prisonApiWebclient = WebClientWrapper(prisonBaseUrl)
 
+  @Cacheable(REFERENCE_DATA_CACHE, keyGenerator = "gatewayKeyGenerator")
   fun referenceData(): Response<ReferenceData?> {
     val probationReferenceData =
       deliusWebClient

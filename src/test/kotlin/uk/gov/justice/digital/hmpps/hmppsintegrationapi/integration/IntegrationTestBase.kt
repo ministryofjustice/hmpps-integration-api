@@ -41,6 +41,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.AuthorisationService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ReferenceDataService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.telemetry.TelemetryService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.TestConstants.DEFAULT_CRN
 import java.io.File
@@ -87,6 +88,9 @@ abstract class IntegrationTestBase {
 
   @MockitoSpyBean
   lateinit var manageUsersGateway: ManageUsersGateway
+
+  @MockitoSpyBean
+  lateinit var referenceDataService: ReferenceDataService
 
   @Autowired
   lateinit var mockMvc: MockMvc
