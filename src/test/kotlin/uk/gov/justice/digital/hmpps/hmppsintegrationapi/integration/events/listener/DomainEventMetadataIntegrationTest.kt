@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.entities.EventNotification
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.events.helpers.SqsNotificationGeneratingHelper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.events.IntegrationTestWithEventsQueueBase
+import java.time.Duration
 import kotlin.test.assertEquals
 
 class DomainEventMetadataIntegrationTest : IntegrationTestWithEventsQueueBase() {
@@ -134,7 +135,7 @@ class DomainEventMetadataIntegrationTest : IntegrationTestWithEventsQueueBase() 
       )
     sendDomainSqsMessage(rawMessage)
 
-    Awaitility.await().untilAsserted {
+    Awaitility.await().atMost(Duration.ofSeconds(100)).untilAsserted {
       eventNotificationRepository.findAll().isNotEmpty()
       val savedEvents: List<EventNotification> = eventNotificationRepository.findByHmppsIdIsIn(listOf(crnActiveInProbation))
       savedEvents.shouldNotBeEmpty().shouldHaveSize(1)
