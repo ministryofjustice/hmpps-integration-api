@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @Component
 @ConfigurationProperties(prefix = "authorisation")
 class AuthorisationConfig(
