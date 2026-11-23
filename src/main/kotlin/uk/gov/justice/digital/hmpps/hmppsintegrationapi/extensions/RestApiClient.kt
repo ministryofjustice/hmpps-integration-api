@@ -40,6 +40,7 @@ class RestApiClient(
 ) {
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
+    val retryCodes = listOf(500, 502, 503, 504, 522, 599, 499, 408)
 
     private val mapper: JsonMapper =
       JsonMapper
@@ -66,8 +67,6 @@ class RestApiClient(
       return mapper.readValue(jsonText, listType)
     }
   }
-
-  val retryCodes = listOf(502, 503, 504, 522, 599, 499, 408)
 
   fun <T : Any> get(
     path: String,
