@@ -50,6 +50,10 @@ class CourtCaseController(
       throw ValidationException("Invalid hmppsId.")
     }
 
+    if (response.hasError(UpstreamApiError.Type.INTERNAL_SERVER_ERROR)) {
+      throw Exception("Error returning from internal server error")
+    }
+
     auditService.createEvent("COURT_CASES_SUMMARY", mapOf("hmppsId" to hmppsId))
     return DataResponse(response.data)
   }

@@ -56,6 +56,10 @@ class ReferenceDataController(
       throw EntityNotFoundException("Could not find court with id: $courtId")
     }
 
+    if (response.hasError(UpstreamApiError.Type.INTERNAL_SERVER_ERROR)) {
+      throw Exception("Error returning from internal server error")
+    }
+
     return response
   }
 }
