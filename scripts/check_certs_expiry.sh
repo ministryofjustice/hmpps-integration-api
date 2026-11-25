@@ -247,7 +247,7 @@ main() {
     done
 
 
-    tail -n+2 $EXPIRY_REPORT | awk -F',' '{printf "%-30s %-10s %s\n", $1, $2, $3}' > formatted.txt
+    tail -n+2 $EXPIRY_REPORT | sort -t "," -k 2 | awk -F',' '{printf "%-30s %-10s %s\n", $1, $2, $3}' > formatted.txt
     reportData="$(cat formatted.txt)"
     payload='{
         "blocks": [
@@ -265,8 +265,8 @@ main() {
         ]
     }'
 
-    # Send the report every Tuesday (2nd Day of working week)
-    if [ "$(date +%u)" -eq 2 ]; then
+    # Send the report every Thursday (4th Day of working week)
+    if [ "$(date +%u)" -eq 4 ]; then
       curl -X POST -H 'Content-type: application/json' --data "$payload" "$slack_webhook_url"
     fi
   fi
