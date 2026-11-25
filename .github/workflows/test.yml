@@ -10,7 +10,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # V7.0.1
-      - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # V6.2.0
+      - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # V6.3.0
         with:
           distribution: 'temurin'
           java-version: 25
@@ -34,7 +34,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
+      - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
         with:
           distribution: 'temurin'
           java-version: 25
@@ -55,7 +55,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
+      - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
         with:
           distribution: 'temurin'
           java-version: 25
@@ -75,7 +75,7 @@ jobs:
             build/kover
             build/reports/tests
       - name: Publish Test Report
-        uses: ctrf-io/github-test-reporter@dbb08957b5b2af918b39136ab2c5532002c7649b
+        uses: ctrf-io/github-test-reporter@c2e2997afb89a9a515d83121ce7499e272630446
         with:
           report-path: './build/test-results/unitTest/*.xml'
           use-suite-name: true
@@ -103,7 +103,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
+      - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
         with:
           distribution: 'temurin'
           java-version: 25
@@ -124,7 +124,7 @@ jobs:
             build/reports/tests
             build/kover
       - name: Publish Test Report
-        uses: ctrf-io/github-test-reporter@dbb08957b5b2af918b39136ab2c5532002c7649b
+        uses: ctrf-io/github-test-reporter@c2e2997afb89a9a515d83121ce7499e272630446
         with:
           report-path: './build/test-results/integrationTest/*.xml'
           use-suite-name: true
@@ -151,7 +151,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
+      - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
         with:
           distribution: 'temurin'
           java-version: 25
